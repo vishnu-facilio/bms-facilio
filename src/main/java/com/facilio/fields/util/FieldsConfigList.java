@@ -194,6 +194,17 @@ public class FieldsConfigList {
             "ticket", "approvalFlowId", "stateFlowId", "isRecurring",
             "recurringInfoId", "permitType");
 
+    public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE = Arrays.asList(
+            "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid"
+    );
+    public static final List<String> UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE = Arrays.asList(
+            "fuelSurcharge", "flatRatePerUnit", "unit"
+    );
+
+    public static final List<String> UTILITY_DISPUTE_FIELDS_EXCLUDE = Arrays.asList(
+            "approvalFlowId", "approvalStatus", "stateFlowId"
+    );
+
     public static List<String> getNameField() {
         return Arrays.asList("name");
     }

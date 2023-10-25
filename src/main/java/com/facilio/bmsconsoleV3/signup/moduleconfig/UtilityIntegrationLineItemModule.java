@@ -69,10 +69,10 @@ public class UtilityIntegrationLineItemModule extends BaseModuleConfig {
         NumberField cost = FieldFactory.getDefaultField("cost","Cost","COST", FieldType.DECIMAL);
         fields.add(cost);
 
-        NumberField volume = FieldFactory.getDefaultField("volume","volume","VOLUME", FieldType.DECIMAL);
+        NumberField volume = FieldFactory.getDefaultField("volume","Volume","VOLUME", FieldType.DECIMAL);
         fields.add(volume);
 
-        NumberField rate = FieldFactory.getDefaultField("rate","rate","RATE", FieldType.DECIMAL);
+        NumberField rate = FieldFactory.getDefaultField("rate","Rate","RATE", FieldType.DECIMAL);
         fields.add(rate);
 
         StringField chargeKind = (StringField) FieldFactory.getDefaultField("chargeKind", "Kind", "CHARGE_KIND", FieldType.STRING);

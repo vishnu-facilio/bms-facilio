@@ -224,7 +224,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
         FacilioView utilityDisputeView = new FacilioView();
         utilityDisputeView.setName("all");
-        utilityDisputeView.setDisplayName("Utility Dispute");
+        utilityDisputeView.setDisplayName("All Disputes");
 
         utilityDisputeView.setModuleName(FacilioConstants.UTILITY_DISPUTE);
         utilityDisputeView.setSortFields(sortFields);
@@ -376,7 +376,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -388,8 +388,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", "", null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -404,7 +404,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getBillMissingSummaryWidgetDetails((FacilioConstants.UTILITY_DISPUTE),app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getBillMissingSummaryWidgetDetails((FacilioConstants.UTILITY_DISPUTE),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -416,8 +416,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", null, null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -430,7 +430,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getAccountTerminatedSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getAccountTerminatedSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -442,8 +442,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", null, null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -453,10 +453,10 @@ public class UtilityDisputeModule extends BaseModuleConfig {
         //consumption mismatch
         PagesContext consumptionTemplatePage = new PagesContext("consumptiondisputepage", "Consumption Dispute Page", "", getConsumptionMismatchCriteria(), false, false, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
-                .addTab("utilitydisputesummary", "Sumary", PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getConsumptionMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getConsumptionMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -468,8 +468,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", null, null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -482,7 +482,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getTariffMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getTariffMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -494,8 +494,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", null, null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -508,7 +508,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
                 .addTab("utilitydisputesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilitydisputesummaryfields", null, null)
-                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getCostMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
+                .addWidget("utilitydisputesummarywidget", "Dispute  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getCostMismatchSummaryWidgetDetails(FacilioConstants.UTILITY_DISPUTE,app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -520,8 +520,8 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
                 .addTab("utilitydisputehistory", "History", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("history", null, null)
-                .addWidget("history", "History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", null, null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -628,7 +628,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
@@ -703,7 +703,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
@@ -756,7 +756,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
@@ -814,7 +814,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
@@ -885,7 +885,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
@@ -959,7 +959,7 @@ public class UtilityDisputeModule extends BaseModuleConfig {
 
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("Primary Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 

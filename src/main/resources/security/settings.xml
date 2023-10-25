@@ -4107,6 +4107,11 @@
             <property name="relationCategory" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v3/utilityIntegration/removeDummyAccount">
+        <requestbody type="object">
+            <property name="secretState" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
 
     <request path="/api/v1/setup/numberformat/add" method="POST">
         <requestbody type="object">

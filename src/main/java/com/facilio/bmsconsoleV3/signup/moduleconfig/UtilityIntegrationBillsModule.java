@@ -220,7 +220,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
 
         FacilioView utilityBillView = new FacilioView();
         utilityBillView.setName("all");
-        utilityBillView.setDisplayName("Utility Integration Bills");
+        utilityBillView.setDisplayName("Utility Bills");
         utilityBillView.setAppLinkNames(UtilityIntegrationBillsModule.supportedApps);
         utilityBillView.setModuleName(FacilioConstants.UTILITY_INTEGRATION_BILLS);
         utilityBillView.setSortFields(sortFields);
@@ -229,7 +229,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
 
         utilityBillViewFields.add(new ViewField("billUid","Bill UID"));
         utilityBillViewFields.add(new ViewField("meterUid","Meter UID"));
-        utilityBillViewFields.add(new ViewField("customerUid","Customer Id"));
+        utilityBillViewFields.add(new ViewField("customerUid","Customer ID"));
         utilityBillViewFields.add(new ViewField("utilityID","Utility ID"));
         utilityBillViewFields.add(new ViewField("serviceIdentifier","Service Identifier"));
         utilityBillViewFields.add(new ViewField("serviceTariff","Service Tariff"));
@@ -323,7 +323,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
                 .addTab("utilityintegrationbillnotes", "Notes & Information", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationbillsummaryfields", null, null)
-                .addWidget("utilityintegrationbillsummaryfieldswidget", "Bill  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails((FacilioConstants.UTILITY_INTEGRATION_BILLS),app))
+                .addWidget("utilityintegrationbillsummaryfieldswidget", "Bill  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getSummaryWidgetDetails((FacilioConstants.UTILITY_INTEGRATION_BILLS),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -385,7 +385,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 3, 2, 1);
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 

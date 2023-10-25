@@ -4162,4 +4162,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CloseFlaggedEventCommand());
         return c;
     }
+    public static FacilioChain removeDummyAccountChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new removeDummyAccountCommand());
+        return c;
+    }
 }

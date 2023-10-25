@@ -748,4 +748,56 @@ public class APIFieldsConfig {
                 .pageBuilderCriteriaFields()
                 .done();
     }
+
+    @Module(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
+    public static Supplier<FieldConfig> getUtilityIntegrationCustomerFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_TARIFF)
+    public static Supplier<FieldConfig> getUtilityIntegrationBillFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE)
+                .done();
+    }
+
+    @Module(FacilioConstants.UTILITY_DISPUTE)
+    public static Supplier<FieldConfig> getUtilityDisputeFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.UTILITY_DISPUTE_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.UTILITY_DISPUTE_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.UTILITY_DISPUTE_FIELDS_EXCLUDE)
+                .addFixedFields(Arrays.asList("subject"))
+                .done();
+    }
+
 }

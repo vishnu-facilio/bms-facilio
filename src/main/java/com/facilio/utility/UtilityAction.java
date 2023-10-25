@@ -37,6 +37,7 @@ public class UtilityAction extends V3Action {
     private String identifier;
     long id;
     List<Long>meterIds;
+    String secretState;
 
 
     public String createUtilityAccounts() throws Exception{
@@ -131,6 +132,16 @@ public class UtilityAction extends V3Action {
 //        context.put(FacilioConstants.ContextNames.PARAMS,"isAssociate");
         return V3Action.SUCCESS;
 
+    }
+
+    public String removeDummyAccount() throws Exception{
+        FacilioChain chain = TransactionChainFactoryV3.removeDummyAccountChain();
+        FacilioContext context = chain.getContext();
+
+        context.put("secretState", secretState);
+
+        chain.execute();
+        return V3Action.SUCCESS;
     }
 
 }

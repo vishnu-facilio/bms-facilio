@@ -151,7 +151,7 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
             FacilioView utilityTariffView = new FacilioView();
             utilityTariffView.setName("all");
-            utilityTariffView.setDisplayName("Utility Integration Tariff");
+            utilityTariffView.setDisplayName("All Tariff");
             utilityTariffView.setModuleName(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
             utilityTariffView.setSortFields(sortFields);
             utilityTariffView.setAppLinkNames(UtilityIntegrationTariffModule.supportedApps);
@@ -160,11 +160,6 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
             utilityTariffViewFields.add(new ViewField("name","Name"));
             utilityTariffViewFields.add(new ViewField("description","Description"));
-//            utilityTariffViewFields.add(new ViewField("flatRatePerUnit","Flat Rate Per Unit"));
-//            utilityTariffViewFields.add(new ViewField("fuelSurcharge","Fuel Surcharge"));
-//            utilityTariffViewFields.add(new ViewField("fromDate","From"));
-//            utilityTariffViewFields.add(new ViewField("toDate","To"));
-//            utilityTariffViewFields.add(new ViewField("unit","Unit"));
             utilityTariffViewFields.add(new ViewField("utilityProviders","Utility Providers"));
             utilityTariffViewFields.add(new ViewField("utilityType","Utility Type"));
 

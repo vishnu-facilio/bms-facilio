@@ -127,7 +127,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         StringField meta = (StringField) FieldFactory.getDefaultField("meta", "Meta", "META_JSON", FieldType.STRING);
         fields.add(meta);
 
-        NumberField noOfConnections = (NumberField)  FieldFactory.getDefaultField("noOfConnections","No.of Connections","NO_OF_CONNECTIONS", FieldType.NUMBER);
+        NumberField noOfConnections = (NumberField)  FieldFactory.getDefaultField("noOfConnections","No of Connections","NO_OF_CONNECTIONS", FieldType.NUMBER);
         fields.add(noOfConnections);
 
 
@@ -169,7 +169,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
         FacilioView utilityCustomerView = new FacilioView();
         utilityCustomerView.setName("all");
-        utilityCustomerView.setDisplayName("Utility Integration Customer");
+        utilityCustomerView.setDisplayName("All accounts");
         utilityCustomerView.setAppLinkNames(UtilityIntegrationCustomerModule.supportedApps);
 
         utilityCustomerView.setModuleName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
@@ -180,7 +180,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         utilityCustomerViewFields.add(new ViewField("name","Name"));
         utilityCustomerViewFields.add(new ViewField("customerId","Customer Id"));
         utilityCustomerViewFields.add(new ViewField("customerEmail","Customer Email"));
-        utilityCustomerViewFields.add(new ViewField("noOfConnections","No.of Connections"));
+        utilityCustomerViewFields.add(new ViewField("noOfConnections","No of Connections"));
         utilityCustomerViewFields.add(new ViewField("utilityID","Utility ID"));
         utilityCustomerViewFields.add(new ViewField("expires","Expiry Date"));
         utilityCustomerViewFields.add(new ViewField("customerType","Customer Type"));
@@ -235,7 +235,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
                 .addTab("utilityintegrationcustomersummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("utilityintegrationcustomersummaryfields", null, null)
-                .addWidget("utilityintegrationcustomersummaryfieldswidget", "Account  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(customerModule.getName(),app))
+                .addWidget("utilityintegrationcustomersummaryfieldswidget", "Account  Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_3", 0, 0, null, getSummaryWidgetDetails(customerModule.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("meterConnections", null, null)
@@ -264,8 +264,8 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
                 .addTab("utilityintegrationcustomerhistory", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("activity", null, null)
-                .addWidget("activity", "Customer History ", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("", "", null)
+                .addWidget("history", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -302,7 +302,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(widgetGroup, supplier, 1, 4, 1);
 
         widgetGroup.setName("moduleDetails");
-        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setDisplayName("");
         widgetGroup.setColumns(4);
 
 
