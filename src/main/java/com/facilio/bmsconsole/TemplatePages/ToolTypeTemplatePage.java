@@ -136,16 +136,25 @@ public class ToolTypeTemplatePage implements TemplatePageFactory {
         addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, category, 2, 1, 1);
         addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, isApprovalNeeded, 2, 2, 1);
         addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, isRotating, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, sysModifiedTime, 2, 4, 1);
-        addSummaryFieldInWidgetGroup(generalInformationwidgetGroup, sysCreatedTime, 3, 1, 1);
+
+
+        SummaryWidgetGroup systemInformationwidgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemInformationwidgetGroup, sysCreatedTime, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationwidgetGroup, sysModifiedTime, 1, 2, 1);
 
 
         generalInformationwidgetGroup.setName("moduleDetails");
         generalInformationwidgetGroup.setDisplayName("Primary Details");
         generalInformationwidgetGroup.setColumns(4);
 
+        systemInformationwidgetGroup.setName("systemInfo");
+        systemInformationwidgetGroup.setDisplayName("System Information");
+        systemInformationwidgetGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(generalInformationwidgetGroup);
+        widgetGroupList.add(systemInformationwidgetGroup);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();

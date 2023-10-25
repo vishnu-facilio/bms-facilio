@@ -75,6 +75,7 @@ public class GetCriteriaFieldsForModuleCommand extends FacilioCommand {
                     case FacilioConstants.ContextNames.SERVICE:
                     case FacilioConstants.ContextNames.TOOL_TYPES:
                     case FacilioConstants.ContextNames.ITEM_TYPES:
+                    case FacilioConstants.ContextNames.INVENTORY_REQUEST:
                         fields = FieldUtil.getFieldsByAccessType(FacilioField.AccessType.CRITERIA.getVal(), moduleName);
                         break;
                     default:
