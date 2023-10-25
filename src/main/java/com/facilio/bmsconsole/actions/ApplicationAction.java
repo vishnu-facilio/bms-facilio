@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -493,6 +494,27 @@ public class ApplicationAction extends FacilioAction {
 	public String getAllLicensedPortals() throws Exception{
 		List<ApplicationContext> portals = ApplicationApi.getLicensedPortalApps();
 		setResult(FacilioConstants.ContextNames.PORTALS,portals);
+		return SUCCESS;
+	}
+
+	public String getDefaultApplication() throws Exception{
+		ApplicationContext defaultAppToLoad = null;
+		HttpServletRequest request = ServletActionContext.getRequest();
+		User currentUser = AccountUtil.getCurrentUser();
+
+		if(currentUser!=null) {
+			List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(currentUser.getOuid(), request.getServerName());
+			if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
+				defaultAppToLoad = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain, currentUser.getOuid());
+			}
+		}
+
+		if(defaultAppToLoad != null && StringUtils.isNotEmpty(defaultAppToLoad.getLinkName())){
+			setResult("appLinkName", defaultAppToLoad.getLinkName());
+		}else {
+			throw new IllegalArgumentException("Application Not Found");
+		}
+
 		return SUCCESS;
 	}
 }

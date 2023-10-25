@@ -6763,6 +6763,11 @@
 			<param name="permission">ALL</param>
 			<param name="setupTab">PORTALS</param>
 			</action>
+		<action name="fetchDefaultApp" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getDefaultApplication">
+			<param name="permission">ALL</param>
+			<param name="setupTab">PORTALS</param>
+		</action>
 	</package>
 	<package name="applicationsRelatedApps" namespace="/api/v2/application/relatedApps"
 			 extends="v2Api">

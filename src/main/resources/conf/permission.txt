@@ -205,6 +205,7 @@ api/v3/globalVariable/addOrUpdateGroup
 /api/v3/scopeVariable/delete
 /api/v3/scopeVariable/detail
 /api/v2/application/fetchDetails
+/api/v2/application/fetchDefaultApp
 /api/v2/application/relatedApps/fetchList
 /api/v3/modules/list/all
 /api/v2/isSessionActive
