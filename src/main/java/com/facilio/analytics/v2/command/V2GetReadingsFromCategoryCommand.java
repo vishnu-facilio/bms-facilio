@@ -2,7 +2,10 @@ package com.facilio.analytics.v2.command;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.UtilityMeterContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -17,6 +20,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,108 +32,52 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception
     {
         String type = (String )context.get("type");
-        Long category = (Long)context.get("category");
         String searchText = (String)context.get("searchText");
+        List<FacilioModule> modules = (ArrayList<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
         if(type != null && type.equals("asset"))
         {
-            context.put("fields",this.getAssetsReadings(category, searchText));
+            context.put("fields",this.getReadingsList(modules, searchText ));
         }
         else if(type != null && type.equals("meter")){
-            context.put("fields", this.getMetersReadings(category, searchText));
+            context.put("fields", this.getReadingsList(modules, searchText));
         }
         return false;
     }
 
-    private Map<Long, Map<String,Object>> getAssetsReadings(Long categoryId, String searchText) throws Exception
+    private Map<Long, Map<String,Object>> getReadingsList(List<FacilioModule> reading_modules, String searchText )throws Exception
     {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-        List<FacilioField> assetFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
-        Map<String, FacilioField> assetFieldMap = FieldFactory.getAsMap(assetFields);
-
-        FacilioModule readingDataMetaModule = ModuleFactory.getReadingDataMetaModule();
-        List<FacilioField> readingFields = FieldFactory.getReadingDataMetaFields();
-        Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getIdField(assetModule));
-        fields.add(assetFieldMap.get("name"));
-        fields.add(readingFieldsMap.get("fieldId"));
-
-        SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>()
-                .select(fields)
-                .table(assetModule.getTableName())
-                .moduleName(assetModule.getName())
-                .beanClass(AssetContext.class)
-                .innerJoin(readingDataMetaModule.getTableName())
-                .on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+assetModule.getTableName()+".ID")
-                .setAggregation()
-                .andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
-                .andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
-                .andCondition(CriteriaAPI.getCondition("CATEGORY", "category", categoryId.toString(), NumberOperators.EQUALS))
-                .limit(30000);
-
-        List<AssetContext> assets = selectBuilder.get();
         Map<Long, Map<String,Object>> fieldMap =new HashMap<>();
-        if(assets != null && assets.size() > 0)
+        if(reading_modules != null && !reading_modules.isEmpty())
         {
-            Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
-            List<FacilioField> fieldDetailList = modBean.getFields(fieldIds);
-            for(FacilioField field: fieldDetailList)
+            List<FacilioField> fields = new ArrayList<>();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            for (FacilioModule reading : reading_modules) {
+                fields.addAll(modBean.getAllFields(reading.getName()));
+                reading.setFields(new ArrayList<>());
+            }
+            List<String> default_fields = getDefaultReadingFieldNames();
+            for(FacilioField field: fields)
             {
-                if(canSkipField(field)) {
-                    continue;
+                if (!default_fields.contains(field.getName()) )
+                {
+                    if(canSkipField(field) || (searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText))) {
+                        continue;
+                    }
+
+                    fieldMap.put(field.getFieldId(), constructFieldObject(field));
                 }
-                fieldMap.put(field.getFieldId(), constructFieldObject(field));
             }
         }
         return fieldMap;
     }
-
-    private Map<Long, Map<String,Object>> getMetersReadings(Long categoryId, String searchText)throws Exception
-    {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule meterModule = modBean.getModule(FacilioConstants.ContextNames.METER);
-        List<FacilioField> meterFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.METER));
-        Map<String, FacilioField> meterFieldMap = FieldFactory.getAsMap(meterFields);
-
-        FacilioModule readingDataMetaModule = ModuleFactory.getReadingDataMetaModule();
-        List<FacilioField> readingFields = FieldFactory.getReadingDataMetaFields();
-        Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
-
-        List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getIdField(meterModule));
-        fields.add(meterFieldMap.get("name"));
-        fields.add(readingFieldsMap.get("fieldId"));
-
-        SelectRecordsBuilder<UtilityMeterContext> selectBuilder = new SelectRecordsBuilder<UtilityMeterContext>()
-                .select(fields)
-                .table(meterModule.getTableName())
-                .moduleName(meterModule.getName())
-                .beanClass(UtilityMeterContext.class)
-                .innerJoin(readingDataMetaModule.getTableName())
-                .on(readingDataMetaModule.getTableName()+"."+readingFieldsMap.get("resourceId").getColumnName()+"="+meterModule.getTableName()+".ID")
-                .setAggregation()
-                .andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T))
-                .andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY))
-                .andCondition(CriteriaAPI.getCondition(meterModule.getTableName()+".UTILITY_TYPE", "utilityType", categoryId.toString(), NumberOperators.EQUALS))
-                .limit(30000);
-
-        List<UtilityMeterContext> assets = selectBuilder.get();
-        Map<Long, Map<String,Object>> fieldMap =new HashMap<>();
-        if(assets != null && assets.size() > 0)
-        {
-            Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
-            List<FacilioField> fieldDetailList = modBean.getFields(fieldIds);
-            for(FacilioField field: fieldDetailList)
-            {
-                if(canSkipField(field)) {
-                    continue;
-                }
-                fieldMap.put(field.getFieldId(), constructFieldObject(field));
-            }
+    private List<String> getDefaultReadingFieldNames() throws Exception {
+        List<String> fieldNames = new ArrayList<>();
+        List<FacilioField> fields = FieldFactory.getDefaultReadingFields(null);
+        for(FacilioField field : fields) {
+            fieldNames.add(field.getName());
         }
-        return fieldMap;
+        fieldNames.add("sysCreatedTime");
+        return fieldNames;
     }
 
     private static boolean canSkipField(FacilioField field) {
