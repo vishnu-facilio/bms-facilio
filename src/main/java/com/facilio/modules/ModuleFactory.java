@@ -2217,6 +2217,13 @@ public class ModuleFactory {
 		customFiltersModule.setTableName("Custom_Filters");
 		return customFiltersModule;
 	}
+	public static FacilioModule getCustomRelationModule() {
+		FacilioModule customFiltersModule = new FacilioModule();
+		customFiltersModule.setName("customRelation");
+		customFiltersModule.setDisplayName("Custom Relation");
+		customFiltersModule.setTableName("Custom_Relation");
+		return customFiltersModule;
+	}
 	
 	public static FacilioModule getQuickFilterModule() {
 		FacilioModule quickFiltersModule = new FacilioModule();

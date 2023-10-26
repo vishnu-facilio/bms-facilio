@@ -66,10 +66,10 @@ public class VisitorLogModule extends BaseModuleConfig{
     }
     public static FacilioView getHiddenVisitorLogView() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioView baseSpaceView = new FacilioView();
-        baseSpaceView.setName("VisitorLogListView");
-        baseSpaceView.setDisplayName("Visitor Log List View");
-        baseSpaceView.setHidden(true);
+        FacilioView view = new FacilioView();
+        view.setName("VisitorLogListView");
+        view.setDisplayName("Visitor Log List View");
+        view.setHidden(true);
         FacilioModule visitorLogModule = modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOG);
         List<FacilioField> allFields =  modBean.getAllFields(visitorLogModule.getName());
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
@@ -84,7 +84,7 @@ public class VisitorLogModule extends BaseModuleConfig{
             viewField.setFieldId(field.getFieldId());
             viewFields.add(viewField);
         }
-        baseSpaceView.setFields(viewFields);
+        view.setFields(viewFields);
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
@@ -92,8 +92,8 @@ public class VisitorLogModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
-        baseSpaceView.setAppLinkNames(appLinkNames);
-        return baseSpaceView;
+        view.setAppLinkNames(appLinkNames);
+        return view;
     }
 
     private static FacilioView getVisitorsLogCheckedInTodayView() {
@@ -296,11 +296,11 @@ public class VisitorLogModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("inviteVisitorDetails", "Invite Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, VisitorManagementModulePageUtil.getSummaryWidgetDetailsForIniviteVisitorModule(module.getName(), app))
+                .addWidget("visitorLogDetails", "Visit Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, VisitorManagementModulePageUtil.getSummaryWidgetDetailsForVisitorLogModule(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null,  null)
-                .addWidget("inivitevisitorlogcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, VisitorManagementModulePageUtil.getWidgetGroup(false,module.getName()))
+                .addWidget("visitorlogcommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, VisitorManagementModulePageUtil.getWidgetGroup(false,module.getName()))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -46,7 +46,7 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
                 .widgetDone()
                 .sectionDone()
                 .addSection("occupyingunitsvaccatedunits",null,null)
-                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_6_9", 0, 0,null,null )
+                .addWidget("occupyingunitsvaccatedunitswidget", null, PageWidget.WidgetType.TENANT_SPECIAL_WIDGET, "webtenantspecialwidget_6_9", 0, 0,tenantSpaceViewParam,null )
                 .widgetDone()
                 .addWidget("tenantworkorders", "Workorders", PageWidget.WidgetType.TENANT_WORKORDERS, "webtenantworkorders_3_3", 9, 0,null,null )
                 .widgetDone()

@@ -3428,6 +3428,10 @@
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="deleteRelationship">
 		</action>
+		<action name="getRelationshipForRecord"
+				class="com.facilio.bmsconsole.actions.RelationshipAction"
+				method="getRelationshipsWithDataAssociated">
+		</action>
 	</package>
 
 	<package name="classification" namespace="/api/v2/classification" extends="v2Api">

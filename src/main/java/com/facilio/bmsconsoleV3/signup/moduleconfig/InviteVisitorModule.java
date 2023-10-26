@@ -105,10 +105,10 @@ public class InviteVisitorModule extends BaseModuleConfig{
     }
     public static FacilioView getHiddenInviteVisitorView() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioView baseSpaceView = new FacilioView();
-        baseSpaceView.setName("InviteVisitorListView");
-        baseSpaceView.setDisplayName("Invite Visitor List View");
-        baseSpaceView.setHidden(true);
+        FacilioView view = new FacilioView();
+        view.setName("InviteVisitorListView");
+        view.setDisplayName("Invite Visitor List View");
+        view.setHidden(true);
         FacilioModule visitorLogModule = modBean.getModule(FacilioConstants.ContextNames.INVITE_VISITOR);
         List<FacilioField> allFields =  modBean.getAllFields(visitorLogModule.getName());
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
@@ -122,7 +122,7 @@ public class InviteVisitorModule extends BaseModuleConfig{
             viewField.setFieldId(field.getFieldId());
             viewFields.add(viewField);
         }
-        baseSpaceView.setFields(viewFields);
+        view.setFields(viewFields);
         List<String> appLinkNames = new ArrayList<>();
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
@@ -130,8 +130,8 @@ public class InviteVisitorModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP);
-        baseSpaceView.setAppLinkNames(appLinkNames);
-        return baseSpaceView;
+        view.setAppLinkNames(appLinkNames);
+        return view;
     }
 
     private static FacilioView getPendingInviteVisitorInvitesView() {

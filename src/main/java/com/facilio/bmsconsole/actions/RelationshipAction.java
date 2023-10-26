@@ -6,6 +6,8 @@ import com.facilio.bmsconsole.context.RelationshipContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import org.json.simple.JSONObject;
 
 public class RelationshipAction extends FacilioAction {
 
@@ -32,6 +34,12 @@ public class RelationshipAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+
+
+	@Getter
+	public String fromModuleName;
+	@Getter
+	public long recordId;
 
 	public String addOrUpdateRelationShip() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -66,5 +74,18 @@ public class RelationshipAction extends FacilioAction {
 		chain.execute(context);
 		return SUCCESS;
 	}
+	public String getRelationshipsWithDataAssociated() throws Exception{
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getFromModuleName());
+		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getRecordId());
+		JSONObject pagination = new JSONObject();
+		pagination.put("page", this.getPage());
+		pagination.put("perPage", this.getPerPage());
+		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 
+		FacilioChain chain = TransactionChainFactory.getRelationshipsWithDataAssociatedChain();
+		chain.execute(context);
+		setResult(FacilioConstants.ContextNames.RELATIONSHIP_LIST, context.get(FacilioConstants.ContextNames.RELATIONSHIP_LIST));
+		return SUCCESS;
+	}
 }

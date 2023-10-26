@@ -3461,6 +3461,16 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    public static List<FacilioField> getCustomRelationFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCustomRelationModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("moduleId", "MODULEID", module));
+        fields.add(getNumberField("left", "LEFT_ID", module));
+        fields.add(getNumberField("right", "RIGHT_ID", module));
+        return fields;
+    }
 
     public static List<FacilioField> getTemplateFields() {
         FacilioModule module = ModuleFactory.getTemplatesModule();

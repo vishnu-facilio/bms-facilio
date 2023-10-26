@@ -46,6 +46,14 @@
 <!--        </requestbody>-->
     </request>
 
+    <request path="/api/v2/relationship/getRelationshipForRecord" method="GET">
+        <urlparams>
+            <property name="fromModuleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
     <!-- RelatedList -->
     <request path="/api/v3/modules/:moduleName/:id/relatedList/:relatedModuleName/:relatedFieldName" method="GET">
         <urlparams>
@@ -116,6 +124,7 @@
             <property name="search" type="string" mandatory="false"/>
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
+
     </request>
 
     <request path="/api/v1/setup/modules/summary" method="GET">
