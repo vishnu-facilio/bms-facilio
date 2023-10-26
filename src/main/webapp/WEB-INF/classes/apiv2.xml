@@ -7163,6 +7163,10 @@
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="fetchParentNodes"
 		/>
+		<action name="boundedSpaces"
+				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="getBoundedSpaces"
+		/>
 	</package>
 
 	<package name="siteApiv2" namespace="/api/v2/site" extends="v2Api">

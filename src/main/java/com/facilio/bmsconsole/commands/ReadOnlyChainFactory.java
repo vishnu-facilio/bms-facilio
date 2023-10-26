@@ -3628,4 +3628,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetPortfolioSpacesCountCommand());
 		return chain;
     }
+
+    public static FacilioChain getBoundedSpacesChain() {
+		FacilioChain chain = getDefaultChain();
+
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GetBoundedSpacesCommand());
+		return chain;
+    }
 }

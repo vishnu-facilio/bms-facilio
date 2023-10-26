@@ -460,15 +460,6 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexibleWebSubSpaces_7","Sub Spaces - 7", WidgetConfigContext.ConfigType.FLEXIBLE,7,-1, PagesContext.PageLayoutType.WEB)
                 .done()
 
-                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
-                .done()
-
-                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
-                .done()
-
-                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
-                .done()
-
                 .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
                 .done()
 
@@ -500,14 +491,6 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexibleWebSpaces_7","Spaces - 7", WidgetConfigContext.ConfigType.FLEXIBLE,7,-1, PagesContext.PageLayoutType.WEB)
                 .done()
 
-                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
-                .done()
-
-                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
-                .done()
-
-                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
-                .done()
 
                 .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)
                 .done()
@@ -543,15 +526,6 @@ public class APIModuleWidgets {
                 .done()
 
                 .addModuleWidget("spaces","Spaces", PageWidget.WidgetType.SPACES)
-                .done()
-
-                .addModuleWidget("readings","Readings", PageWidget.WidgetType.READINGS)
-                .done()
-
-                .addModuleWidget("commandsWidget","Commands Widget", PageWidget.WidgetType.COMMANDS_WIDGET)
-                .done()
-
-                .addModuleWidget("relatedReadings","Related Readings", PageWidget.WidgetType.RELATED_READINGS)
                 .done()
 
                 .addModuleWidget("plannedMaintenance","Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE)

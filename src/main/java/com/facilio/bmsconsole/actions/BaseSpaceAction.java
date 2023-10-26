@@ -10,6 +10,10 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.util.FacilioUtil;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
+@Getter @Setter
 public class BaseSpaceAction extends FacilioAction {
 	
 	/**
@@ -103,31 +108,25 @@ public class BaseSpaceAction extends FacilioAction {
 	}
 	
 	
+	@Getter
 	private Boolean fetchHierarchy;
-	
-	public Boolean getFetchHierarchy() {
-		return fetchHierarchy;
-	}
+
 	public void setFetchHierarchy(Boolean fetchHierarchy) {
 		this.fetchHierarchy = fetchHierarchy;
 	}
 
+	@Getter
 	private String moduleName;
-	public String getModuleName() 
-	{
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) 
+
+	public void setModuleName(String moduleName)
 	{
 		this.moduleName = moduleName;
 	}
 	
+	@Getter
 	private ActionForm actionForm;
-	public ActionForm getActionForm() 
-	{
-		return actionForm;
-	}
-	public void setActionForm(ActionForm actionForm) 
+
+	public void setActionForm(ActionForm actionForm)
 	{
 		this.actionForm = actionForm;
 	}
@@ -142,21 +141,16 @@ public class BaseSpaceAction extends FacilioAction {
 		this.customFieldNames = customFieldNames;
 	}
 	
+	@Getter
 	private BaseSpaceContext basespace;
-
-	public BaseSpaceContext getBasespace() {
-		return basespace;
-	}
 
 	public void setBasespace(BaseSpaceContext basespace) {
 		this.basespace = basespace;
 	}
+	@Getter
 	private List<BaseSpaceContext> basespaces;
-	public List<BaseSpaceContext> getBasespaces() 
-	{
-		return basespaces;
-	}
-	public void setBasespaces(List<BaseSpaceContext> basespaces) 
+
+	public void setBasespaces(List<BaseSpaceContext> basespaces)
 	{
 		this.basespaces = basespaces;
 	}
@@ -171,60 +165,47 @@ public class BaseSpaceAction extends FacilioAction {
 		return basespaces;
 	}
 	
+	@Getter
 	private long spaceId;
-	
-	public long getSpaceId() {
-		return this.spaceId;
-	}
-	
+
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
 	}
 
+	@Getter
 	private long baseSpaceId;
 	
+	@Getter
 	private String spaceType;
-
-	public String getSpaceType() {
-		return spaceType;
-	}
 
 	public void setSpaceType(String spaceType) {
 		this.spaceType = spaceType;
 	}
 	
+	@Getter
 	String filters;
 	public void setFilters(String filters){
 		this.filters = filters;
 	}
-	public String getFilters(){
-		return this.filters;
-	}
-	
+
+	@Getter
 	String orderBy;
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
 	}
-	public String getOrderBy() {
-		return this.orderBy;
-	}
-	
+
+	@Getter
 	String orderType;
 	public void setOrderType(String orderType) {
 		this.orderType = orderType;
 	}
-	public String getOrderType() {
-		return this.orderType;
-	}
-	
+
+	@Getter
 	String search;
 	public void setSearch(String search) {
 		this.search = search;
 	}
-	public String getSearch() {
-		return this.search;
-	}
-	
+
 	private Boolean withReadings;
 	public Boolean getWithReadings() {
 		if (withReadings == null) {
@@ -317,9 +298,32 @@ public class BaseSpaceAction extends FacilioAction {
 		return SUCCESS;
 	}
 
-	public long getBaseSpaceId() {
-		return baseSpaceId;
+	public String getBoundedSpaces() throws Exception{
+		FacilioChain getSpacesChain = ReadOnlyChainFactory.getBoundedSpacesChain();
+		FacilioContext boundedSpacesContext = getSpacesChain.getContext();
+		boundedSpacesContext.put("maxLat",getMaxLatitude());
+		boundedSpacesContext.put("minLat",getMinLatitude());
+		boundedSpacesContext.put("maxLng",getMaxLongitude());
+		boundedSpacesContext.put("minLng",getMinLongitude());
+		boundedSpacesContext.put("defaultIds",getDefaultIds());
+		boundedSpacesContext.put(ContextNames.MODULE_NAME,getModuleName());
+
+		if (StringUtils.isNotEmpty(getFilters())) {
+			JSONObject json = FacilioUtil.parseJson(getFilters());
+			boundedSpacesContext.put(FacilioConstants.ContextNames.FILTERS, json);
+		}
+
+		getSpacesChain.execute();
+		setResult("spaces",boundedSpacesContext.get("spaces"));
+		return SUCCESS;
 	}
+
+	private double maxLatitude;
+	private double maxLongitude;
+	private double minLatitude;
+	private double minLongitude;
+	private String defaultIds;
+
 
 	public void setBaseSpaceId(long baseSpaceId) {
 		this.baseSpaceId = baseSpaceId;

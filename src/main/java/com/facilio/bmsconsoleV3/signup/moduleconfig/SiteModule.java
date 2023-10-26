@@ -726,8 +726,8 @@ public class SiteModule extends BaseModuleConfig {
         FacilioField modifiedTimeField =moduleBean.getField("sysModifiedTime",moduleName);
 
         SummaryWidgetGroup systemGroup = new SummaryWidgetGroup();
-        systemGroup.setName("secondaryDetails");
-        systemGroup.setDisplayName("System Details");
+        systemGroup.setName("systemDetails");
+        systemGroup.setDisplayName("System Information");
 
         addSummaryFieldInWidgetGroup(systemGroup, sysCreatedByField,1, 1, 1);
         addSummaryFieldInWidgetGroup(systemGroup, createdTimeField, 1 , 2, 1);
@@ -735,40 +735,9 @@ public class SiteModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(systemGroup,modifiedTimeField,1,4,1);
 
         systemGroup.setColumns(4);
-        FacilioField temperatureField1 =moduleBean.getField("cddBaseTemperature",moduleName);
-        FacilioField temperatureField2 = moduleBean.getField("hddBaseTemperature", moduleName);
-        FacilioField temperatureField3 = moduleBean.getField("wddBaseTemperature", moduleName);
-
-        SummaryWidgetGroup weatherDetailsGroup = new SummaryWidgetGroup();
-        weatherDetailsGroup.setName("weatherDetails");
-        weatherDetailsGroup.setDisplayName("Weather Details");
-
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup, temperatureField1,1, 1, 1);
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup, temperatureField2, 1 , 2, 1);
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup,temperatureField3,1,3,1);
-
-        weatherDetailsGroup.setColumns(3);
-
-        FacilioField timeZoneField = moduleBean.getField("timeZone", moduleName);
-        FacilioField failureClassField = moduleBean.getField("failureClass", moduleName);
-        FacilioField boundaryRadiusField=moduleBean.getField("boundaryRadius",moduleName);
-
-        SummaryWidgetGroup otherWidgetGroup = new SummaryWidgetGroup();
-        otherWidgetGroup.setName("otherDetails");
-        otherWidgetGroup.setDisplayName("Other Details");
-
-        addSummaryFieldInWidgetGroup(otherWidgetGroup,timeZoneField ,1, 1, 1);
-        addSummaryFieldInWidgetGroup(otherWidgetGroup, failureClassField, 1 , 2, 1);
-        addSummaryFieldInWidgetGroup(otherWidgetGroup,boundaryRadiusField,1,3,1);
-        otherWidgetGroup.setColumns(3);
-
-
-
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
         widgetGroupList.add(systemGroup);
-        widgetGroupList.add(weatherDetailsGroup);
-        widgetGroupList.add(otherWidgetGroup);
 
         pageWidget.setDisplayName("Site details");
         pageWidget.setModuleId(module.getModuleId());

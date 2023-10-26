@@ -33,6 +33,16 @@
             <property name="baseSpaceId" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v2/portfolio/boundedSpaces" method="GET">
+        <urlparams type="object">
+            <property name="maxLatitude" type="number" mandatory="false"/>
+            <property name="minLatitude" type="number" mandatory="false"/>
+            <property name="minLongitude" type="number" mandatory="false"/>
+            <property name="maxLongitude" type="number" mandatory="false"/>
+            <property name="defaultIds" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
     <request path="/api/campus/spaceInsights" method="GET">
         <urlparams type="object">
             <property name="campusId" type="string" mandatory="true"/>
