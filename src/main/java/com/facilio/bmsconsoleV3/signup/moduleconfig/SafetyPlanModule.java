@@ -32,7 +32,7 @@ public class SafetyPlanModule extends BaseModuleConfig{
         addSystemButtons();
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         SystemButtonRuleContext addHazard = new SystemButtonRuleContext();
         addHazard.setName("Add Hazard");
         addHazard.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());

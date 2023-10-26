@@ -2444,6 +2444,10 @@ public class FacilioConstants {
 		public static final String SAFETY_PLAN = "safetyPlan";
 		public static final String SAFETY_PLAN_NOTES = "safetyPlanNotes";
 		public static final String SAFETY_PLAN_ATTACHMENTS = "safetyPlanAttachments";
+		public static final String HAZARD_NOTES = "hazardNotes";
+		public static final String PRECAUTION_NOTES ="precautionNotes";
+		public static final String HAZARD_ATTACHMENT = "hazardAttachments";
+		public static final String PRECAUTION_ATTACHMENT ="precautionAttachments";
 		public static final String HAZARD = "hazard";
 
 		public static final String SAFETY_PLANS = "safetyPlans";

@@ -113,7 +113,7 @@ public class ReceivablesTemplatePage implements TemplatePageFactory{
         notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.RECEIVABLE_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.RECEIVABLE_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.RECEIVABLE_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

@@ -44,7 +44,7 @@ public class RequestForQuotationModule extends BaseModuleConfig{
     public void addData() throws Exception {
         addSystemButtons();
     }
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> rfqFields = modBean.getAllFields(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
         Map<String,FacilioField> rfqFieldMap = FieldFactory.getAsMap(rfqFields);

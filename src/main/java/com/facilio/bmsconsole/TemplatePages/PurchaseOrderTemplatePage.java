@@ -145,7 +145,7 @@ public class PurchaseOrderTemplatePage implements TemplatePageFactory{
         notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.PURCHASE_ORDER_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.PURCHASE_ORDER_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.PURCHASE_ORDER_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

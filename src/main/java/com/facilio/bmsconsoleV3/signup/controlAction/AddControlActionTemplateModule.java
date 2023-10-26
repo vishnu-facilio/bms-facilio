@@ -65,6 +65,14 @@ public class AddControlActionTemplateModule extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(controlActionTemplateStatus);
 
+        SystemEnumField controlActionTemplateType = SignupUtil.getSystemEnumField(controlActionTemplate,"controlActionTemplateType","Template Type","CONTROL_ACTION_TEMPLATE_TYPE","ControlActionTemplateType",
+                FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
+        fields.add(controlActionTemplateType);
+
+        BooleanField isEnableRevert = SignupUtil.getBooleanField(controlActionTemplate,"isEnableRevert","Enable Revert",
+                "IS_ENABLED_REVERT", FacilioField.FieldDisplayType.DECISION_BOX,null,false,false,true,orgId);
+        fields.add(isEnableRevert);
+
         controlActionTemplate.setFields(fields);
         modules.add(controlActionTemplate);
 
@@ -78,12 +86,12 @@ public class AddControlActionTemplateModule extends SignUpData {
         FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
         if(module != null) {
 
-            LookupField controlActionTemplateField = SignupUtil.getLookupField(module, controlActionTemplate, "controlActionTemplate","control Action Template",
+            LookupField controlActionTemplateField = SignupUtil.getLookupField(module, controlActionTemplate, "controlActionTemplate","Control Action Template",
                     "CONTROL_ACTION_TEMPLATES_ID", null,FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false,false,true,orgId);
             modBean.addField(controlActionTemplateField);
         }
     }
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);

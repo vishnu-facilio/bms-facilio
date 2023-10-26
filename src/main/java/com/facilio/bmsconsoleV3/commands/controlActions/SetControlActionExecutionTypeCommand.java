@@ -28,6 +28,7 @@ public class SetControlActionExecutionTypeCommand extends FacilioCommand {
             else{
                 controlActionTemplateContext.setControlActionExecutionType(V3ControlActionContext.ControlActionExecutionType.ACTUAL.getVal());
             }
+            controlActionTemplateContext.setControlActionSourceType(V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal());
         }
         return false;
     }

@@ -3,23 +3,21 @@ package com.facilio.bmsconsole.TemplatePages;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SafetyPlanTemplatePage implements TemplatePageFactory{
+public class HazardTemplatePage implements TemplatePageFactory{
     @Override
     public String getModuleName() {
-        return FacilioConstants.ContextNames.SAFETY_PLAN;
+        return FacilioConstants.ContextNames.HAZARD;
     }
 
     @Override
@@ -28,28 +26,16 @@ public class SafetyPlanTemplatePage implements TemplatePageFactory{
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("safetyplansummaryfields", null, null)
-                .addWidget("safetyplansummaryFieldsWidget", "Safety Plan Details",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addSection("hazardsummaryfields", null, null)
+                .addWidget("hazardFieldsWidget", "Hazard Details",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
-                .addSection("safetyplanhazard", null, null)
-                .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                .addSection("hazardsprecaution", null, null)
+                .addWidget("hazardsprecaution", "Associated Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, getPrecautionWidgetParams(), null)
                 .widgetDone()
                 .sectionDone()
-                .addSection("safetyplanprecaution", null, null)
-                .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
-                .widgetDone()
-                .sectionDone()
-                .addSection("safetyplanwidgetGroup", null,  null)
-                .addWidget("safetyplancommentandattachmentwidgetgroupwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, getWidgetGroup(false))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
-                .addTab("workassettab", "Work Asset", PageTabContext.TabType.SIMPLE, true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("workassetsection", null, null)
-                .addWidget("workAssetList", "Work Asset", PageWidget.WidgetType.WORK_ASSET_LIST,"flexiblewebsafetyplanworkassetwidget_6", 0, 0,  null, null)
+                .addSection("hazardswidgetGroup", null,  null)
+                .addWidget("hazardscommentandattachmentwidget", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0,  null, getWidgetGroup(false))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -108,10 +94,10 @@ public class SafetyPlanTemplatePage implements TemplatePageFactory{
     }
     public static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
         JSONObject notesWidgetParam = new JSONObject();
-        notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.SAFETY_PLAN_NOTES);
+        notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.HAZARD_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.SAFETY_PLAN_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.HAZARD_ATTACHMENT);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
@@ -119,10 +105,15 @@ public class SafetyPlanTemplatePage implements TemplatePageFactory{
                 .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile ? "flexiblemobilecomment_8" : "flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
-                .addSection("documents", "Documents", null)
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
+                .addSection("attachments", "Attachments", null)
+                .addWidget("attachmentwidget", "Attachments", PageWidget.WidgetType.ATTACHMENT, isMobile ? "flexiblemobileattachment_8" : "flexiblewebattachment_5", 0, 0, attachmentsWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    public static  JSONObject getPrecautionWidgetParams(){
+        JSONObject widgetParams = new JSONObject();
+        widgetParams.put("isHazardModule", true);
+        return  widgetParams;
     }
 }

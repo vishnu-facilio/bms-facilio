@@ -145,7 +145,7 @@ public class RequestForQuotationTemplatePage implements TemplatePageFactory{
         JSONObject notesWidgetParam = new JSONObject();
         notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_NOTES);
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

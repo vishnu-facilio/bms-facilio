@@ -42,7 +42,7 @@ public class PurchaseOrderModule extends BaseModuleConfig{
         addSystemButtons();
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> poFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_ORDER);
         Map<String,FacilioField> poFieldMap = FieldFactory.getAsMap(poFields);

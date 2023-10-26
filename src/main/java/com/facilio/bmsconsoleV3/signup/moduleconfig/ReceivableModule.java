@@ -30,7 +30,7 @@ public class ReceivableModule extends BaseModuleConfig{
         addSystemButtons();
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
 
         SystemButtonRuleContext addReceiptButton = new SystemButtonRuleContext();
         addReceiptButton.setName("Add Receipt");

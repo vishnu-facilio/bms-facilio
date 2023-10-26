@@ -36,7 +36,7 @@ public class TransferRequestModule extends BaseModuleConfig{
         addSystemButtons();
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> trFields = modBean.getAllFields(FacilioConstants.ContextNames.TRANSFER_REQUEST);
         Map<String,FacilioField> trFieldMap = FieldFactory.getAsMap(trFields);
@@ -69,8 +69,10 @@ public class TransferRequestModule extends BaseModuleConfig{
         completeRequest.setIdentifier("completeRequest");
         completeRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria completeRequestBtnCriteria = new Criteria();
+
+        completeRequestBtnCriteria.addOrCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
+        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipmentTrackingNeeded"),"false", BooleanOperators.IS));
         completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"true", BooleanOperators.IS));
-        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
         completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isCompleted"),"false", BooleanOperators.IS));
         completeRequest.setCriteria(completeRequestBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,completeRequest);

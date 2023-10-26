@@ -264,7 +264,7 @@ public class AddControlActionModule extends SignUpData {
         addStateflowTransitionContext(controlActionModule, stateFlowRuleContext, "Command Generation", firstLevelApproved, commandGenerated, AbstractStateTransitionRuleContext.TransitionType.CONDITIONED,commandGeneratedCriteria,null);
 
     }
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);

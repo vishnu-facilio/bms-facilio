@@ -42,7 +42,7 @@ public class PurchaseRequestModule extends BaseModuleConfig{
         addSystemButtons();
     }
 
-    private static void addSystemButtons() throws Exception {
+    public static void addSystemButtons() throws Exception {
 
         SystemButtonRuleContext convertToRfq = new SystemButtonRuleContext();
         convertToRfq.setName("Convert To Rfq");

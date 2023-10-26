@@ -946,4 +946,16 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexiblewebinventoryrequestlineitems_6","Inventory Request Line Items - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1,PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.HAZARD)
+    public static Supplier<ModuleWidgets> getHazardWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("safetyplanprecautions", "Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.ContextNames.PRECAUTION)
+    public static Supplier<ModuleWidgets> getPrecautionWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
+                .done();
+    }
 }

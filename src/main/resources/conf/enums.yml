@@ -432,6 +432,9 @@ enums:
   - name: ControlActionTemplateStatus
     enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext$ControlActionTemplateStatus
 
+  - name: ControlActionTemplateType
+    enumClassName: com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext$ControlActionTemplateType
+
   - name: FlowStatus
     enumClassName: com.facilio.flowLog.moduleFlowLog.enums.FlowStatus
 

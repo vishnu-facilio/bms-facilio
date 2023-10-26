@@ -130,7 +130,7 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
         notesWidgetParam.put("notesModuleName", FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_NOTES_MODULE_NAME);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ATTACHMENT_MODULE_NAME);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ATTACHMENT_MODULE_NAME);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

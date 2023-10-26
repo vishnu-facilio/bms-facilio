@@ -129,7 +129,7 @@ public class TransferRequestTemplatePage implements TemplatePageFactory{
         notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.TRANSFER_REQUEST_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.TRANSFER_REQUEST_ATTACHMENT);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.TRANSFER_REQUEST_ATTACHMENT);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
