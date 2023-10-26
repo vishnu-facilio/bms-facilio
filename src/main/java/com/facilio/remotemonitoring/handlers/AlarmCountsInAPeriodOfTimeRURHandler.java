@@ -16,6 +16,7 @@ import com.facilio.remotemonitoring.context.FilterRuleCriteriaContext;
 import com.facilio.remotemonitoring.context.FilteredAlarmContext;
 import com.facilio.remotemonitoring.context.RawAlarmContext;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -69,7 +70,7 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
             RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
             if(filterRuleCriteria.getAlarmClearPeriod() != null) {
                 Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmClearPeriod()) / 1000;
-                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.CLEAR_ALARM_JOB, nextExecutionTime, "priority");
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.CLEAR_ALARM_JOB, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
             }
         }
     }

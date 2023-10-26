@@ -16,6 +16,7 @@ import com.facilio.remotemonitoring.context.FilterRuleCriteriaContext;
 import com.facilio.remotemonitoring.context.FilteredAlarmContext;
 import com.facilio.remotemonitoring.context.RawAlarmContext;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,7 +60,7 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
             if(filterRuleCriteria != null) {
                 RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
                 Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmDuration()) / 1000;
-                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.ALARM_OPEN_FOR_DURATION_OF_TIME, nextExecutionTime, "priority");
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.ALARM_OPEN_FOR_DURATION_OF_TIME, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
             }
         }
     }

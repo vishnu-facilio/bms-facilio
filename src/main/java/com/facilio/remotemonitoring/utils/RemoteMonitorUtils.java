@@ -1,5 +1,6 @@
 package com.facilio.remotemonitoring.utils;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -213,5 +214,11 @@ public class RemoteMonitorUtils {
             }
         }
         return null;
+    }
+    public static String getExecutorName(String executorName) {
+        if(FacilioProperties.getService() != null && FacilioProperties.getService().equalsIgnoreCase("storm")) {
+            return FacilioProperties.isDevelopment() ? executorName : "pre-" + executorName;
+        }
+        return executorName;
     }
 }
