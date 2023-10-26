@@ -10,16 +10,16 @@ import java.util.*;
 
 
 public enum BlockType implements FacilioStringEnum {
-    set_variable(Group.LOGIC, "Set Variable", SetVariableBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    if_else(Group.LOGIC, "Decision", If_Else_Block.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class, FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    create_record(Group.CRUD,"Create Record", CreateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    update_record(Group.CRUD,"Update Record", UpdateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    script(Group.ACTION,"Script", ScriptBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI),
-    send_mail(Group.ACTION,"Send Mail", BaseBlock.class,FlowType.GENERIC,FlowType.MODULE,FlowType.KPI);
+    set_variable(Group.LOGIC, "Set Variable", SetVariableBlock.class),
+    if_else(Group.LOGIC, "Decision", If_Else_Block.class),
+    summary_record(Group.CRUD, "Get Record", SummaryRecordBlock.class),
+    delete_record(Group.CRUD, "Delete Record", DeleteRecordBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    create_record(Group.CRUD,"Create Record", CreateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    update_record(Group.CRUD,"Update Record", UpdateRecordBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    script(Group.ACTION,"Script", ScriptBlock.class),
+    send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    send_mail(Group.ACTION,"Send Mail", BaseBlock.class,FlowType.GENERIC,FlowType.MODULE);
 
     private Class clazz;
     @Getter
@@ -35,6 +35,9 @@ public enum BlockType implements FacilioStringEnum {
         this.supportedFlowTypes = sum(supportedFlowTypes);
     }
     private long sum(FlowType... supportedFlowTypes){
+        if(supportedFlowTypes.length==0){
+            return 0;
+        }
         return Arrays.stream(supportedFlowTypes).map(flowType -> flowType.getKey()).reduce((key,sum)->key+sum).get();
     }
 
@@ -113,6 +116,9 @@ public enum BlockType implements FacilioStringEnum {
         return typeMap;
     }
     public boolean isSupportedBlock(FlowType flowType){
+        if(supportedFlowTypes == 0){
+            return true;
+        }
         return (supportedFlowTypes & flowType.getKey()) == flowType.getKey();
     }
 }
