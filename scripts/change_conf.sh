@@ -331,6 +331,14 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "uk-production-kafka" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "uk-preprod-kafka" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-preprod-uk-kafka.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-preprod-uk-kafka.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-uk.yml $CONF_DIR/service.yml
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "azure-test-production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
