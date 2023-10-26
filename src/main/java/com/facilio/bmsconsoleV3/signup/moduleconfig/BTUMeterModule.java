@@ -49,7 +49,7 @@ public class BTUMeterModule extends BaseModuleConfig{
         ModuleBean modBean = Constants.getModBean();
         FacilioModule meterModule = modBean.getModule("meter");
 
-        FacilioModule module = new FacilioModule("btumeter", "BTU Meter", "BTU_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.BTU_METER, "BTU Meter", "BTU_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
         return module;
     }
 
@@ -94,7 +94,7 @@ public class BTUMeterModule extends BaseModuleConfig{
         btuTypeContext.setDisplayName("BTU Meter");
         btuTypeContext.setDescription("The BTU meter gauges heat energy consumption.");
         btuTypeContext.setIsDefault(true);
-        btuTypeContext.setMeterModuleID(modBean.getModule("btumeter").getModuleId());
+        btuTypeContext.setMeterModuleID(modBean.getModule(FacilioConstants.Meter.BTU_METER).getModuleId());
         InsertRecordBuilder<V3UtilityTypeContext> insertBTUMeterBuilder = new InsertRecordBuilder<V3UtilityTypeContext>()
                 .fields(fields)
                 .table(module.getTableName())

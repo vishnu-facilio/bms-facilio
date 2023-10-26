@@ -49,7 +49,7 @@ public class HeatMeterModule extends BaseModuleConfig{
         ModuleBean modBean = Constants.getModBean();
         FacilioModule meterModule = modBean.getModule("meter");
 
-        FacilioModule module = new FacilioModule("heatmeter", "Heat Meter", "Heat_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.HEAT_METER, "Heat Meter", "Heat_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
         return module;
     }
 
@@ -94,7 +94,7 @@ public class HeatMeterModule extends BaseModuleConfig{
         heatTypeContext.setDisplayName("Heat Meter");
         heatTypeContext.setDescription("The heat meter gauges thermal energy consumption.");
         heatTypeContext.setIsDefault(true);
-        heatTypeContext.setMeterModuleID(modBean.getModule("heatmeter").getModuleId());
+        heatTypeContext.setMeterModuleID(modBean.getModule(FacilioConstants.Meter.HEAT_METER).getModuleId());
         InsertRecordBuilder<V3UtilityTypeContext> insertHeatMeterBuilder = new InsertRecordBuilder<V3UtilityTypeContext>()
                 .fields(fields)
                 .table(module.getTableName())

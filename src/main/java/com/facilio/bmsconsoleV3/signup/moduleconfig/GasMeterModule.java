@@ -49,7 +49,7 @@ public class GasMeterModule extends BaseModuleConfig{
         ModuleBean modBean = Constants.getModBean();
         FacilioModule meterModule = modBean.getModule("meter");
 
-        FacilioModule module = new FacilioModule("gasmeter", "Gas Meter", "Gas_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.GAS_METER, "Gas Meter", "Gas_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
         return module;
     }
 
@@ -94,7 +94,7 @@ public class GasMeterModule extends BaseModuleConfig{
         gasTypeContext.setDisplayName("Gas Meter");
         gasTypeContext.setDescription("The gas meter captures energy consumption and its flow.");
         gasTypeContext.setIsDefault(true);
-        gasTypeContext.setMeterModuleID(modBean.getModule("gasmeter").getModuleId());
+        gasTypeContext.setMeterModuleID(modBean.getModule(FacilioConstants.Meter.GAS_METER).getModuleId());
         InsertRecordBuilder<V3UtilityTypeContext> insertGasMeterBuilder = new InsertRecordBuilder<V3UtilityTypeContext>()
                 .fields(fields)
                 .table(module.getTableName())

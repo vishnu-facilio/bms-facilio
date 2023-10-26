@@ -19,12 +19,12 @@ public class VirtualMeterTemplateAction extends V3Action {
         this.vmTemplateId = vmTemplateId;
     }
 
-    private long relationshipId;
-    public long getRelationshipId() {
-        return relationshipId;
+    private long relationShipId;
+    public long getRelationShipId() {
+        return relationShipId;
     }
-    public void setRelationshipId(long relationshipId) {
-        this.relationshipId = relationshipId;
+    public void setRelationShipId(long relationShipId) {
+        this.relationShipId = relationShipId;
     }
 
     private List<Long> resourceIds;
@@ -50,7 +50,7 @@ public class VirtualMeterTemplateAction extends V3Action {
     public String fetchVMGeneratedResources() throws Exception {
         FacilioChain fetchVMGeneratedResources = TransactionChainFactoryV3.fetchVMGeneratedResourcesChain();
         FacilioContext context = fetchVMGeneratedResources.getContext();
-        context.put("relationshipId", relationshipId);
+        context.put("relationShipId", relationShipId);
         fetchVMGeneratedResources.execute();
         List<Long> resourceList = new ArrayList<>();
         if(context.get("resourceList") != null) {

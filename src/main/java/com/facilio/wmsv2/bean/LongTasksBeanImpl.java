@@ -20,6 +20,7 @@ import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.relation.context.RelationContext;
@@ -116,8 +117,11 @@ public class LongTasksBeanImpl implements LongTasksBean {
 			dataList.add(vmMeter.getId());
 			
 			JSONObject dataMap = new JSONObject();
-			
-			dataMap.put(FacilioConstants.Meter.METER, dataList);
+
+			List<V3MeterContext> meterContext = Constants.getRecordList(context);
+			long meterModuleId = meterContext.get(0).getUtilityType().getMeterModuleID();
+			FacilioModule module = Constants.getModBean().getModule(meterModuleId);
+			dataMap.put(module.getName(), dataList);
 
 			RelationshipDataUtil.associateRelation(parentModuleName, dataMap, queryParameters, null);
 			

@@ -4610,11 +4610,11 @@ public class FacilioConstants {
 	public static class Meter {
 		public static final String METER = "meter";
 		public static final String UTILITY_TYPE = "utilitytype";
-		public static final String GAS_METER = "gasmeter";
-		public static final String WATER_METER = "waterutilitymeter";
-		public static final String ELECTRICITY_METER = "electricitymeter";
-		public static final String HEAT_METER = "heatmeter";
-		public static final String BTU_METER = "btumeter";
+		public static final String GAS_METER = "gasmeterutility";
+		public static final String WATER_METER = "watermeterutility";
+		public static final String ELECTRICITY_METER = "electricitymeterutility";
+		public static final String HEAT_METER = "heatmeterutility";
+		public static final String BTU_METER = "btumeterutility";
 		public static final String PARENT_UTILITY_TYPE_ID = "parentUtilityTypeId";
 		public static final String METER_NOTES = "meternotes";
 		public static final String METER_ATTACHMENTS = "meterattachments";

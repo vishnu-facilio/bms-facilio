@@ -49,7 +49,7 @@ public class WaterMeterModule extends BaseModuleConfig{
         ModuleBean modBean = Constants.getModBean();
         FacilioModule meterModule = modBean.getModule("meter");
 
-        FacilioModule module = new FacilioModule("waterutilitymeter", "Water Meter", "Water_Utility_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.WATER_METER, "Water Meter", "Water_Utility_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
         return module;
     }
 
@@ -94,7 +94,7 @@ public class WaterMeterModule extends BaseModuleConfig{
         waterTypeContext.setDisplayName("Water Meter");
         waterTypeContext.setDescription("The water meter captures energy consumption and its flow.");
         waterTypeContext.setIsDefault(true);
-        waterTypeContext.setMeterModuleID(modBean.getModule("waterutilitymeter").getModuleId());
+        waterTypeContext.setMeterModuleID(modBean.getModule(FacilioConstants.Meter.WATER_METER).getModuleId());
         InsertRecordBuilder<V3UtilityTypeContext> insertWaterMeterBuilder = new InsertRecordBuilder<V3UtilityTypeContext>()
                 .fields(fields)
                 .table(module.getTableName())

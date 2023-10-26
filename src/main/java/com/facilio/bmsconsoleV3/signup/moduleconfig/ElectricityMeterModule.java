@@ -49,7 +49,7 @@ public class ElectricityMeterModule extends BaseModuleConfig{
         ModuleBean modBean = Constants.getModBean();
         FacilioModule meterModule = modBean.getModule("meter");
 
-        FacilioModule module = new FacilioModule("electricitymeter", "Electricity Meter", "Electricity_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
+        FacilioModule module = new FacilioModule(FacilioConstants.Meter.ELECTRICITY_METER, "Electricity Meter", "Electricity_Meter", FacilioModule.ModuleType.BASE_ENTITY, meterModule, true);
         return module;
     }
 
@@ -94,7 +94,7 @@ public class ElectricityMeterModule extends BaseModuleConfig{
         electricityTypeContext.setDisplayName("Electricity Meter");
         electricityTypeContext.setDescription("The electricity meter gauges energy consumption and its associated parameters.");
         electricityTypeContext.setIsDefault(true);
-        electricityTypeContext.setMeterModuleID(modBean.getModule("electricitymeter").getModuleId());
+        electricityTypeContext.setMeterModuleID(modBean.getModule(FacilioConstants.Meter.ELECTRICITY_METER).getModuleId());
         InsertRecordBuilder<V3UtilityTypeContext> insertElectricityMeterBuilder = new InsertRecordBuilder<V3UtilityTypeContext>()
                 .fields(fields)
                 .table(module.getTableName())

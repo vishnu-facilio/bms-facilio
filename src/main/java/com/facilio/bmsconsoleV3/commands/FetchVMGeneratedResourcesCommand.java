@@ -17,7 +17,7 @@ public class FetchVMGeneratedResourcesCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-        Long relationShipId = (Long) context.get("relationshipId");
+        Long relationShipId = (Long) context.get("relationShipId");
 
         FacilioModule relationModule = ModuleFactory.getRelationModule();
         GenericSelectRecordBuilder selectRelationBuilder = new GenericSelectRecordBuilder()
