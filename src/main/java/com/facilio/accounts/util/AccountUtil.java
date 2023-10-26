@@ -601,13 +601,11 @@ public class AccountUtil {
 		COMMISSIONING(136,getExponentValue(9),LicenseMapping.GROUP3LICENSE),//2^9
 		BACKGROUND_ACTIVITY(137,getExponentValue(10),LicenseMapping.GROUP3LICENSE),//2^10
 		PAGE_BUILDER(138, getExponentValue(11), LicenseMapping.GROUP3LICENSE),//2^11
-
 		DISABLE_EDIT_SUB_FORM_DATA(139, getExponentValue(12), LicenseMapping.GROUP3LICENSE),//2^12
 
 		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
 		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
 		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE),//2^15
-
 		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE),//2^16
 		FIELD_LIST_PERMISSION(144,getExponentValue(17),LicenseMapping.GROUP3LICENSE),//2^17
 		AGENT_INTERVAL(145,getExponentValue(18),LicenseMapping.GROUP3LICENSE),//2^18
@@ -624,7 +622,8 @@ public class AccountUtil {
 		REMOTE_MONITORING(156,getExponentValue(29),LicenseMapping.GROUP3LICENSE),//2^29
 		FSM(157,getExponentValue(30),LicenseMapping.GROUP3LICENSE),//2^30
 		SFG_20(158,getExponentValue(31),LicenseMapping.GROUP3LICENSE), //2^31
-		CLICKHOUSE(159,getExponentValue(32),LicenseMapping.GROUP3LICENSE);//2^32
+		CLICKHOUSE(159,getExponentValue(32),LicenseMapping.GROUP3LICENSE),//2^32
+		PRE_COMMIT_WORKFLOW_RULES(160,getExponentValue(33),LicenseMapping.GROUP3LICENSE);//2^33
 
 		public int featureId;
 		private long license;

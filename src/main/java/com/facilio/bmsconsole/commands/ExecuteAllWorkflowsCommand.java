@@ -207,12 +207,19 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 
 	private void handlePostRules(List<WorkflowRuleContext> workflowRules, List<WorkflowRuleContext> postRules) {
 		for (Iterator<WorkflowRuleContext> iterator = workflowRules.iterator(); iterator.hasNext(); ) {
-			WorkflowRuleContext workflowRule = iterator.next();
-			if (workflowRule.getRuleTypeEnum().isPostExecute()) {
-				postRules.add(workflowRule);
-				iterator.remove();
-				continue;
-			}
+			 WorkflowRuleContext workflowRule = iterator.next();
+			 if (workflowRule.getRuleTypeEnum().isPostExecute()) {
+				 if (workflowRule.getRuleTypeEnum() == RuleType.MODULE_RULE) {
+					 if (!workflowRule.isPreCommit()) {
+						 postRules.add(workflowRule);
+						 iterator.remove();
+					 }
+				 } else {
+					 postRules.add(workflowRule);
+					 iterator.remove();
+				 }
+			 }
+
 		}
 	}
 

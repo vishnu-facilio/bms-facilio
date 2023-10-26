@@ -19,6 +19,7 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		WorkflowRuleContext oldRule = WorkflowRuleAPI.getWorkflowRule(rule.getId());
+		rule.setPreCommit(oldRule.isPreCommit());
 		if (rule.getActivityTypeEnum() == null) {
 			rule.setEvent(oldRule.getEvent());
 		}
@@ -53,6 +54,7 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 	
 	private void updateRule (WorkflowRuleContext rule, WorkflowRuleContext oldRule) throws Exception {
 		rule.setRuleType(null); //Type is not allowed to be changed
+
 		if (rule instanceof ReadingRuleContext) {
 			rule = ReadingRuleAPI.updateReadingRuleWithChildren((ReadingRuleContext) rule, (ReadingRuleContext)oldRule);
 		}

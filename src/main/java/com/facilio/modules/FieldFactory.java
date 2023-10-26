@@ -2310,6 +2310,8 @@ public class FieldFactory extends BaseFieldFactory {
 
         fields.add(getBooleanField("locked", "IS_LOCKED", module));
 
+        fields.add(getBooleanField("preCommit", "IS_PRECOMMIT", module));
+
         fields.add(getModuleIdField(module));
 
         FacilioField field3 = new FacilioField();

@@ -13,8 +13,12 @@ import com.facilio.bmsconsole.scoringrule.ScoringRuleContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.modules.*;
 import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflowlog.context.WorkflowLogContext.WorkflowLogType;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -39,7 +43,6 @@ import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 public class WorkflowRuleContext implements Serializable {
 	/**
 	 * 
@@ -467,6 +470,10 @@ public class WorkflowRuleContext implements Serializable {
 		this.versionNumber = versionNumber;
 	}
 
+	@Getter
+	@Setter
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private boolean preCommit= false;
 	private boolean locked;
 	public boolean isLocked() {
 		return locked;
@@ -557,7 +564,7 @@ public class WorkflowRuleContext implements Serializable {
 			actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		}
 		LOGGER.debug("Time taken to fetch actions for workflowrule id : "+ruleId+" with actions : "+actions+" is "+(System.currentTimeMillis() - startTime));
-
+		String errorRule="";
 		List<WorkflowRuleActionLogContext> actionLogContextList=new LinkedList<>();
 		if(actions != null) {
 			for(ActionContext action : actions) {
@@ -566,6 +573,9 @@ public class WorkflowRuleContext implements Serializable {
 				}
 				WorkflowRuleActionLogContext.ActionStatus status = action.executeAction(placeHolders, context, this, record);
                 actionLogContextList.add(new WorkflowRuleActionLogContext(action.getActionTypeEnum(),status));
+				if(this.getRuleTypeEnum()==RuleType.MODULE_RULE && status== WorkflowRuleActionLogContext.ActionStatus.FAILED){
+					errorRule+=this.getRuleTypeEnum().toString();
+				}
 			}
 		}
 		try {
@@ -577,6 +587,7 @@ public class WorkflowRuleContext implements Serializable {
 		} catch (Exception e) {
 			LOGGER.error("Exception occurred in workflowRuleLog", e);
 		}
+		FacilioUtil.throwIllegalArgumentException(StringUtils.isNotEmpty(errorRule),"Exception occured in Workflow Rule "+this.getName()+" in Actions -- "+errorRule);
 	}
 
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {

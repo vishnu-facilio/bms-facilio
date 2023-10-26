@@ -80,6 +80,8 @@ public class VisitorLogModule extends BaseModuleConfig{
             FacilioField field = fieldMap.get(viewFieldName);
             ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
             viewField.setField(field);
+            viewField.setFieldName(field.getName());
+            viewField.setFieldId(field.getFieldId());
             viewFields.add(viewField);
         }
         baseSpaceView.setFields(viewFields);

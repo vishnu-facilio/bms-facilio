@@ -108,6 +108,10 @@ public class WorkflowRuleAPI {
 		rule.setLatestVersion(true);
 		rule.setCreatedTime(DateTimeUtil.getCurrenTime());
 		rule.setModifiedTime(rule.getCreatedTime());
+		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PRE_COMMIT_WORKFLOW_RULES)&& rule.getRuleTypeEnum()==WorkflowRuleContext.RuleType.MODULE_RULE){
+			rule.setPreCommit(true);
+		}
+
 		updateWorkflowRuleChildIds(rule);
 		
 		validateWorkflowRule(rule);

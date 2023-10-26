@@ -10,13 +10,10 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,6 +21,7 @@ import javax.websocket.EncodeException;
 
 import com.facilio.auth.actions.PasswordHashUtil;
 import com.facilio.bmsconsole.ModuleSettingConfig.impl.PageBuilderConfigUtil;
+import com.facilio.bmsconsole.ModuleSettingConfig.impl.PreCommitWorkflowRuleUtil;
 import com.facilio.bmsconsole.util.MLServiceUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -691,7 +689,18 @@ public class AdminAction extends ActionSupport {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Long.parseLong(orgId));
 		return bean.getOrgSpecificAgentList();
 	}
-	
+	public String updateRulesToPreCommit() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String[] selectedRuleIds = request.getParameterValues("selectedRules");
+		String isPrecommit=request.getParameter("updateRules");
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
+		AccountUtil.setCurrentAccount(orgId);
+		if(selectedRuleIds != null) {
+			List<Long> ruleIdsList = Stream.of(selectedRuleIds).map(Long::valueOf).collect(Collectors.toList());
+			PreCommitWorkflowRuleUtil.updateWorkflowRulesToPreCommit(ruleIdsList,!Boolean.valueOf(isPrecommit));
+		}
+		return SUCCESS;
+	}
 	public String disableAgent() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgId"));

@@ -364,6 +364,14 @@
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
 		</action>
+		<action name="preCommitWorkflowRule" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/preCommitWorkflowRule.jsp</result>
+			<param name="permission">READ,UPDATE</param>
+		</action>
+		<action name="updateRulesToPreCommit" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateRulesToPreCommit">
+			<result name="success" type="tiles">adminpage/preCommitWorkflowRule.jsp</result>
+			<param name="permission">READ,UPDATE</param>
+		</action>
 	</package>
 
 </struts>
