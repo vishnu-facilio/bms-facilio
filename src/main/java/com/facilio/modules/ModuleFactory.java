@@ -5973,4 +5973,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("SFG20 Sync History");
 		return module;
 	}
+
+	public static FacilioModule getVirtualRelationshipConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("virtualRelationshipConfig");
+		module.setTableName("VIRTUAL_RELATIONSHIP_CONFIG");
+		module.setDisplayName("Virtual Relationship Config");
+		return module;
+	}
 }

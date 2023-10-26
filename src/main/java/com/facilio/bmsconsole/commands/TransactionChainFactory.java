@@ -44,12 +44,10 @@ import com.facilio.bmsconsoleV3.commands.quotation.AssociateQuotationTermsComman
 import com.facilio.bmsconsoleV3.commands.quotation.DisAssociateQuotationTermsCommand;
 import com.facilio.bmsconsoleV3.commands.quotation.SendQuotationMailCommand;
 import com.facilio.bmsconsoleV3.commands.shift.AssignShiftToUserCommand;
-import com.facilio.bmsconsoleV3.signup.AddEnergyApp;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultForms;
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppDefaultUserAndRoles;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppLayout;
-import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppRelatedApplication;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppTabsAndLayout;
 import com.facilio.bmsconsoleV3.signup.fsmApp.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
@@ -86,8 +84,7 @@ import com.facilio.readingrule.command.FetchRuleRootCauseCommand;
 import com.facilio.readingrule.command.GetRulesForRootCauseCommand;
 import com.facilio.readingrule.faultimpact.command.DeleteFaultImpactFromReadingRuleCommand;
 import com.facilio.readingrule.faulttowo.command.*;
-import com.facilio.relation.command.AddOrUpdateRelationCommand;
-import com.facilio.relation.command.DeleteRelationCommand;
+import com.facilio.relation.command.*;
 import com.facilio.remotemonitoring.commands.AddRMSetupTabsAndTabGroups;
 import com.facilio.remotemonitoring.commands.AddRemoteMonitoringApp;
 import com.facilio.storm.command.StormAddEventPayloadCommand;
@@ -7302,6 +7299,12 @@ public class TransactionChainFactory {
 	public static FacilioChain getDeletePDFTemplateChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new DeletePDFTemplateCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddVirtualRelationChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddVirtualRelationCommand());
 		return chain;
 	}
 

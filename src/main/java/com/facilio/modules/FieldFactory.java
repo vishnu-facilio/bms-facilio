@@ -3447,6 +3447,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("relationModuleId", "RELATION_MODULE_ID", module));
         fields.add(getNumberField("relationCategory", "RELATION_CATEGORY", module));
         fields.add(getBooleanField("isCustom", "IS_CUSTOM", module));
+        fields.add(getBooleanField("isVirtual", "IS_VIRTUAL", module));
 
         return fields;
     }
@@ -12472,6 +12473,16 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
         fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
         fields.add(getField("type", "SHARING_TYPE", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getVirtualRelationshipConfigFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getVirtualRelationshipConfigModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("parentId", "PARENT_ID", module));
+        fields.add(getNumberField("relationId", "RELATION_ID", module));
+        fields.add(getNumberField("sequenceNumber", "SEQUENCE_NUMBER", module));
         return fields;
     }
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {

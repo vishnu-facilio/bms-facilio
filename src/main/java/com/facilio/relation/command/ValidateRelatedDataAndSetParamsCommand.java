@@ -46,19 +46,20 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
                 if (relationMapping == null) {
                     throw new IllegalArgumentException("Invalid relation");
                 }
+                RelationContext relationContext = RelationUtil.getRelation(relationMapping.getRelationId(), false);
+                context.put(ContextNames.RELATION, relationContext);
 
                 if (!isRelationshipAction && !unAssociated && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()
                         || relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_MANY.getIndex())) {
                     constructRelationListQueryParams(queryParams, recordId, relationMapping);
 
-                    RelationContext relationContext = RelationUtil.getRelation(relationMapping.getRelationId(), false);
                     FacilioModule relationMappingModule = modBean.getModule(relationContext.getRelationModuleId());
                     RelationMappingContext.Position relationPosition = RelationMappingContext.Position.valueOf(relationMapping.getPosition());
 
                     context.put(ContextNames.RELATION_MODULE_NAME, relationMappingModule.getName());                        // ModuleName for V3Util.fetchList()
                     context.put(ContextNames.RELATION_POSITION_TYPE, relationPosition);
                     context.put("fetchSummary", true);
-                } else {
+                } else if (!relationContext.isVirtual()) {
                     filterCriteria = getRelationshipFilterCriteria(relationName, recordId, unAssociated);                   // Many-to-One & Many-to-Many
                     context.put(ContextNames.FILTER_SERVER_CRITERIA, filterCriteria);
                 }
@@ -71,18 +72,18 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
                 context.put(ContextNames.MODULE_NAME, fromModule.getName());                                                // ModuleName for V3Util.fetchList() / V3Util.summary()
                 break;
 
-                case ContextNames.RELATED_LIST:
-                    if (StringUtils.isEmpty(relatedModuleName)) {
-                        throw new IllegalArgumentException("Related Module Name cannot be null");
-                    }
-                    if (StringUtils.isEmpty(relatedFieldName)) {
-                        throw new IllegalArgumentException("Related Field Name cannot be null");
-                    }
-                    context.put(ContextNames.MODULE_NAME, relatedModuleName);
-                    filterCriteria = getRelatedListFilterCriteria(relatedFieldName, relatedModuleName, recordId);
-                    context.put(ContextNames.FILTER_SERVER_CRITERIA, filterCriteria);
+            case ContextNames.RELATED_LIST:
+                if (StringUtils.isEmpty(relatedModuleName)) {
+                    throw new IllegalArgumentException("Related Module Name cannot be null");
+                }
+                if (StringUtils.isEmpty(relatedFieldName)) {
+                    throw new IllegalArgumentException("Related Field Name cannot be null");
+                }
+                context.put(ContextNames.MODULE_NAME, relatedModuleName);
+                filterCriteria = getRelatedListFilterCriteria(relatedFieldName, relatedModuleName, recordId);
+                context.put(ContextNames.FILTER_SERVER_CRITERIA, filterCriteria);
 
-                    break;
+                break;
         }
 
         return false;
@@ -121,7 +122,7 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
             add(id);
         }});
     }
-    
+
     private void constructRelationListQueryParams(Map<String, List<Object>> queryParams, long id, RelationMappingContext relationMapping) {
         queryParams.put("parentId", new ArrayList<Object>(){{
             add(id);

@@ -1,12 +1,15 @@
 package com.facilio.relation.command;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.v3.V3Action;
@@ -45,50 +48,98 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         Criteria filterServerCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA);
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.get(FacilioConstants.ContextNames.QUERY_PARAMS);
         RelationMappingContext.Position relationPosition = (RelationMappingContext.Position) context.get(FacilioConstants.ContextNames.RELATION_POSITION_TYPE);
+        RelationContext relationContext = (RelationContext) context.getOrDefault(FacilioConstants.ContextNames.RELATION, new RelationContext());
 
         FacilioContext listContext;
         JSONObject recordJSON = new JSONObject();
         Map<String, Object> paginationObject = new HashMap<>();
 
-        if (fetchSummary) {
-            FacilioChain relationDataChain = ReadOnlyChainFactoryV3.validateAndGetCustomRelationDataChain();
+        if (relationContext.isVirtual()) {
+            FacilioChain chain = ReadOnlyChainFactoryV3.getFetchVirtualRelationDataChain();
+            FacilioContext chainContext = chain.getContext();
+//            chainContext.put(FacilioConstants.ContextNames.PAGE, page);
+//            chainContext.put(FacilioConstants.ContextNames.PER_PAGE, perPage);
+            chainContext.put(FacilioConstants.ContextNames.ID, context.get(FacilioConstants.ContextNames.ID));
+            chainContext.put(FacilioConstants.ContextNames.RELATION_NAME, context.get(FacilioConstants.ContextNames.RELATION_NAME));
+            chain.execute();
 
-            listContext = relationDataChain.getContext();
-            listContext.put(Constants.QUERY_PARAMS, queryParams);
-            listContext.put(FacilioConstants.ContextNames.MODULE_NAME, relationModuleName);
-
-            relationDataChain.execute();
-
-            JSONObject customRelation = Constants.getJsonRecordMap(listContext);
-            ArrayList<Map<String, Object>> resultData = (ArrayList<Map<String, Object>>) customRelation.get(relationModuleName);
-
-            if (CollectionUtils.isNotEmpty(resultData)) {
-                Map<String, Object> moduleDataObj = (Map<String, Object>) resultData.get(0).get(relationPosition.getFieldName());
-                FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams,fetchClassificationData,null);
-
-                Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
-                List list = recordMap.get(moduleName);
-
-                recordJSON.put(moduleName, FieldUtil.getAsJSONArray(list, ModuleBaseWithCustomFields.class));
-                paginationObject.put("totalCount", list.size());
-            } else {
-                recordJSON.put(moduleName, new ArrayList<>());
-                paginationObject.put("totalCount", 0l);
+            List<Long> recordIdList = (List<Long>) chainContext.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+            if (CollectionUtils.isEmpty(recordIdList)) {
+                context.put(FacilioConstants.ContextNames.RESULT, recordJSON);
+                return false;
             }
-            JSONObject meta = new JSONObject();
-            meta.put("pagination", paginationObject);
-            context.put(FacilioConstants.ContextNames.META, meta);
+            String fetchRecordsModuleName = (String) chainContext.get(FacilioConstants.ContextNames.MODULE_NAME);
+
+            if (fetchSummary) {
+                FacilioContext summaryContext = V3Util.getSummary(fetchRecordsModuleName, recordIdList, queryParams,fetchClassificationData,null);
+                Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
+                List list = recordMap.get(fetchRecordsModuleName);
+
+                recordJSON.put(fetchRecordsModuleName, FieldUtil.getAsJSONArray(list, ModuleBaseWithCustomFields.class));
+                paginationObject.put("totalCount", list.size());
+                JSONObject meta = new JSONObject();
+                meta.put("pagination", paginationObject);
+                context.put(FacilioConstants.ContextNames.META, meta);
+            } else {
+                ConfigParams configParams = new ConfigParams();
+                configParams.setSelectableFieldNames(selectableFieldNames);
+                configParams.setIsSubFormRecord(isSubFormRecord);
+
+                Criteria criteria = new Criteria();
+                criteria.addAndCondition(CriteriaAPI.getIdCondition(recordIdList, Constants.getModBean().getModule(fetchRecordsModuleName)));
+                filterServerCriteria = filterServerCriteria == null || filterServerCriteria.isEmpty() ? new Criteria() : filterServerCriteria;
+                filterServerCriteria.andCriteria(criteria);
+
+                listContext = V3Util.fetchList(fetchRecordsModuleName, true, viewName, filters, excludeParentFilter, clientCriteria,
+                        orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
+
+                recordJSON = Constants.getJsonRecordMap(listContext);
+
+                if (listContext.containsKey(FacilioConstants.ContextNames.META)) {
+                    context.put(FacilioConstants.ContextNames.META, listContext.get(FacilioConstants.ContextNames.META));
+                }
+            }
         } else {
-            ConfigParams configParams = new ConfigParams();
-            configParams.setSelectableFieldNames(selectableFieldNames);
-            configParams.setIsSubFormRecord(isSubFormRecord);
-            listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
-                    orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
+            if (fetchSummary) {
+                FacilioChain relationDataChain = ReadOnlyChainFactoryV3.validateAndGetCustomRelationDataChain();
 
-            recordJSON = Constants.getJsonRecordMap(listContext);
+                listContext = relationDataChain.getContext();
+                listContext.put(Constants.QUERY_PARAMS, queryParams);
+                listContext.put(FacilioConstants.ContextNames.MODULE_NAME, relationModuleName);
 
-            if (listContext.containsKey(FacilioConstants.ContextNames.META)) {
-                context.put(FacilioConstants.ContextNames.META, listContext.get(FacilioConstants.ContextNames.META));
+                relationDataChain.execute();
+
+                JSONObject customRelation = Constants.getJsonRecordMap(listContext);
+                ArrayList<Map<String, Object>> resultData = (ArrayList<Map<String, Object>>) customRelation.get(relationModuleName);
+
+                if (CollectionUtils.isNotEmpty(resultData)) {
+                    Map<String, Object> moduleDataObj = (Map<String, Object>) resultData.get(0).get(relationPosition.getFieldName());
+                    FacilioContext summaryContext = V3Util.getSummary(moduleName, Collections.singletonList((long) moduleDataObj.get("id")), queryParams,fetchClassificationData,null);
+
+                    Map<String, List> recordMap = (Map<String, List>) summaryContext.get(Constants.RECORD_MAP);
+                    List list = recordMap.get(moduleName);
+
+                    recordJSON.put(moduleName, FieldUtil.getAsJSONArray(list, ModuleBaseWithCustomFields.class));
+                    paginationObject.put("totalCount", list.size());
+                } else {
+                    recordJSON.put(moduleName, new ArrayList<>());
+                    paginationObject.put("totalCount", 0l);
+                }
+                JSONObject meta = new JSONObject();
+                meta.put("pagination", paginationObject);
+                context.put(FacilioConstants.ContextNames.META, meta);
+            } else {
+                ConfigParams configParams = new ConfigParams();
+                configParams.setSelectableFieldNames(selectableFieldNames);
+                configParams.setIsSubFormRecord(isSubFormRecord);
+                listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
+                        orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
+
+                recordJSON = Constants.getJsonRecordMap(listContext);
+
+                if (listContext.containsKey(FacilioConstants.ContextNames.META)) {
+                    context.put(FacilioConstants.ContextNames.META, listContext.get(FacilioConstants.ContextNames.META));
+                }
             }
         }
 

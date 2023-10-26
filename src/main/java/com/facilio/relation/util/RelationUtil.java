@@ -375,7 +375,8 @@ public class RelationUtil {
         relationContext.setName(relationRequest.getName());
         relationContext.setDescription(relationRequest.getDescription());
         relationContext.setLinkName(relationRequest.getLinkName());
-        relationContext.setIsCustom(relationRequest.getIsCustom());
+        relationContext.setIsCustom(relationRequest.isCustom());
+        relationContext.setIsVirtual(relationRequest.isVirtual());
 
         relationContext.addMapping(getRelationMapping(relationContext, relationRequest.getRelationName(),
                 relationRequest.getRelationTypeEnum(), relationRequest.getFromModuleId(), relationRequest.getToModuleId(), RelationMappingContext.Position.LEFT));
@@ -532,11 +533,19 @@ public class RelationUtil {
 
 
     public static List<RelationContext> getRelations(Collection<Long> ids ,boolean fetchRelations) throws Exception {
+        return getRelations(ids, fetchRelations, null);
+    }
+
+    public static List<RelationContext> getRelations(Collection<Long> ids , boolean fetchRelations, String orderBy) throws Exception {
         FacilioModule module = ModuleFactory.getRelationModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
                 .select(FieldFactory.getRelationFields())
                 .andCondition(CriteriaAPI.getIdCondition(ids,module));
+
+        if (StringUtils.isNotEmpty(orderBy)) {
+            builder.orderBy(orderBy);
+        }
 
         List<RelationContext> relations = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
         if (relations != null) {

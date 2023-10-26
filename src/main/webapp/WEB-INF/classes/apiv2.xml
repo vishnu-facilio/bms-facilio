@@ -706,6 +706,11 @@
 		<action name="fetchMeterRelations"
 				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" />
 	</package>
+
+	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
+		<action name="add" class="com.facilio.relation.action.VirtualRelationAction" method="addVirtualRelation" />
+	</package>
+
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"

@@ -65,8 +65,7 @@ public class RelationContext implements Serializable {
     public enum RelationCategory implements FacilioIntEnum {
         NORMAL("normal"),
         HIDDEN("hidden"),
-        METER("meter"),
-        VIRTUAL("virtual"),
+        METER("meter")
         ;
 
         RelationCategory(String name) {
@@ -106,4 +105,17 @@ public class RelationContext implements Serializable {
         return this.isCustom != null ? this.isCustom : true;
     }
 
+    private Boolean isVirtual;
+    public boolean isVirtual() {
+        if (isVirtual != null) {
+            return isVirtual;
+        }
+        return false;
+    }
+    public Boolean getIsVirtual() {
+        return isVirtual;
+    }
+    public void setIsVirtual(Boolean isVirtual) {
+        this.isVirtual = isVirtual;
+    }
 }

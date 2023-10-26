@@ -671,4 +671,10 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new GetAssetRelationsForAssetCategoryCommand());
         return c;
     }
+
+    public static FacilioChain getFetchVirtualRelationDataChain() {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new GetVirtualRelationDataCommand());
+        return chain;
+    }
 }

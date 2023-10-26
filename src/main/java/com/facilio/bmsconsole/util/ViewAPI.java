@@ -1595,7 +1595,7 @@ public class ViewAPI {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		}
 		List<ViewField> columns = new ArrayList<>();
-		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		List<FacilioField> allFields = modBean.getAllFields(module.getName()); // todo - get fields from Fields Framework..
 		for (FacilioField field : allFields) {
 			ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 			viewField.setFieldName(viewField.getName());

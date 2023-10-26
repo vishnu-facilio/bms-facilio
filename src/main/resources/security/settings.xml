@@ -4188,4 +4188,19 @@
             <property name="assetCategoryId" type="number"/>
         </urlparams>
     </request>
+
+    <request path="/api/v2/virtualRelation/add" method="POST">
+        <requestbody type="object">
+            <property name="relation" type="object" mandatory="true">
+                <property name="name" type="string" mandatory="true"/>
+                <property name="description" type="string"/>
+                <property name="relationName" type="string"/>
+                <property name="reverseRelationName" type="string"/>
+                <property name="isVirtual" type="boolean"/>
+                <property name="virtualRelationIds" type="array" mandatory="true">
+                    <items type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
 </config>
