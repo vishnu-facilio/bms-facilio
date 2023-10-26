@@ -39,8 +39,8 @@ public class SilentNotificationForFsmHandler extends ImsHandler {
                         if (users != null) {
                             List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
                             String eventType = (String) message.getContent().get("eventType");
-                        Long interval = (Long) message.getContent().get("interval");
-                        Long notifyInterval = (Long) message.getContent().get("notifyInterval");
+                        Long interval = Long.parseLong (String.valueOf(message.getContent().get("interval")));
+                        Long notifyInterval = Long.parseLong(String.valueOf(message.getContent().get("notifyInterval")));
                         List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(userIds, appLinkName);
 
                             if (CollectionUtils.isNotEmpty(mobileInstanceSettings)) {
