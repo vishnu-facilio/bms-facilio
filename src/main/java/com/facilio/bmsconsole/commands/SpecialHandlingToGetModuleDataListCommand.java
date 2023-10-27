@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,6 +38,11 @@ public class SpecialHandlingToGetModuleDataListCommand extends FacilioCommand {
 					Map<Long, SpaceContext> spaceMap = SpaceAPI.getSpaceMap(spaceIds);
 					for(ReservationContext record:(List<ReservationContext>)records) {
 						record.setSpace(spaceMap.get(record.getSpace().getId()));
+					}
+					break;
+				case FacilioConstants.Meter.UTILITY_TYPE:
+					for(V3UtilityTypeContext record: (List<V3UtilityTypeContext>)records) {
+						record.setModuleName(modBean.getModule(record.getMeterModuleID()).getName());
 					}
 					break;
 			}
