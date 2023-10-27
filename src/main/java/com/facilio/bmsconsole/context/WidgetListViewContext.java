@@ -86,4 +86,20 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 //		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
+	@Override
+	public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+		JSONObject widgetJson = new JSONObject();
+		widgetJson.put("label", getWidgetName());
+		widgetJson.put("id", getId());
+		widgetJson.put("link_name", getLinkName());
+		widgetJson.put("type", getWidgetType().getName());
+		widgetJson.put("helpText",getHelpText());
+		widgetJson.put("title", getHeaderText());
+		widgetJson.put("moduleName", getModuleName());
+		widgetJson.put("viewName", getViewName());
+		widgetJson.put("refresh_interval", getDataRefreshIntervel());
+
+		return widgetJson;
+	}
 }

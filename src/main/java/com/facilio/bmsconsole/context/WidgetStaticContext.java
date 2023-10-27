@@ -119,4 +119,21 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 //		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
+
+	@Override
+	public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+		JSONObject widgetJson = new JSONObject();
+		widgetJson.put("id", getId());
+		widgetJson.put("label", getWidgetName());
+		widgetJson.put("type", getWidgetType().getName());
+		widgetJson.put("staticKey", getStaticKey());
+		widgetJson.put("metaJson", getMetaJson());
+		widgetJson.put("paramsJson", getParamsJson());
+		widgetJson.put("refresh_interval", getDataRefreshIntervel());
+		widgetJson.put("widgetVsWorkflowContexts", getWidgetVsWorkflowContexts());
+		widgetJson.put("helpText",getHelpText());
+		widgetJson.put("title", getHeaderText());
+		return widgetJson;
+	}
 }

@@ -434,4 +434,43 @@ public class V3DashboardAction extends V3Action {
         update.update(props);
         return SUCCESS;
     }
+    public String mobileList() throws Exception
+    {
+        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs);
+        if(dashboard_list_prop == null || dashboard_list_prop.getAppId() == null || dashboard_list_prop.getAppId() <= 0)
+        {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please pass at least appId in api");
+        }
+        try
+        {
+            FacilioChain chain = TransactionChainFactoryV3.getMobileDashboardListChain();
+            FacilioContext context = chain.getContext();
+            context.put("dashboard_list_prop", dashboard_list_prop);
+            chain.execute();
+            setData("dashboardFolders", dashboard_list_prop.getFolders());
+        }
+        catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard list" +e);
+        }
+        return V3Action.SUCCESS;
+    }
+    public String getMobileDashboard() throws Exception
+    {
+        if(linkName  == null || "".equals(linkName)){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Name can not be empty");
+        }
+        try {
+            DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(linkName, null);
+            List<DashboardWidgetContext> widget_list = DashboardUtil.getDashboardWidgetsWithSection(dashboard.getDashboardWidgets());
+            if (widget_list != null) {
+                dashboard.setDashboardWidgets(widget_list);
+            }
+            setData("dashboard", DashboardUtil.getMobileDashboardResponseJson(dashboard, false));
+        }catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);
+        }
+        return SUCCESS;
+    }
 }

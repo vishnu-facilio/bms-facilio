@@ -135,4 +135,26 @@ public class WidgetChartContext extends DashboardWidgetContext {
 //		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
+	@Override
+	public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+		JSONObject widgetJson = new JSONObject();
+		widgetJson.put("label", getWidgetName());
+		widgetJson.put("id", getId());
+		widgetJson.put("reportId", getNewReportId());
+
+		widgetJson.put("link_name", getLinkName());
+		widgetJson.put("type", getWidgetType().getName());
+		widgetJson.put("helpText",getHelpText());
+		widgetJson.put("title", getHeaderText());
+		try {
+			if(getNewReportId() != null && getNewReportId() > 0) {
+				widgetJson.put("reportType", ReportUtil.getReportType(getNewReportId()));
+			}
+		}
+		catch(Exception e) {
+			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+		};
+		return widgetJson;
+	}
 }

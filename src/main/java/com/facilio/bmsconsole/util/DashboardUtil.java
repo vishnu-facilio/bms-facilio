@@ -858,6 +858,34 @@ public class DashboardUtil {
 		dashboards.add(dashboard);
 		return getDashboardResponseJson(dashboards, optimize);
 	}
+	public static JSONArray getMobileDashboardResponseJson(DashboardContext dashboard, boolean optimize) {
+		List dashboards = new ArrayList<>();
+		dashboards.add(dashboard);
+		return getMobileDashboardResponseJson(dashboards, optimize);
+	}
+	public static JSONArray getMobileDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) {
+
+		JSONArray result = new JSONArray();
+
+		for(DashboardContext dashboard:dashboards) {
+			String dashboardName = dashboard.getDashboardName();
+			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
+			JSONArray childrenArray = new JSONArray();
+			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
+				childrenArray.add(dashboardWidgetContext.widgetMobileJsonObject(optimize));
+			}
+			JSONObject dashboardJson = new JSONObject();
+			dashboardJson.put("id", dashboard.getId());
+			dashboardJson.put("label", dashboardName);
+			dashboardJson.put("description", dashboard.getDescription());
+			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
+			dashboardJson.put("group", childrenArray);
+			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
+			dashboardJson.put("tabEnabled", dashboard.isTabEnabled());
+			result.add(dashboardJson);
+		}
+		return result;
+	}
 	
 	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) {
 		

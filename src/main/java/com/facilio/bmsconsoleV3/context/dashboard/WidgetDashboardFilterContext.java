@@ -293,4 +293,16 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         widgetJson.put("label", getWidgetName());
         return widgetJson;
     }
+    @Override
+    public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+        JSONObject widgetJson = new JSONObject();
+        widgetJson.put("id", getId());
+        widgetJson.put("label", getWidgetName());
+        widgetJson.put("link_name", getLinkName());
+        widgetJson.put("type", getWidgetType().getName());
+        widgetJson.put("dashboardFilterId", getDashboardFilterId());
+        widgetJson.put("title", getHeaderText());
+        return widgetJson;
+    }
 }

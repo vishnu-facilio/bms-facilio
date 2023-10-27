@@ -1325,7 +1325,16 @@
             <param name="linkName">{1}</param>
         </action>
     </package>
-
+    <package name="v3MobileDashboard" namespace="/api/v3/dashboard/mobile" extends="v3Api">
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="mobileList"/>
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="getMobileDashboard">
+            <param name="linkName">{1}</param>
+        </action>
+    </package>
     <package name="v3DashboardTab" namespace="/api/v3/dashboard/tab" extends="v3Api">
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"

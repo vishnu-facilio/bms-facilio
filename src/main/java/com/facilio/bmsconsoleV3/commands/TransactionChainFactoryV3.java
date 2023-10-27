@@ -2397,6 +2397,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetDashboardListResponseCommand());
         return c;
     }
+    public static FacilioChain getMobileDashboardListChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDashboardFolderCommand());
+        c.addCommand(new GetMobileDashboardListCommand());
+        c.addCommand(new GetDashboardSharingCommand());
+        c.addCommand(new GetDashboardListResponseCommand());
+        return c;
+    }
 
     public static FacilioChain getCloneReportChain() {
         FacilioChain c = getDefaultChain();

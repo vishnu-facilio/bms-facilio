@@ -84,4 +84,22 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 //		System.out.println("resultJson -- "+widgetJson);
 		return widgetJson;
 	}
+
+	@Override
+	public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+		JSONObject widgetJson = new JSONObject();
+		widgetJson.put("label", getWidgetName());
+		widgetJson.put("id", getId());
+		widgetJson.put("graphicsId", getGraphicsId());
+		widgetJson.put("refresh_interval", getDataRefreshIntervel());
+		widgetJson.put("title", getHeaderText());
+		widgetJson.put("type", getWidgetType().getName());
+		widgetJson.put("helpText",getHelpText());
+		widgetJson.put("link_name", getLinkName());
+		if (graphicsOptions != null) {
+			widgetJson.put("graphicsOptions", graphicsOptions);
+		}
+		return widgetJson;
+	}
 }

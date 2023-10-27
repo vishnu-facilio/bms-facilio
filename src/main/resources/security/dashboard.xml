@@ -532,4 +532,12 @@
             <property name="categoryId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/mobile/list" method="GET">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/dashboard/mobile/:linkName" method="GET">
+        <urlparams>
+            <property name="linkName" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

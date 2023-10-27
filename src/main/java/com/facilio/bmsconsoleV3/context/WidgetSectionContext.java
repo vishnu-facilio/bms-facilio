@@ -58,4 +58,21 @@ public class WidgetSectionContext extends DashboardWidgetContext {
         widgetJson.put("label", getWidgetName());
         return widgetJson;
     }
+    @Override
+    public JSONObject widgetMobileJsonObject(boolean optimize) {
+
+        JSONObject widgetJson = new JSONObject();
+        widgetJson.put("label", getWidgetName());
+        widgetJson.put("id", getId());
+        widgetJson.put("name", getName());
+        JSONArray childrenArray = new JSONArray();
+        if(getWidgets_in_section() != null && getWidgets_in_section().size() > 0) {
+            widgetJson.put("widgets", childrenArray);
+            for(DashboardWidgetContext widget_context : getWidgets_in_section())
+            {
+                childrenArray.add(widget_context.widgetMobileJsonObject(false));
+            }
+        }
+        return widgetJson;
+    }
 }
