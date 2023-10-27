@@ -11,14 +11,21 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonAppRelContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -26,6 +33,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.util.SummaryWidgetUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -42,7 +50,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
         FacilioModule vendorQuotesModule = modBean.getModule(FacilioConstants.ContextNames.VENDOR_QUOTES);
         addVendorQuotesActivityModuleChain(vendorQuotesModule);
         addRfqDetailsSummaryWidget();
-        addSystemButtons();
+        addSystemButtons(vendorQuotesModule);
     }
 
     private void addRfqDetailsSummaryWidget() throws Exception {
@@ -490,7 +498,19 @@ public class VendorQuotesModule extends BaseModuleConfig{
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
-    public static void addSystemButtons() throws Exception {
+    public static void addSystemButtons(FacilioModule module) throws Exception {
+
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
+        SystemButtonRuleContext addQuote = new SystemButtonRuleContext();
+        addQuote.setName("Add quote");
+        addQuote.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        addQuote.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addQuote.setIdentifier("addQuote");
+        addQuote.setPermissionRequired(true);
+        addQuote.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addQuote.setCriteria(checkAddQuotePermission(module,fieldMap));
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, addQuote);
+
         SystemButtonRuleContext updateQuote = new SystemButtonRuleContext();
         updateQuote.setName("Update quote");
         updateQuote.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -498,6 +518,7 @@ public class VendorQuotesModule extends BaseModuleConfig{
         updateQuote.setIdentifier("updateQuote");
         updateQuote.setPermissionRequired(true);
         updateQuote.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        updateQuote.setCriteria(checkAddQuotePermission(module,fieldMap));
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, updateQuote);
 
         SystemButtonRuleContext submitButton = new SystemButtonRuleContext();
@@ -507,17 +528,31 @@ public class VendorQuotesModule extends BaseModuleConfig{
         submitButton.setIdentifier("submitQuote");
         submitButton.setPermissionRequired(true);
         submitButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        submitButton.setCriteria(checkAddQuotePermission(module,fieldMap));
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, submitButton);
 
         SystemButtonRuleContext negotiateButton = new SystemButtonRuleContext();
         negotiateButton.setName("Negotiate");
         negotiateButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         negotiateButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        negotiateButton.setIdentifier("Quote");
+        negotiateButton.setIdentifier("negotiateQuote");
         negotiateButton.setPermissionRequired(true);
         negotiateButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, negotiateButton);
 
+        List<SystemButtonAppRelContext> systemButtonAppRels = new ArrayList<>();
+
+        SystemButtonAppRelContext mainAppNegotiateBtn = new SystemButtonAppRelContext();
+        SystemButtonAppRelContext maintenanceNegotiateBtn = new SystemButtonAppRelContext();
+
+        mainAppNegotiateBtn.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP));
+        maintenanceNegotiateBtn.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        systemButtonAppRels.add(mainAppNegotiateBtn);
+        systemButtonAppRels.add(maintenanceNegotiateBtn);
+        negotiateButton.setSystemButtonAppRels(systemButtonAppRels);
+
+        negotiateButton.setCriteria(checkPermissionForNegotiation(fieldMap));
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, negotiateButton);
 
         SystemButtonRuleContext downloadRFQButton = new SystemButtonRuleContext();
         downloadRFQButton.setName("Download RFQ");
@@ -536,6 +571,64 @@ public class VendorQuotesModule extends BaseModuleConfig{
         goToRFQButton.setPermissionRequired(true);
         goToRFQButton.setPermission(AccountConstants.ModulePermission.READ.name());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.VENDOR_QUOTES, goToRFQButton);
+    }
+    private static Criteria checkRfqAndApprovalPermission(Map<String,FacilioField> fieldMap) throws Exception{
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("approvalFlowId"),"",CommonOperators.IS_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("approvalStatus"),"", CommonOperators.IS_EMPTY));
+
+
+        Map<String,FacilioField> oneLevelFieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+        Criteria oneLevelCriteria=new Criteria();
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(oneLevelFieldMap.get("isRfqFinalized"),String.valueOf(true), BooleanOperators.IS));
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(oneLevelFieldMap.get("isQuoteReceived"),String.valueOf(false), BooleanOperators.IS));
+
+        Condition oneLevelCondition=new Condition();
+        oneLevelCondition.setOperator(LookupOperator.LOOKUP);
+        oneLevelCondition.setModuleName(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        oneLevelCondition.setFieldName("requestForQuotation");
+        oneLevelCondition.setCriteriaValue(oneLevelCriteria);
+
+        criteria.addAndCondition(oneLevelCondition);
+
+        return criteria;
+    }
+    private static Criteria checkPermissionForNegotiation(Map<String,FacilioField> fieldMap) throws Exception{
+        Criteria criteria = new Criteria();
+
+        criteria.andCriteria(checkRfqAndApprovalPermission(fieldMap));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("isFinalized"),String.valueOf(true), BooleanOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("approvalFlowId"),"", CommonOperators.IS_EMPTY));
+        criteria.andCriteria(isNotClosedBid());
+
+        return criteria;
+    }
+    private static Criteria isNotClosedBid() throws Exception{
+        Criteria criteria = new Criteria();
+
+        Criteria oneLevelCriteria=new Criteria();
+        Map<String,FacilioField> oneLevelFieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION));
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(oneLevelFieldMap.get("rfqType"), V3RequestForQuotationContext.RfqTypes.CLOSED_BID.name(), StringSystemEnumOperators.ISN_T));
+
+        Condition oneLevelCondition=new Condition();
+        oneLevelCondition.setOperator(LookupOperator.LOOKUP);
+        oneLevelCondition.setModuleName(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        oneLevelCondition.setFieldName("requestForQuotation");
+        oneLevelCondition.setCriteriaValue(oneLevelCriteria);
+
+        criteria.addAndCondition(oneLevelCondition);
+        return criteria;
+    }
+    private static Criteria checkAddQuotePermission(FacilioModule module,Map<String,FacilioField> fieldMap) throws Exception {
+        Criteria criteria = new Criteria();
+
+        FacilioStatus underNegotiation = TicketAPI.getStatus(module,"undernegotiation");
+        FacilioStatus awaitingVendorQuote =  TicketAPI.getStatus(module,"awaitingvendorquote");
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"),String.valueOf(underNegotiation.getId()),PickListOperators.IS));
+        criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("moduleState"),String.valueOf(awaitingVendorQuote.getId()),PickListOperators.IS));
+        criteria.andCriteria(checkRfqAndApprovalPermission(fieldMap));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("isFinalized"),String.valueOf(false), BooleanOperators.IS));
+        return criteria;
     }
 
 }
