@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.readingkpi.context.KPIType;
@@ -26,7 +27,7 @@ public class SetFieldAndModuleIdCommand extends FacilioCommand {
             for (ReadingKPIContext kpi : list) {
                 kpi.setOrgId(AccountUtil.getCurrentOrg().getId());
                 if (kpi.getKpiTypeEnum() != KPIType.DYNAMIC) {
-                    FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+                    FacilioChain addReadingChain = TransactionChainFactory.getAddFDDReadingModuleChain(kpi.getResourceTypeEnum().equals(ResourceType.METER_CATEGORY));
                     addReadingChain.execute(context);
                     List<FacilioModule> modules = (List) context.get(FacilioConstants.ContextNames.MODULE_LIST);
                     kpi.setReadingModuleId(modules.get(0).getModuleId());

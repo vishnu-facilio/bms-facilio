@@ -14,7 +14,7 @@ public class LoadSupplementsForRuleLogsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(
                 FacilioConstants.ReadingRules.READING_RULE_LOGS_MODULE,
-                Arrays.asList("rule", "resource")
+                Arrays.asList("rule")
         );
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;

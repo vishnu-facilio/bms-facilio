@@ -7265,9 +7265,24 @@ public class TransactionChainFactory {
 		c.addCommand(new GetUtilityTypeModuleCommand());
 		c.addCommand(getAddReadingsChain());
 		c.addCommand(new GetUtilityTypeResourcesCommand());
+		c.addCommand(addReadingDataMetaForCategory());
+		return c;
+	}
+
+	private static FacilioChain addReadingDataMetaForCategory() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 		c.addCommand(new SetValidationRulesContextCommand());
 		c.addCommand(new AddValidationRulesCommand());
+		return c;
+	}
+
+	public static FacilioChain getAddFDDReadingModuleChain(boolean isMeter) {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(isMeter ? new GetUtilityTypeModuleCommand() : new GetCategoryModuleCommand());
+		c.addCommand(getAddReadingsChain());
+		c.addCommand(isMeter ? new GetUtilityTypeResourcesCommand() : new GetCategoryResourcesCommand());
+		c.addCommand(addReadingDataMetaForCategory());
 		return c;
 	}
 

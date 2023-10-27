@@ -23,6 +23,8 @@ public class FetchMetricAndUnitCommand extends FacilioCommand {
         List<ReadingKPIContext> list = recordMap.get(moduleName);
         if (CollectionUtils.isNotEmpty(list)) {
             for (ReadingKPIContext kpi : list) {
+
+                ReadingKpiAPI.setCategory(kpi);
                 if (kpi.getKpiTypeEnum() == KPIType.DYNAMIC) {
                     continue;
                 }
@@ -38,7 +40,6 @@ public class FetchMetricAndUnitCommand extends FacilioCommand {
                     kpi.setCustomUnit(customUnit);
                 }
 
-                ReadingKpiAPI.setCategory(kpi);
             }
         }
         return false;

@@ -14,7 +14,7 @@ public class LoadSupplementsForKpiLogsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<SupplementRecord> fetchLookupsList = GenericLoadSupplementsV3.getLookupList(
                 FacilioConstants.ReadingKpi.READING_KPI_LOGS_MODULE,
-                Arrays.asList("kpi", "resource")
+                Arrays.asList("kpi")
         );
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
         return false;

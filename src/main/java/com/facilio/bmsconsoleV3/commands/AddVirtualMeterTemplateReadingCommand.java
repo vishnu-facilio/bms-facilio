@@ -36,6 +36,7 @@ public class AddVirtualMeterTemplateReadingCommand extends FacilioCommand {
 						
 						VirtualMeterTemplateContext vmTemplate = new VirtualMeterTemplateContext();
 						vmTemplate.setId(virtualMeterTemplateContext.getId());
+						vmTemplate.setName(virtualMeterTemplateContext.getName());
 						vmTemplate.setUtilityType(virtualMeterTemplateContext.getUtilityType());
 						reading.setVirtualMeterTemplate(vmTemplate);
 						

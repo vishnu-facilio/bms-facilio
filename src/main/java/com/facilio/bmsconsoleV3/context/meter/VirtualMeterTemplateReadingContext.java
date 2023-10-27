@@ -44,7 +44,7 @@ public class VirtualMeterTemplateReadingContext extends V3Context implements ICo
 
     @Override
     public String getName() {
-        return virtualMeterTemplate.getName();
+        return virtualMeterTemplate.getName() != null ? virtualMeterTemplate.getName() : null;
     }
 
     @Override

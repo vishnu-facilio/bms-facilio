@@ -38,7 +38,6 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
         String searchModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
-        ReadingKPIContext dynKpi=ReadingKpiAPI.getReadingKpi(recordId);
         List<String> resourceTypes = new ArrayList<>();
         resourceTypes.add(FacilioConstants.ContextNames.ASSET);
         resourceTypes.add(FacilioConstants.ContextNames.METER);
@@ -53,8 +52,9 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
             countProps = fetchBuilderForResourceSelected(context, recordId, true).fetchFirst();
 
         } else {
+            ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi(recordId);
             NameSpaceContext ns = getNameSpaceByRuleId(recordId, NSType.KPI_RULE);
-            List<Long> resourceIds = NamespaceAPI.getMatchedResources(ns,dynKpi.getCategory());
+            List<Long> resourceIds = NamespaceAPI.getMatchedResources(ns,kpi.getCategory());
             props = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, false).get();
             countProps = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, true).fetchFirst();
         }
