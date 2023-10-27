@@ -93,6 +93,20 @@ public class QuoteModule extends BaseModuleConfig{
         reviseQuoute.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,reviseQuoute);
 
+        SystemButtonRuleContext viewCustomerQuote = new SystemButtonRuleContext();
+        viewCustomerQuote.setName("View Customer Quote");
+        viewCustomerQuote.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        viewCustomerQuote.setIdentifier("viewCustomerQuote");
+        viewCustomerQuote.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,viewCustomerQuote);
+
+        SystemButtonRuleContext convertUserQuote = new SystemButtonRuleContext();
+        convertUserQuote.setName("Convert to User Quote");
+        convertUserQuote.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        convertUserQuote.setIdentifier("convertUserQuote");
+        convertUserQuote.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,convertUserQuote);
+
 
         SystemButtonRuleContext edit = new SystemButtonRuleContext();
         edit.setName("Edit");

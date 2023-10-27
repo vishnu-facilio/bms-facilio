@@ -113,7 +113,12 @@ public class GetAllModulesCommand extends FacilioCommand {
 			FacilioConstants.TimeSheet.TIME_SHEET,
 			ContextNames.FieldServiceManagement.SERVICE_ORDER,
 			ContextNames.CLIENT_CONTACT,
-			FacilioConstants.Trip.TRIP
+			FacilioConstants.Trip.TRIP,
+			ContextNames.FAILURE_CLASS,
+			ContextNames.FAILURE_CODE,
+			ContextNames.FAILURE_CODE_PROBLEMS,
+			ContextNames.FAILURE_CODE_CAUSES,
+			ContextNames.FAILURE_CODE_REMEDIES
 
 	});
 

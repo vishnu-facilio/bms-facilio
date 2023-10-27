@@ -135,6 +135,10 @@ public class WorkorderTemplatePageFactory implements TemplatePageFactory{
                     .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_6", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
+                    .addSection("failurehierarchy", null, null)
+                    .addWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY, "flexiblewebfailurehierarchy_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
                     .columnDone()
                     .tabDone()
 

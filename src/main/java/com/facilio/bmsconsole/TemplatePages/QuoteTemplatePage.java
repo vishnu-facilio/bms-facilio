@@ -149,7 +149,7 @@ public class QuoteTemplatePage implements TemplatePageFactory {
         notesWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.QUOTE_NOTES);
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        notesWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.QUOTE_ATTACHMENTS);
+        attachmentsWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.QUOTE_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
