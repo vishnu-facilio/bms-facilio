@@ -135,7 +135,7 @@ public class IAMUserUtil {
 
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.ISN_T));
-			boolean status = IAMUtil.getTransactionalUserBean().endUserSessionv2(uId, criteria);
+			boolean status = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().endUserSessionv2(uId,criteria));
 			if (status) {
 				logger.info("Cleared sessions for " + uId);
 			}
