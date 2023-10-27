@@ -576,3 +576,6 @@ classes:
   #Add System Value Generators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddValueGenerators
   - com.facilio.bmsconsoleV3.signup.scopeVariable.AddDefaultGlobalScopeVariable
+
+  #System Button Adding
+  - com.facilio.bmsconsoleV3.signup.vendorQuote.VendorQuotesSystemButton
