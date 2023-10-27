@@ -95,6 +95,20 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new V2GetReadingsFromCategoryCommand());
         return chain;
     }
+    public static FacilioChain getCHCardAnalyticsCardData()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2FetchAnalyticDataCommand());
+        chain.addCommand(new ApplyConditionalFormattingForCard());
+        return chain;
+    }
+    public static FacilioChain getAnalyticsCardDataChain()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2ConstructCardCommand());
+        return chain;
+    }
+
 
 }
 

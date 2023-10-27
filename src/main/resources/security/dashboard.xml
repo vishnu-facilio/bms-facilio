@@ -532,6 +532,9 @@
             <property name="categoryId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/card/fetch" method="PUT">
+        <requestbody type="object"></requestbody>
+    </request>
     <request path="/api/v3/dashboard/mobile/list" method="GET">
         <requestbody/>
     </request>

@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.Iterator;
 
+import com.facilio.analytics.v2.context.V2CardContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -25,11 +26,35 @@ public class ApplyConditionalFormattingForCard extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
-		WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
-		Object cardValue = context.get(FacilioConstants.ContextNames.CARD_RETURN_VALUE);
+
+		Long cardId= null;
+		JSONObject conditional_formatting = null;
+		JSONObject cardState = null;
+		String cardLayout=null;
+		Object cardValue=null;
+
+
+		if(context.containsKey("v2"))
+		{
+			V2CardContext v2cardContext = (V2CardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
+			conditional_formatting = v2cardContext.getConditionalFormatting();
+			cardState = v2cardContext.getCardState();
+			cardLayout = v2cardContext.getCardLayout();
+			cardId = v2cardContext.getCardId();
+			cardValue = v2cardContext.getCardParams().getResult().get("value");
+		}
+		else
+		{
+			WidgetCardContext cardContext = (WidgetCardContext) context.get(FacilioConstants.ContextNames.CARD_CONTEXT);
+			conditional_formatting = cardContext.getConditionalFormatting();
+			cardState = cardContext.getCardState();
+			cardLayout = cardContext.getCardLayout();
+			cardId = cardContext.getId();
+			cardValue = context.get(FacilioConstants.ContextNames.CARD_RETURN_VALUE);
+		}
 		try {
-			if (cardContext.getConditionalFormatting() != null && cardContext.getConditionalFormatting().containsKey("conditionalFormatting")) {
+			if (conditional_formatting != null && conditional_formatting.containsKey("conditionalFormatting"))
+			{
 				HashMap<String, Object> variables = new HashMap<>();
 
 				if (cardValue != null) {
@@ -56,8 +81,8 @@ public class ApplyConditionalFormattingForCard extends FacilioCommand {
 
 				List<Object> paramsList = new ArrayList<Object>();
 				paramsList.add(variables);
-				paramsList.add(cardContext.getConditionalFormatting());
-				paramsList.add(cardContext.getCardState());
+				paramsList.add(conditional_formatting);
+				paramsList.add(cardState);
 
 				FacilioChain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
 				chain.getContext().put(WorkflowV2Util.DEFAULT_WORKFLOW_ID, 10);
@@ -69,11 +94,11 @@ public class ApplyConditionalFormattingForCard extends FacilioCommand {
 
 				Map formatState = (Map) workflow.getReturnValue();
 
-				context.put(FacilioConstants.ContextNames.CARD_STATE, mergeCardState(cardContext.getCardState(), formatState));
+				context.put(FacilioConstants.ContextNames.CARD_STATE, mergeCardState(cardState, formatState));
 			}
 		}
 		catch (Exception e) {
-			LOGGER.log(Level.WARNING, "Exception when applying conditional formatting for card. layout: "+cardContext.getCardLayout() + " id: "+cardContext.getId(), e);
+			LOGGER.log(Level.WARNING, "Exception when applying conditional formatting for card. layout: "+ cardLayout + " id: "+cardId, e);
 		}
 		return false;
 	}
