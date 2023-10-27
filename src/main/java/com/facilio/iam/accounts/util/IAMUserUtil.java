@@ -116,7 +116,7 @@ public class IAMUserUtil {
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getUserBean().updateUserv2(userToBeUpdated, fieldsToBeUpdated));
 			FacilioService.runAsService(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().savePreviousPassword(uId, encryptedPassword));
 
-			List<Map<String, Object>> userSessionsv2 = IAMUtil.getTransactionalUserBean().getUserSessionsv2(uId, true);
+			List<Map<String, Object>> userSessionsv2 = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE, () -> IAMUtil.getUserBean().getUserSessionsv2(uId, true));
 
 			String token = "";
 			if (CollectionUtils.isNotEmpty(userSessionsv2)) {
