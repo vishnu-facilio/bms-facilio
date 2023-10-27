@@ -137,6 +137,15 @@ public class SystemButtonApi {
         chain.execute();
     }
 
+    public static void deleteSystemButtons(List<Long> ids) throws Exception{
+
+        FacilioChain chain = TransactionChainFactory.getDeleteWorkflowRuleChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.ID, ids);
+        chain.execute();
+
+    }
+
     public static void deleteSystemButtonAppRelForButtonId(long systemButtonId) throws Exception{
 
         if (systemButtonId == -1l){
