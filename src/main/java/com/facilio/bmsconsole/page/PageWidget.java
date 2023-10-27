@@ -257,6 +257,7 @@ public class PageWidget {
 		LIST("list"),
 		COUNT("count"),
 		COMMENT("comment"),
+		NOTE("note"),
 		ATTACHMENT("attachment"),
 		RELATED_LIST("relatedList"),
 		ACTIVITY("activity"),
@@ -368,6 +369,9 @@ public class PageWidget {
 		BUDGET_PRIMARY_DETAILS("budgetPrimaryDetails"),
 		BUDGET_SPLIT_UP("budgetSplitUp"),
 		BUDGET_NET_INCOME("budgetNetIncome"),
+		BUDGET_INCOME("budgetIncome"),
+		BUDGET_EXPENSE("budgetExpense"),
+		BUDGET_INCOME_EXPENSE("budgetIncomeExpense"),
 
 		// Purchase Module Widgets
 		PR_PREVIEW("prPreview"),

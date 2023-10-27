@@ -1137,4 +1137,23 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexiblewebtoolsummarytransactions_7", "Transactions - 7", 7, PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.BUDGET)
+    public static Supplier<ModuleWidgets> getBudgetWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("totalBudget" , "Total Budget",PageWidget.WidgetType.TOTAL_BUDGET)
+                .addFixedWidgetConfig("totalbudget_3_4", "Total Budget - 3 - 4",3,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("actualAmount", "Actual Amount", PageWidget.WidgetType.ACTUAL_BUDGET_AMOUNT)
+                .addFixedWidgetConfig("actualbudgetamount_3_4", "Actual Amount - 3 - 4",3,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("remainingAmount", "Remaining Amount", PageWidget.WidgetType.REMAINING_BUDGET)
+                .addFixedWidgetConfig("remainingbudget_3_4", "Remaining Amount - 3 - 4",3,4, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("budget", "Budget", PageWidget.WidgetType.BUDGET_INCOME_EXPENSE)
+                .addFlexibleWidgetConfig("flexiblebudgetincomeexpense_21", "Budget - 21",21, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("budgetTransactions", "Budget Transactions", PageWidget.WidgetType.BUDGET_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebbudgettransactions_9", "Budget Transactions - 9",9, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

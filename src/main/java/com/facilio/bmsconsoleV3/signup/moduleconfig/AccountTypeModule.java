@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -18,6 +19,10 @@ import java.util.*;
 public class AccountTypeModule extends BaseModuleConfig{
     public AccountTypeModule(){
         setModuleName(FacilioConstants.ContextNames.Budget.ACCOUNT_TYPE);
+    }
+
+    public void addData() throws Exception {
+        addSystemButton();
     }
 
     @Override
@@ -82,5 +87,12 @@ public class AccountTypeModule extends BaseModuleConfig{
         accountTypeForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(accountTypeForm);
+    }
+
+    private static void addSystemButton() throws Exception{
+        String moduleName = FacilioConstants.ContextNames.ACCOUNT_TYPE;
+
+        SystemButtonApi.addListEditButton(moduleName);
+        SystemButtonApi.addCreateButton(moduleName);
     }
 }

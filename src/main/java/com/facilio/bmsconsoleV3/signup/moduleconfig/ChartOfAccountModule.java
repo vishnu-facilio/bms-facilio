@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
@@ -20,6 +21,10 @@ public class ChartOfAccountModule extends BaseModuleConfig{
 
     public ChartOfAccountModule(){
         setModuleName(FacilioConstants.ContextNames.Budget.CHART_OF_ACCOUNT);
+    }
+
+    public void addData() throws Exception {
+        addSystemButton();
     }
 
     @Override
@@ -87,5 +92,12 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         chartOfAccountForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(chartOfAccountForm);
+    }
+
+    private static void addSystemButton() throws Exception{
+        String moduleName = "chartofaccount";
+
+        SystemButtonApi.addListEditButton(moduleName);
+        SystemButtonApi.addCreateButton(moduleName);
     }
 }
