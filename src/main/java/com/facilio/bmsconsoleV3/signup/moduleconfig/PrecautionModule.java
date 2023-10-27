@@ -117,7 +117,7 @@ public class PrecautionModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("precautionsummaryfields", null, null)
-                .addWidget("precautionFieldsWidget", "Hazard Details",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, PrecautionsTemplatePage.getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("precautionFieldsWidget", "Precaution Details",  PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, PrecautionsTemplatePage.getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("precautionhazard", null, null)

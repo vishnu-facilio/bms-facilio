@@ -3838,6 +3838,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchExistingRelationsCommand());
         return c;
     }
+
+    public static FacilioChain fetchMeterRelationsChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchMeterRelationsCommand());
+        return c;
+    }
     public static FacilioChain getSFG20ConnectCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SFG20ConnectCommand());

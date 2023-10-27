@@ -141,4 +141,22 @@ public class RelationAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.RELATION_LIST, relationList);
         return SUCCESS;
     }
+
+    public String fetchMeterRelations() throws Exception {
+        FacilioChain fetchMeterRelationships = TransactionChainFactoryV3.fetchMeterRelationsChain();
+        FacilioContext context = fetchMeterRelationships.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", getPage());
+        pagination.put("perPage", getPerPage());
+        if (getPerPage() < 0) {
+            pagination.put("perPage", 5000);
+        }
+        context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        fetchMeterRelationships.execute();
+
+        setResult(FacilioConstants.ContextNames.RELATION_LIST, context.get(FacilioConstants.ContextNames.RELATION_LIST));
+        return SUCCESS;
+    }
 }

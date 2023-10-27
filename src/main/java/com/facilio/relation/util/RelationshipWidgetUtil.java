@@ -18,6 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationRequestContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -150,6 +151,14 @@ public class RelationshipWidgetUtil {
         return FieldUtil.getAsJSON(bulkRelationshipWidget);
     }
 
+    public static JSONObject fetchMeterRelationshipsOfModule(FacilioModule module) throws Exception {
+        List<RelationRequestContext> relationRequests = RelationUtil.getAllRelations(module, false, null, null,true,null, RelationContext.RelationCategory.METER);
+
+        BulkRelationshipWidget bulkRelationshipWidget = new BulkRelationshipWidget();
+        List<RelationshipWidget> relationshipWidgets = getRelationshipWidgetsFromRelations(relationRequests);
+        bulkRelationshipWidget.setRelationships(relationshipWidgets);
+        return FieldUtil.getAsJSON(bulkRelationshipWidget);
+    }
     public static List<RelationshipWidget> getRelationshipWidgetsFromRelations(List<RelationRequestContext> relationRequests) {
         if(CollectionUtils.isNotEmpty(relationRequests)) {
             List<RelationshipWidget> relationshipWidgets = new ArrayList<>();
