@@ -491,16 +491,14 @@ public class FacilioProperties {
             malwareScanningEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("malwareScanner.enabled","false"));
             sgfBridgeKey = PROPERTIES.getProperty("sgfBridgeKey","1c4c2ace-557e-41c3-aa07-5a5a9efdf7ad");
             sfgSecretKey = PROPERTIES.getProperty("sfgSecretKey","2be890e6-7af1-403c-a281-22d31214dc4b");
-            if (malwareScanningEnabled) {
-                malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine","clam");
-                malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout","20000"));
-                clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout","18000"));
-                blackListExtension = new HashSet<String>(Arrays.asList(PROPERTIES.getProperty("fileExtension.blacklist", "ade,adp,apk,appx,appxbundle,bat,cab,chm,cmd,com,cpl,dll,dmg,exe,hta,html,ins,iso,isp,jar,js,jse,lnk,mde,msc,msi,msix,msixbundle,msp,mst,nsh,php,pif,ps1,scr,sct,sh,shb,sys,vb,vbe,vbs,vxd,wsc,wsf,wsh,terminal").split(",", -1)));
-                malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
-                malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port","0"));
-                if(StringUtils.isEmpty(malwareScannerHost) && malwareScannerPort.equals(0)){
-                    malwareScanningEnabled = false;
-                }
+            malwareScannerEngine = PROPERTIES.getProperty("malwareScanner.engine","clam");
+            malwareScannerTimeout = Long.parseLong(PROPERTIES.getProperty("malwareScanner.timeout","20000"));
+            clamReadTimeout = Integer.parseInt(PROPERTIES.getProperty("clam.readtimeout","18000"));
+            blackListExtension = new HashSet<String>(Arrays.asList(PROPERTIES.getProperty("fileExtension.blacklist", "ade,adp,apk,appx,appxbundle,bat,cab,chm,cmd,com,cpl,dll,dmg,exe,hta,html,ins,iso,isp,jar,js,jse,lnk,mde,msc,msi,msix,msixbundle,msp,mst,nsh,php,pif,ps1,scr,sct,sh,shb,sys,vb,vbe,vbs,vxd,wsc,wsf,wsh,terminal").split(",", -1)));
+            malwareScannerHost = PROPERTIES.getProperty("malwareScanner.host");
+            malwareScannerPort = Integer.parseInt(PROPERTIES.getProperty("malwareScanner.port","0"));
+            if(StringUtils.isEmpty(malwareScannerHost) && malwareScannerPort.equals(0)){
+                malwareScanningEnabled = false;
             }
             isApiRateLimiterEnabled = Boolean.parseBoolean(PROPERTIES.getProperty("apiRateLimiter.enabled", "false"));
             if(isApiRateLimiterEnabled){
