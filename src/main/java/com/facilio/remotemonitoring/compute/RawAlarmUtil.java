@@ -25,6 +25,7 @@ import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.AlarmDefinitionModule;
 import com.facilio.remotemonitoring.signup.AlarmDefinitionTaggingModule;
+import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.services.messageQueue.MessageQueue;
@@ -315,17 +316,45 @@ public class RawAlarmUtil {
         V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,Collections.singletonList(rawAlarm.getId()),false);
     }
 
-    public static void clearAlarm(RawAlarmContext rawAlarm) throws Exception {
-        if(rawAlarm != null) {
-            Map<String,Object> prop = new HashMap<>();
-            Long currentTime = System.currentTimeMillis();
-            prop.put("clearedTime",currentTime);
-            V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,Collections.singletonList(rawAlarm.getId()),false);
-            FilterAlarmUtil.clearAlarms(Collections.singletonList(rawAlarm.getId()),currentTime);
-            clearAllParentAlarms(rawAlarm);
+    public static void clearAlarms(List<Long> ids,Long clearTime) throws Exception {
+        if(CollectionUtils.isNotEmpty(ids)) {
+            if(clearTime == null) {
+                clearTime = System.currentTimeMillis();
+            }
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            RawAlarmContext rawAlarmContext = new RawAlarmContext();
+            rawAlarmContext.setClearedTime(clearTime);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("ID","id", StringUtils.join(ids,","), NumberOperators.EQUALS));
+            UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                    .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                    .fields(Arrays.asList(modBean.getField("clearedTime", RawAlarmModule.MODULE_NAME)))
+                    .andCriteria(criteria);
+            updateRecordBuilder.update(rawAlarmContext);
+            FilterAlarmUtil.clearAlarms(ids,clearTime);
         }
     }
-    private static void clearAllParentAlarms(List<RawAlarmContext> alarms) throws Exception {
+
+    public static void clearAlarm(RawAlarmContext rawAlarm,Long clearTime) throws Exception {
+        if(rawAlarm != null) {
+            if(clearTime == null) {
+                clearTime = System.currentTimeMillis();
+            }
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            RawAlarmContext rawAlarmContext = new RawAlarmContext();
+            rawAlarmContext.setClearedTime(clearTime);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(rawAlarm.getId()), NumberOperators.EQUALS));
+            UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                    .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                    .fields(Arrays.asList(modBean.getField("clearedTime", RawAlarmModule.MODULE_NAME)))
+                    .andCriteria(criteria);
+            updateRecordBuilder.update(rawAlarmContext);
+            FilterAlarmUtil.clearAlarms(Collections.singletonList(rawAlarm.getId()),clearTime);
+            clearAllParentAlarms(rawAlarm,clearTime);
+        }
+    }
+    private static void clearAllParentAlarms(List<RawAlarmContext> alarms,Long clearTime) throws Exception {
         if(CollectionUtils.isNotEmpty(alarms)) {
             for(RawAlarmContext alarm : alarms) {
                 if(alarm != null && alarm.getParentAlarm() != null) {
@@ -338,13 +367,13 @@ public class RawAlarmUtil {
                         allCleared = false;
                     }
                     if (allCleared) {
-                        clearAlarm(alarm.getParentAlarm());
+                        clearAlarm(alarm.getParentAlarm(),clearTime);
                     }
                 }
             }
         }
     }
-    private static void clearAllParentAlarms(RawAlarmContext alarm) throws Exception {
+    private static void clearAllParentAlarms(RawAlarmContext alarm,Long clearTime) throws Exception {
         if(alarm != null) {
             RawAlarmContext rawAlarm = fetchRawAlarm(alarm.getId());
             if(rawAlarm != null && rawAlarm.getParentAlarm() != null) {
@@ -357,7 +386,7 @@ public class RawAlarmUtil {
                     allCleared = false;
                 }
                 if (allCleared) {
-                    clearAlarm(rawAlarm.getParentAlarm());
+                    clearAlarm(rawAlarm.getParentAlarm(),clearTime);
                 }
             }
         }
@@ -388,16 +417,13 @@ public class RawAlarmUtil {
         List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
         if (CollectionUtils.isNotEmpty(rawAlarms)) {
             List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
-            Map<String,Object> prop = new HashMap<>();
             Long clearTime = rawAlarm.getOccurredTime();
             if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {
                 clearTime = rawAlarm.getClearedTime();
             }
-            prop.put("clearedTime", clearTime);
-            V3Util.updateBulkRecords(rawAlarmModule.getName(), prop,ids,false);
-            RawAlarmUtil.clearAllParentAlarms(rawAlarms);
             if (CollectionUtils.isNotEmpty(ids)) {
-                FilterAlarmUtil.clearAlarms(ids, clearTime);
+                clearAlarms(ids,clearTime);
+                clearAllParentAlarms(rawAlarms,clearTime);
             }
             return ids;
         }
