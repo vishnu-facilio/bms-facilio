@@ -251,14 +251,18 @@ public class FieldsConfigList {
     );
 
     public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE = Arrays.asList(
-            "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid"
+            "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid","localId"
     );
     public static final List<String> UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE = Arrays.asList(
-            "fuelSurcharge", "flatRatePerUnit", "unit"
+            "fuelSurcharge", "flatRatePerUnit", "unit","localId"
     );
 
     public static final List<String> UTILITY_DISPUTE_FIELDS_EXCLUDE = Arrays.asList(
-            "approvalFlowId", "approvalStatus", "stateFlowId"
+            "approvalFlowId", "approvalStatus", "stateFlowId","localId"
+    );
+
+    public static final List<String> UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE = Arrays.asList(
+            "stateFlowId","approvalFlowId","approvalStatus","localId","meta","sourceDownloadUrl","sourceUrl","sourceType","serviceAddress","sourceType","sourceUrl","supplierServiceId"
     );
 
     public static List<String> getNameField() {

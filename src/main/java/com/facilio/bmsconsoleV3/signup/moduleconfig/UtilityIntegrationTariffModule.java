@@ -173,7 +173,7 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
         FacilioModule utilityIntegrationTariffSlabModule = modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB);
 
         FacilioForm utilityIntegrationTariffModuleForm = new FacilioForm();
-        utilityIntegrationTariffModuleForm.setDisplayName("UTILITY INTEGRATION TARIFF");
+        utilityIntegrationTariffModuleForm.setDisplayName("Tariff");    
         utilityIntegrationTariffModuleForm.setName("default_utilityIntegrationTariff_web");
         utilityIntegrationTariffModuleForm.setModule(utilityIntegrationTariffModule);
         utilityIntegrationTariffModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
@@ -200,7 +200,7 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
 
         FacilioForm utilityIntegrationTariffSlabForm = new FacilioForm();
-        utilityIntegrationTariffSlabForm.setDisplayName("Utility Integration Tariff Slab");
+        utilityIntegrationTariffSlabForm.setDisplayName("Tariff Slab");
         utilityIntegrationTariffSlabForm.setName("default_"+FacilioConstants.UTILITY_INTEGRATION_TARIFF_SLAB+"_web");
         utilityIntegrationTariffSlabForm.setModule(utilityIntegrationTariffSlabModule);
         utilityIntegrationTariffSlabForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);

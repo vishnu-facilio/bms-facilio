@@ -922,5 +922,22 @@ public class APIFieldsConfig {
                 .addFixedFields(Arrays.asList("subject"))
                 .done();
     }
+    @Module(FacilioConstants.UTILITY_INTEGRATION_BILLS)
+    public static Supplier<FieldConfig> getUtilityIntegrationBillsFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE)
+                .addFixedFields(Arrays.asList("billUid"))
+                .done();
+    }
 
 }

@@ -1292,6 +1292,10 @@ public class UtilitySDK {
                                                     diff = calculatedBill - bill.getBillTotalCost();
                                                 }
 
+                                                diff = FacilioUtil.parseDouble(diff);
+                                                BigDecimal roundedValue = BigDecimal.valueOf(diff).setScale(2, BigDecimal.ROUND_HALF_UP);
+                                                diff = roundedValue.doubleValue();
+
                                                 FacilioContext context = new FacilioContext();
                                                 context.put("bill",bill);
                                                 context.put("calculatedBill",calculatedBill);
