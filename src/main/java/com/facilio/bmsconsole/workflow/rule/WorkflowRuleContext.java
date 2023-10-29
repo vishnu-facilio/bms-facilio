@@ -587,7 +587,7 @@ public class WorkflowRuleContext implements Serializable {
 		} catch (Exception e) {
 			LOGGER.error("Exception occurred in workflowRuleLog", e);
 		}
-		FacilioUtil.throwIllegalArgumentException(StringUtils.isNotEmpty(errorRule),"Exception occured in Workflow Rule "+this.getName()+" in Actions -- "+errorRule);
+		FacilioUtil.throwIllegalArgumentException(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PRE_COMMIT_WORKFLOW_RULES) && this.isPreCommit()  && this.ruleType==RuleType.MODULE_RULE && StringUtils.isNotEmpty(errorRule),"Exception occured in Workflow Rule -- "+this.getName()+" in Actions -- "+errorRule +" in Module -- "+this.getModuleName());
 	}
 
 	public void executeFalseActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
