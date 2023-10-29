@@ -24,7 +24,9 @@ public class FlowConfiguration {
                 .summary()
                 .afterFetchCommand(new LoadScriptBlockCommand())
                 .done()
-                .build();
+                .list()
+                .afterFetchCommand(new LoadScriptBlockCommand(true))
+                .done().build();
     }
     @Block(BlockType.send_notification)
     public static Supplier<FlowConfig> getPushNotificationBlockConfig(){
