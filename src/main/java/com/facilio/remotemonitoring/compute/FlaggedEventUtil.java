@@ -163,11 +163,12 @@ public class FlaggedEventUtil {
     }
 
     public static void postCreateFlaggedEventIMS(FlaggedEventContext flaggedEvent) throws Exception {
+        boolean overrideVersion = !FacilioProperties.isDevelopment();
         if (AccountUtil.getCurrentOrg() != null) {
             Messenger.getMessenger().sendMessage(new Message()
                     .setKey(Topics.FlaggedEventCreation.flaggedEventTopic + "/" + AccountUtil.getCurrentOrg().getId())
                     .setOrgId(AccountUtil.getCurrentOrg().getId())
-                    .setContent(FieldUtil.getAsJSON(flaggedEvent)),true);
+                    .setContent(FieldUtil.getAsJSON(flaggedEvent)), overrideVersion);
         }
     }
 
