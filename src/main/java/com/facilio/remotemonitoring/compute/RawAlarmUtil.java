@@ -286,20 +286,51 @@ public class RawAlarmUtil {
     }
 
     public static void markAsFiltered(Long id) throws Exception {
-        Map<String, Object> prop = new HashMap<>();
-        prop.put("filtered", true);
-        V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop, Collections.singletonList(id), false);
+        RawAlarmContext alarm = new RawAlarmContext();
+        alarm.setFiltered(true);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.EQUALS));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                .fields(Arrays.asList(modBean.getField("filtered", RawAlarmModule.MODULE_NAME)))
+                .andCriteria(criteria);
+        updateRecordBuilder.update(alarm);
     }
 
     public static void updateParentAlarmAndMarkAsFiltered(List<Long> ids,Long parentAlarmId) throws Exception {
-        if(CollectionUtils.isNotEmpty(ids) && parentAlarmId != null) {
-            Map<String,Object> prop = new HashMap<>();
-            Map<String,Object> parentAlarmProp = new HashMap<>();
-            parentAlarmProp.put("id",parentAlarmId);
-            prop.put("parentAlarm",parentAlarmProp);
-            prop.put("filtered",true);
-            V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,ids,false);
+        if (CollectionUtils.isNotEmpty(ids) && parentAlarmId != null) {
+            RawAlarmContext parentAlarm = new RawAlarmContext();
+            parentAlarm.setId(parentAlarmId);
+            RawAlarmContext alarm = new RawAlarmContext();
+            alarm.setFiltered(true);
+            alarm.setParentAlarm(parentAlarm);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), NumberOperators.EQUALS));
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                    .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                    .fields(Arrays.asList(modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME), modBean.getField("filtered", RawAlarmModule.MODULE_NAME)))
+                    .andCriteria(criteria);
+            updateRecordBuilder.update(alarm);
         }
+    }
+    public static void updateFilterCriteriaId(RawAlarmContext rawAlarm, FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
+        RawAlarmContext alarm = new RawAlarmContext();
+        alarm.setFilterRuleCriteriaId(filterRuleCriteria.getId());
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rawAlarm.getId()), NumberOperators.EQUALS));
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                .fields(Arrays.asList(modBean.getField("filterRuleCriteriaId", RawAlarmModule.MODULE_NAME)))
+                .andCriteria(criteria);
+        updateRecordBuilder.update(alarm);
     }
     public static void markAsFiltered(List<RawAlarmContext> rawAlarms) throws Exception {
         if(CollectionUtils.isNotEmpty(rawAlarms)) {
@@ -308,12 +339,6 @@ public class RawAlarmUtil {
             prop.put("filtered",true);
             V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,ids,false);
         }
-    }
-
-    public static void updateFilterCriteriaId(RawAlarmContext rawAlarm,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
-        Map<String,Object> prop = new HashMap<>();
-        prop.put("filterRuleCriteriaId",filterRuleCriteria.getId());
-        V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,Collections.singletonList(rawAlarm.getId()),false);
     }
 
     public static void clearAlarms(List<Long> ids,Long clearTime) throws Exception {
