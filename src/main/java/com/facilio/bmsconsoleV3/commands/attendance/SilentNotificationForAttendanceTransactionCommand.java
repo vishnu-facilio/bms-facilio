@@ -23,10 +23,10 @@ public class SilentNotificationForAttendanceTransactionCommand extends FacilioCo
 
 
             if (transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN)) {
-                SilentNotificationUtilForFsm.sendNotificationForFsm(Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_IN, 300000L, 120000L);
+                SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(),Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_IN, 300000L, 120000L);
 
             } else if (transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT)) {
-                SilentNotificationUtilForFsm.sendNotificationForFsm(Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_OUT, 300000L, 120000L);
+                SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(),Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_OUT, 300000L, 120000L);
             }
         }
        return false;

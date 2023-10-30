@@ -27,7 +27,7 @@ public class StartTripCommand extends FacilioCommand {
         info.put("doneBy", AccountUtil.getCurrentUser().getName());
         info.put("trip",trip.getCode());
         if(trip != null && trip.getPeople() != null){
-            SilentNotificationUtilForFsm.sendNotificationForFsm( Collections.singletonList(trip.getPeople().getId()), SilentPushNotificationContext.ActionType.START_TRIP,300000L,120000L);
+            SilentNotificationUtilForFsm.sendNotificationForFsm( trip.getId(),Collections.singletonList(trip.getPeople().getId()), SilentPushNotificationContext.ActionType.START_TRIP,300000L,120000L);
         }
         CommonCommandUtil.addActivityToContext(recordId, -1, ServiceAppointmentActivityType.START_TRIP, info, (FacilioContext) context);
         return false;

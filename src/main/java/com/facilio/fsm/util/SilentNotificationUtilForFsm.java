@@ -13,12 +13,13 @@ import java.util.Map;
 
 public class SilentNotificationUtilForFsm {
 
-    public static void sendNotificationForFsm(List<Long> peopleIds, SilentPushNotificationContext.ActionType actionType, Long interval, Long notifyInterval) throws Exception {
+    public static void sendNotificationForFsm(Long recordId, List<Long> peopleIds, SilentPushNotificationContext.ActionType actionType, Long interval, Long notifyInterval) throws Exception {
 
         if (CollectionUtils.isNotEmpty(peopleIds)) {
 
                 SilentPushNotificationContext content = new SilentPushNotificationContext();
                 Map<String, Object> data = new HashMap<>();
+                data.put("id",recordId);
                 data.put("peopleIds",peopleIds);
                 data.put("eventType",actionType);
                 data.put("type","FSM_LOCATION_TRACKING");

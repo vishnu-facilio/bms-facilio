@@ -7,7 +7,6 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsoleV3.context.SilentPushNotificationContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fms.message.Message;
@@ -39,6 +38,10 @@ public class SilentNotificationForFsmHandler extends ImsHandler {
                         if (users != null) {
                             List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
                             String eventType = (String) message.getContent().get("eventType");
+                            Long id = 0l;
+                            if(message.getContent().get("id") != null) {
+                                id = Long.parseLong(String.valueOf(message.getContent().get("id")));
+                            }
                         Long interval = Long.parseLong (String.valueOf(message.getContent().get("interval")));
                         Long notifyInterval = Long.parseLong(String.valueOf(message.getContent().get("notifyInterval")));
                         List<UserMobileSetting> mobileInstanceSettings = NotificationAPI.getMobileInstanceIDs(userIds, appLinkName);
@@ -57,7 +60,8 @@ public class SilentNotificationForFsmHandler extends ImsHandler {
                                             String mobileInstanceId = mobileSetting.getMobileInstanceId();
 
                                             HashMap<String, Object> data = message.getContent();
-                                            data.put("id", user.getPeopleId());
+                                            data.put("id", id);
+                                            data.put("peopleId",user.getPeopleId());
                                             data.put("eventType", eventType);
                                             data.put("type", "FSM_LOCATION_TRACKING");
                                             data.put("interval", interval);

@@ -12,7 +12,6 @@ import com.facilio.beans.PermissionSetBean;
 import com.facilio.bmsconsole.commands.ExecuteStateFlowCommand;
 import com.facilio.bmsconsole.commands.ExecuteStateTransitionsCommand;
 import com.facilio.bmsconsole.commands.SetTableNamesCommand;
-import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
@@ -20,7 +19,6 @@ import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.context.shift.Shift;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -54,9 +52,6 @@ import org.apache.log4j.Logger;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-import static com.facilio.modules.ModuleFactory.getShiftModule;
-
 public class V3PeopleAPI {
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z0-9._%+&-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$", Pattern.CASE_INSENSITIVE);
@@ -1384,10 +1379,10 @@ public class V3PeopleAPI {
                 peopleIdsForShiftEnd.add(peopleId);
             }
                     if(CollectionUtils.isNotEmpty(peopleIdsForShiftStart)){
-                        SilentNotificationUtilForFsm.sendNotificationForFsm( peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);
+                        SilentNotificationUtilForFsm.sendNotificationForFsm( null,peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);
                     }
                     if(CollectionUtils.isNotEmpty(peopleIdsForShiftEnd)){
-                        SilentNotificationUtilForFsm.sendNotificationForFsm( peopleIdsForShiftEnd, SilentPushNotificationContext.ActionType.SHIFT_END,300000L,120000L);
+                        SilentNotificationUtilForFsm.sendNotificationForFsm( null,peopleIdsForShiftEnd, SilentPushNotificationContext.ActionType.SHIFT_END,300000L,120000L);
                     }
 
 
