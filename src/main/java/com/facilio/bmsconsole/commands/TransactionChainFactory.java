@@ -76,8 +76,6 @@ import com.facilio.pdftemplate.command.AddOrUpdatePDFTemplateCommand;
 import com.facilio.pdftemplate.command.DeletePDFTemplateCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
-import com.facilio.readingkpi.commands.ExecuteSchKpiOfACategoryCommand;
-import com.facilio.readingkpi.commands.FetchIntervalsAndCalculateKpiCommand;
 import com.facilio.readingrule.command.DeleteReadingRuleActionsCommand;
 import com.facilio.readingrule.command.DeleteReadingRuleCommand;
 import com.facilio.readingrule.command.FetchRuleRootCauseCommand;
@@ -6881,17 +6879,6 @@ public class TransactionChainFactory {
 		FacilioChain chain=getDefaultChain();
 		chain.addCommand(new sendTestMailCommand());
 		return chain;
-	}
-
-	public static FacilioChain executeScheduleKpi(Integer scheduleType){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new ExecuteSchKpiOfACategoryCommand(scheduleType));
-		return c;
-	}
-	public static FacilioChain fetchIntervalsAndCalculateKpiChain(){
-		FacilioChain c = getDefaultChain();
-		c.addCommand(new FetchIntervalsAndCalculateKpiCommand());
-		return c;
 	}
 
 	public static FacilioChain addScopingChain(){

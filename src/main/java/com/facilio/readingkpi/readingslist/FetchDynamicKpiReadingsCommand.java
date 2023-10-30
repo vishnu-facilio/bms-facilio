@@ -30,6 +30,8 @@ import org.apache.commons.collections.MapUtils;
 import java.util.*;
 
 import static com.facilio.ns.NamespaceAPI.getNameSpaceByRuleId;
+import static com.facilio.readingkpi.ReadingKpiAPI.getCountBuilder;
+import static com.facilio.readingkpi.ReadingKpiAPI.getDataBuilder;
 
 public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
     @Override
@@ -40,7 +42,7 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
 
         List<String> resourceTypes = new ArrayList<>();
         resourceTypes.add(FacilioConstants.ContextNames.ASSET);
-        resourceTypes.add(FacilioConstants.ContextNames.METER);
+        resourceTypes.add(FacilioConstants.Meter.METER);
         resourceTypes.add(FacilioConstants.ContextNames.SITE);
 
         List<Map<String, Object>> props;
@@ -52,9 +54,8 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
             countProps = fetchBuilderForResourceSelected(context, recordId, true).fetchFirst();
 
         } else {
-            ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi(recordId);
             NameSpaceContext ns = getNameSpaceByRuleId(recordId, NSType.KPI_RULE);
-            List<Long> resourceIds = NamespaceAPI.getMatchedResources(ns,kpi.getCategory());
+            List<Long> resourceIds = NamespaceAPI.getMatchedResources(ns);
             props = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, false).get();
             countProps = fetchBuilderForKpiSelected(context, resourceIds, searchModuleName, true).fetchFirst();
         }
@@ -89,7 +90,11 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
                 .on(module.getTableName() + ".ID=" + resourcesModule.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
 
-        return ReadingKpiAPI.addFilterAndReturnBuilder(context, fetchCount, module, fieldsMap, builder);
+
+        ReadingKpiAPI.addFilterToBuilder(context, fieldsMap, builder);
+        return fetchCount
+                ? getCountBuilder(builder, module)
+                : getDataBuilder(context, module, fieldsMap, builder);
     }
 
 
@@ -139,7 +144,10 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
             builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
         }
 
-        return ReadingKpiAPI.addFilterAndReturnBuilder(context, fetchCount, kpiModule, fieldsMap, builder);
+        ReadingKpiAPI.addFilterToBuilder(context, fieldsMap, builder);
+        return fetchCount
+                ? getCountBuilder(builder, kpiModule)
+                : getDataBuilder(context, kpiModule, fieldsMap, builder);
     }
 
     private static Long getCategoryForResource(Long recordId, Context context) throws Exception {
@@ -151,7 +159,7 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
                         .map(ModuleBaseWithCustomFields::getId)
                         .orElse(-1L);
             case FacilioConstants.ContextNames.SITE:
-            case FacilioConstants.ContextNames.METER:
+            case FacilioConstants.Meter.METER:
             case FacilioConstants.ContextNames.KPI:
                 return -1L;
             default:

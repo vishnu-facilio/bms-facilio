@@ -17,7 +17,7 @@ public enum ResourceType implements FacilioIntEnum {
         if (value > 0 && value <= values().length) {
             return values()[value - 1];
         }
-        return null;
+        throw new IllegalArgumentException("Invalid resource Type index");
     }
     public String getModuleName() {
         return moduleName;

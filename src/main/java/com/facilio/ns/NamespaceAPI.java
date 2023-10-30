@@ -174,14 +174,17 @@ public class NamespaceAPI {
         return resourceIds;
     }
 
-    public static List<Long> getMatchedResources(NameSpaceContext ns, ResourceCategory resourceCategory) throws Exception {
+    public static List<Long> getMatchedResources(NameSpaceContext ns) throws Exception {
 
+        if (CollectionUtils.isNotEmpty(ns.getIncludedAssetIds())) {
+            return ns.getIncludedAssetIds();
+        }
         List<Long> inclusions = fetchResourceIdsFromNamespaceInclusions(ns.getId());
         if (CollectionUtils.isNotEmpty(inclusions)) {
             return inclusions;
         }
 
-        return CommonConnectedUtil.getResourceIdsBasedOnCategory(resourceCategory.getResType(), resourceCategory.fetchId());
+        return CommonConnectedUtil.getResourceIdsBasedOnCategory(ResourceType.valueOf(ns.getResourceType()), ns.getCategoryId());
     }
 
     public static List<Long> fetchMatchedResourceIds(Long nsId) throws Exception {

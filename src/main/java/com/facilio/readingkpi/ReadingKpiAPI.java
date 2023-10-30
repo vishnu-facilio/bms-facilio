@@ -3,7 +3,6 @@ package com.facilio.readingkpi;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -24,6 +23,10 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
 import com.facilio.readingkpi.context.*;
+import com.facilio.readingkpi.readingslist.AssetDataFetcher;
+import com.facilio.readingkpi.readingslist.KpiAnalyticsDataFetcher;
+import com.facilio.readingkpi.readingslist.MeterDataFetcher;
+import com.facilio.readingkpi.readingslist.ReadingKPIDataFetcher;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.scriptengine.context.ScriptContext;
@@ -36,7 +39,6 @@ import com.facilio.time.SecondsChronoUnit;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
-import com.facilio.workflows.context.WorkflowContext;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j;
@@ -50,13 +52,10 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.json.simple.JSONObject;
 
-import java.sql.SQLException;
 import java.time.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
 
 import static com.facilio.connected.CommonConnectedUtil.getDependencyMapForConnectedRules;
 import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
@@ -320,7 +319,7 @@ public class ReadingKpiAPI {
         for (Long id : flattenedOrder) {
             orderedReadingKpis.add(dependentKpisMap.get(id));
         }
-        orderedReadingKpis.stream().filter(readingKPIContext -> readingKPIContext != null);
+        orderedReadingKpis.stream().filter(Objects::nonNull);
 
         return orderedReadingKpis;
     }
@@ -334,7 +333,7 @@ public class ReadingKpiAPI {
             kpi.setReadingField(modBean.getField(kpi.getReadingFieldId()));
             FacilioModule module = modBean.getModule(kpi.getReadingModuleId());
             kpi.setReadingModule(module);
-
+            setCategory(kpi);
             kpi.setMatchedResourcesIds(NamespaceAPI.getMatchedResources(kpi.getNs(), kpi));
         }
         return kpis;
@@ -400,7 +399,7 @@ public class ReadingKpiAPI {
                 schedule = new ScheduleInfo();
                 if (frequency.getIndex() >= NamespaceFrequency.ONE_HOUR.getIndex()) {
                     for (int i = 0; i < 24; i += frequency.getDivisor()) {
-                        LocalTime time = LocalTime.of(i, 00);
+                        LocalTime time = LocalTime.of(i, 0);
                         schedule.addTime(time);
                     }
                 } else {
@@ -416,122 +415,6 @@ public class ReadingKpiAPI {
         }
     }
 
-    public static List<ReadingContext> calculateReadingKpi(long resourceId, ReadingKPIContext kpi, List<DateRange> intervals, Long currentExecStartTime) throws Exception {
-        String fieldName = kpi.getReadingField().getName();
-        NameSpaceContext ns = kpi.getNs();
-        WorkflowContext workflow = ns.getWorkflowContext();
-
-        List<ReadingContext> readings = new ArrayList<>();
-        JSONObject logMsg = new JSONObject();
-        for (DateRange interval : intervals) {
-            long iStartTime = interval.getStartTime();
-            long iEndTime = interval.getEndTime();
-            try {
-                long startTime = System.currentTimeMillis();
-                Double kpiResult = fetchReadingsAndEvaluateKpi(resourceId, interval, ns.getFields(), workflow.getWorkflowV2String());
-                if (kpiResult != null) {
-                    ReadingContext reading = new ReadingContext();
-                    reading.setParentId(resourceId);
-                    reading.addReading(fieldName, kpiResult);
-                    reading.addReading("startTime", iStartTime);
-                    reading.setTtime(iStartTime);
-                    readings.add(reading);
-                } else {
-                    LOGGER.info(" One of the fields does not have data, for resource" + resourceId);
-                    logMsg.put(iStartTime, "One of the fields does not have data, Evaluation returned null");
-                }
-                long timeTaken = System.currentTimeMillis() - startTime;
-                LOGGER.info("Time taken for evaluation of kpi " + kpi.getId() + " for resource " + resourceId + " for interval " + interval + " is " + timeTaken);
-
-            } catch (SQLException e) {
-                ReadingKpiLoggerAPI.updateResourceLog(kpi.getId(), resourceId, KpiResourceLoggerContext.KpiLoggerStatus.FAILED.getIndex(), currentExecStartTime, iEndTime, logMsg.toJSONString());
-                LOGGER.error("calculateReadingKpi failed by SQLException. resource id : " + resourceId + " , field name : " + fieldName + ", workflow : " + workflow.getId(), e);
-                break;
-            } catch (Exception e) {
-                logMsg.put(iStartTime, e.getMessage());
-                ReadingKpiLoggerAPI.updateResourceLog(kpi.getId(), resourceId, KpiResourceLoggerContext.KpiLoggerStatus.FAILED.getIndex(), currentExecStartTime, iEndTime, logMsg.toJSONString());
-                LOGGER.error("calculateReadingKpi failed. resource id : " + resourceId + " , field name : " + fieldName + ", intervals : " + intervals + ", workflow : " + workflow.getId(), e);
-                break;
-            }
-        }
-        ReadingKpiLoggerAPI.updateResourceLog(kpi.getId(), resourceId, KpiResourceLoggerContext.KpiLoggerStatus.SUCCESS.getIndex(), currentExecStartTime, System.currentTimeMillis(), logMsg.toJSONString());
-        return readings;
-    }
-
-
-    private static Double fetchReadingsAndEvaluateKpi(Long resourceId, DateRange interval, List<NameSpaceField> nsFields, String script) throws Exception {
-        List<Object> scriptParams = new ArrayList<>();
-        for (NameSpaceField field : nsFields) {
-            Long resId = field.getResourceId() != null ? field.getResourceId() : resourceId;
-            Double reading = fetchAggregatedReading(field.getFieldId(), resId, interval.getStartTime(), interval.getEndTime(), field.getAggregation());
-            if (reading != null) {
-                scriptParams.add(reading);
-                LOGGER.info("nsId: " + field.getNsId() + " resourceId: " + resourceId + " variable: " + field.getVarName() + " value: " + reading);
-            } else {
-                LOGGER.info("Variable " + field.getVarName() + " with fieldID " + field.getField().getId() + " field does not have data, for resource" + resId);
-                return null;
-            }
-        }
-        Map<String, Object> sysPropMap = new HashMap<>();
-        sysPropMap.put("resourceId", resourceId);
-        sysPropMap.put("ttime", interval.getStartTime());
-        scriptParams.add(sysPropMap);
-        LOGGER.info("Script Params : " + scriptParams + " for resource " + resourceId);
-        ScriptContext result = ScriptUtil.executeScript(script, scriptParams);
-        return Double.parseDouble(result.getReturnValue().toString());
-    }
-
-    private static Double fetchAggregatedReading(Long fieldId, Long resourceId, Long startTime, Long endTime, AggregationType aggregationType) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioField readingField = modBean.getField(fieldId);
-        FacilioModule readingsModule = modBean.getModule(readingField.getModuleId());
-        Map<String, FacilioField> readingsModuleFieldsMap = FieldFactory.getAsMap(modBean.getAllFields(readingsModule.getName()));
-        FacilioField resultField = FieldFactory.getField("reading", readingField.getColumnName(), FieldType.NUMBER);
-        FacilioField moduleIdField = FieldFactory.getField("moduleId", "MODULEID", FieldType.NUMBER);
-        FacilioField resourceIdField = readingsModuleFieldsMap.get("parentId");
-
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .table(readingsModule.getTableName())
-                .select(new HashSet<>())
-                .andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(resourceId), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(readingsModule.getModuleId()), NumberOperators.EQUALS));
-
-        if (aggregationType != AggregationType.LATEST) {
-            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime + "," + endTime, DateOperators.BETWEEN));
-        }
-
-        List<Map<String, Object>> props = Objects.requireNonNull(applyAggregate(selectRecordBuilder, aggregationType, resultField)).get();
-        LOGGER.info("select query of fieldId : " + fieldId + " for resource: " + resourceId + " qry: " + selectRecordBuilder);
-        return CollectionUtils.isNotEmpty(props) ? (Double) props.get(0).get("reading") : null;
-    }
-
-
-    private static GenericSelectRecordBuilder applyAggregate(GenericSelectRecordBuilder selectRecordBuilder, AggregationType aggregationType, FacilioField aggrField) throws Exception {
-        switch (aggregationType) {
-            case FIRST:
-                return selectRecordBuilder.select(Collections.singletonList(aggrField)).orderBy("TTIME ASC")
-                        .limit(1);
-            case LAST:
-            case LATEST:
-                return selectRecordBuilder.select(Collections.singletonList(aggrField)).orderBy("TTIME DESC")
-                        .limit(1);
-            case SUM:
-                return selectRecordBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM, aggrField);
-            case MAX:
-                return selectRecordBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MAX, aggrField);
-            case MIN:
-                return selectRecordBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.MIN, aggrField);
-            case AVG:
-                return selectRecordBuilder.aggregate(BmsAggregateOperators.NumberAggregateOperator.AVERAGE, aggrField);
-            case COUNT:
-                return selectRecordBuilder.aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, aggrField);
-            case DISTINCT_COUNT:
-                return selectRecordBuilder.select(Collections.singletonList(FieldFactory.getField("reading", "COUNT(DISTINCT " + aggrField.getColumnName() + ")", FieldType.NUMBER)));
-
-        }
-        return null;
-    }
 
     // Dynamic KPI Util
 
@@ -539,14 +422,14 @@ public class ReadingKpiAPI {
         AssetContext assetInfo = AssetsAPI.getAssetInfo(resourceId);
         AssetCategoryContext category = assetInfo.getCategory();
         return getDynamicKpisOfCategory(category.getId()).stream()
-                .filter(dynKpi -> getMatchedResources(dynKpi.getNs(),dynKpi.getCategory()).contains(resourceId))
+                .filter(dynKpi -> getMatchedResourcesWrapper(dynKpi.getNs()).contains(resourceId))
                 .map(dynKpi -> new KpiContextWrapper(dynKpi.getId(), dynKpi.getName()))
                 .collect(Collectors.toList());
     }
 
-    private static List<Long> getMatchedResources(NameSpaceContext ns,ResourceCategory resourceCategory) {
+    private static List<Long> getMatchedResourcesWrapper(NameSpaceContext ns) {
         try {
-            return CollectionUtils.isEmpty(ns.getIncludedAssetIds()) ? NamespaceAPI.getMatchedResources(ns, resourceCategory) : ns.getIncludedAssetIds();
+            return NamespaceAPI.getMatchedResources(ns);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -926,21 +809,6 @@ public class ReadingKpiAPI {
                 .collect(Collectors.toMap(ReadingKPIContext::getReadingFieldId, ReadingKPIContext::getId));
     }
 
-    public Boolean logsInProgress(Long kpiId) throws Exception {
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule loggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ReadingKpi.KPI_LOGGER_MODULE));
-        SelectRecordsBuilder<KpiLoggerContext> builder = new SelectRecordsBuilder<KpiLoggerContext>()
-                .select(Collections.singleton(FieldFactory.getIdField(loggerModule)))
-                .module(loggerModule)
-                .beanClass(KpiLoggerContext.class)
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(KpiResourceLoggerContext.KpiLoggerStatus.IN_PROGRESS.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("kpi"), Collections.singleton(kpiId), NumberOperators.EQUALS));
-
-        List<KpiLoggerContext> loggersInProgress = builder.get();
-        return CollectionUtils.isNotEmpty(loggersInProgress);
-    }
-
     public static List<KpiResourceLoggerContext> logsInProgressForResource(Long kpiId, List<Long> resourceIds) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule resourceLoggerModule = modBean.getModule(FacilioConstants.ReadingKpi.KPI_RESOURCE_LOGGER_MODULE);
@@ -960,53 +828,50 @@ public class ReadingKpiAPI {
         return new ArrayList<>();
     }
 
+    public static void beginKpiHistorical(List<ReadingKPIContext> kpis, long startTime, long endTime, List<Long> assetIds, boolean executeDependencies, boolean isSysCreated) throws Exception {
+        postConRuleHistoryInstructionToStorm(kpis, startTime, endTime, assetIds, executeDependencies, InstructionType.LIVE_KPI_HISTORICAL, isSysCreated);
 
-    public static void beginLiveKpiHistorical(List<ReadingKPIContext> kpis, Long startTime, Long endTime, List<Long> assetIds, boolean executeDependencies) throws Exception {
-        postConRuleHistoryInstructionToStorm(kpis, startTime, endTime, assetIds, executeDependencies, InstructionType.LIVE_KPI_HISTORICAL);
-    }
-
-    public static void beginSchKpiHistorical(ReadingKPIContext kpi, Long startTime, Long endTime, List<Long> assetIds) throws Exception {
-        JSONObject props = new JSONObject();
-        props.put(FacilioConstants.ContextNames.START_TIME, startTime);
-        props.put(FacilioConstants.ContextNames.END_TIME, endTime);
-        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
-        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, assetIds);
-        props.put(FacilioConstants.ReadingKpi.READING_KPI, kpi.getId());
-
-        Long parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(assetIds) ? assetIds.size() : NamespaceAPI.getMatchedResources(kpi.getNs(), kpi.getCategory()).size());
-        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
-
-        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
     }
 
     public static void setCategory(ReadingKPIContext kpi) throws Exception {
         ResourceType type = kpi.getResourceTypeEnum();
         V3Context category = CommonConnectedUtil.getCategory(type, kpi.getCategoryId());
-        if(category != null) {
+        if (category != null) {
             kpi.setCategory(new ResourceCategory<>(type, category));
         }
     }
 
+    public static void addFilterToBuilder(Context context, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
+        String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
+        if (StringUtils.isNotEmpty(searchText)) {
+            builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchText, StringOperators.CONTAINS));
+        }
 
-    public static GenericSelectRecordBuilder addFilterAndReturnBuilder(Context context, boolean fetchCount, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) throws Exception {
         Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         if (filterCriteria != null) {
             builder.andCriteria(filterCriteria);
         }
-        return fetchCount
-                ? getCountBuilder(builder, module)
-                : getDataBuilder(context, module, fieldsMap, builder);
     }
 
-    private static GenericSelectRecordBuilder getCountBuilder(GenericSelectRecordBuilder builder, FacilioModule module) throws Exception {
+    public static GenericSelectRecordBuilder getCountBuilder(GenericSelectRecordBuilder builder, FacilioModule module) throws Exception {
         FacilioField selectDistinctField = getSelectDistinctIdField(module);
         builder.select(new HashSet<>()).aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, selectDistinctField);
         return builder;
     }
 
-    private static GenericSelectRecordBuilder getDataBuilder(Context context, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
+    public static GenericSelectRecordBuilder getDataBuilder(Context context, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
+        return getDataBuilder(context, module, fieldsMap, builder, null);
+    }
+
+    public static GenericSelectRecordBuilder getDataBuilder(Context context, FacilioModule module, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder, List<FacilioField> additionalSelectFields) {
         FacilioField selectDistinctField = getSelectDistinctIdField(module);
-        builder.select(Arrays.asList(selectDistinctField, fieldsMap.get("name")));
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(selectDistinctField);
+        selectFields.add(fieldsMap.get("name"));
+        if (CollectionUtils.isNotEmpty(additionalSelectFields)) {
+            selectFields.addAll(additionalSelectFields);
+        }
+        builder.select(selectFields);
         return addPaginationPropsToBuilder(context, builder);
     }
 
@@ -1033,4 +898,37 @@ public class ReadingKpiAPI {
         return builder;
     }
 
+    public static long getStartTimeForHistoricalCalculation(NamespaceFrequency freq) {
+        long currentTime = DateTimeUtil.getCurrenTime() - 10 * 1000; // trigger happens at 00:00, we need prev interval, so 10 mins behind
+        switch (freq) {
+            case ONE_DAY:
+                return DateTimeUtil.getDayStartTimeOf(currentTime);
+            case WEEKLY:
+                return DateTimeUtil.getWeekStartTimeOf(currentTime);
+            case MONTHLY:
+                return DateTimeUtil.getMonthStartTimeOf(currentTime);
+            case QUARTERLY:
+                return DateTimeUtil.getQuarterStartTimeOf(currentTime);
+            case HALF_YEARLY: // figure out later
+                return DateTimeUtil.getYearStartTime(-1);
+            case ANNUALLY:
+                return DateTimeUtil.getYearStartTimeOf(currentTime);
+            default:
+                throw new IllegalArgumentException("Invalid Scheduled Freq");
+        }
+    }
+
+    public static KpiAnalyticsDataFetcher getKpiAnalyticsDataFetcher(String moduleName, Context context, List<FacilioField> additionalSelectFields) throws Exception {
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+        switch (moduleName) {
+            case FacilioConstants.ReadingKpi.READING_KPI:
+                return new ReadingKPIDataFetcher(module, context, additionalSelectFields);
+            case FacilioConstants.ContextNames.ASSET:
+                return new AssetDataFetcher(module, context, additionalSelectFields);
+            case FacilioConstants.Meter.METER:
+                return new MeterDataFetcher(module, context, additionalSelectFields);
+            default:
+                throw new IllegalArgumentException("Unsupported Module");
+        }
+    }
 }

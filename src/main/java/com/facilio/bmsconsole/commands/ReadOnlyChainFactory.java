@@ -58,10 +58,7 @@ import com.facilio.pdftemplate.command.PreviewPDFTemplateCommand;
 import com.facilio.pdftemplate.command.DownloadPDFTemplateCommand;
 import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
-import com.facilio.readingkpi.readingslist.FetchAssetNamesCommand;
-import com.facilio.readingkpi.readingslist.FetchDynamicKpiReadingsCommand;
-import com.facilio.readingkpi.readingslist.FetchKpiNamesCommand;
-import com.facilio.readingkpi.readingslist.FetchKpiReadingsCommand;
+import com.facilio.readingkpi.readingslist.*;
 import com.facilio.readingrule.rca.command.AddBooleanChartDataCommand;
 import com.facilio.readingrule.rca.command.FetchRcaReadingsCommand;
 import com.facilio.readingrule.rca.command.RcaReadingFaultCountAndDurationCommand;
@@ -3411,17 +3408,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new FetchKpiReadingsCommand());
 		return chain;
 	}
-	public static FacilioChain getKpiNames(){
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new FetchKpiNamesCommand());
-		return chain;
-	}
-	public static FacilioChain getReadingKpiAssetNames(){
-		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new FetchAssetNamesCommand());
-		return chain;
-	}
 
+	public static FacilioChain getNamesListForKpiAnalytics(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchNameListCommand());
+		return chain;
+	}
 	public static FacilioChain fetchRcaReadingsChain(){
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GenerateCriteriaFromFilterCommand());

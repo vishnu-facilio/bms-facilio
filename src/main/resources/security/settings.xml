@@ -2054,10 +2054,7 @@
     <request path="/api/v3/readingKpi/fetchDynamicKpiReadings">
         <requestbody type="object"/>
     </request>
-    <request path="/api/v3/readingKpi/fetchAssetNames">
-        <requestbody type="object"/>
-    </request>
-    <request path="/api/v3/readingKpi/fetchKpiNames">
+    <request path="/api/v3/readingKpi/fetchNamesForAnalytics">
         <requestbody type="object"/>
     </request>
     <request path="/api/v1/setup/kpiLogger">

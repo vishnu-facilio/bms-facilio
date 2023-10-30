@@ -167,44 +167,8 @@ public class ReadingKpiAction extends V3Action {
     public String runHistorical() throws Exception {
         List<ReadingKPIContext> kpis = validatePayload();
         ReadingKpiAPI.setNamespaceAndMatchedResources(kpis);
-
-        try {
-            switch (Objects.requireNonNull(getKpiType() == null ?
-                    KPIType.valueOf(kpis.get(0).getKpiType()) :
-                    getKpiType())) {
-                case SCHEDULED:
-                    ReadingKpiAPI.beginSchKpiHistorical(kpis.get(0), getStartTime(), getEndTime(), getAssets());
-                    break;
-                case LIVE:
-                    beginLiveKpiHistorical(kpis);
-                    break;
-            }
-            setData(SUCCESS, "Historical KPI Calculation has started");
-
-            return SUCCESS;
-        } catch (Exception userException) {
-            setData("Failed", userException.getMessage());
-            throw userException;
-        }
-    }
-
-    private void beginLiveKpiHistorical(List<ReadingKPIContext> kpis) throws Exception {
-        ReadingKpiAPI.beginLiveKpiHistorical(kpis, startTime, endTime, assets, false);
-    }
-
-    private void beginSchKpiHistorical(List<ReadingKPIContext> kpis) throws Exception {
-        ReadingKPIContext kpi = kpis.get(0);
-        JSONObject props = new JSONObject();
-        props.put(FacilioConstants.ContextNames.START_TIME, getStartTime());
-        props.put(FacilioConstants.ContextNames.END_TIME, getEndTime());
-        props.put(FacilioConstants.ReadingKpi.IS_HISTORICAL, true);
-        props.put(FacilioConstants.ContextNames.RESOURCE_LIST, getAssets());
-        props.put(FacilioConstants.ReadingKpi.READING_KPI, getRecordId());
-
-        parentLoggerId = ReadingKpiLoggerAPI.insertLog(kpi.getId(), KPIType.SCHEDULED.getIndex(), startTime, endTime, false, CollectionUtils.isNotEmpty(getAssets()) ? getAssets().size() : kpi.getMatchedResourcesIds().size());
-        props.put(FacilioConstants.ReadingKpi.PARENT_LOGGER_ID, parentLoggerId);
-
-        scheduleOneTimeJobWithProps(ReadingKpiLoggerAPI.getNextJobId(), FacilioConstants.ReadingKpi.READING_KPI_HISTORICAL_JOB, 1, "facilio", props);
+        ReadingKpiAPI.beginKpiHistorical(kpis, startTime, endTime, assets, false, false);
+        return SUCCESS;
     }
 
 

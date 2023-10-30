@@ -24,7 +24,6 @@ import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
-import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
 import com.facilio.v3.context.Constants;
@@ -223,11 +222,10 @@ public class CommonConnectedUtil {
 
     public static DirectedAcyclicGraph<Long, DefaultEdge> fetchConRuleFamilyUpwardGraph(Long connectedRuleId, NSType type, List<Long> resourceIds) throws Exception {
         IConnectedRule conRule = fetchConnectedRules(Collections.singleton(connectedRuleId), type).get(0);
-        ResourceCategory resourceCategory=conRule.getCategory();
         NameSpaceContext ns = conRule.getNs();
-        Long categoryId = resourceCategory.fetchId();
+        Long categoryId = ns.getCategoryId();
         if (CollectionUtils.isEmpty(resourceIds)) {
-            resourceIds = NamespaceAPI.getMatchedResources(ns, resourceCategory);
+            resourceIds = NamespaceAPI.getMatchedResources(ns);
         }
 
         DirectedAcyclicGraph<Long, DefaultEdge> directedGraph = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -311,8 +309,7 @@ public class CommonConnectedUtil {
                 firstCircle.add(parentRuleId);
                 categoryIds.add(catId);
                 IConnectedRule connectedRule = fetchConnectedRule(parentRuleId, type);
-                ResourceCategory resourceCategory = connectedRule.getCategory();
-                resourceIds.addAll(NamespaceAPI.getMatchedResources(connectedRule.getNs(),resourceCategory));
+                resourceIds.addAll(NamespaceAPI.getMatchedResources(connectedRule.getNs()));
             }
         }
         return firstCircle;
@@ -410,27 +407,27 @@ public class CommonConnectedUtil {
         return graph.vertexSet().stream().filter(vertex -> graph.inDegreeOf(vertex) == 0).collect(Collectors.toSet());
     }
 
-    public static <T extends IConnectedRule> void postConRuleHistoryInstructionToStorm(List<T> conRules, long startTime, long endTime, List<Long> assets, boolean executeDependencies, InstructionType instructionType) throws Exception {
+    public static <T extends IConnectedRule> void postConRuleHistoryInstructionToStorm(List<T> conRules, long startTime, long endTime, List<Long> assets, boolean executeDependencies, InstructionType instructionType, boolean isSysCreated) throws Exception {
         FacilioChain runStormHistorical = TransactionChainFactory.initiateStormInstructionExecChain();
-        FacilioContext historicalContext = runStormHistorical.getContext();
-        historicalContext.put("type", instructionType.getIndex());
+        FacilioContext instructionData = runStormHistorical.getContext();
+        instructionData.put("type", instructionType.getIndex());
 
-        JSONObject instructionData = new JSONObject();
-        instructionData.put("conRuleIds", conRules.stream().map(IConnectedRule::getId).collect(Collectors.toSet()));
-        instructionData.put("startTime", startTime);
-        instructionData.put("endTime", endTime);
-        instructionData.put("assetIds", assets);
-        instructionData.put("executeDependencies", executeDependencies);
+        JSONObject historicalInputData = new JSONObject();
+        historicalInputData.put("conRuleIds", conRules.stream().map(IConnectedRule::getId).collect(Collectors.toSet()));
+        historicalInputData.put("startTime", startTime);
+        historicalInputData.put("endTime", endTime);
+        historicalInputData.put("assetIds", assets);
+        historicalInputData.put("executeDependencies", executeDependencies);
 
         Map<Long, Long> conRuleIdVsParentLoggerId = new HashMap<>();
         for (IConnectedRule conRule : conRules) {
-            instructionData.put("assetCategoryId", conRule.getCategory().fetchId());
-            long parentLoggerId = conRule.insertLog(startTime, endTime, CollectionUtils.isNotEmpty(assets) ? assets.size() : NamespaceAPI.getMatchedResources(conRule.getNs(), conRule.getCategory()).size(), false);
+            historicalInputData.put("assetCategoryId", conRule.getCategory().fetchId());
+            long parentLoggerId = conRule.insertLog(startTime, endTime, CollectionUtils.isNotEmpty(assets) ? assets.size() : NamespaceAPI.getMatchedResources(conRule.getNs()).size(), false);
             conRuleIdVsParentLoggerId.put(conRule.getId(), parentLoggerId);
         }
-        instructionData.put("conRuleIdVsParentLoggerId", conRuleIdVsParentLoggerId);
+        historicalInputData.put("conRuleIdVsParentLoggerId", conRuleIdVsParentLoggerId);
 
-        historicalContext.put("data", instructionData);
+        instructionData.put("data", historicalInputData);
         runStormHistorical.execute();
     }
 
@@ -460,10 +457,10 @@ public class CommonConnectedUtil {
         switch (resourceType) {
             case ASSET_CATEGORY:
                 List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-                return assets.stream().map(asset -> asset.getId()).collect(Collectors.toList());
+                return assets.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
             case METER_CATEGORY:
                 List<V3MeterContext> meters = MetersAPI.getMeterListOfUtilityType(categoryId);
-                return meters.stream().map(meter -> meter.getId()).collect(Collectors.toList());
+                return meters.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
             case SITE:
                 throw new Exception("Not supported yet");
         }

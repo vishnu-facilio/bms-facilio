@@ -4443,7 +4443,6 @@ public class FacilioConstants {
 		public static final String SCHEDULE_TYPE = "scheduleType";
 		public static final String NEXT_SCHEDULE_TYPE = "nextScheduleType";
 		public static final String READING_KPI_JOB_NAME = "ExecuteScheduledReadingKpi";
-		public static final String READING_KPI_HISTORICAL_JOB = "ScheduledKpiHistoricalCalculationJob";
 		public static final String KPI_LOGGER_MODULE = "kpiLogger";
 		public static final String KPI_RESOURCE_LOGGER_MODULE = "kpiResourceLogger";
 		public static final String KPI_TYPE = "kpiType";

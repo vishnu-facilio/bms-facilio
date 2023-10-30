@@ -21,6 +21,7 @@ public class ReadingKpiListAction extends V3Action {
     private List<Long> frequencies;
     private Boolean fetchCount;
     private String groupBy; // Can have values kpi, asset, meter, site, space
+    private String moduleName;
     private String searchModuleName;
     private Long assetCategoryId;
     private Long resourceType;
@@ -60,26 +61,17 @@ public class ReadingKpiListAction extends V3Action {
         return SUCCESS;
     }
 
-    public String fetchKpiNames() throws Exception {
-        FacilioChain chain = ReadOnlyChainFactory.getKpiNames();
+    public String fetchNamesForAnalytics() throws Exception{
+        FacilioChain chain = ReadOnlyChainFactory.getNamesListForKpiAnalytics();
         FacilioContext context = chain.getContext();
         setPaginationAndFetchCount(context);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
         context.put(FacilioConstants.ContextNames.SEARCH_QUERY, getSearchText());
         context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
         context.put(FacilioConstants.ContextNames.FREQUENCY, getFrequencies());
-
-        chain.execute();
-        setDataFromContext(context);
-        return SUCCESS;
-    }
-
-    public String fetchAssetNames() throws Exception {
-
-        FacilioChain chain = ReadOnlyChainFactory.getReadingKpiAssetNames();
-        FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ASSET_CATEGORY_ID, getAssetCategoryId());
-        context.put(FacilioConstants.ContextNames.SEARCH_QUERY, getSearchText());
-        setPaginationAndFetchCount(context);
+
+
         chain.execute();
         setDataFromContext(context);
         return SUCCESS;

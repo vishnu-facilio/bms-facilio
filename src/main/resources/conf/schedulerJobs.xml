@@ -49,10 +49,6 @@
 		 transactionTimeout='300000'/>
 	<job name='ScheduledKpiExecInitiator' classname='com.facilio.readingkpi.jobs.ScheduledKpiExecInitiatorJob'
 		 transactionTimeout='300000'/>
-	<job name='ExecuteScheduledReadingKpi' classname='com.facilio.readingkpi.jobs.ExecuteScheduledReadingKpiJob'
-		 transactionTimeout='3600000'/>
-	<job name='ScheduledKpiHistoricalCalculationJob' classname='com.facilio.readingkpi.jobs.ScheduledKpiHistoricalCalculationJob'
-		 transactionTimeout='3600000'/>
 	<job name='SingleResourceHistoricalFormulaFieldCalculator'
 		 classname='com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob'
 		 transactionTimeout='900000'/>

@@ -86,7 +86,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
                 break;
             case METER_CATEGORY:
-                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.METER);
+                context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.Meter.METER);
                 context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, kpi.getCategoryId());
               //  context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,ModuleFactory.getSubModulesRelModule());
                 break;
