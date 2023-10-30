@@ -19,6 +19,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
+import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.importFileReader.AbstractImportFileReader;
 import com.facilio.multiImport.importFileReader.CSVFileReader;
@@ -31,6 +32,7 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.Broadcaster;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.message.WebMessage;
@@ -1090,6 +1092,19 @@ public class MultiImportApi {
         }
         return true;
     }
+    public static Map<ImportFieldMappingType,List<MultiImportField>> getMultiImportFieldMap(String moduleName) throws Exception{
+        Map<ImportFieldMappingType,List<MultiImportField>> multiImportFieldMap = new HashMap<>();
+        multiImportFieldMap.put(ImportFieldMappingType.NORMAL,getMultiImportFieldsList(moduleName));
+        multiImportFieldMap.put(ImportFieldMappingType.RELATIONSHIP,getRelationsMultiImportFields(moduleName));
+        return multiImportFieldMap;
+    }
+    public static List<MultiImportField> getMultiImportFieldsList(String moduleName,boolean withRelations) throws Exception{
+        List<MultiImportField> multiImportFields = getMultiImportFieldsList(moduleName);
+        if(withRelations){
+           multiImportFields.addAll(getRelationsMultiImportFields(moduleName));
+        }
+        return multiImportFields;
+    }
     public static List<MultiImportField> getMultiImportFieldsList(String moduleName) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
@@ -1148,6 +1163,12 @@ public class MultiImportApi {
             multiImportFields.add(importField);
         }
 
+        return multiImportFields;
+    }
+    public static List<MultiImportField> getRelationsMultiImportFields(String moduleName) throws Exception{
+        List<MultiImportField> multiImportFields = new ArrayList<>();
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
         //fill relations
         List<ImportRelationshipRequestContext> relations = RelationUtil.getAllRelationshipRequestForImport(module);
 
@@ -1158,7 +1179,6 @@ public class MultiImportApi {
                 multiImportFields.add(importField);
             }
         }
-
         return multiImportFields;
     }
     public static List<FacilioField> getFields(String moduleName) throws Exception {

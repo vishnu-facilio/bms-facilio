@@ -31,6 +31,7 @@ public class MultiImportDataAction extends V3Action {
     ImportFileSheetsContext importSheet;
     private boolean myImport;
     private boolean skipValidation;
+    private boolean newVersion;
 
     public String createImportDataDetails() throws Exception {
         FacilioChain chain = MultiImportChain.getCreateImportDataChain();
@@ -247,6 +248,7 @@ public class MultiImportDataAction extends V3Action {
         FacilioChain chain = MultiImportChain.getMultiImportFieldsChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
+        context.put("newVersion",newVersion);
         chain.execute();
 
         setData(FacilioConstants.ContextNames.FIELDS,context.get(FacilioConstants.ContextNames.FIELDS));
