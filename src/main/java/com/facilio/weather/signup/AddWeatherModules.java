@@ -287,7 +287,7 @@ public class AddWeatherModules extends SignUpData {
         FacilioModule weatherStation = modBean.getModule(FacilioConstants.ModuleNames.WEATHER_STATION);
         FacilioModule site = modBean.getModule(FacilioConstants.ContextNames.SITE);
         RelationRequestContext siteVsStationRelation = new RelationRequestContext();
-        siteVsStationRelation.setName("weatherstation");
+        siteVsStationRelation.setName("Weather Station");
         siteVsStationRelation.setDescription("Site Vs Weatherstation relationship");
         siteVsStationRelation.setFromModuleId(site.getModuleId());
         siteVsStationRelation.setToModuleId(weatherStation.getModuleId());

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.TemplatePages;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -109,6 +110,14 @@ public class SpaceTemplatePageFactory implements TemplatePageFactory{
                 .columnDone()
                 .tabDone()
 
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
 
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)

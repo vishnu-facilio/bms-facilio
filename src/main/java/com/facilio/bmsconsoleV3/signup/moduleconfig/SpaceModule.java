@@ -334,6 +334,15 @@ public class SpaceModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("spaceRelatedlist", "Related List", "List of related records across modules")

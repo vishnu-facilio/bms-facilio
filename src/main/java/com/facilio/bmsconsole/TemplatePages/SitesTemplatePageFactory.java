@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.TemplatePages;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -147,11 +148,10 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
                 .columnDone()
                 .tabDone()
 
-
-                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("activity", null, null)
-                .addWidget("siteactivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -170,6 +170,14 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
                 .columnDone()
                 .tabDone()
 
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("siteactivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
                 .layoutDone();
 
     }
@@ -188,7 +196,7 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
@@ -201,7 +209,6 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         widgetGroup.setName("primaryDetails");
-        widgetGroup.setDisplayName("General Details");
 
         addSummaryFieldInWidgetGroup(widgetGroup, descFields,1, 1, 4);
         addSummaryFieldInWidgetGroup(widgetGroup, managedByField, 2 , 1, 1);
@@ -217,8 +224,8 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
         FacilioField modifiedTimeField =moduleBean.getField("sysModifiedTime",moduleName);
 
         SummaryWidgetGroup systemGroup = new SummaryWidgetGroup();
-        systemGroup.setName("secondaryDetails");
-        systemGroup.setDisplayName("System Details");
+        systemGroup.setName("systemDetails");
+        systemGroup.setDisplayName("System Information");
 
         addSummaryFieldInWidgetGroup(systemGroup, sysCreatedByField,1, 1, 1);
         addSummaryFieldInWidgetGroup(systemGroup, createdTimeField, 1 , 2, 1);
@@ -226,40 +233,9 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
         addSummaryFieldInWidgetGroup(systemGroup,modifiedTimeField,1,4,1);
 
         systemGroup.setColumns(4);
-        FacilioField temperatureField1 =moduleBean.getField("cddBaseTemperature",moduleName);
-        FacilioField temperatureField2 = moduleBean.getField("hddBaseTemperature", moduleName);
-        FacilioField temperatureField3 = moduleBean.getField("wddBaseTemperature", moduleName);
-
-        SummaryWidgetGroup weatherDetailsGroup = new SummaryWidgetGroup();
-        weatherDetailsGroup.setName("weatherDetails");
-        weatherDetailsGroup.setDisplayName("Weather Details");
-
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup, temperatureField1,1, 1, 1);
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup, temperatureField2, 1 , 2, 1);
-        addSummaryFieldInWidgetGroup(weatherDetailsGroup,temperatureField3,1,3,1);
-
-        weatherDetailsGroup.setColumns(3);
-
-        FacilioField timeZoneField = moduleBean.getField("timeZone", moduleName);
-        FacilioField failureClassField = moduleBean.getField("failureClass", moduleName);
-        FacilioField boundaryRadiusField=moduleBean.getField("boundaryRadius",moduleName);
-
-        SummaryWidgetGroup otherWidgetGroup = new SummaryWidgetGroup();
-        otherWidgetGroup.setName("otherDetails");
-        otherWidgetGroup.setDisplayName("Other Details");
-
-        addSummaryFieldInWidgetGroup(otherWidgetGroup,timeZoneField ,1, 1, 1);
-        addSummaryFieldInWidgetGroup(otherWidgetGroup, failureClassField, 1 , 2, 1);
-        addSummaryFieldInWidgetGroup(otherWidgetGroup,boundaryRadiusField,1,3,1);
-        otherWidgetGroup.setColumns(3);
-
-
-
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
         widgetGroupList.add(systemGroup);
-        widgetGroupList.add(weatherDetailsGroup);
-        widgetGroupList.add(otherWidgetGroup);
 
         pageWidget.setDisplayName("Site details");
         pageWidget.setModuleId(module.getModuleId());

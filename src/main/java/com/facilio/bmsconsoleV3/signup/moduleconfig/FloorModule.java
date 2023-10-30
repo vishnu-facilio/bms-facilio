@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -144,8 +145,18 @@ public class FloorModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
+                    .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("classification", null, null)
+                    .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
 
-                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("floorRelatedlist", "Related List", "List of related records across modules")
                     .addWidget("floorrelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
