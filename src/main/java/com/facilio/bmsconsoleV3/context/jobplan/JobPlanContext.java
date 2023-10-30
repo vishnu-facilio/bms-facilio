@@ -142,7 +142,8 @@ public class JobPlanContext extends V3Context {
         BUILDINGS("Buildings"),
         SITES("Sites"),
         FLOORS("Floors"),
-        GENERAL("General");
+        GENERAL("General"),
+        METERTYPE("Meter Type");
 
         @Override
         public String getValue() {

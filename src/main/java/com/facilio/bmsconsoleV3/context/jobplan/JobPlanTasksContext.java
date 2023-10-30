@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +21,8 @@ import java.util.*;
 public class JobPlanTasksContext extends V3TaskContext {
 	
 	private V3AssetCategoryContext assetCategory;
+	
+	private V3UtilityTypeContext meterType;
 
     private V3SpaceCategoryContext spaceCategory;
 

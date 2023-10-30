@@ -40,6 +40,7 @@ public class BulkResourceAllocationAction extends V3Action {
     Long baseSpaceId;
     Long spaceCategoryId;
     Long assetCategoryId;
+    Long meterTypeId;
     
     List<Long> siteIds;
     List<Long> baseSpaceIds;
@@ -121,13 +122,13 @@ public class BulkResourceAllocationAction extends V3Action {
     	
     	 if(baseSpaceIds != null || siteIds != null) {
     		 
-    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteIds, baseSpaceIds, spaceCategoryId, assetCategoryId);
+    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteIds, baseSpaceIds, spaceCategoryId, assetCategoryId,meterTypeId);
         	 
         	 setData(res);
     	 }
     	 else {
     		 
-    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteId, baseSpaceId, spaceCategoryId, assetCategoryId);
+    		 JSONObject res = BulkResourceAllocationUtil.getMultipleResourceCriteriaFromConfig(PreventiveMaintenance.PMAssignmentType.valueOf(assignmentTypeId), siteId, baseSpaceId, spaceCategoryId, assetCategoryId,meterTypeId);
         	 
         	 setData(res);
     	 }

@@ -9,9 +9,11 @@ import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.tasks.SectionInputOptionsContext;
 import com.facilio.bmsconsoleV3.context.tasks.TaskInputOptionsContext;
 import com.facilio.bmsconsoleV3.signup.jobPlan.AddJobPlanModule;
+import com.facilio.bmsconsoleV3.util.BulkResourceAllocationUtil.BulkAllocationTypes;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -23,6 +25,7 @@ import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.taskengine.ScheduleInfo;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.common.protocol.types.Field;
@@ -373,7 +376,7 @@ public class JobPlanAPI {
      * Methods with {@link V3WorkOrderContext}
      * @param workOrderContext
      */
-
+    
     public static Map<String, List<V3TaskContext>> getScopedTasksForWo(JobPlanContext jobPlan, Boolean isPreRequest, V3WorkOrderContext workOrderContext) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -396,18 +399,30 @@ public class JobPlanAPI {
                     }
                     workOrderContext.setResource(resourceContext);
                 }
-                List<ResourceContext> sectionResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false);
-
-                if(CollectionUtils.isNotEmpty(sectionResourceList)) {
-
-                    for(ResourceContext sectionResource : sectionResourceList) {
-
-                        JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
-                        updatedTaskSection.setName(updatedTaskSection.getName() + " - " + sectionResource.getName());
-                        updatedTaskSection.setResource(sectionResource);
-                        updatedTaskSections.add(updatedTaskSection);
-                        sectionNameList.add(updatedTaskSection.getName());  // update sectionName in sectionNameList
-                    }
+                Map<BulkAllocationTypes,List<ModuleBaseWithCustomFields>> sectionObjMap = BulkResourceAllocationUtil.getMultipleObjFromBulkConfig(initalTaskSection.getJobPlanSectionCategoryEnum(), Collections.singletonList(workOrderContext.getResource().getId()), initalTaskSection.getSpaceCategory() == null ? null :  initalTaskSection.getSpaceCategory().getId(), initalTaskSection.getAssetCategory() == null ? null :  initalTaskSection.getAssetCategory().getId(), null, null, false,initalTaskSection.getMeterType() == null ? null :  initalTaskSection.getMeterType().getId(),null);
+                
+                if(MapUtils.isNotEmpty(sectionObjMap)) {
+                	
+                	for(BulkAllocationTypes type : sectionObjMap.keySet()) {
+                		List<ModuleBaseWithCustomFields> moduleBaseList = sectionObjMap.get(type);
+                		if(CollectionUtils.isNotEmpty(moduleBaseList)) {
+                			for(ModuleBaseWithCustomFields moduleBase : moduleBaseList) {
+                    			
+                    			JobPlanTaskSectionContext updatedTaskSection = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(initalTaskSection), JobPlanTaskSectionContext.class);
+                    			
+                                updatedTaskSection.setName(updatedTaskSection.getName() + " - " + type.getName(moduleBase));
+                                if(type == BulkAllocationTypes.RESOURCE) {
+                                	updatedTaskSection.setResource((ResourceContext)moduleBase);
+                                }
+                                else if (type == BulkAllocationTypes.METER) {
+                                	updatedTaskSection.setMeter((V3MeterContext)moduleBase);
+                                }
+                                
+                                updatedTaskSections.add(updatedTaskSection);
+                                sectionNameList.add(updatedTaskSection.getName());  // update sectionName in sectionNameList
+                    		}
+                		}
+                	}
                 }
            }
             if(workOrderContext.getSectionNameList() != null){
@@ -427,16 +442,30 @@ public class JobPlanAPI {
                         List<JobPlanTasksContext> jobPlanTasks = orderTaskBySequenceNumber(sectionContext.getTasks());
                         for (JobPlanTasksContext jobPlanTask : jobPlanTasks) {
 
-                            List<ResourceContext> taskResourceList = BulkResourceAllocationUtil.getMultipleResourceToBeAddedFromPM(jobPlanTask.getJobPlanTaskCategoryEnum(), Collections.singletonList(sectionContext.getResource().getId()), jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false);
+                        	Map<BulkAllocationTypes,List<ModuleBaseWithCustomFields>> taskObjMap =  BulkResourceAllocationUtil.getMultipleObjFromBulkConfig(jobPlanTask.getJobPlanTaskCategoryEnum(), sectionContext.getResource() != null ? Collections.singletonList(sectionContext.getResource().getId()) : null, jobPlanTask.getSpaceCategory() == null ? null :  jobPlanTask.getSpaceCategory().getId(), jobPlanTask.getAssetCategory() == null ? null :  jobPlanTask.getAssetCategory().getId(), null, null, false,jobPlanTask.getMeterType() == null ? null :  jobPlanTask.getMeterType().getId(),sectionContext.getMeter() != null ? Collections.singletonList(sectionContext.getMeter().getId()) : null);
 
-                            if(CollectionUtils.isNotEmpty(taskResourceList)) {
-
-                                for (ResourceContext taskResource : taskResourceList) {
-                                    V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
-                                    task.setResource(taskResource);
-                                    task.setUniqueId(taskUniqueId++);
-                                    tasks.add(task);
-                                }
+                            if(MapUtils.isNotEmpty(taskObjMap)) {
+                            	
+                            	for(BulkAllocationTypes type : taskObjMap.keySet()) {
+                            		List<ModuleBaseWithCustomFields> moduleBaseList = taskObjMap.get(type);
+                            		
+                            		if(CollectionUtils.isNotEmpty(moduleBaseList)) {
+                            			for(ModuleBaseWithCustomFields moduleBase : moduleBaseList) {
+                                			
+                                			V3TaskContext task = FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(jobPlanTask), V3TaskContext.class);
+                                            
+                                            if(type == BulkAllocationTypes.RESOURCE) {
+                                            	task.setResource((ResourceContext)moduleBase);
+                                            }
+                                            else if (type == BulkAllocationTypes.METER) {
+                                            	task.setMeter((V3MeterContext)moduleBase);
+                                            }
+                                            
+                                            task.setUniqueId(taskUniqueId++);
+                                            tasks.add(task);
+                                		}
+                            		}
+                            	}
                             }
                         }
                         

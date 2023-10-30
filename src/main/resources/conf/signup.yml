@@ -4,6 +4,7 @@ version: 1.0
 classes:
   # Adding workflowRuleLog modules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddWorkflowRuleLogModules
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityTypeModule
 
   # Adding system fields/ modules
   - com.facilio.modules.signup.AddSystemLookupModules
@@ -423,7 +424,7 @@ classes:
 
 
   #Adding Meter Modules
-  - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityTypeModule
+  
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddVirtualMeterTemplateModules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.GasMeterModule

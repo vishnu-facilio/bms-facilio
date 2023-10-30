@@ -625,14 +625,15 @@ public class PreventiveMaintenance extends ResourceContext {
 
 	public static enum PMAssignmentType implements FacilioIntEnum {
 		
-		ALL_FLOORS("All Floors",FacilioConstants.ContextNames.FLOOR),			//1
+		ALL_FLOORS("All Floors",FacilioConstants.ContextNames.FLOOR),				//1
 		ALL_SPACES("All Spaces",FacilioConstants.ContextNames.SPACE),
 		SPACE_CATEGORY("Space Category",FacilioConstants.ContextNames.SPACE),		//3
 		ASSET_CATEGORY("Asset Category",FacilioConstants.ContextNames.ASSET),
-		CURRENT_ASSET("Current Asset",FacilioConstants.ContextNames.ASSET),		//5
+		CURRENT_ASSET("Current Asset",FacilioConstants.ContextNames.ASSET),			//5
 		SPECIFIC_ASSET("Specific Asset",FacilioConstants.ContextNames.ASSET),
 		ALL_BUILDINGS("All Buildings",FacilioConstants.ContextNames.BUILDING),		//7
-		ALL_SITES("All Sites",FacilioConstants.ContextNames.SITE)
+		ALL_SITES("All Sites",FacilioConstants.ContextNames.SITE),
+		METER_TYPE("Meter Type",FacilioConstants.Meter.METER)						//9
 		;
 		String name;
 		String moduleName;

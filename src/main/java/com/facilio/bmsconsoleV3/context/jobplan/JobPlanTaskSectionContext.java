@@ -1,27 +1,30 @@
 package com.facilio.bmsconsoleV3.context.jobplan;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.v3.context.V3Context;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.v3.context.V3Context;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter 
 @Setter
@@ -33,12 +36,16 @@ public class JobPlanTaskSectionContext extends V3Context{
 	}
 
 	private V3AssetCategoryContext assetCategory;
+	
+	private V3UtilityTypeContext meterType;
 
     private V3SpaceCategoryContext spaceCategory;
 
     private JobPlanContext jobPlan;
     
-    private ResourceContext resource;	// for internal purpose only 
+    private ResourceContext resource;	// for internal purpose only
+    
+    private V3MeterContext meter;	// for internal purpose only
     
     List<JobPlanTasksContext> tasks;
 

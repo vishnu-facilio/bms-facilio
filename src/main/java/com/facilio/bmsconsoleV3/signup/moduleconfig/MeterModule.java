@@ -32,6 +32,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.relation.util.RelationshipWidgetUtil;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
@@ -58,10 +59,22 @@ public class MeterModule extends BaseModuleConfig{
         addModuleLocalId();
         addMeterSubModules(meterModule);
         addSystemButtons();
+        addMetertoTask(meterModule);
 
     }
 
-    public FacilioModule addMeterModule() throws Exception{
+    private void addMetertoTask(FacilioModule meterModule) throws Exception {
+		
+    	
+    	LookupField jobPlanField = (LookupField) FieldFactory.getField("meter", "Meter", "METER_ID", Constants.getModBean().getModule(FacilioConstants.ContextNames.TASK), FieldType.LOOKUP);
+    	jobPlanField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
+    	jobPlanField.setLookupModule(meterModule);
+        jobPlanField.setDefault(true);
+        Constants.getModBean().addField(jobPlanField);
+		
+	}
+
+	public FacilioModule addMeterModule() throws Exception{
 
         ModuleBean moduleBean = Constants.getModBean();
 

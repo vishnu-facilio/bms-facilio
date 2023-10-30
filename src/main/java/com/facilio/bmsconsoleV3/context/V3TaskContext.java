@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioIntEnum;
@@ -73,8 +74,18 @@ public class V3TaskContext extends V3Context {
     public void setResource(ResourceContext resource) {
         this.resource = resource;
     }
+    
+    private V3MeterContext meter;
 
-    private AssetContext asset;
+    public V3MeterContext getMeter() {
+		return meter;
+	}
+
+	public void setMeter(V3MeterContext meter) {
+		this.meter = meter;
+	}
+
+	private AssetContext asset;
     public AssetContext getAsset() {
         return asset;
     }

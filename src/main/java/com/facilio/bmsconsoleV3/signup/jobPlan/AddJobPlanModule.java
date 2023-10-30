@@ -301,7 +301,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         LookupField assetCategory = (LookupField) FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY_ID", FieldType.LOOKUP);
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
-
+        
+        LookupField meterType = (LookupField) FieldFactory.getDefaultField("meterType", "Meter Type", "METER_TYPE_ID", FieldType.LOOKUP);
+        meterType.setLookupModule(modBean.getModule(FacilioConstants.Meter.UTILITY_TYPE));
+        fields.add(meterType);
+        
         LookupField spaceCategory = (LookupField) FieldFactory.getDefaultField("spaceCategory", "Space Category", "SPACE_CATEGORY_ID", FieldType.LOOKUP);
         spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
         fields.add(spaceCategory);
@@ -349,7 +353,11 @@ public class AddJobPlanModule extends BaseModuleConfig{
         LookupField assetCategory = (LookupField) FieldFactory.getDefaultField("assetCategory", "Asset Category", "ASSET_CATEGORY_ID", FieldType.LOOKUP);
         assetCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
         fields.add(assetCategory);
-
+        
+        LookupField meterType = (LookupField) FieldFactory.getDefaultField("meterType", "Meter Type", "METER_TYPE_ID", FieldType.LOOKUP);
+        meterType.setLookupModule(modBean.getModule(FacilioConstants.Meter.UTILITY_TYPE));
+        fields.add(meterType);
+        
         LookupField spaceCategory = (LookupField) FieldFactory.getDefaultField("spaceCategory", "Space Category", "SPACE_CATEGORY_ID", FieldType.LOOKUP);
         spaceCategory.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SPACE_CATEGORY));
         fields.add(spaceCategory);
