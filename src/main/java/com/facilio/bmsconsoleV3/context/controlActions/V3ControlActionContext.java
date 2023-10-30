@@ -228,7 +228,7 @@ public class V3ControlActionContext extends V3Context {
     }
     public static enum ControlActionExecutionType implements FacilioIntEnum{
         ACTUAL("Actual"),
-        SANDBOX("Sandbox");
+        SANDBOX("Stimulated");
 
         public String getValue() {
             return this.name;

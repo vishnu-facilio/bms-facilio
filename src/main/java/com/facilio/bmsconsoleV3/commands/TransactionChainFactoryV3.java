@@ -3949,6 +3949,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getControlActionBeforeSaveChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateActionsOfControlActionCommand());
         c.addCommand(new AddCriteriaForControlActionCommand());
         c.addCommand(new SetControlActionInitialStatusCommand());
         return c;
@@ -3965,6 +3966,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getControlActionBeforeUpdateChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateActionsOfControlActionCommand());
         c.addCommand(new UnPublishControlActionOnEditCommand());
         c.addCommand(new AddCriteriaForControlActionCommand());
         c.addCommand(new AddActionCommand());
@@ -4057,6 +4059,7 @@ public class TransactionChainFactoryV3 {
     }
     public static FacilioChain getControlActionTemplateBeforeSaveChain(){
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateActionsOfControlActionTemplateCommand());
         c.addCommand(new AddCriteriaFromControlActionTemplateCommand());
         c.addCommand(new SetControlActionExecutionTypeCommand());
         c.addCommand(new MakeControlActionTemplateStatusAsInActiveCommand());

@@ -20,11 +20,13 @@ public class ActivateControlActionTemplateCommand extends FacilioCommand {
         controlActionTemplateContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getVal());
         ControlActionAPI.updateControlActionTemplate(controlActionTemplateContext);
         ControlActionAPI.addControlActionTemplateActivity(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getValue(),controlActionTemplateId);
-        Long currentTime = System.currentTimeMillis();
-        ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());
-        ZonedDateTime startTime = zonedDateTime.plusDays(1);
-        zonedDateTime = zonedDateTime.plusDays(5);
-        ControlActionAPI.generateControlActionFromTemplateWms(controlActionTemplateId,startTime.toEpochSecond()*1000,zonedDateTime.toEpochSecond()*1000);
+        if(controlActionTemplateContext.getControlActionTemplateType() != V3ControlActionTemplateContext.ControlActionTemplateType.FLAGGED_EVENT.getVal()){
+            Long currentTime = System.currentTimeMillis();
+            ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());
+            ZonedDateTime startTime = zonedDateTime.plusDays(1);
+            zonedDateTime = zonedDateTime.plusDays(5);
+            ControlActionAPI.generateControlActionFromTemplateWms(controlActionTemplateId,startTime.toEpochSecond()*1000,zonedDateTime.toEpochSecond()*1000);
+        }
         return false;
     }
 }
