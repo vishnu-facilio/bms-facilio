@@ -44,7 +44,8 @@ public class GetDashboardFolderCommand extends FacilioCommand {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getDashboardFolderFields())
                 .table(ModuleFactory.getDashboardFolderModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.EQUALS));
 
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardFolderFields());
         Criteria appCriteria = new Criteria();
@@ -55,12 +56,6 @@ public class GetDashboardFolderCommand extends FacilioCommand {
             appCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("appId"), CommonOperators.IS_EMPTY));
         }
         selectBuilder.andCriteria(appCriteria);
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.EQUALS));
-        }
-        else{
-            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.NOT_EQUALS));
-        }
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty())
         {

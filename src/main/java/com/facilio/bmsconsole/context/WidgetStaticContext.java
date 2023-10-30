@@ -121,7 +121,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 	}
 
 	@Override
-	public JSONObject widgetMobileJsonObject(boolean optimize) {
+	public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
 
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("id", getId());
@@ -134,6 +134,7 @@ public class WidgetStaticContext extends DashboardWidgetContext {
 		widgetJson.put("widgetVsWorkflowContexts", getWidgetVsWorkflowContexts());
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("title", getHeaderText());
+		widgetJson.put("sequence", index);
 		return widgetJson;
 	}
 }

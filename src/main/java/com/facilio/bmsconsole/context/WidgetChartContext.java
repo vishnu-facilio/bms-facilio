@@ -136,7 +136,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		return widgetJson;
 	}
 	@Override
-	public JSONObject widgetMobileJsonObject(boolean optimize) {
+	public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
 
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("label", getWidgetName());
@@ -147,6 +147,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		widgetJson.put("type", getWidgetType().getName());
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("title", getHeaderText());
+		widgetJson.put("sequence", index);
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {
 				widgetJson.put("reportType", ReportUtil.getReportType(getNewReportId()));

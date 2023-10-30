@@ -872,7 +872,7 @@ public class DashboardUtil {
 			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
 			JSONArray childrenArray = new JSONArray();
 			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
-				childrenArray.add(dashboardWidgetContext.widgetMobileJsonObject(optimize));
+				childrenArray.add(dashboardWidgetContext.widgetMobileJsonObject(optimize, 0));
 			}
 			JSONObject dashboardJson = new JSONObject();
 			dashboardJson.put("id", dashboard.getId());

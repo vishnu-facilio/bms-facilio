@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardListPropsContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -463,6 +464,24 @@ public class V3DashboardAction extends V3Action {
         try {
             DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(linkName, null);
             List<DashboardWidgetContext> widget_list = DashboardUtil.getDashboardWidgetsWithSection(dashboard.getDashboardWidgets());
+            if(widget_list != null && widget_list.size() > 0){
+                for(DashboardWidgetContext widgetContext: widget_list){
+                    WidgetSectionContext sectionWidget = (WidgetSectionContext) widgetContext;
+                    if(sectionWidget.getWidgets_in_section() != null && sectionWidget.getWidgets_in_section().size() > 0){
+                        List<DashboardWidgetContext> sortedArray = new ArrayList<>();
+                        Map<String, List<DashboardWidgetContext>> separateArrays = new LinkedHashMap<>();
+                        sectionWidget.getWidgets_in_section().sort(Comparator.comparing(DashboardWidgetContext::getyPosition));
+                        for (DashboardWidgetContext obj : sectionWidget.getWidgets_in_section()) {
+                            separateArrays.computeIfAbsent(obj.getyPosition().toString(), k -> new ArrayList<>()).add(obj);
+                        }
+                        for (Object yVal: separateArrays.keySet()) {
+                            separateArrays.get(yVal).sort(Comparator.comparing(DashboardWidgetContext::getxPosition));
+                            sortedArray.addAll(separateArrays.get(yVal));
+                        }
+                        sectionWidget.setWidgets_in_section(sortedArray);
+                    }
+                }
+            }
             if (widget_list != null) {
                 dashboard.setDashboardWidgets(widget_list);
             }

@@ -294,7 +294,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         return widgetJson;
     }
     @Override
-    public JSONObject widgetMobileJsonObject(boolean optimize) {
+    public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("id", getId());
@@ -303,6 +303,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         widgetJson.put("type", getWidgetType().getName());
         widgetJson.put("dashboardFilterId", getDashboardFilterId());
         widgetJson.put("title", getHeaderText());
+        widgetJson.put("sequence", index);
         return widgetJson;
     }
 }

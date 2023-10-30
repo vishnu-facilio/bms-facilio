@@ -87,7 +87,7 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		return widgetJson;
 	}
 	@Override
-	public JSONObject widgetMobileJsonObject(boolean optimize) {
+	public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
 
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("label", getWidgetName());
@@ -99,6 +99,7 @@ public class WidgetListViewContext extends DashboardWidgetContext {
 		widgetJson.put("moduleName", getModuleName());
 		widgetJson.put("viewName", getViewName());
 		widgetJson.put("refresh_interval", getDataRefreshIntervel());
+		widgetJson.put("sequence", index);
 
 		return widgetJson;
 	}

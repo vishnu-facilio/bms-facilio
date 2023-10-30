@@ -86,7 +86,7 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 	}
 
 	@Override
-	public JSONObject widgetMobileJsonObject(boolean optimize) {
+	public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
 
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("label", getWidgetName());
@@ -97,6 +97,7 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 		widgetJson.put("type", getWidgetType().getName());
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("link_name", getLinkName());
+		widgetJson.put("sequence", index);
 		if (graphicsOptions != null) {
 			widgetJson.put("graphicsOptions", graphicsOptions);
 		}
