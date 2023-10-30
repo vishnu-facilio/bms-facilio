@@ -30,6 +30,7 @@ public class ImportConstants{
     public static final String UPDATE_RECORDS_COUNT = "updateRecordsCount";
     public static final String SKIP_RECORDS_COUNT = "skipRecordsCount";
     public static final String IMPORT_FIELDS="importFields";
+    public static final String MAPPED_FIELDS="importFields";
     public static final String BATCH_COLLECT_MAP= "batchCollectMap";
     public static final String RELATED_FIELDS_MAP = "relatedFieldsMapping";
     public static final String RELATION_MAPPING_VS_RELATION_MAP = "relationMappingVsRelationMap";
@@ -59,11 +60,11 @@ public class ImportConstants{
     public static Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>> getUpdateRecordMap(Context context){
         return (Map<String, List<Pair<Long,ModuleBaseWithCustomFields>>>)context.get(UPDATE_RECORD_MAP);
     }
-    public static void setOldRecordsMap(Context context, Map<Long, V3Context> oldRecordsMap) {
+    public static void setOldRecordsMap(Context context, Map<Long, ModuleBaseWithCustomFields> oldRecordsMap) {
         context.put(OLD_RECORDS_MAP, oldRecordsMap);
     }
-    public static Map<Long, V3Context> getOldRecordsMap(Context context) {
-       return  (Map<Long, V3Context>)context.get(OLD_RECORDS_MAP);
+    public static Map<Long, ModuleBaseWithCustomFields> getOldRecordsMap(Context context) {
+       return  (Map<Long, ModuleBaseWithCustomFields>)context.get(OLD_RECORDS_MAP);
     }
     public static void setLogIdVsRowContextMap(Context context,Map<Long, ImportRowContext> logIdVsRowContext){
         context.put(LOGID_VS_ROW_CONTEXT_MAP,logIdVsRowContext);
@@ -94,6 +95,12 @@ public class ImportConstants{
     }
     public static List<FacilioField> getImportFields(Context context){
         return (List<FacilioField>) context.get(IMPORT_FIELDS);
+    }
+    public static void setMappedFields(Context context, List<FacilioField> fields){
+        context.put(MAPPED_FIELDS,fields);
+    }
+    public static List<FacilioField> getMappedFields(Context context){
+        return (List<FacilioField>) context.get(MAPPED_FIELDS);
     }
     public static  Map<String,Object> getBatchCollectMap(Context context){
         return (Map<String,Object>) context.get(ImportConstants.BATCH_COLLECT_MAP);

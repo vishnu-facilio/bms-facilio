@@ -10,9 +10,9 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.multiImport.constants.ImportConstants;
 import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
@@ -99,7 +99,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
                 if (dbRecord == null) { // add only when the record is not found in database.
                     newRawInputs.add(datum);
                     importRowContext.setRowStatus(ImportRowContext.RowStatus.ADDED);
@@ -125,12 +125,12 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
             List<FacilioField> dbSelectableFields = getDBSelectableFields(setting);
 
-            Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
+            Map<Long, ModuleBaseWithCustomFields> oldRecords = new LinkedHashMap<>();
             for (Pair<Long, Map<String, Object>> datum : rawInputs) {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record); //only select id field from dp for old record
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record); //only select id field from dp for old record
                 if (dbRecord == null) {// Mark error if the record is not found id db.
                     importRowContext.setErrorOccurredRow(true);
                     importRowContext.setErrorMessage("Record is not found to update");
@@ -165,7 +165,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
             List<Pair<Long, Map<String, Object>>> updateInputs = new ArrayList<>();
             List<Pair<Long, Map<String, Object>>> newCreateInputs = new ArrayList<>();
-            Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
+            Map<Long,ModuleBaseWithCustomFields> oldRecords = new LinkedHashMap<>();
 
             List<FacilioField> dbSelectableFields = getDBSelectableFields(setting);
 
@@ -173,7 +173,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
                 if (dbRecord == null) { // if not found in dp, add the record
                     if(validateRow(importRowContext)){ // check mandatory fields value
                         newCreateInputs.add(datum);
@@ -192,7 +192,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
             }
 
 
-            context.put(Constants.PATCH_FIELDS,mappedFields);
+            context.put(Constants.PATCH_FIELDS,getPatchFields());
 
             ImportConstants.setInsertRecords(context, newCreateInputs);
             ImportConstants.setUpdateRecords(context,updateInputs);
@@ -215,7 +215,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         return fields;
     }
 
-    private V3Context getDBRecord(FacilioModule module, List<FacilioField> selectableFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
+    private ModuleBaseWithCustomFields getDBRecord(FacilioModule module, List<FacilioField> selectableFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
         SelectRecordsBuilder<V3Context> builder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .select(selectableFields)
@@ -226,7 +226,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         if (!criteria.isEmpty()) {
             builder.andCriteria(criteria);
         }
-        V3Context record = builder.fetchFirst();
+        ModuleBaseWithCustomFields record = builder.fetchFirst();
 
         return record;
     }
@@ -309,6 +309,23 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
                 break;
         }
+        addOneLevelLookupFieldsIfExists(dbSelectableFields);
         return dbSelectableFields;
+    }
+    private void addOneLevelLookupFieldsIfExists(List<FacilioField> dbSelectableFields){
+        List<ImportFieldMappingContext> oneLevelFieldMappings = typeVsFieldMappings.get(ImportFieldMappingType.ONE_LEVEL);
+        if(CollectionUtils.isEmpty(oneLevelFieldMappings)){
+            return;
+        }
+        Set<Long> parentLookupFieldIds = oneLevelFieldMappings.stream().map(f -> f.getParentLookupFieldId()).collect(Collectors.toSet());
+        dbSelectableFields.addAll(parentLookupFieldIds.stream()
+                .map(parentLookupFieldId -> fieldIdVsFacilioFieldMap.get(parentLookupFieldId))
+                .collect(Collectors.toList()));
+    }
+    private List<FacilioField> getPatchFields(){
+        List<FacilioField> patchFields = new ArrayList<>();
+        patchFields.addAll(mappedFields);
+        addOneLevelLookupFieldsIfExists(patchFields);
+        return patchFields;
     }
 }

@@ -58,6 +58,7 @@ public class LoadLookupHelper {
     Map<BaseLookupField, Set<String>> sameModuleRecordCacheLookupMap = new HashMap<>();
     @Builder.Default
     Set<String> skipLookupNotFoundExceptionFields = new HashSet<>();
+    boolean isOneLevel;
 
     public void loadLookupMap(List<ImportRowContext> rows) throws Exception {
         lookupMap = new HashMap<>();
@@ -84,7 +85,7 @@ public class LoadLookupHelper {
                 BaseLookupField lookupField = mapEntry.getKey();
                 Map<String, Map<String, Object>> numberIdPairList = mapEntry.getValue();
 
-                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,lookupField);
+                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,lookupField,isOneLevel);
 
                 Object cellValue = rowVal.get(sheetColumnName);
                 if (isEmpty(cellValue)) {
@@ -203,7 +204,8 @@ public class LoadLookupHelper {
         for (int i = 1; i < uniqueFields.size(); i++) {
             FacilioField uniqueField = uniqueFields.get(i);
             String uniqueFieldName = uniqueField.getName();
-            String uniqueFieldSheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,uniqueField);
+            String uniqueFieldSheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,
+                    fieldNameVsSheetColumnNameMap,uniqueField,isOneLevel);
 
             if(uniqueFieldSheetColumnName == null && uniqueFieldName!=null && uniqueFieldName.equals("site")){
                 uniqueFieldSheetColumnName = fieldNameVsSheetColumnNameMap.get("siteId");
@@ -355,7 +357,7 @@ public class LoadLookupHelper {
         String lookupModuleName = lookupField.getLookupModule().getName();
 
 
-        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,lookupField);
+        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,lookupField,isOneLevel);
         ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
         LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
 
@@ -479,7 +481,8 @@ public class LoadLookupHelper {
     }
     public String getLookupIdentifierData(BaseLookupField lookupField, String data) throws Exception{
         String lookupFieldName = lookupField.getName();
-        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,lookupField);
+        String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,
+                fieldNameVsSheetColumnNameMap,lookupField,isOneLevel);
         ImportFieldMappingContext fieldMappingContext = sheetColumnNameVsFieldMapping.get(sheetColumnName);
         LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
 
@@ -523,7 +526,8 @@ public class LoadLookupHelper {
             List<FacilioField> uniqueFields = getImportLookupUniqueFields(lookupField);
             try{
                 FacilioField primaryField = uniqueFields.get(0);
-                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,primaryField);
+                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,
+                        fieldNameVsSheetColumnNameMap,primaryField,isOneLevel);
 
                 Object cellValue = rowVal.get(sheetColumnName);
                 if (isEmpty(cellValue)) {
@@ -552,7 +556,8 @@ public class LoadLookupHelper {
             List<FacilioField> uniqueFields = getImportLookupUniqueFields(lookupField);
             try{
                 FacilioField firstField = uniqueFields.get(0);
-                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,firstField);
+                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,
+                        fieldNameVsSheetColumnNameMap,firstField,isOneLevel);
                 Object cellValue = rowVal.get(sheetColumnName);
                 if (isEmpty(cellValue)) {
                     continue;
@@ -578,7 +583,8 @@ public class LoadLookupHelper {
         Map<String, Object> rowVal = rowContext.getRawRecordMap(); // un processed prop
         for (BaseLookupField baseLookupField : sameModuleRecordCacheLookupMap.keySet()){
             try{
-                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,fieldNameVsSheetColumnNameMap,baseLookupField);
+                String sheetColumnName = MultiImportApi.getSheetColumnNameFromFacilioField(fieldIdVsSheetColumnNameMap,
+                        fieldNameVsSheetColumnNameMap,baseLookupField,isOneLevel);
 
                 Object cellValue = rowVal.get(sheetColumnName);
                 if (isEmpty(cellValue)) {

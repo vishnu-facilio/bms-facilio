@@ -1,7 +1,7 @@
 package com.facilio.multiImport.config;
 
 
-import com.facilio.v3.context.V3Context;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ImportConfig {
     private Class beanClass;
@@ -52,7 +52,7 @@ public class ImportConfig {
     public static class ImportConfigBuilder {
         private Class beanClass;
         private ImportConfigBuilder(){}
-        public ImportConfigBuilder(Class<? extends V3Context> beanClass){
+        public ImportConfigBuilder(Class<? extends ModuleBaseWithCustomFields> beanClass){
             this.beanClass=beanClass;
         }
         UploadHandler uploadHandler;

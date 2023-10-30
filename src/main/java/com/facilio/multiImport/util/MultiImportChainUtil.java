@@ -10,6 +10,7 @@ import com.facilio.multiImport.annotations.ImportModule;
 import com.facilio.multiImport.annotations.RowFunction;
 import com.facilio.multiImport.command.*;
 import com.facilio.multiImport.config.*;
+import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.commands.AddMultiSelectFieldsCommand;
@@ -166,6 +167,56 @@ public class MultiImportChainUtil {
         context.put(MultiImportApi.ImportProcessConstants.SKIP_LOOKUP_NOT_FOUND_EXCEPTION,skipLookupNotFoundExceptionFields);
         return chain;
     }
+
+    public static FacilioChain getOneLevelImportProcessChain(String moduleName, List<ImportFieldMappingContext> fieldMappingList) throws Exception {
+        ImportConfig importConfig = getMultiImportConfig(moduleName);
+
+        Command beforeImportCommand = null;
+        Command afterImportCommand = null;
+        Command afterDataProcessCommand = null;
+
+
+        RowFunction beforeProcessRowFunction = null;
+        RowFunction afterProcessRowFunction = null;
+        Map<String, List<String>> lookupUniqueFieldsMap = null;
+        Map<String,List<String>> loadLookUpExtraSelectFields = null;
+        Set<String> batchCollectFieldNames = null;
+        Set<String> skipLookupNotFoundExceptionFields = null;
+
+        if (importConfig != null) {
+            ImportHandler importHandler = importConfig.getImportHandler();
+            if (importHandler != null) {
+                beforeImportCommand = importHandler.getBeforeImportCommand();
+                afterImportCommand = importHandler.getAfterImportCommand();
+                afterDataProcessCommand = importHandler.getAfterDataProcessCommand();
+                beforeProcessRowFunction = importHandler.getBeforeProcessRowFunction();
+                afterProcessRowFunction = importHandler.getAfterProcessRowFunction();
+                lookupUniqueFieldsMap = importHandler.getLookupUniqueFieldsMap();
+                loadLookUpExtraSelectFields = importHandler.getLoadLookUpExtraSelectFields();
+                batchCollectFieldNames = importHandler.getBatchCollectFieldNames();
+                skipLookupNotFoundExceptionFields = importHandler.getSkipLookupNotFoundExceptionFields();
+            }
+        }
+
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new OneLevelImportInitCommand());
+        addIfNotNull(chain, beforeImportCommand);
+
+        chain.addCommand(new OneLevelMultiImportProcessCommand(moduleName,fieldMappingList));
+        chain.addCommand(new FilterAndImportOneLevelRecordsCommand());
+
+        addIfNotNull(chain,afterDataProcessCommand);
+        addIfNotNull(chain, afterImportCommand);
+
+        FacilioContext context = chain.getContext();
+        context.put(MultiImportApi.ImportProcessConstants.BEFORE_PROCESS_ROW_FUNCTION, beforeProcessRowFunction);
+        context.put(MultiImportApi.ImportProcessConstants.AFTER_PROCESS_ROW_FUNCTION, afterProcessRowFunction);
+        context.put(MultiImportApi.ImportProcessConstants.LOOKUP_UNIQUE_FIELDS_MAP, lookupUniqueFieldsMap);
+        context.put(MultiImportApi.ImportProcessConstants.LOAD_LOOK_UP_EXTRA_SELECT_FIELDS_MAP,loadLookUpExtraSelectFields);
+        context.put(MultiImportApi.ImportProcessConstants.BATCH_COLLECT_FIELD_NAMES,batchCollectFieldNames);
+        context.put(MultiImportApi.ImportProcessConstants.SKIP_LOOKUP_NOT_FOUND_EXCEPTION,skipLookupNotFoundExceptionFields);
+        return chain;
+    }
     public static FacilioChain getImportChain(String moduleName, MultiImportSetting setting) throws Exception {
         FacilioChain chain = getDefaultChain();
         if(useV3Import()){
@@ -173,7 +224,7 @@ public class MultiImportChainUtil {
         }else{
             chain.addCommand(new V4FilterMultiImportDataCommand());
         }
-        addCreateAndPatchChainsBySettings(chain,setting,moduleName);
+        addCreateAndPatchChainsBySettings(chain,setting,moduleName,false);
         return chain;
     }
     private static void addIfNotNull(FacilioChain chain, Command command) {
@@ -181,8 +232,7 @@ public class MultiImportChainUtil {
             chain.addCommand(command);
         }
     }
-
-    public static FacilioChain getCreateChain(String moduleName) throws Exception {
+    public static FacilioChain getCreateChain(String moduleName,boolean isOneLevelImport) throws Exception {
         ImportConfig importConfig = getMultiImportConfig(moduleName);
         FacilioModule module = ChainUtil.getModule(moduleName);
 
@@ -209,15 +259,20 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, beforeSaveCommand);
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
         transactionChain.addCommand(new ValidateRelationshipConstraints(false));
+        if(!isOneLevelImport){
+            transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(false));
+        }
         transactionChain.addCommand(new ImportSaveCommand(module));
-        transactionChain.addCommand(new AssociateRelationshipCommand(false));
+        if(!isOneLevelImport){
+            transactionChain.addCommand(new AssociateRelationshipCommand(false));
+        }
         addIfNotNull(transactionChain, afterSaveCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         return transactionChain;
     }
 
-    public static FacilioChain getPatchChain(String moduleName) throws Exception {
+    public static FacilioChain getPatchChain(String moduleName,boolean isOneLevelImport) throws Exception {
         ImportConfig importConfig = getMultiImportConfig(moduleName);
         FacilioModule module = ChainUtil.getModule(moduleName);
 
@@ -244,21 +299,26 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, beforeUpdateCommand);
         transactionChain.addCommand(new SetSupplementsForImportUpdateCommand());
         transactionChain.addCommand(new ValidateRelationshipConstraints(true));
+        if(!isOneLevelImport){
+            transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(true));
+        }
         transactionChain.addCommand(new ImportUpdateCommand(module));
-        transactionChain.addCommand(new AssociateRelationshipCommand(true));
+        if(!isOneLevelImport){
+            transactionChain.addCommand(new AssociateRelationshipCommand(true));
+        }
         addIfNotNull(transactionChain, afterUpdateCommand);
         addIfNotNull(transactionChain, afterTransactionCommand);
         return transactionChain;
     }
 
-    public static void addCreateAndPatchChainsBySettings(FacilioChain chain,MultiImportSetting setting,String moduleName) throws Exception {
+    public static void addCreateAndPatchChainsBySettings(FacilioChain chain,MultiImportSetting setting,String moduleName,boolean isOneLevelImport) throws Exception {
         if(setting == MultiImportSetting.INSERT || setting == MultiImportSetting.INSERT_SKIP){
-            chain.addCommand(getCreateChain(moduleName));
+            chain.addCommand(getCreateChain(moduleName,isOneLevelImport));
         }else if(setting == MultiImportSetting.UPDATE || setting == MultiImportSetting.UPDATE_NOT_NULL){
-            chain.addCommand(getPatchChain(moduleName));
+            chain.addCommand(getPatchChain(moduleName,isOneLevelImport));
         } else if ( setting == MultiImportSetting.BOTH || setting == MultiImportSetting.BOTH_NOT_NULL) {
-            chain.addCommand(getCreateChain(moduleName));
-            chain.addCommand(getPatchChain(moduleName));
+            chain.addCommand(getCreateChain(moduleName,isOneLevelImport));
+            chain.addCommand(getPatchChain(moduleName,isOneLevelImport));
         }
     }
     public static FacilioChain getDownloadErrorRecordsChain(){

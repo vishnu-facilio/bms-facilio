@@ -1,9 +1,11 @@
 package com.facilio.multiImport;
 
+import com.facilio.bmsconsole.context.LocationContext;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
+import com.facilio.bmsconsoleV3.commands.SetLocationNameBeforeImportCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.asset.RemoveAssetExtendedModulesFromRecordMap;
 import com.facilio.bmsconsoleV3.commands.asset.multi_import.AssetCategoryAdditionInExtendModuleV3ImportCommand;
@@ -16,6 +18,11 @@ import com.facilio.bmsconsoleV3.commands.tenant.multi_import.AddTenantUserImport
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.BeforeTenantImportProcessCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.UpdateTenantUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.AddVendorUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.BeforeVendorImportProcessCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.UpdateVendorUserImportCommand;
+import com.facilio.bmsconsoleV3.commands.vendor.multi_import.ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.AddVendorUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.BeforeVendorImportProcessCommand;
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.UpdateVendorUserImportCommand;
@@ -128,7 +135,7 @@ public class MultiImportConfigurations {
                 .done()
                 .build();
     }
-        
+
     @ImportModule(FacilioConstants.Meter.METER)
     public static Supplier<ImportConfig> getMeterImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3MeterContext.class)
@@ -190,6 +197,18 @@ public class MultiImportConfigurations {
                 .updateHandler()
                 .beforeUpdateCommand(new ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand())
                 .afterUpadteCommand(new UpdateVendorUserImportCommand())
+                .done()
+                .build();
+
+
+    }
+    @ImportModule(FacilioConstants.ContextNames.LOCATION)
+    public static Supplier<ImportConfig> getLocationImportConfig(){
+        return () -> new ImportConfig.ImportConfigBuilder(LocationContext.class)
+                .importHandler()
+                .done()
+                .createHandler()
+                .beforeSaveCommand(new SetLocationNameBeforeImportCommand())
                 .done()
                 .build();
 

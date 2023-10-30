@@ -26,7 +26,7 @@ public class BulkPatchInit extends FacilioCommand {
         }
 
         Collection<Pair<Long, Map<String, Object>>> updateRecords = ImportConstants.getUpdateRecords(context);
-        Map<Long,V3Context> logIdVsOldRecord = ImportConstants.getOldRecordsMap(context);
+        Map<Long,ModuleBaseWithCustomFields> logIdVsOldRecord = ImportConstants.getOldRecordsMap(context);
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
         String moduleName = Constants.getModuleName(context);
 
@@ -52,7 +52,7 @@ public class BulkPatchInit extends FacilioCommand {
 
             Long logId = rawObj.getLeft();
             Map<String, Object> rawRecord = rawObj.getRight();
-            V3Context oldRecord = logIdVsOldRecord.get(logId);
+            ModuleBaseWithCustomFields oldRecord = logIdVsOldRecord.get(logId);
             Map<String, Object> oldRecordJson = FieldUtil.getAsJSON(oldRecord);
 
             Set<String> keys = rawRecord.keySet();

@@ -807,6 +807,9 @@ public class MultiImportApi {
     }
 
     public static boolean isFieldMappingPresent(ImportFileSheetsContext importSheet, FacilioField field) {
+          return isFieldMappingPresent(importSheet,field,false);
+    }
+    public static boolean isFieldMappingPresent(ImportFileSheetsContext importSheet, FacilioField field,boolean isOneLevel) {
         Map<Long, String> fieldIdVsSheetColumnNameMap = importSheet.getFieldIdVsSheetColumnNameMap();
         Map<String, String> fieldNameVsSheetColumnNameMap = importSheet.getFieldNameVsSheetColumnNameMap();
 
@@ -819,13 +822,22 @@ public class MultiImportApi {
         return true;
     }
 
-    public static String getSheetColumnNameFromFacilioField(ImportFileSheetsContext importSheet, FacilioField field) {
+    public static String getSheetColumnNameFromFacilioField(ImportFileSheetsContext importSheet,
+                                                            FacilioField field) {
+        return getSheetColumnNameFromFacilioField(importSheet,field,false);
+    }
+    public static String getSheetColumnNameFromFacilioField(ImportFileSheetsContext importSheet,
+                                                            FacilioField field,boolean isOneLevel) {
         Map<Long, String> fieldIdVsSheetColumnNameMap = importSheet.getFieldIdVsSheetColumnNameMap();
         Map<String, String> fieldNameVsSheetColumnNameMap = importSheet.getFieldNameVsSheetColumnNameMap();
 
 
         Long fieldId = field.getFieldId();
         String fieldName = field.getName();
+
+        if(isOneLevel){
+            fieldName = fieldName +"."+field.getModule().getName();
+        }
 
         String sheetColumnName = null;
         if (fieldIdVsSheetColumnNameMap != null && fieldId!=-1l && fieldIdVsSheetColumnNameMap.containsKey(fieldId)) {
@@ -837,9 +849,13 @@ public class MultiImportApi {
     }
     public static String getSheetColumnNameFromFacilioField(Map<Long, String> fieldIdVsSheetColumnNameMap,
                                                             Map<String, String> fieldNameVsSheetColumnNameMap,
-                                                            FacilioField field) {
+                                                            FacilioField field,boolean isOneLevel) {
         Long fieldId = field.getFieldId();
         String fieldName = field.getName();
+
+        if(isOneLevel){
+            fieldName = fieldName +"."+field.getModule().getName();
+        }
 
         if (fieldIdVsSheetColumnNameMap != null && fieldId!=-1l && fieldIdVsSheetColumnNameMap.containsKey(fieldId)) {
             return fieldIdVsSheetColumnNameMap.get(fieldId);
@@ -956,9 +972,14 @@ public class MultiImportApi {
             }
         }
     }
+    public static List<FacilioField> getImportFields(String moduleName) throws Exception{
+        return getImportFields(null,moduleName);
+    }
     public static List<FacilioField> getImportFields(Context context, String moduleName) throws Exception {
-
-        List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+        List<FacilioField> fields = null;
+        if(context!=null){
+          fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+        }
         if (org.apache.commons.collections.CollectionUtils.isEmpty(fields)) {
             fields = getFields(moduleName);
         }
@@ -977,8 +998,13 @@ public class MultiImportApi {
         if(fieldIdVsFacilioFieldMap != null && fieldId!=-1l && fieldIdVsFacilioFieldMap.containsKey(fieldId)){
             return fieldIdVsFacilioFieldMap.get(fieldId);
         }
-        if(StringUtils.isNotEmpty(fieldName) && fieldNameVsFacilioFieldMap.containsKey(fieldName)){
-            return fieldNameVsFacilioFieldMap.get(fieldName);
+        if(StringUtils.isNotEmpty(fieldName)){
+            if(fieldName.contains(".")){
+                fieldName = fieldName.split(".")[1];
+            }
+            if(fieldNameVsFacilioFieldMap.containsKey(fieldName)){
+                return fieldNameVsFacilioFieldMap.get(fieldName);
+            }
         }
         return null;
     }
@@ -1288,5 +1314,6 @@ public class MultiImportApi {
         public static final String PARSED_PROPS = "parsedProps";
         public static final String DATE_FORMATS = "dateFormat";
         public static final String TIME_STAMP_STRING = "timeStampString";
+        public static final String LOG_ID_VS_OLD_RECORD_MAP = "logIdVsOldRecordMap";
     }
 }

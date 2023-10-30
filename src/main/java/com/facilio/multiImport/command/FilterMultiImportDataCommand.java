@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -86,7 +87,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
                 if (dbRecord == null) { // add only when the record is not found in database.
                     newRawInputs.add(datum);
                     importRowContext.setRowStatus(ImportRowContext.RowStatus.ADDED);
@@ -112,12 +113,12 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             List<FacilioField> dbSelectableFields = getDBSelectableFields(setting,context);
 
-            Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
+            Map<Long, ModuleBaseWithCustomFields> oldRecords = new LinkedHashMap<>();
             for (Pair<Long, Map<String, Object>> datum : rawInputs) {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record); //only select id field from dp for old record
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record); //only select id field from dp for old record
                 if (dbRecord == null) {// Mark error if the record is not found id db.
                     importRowContext.setErrorOccurredRow(true);
                     importRowContext.setErrorMessage("Record is not found to update");
@@ -153,7 +154,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
 
             List<Pair<Long, Map<String, Object>>> updateInputs = new ArrayList<>();
             List<Pair<Long, Map<String, Object>>> newCreateInputs = new ArrayList<>();
-            Map<Long,V3Context> oldRecords = new LinkedHashMap<>();
+            Map<Long,ModuleBaseWithCustomFields> oldRecords = new LinkedHashMap<>();
 
             List<FacilioField> dbSelectableFields = getDBSelectableFields(setting,context);
 
@@ -161,7 +162,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
                 long logId = datum.getLeft();
                 Map<String,Object> record = datum.getRight();
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
-                V3Context dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
+                ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
                 if (dbRecord == null) { // if not found in dp, add the record
                     if(validateRow(importRowContext)){ // check mandatory fields value
                         newCreateInputs.add(datum);
@@ -223,7 +224,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
         return getFieldsBySheetColumnNames(importSheet,sheetColumnNames,context);
     }
 
-    private V3Context getDBRecord(FacilioModule module, List<FacilioField> selectableFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
+    private ModuleBaseWithCustomFields getDBRecord(FacilioModule module, List<FacilioField> selectableFields, List<FacilioField> criteriaFields, Map<String, Object> datum) throws Exception {
         SelectRecordsBuilder<V3Context> builder = new SelectRecordsBuilder<V3Context>()
                 .module(module)
                 .select(selectableFields)
@@ -241,7 +242,7 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
         if (!criteria.isEmpty()) {
             builder.andCriteria(criteria);
         }
-        V3Context record = builder.fetchFirst();
+        ModuleBaseWithCustomFields record = builder.fetchFirst();
 
         return record;
     }
