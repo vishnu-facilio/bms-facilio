@@ -4,7 +4,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.WidgetAPI;
+import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -32,7 +37,7 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
                 .addTab("controlactiontemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlactiontemplatesummaryfields", null, null)
-                .addWidget("controlactiontemplatesummaryfieldswidget", "Control Action", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , app))
+                .addWidget("controlactiontemplatesummaryfieldswidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , app, true))
                 .widgetDone()
                 .sectionDone()
                 .addSection("controlactiontemplateControlfields", null, null)
@@ -81,24 +86,38 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
         widgetDetails.put("criteriaFieldName" , criteriaFieldName);
         return widgetDetails;
     }
-    public static JSONObject getSummaryWidgetDetails(String moduleName , ApplicationContext app) throws Exception {
+    public static Criteria getScheduledTypeCriteria() {
+        Criteria criteria = new Criteria();
+        Condition controlActionTemplateTypeCondition = new Condition();
+        controlActionTemplateTypeCondition.setFieldName("controlActionTemplateType");
+        controlActionTemplateTypeCondition.setColumnName("Control_Action_Templates.CONTROL_ACTION_TEMPLATE_TYPE");
+        controlActionTemplateTypeCondition.setOperator(EnumOperators.IS);
+        controlActionTemplateTypeCondition.setValue(String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateType.SCHEDULED.getVal()));
+        controlActionTemplateTypeCondition.setModuleName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        criteria.addAndCondition(controlActionTemplateTypeCondition);
+        return criteria;
+    }
+    public static JSONObject getSummaryWidgetDetails(String moduleName , ApplicationContext app , Boolean isScheduledPage) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         FacilioField nameField = moduleBean.getField("name", moduleName);
         FacilioField controlActionType = moduleBean.getField("controlActionType", moduleName);
+        FacilioField controlActionTemplateType = moduleBean.getField("controlActionTemplateType", moduleName);
         FacilioField controlActionExecutionType = moduleBean.getField("controlActionExecutionType", moduleName);
         FacilioField calendar = moduleBean.getField("calendar",moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, controlActionExecutionType, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controlActionTemplateType, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, controlActionType, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, calendar, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
+        if(isScheduledPage) {
+            addSummaryFieldInWidgetGroup(widgetGroup, calendar, 1, 4, 1);
+            addSummaryFieldInWidgetGroup(widgetGroup, controlActionExecutionType, 2, 1, 1);
+        }
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 3, 1, 4);
 
         widgetGroup.setName("controlActionTemplateModuleDetails");
-        widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();

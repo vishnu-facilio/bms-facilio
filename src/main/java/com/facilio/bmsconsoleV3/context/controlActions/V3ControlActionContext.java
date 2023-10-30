@@ -170,7 +170,7 @@ public class V3ControlActionContext extends V3Context {
         return -1;
     }
     public static enum ControlActionStatus implements FacilioIntEnum{
-        UNPUBLISHED("Un Published"),
+        UNPUBLISHED("Unpublished"),
         PUBLISHED("Published"),
         WAITING_FOR_FIRST_LEVEL_APPROVAL("Waiting For First Level Approval"),
         FIRST_LEVEL_APPROVED("First Level Approved"),

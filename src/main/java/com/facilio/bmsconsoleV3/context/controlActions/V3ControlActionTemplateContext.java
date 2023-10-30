@@ -71,7 +71,7 @@ public class V3ControlActionTemplateContext extends V3ControlActionContext{
         return -1;
     }
     public static enum ControlActionTemplateType implements FacilioIntEnum{
-        NOT_SCHEDULED("Un Scheduled"),
+        NOT_SCHEDULED("Unscheduled"),
         SCHEDULED("Scheduled"),
         FLAGGED_EVENT("Flagged Event")
         ;

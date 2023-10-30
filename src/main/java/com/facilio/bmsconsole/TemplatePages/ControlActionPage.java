@@ -33,7 +33,7 @@ public class ControlActionPage implements TemplatePageFactory{
                 .addTab("controlactioncommands", "Command Results", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlactionControlfields", null, null)
-                .addWidget("controlactionCommandswidget", "List of Commands", PageWidget.WidgetType.COMMANDS_LIST_VIEW, "webCommandsListView_6_12", 0, 0, null,null)
+                .addWidget("controlactionCommandswidget", "Commands", PageWidget.WidgetType.COMMANDS_LIST_VIEW, "webCommandsListView_6_12", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("notesandcomments",null,null)
@@ -45,7 +45,7 @@ public class ControlActionPage implements TemplatePageFactory{
                 .addTab("controlactionbasicdetails", "Actions", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("controlactionsummaryfields", null, null)
-                .addWidget("controlactionsummaryfieldswidget", "Control Action", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME , app))
+                .addWidget("controlactionsummaryfieldswidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME , app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("controlactionControlfields", null, null)
@@ -101,7 +101,6 @@ public class ControlActionPage implements TemplatePageFactory{
         addSummaryFieldInWidgetGroup(widgetGroup, description, 3, 1, 4);
 
         widgetGroup.setName("controlActionModuleDetails");
-        widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();

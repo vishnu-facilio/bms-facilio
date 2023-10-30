@@ -98,9 +98,9 @@ public class AddControlActionTemplateModule extends SignUpData {
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
         SystemButtonRuleContext activateControlActionTemplate = new SystemButtonRuleContext();
-        activateControlActionTemplate.setName("Activate");
+        activateControlActionTemplate.setName("Publish");
         activateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        activateControlActionTemplate.setIdentifier("activate");
+        activateControlActionTemplate.setIdentifier("publish");
         activateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria  activationCriteria = new Criteria();
         activationCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.IN_ACTIVE.getIndex()), EnumOperators.IS));
@@ -108,9 +108,9 @@ public class AddControlActionTemplateModule extends SignUpData {
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,activateControlActionTemplate);
 
         SystemButtonRuleContext  inactivateControlActionTemplate = new SystemButtonRuleContext();
-        inactivateControlActionTemplate.setName("In Activate");
+        inactivateControlActionTemplate.setName("Unpublish");
         inactivateControlActionTemplate.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        inactivateControlActionTemplate.setIdentifier("inActivate");
+        inactivateControlActionTemplate.setIdentifier("unPublish");
         inactivateControlActionTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria unPublishCriteria = new Criteria();
         unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getIndex()), EnumOperators.IS));
