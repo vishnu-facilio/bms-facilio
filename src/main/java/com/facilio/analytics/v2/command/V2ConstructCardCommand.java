@@ -24,7 +24,6 @@ import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.sun.javafx.print.Units;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
