@@ -55,7 +55,15 @@ public class AddCVCommand extends FacilioCommand {
 				TimelineViewContext timelineView = (TimelineViewContext) view;
 				FacilioField field = modBean.getField(timelineView.getGroupByFieldId());
 				if(field instanceof LookupField) {
-					updateConditionField(modBean, ((LookupField)field).getLookupModule().getName(), timelineView.getGroupCriteria());
+					String lookupModuleName = null;
+					long childModuleId = timelineView.getGroupByChildModuleId();
+					if(childModuleId > 0) {
+						FacilioModule childModule = modBean.getModule(childModuleId);
+						lookupModuleName = childModule.getName();
+					} else  {
+						lookupModuleName = ((LookupField)field).getLookupModule().getName();
+					}
+					updateConditionField(modBean, lookupModuleName, timelineView.getGroupCriteria());
 				}
 				else if(field instanceof EnumField) {
 					Criteria groupCriteria = timelineView.getGroupCriteria();

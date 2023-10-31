@@ -7660,6 +7660,13 @@
 
 	</package>
 
+	<package name="extendedModules" namespace="/api/v2/extended"  extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+				method="getExtendedModules">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
+
 	<package name="customPageAPI" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="summaryFieldWidget"
 				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getMainSummaryWidget">

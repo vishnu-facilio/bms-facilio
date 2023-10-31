@@ -30,6 +30,7 @@ import com.facilio.v3.util.V3Util;
 import com.facilio.ims.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -64,8 +65,21 @@ public class TimelineAction extends RESTAPIHandler {
 			throw new IllegalArgumentException("Group field not configured for the view");
 		}
 		if(groupByField instanceof LookupField) {
+			FacilioModule module = null;
 			LookupField lookupField = (LookupField) timelineViewObj.getGroupByField();
-			setModuleName(lookupField.getLookupModule().getName());
+			FacilioModule lookupModule = lookupField.getLookupModule();
+			long groupByChildModuleId = timelineViewObj.getGroupByChildModuleId();
+
+			if(groupByChildModuleId > 0) {
+				module = timelineViewObj.getChildModule();
+				List<Long> extendedModuleIds = module.getExtendedModuleIds();
+				if(CollectionUtils.isEmpty(extendedModuleIds) || !extendedModuleIds.contains(lookupModule.getModuleId())) {
+					throw new IllegalArgumentException("Invalid Grouping by ChildModuleId");
+				}
+			} else {
+				module = lookupModule;
+			}
+			setModuleName(module.getName());
 			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
 				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, timelineViewObj.getGroupCriteria(), getOrderBy(), getOrderType()));
 				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
@@ -76,6 +90,14 @@ public class TimelineAction extends RESTAPIHandler {
 				PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
 
 				Criteria serverCriteria = new Criteria();
+
+				if(!(groupByChildModuleId > 0) && lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+					Criteria resourceTypeCriteria = new Criteria();
+					resourceTypeCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(SPACE_RESOURCE_TYPE, ","), NumberOperators.EQUALS));
+
+					serverCriteria.andCriteria(resourceTypeCriteria);
+				}
+
 				if (lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals("ticketstatus")) {
 					Criteria ticketStatusCriteria = new Criteria();
 					ModuleBean moduleBean = Constants.getModBean();
@@ -84,11 +106,6 @@ public class TimelineAction extends RESTAPIHandler {
 					ticketStatusCriteria.addAndCondition(CriteriaAPI.getCondition(parentModuleIdField, String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
 
 					serverCriteria.andCriteria(ticketStatusCriteria);
-				} else if(lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
-					Criteria resourceTypeCriteria = new Criteria();
-					resourceTypeCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(SPACE_RESOURCE_TYPE, ","), NumberOperators.EQUALS));
-
-					serverCriteria.andCriteria(resourceTypeCriteria);
 				}
 
 				if (timelineViewObj.getGroupCriteriaId() > 0) {
@@ -159,8 +176,21 @@ public class TimelineAction extends RESTAPIHandler {
 			throw new IllegalArgumentException("Group field not configured for the view");
 		}
 		if(groupByField instanceof LookupField) {
+			FacilioModule module = null;
 			LookupField lookupField = (LookupField) timelineViewObj.getGroupByField();
-			setModuleName(lookupField.getLookupModule().getName());
+			FacilioModule lookupModule = lookupField.getLookupModule();
+			long groupByChildModuleId = timelineViewObj.getGroupByChildModuleId();
+
+			if(groupByChildModuleId > 0) {
+				module = timelineViewObj.getChildModule();
+				List<Long> extendedModuleIds = module.getExtendedModuleIds();
+				if(CollectionUtils.isEmpty(extendedModuleIds) || !extendedModuleIds.contains(lookupModule.getModuleId())) {
+					throw new IllegalArgumentException("Invalid Grouping by ChildModuleId");
+				}
+			} else {
+				module = lookupModule;
+			}
+			setModuleName(module.getName());
 			if (LookupSpecialTypeUtil.isSpecialType(getModuleName())) {
 				setData(FacilioConstants.ContextNames.PICKLIST, PickListUtil.getSpecialModulesPickList(getModuleName(), getPage(), getPerPage(), getSearch(), getFilters(), null, timelineViewObj.getGroupCriteria(), getOrderBy(), getOrderType()));
 				setMeta("moduleType", FacilioModule.ModuleType.PICK_LIST.name());
@@ -171,6 +201,13 @@ public class TimelineAction extends RESTAPIHandler {
 				PickListUtil.populatePicklistContext(pickListContext, getModuleName(), getFilters(), getSearch(), getCriteria(), getClientCriteria(), getDefault(), getViewName(), getPage(), getPerPage());
 
 				Criteria serverCriteria = new Criteria();
+
+				if(!(groupByChildModuleId > 0) && lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
+					Criteria resourceTypeCriteria = new Criteria();
+					resourceTypeCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(SPACE_RESOURCE_TYPE, ","), NumberOperators.EQUALS));
+
+					serverCriteria.andCriteria(resourceTypeCriteria);
+				}
 				if (lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals("ticketstatus")) {
 					Criteria ticketStatusCriteria = new Criteria();
 					ModuleBean moduleBean = Constants.getModBean();
@@ -179,11 +216,6 @@ public class TimelineAction extends RESTAPIHandler {
 					ticketStatusCriteria.addAndCondition(CriteriaAPI.getCondition(parentModuleIdField, String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS));
 
 					serverCriteria.andCriteria(ticketStatusCriteria);
-				} else if(lookupField.getLookupModule() != null && lookupField.getLookupModule().getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
-					Criteria resourceTypeCriteria = new Criteria();
-					resourceTypeCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(SPACE_RESOURCE_TYPE, ","), NumberOperators.EQUALS));
-
-					serverCriteria.andCriteria(resourceTypeCriteria);
 				}
 
 				if (timelineViewObj.getGroupCriteriaId() > 0) {

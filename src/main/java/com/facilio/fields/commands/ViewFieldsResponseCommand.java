@@ -38,11 +38,6 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         List<String> fixedSelectableFieldNames = (List<String>) context.get(FacilioConstants.FieldsConfig.FIXED_SELECTABLE_FIELD_NAMES);
         Map<String, JSONObject> customization = (Map<String, JSONObject>) context.get(FacilioConstants.FieldsConfig.CUSTOMIZATION);
 
-        // localId Field
-        if (!ModuleLocalIdUtil.MODULES_WITH_LOCAL_ID.contains(moduleName)) {
-            fieldsList.add(FieldFactory.getNumberField("localId", null, module));
-        }
-
         List<ModuleViewField> viewFieldList = new ArrayList<>();
         boolean isCustomization = MapUtils.isNotEmpty(customization);
         boolean hasFixedFields = CollectionUtils.isNotEmpty(fixedFieldNames);

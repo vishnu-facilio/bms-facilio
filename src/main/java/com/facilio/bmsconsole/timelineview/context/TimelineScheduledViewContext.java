@@ -1,10 +1,15 @@
 package com.facilio.bmsconsole.timelineview.context;
 
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.calendarview.CommonCalendarViewContext;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -110,5 +115,18 @@ public class TimelineScheduledViewContext extends CommonCalendarViewContext impl
     }
     public void setGroupCriteria(Criteria groupCriteria) {
         this.groupCriteria = groupCriteria;
+    }
+
+    @Getter
+    private long groupByChildModuleId = -1;
+    @Getter
+    @Setter
+    private FacilioModule childModule;
+    public void setGroupByChildModuleId(long groupByChildModuleId) throws Exception {
+        ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        this.groupByChildModuleId = groupByChildModuleId;
+        if (groupByChildModuleId > 0) {
+            setChildModule(modbean.getModule(groupByChildModuleId));
+        }
     }
 }

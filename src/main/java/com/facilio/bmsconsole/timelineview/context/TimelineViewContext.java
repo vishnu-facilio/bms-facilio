@@ -1,22 +1,25 @@
 package com.facilio.bmsconsole.timelineview.context;
 
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.constants.FacilioConstants.ViewConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.recordcustomization.RecordCustomizationContext;
 import com.facilio.weekends.WeekendContext;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TimelineViewContext extends FacilioView implements Serializable {
 
@@ -213,4 +216,18 @@ public class TimelineViewContext extends FacilioView implements Serializable {
     public void setGroupCriteria(Criteria groupCriteria) {
         this.groupCriteria = groupCriteria;
     }
+
+    public void setGroupByChildModuleId(long groupByChildModuleId) throws Exception {
+        ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        this.groupByChildModuleId = groupByChildModuleId;
+        if (groupByChildModuleId > 0) {
+            setChildModule(modbean.getModule(groupByChildModuleId));
+        }
+    }
+
+    @Getter
+    private long groupByChildModuleId = -1;
+    @Getter
+    @Setter
+    private FacilioModule childModule;
 }

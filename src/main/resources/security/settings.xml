@@ -1558,6 +1558,12 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/extended/:moduleName" method="GET">
+    <urlparams>
+        <property name="moduleName" type="string" mandatory="true"/>
+    </urlparams>
+    </request>
+
     <request path="/api/v2/moduleSetting/pageBuilder/modules"/>
 
     <request path="/api/v1/setup/customPage/criteria/fields/:moduleName">

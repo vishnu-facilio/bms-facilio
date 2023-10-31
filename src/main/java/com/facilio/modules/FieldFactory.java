@@ -9671,6 +9671,7 @@ public class FieldFactory extends BaseFieldFactory {
         list.add(getStringField("configJson", "CONFIG_JSON", module));
         list.add(getNumberField("recordCustomizationId", "RECORD_CUSTOMIZATION_ID", module));
         list.add(getNumberField("groupCriteriaId", "GROUP_BY_CRITERIA_ID", module));
+        list.add(getNumberField("groupByChildModuleId","GROUP_BY_CHILD_MODULEID", module));
 
         return list;
     }
