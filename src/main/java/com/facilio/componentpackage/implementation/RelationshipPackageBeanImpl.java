@@ -236,13 +236,13 @@ public class RelationshipPackageBeanImpl implements PackageBean<RelationRequestC
                 relationRequestContext.setId(relationId);
                 relationRequestContext.setName(relation.getName());
                 relationRequestContext.setDescription(relation.getDescription());
-                relationRequestContext.setRelationType(relationMapping.getRelationType());
             }
 
             if (relationMapping.getPosition() == 1 && StringUtils.isNotEmpty(relationMapping.getRelationName())) {
                 relationRequestContext.setRelationName(relationMapping.getRelationName());
                 relationRequestContext.setFromModuleId(relationMapping.getFromModuleId());
                 relationRequestContext.setToModuleId(relationMapping.getToModuleId());
+                relationRequestContext.setRelationType(relationMapping.getRelationType());
             }
 
             if (relationMapping.getPosition() == 2 && StringUtils.isNotEmpty(relationMapping.getRelationName())) {
