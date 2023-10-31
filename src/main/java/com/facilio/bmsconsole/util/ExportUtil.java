@@ -968,6 +968,7 @@ public class ExportUtil {
 			}
 		}
 
+		boolean includeNoOfClosedTasks = false;
 		for (int j = 0; j < viewFields.size(); j++) {
 			ViewField viewField = viewFields.get(j);
 			FacilioField field = viewField.getField();
@@ -980,11 +981,14 @@ public class ExportUtil {
 					viewField.setField(FieldFactory.getSystemField(viewField.getFieldName(), module));
 				}
 			}
-
+			// Add noOfClosedTasks only if noOfTasks is added to view
+			if (moduleName.equals("workorder") && field != null && field.getName().equals("noOfTasks")) {
+				includeNoOfClosedTasks = true;
+			}
 		}
 		// could have added in the above if check for WO;
 		// but the field has to be appended at the end of the list
-		if (moduleName.equals("workorder")) {
+		if (moduleName.equals("workorder") && includeNoOfClosedTasks) {
 			ViewField tasksComplete = new ViewField("noOfClosedTasks", "Tasks Complete");
 			tasksComplete.setField(modBean.getField("noOfClosedTasks", moduleName));
 			viewFields.add(tasksComplete);
