@@ -17,8 +17,11 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
@@ -54,6 +57,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addSystemButtons();
 
         addServiceOrderFieldInItemTransactions();
+
+        addSLA();
     }
 
     private void addServiceOrderFieldInItemTransactions() throws Exception {
@@ -1138,4 +1143,34 @@ public class ServiceOrderModule extends BaseModuleConfig {
         return FieldUtil.getAsJSON(widgetGroup);
     }
 
+    public void addSLA() throws Exception {
+        SLAEntityContext sla = new SLAEntityContext();
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        List<FacilioField> soFields = moduleBean.getAllFields(FacilioConstants.ContextNames.SERVICE_ORDER);
+        Map<String, FacilioField> soFieldsMap = FieldFactory.getAsMap(soFields);
+
+        FacilioField preferredStartTime = soFieldsMap.get("preferredStartTime");
+        FacilioField resolutionDueDate = soFieldsMap.get("resolutionDueDate");
+
+        Criteria slaCriteria = new Criteria();
+        slaCriteria.addAndCondition(CriteriaAPI.getCondition(soFieldsMap.get("actualEndTime"), String.valueOf(true), CommonOperators.IS_EMPTY));
+
+        long criteriaId = CriteriaAPI.addCriteria(slaCriteria);
+        if (criteriaId > 0) {
+
+            sla.setName("Resolution Due Date");
+            sla.setDescription("Resolution due date");
+            sla.setModuleId(module.getModuleId());
+            sla.setBaseFieldId(preferredStartTime.getId());
+            sla.setDueFieldId(resolutionDueDate.getId());
+            sla.setCriteriaId(criteriaId);
+
+            Map<String, Object> slaEntityMap = FieldUtil.getAsProperties(sla);
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getSLAEntityModule().getTableName())
+                    .fields(FieldFactory.getSLAEntityFields());
+            builder.insert(slaEntityMap);
+        }
+    }
 }

@@ -15,6 +15,7 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -46,6 +47,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
             SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
             addSystemButtons();
             addServiceTaskSystemButtons();
+            addSLA();
     }
     private void addServiceAppointmentModule() throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
@@ -1582,6 +1584,35 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         criteria.addAndCondition(fieldAgentCondition);
 
         return fieldAgentCriteria;
+    }
+    public void addSLA() throws Exception{
+        SLAEntityContext sla = new SLAEntityContext();
+        ModuleBean moduleBean = Constants.getModBean();
+        FacilioModule module = moduleBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        List<FacilioField> saFields = moduleBean.getAllFields(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        Map<String,FacilioField> saFieldMap = FieldFactory.getAsMap(saFields);
+
+        FacilioField scheduledStartTime = saFieldMap.get(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME);
+        FacilioField resolutionDueTime = saFieldMap.get("resolutionDueTime");
+
+        Criteria slaCriteria = new Criteria();
+        slaCriteria.addAndCondition(CriteriaAPI.getCondition(saFieldMap.get("actualEndTime"), String.valueOf(true), CommonOperators.IS_EMPTY));
+        long criteriaId = CriteriaAPI.addCriteria(slaCriteria);
+        if(criteriaId >0) {
+
+            sla.setName("Resolution Due Date");
+            sla.setDescription("Resolution due date");
+            sla.setModuleId(module.getModuleId());
+            sla.setBaseFieldId(scheduledStartTime.getId());
+            sla.setDueFieldId(resolutionDueTime.getId());
+            sla.setCriteriaId(criteriaId);
+
+            Map<String, Object> slaEntityMap = FieldUtil.getAsProperties(sla);
+            GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                    .table(ModuleFactory.getSLAEntityModule().getTableName())
+                    .fields(FieldFactory.getSLAEntityFields());
+            builder.insert(slaEntityMap);
+        }
     }
 
 }
