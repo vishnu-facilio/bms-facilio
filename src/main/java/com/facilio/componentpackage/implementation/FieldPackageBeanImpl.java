@@ -1,5 +1,7 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.componentpackage.constants.PackageConstants.FieldXMLConstants;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -222,10 +224,12 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
     @Override
     public void updateComponentFromXML(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
+        Organization org = AccountUtil.getCurrentOrg();
         ModuleBean moduleBean = Constants.getModBean();
         for (Map.Entry<Long, XMLBuilder> uniqueIdentifierVsComponent : idVsXMLComponents.entrySet()) {
             Long fieldId = uniqueIdentifierVsComponent.getKey();
             if (fieldId != null && fieldId > 0) {
+                FacilioField dbField = null;
                 XMLBuilder fieldElement = uniqueIdentifierVsComponent.getValue();
                 String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
                 FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
@@ -233,16 +237,31 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
                 // set additional details for EnumFieldValues
                 if (facilioField.getDataTypeEnum() == FieldType.ENUM || facilioField.getDataTypeEnum() == FieldType.MULTI_ENUM) {
-                    FacilioField dbField = moduleBean.getField(fieldId);
+                    dbField = dbField == null ? moduleBean.getFieldFromDB(fieldId) : dbField;
                     List<EnumFieldValue<Integer>> dbEnumFieldValues = ((BaseEnumField) dbField).getValues();
-                    Map<Integer, Long> indexVsIdMap = dbEnumFieldValues.stream().collect(Collectors.toMap(EnumFieldValue::getIndex, EnumFieldValue::getId));
+                    if (CollectionUtils.isNotEmpty(dbEnumFieldValues)) {
+                        long indexFieldFieldId = dbEnumFieldValues.get(0).getFieldId();
+                        Map<Integer, Long> indexVsIdMap = dbEnumFieldValues.stream().collect(Collectors.toMap(EnumFieldValue::getIndex, EnumFieldValue::getId));
 
-                    for (EnumFieldValue<Integer> value : ((BaseEnumField) facilioField).getValues()) {
-                        if (indexVsIdMap.containsKey(value.getIndex())) {
-                            value.setId(indexVsIdMap.get(value.getIndex()));
-                            value.setFieldId(fieldId);
+                        for (EnumFieldValue<Integer> value : ((BaseEnumField) facilioField).getValues()) {
+                            if (indexVsIdMap.containsKey(value.getIndex())) {
+                                value.setId(indexVsIdMap.get(value.getIndex()));
+                                value.setFieldId(indexFieldFieldId);
+                                value.setOrgId(org.getOrgId());
+                            }
                         }
                     }
+                }
+
+                // set additional details for MULTI-ENUM / MULTI-LOOKUP field
+                if (facilioField instanceof MultiEnumField) {
+                    dbField = dbField == null ? moduleBean.getFieldFromDB(fieldId) : dbField;
+                    ((MultiEnumField) facilioField).setRelModule(((MultiEnumField) dbField).getRelModule());
+                    ((MultiEnumField) facilioField).setRelModuleId(((MultiEnumField) dbField).getRelModuleId());
+                } else if (facilioField instanceof MultiLookupField) {
+                    dbField = dbField == null ? moduleBean.getFieldFromDB(fieldId) : dbField;
+                    ((MultiLookupField) facilioField).setRelModule(((MultiLookupField) dbField).getRelModule());
+                    ((MultiLookupField) facilioField).setRelModuleId(((MultiLookupField) dbField).getRelModuleId());
                 }
 
                 updateField(facilioField);
