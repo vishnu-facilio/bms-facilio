@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.point.PointEnum;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -257,5 +259,19 @@ public class CommissioningLogContext {
 
 	public void setModuleId(long moduleId) {
 		this.moduleId = moduleId;
+	}
+
+	private ResourceType readingScope;
+	public int getReadingScope() {
+		if (readingScope != null) {
+			return readingScope.getIndex();
+		}
+		return -1;
+	}
+	public ResourceType getReadingScopeEnum(){
+		return readingScope;
+	}
+	public void setReadingScope(int readingScope) {
+		this.readingScope = ResourceType.valueOf(readingScope);
 	}
 }

@@ -6,6 +6,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.point.Point;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.CommissioningApi;
@@ -148,6 +149,8 @@ public class AddAgentDataCommand extends FacilioCommand {
             summaryContext.setValue(String.valueOf(value));
             summaryContext.setParentId(parentId);
             summaryContext.setControllerId(controller.getId());
+            summaryContext.setResourceId(point.getResourceId());
+            summaryContext.setReadingScope(point.getReadingScope());
 
             if(errorPoints.containsKey(pointName)){
                 //fail case

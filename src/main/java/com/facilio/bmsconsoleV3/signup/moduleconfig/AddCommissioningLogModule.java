@@ -8,10 +8,7 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 
 import java.util.*;
@@ -133,6 +130,12 @@ public class AddCommissioningLogModule extends SignUpData {
         LookupField modifiedBy = (LookupField) FieldFactory.getSystemField("sysModifiedBy",module);
         modifiedBy.setAccessType(calculateAccessType(FacilioField.AccessType.READ,FacilioField.AccessType.CRITERIA));
         fields.add(modifiedBy);
+
+        SystemEnumField readingScope = (SystemEnumField) FieldFactory.getDefaultField(AgentConstants.READING_SCOPE, "Scope", "SCOPE", module, FieldType.SYSTEM_ENUM);
+        readingScope.setEnumName("ConnectedResourceAssignmentType");
+        readingScope.setValues(FacilioEnum.getEnumValues(readingScope.getEnumName()));
+        readingScope.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
+        fields.add(readingScope);
 
         module.setFields(fields);
 

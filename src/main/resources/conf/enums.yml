@@ -548,3 +548,4 @@ enums:
 
   - name: FilterType
     enumClassName: com.facilio.remotemonitoring.context.FilterType
+

@@ -1,14 +1,15 @@
 package com.facilio.agent.commands;
 
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsoleV3.context.DataLogSummaryContextV3;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class AgentLoggerSummaryAfterFetchCommand extends FacilioCommand {
@@ -20,6 +21,37 @@ public class AgentLoggerSummaryAfterFetchCommand extends FacilioCommand {
         Map<Long, Map<String, Object>> readings = CommissioningApi.getFields(new HashSet<>(fieldIds));
 
         recordMap.put("readings",readings);
+
+        Map<Integer, Map<Long, String>> resourceMap = new HashMap<>();
+        Map<Integer, Set<Long>> scopeVsParentIds = new HashMap<>();
+
+        for (DataLogSummaryContextV3 dataLog : recordList) {
+            ResourceType scope = null;
+            if (dataLog.getReadingScope() > 0){
+                scope = ResourceType.valueOf(dataLog.getReadingScope());
+            }
+            else {
+                scope = ResourceType.ASSET_CATEGORY;
+            }
+            int scopeIntVal = scope.getIndex();
+            long resourceId = dataLog.getResourceId();
+
+            scopeVsParentIds.computeIfAbsent(scopeIntVal, k -> new HashSet<>()).add(resourceId);
+        }
+
+        scopeVsParentIds.forEach((scope, parentIds) -> {
+            Map<Long, String> pickList = null;
+            try {
+                pickList = CommissioningApi.getParent(parentIds, ResourceType.valueOf(scope).getModuleName());
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            resourceMap.put(scope, pickList);
+        });
+
+
+        recordMap.put("resourceMap",resourceMap);
+
         return false;
     }
 }

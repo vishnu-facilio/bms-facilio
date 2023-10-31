@@ -10,10 +10,12 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.CommissioningApi;
+import com.facilio.bmsconsole.util.MetersAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -116,7 +118,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 
 			// Case: If any mapping done or if already commissioned and removed mapping
 			if (( (categoryId != null && categoryId > 0) ||  (dbCategoryId != null && dbCategoryId > 0) )
-					|| resourceAvailable || fieldAvailable || unitAvailable) {
+					|| resourceAvailable || fieldAvailable || unitAvailable || log.getReadingScope() > 0) {
 
 				// Case 1: point is already mapped
 				if (fieldAvailable && resourceAvailable) {
@@ -179,7 +181,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 
 				// Case 2: New commissioning (or recommissioning or removed mapping)
 				if(mappingChanged || unitChanged) {
-					addPointToBatchUpdateProp(point, batchUpdateList, publishTime);
+					addPointToBatchUpdateProp(point, batchUpdateList, publishTime , ResourceType.valueOf(log.getReadingScope()));
 				}
 			}
 			
@@ -201,7 +203,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 			addInputValueMapping(inputValuePoints, remainingRdmPairs);
 		}
 		
-		handleAssetConnectionStatus(connectedAssetIds, unmappedAssetIds);
+		handleConnectionStatus(connectedAssetIds, unmappedAssetIds , ResourceType.valueOf(log.getReadingScope()));
 		
 		updateLog(publishTime, id);
 		
@@ -250,13 +252,16 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		return getPointRequest.getPointsData();
 	}
 
-	private void addPointToBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime) {
+	private void addPointToBatchUpdateProp(Map<String, Object> point, List<BatchUpdateByIdContext> batchUpdateList, long publishTime , ResourceType scope) {
 		BatchUpdateByIdContext batchValue = new BatchUpdateByIdContext();
 		batchValue.setWhereId((long) point.get("id"));
 		batchValue.addUpdateValue(AgentConstants.MAPPED_TIME, publishTime);
 
 		Long categoryId = (Long) point.get(AgentConstants.ASSET_CATEGORY_ID);
 		if (categoryId != null && categoryId > 0) {
+			if (scope != null){
+				batchValue.addUpdateValue(AgentConstants.READING_SCOPE,scope.getIndex());
+			}
 			batchValue.addUpdateValue(AgentConstants.ASSET_CATEGORY_ID, point.get(AgentConstants.ASSET_CATEGORY_ID));
 
 			Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
@@ -304,6 +309,8 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		if(fieldMap.containsKey(AgentConstants.MAPPED_TYPE) && fieldMap.get(AgentConstants.MAPPED_TYPE)!=null){
 			updateFields.add(fieldMap.get(AgentConstants.MAPPED_TYPE));
 		}
+
+		updateFields.add(fieldMap.get(AgentConstants.READING_SCOPE));
 
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(pointModule.getTableName())
@@ -372,14 +379,18 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 		insertBuilder.save();
 	}
 	
-	private void handleAssetConnectionStatus(Set<Long> connectedAssetIds, Set<Long> unmappedAssetIds) throws Exception {
+	private void handleConnectionStatus(Set<Long> connectedIds, Set<Long> unmappedIds,ResourceType scope) throws Exception {
 		
-		if (!connectedAssetIds.isEmpty()) {
-			AssetsAPI.updateAssetConnectionStatus(connectedAssetIds, true);
+		if (!connectedIds.isEmpty()) {
+			if (scope == null || scope.equals(ResourceType.ASSET_CATEGORY)){
+				AssetsAPI.updateAssetConnectionStatus(connectedIds, true);
+			} else if (scope.equals(ResourceType.METER_CATEGORY)) {
+				MetersAPI.updateMeterConnectionStatus(connectedIds,true);
+			}
 		}
 		
-		unmappedAssetIds.removeAll(connectedAssetIds);
-		if (!unmappedAssetIds.isEmpty()) {
+		unmappedIds.removeAll(connectedIds);
+		if (!unmappedIds.isEmpty()) {
 			FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 			List<FacilioField> fields = FieldFactory.getReadingDataMetaFields();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -390,16 +401,20 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 														.table(module.getTableName())
 														.select(Collections.EMPTY_LIST)
 														.aggregate(BmsAggregateOperators.CommonAggregateOperator.DISTINCT, resourceIdField)
-														.andCondition(CriteriaAPI.getCondition(resourceIdField, unmappedAssetIds, PickListOperators.IS))
+														.andCondition(CriteriaAPI.getCondition(resourceIdField, unmappedIds, PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(fieldMap.get("inputType"), String.valueOf(ReadingInputType.CONTROLLER_MAPPED.getValue()), PickListOperators.IS))
 														;
 			List<Map<String, Object>> props = builder.get();
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> mappedAssetIds = props.stream().map(prop -> (long) prop.get("resourceId")).collect(Collectors.toList());
-				unmappedAssetIds.removeAll(mappedAssetIds);
+				unmappedIds.removeAll(mappedAssetIds);
 			}
-			if (!unmappedAssetIds.isEmpty()) {
-				AssetsAPI.updateAssetConnectionStatus(unmappedAssetIds, false);
+			if (!unmappedIds.isEmpty()) {
+				if (scope == null || scope.equals(ResourceType.ASSET_CATEGORY)){
+					AssetsAPI.updateAssetConnectionStatus(unmappedIds, false);
+				} else if (scope.equals(ResourceType.METER_CATEGORY)) {
+					MetersAPI.updateMeterConnectionStatus(unmappedIds,false);
+				}
 			}
 		}
 	}

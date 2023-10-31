@@ -2,8 +2,10 @@ package com.facilio.bmsconsoleV3.context;
 
 
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -28,13 +30,32 @@ public class DataLogSummaryContextV3 extends V3Context{
     private String errorStackTrace;
     private long readingId = -1L;
 
+    private ResourceType readingScope;
+    private long resourceId;
+    public long getResourceId() {
+        return resourceId;
+    }
+    public void setResourceId(long resourceId) {
+        this.resourceId = resourceId;
+    }
+    public int getReadingScope() {
+        if (readingScope != null) {
+            return readingScope.getIndex();
+        }
+        return -1;
+    }
+    public ResourceType getScopeEnum(){
+        return readingScope;
+    }
+    public void setReadingScope(int readingScope) {
+        this.readingScope =ResourceType.valueOf(readingScope);
+    }
     public void setValue(Object value){
       this.value =  String.valueOf(value);
     }
     public String getValue(){
         return value;
     }
-
 
     private long assetId = -1L;
     public long getAssetId(){return assetId;}

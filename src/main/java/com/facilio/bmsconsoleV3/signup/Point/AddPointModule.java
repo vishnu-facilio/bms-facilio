@@ -64,15 +64,12 @@ public class AddPointModule extends SignUpData {
         controllerId.setAccessType(FacilioField.AccessType.READ.getVal());
         fields.add(controllerId);
 
-        LookupField assetCategoryId = (LookupField) FieldFactory.getDefaultField(AgentConstants.ASSET_CATEGORY_ID, "Category", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP);
-        assetCategoryId.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.ASSET_CATEGORY));
-        assetCategoryId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        assetCategoryId.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
-        fields.add(assetCategoryId);
 
-        LookupField resourceId = (LookupField) FieldFactory.getDefaultField(AgentConstants.RESOURCE_ID, "Asset", "RESOURCE_ID", module, FieldType.LOOKUP);
-        resourceId.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE));
-        resourceId.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        NumberField category = FieldFactory.getDefaultField(AgentConstants.ASSET_CATEGORY_ID, "Category/Utility", "ASSET_CATEGORY_ID", module, FieldType.NUMBER);
+        category.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
+        fields.add(category);
+
+        NumberField resourceId = FieldFactory.getDefaultField(AgentConstants.RESOURCE_ID, "Asset/Meter", "RESOURCE_ID", module, FieldType.NUMBER);
         resourceId.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
         fields.add(resourceId);
 
@@ -145,6 +142,12 @@ public class AddPointModule extends SignUpData {
         displayName.setMainField(true);
         displayName.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
         fields.add(displayName);
+
+        SystemEnumField readingScope = (SystemEnumField) FieldFactory.getDefaultField(AgentConstants.READING_SCOPE, "Scope", "SCOPE", module, FieldType.SYSTEM_ENUM);
+        readingScope.setEnumName("ConnectedResourceAssignmentType");
+        readingScope.setValues(FacilioEnum.getEnumValues(readingScope.getEnumName()));
+        readingScope.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
+        fields.add(readingScope);
 
         module.setFields(fields);
         return module;

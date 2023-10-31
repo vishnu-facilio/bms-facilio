@@ -47,6 +47,7 @@ public class AgentConstants
     public static final String TRANSFORM_WORKFLOW = "transformWorkflow";
     public static final String COMMAND_WORKFLOW = "commandWorkflow";
     public static final String IS_ACTIVE_UPDATE_VALUE = "isActiveUpdateValue";
+    public static final String READING_SCOPE = "readingScope";
 
     //modbus constants
     public static final String SLAVE_ID = "slaveId";

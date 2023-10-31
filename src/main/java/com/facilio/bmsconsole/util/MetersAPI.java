@@ -16,10 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class MetersAPI {
@@ -246,6 +243,18 @@ public class MetersAPI {
 			}
 		}
 		return 0d;
+	}
+	public static int updateMeterConnectionStatus(Set<Long> meterIds, boolean isCommissioned) throws Exception{
+		V3MeterContext meter = new V3MeterContext();
+		meter.setIsCommissioned(isCommissioned);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.METER);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.METER);
+		UpdateRecordBuilder<V3MeterContext> updateBuilder = new UpdateRecordBuilder<V3MeterContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(meterIds, module));
+		return updateBuilder.update(meter);
 	}
 	
 }

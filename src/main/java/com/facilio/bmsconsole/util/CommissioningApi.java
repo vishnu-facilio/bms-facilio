@@ -354,7 +354,7 @@ public class CommissioningApi {
 			throw new IllegalArgumentException("Unit for " + name + " cannot be mapped without selecting reading");
 		}
 	}
-	
+	@Deprecated
 	public static Map<Long, String> getResources(Set<Long> resourceIds) throws Exception {
 		if (!resourceIds.isEmpty()) {
 			FacilioChain chain = FacilioChainFactory.getPickListChain();
@@ -362,6 +362,23 @@ public class CommissioningApi {
 			picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.RESOURCE);
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getIdCondition(resourceIds, null));
+			picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
+			chain.execute();
+			return (Map<Long, String>) picklistContext.get(ContextNames.PICKLIST);
+		}
+		return null;
+	}
+
+	public static Map<Long, String> getParent(Set<Long> ids,String moduleName) throws Exception {
+		if (moduleName.equals("asset")){
+			moduleName = ContextNames.RESOURCE;
+		}
+		if (!ids.isEmpty()) {
+			FacilioChain chain = FacilioChainFactory.getPickListChain();
+			Context picklistContext = chain.getContext();
+			picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, null));
 			picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
 			chain.execute();
 			return (Map<Long, String>) picklistContext.get(ContextNames.PICKLIST);

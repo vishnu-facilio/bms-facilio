@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
@@ -19,6 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -118,11 +120,15 @@ public class AddCommissioningLogCommand extends FacilioCommand {
 				.leftJoin(pointModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + pointModule.getTableName() + "." + FieldFactory.getControllerIdField(pointModule).getColumnName())
 				.innerJoin(resourceModule.getTableName()).on(controllerModule.getTableName() + ".ID = " + resourceModule.getTableName() + ".ID")
 				.andCondition(CriteriaAPI.getIdCondition(controllerIds, controllerModule))
+				.andCriteria(GetPointRequest.filterPointsByScope(log.getReadingScope()))
 				.select(allFields)
 				.groupBy(controllerModule.getTableName()+".ID");
 
 
 		List<Map<String, Object>> result = selectRecordBuilder.get();
+		if (CollectionUtils.isEmpty(result)) {
+			throw new IllegalArgumentException("Configured or subscribed points are already commissioned to another Scope");
+		}
 		Map<String,Long>NameVsPointsCountMap = result.stream().collect(Collectors.toMap(prop->(String)prop.get("name"),prop->(((BigDecimal) prop.get(AgentConstants.SUBSCRIBED_COUNT)).longValue()) + ((BigDecimal) prop.get(AgentConstants.CONFIGURED_COUNT)).longValue()));
 		for (String name : NameVsPointsCountMap.keySet()){
 			if (NameVsPointsCountMap.get(name)==0){

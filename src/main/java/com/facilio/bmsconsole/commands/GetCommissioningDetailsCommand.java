@@ -4,11 +4,14 @@ import com.facilio.agent.AgentType;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.PointEnum;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bacnet.BACNetUtil;
 import com.facilio.bmsconsole.context.CommissioningLogContext;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -74,7 +77,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 			}
 			
 			log.setPoints(finalPoints);
-			setResources(resourceIds, context);
+			setResources(resourceIds,context, ResourceType.valueOf(log.getReadingScope()));
 			setFields(fieldIds, context);
 			context.put(ContextNames.UNIT , unitMap);
 		}
@@ -104,7 +107,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 				.orderBy(orderBy.getCompleteColumnName())
 				.limit(-1);
 				;
-		
+		if(log.getReadingScope() > 0){
+			getPointRequest.scopeFilter(log.getReadingScope());
+		}
 		if (log.isLogical()) {
 			getPointRequest.withLogicalControllers(log.getAgentId());
 		}
@@ -152,9 +157,10 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		return point;
 	}
 
-	private void setResources(Set<Long> resourceIds, Context context) throws Exception {
+	private void setResources(Set<Long> resourceIds, Context context,ResourceType scope) throws Exception {
 		if (!resourceIds.isEmpty()) {
-			Map<Long, String> resources = CommissioningApi.getResources(resourceIds);
+			String moduleName = scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? ContextNames.RESOURCE : FacilioConstants.Meter.METER;
+			Map<Long, String> resources = CommissioningApi.getParent(resourceIds,moduleName);
 			context.put(ContextNames.RESOURCE_LIST, resources);
 		}
 	}
@@ -168,6 +174,7 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 	private void setHeaders(CommissioningLogContext log) {
 		List<Map<String, Object>> headers = new ArrayList<>();
+		ResourceType scope = ResourceType.valueOf(log.getReadingScope());;
 
 		Map<String, Object> header = new HashMap<>();
 		header.put("name", AgentConstants.NAME);
@@ -187,11 +194,13 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		header = new HashMap<>();
 		header.put("name", AgentConstants.ASSET_CATEGORY_ID);
 		header.put("editable", true);
+		header.put("header",scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? "Category":"Utility");
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.RESOURCE_ID);
 		header.put("editable", true);
+		header.put("header",scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? "Asset":"Meter");
 		headers.add(header);
 
 		header = new HashMap<>();

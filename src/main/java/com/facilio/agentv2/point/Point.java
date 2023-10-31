@@ -5,6 +5,7 @@ import com.facilio.agent.controller.FacilioDataType;
 import com.facilio.agent.controller.FacilioPoint;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.JsonUtil;
+import com.facilio.connected.ResourceType;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -105,6 +106,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
 
     private Long moduleId;
 
+    @Getter @Setter
+    private ResourceType readingScope;
+
     public boolean isAgentWritable() {
         return agentWritable;
     }
@@ -167,6 +171,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
         }
         if (getInterval() > 0) {
         	 pointJSON.put(AgentConstants.DATA_INTERVAL,getInterval());
+        }
+        if (getReadingScopeEnum() != null) {
+            pointJSON.put(AgentConstants.READING_SCOPE,getReadingScope());
         }
         return pointJSON;
     }
@@ -304,6 +311,18 @@ public abstract class Point extends FacilioPoint implements Serializable {
         this.subscribeStatus = PointEnum.SubscribeStatus.valueOf(subscribestatus);
     }
 
+    public int getReadingScope() {
+        if (readingScope != null) {
+            return readingScope.getIndex();
+        }
+        return -1;
+    }
+    public ResourceType getReadingScopeEnum(){
+        return readingScope;
+    }
+    public void setReadingScope(int readingScope) {
+        this.readingScope = ResourceType.valueOf(readingScope);
+    }
 
     /**
      * This method builds pointObject using map
@@ -379,6 +398,9 @@ public abstract class Point extends FacilioPoint implements Serializable {
         }
         if(row.containsKey(AgentConstants.DATA_MISSING)){
             setDataMissing((boolean) row.get(AgentConstants.DATA_MISSING));
+        }
+        if (row.containsKey(AgentConstants.READING_SCOPE)){
+            setReadingScope((Integer) row.get(AgentConstants.READING_SCOPE));
         }
         return this;
     }

@@ -163,6 +163,16 @@ public class GetPointRequest {
     		criteria.andCriteria(filterCriteria);
         return this;
     }
+    public GetPointRequest scopeFilter(int scope){
+        criteria.andCriteria(filterPointsByScope(scope));
+        return this;
+    }
+    public static Criteria filterPointsByScope(int scope){
+        Criteria filterCriteria = new Criteria();
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(M_POINT_MAP.get(AgentConstants.READING_SCOPE), String.valueOf(scope),NumberOperators.EQUALS));
+        filterCriteria.addOrCondition(CriteriaAPI.getCondition(M_POINT_MAP.get(AgentConstants.READING_SCOPE),CommonOperators.IS_EMPTY));
+        return filterCriteria;
+    }
 
     public GetPointRequest forController(long controllerId) throws Exception {
         if(controllerId > 0){
@@ -227,7 +237,8 @@ public class GetPointRequest {
             setCountAggregate(selectRecordBuilder);
         }
         else {
-            selectRecordBuilder.select(new ArrayList<>(POINT_FIELDS));
+            M_POINT_FIELDS.add(FieldFactory.getIdField(M_POINT_MODULE));
+            selectRecordBuilder.select(new ArrayList<>(M_POINT_FIELDS));
         }
         if(criteria.getConditions() != null && !criteria.getConditions().isEmpty()){
             selectRecordBuilder.andCriteria(criteria);

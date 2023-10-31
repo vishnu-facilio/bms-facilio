@@ -8,10 +8,7 @@ import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 
 import java.util.ArrayList;
@@ -88,6 +85,17 @@ public class AgentDataProcessingLoggerModule extends SignUpData {
         errorStackTrace.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
         errorStackTrace.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(errorStackTrace);
+
+        SystemEnumField readingScope = (SystemEnumField) FieldFactory.getDefaultField(AgentConstants.READING_SCOPE, "Scope", "SCOPE", module, FieldType.SYSTEM_ENUM);
+        readingScope.setEnumName("ConnectedResourceAssignmentType");
+        readingScope.setValues(FacilioEnum.getEnumValues(readingScope.getEnumName()));
+        readingScope.setAccessType(FacilioField.AccessType.READ.getVal()+FacilioField.AccessType.CRITERIA.getVal());
+        fields.add(readingScope);
+
+        NumberField resourceId = FieldFactory.getDefaultField(AgentConstants.RESOURCE_ID,"Resource Id", "RESOURCE_ID",FieldType.NUMBER);
+        resourceId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        resourceId.setAccessType(calculateAccessType(FacilioField.AccessType.READ,FacilioField.AccessType.CRITERIA));
+        fields.add(resourceId);
 
 
         module.setFields(fields);
