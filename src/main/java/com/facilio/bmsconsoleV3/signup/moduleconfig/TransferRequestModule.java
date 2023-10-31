@@ -69,9 +69,8 @@ public class TransferRequestModule extends BaseModuleConfig{
         completeRequest.setIdentifier("completeRequest");
         completeRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria completeRequestBtnCriteria = new Criteria();
-
-        completeRequestBtnCriteria.addOrCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
-        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipmentTrackingNeeded"),"false", BooleanOperators.IS));
+        completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipped"),"true", BooleanOperators.IS));
+        completeRequestBtnCriteria.addOrCondition(CriteriaAPI.getCondition(trFieldMap.get("isShipmentTrackingNeeded"),"false", BooleanOperators.IS));
         completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"true", BooleanOperators.IS));
         completeRequestBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isCompleted"),"false", BooleanOperators.IS));
         completeRequest.setCriteria(completeRequestBtnCriteria);
