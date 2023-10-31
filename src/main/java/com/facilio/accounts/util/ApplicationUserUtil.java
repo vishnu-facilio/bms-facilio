@@ -1,7 +1,9 @@
 package com.facilio.accounts.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PeopleContext;
+import com.facilio.bmsconsole.context.PeopleUserContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.V3ClientContactContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
@@ -18,13 +20,15 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.identity.client.bean.SandboxBean;
-import com.facilio.identity.client.bean.UserBean;
 import com.facilio.identity.client.dto.User;
-import com.facilio.modules.*;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
 import java.util.*;
 
 
@@ -222,18 +226,23 @@ public class ApplicationUserUtil {
         }
     }
 
-    public static void revokeAppAccess( long userId,long appId) throws Exception{
-        List<Map<String, Object>> records = getOrgAppUsers(userId,appId);
-        List<Long> orgUserIds = new ArrayList<>();
-        if(CollectionUtils.isNotEmpty(records)){
+    public static void revokeAppAccess( long userId,long appId) throws Exception {
+        User user = IdentityClient.getDefaultInstance().getUserBean().getUser(userId);
+        if(user != null && !user.getIsSuperUser()){
+            List<Map<String, Object>> records = getOrgAppUsers(userId, appId);
+            List<Long> orgUserIds = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(records)) {
 
-            for (Map<String, Object> record : records) {
-                orgUserIds.add((Long) record.get("ouid"));
+                for (Map<String, Object> record : records) {
+                    orgUserIds.add((Long) record.get("ouid"));
+                }
+
             }
-
-        }
-        if(CollectionUtils.isNotEmpty(orgUserIds)){
-            deleteOrgAppUsers(userId,orgUserIds,appId);
+            if (CollectionUtils.isNotEmpty(orgUserIds)) {
+                deleteOrgAppUsers(userId, orgUserIds, appId);
+            }
+        }else {
+            throw new IllegalArgumentException("SuperUser can't be updated");
         }
     }
 

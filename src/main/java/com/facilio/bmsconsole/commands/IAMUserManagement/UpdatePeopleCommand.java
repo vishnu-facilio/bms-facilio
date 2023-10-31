@@ -22,25 +22,29 @@ public class UpdatePeopleCommand extends FacilioCommand {
         c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
 
-        PeopleContext existingPeople = PeopleAPI.getPeople(user.getUser().getEmail());
-        user.setPeopleId(existingPeople.getId());
-        if(user.getPeople() != null){
-            user.getPeople().setId(existingPeople.getId());
+        if(!user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().getIsSuperAdmin()){
+            PeopleContext existingPeople = PeopleAPI.getPeople(user.getUser().getEmail());
+            user.setPeopleId(existingPeople.getId());
+            if (user.getPeople() != null) {
+                user.getPeople().setId(existingPeople.getId());
+            }
+
+            EmployeeContext employee = new EmployeeContext();
+            employee.setId(existingPeople.getId());
+            employee.setName(user.getUser().getName());
+            employee.setPhone(user.getUser().getPhone());
+            employee.setLanguage(user.getUser().getLanguage());
+            employee.setTimezone(user.getUser().getTimezone());
+            employee.setMobile(user.getUser().getMobile());
+
+            employee.parseFormData();
+            RecordAPI.handleCustomLookup(employee.getData(), FacilioConstants.ContextNames.EMPLOYEE);
+
+            c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(employee));
+            c.execute();
+        }else {
+            throw new IllegalArgumentException("SuperUser can't be updated");
         }
-
-        EmployeeContext employee = new EmployeeContext();
-        employee.setId(existingPeople.getId());
-        employee.setName(user.getUser().getName());
-        employee.setPhone(user.getUser().getPhone());
-        employee.setLanguage(user.getUser().getLanguage());
-        employee.setTimezone(user.getUser().getTimezone());
-        employee.setMobile(user.getUser().getMobile());
-
-        employee.parseFormData();
-        RecordAPI.handleCustomLookup(employee.getData(), FacilioConstants.ContextNames.EMPLOYEE);
-
-        c.getContext().put(FacilioConstants.ContextNames.RECORD_LIST, Collections.singletonList(employee));
-        c.execute();
 
         return false;
     }
