@@ -61,7 +61,6 @@ public class DataProcessorUtil {
 
     private long orgId;
     private AgentUtilV2 agentUtilV2;
-    private EventUtil eventUtil;
     private static final String TIME_TAKEN = "timetaken";
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
     private MessageSource messageSource;
@@ -72,9 +71,8 @@ public class DataProcessorUtil {
         this.orgId = orgId;
         this.messageSource = source;
         agentUtilV2 = new AgentUtilV2(orgId, orgDomainName);
-        eventUtil = new EventUtil();
         try {
-            dataProcessorV2 = new DataProcessorV2(orgId, orgDomainName, agentUtilV2);
+            dataProcessorV2 = new DataProcessorV2(orgId, agentUtilV2);
         } catch (Exception e) {
             dataProcessorV2 = null;
             LOGGER.info("Exception occurred ", e);
@@ -192,7 +190,7 @@ public class DataProcessorUtil {
         boolean processed = true;
         int payloadIndex=1;
         for (JSONObject jsonObject : payloads) {
-            processed = processed && dataProcessorV2.processRecord(jsonObject, eventUtil, agent,recordId,partitionId,messageSource.getName(),payloadIndex, startTime);
+            processed = processed && dataProcessorV2.processRecord(jsonObject, agent,recordId,partitionId,messageSource.getName(),payloadIndex, startTime);
             payloadIndex++;
         }
         if (processed) {

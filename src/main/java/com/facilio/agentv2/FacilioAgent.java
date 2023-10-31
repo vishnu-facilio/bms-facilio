@@ -3,6 +3,7 @@ package com.facilio.agentv2;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.facilio.modules.FacilioIntEnum;
 import org.json.simple.JSONObject;
 
 import com.facilio.agent.AgentKeys;
@@ -318,6 +319,36 @@ public class FacilioAgent implements Serializable {
 
     @JsonInclude
     private long inboundConnectionId = -1;
+
+    @Setter
+    private AgentBMSAlarmProcessorType alarmProcessorType;
+    public AgentBMSAlarmProcessorType getAlarmProcessorTypeEnum() {
+        return alarmProcessorType;
+    }
+    public int getAlarmProcessorType() {
+        if (alarmProcessorType != null) {
+            return alarmProcessorType.getIndex();
+        }
+        return -1;
+    }
+
+    public void setAlarmProcessorType(int alarmProcessorType) {
+        this.alarmProcessorType = AgentBMSAlarmProcessorType.valueOf(alarmProcessorType);
+    }
+
+    public enum AgentBMSAlarmProcessorType implements FacilioIntEnum {
+        BMS_ALARM,
+        RAW_ALARM,
+        BOTH
+        ;
+
+        public static AgentBMSAlarmProcessorType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
 
     public JSONObject toJSON() {
         JSONObject payload = new JSONObject();

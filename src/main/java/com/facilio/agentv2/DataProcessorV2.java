@@ -7,7 +7,6 @@ import com.facilio.agent.alarms.AgentEvent;
 import com.facilio.agent.controller.FacilioControllerType;
 import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.PublishType;
-import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.IotMessage;
@@ -15,7 +14,6 @@ import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.PointsUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -33,12 +31,14 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRuleContext;
-import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.remotemonitoring.compute.RawAlarmUtil;
+import com.facilio.remotemonitoring.context.AlarmStrategy;
+import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
@@ -59,10 +59,7 @@ import java.util.stream.Collectors;
 public class DataProcessorV2 {
 
     private long orgId;
-    private String orgDomainName;
     private AgentUtilV2 agentUtil;
-    private ControllerUtilV2 controllerUtil;
-    private Map<Long, ControllerUtilV2> agentIdControllerUtilMap = new HashMap<>();
     private final Map<Long, String> controllerIdVsLastTimeSeriesTimeStamp = new HashMap<>();
 
     private static final Meter OTEL_METER = GlobalOpenTelemetry.getMeter(DataProcessorV2.class.getSimpleName());
@@ -75,14 +72,13 @@ public class DataProcessorV2 {
 
     private static final Logger LOGGER = LogManager.getLogger(DataProcessorV2.class.getName());
 
-    public DataProcessorV2(long orgId, String orgDomainName, AgentUtilV2 agentUtil) {
+    public DataProcessorV2(long orgId, AgentUtilV2 agentUtil) {
         this.orgId = orgId;
-        this.orgDomainName = orgDomainName;
         this.agentUtil = agentUtil;
     }
 
 
-    public boolean processRecord(JSONObject payload, EventUtil eventUtil, FacilioAgent agent,long recordId,int partitionId,String messageSource,int payloadIndex, long startTime) {
+    public boolean processRecord(JSONObject payload, FacilioAgent agent,long recordId,int partitionId,String messageSource,int payloadIndex, long startTime) {
         boolean processStatus = false;
         try {
 
@@ -159,23 +155,7 @@ public class DataProcessorV2 {
                     processStatus = processAlarmSourceEvents(agent,payload);
                     break;
                 case EVENTS:
-                    List<EventRuleContext> eventRules = new ArrayList<>();
-                    ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-                    List<EventRuleContext> ruleList = bean.getActiveEventRules();
-                    if (ruleList != null) {
-                        eventRules = ruleList;
-                    }
-                    
-                    JSONArray events;
-                    if(payload.containsKey(AgentConstants.EVENT_VERSION) && FacilioUtil.parseInt(payload.get(AgentConstants.EVENT_VERSION)) == 2){
-                        events = (JSONArray) payload.get(EventConstants.EventContextNames.EVENT_LIST);
-                    }
-                    else {
-                        events = new JSONArray();
-                        events.add(payload);
-                    }
-                    
-                    processStatus = eventUtil.processEvents(timeStamp, events, orgId, eventRules);
+                    processStatus = processIncomingAlarms(agent, payload, timeStamp);
                     break;
                 default:
                     throw new Exception("No such Publish type " + publishType.name());
@@ -540,6 +520,65 @@ public class DataProcessorV2 {
             return Long.parseLong(rows.get(0).get(AgentConstants.ID).toString());
         }
         return -1;
+    }
+
+    private boolean processIncomingAlarms(FacilioAgent agent, JSONObject payload, long timestamp) throws Exception {
+        JSONArray events;
+        if(payload.containsKey(AgentConstants.EVENT_VERSION) && FacilioUtil.parseInt(payload.get(AgentConstants.EVENT_VERSION)) == 2){
+            events = (JSONArray) payload.get(EventConstants.EventContextNames.EVENT_LIST);
+        }
+        else {
+            events = new JSONArray();
+            events.add(payload);
+        }
+
+        FacilioAgent.AgentBMSAlarmProcessorType alarmProcessorType = agent.getAlarmProcessorTypeEnum();
+        // If raw alarm or both
+        if (alarmProcessorType != null &&  alarmProcessorType != FacilioAgent.AgentBMSAlarmProcessorType.BMS_ALARM) {
+            Controller controller = getOrAddController(payload, agent);
+            processRawAlarm(agent,controller,events, timestamp);
+            if (alarmProcessorType == FacilioAgent.AgentBMSAlarmProcessorType.RAW_ALARM) {
+                return true;
+            }
+            // removing controller object from payload for bmsevent
+            payload.remove("controller");
+        }
+
+        processBmsEvents(events, timestamp);
+
+        return true;
+    }
+
+    private void processRawAlarm(FacilioAgent agent, Controller controller, JSONArray alarms, long timestamp) throws Exception {
+        for (int i = 0; i < alarms.size(); i++) {
+            JSONObject rawAlarm = (JSONObject) alarms.get(i);
+            IncomingRawAlarmContext alarmContext = new IncomingRawAlarmContext();
+            alarmContext.setMessage((String) rawAlarm.get("message"));
+            alarmContext.setController(controller);
+            alarmContext.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.CONTROLLER);
+            String state = (String) rawAlarm.get("state");
+            if(state.equals("Alarm")) {
+                alarmContext.setOccurredTime(timestamp);
+            }
+            else {
+                alarmContext.setClearedTime(timestamp);
+            }
+            if (controller.getControllerType() == FacilioControllerType.E2.asInt()) {
+                alarmContext.setStrategy(AlarmStrategy.RETURN_TO_NORMAL.getIndex());
+            }
+            RawAlarmUtil.pushToStormRawAlarmQueue(alarmContext);
+        }
+    }
+
+
+    private void processBmsEvents(JSONArray events, long timestamp) throws Exception {
+        List<EventRuleContext> eventRules = new ArrayList<>();
+        ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+        List<EventRuleContext> ruleList = bean.getActiveEventRules();
+        if (ruleList != null) {
+            eventRules = ruleList;
+        }
+        bean.processEvents(timestamp, events, eventRules);
     }
 
 }

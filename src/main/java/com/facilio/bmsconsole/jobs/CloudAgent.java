@@ -37,6 +37,7 @@ public class CloudAgent extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception {
 		try {
+			LOGGER.debug("Cloud Job started");
 			long jobId = jc.getJobId();
 			agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
 			FacilioAgent agent = agentBean.getAgent(jobId);
@@ -159,6 +160,12 @@ public class CloudAgent extends FacilioJob {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(time);
 		zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
 		return DateTimeUtil.getMillis(zdt, true);
+	}
+
+	@Override
+	public void handleTimeOut() {
+		LOGGER.error("The cloud agent job is timed out");
+		super.handleTimeOut();
 	}
 }
 

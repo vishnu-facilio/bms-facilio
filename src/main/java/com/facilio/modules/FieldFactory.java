@@ -965,6 +965,11 @@ public class FieldFactory extends BaseFieldFactory {
         agentType.setValues(FacilioEnum.getEnumValues(agentType.getEnumName()));
         fields.add(agentType);
 
+        SystemEnumField alarmProcessorType = (SystemEnumField) getDefaultField(AgentConstants.ALARM_PROCESSOR_TYPE, "Alarm Processor Type", "ALARM_PROCESSOR_TYPE", module, FieldType.SYSTEM_ENUM);
+        alarmProcessorType.setEnumName("AgentBMSAlarmProcessorType");
+        alarmProcessorType.setValues(FacilioEnum.getEnumValues(alarmProcessorType.getEnumName()));
+        fields.add(alarmProcessorType);
+
         StringField name = (StringField) getDefaultField(AgentConstants.DISPLAY_NAME, "Name", "DISPLAY_NAME", module, FieldType.STRING);
         name.setMainField(true);
         fields.add(name);
