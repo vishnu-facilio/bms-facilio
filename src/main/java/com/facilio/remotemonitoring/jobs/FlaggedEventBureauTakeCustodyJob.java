@@ -3,7 +3,6 @@ package com.facilio.remotemonitoring.jobs;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
@@ -13,7 +12,6 @@ import com.facilio.remotemonitoring.signup.FlaggedEventBureauActionModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
-import com.facilio.tasker.FacilioTimer;
 import lombok.extern.log4j.Log4j;
 
 import java.util.Collections;
@@ -31,7 +29,7 @@ public class FlaggedEventBureauTakeCustodyJob extends FacilioJob {
             if (bureauAction != null && bureauAction.getFlaggedEvent() != null && bureauAction.getFlaggedEvent().getId() > -1) {
                 FlaggedEventContext flaggedEvent = V3RecordAPI.getRecord(FlaggedEventModule.MODULE_NAME, bureauAction.getFlaggedEvent().getId(), FlaggedEventContext.class);
                 if (flaggedEvent != null) {
-                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedEventRule().getId());
+                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
                     if (rule != null && rule.shouldCreateWorkorder() && flaggedEvent.getStatus() != null && flaggedEvent.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN) {
                         if(bureauAction.getTakeCustodyPeriod() != null && bureauAction.getTakeCustodyPeriod() > 0) {
                             if (bureauAction.getEventStatus() != null && bureauAction.getEventStatus().getState() != null && bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN) {

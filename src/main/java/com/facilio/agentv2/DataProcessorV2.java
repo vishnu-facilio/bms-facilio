@@ -37,7 +37,7 @@ import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
-import com.facilio.remotemonitoring.context.AlarmStrategy;
+import com.facilio.remotemonitoring.context.AlarmApproach;
 import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
@@ -564,7 +564,7 @@ public class DataProcessorV2 {
                 alarmContext.setClearedTime(timestamp);
             }
             if (controller.getControllerType() == FacilioControllerType.E2.asInt()) {
-                alarmContext.setStrategy(AlarmStrategy.RETURN_TO_NORMAL.getIndex());
+                alarmContext.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
             }
             RawAlarmUtil.pushToStormRawAlarmQueue(alarmContext);
         }

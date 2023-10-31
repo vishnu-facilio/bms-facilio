@@ -42,9 +42,9 @@ public class AlarmCountsInAPeriodOfTimeRTNHandler implements AlarmCriteriaHandle
     public void createFilteredAlarm(RawAlarmContext rawAlarm,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         if(rawAlarm != null && !rawAlarm.isFiltered()) {
             FilteredAlarmContext filteredAlarm = FilterAlarmUtil.constructFilteredAlarm(rawAlarm);
-            filteredAlarm.setAlarmFilterRule(filterRuleCriteria.getAlarmFilterRule());
-            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
+            filteredAlarm.setAlarmCorrelationRule(filterRuleCriteria.getAlarmFilterRule());
             RawAlarmUtil.markAsFiltered(rawAlarm.getId());
+            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
         }
     }
 
@@ -59,7 +59,7 @@ public class AlarmCountsInAPeriodOfTimeRTNHandler implements AlarmCriteriaHandle
         criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL));
         criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
 
         if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {

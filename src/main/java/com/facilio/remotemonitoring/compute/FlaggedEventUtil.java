@@ -7,11 +7,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
@@ -46,14 +48,12 @@ import com.facilio.wmsv2.constants.Topics;
 import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 import com.google.common.collect.ImmutableMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -126,7 +126,7 @@ public class FlaggedEventUtil {
 
     public static void pushToStormFlaggedEventQueue(FilteredAlarmContext filteredAlarm) throws Exception {
         long controllerId = -1;
-        if(filteredAlarm.getController() != null) {
+        if (filteredAlarm.getController() != null) {
             controllerId = filteredAlarm.getController().getId();
         }
         if (AccountUtil.getCurrentOrg() != null) {
@@ -147,7 +147,7 @@ public class FlaggedEventUtil {
         FlaggedEventContext flaggedEventContext = new FlaggedEventContext();
         flaggedEventContext.setName(filteredAlarm.getMessage());
         flaggedEventContext.setController(filteredAlarm.getController());
-        flaggedEventContext.setFlaggedEventRule(flaggedEventRule);
+        flaggedEventContext.setFlaggedAlarmProcess(flaggedEventRule);
         flaggedEventContext.setStatus(FlaggedEventContext.FlaggedEventStatus.OPEN);
         flaggedEventContext.setClient(filteredAlarm.getClient());
         flaggedEventContext.setSite(filteredAlarm.getSite());
@@ -156,7 +156,6 @@ public class FlaggedEventUtil {
         List<FlaggedEventContext> records = Constants.getRecordList(createContext);
         if (CollectionUtils.isNotEmpty(records)) {
             FlaggedEventContext event = records.get(0);
-            postCreateFlaggedEventIMS(event);
             return event;
         }
         return null;
@@ -184,11 +183,11 @@ public class FlaggedEventUtil {
             AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
             Map<String, Object> workorderProp = null;
             boolean createWO = false;
-            if (flaggedEventContext != null && flaggedEventContext.getFlaggedEventRule() != null) {
+            if (flaggedEventContext != null && flaggedEventContext.getFlaggedAlarmProcess() != null) {
                 if (!(flaggedEventContext.getStatus() == null || (flaggedEventContext.getStatus() != null && flaggedEventContext.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN))) {
                     return;
                 }
-                FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEventContext.getFlaggedEventRule().getId());
+                FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEventContext.getFlaggedAlarmProcess().getId());
                 if (flaggedEventRule != null && flaggedEventRule.shouldCreateWorkorder()) {
                     createWO = true;
                     List<FlaggedEventWorkorderFieldMappingContext> fieldMapping = flaggedEventRule.getFieldMapping();
@@ -207,13 +206,17 @@ public class FlaggedEventUtil {
                                 workorderProp.put(woField.getName(), replacedString);
                             } else {
                                 if (woField.getDataTypeEnum() == FieldType.LOOKUP) {
-                                    if (mapping.getRightFieldId() != null) {
+                                    if (mapping.getValueText() != null) {
+                                        Map<String, Object> insertProp = new HashMap<>();
+                                        insertProp.put(RemoteMonitorConstants.ID, mapping.getValueText());
+                                        workorderProp.put(woField.getName(), insertProp);
+                                    } else if (mapping.getRightFieldId() != null) {
                                         FacilioField flaggedEventField = modBean.getField(mapping.getRightFieldId(), FlaggedEventModule.MODULE_NAME);
                                         if (flaggedEventField != null) {
                                             Map<String, Object> prop = (Map<String, Object>) flaggedEventProp.get(flaggedEventField.getName());
-                                            if (MapUtils.isNotEmpty(prop) && prop.containsKey("id")) {
+                                            if (MapUtils.isNotEmpty(prop) && prop.containsKey(RemoteMonitorConstants.ID)) {
                                                 Map<String, Object> insertProp = new HashMap<>();
-                                                insertProp.put("id", prop.get("id"));
+                                                insertProp.put(RemoteMonitorConstants.ID, prop.get(RemoteMonitorConstants.ID));
                                                 workorderProp.put(woField.getName(), insertProp);
                                             }
                                         }
@@ -229,7 +232,7 @@ public class FlaggedEventUtil {
                         if (workorderProp == null) {
                             workorderProp = new HashMap<>();
                         }
-                        workorderProp.put("formId", flaggedEventRule.getWorkorderTemplateId());
+                        workorderProp.put(FacilioConstants.ContextNames.FORM_ID, flaggedEventRule.getWorkorderTemplateId());
                     }
                 }
             }
@@ -239,15 +242,27 @@ public class FlaggedEventUtil {
                 }
                 Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEventContext.getController().getId());
                 if (controller != null) {
-                    workorderProp.put("siteId", controller.getSiteId());
+                    workorderProp.put(FacilioConstants.ContextNames.SITE_ID, controller.getSiteId());
                     ResourceContext resource = new ResourceContext();
                     resource.setId(controller.getSiteId());
-                    workorderProp.put("resource", FieldUtil.getAsProperties(resource));
+                    workorderProp.put(FacilioConstants.ContextNames.RESOURCE, FieldUtil.getAsProperties(resource));
                 }
-                if (!workorderProp.containsKey("subject")) {
-                    workorderProp.put("subject", flaggedEventContext.getName());
+                if (!workorderProp.containsKey(RemoteMonitorConstants.SUBJECT)) {
+                    workorderProp.put(RemoteMonitorConstants.SUBJECT, flaggedEventContext.getName());
                 }
-                workorderProp.put("flaggedEvent", ImmutableMap.of("id", flaggedEventId));
+
+                //compute site id from resource lookup field value
+                if (!workorderProp.containsKey(FacilioConstants.ContextNames.SITE_ID) && workorderProp.containsKey(FacilioConstants.ContextNames.RESOURCE)) {
+                    Map<String, Object> resourceProp = (Map<String, Object>) workorderProp.get(FacilioConstants.ContextNames.RESOURCE);
+                    if (MapUtils.isNotEmpty(resourceProp) && resourceProp.containsKey(RemoteMonitorConstants.ID)) {
+                        V3ResourceContext resource = V3RecordAPI.getRecord(FacilioConstants.ContextNames.RESOURCE, Long.valueOf((String) resourceProp.get("id")), V3ResourceContext.class);
+                        if (resource != null && resource.getSiteId() > -1) {
+                            workorderProp.put(FacilioConstants.ContextNames.SITE_ID, resource.getSiteId());
+                        }
+                    }
+                }
+
+                workorderProp.put(RemoteMonitorConstants.FlaggedEvent.FLAGGED_EVENT, ImmutableMap.of(RemoteMonitorConstants.ID, flaggedEventId));
                 FacilioContext context = V3Util.createRecord(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER), workorderProp);
                 if (context != null) {
                     Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
@@ -256,10 +271,11 @@ public class FlaggedEventUtil {
                         if (CollectionUtils.isNotEmpty(records)) {
                             ModuleBaseWithCustomFields woRecord = records.get(0);
                             Long workorderId = woRecord.getId();
+                            updateInitialWorkorderStatus(workorderProp, woRecord);
                             if (workorderId != null) {
                                 Map<String, Object> updateMap = new HashMap<>();
-                                updateMap.put("workorder", ImmutableMap.of("id", workorderId));
-                                updateMap.put("status", FlaggedEventContext.FlaggedEventStatus.WORKORDER_CREATED.getIndex());
+                                updateMap.put(FacilioConstants.ContextNames.WORK_ORDER, ImmutableMap.of(RemoteMonitorConstants.ID, workorderId));
+                                updateMap.put(FacilioConstants.ContextNames.STATUS, FlaggedEventContext.FlaggedEventStatus.WORKORDER_CREATED.getIndex());
                                 V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, updateMap, Collections.singletonList(flaggedEventId), false);
                                 if (flaggedEventContext.getCurrentBureauActionDetail() != null && manualAction) {
                                     changeFlaggedEventActionStatus(flaggedEventContext.getCurrentBureauActionDetail().getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.ACTION_TAKEN);
@@ -272,6 +288,27 @@ public class FlaggedEventUtil {
         }
     }
 
+    private static void updateInitialWorkorderStatus(Map<String,Object> prop,ModuleBaseWithCustomFields workorder) throws Exception {
+        if(prop.containsKey(FacilioConstants.ContextNames.MODULE_STATE)) {
+            Map<String,Object> statusMap = (Map<String,Object>) prop.get(FacilioConstants.ContextNames.MODULE_STATE);
+            if(MapUtils.isNotEmpty(statusMap)) {
+                String statusId = (String) statusMap.get(RemoteMonitorConstants.ID);
+                if(statusId != null) {
+                    FacilioStatus status = TicketAPI.getStatus(Long.valueOf(statusId));
+                    if (status != null) {
+                        updateWorkorderStatus(workorder, status);
+                    }
+                }
+            }
+        }
+    }
+    private static void updateWorkorderStatus(ModuleBaseWithCustomFields workorder,FacilioStatus status) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioChain chain = TransactionChainFactory.getHistoryUpdateChain();
+        FacilioContext facilioContext = chain.getContext();
+        facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
+        StateFlowRulesAPI.updateState(workorder, modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER), status, false, facilioContext);
+    }
     private static void changeFlaggedEventActionStatus(Long actionId, FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus status) throws Exception {
         Map<String, Object> updateMap = new HashMap<>();
         updateMap.put("eventStatus", status.getIndex());
@@ -292,12 +329,12 @@ public class FlaggedEventUtil {
         if (flaggedEventRuleId != null && clientId != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
-            if(controllerId != null && controllerId > 0) {
+            if(controllerId != null) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(controllerId), NumberOperators.EQUALS));
             } else {
                 criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
             }
-            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME, String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.CLEARED.name(), FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.name()), ","), StringOperators.ISN_T));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(clientId), NumberOperators.EQUALS));
             if (assetId != null && assetId > 0) {
@@ -340,7 +377,7 @@ public class FlaggedEventUtil {
     }
 
     private static List<FilteredAlarmContext> getOpenFilteredAlarmsForFlaggedRule(FilteredAlarmContext filteredAlarm) throws Exception {
-        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getFlaggedEventRule() != null) {
+        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getFlaggedAlarmProcess() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
             FilteredAlarmContext lastClearedFilterAlarm = getLastClearedAlarm(filteredAlarm);
@@ -353,7 +390,7 @@ public class FlaggedEventUtil {
             if(filteredAlarm.getController() != null) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
             }
-            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(filteredAlarm.getFlaggedEventRule().getId()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, String.valueOf(filteredAlarm.getFlaggedAlarmProcess().getId()), NumberOperators.EQUALS));
             if (filteredAlarm.getAsset() != null && filteredAlarm.getAsset().getId() > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(filteredAlarm.getAsset().getId()), NumberOperators.EQUALS));
             } else {
@@ -370,14 +407,14 @@ public class FlaggedEventUtil {
     }
 
     private static FilteredAlarmContext getLastClearedAlarm(FilteredAlarmContext filteredAlarm) throws Exception {
-        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getFlaggedEventRule() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getController() != null && filteredAlarm.getFlaggedEventRule() != null) {
+        if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getFlaggedAlarmProcess() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getController() != null && filteredAlarm.getFlaggedAlarmProcess() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(filteredAlarm.getClient().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_NOT_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(filteredAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", "flaggedEventRule", String.valueOf(filteredAlarm.getFlaggedEventRule().getId()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, String.valueOf(filteredAlarm.getFlaggedAlarmProcess().getId()), NumberOperators.EQUALS));
 
             SelectRecordsBuilder<FilteredAlarmContext> selectRecordsBuilder = new SelectRecordsBuilder<FilteredAlarmContext>()
                     .select(modBean.getAllFields(FilteredAlarmModule.MODULE_NAME))
@@ -553,9 +590,16 @@ public class FlaggedEventUtil {
     }
 
     public static void updateFlaggedEvent(FlaggedEventContext flaggedEvent, FilteredAlarmContext filteredAlarmContext) throws Exception {
-        Map<String, Object> prop = new HashMap();
-        prop.put("flaggedEvent", FieldUtil.getAsProperties(flaggedEvent));
-        V3Util.updateBulkRecords("filteredAlarm", prop, Collections.singletonList(filteredAlarmContext.getId()), false);
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FilteredAlarmContext updateFilteredAlarm = new FilteredAlarmContext();
+        updateFilteredAlarm.setFlaggedAlarm(flaggedEvent);
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(filteredAlarmContext.getId()), NumberOperators.EQUALS));
+        UpdateRecordBuilder<FilteredAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<FilteredAlarmContext>()
+                .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
+                .fields(Arrays.asList(modBean.getField(FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, FilteredAlarmModule.MODULE_NAME),modBean.getField(FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, FilteredAlarmModule.MODULE_NAME)))
+                .andCriteria(criteria);
+        updateRecordBuilder.update(updateFilteredAlarm);
     }
 
     public static void closeFlaggedEvent(Long flaggedEventId) throws Exception {
@@ -569,17 +613,14 @@ public class FlaggedEventUtil {
         if (flaggedEvent != null && flaggedEvent.getWorkorder() != null) {
             V3WorkOrderContext workorder = V3RecordAPI.getRecord(FacilioConstants.ContextNames.WORK_ORDER, flaggedEvent.getWorkorder().getId(), V3WorkOrderContext.class);
             if (workorder != null && workorder.getStatus() != null) {
-                if (flaggedEvent.getFlaggedEventRule() != null) {
-                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedEventRule().getId());
+                if (flaggedEvent.getFlaggedAlarmProcess() != null) {
+                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
                     if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null && rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseStatus() != null) {
                         List<FacilioStatus> workorderCloseCommandStatuses = rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseCommandCriteria();
                         if (CollectionUtils.isNotEmpty(workorderCloseCommandStatuses)) {
                             for (FacilioStatus criteriaStatus : workorderCloseCommandStatuses) {
                                 if (criteriaStatus != null && criteriaStatus.getId() == workorder.getStatus().getId()) {
-                                    FacilioChain chain = TransactionChainFactory.getHistoryUpdateChain();
-                                    FacilioContext facilioContext = chain.getContext();
-                                    facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-                                    StateFlowRulesAPI.updateState(workorder, modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER), rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseStatus(), false, facilioContext);
+                                    updateWorkorderStatus(workorder,rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseStatus());
                                 }
                             }
                         }
@@ -625,41 +666,65 @@ public class FlaggedEventUtil {
             }
         }
     }
+    public static void checkAndCloseAlarmFlaggedEvent(Long flaggedEventId) throws Exception {
+        if(flaggedEventId != null && flaggedEventId > -1) {
+            if(isAllFlaggedEventAlarmsClosed(flaggedEventId)) {
+                closeFlaggedEvent(flaggedEventId);
+            }
+        }
+    }
     public static boolean isAllFlaggedEventAlarmsClosed(long flaggedEventId) throws Exception {
         FlaggedEventContext event = V3RecordAPI.getRecord(FlaggedEventModule.MODULE_NAME,flaggedEventId,FlaggedEventContext.class);
-        if(event != null && event.getFlaggedEventRule() != null) {
-            List<FlaggedEventRuleAlarmTypeRel> alarmTypes = RemoteMonitorUtils.getFlaggedEventRuleAlarmTypeRel(event.getFlaggedEventRule().getId());
+        if(event != null && event.getFlaggedAlarmProcess() != null) {
+            List<FlaggedEventRuleAlarmTypeRel> alarmTypes = RemoteMonitorUtils.getFlaggedEventRuleAlarmTypeRel(event.getFlaggedAlarmProcess().getId());
             if(CollectionUtils.isNotEmpty(alarmTypes)) {
                 for(FlaggedEventRuleAlarmTypeRel alarmType : alarmTypes) {
                     if(alarmType != null && alarmType.getAlarmType() != null) {
+
+
                         FilteredAlarmContext lastFilteredAlarm = getLastAlarmForFlaggedEvent(flaggedEventId, alarmType.getAlarmType().getId());
                         if (lastFilteredAlarm != null) {
                             if (lastFilteredAlarm.getClearedTime() != null && lastFilteredAlarm.getClearedTime() > 0) {
-                                return false;
+                                return true;
                             }
                         }
                     }
                 }
             }
-            return true;
+            return false;
         }
-        return true;
+        return false;
     }
 
 
     private static FilteredAlarmContext getLastAlarmForFlaggedEvent(long flaggedEventId, Long alarmTypeId) throws Exception {
         if(flaggedEventId > -1 && alarmTypeId != null && alarmTypeId > -1) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT", "flaggedEvent",String.valueOf(flaggedEventId), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType",String.valueOf(alarmTypeId), NumberOperators.EQUALS));
-            SelectRecordsBuilder<FilteredAlarmContext> selectRecordsBuilder = new SelectRecordsBuilder<FilteredAlarmContext>()
-                    .select(modBean.getAllFields(FilteredAlarmModule.MODULE_NAME))
-                    .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
-                    .beanClass(FilteredAlarmContext.class)
-                    .andCriteria(criteria)
-                    .orderBy("SYS_CREATED_TIME desc");
-            return selectRecordsBuilder.fetchFirst();
+            FlaggedEventContext event = FlaggedEventUtil.getFlaggedEvent(flaggedEventId);
+            if(event != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                Criteria criteria = new Criteria();
+                criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT", FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, String.valueOf(flaggedEventId), NumberOperators.EQUALS));
+                criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(alarmTypeId), NumberOperators.EQUALS));
+                criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(event.getClient().getId()), NumberOperators.EQUALS));
+                criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(event.getSite().getId()), NumberOperators.EQUALS));
+                if(event.getController() != null && event.getController().getId() > 0) {
+                    criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(event.getController().getId()), NumberOperators.EQUALS));
+                } else {
+                    criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+                }
+                if(event.getAsset() != null && event.getAsset().getId() > 0) {
+                    criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(event.getAsset().getId()), NumberOperators.EQUALS));
+                } else {
+                    criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
+                }
+                SelectRecordsBuilder<FilteredAlarmContext> selectRecordsBuilder = new SelectRecordsBuilder<FilteredAlarmContext>()
+                        .select(modBean.getAllFields(FilteredAlarmModule.MODULE_NAME))
+                        .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
+                        .beanClass(FilteredAlarmContext.class)
+                        .andCriteria(criteria)
+                        .orderBy("SYS_CREATED_TIME desc");
+                return selectRecordsBuilder.fetchFirst();
+            }
         }
         return null;
     }

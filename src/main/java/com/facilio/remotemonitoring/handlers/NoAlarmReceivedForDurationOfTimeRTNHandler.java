@@ -33,9 +33,9 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
     public void createFilteredAlarm(RawAlarmContext rawAlarm,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         if (rawAlarm != null && rawAlarm.getClearedTime() == null || rawAlarm.getClearedTime() <= 0) {
             FilteredAlarmContext filteredAlarm = FilterAlarmUtil.constructFilteredAlarm(rawAlarm);
-            filteredAlarm.setAlarmFilterRule(filterRuleCriteria.getAlarmFilterRule());
-            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
+            filteredAlarm.setAlarmCorrelationRule(filterRuleCriteria.getAlarmFilterRule());
             RawAlarmUtil.markAsFiltered(rawAlarm.getId());
+            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
         }
     }
 
@@ -48,7 +48,7 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
             criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(rawAlarm.getController().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(rawAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_DEFINITION", "alarmDefinition", String.valueOf(rawAlarm.getAlarmDefinition().getId()), NumberOperators.EQUALS));
-            criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
 
             if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
@@ -71,7 +71,7 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
                 controllerAlarmInfo.setAlarmType(rawAlarm.getAlarmType());
                 controllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());
                 controllerAlarmInfo.setFiltered(false);
-                controllerAlarmInfo.setStrategy(AlarmStrategy.RETURN_TO_NORMAL.getIndex());
+                controllerAlarmInfo.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
                 V3RecordAPI.addRecord(false, Collections.singletonList(controllerAlarmInfo), controllerInfoModule, modBean.getAllFields(controllerInfoModule.getName()));
             }
         }

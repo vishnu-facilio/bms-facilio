@@ -3909,7 +3909,7 @@ public class FacilioConstants {
 		public static final String SERVICE_APP = "service";
 		public static final String IWMS_APP = "iwms";
 		public static final String ENERGY_APP = "energy";
-		public static final String REMOTE_MONITORING = "remotemonitor";
+		public static final String REMOTE_MONITORING = "rm";
 
 
 		public static final String FSM_APP = "fsm";

@@ -59,7 +59,7 @@ public class AddOrUpdateBureauConfigCommand extends FacilioCommand {
                             Criteria lookupCriteria = new Criteria();
                             lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("order", FlaggedEventBureauEvaluationModule.MODULE_NAME), String.valueOf(order), NumberOperators.EQUALS));
                             criteria.addAndCondition(CriteriaAPI.getCondition(bureauDetailField, lookupCriteria, LookupOperator.LOOKUP));
-                            criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+                            criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME, FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
 
                             FieldChangeFieldContext changeFieldContext = new FieldChangeFieldContext();
                             changeFieldContext.setFieldId(bureauDetailField.getFieldId());

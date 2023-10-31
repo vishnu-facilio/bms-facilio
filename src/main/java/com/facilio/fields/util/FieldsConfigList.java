@@ -1,5 +1,7 @@
 package com.facilio.fields.util;
 
+import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import org.apache.kafka.common.protocol.types.Field;
 
 import java.util.Arrays;
@@ -202,7 +204,7 @@ public class FieldsConfigList {
             "recurringInfoId", "permitType");
     public static final List<String> RAW_ALARM_FIELDS_TO_INCLUDE = Arrays.asList(
             "id", "message", "site", "client", "controller", "alarmDefinition",
-            "alarmCategory", "alarmType", "strategy","asset", "parentAlarm", "occurredTime",
+            "alarmCategory", "alarmType", "alarmApproach","asset", "parentAlarm", "occurredTime",
             "clearedTime", "filtered", "processed", "sysCreatedByPeople", "sysCreatedTime"
     );
 
@@ -231,7 +233,7 @@ public class FieldsConfigList {
 
     public static final List<String> ALARM_FILTER_RULE_FIELDS_TO_INCLUDE = Arrays.asList(
             "id", "name", "description", "client", "alarmType",
-            "strategy", "filterType", "priority", "status", "filterType",
+            "alarmApproach", "filterType", "priority", "status", "filterType",
             "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
             "sysModifiedByPeople"
     );
@@ -239,7 +241,7 @@ public class FieldsConfigList {
     public static final List<String> FILTERED_ALARM_FIELDS_TO_INCLUDE = Arrays.asList(
             "id", "message", "controller", "client", "site",
             "alarmType", "alarmCategory","asset", "occurredTime", "clearedTime",
-            "rawAlarm", "alarmFilterRule", "flaggedEvent"
+            "alarm", FilteredAlarmModule.ALARM_FILTER_RULE_FIELD_NAME, FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME
 
     );
 
@@ -250,8 +252,8 @@ public class FieldsConfigList {
     );
 
     public static final List<String> FLAGGED_EVENT_FIELDS_TO_INCLUDE = Arrays.asList(
-            "id", "site", "client", "controller", "flaggedEventRule",
-            "status", "workorder", "assignedPeople", "team",
+            "id", "site", "client", "controller", FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,
+            "status", "workorder", "assignedPeople", "team", "asset",
             "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
             "sysModifiedByPeople"
     );

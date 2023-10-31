@@ -57,7 +57,7 @@ public class FlaggedEventRuleModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Flagged Event Rules");
+        allView.setDisplayName("All Flagged Alarm Process");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(FlaggedEventRuleModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();

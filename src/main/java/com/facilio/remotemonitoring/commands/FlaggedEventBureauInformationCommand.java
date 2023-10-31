@@ -1,7 +1,6 @@
 package com.facilio.remotemonitoring.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.context.communityfeatures.announcement.PeopleAnnouncementContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.Criteria;
@@ -12,7 +11,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
-import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.v3.context.Constants;
@@ -33,8 +31,8 @@ public class FlaggedEventBureauInformationCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if (CollectionUtils.isNotEmpty(flaggedEvents)) {
             for (FlaggedEventContext flaggedEvent : flaggedEvents) {
-                if (flaggedEvent.getFlaggedEventRule() != null) {
-                    List<FlaggedEventRuleBureauEvaluationContext> bureauEvaluations = getBureauEvaluation(flaggedEvent.getFlaggedEventRule().getId());
+                if (flaggedEvent.getFlaggedAlarmProcess() != null) {
+                    List<FlaggedEventRuleBureauEvaluationContext> bureauEvaluations = getBureauEvaluation(flaggedEvent.getFlaggedAlarmProcess().getId());
                     if (CollectionUtils.isNotEmpty(bureauEvaluations)) {
                         List<ModuleBaseWithCustomFields> dataList = new ArrayList<>();
                         for (FlaggedEventRuleBureauEvaluationContext evaluationContext : bureauEvaluations) {

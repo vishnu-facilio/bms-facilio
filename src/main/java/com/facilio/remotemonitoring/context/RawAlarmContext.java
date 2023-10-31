@@ -1,20 +1,15 @@
 package com.facilio.remotemonitoring.context;
 
 import com.facilio.agentv2.controller.Controller;
-import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioStringEnum;
-import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-import java.util.Map;
 
 @Getter
 @Setter
@@ -28,7 +23,7 @@ public class RawAlarmContext extends V3Context {
     private V3SiteContext site;
     private Boolean filtered;
     private Boolean processed;
-    private AlarmStrategy strategy;
+    private AlarmApproach alarmApproach;
     private Long occurredTime;
     private Long clearedTime;
     private Long filterRuleCriteriaId;
@@ -65,20 +60,20 @@ public class RawAlarmContext extends V3Context {
         return filtered;
     }
 
-    public AlarmStrategy getStrategyEnum() {
-        return strategy;
+    public AlarmApproach getAlarmApproachEnum() {
+        return alarmApproach;
     }
 
-    public Integer getStrategy() {
-        if (strategy != null) {
-            return strategy.getIndex();
+    public Integer getAlarmApproach() {
+        if (alarmApproach != null) {
+            return alarmApproach.getIndex();
         }
         return null;
     }
 
-    public void setStrategy(Integer strategy) {
-        if (strategy != null) {
-            this.strategy = AlarmStrategy.valueOf(strategy);
+    public void setAlarmApproach(Integer alarmApproach) {
+        if (alarmApproach != null) {
+            this.alarmApproach = AlarmApproach.valueOf(alarmApproach);
         }
     }
 }

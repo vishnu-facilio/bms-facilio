@@ -12,15 +12,15 @@ import com.facilio.modules.fields.*;
 
 public class AlarmFilterRuleModule extends SignUpData {
 
-    public static final String MODULE_NAME = "alarmFilterRule";
+    public static final String MODULE_NAME = "alarmCorrelationRule";
 
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = new FacilioModule();
         module.setName(MODULE_NAME);
-        module.setDisplayName("Alarm Filter Rule");
-        module.setDescription("Alarm Filter Rule");
+        module.setDisplayName("Alarm Correlation Rule");
+        module.setDescription("Alarm Correlation Rule");
         module.setTableName("Alarm_Filter_Rule");
         module.setCustom(false);
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);
@@ -70,16 +70,16 @@ public class AlarmFilterRuleModule extends SignUpData {
         alarmType.setLookupModule(modBean.getModule(AlarmTypeModule.MODULE_NAME));
         modBean.addField(alarmType);
 
-        SystemEnumField strategyField = new SystemEnumField();
-        strategyField.setDefault(true);
-        strategyField.setName("strategy");
-        strategyField.setDisplayName("Strategy");
-        strategyField.setModule(mod);
-        strategyField.setEnumName("AlarmStrategy");
-        strategyField.setDataType(FieldType.SYSTEM_ENUM);
-        strategyField.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
-        strategyField.setColumnName("STRATEGY");
-        modBean.addField(strategyField);
+        SystemEnumField alarmApproach = new SystemEnumField();
+        alarmApproach.setDefault(true);
+        alarmApproach.setName("alarmApproach");
+        alarmApproach.setDisplayName("Alarm Approach");
+        alarmApproach.setModule(mod);
+        alarmApproach.setEnumName("AlarmApproach");
+        alarmApproach.setDataType(FieldType.SYSTEM_ENUM);
+        alarmApproach.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+        alarmApproach.setColumnName("STRATEGY");
+        modBean.addField(alarmApproach);
 
         LookupField clientField = new LookupField();
         clientField.setDefault(true);
@@ -121,16 +121,16 @@ public class AlarmFilterRuleModule extends SignUpData {
         siteCriteriaId.setColumnName("SITE_CRITERIA_ID");
         modBean.addField(siteCriteriaId);
 
-        StringSystemEnumField filterType = new StringSystemEnumField();
-        filterType.setDefault(true);
-        filterType.setName("filterType");
-        filterType.setDisplayName("Filter Type");
-        filterType.setModule(mod);
-        filterType.setEnumName("FilterType");
-        filterType.setDataType(FieldType.STRING_SYSTEM_ENUM);
-        filterType.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
-        filterType.setColumnName("FILTER_TYPE");
-        modBean.addField(filterType);
+        StringSystemEnumField ruleType = new StringSystemEnumField();
+        ruleType.setDefault(true);
+        ruleType.setName("ruleType");
+        ruleType.setDisplayName("Rule Type");
+        ruleType.setModule(mod);
+        ruleType.setEnumName("RuleType");
+        ruleType.setDataType(FieldType.STRING_SYSTEM_ENUM);
+        ruleType.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
+        ruleType.setColumnName("FILTER_TYPE");
+        modBean.addField(ruleType);
 
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));

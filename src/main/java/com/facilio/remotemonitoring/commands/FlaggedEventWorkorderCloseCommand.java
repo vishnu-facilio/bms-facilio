@@ -30,9 +30,9 @@ public class FlaggedEventWorkorderCloseCommand extends FacilioCommand {
                     FlaggedEventContext flaggedEvent = workorder.getFlaggedEvent();
                     if (flaggedEvent != null) {
                         FlaggedEventContext fetchedFlaggedEvent = FlaggedEventUtil.getFlaggedEvent(flaggedEvent.getId());
-                        if (fetchedFlaggedEvent != null && fetchedFlaggedEvent.getFlaggedEventRule() != null) {
+                        if (fetchedFlaggedEvent != null && fetchedFlaggedEvent.getFlaggedAlarmProcess() != null) {
                             AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
-                            FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(fetchedFlaggedEvent.getFlaggedEventRule().getId());
+                            FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(fetchedFlaggedEvent.getFlaggedAlarmProcess().getId());
                             if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null) {
                                 FlaggedEventRuleClosureConfigContext closure = FlaggedEventUtil.getFlaggedEventClosureConfig(rule.getFlaggedEventRuleClosureConfig().getId());
                                 if (closure != null) {

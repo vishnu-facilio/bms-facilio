@@ -25,9 +25,9 @@ public class CloseFlaggedEventCommand extends FacilioCommand {
         if(id != null) {
             if(id != null) {
                 FlaggedEventContext event = FlaggedEventUtil.getFlaggedEvent(id);
-                if(event != null && event.getFlaggedEventRule() != null) {
+                if(event != null && event.getFlaggedAlarmProcess() != null) {
                     AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
-                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(event.getFlaggedEventRule().getId());
+                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(event.getFlaggedAlarmProcess().getId());
                     if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null) {
                         FlaggedEventRuleClosureConfigContext closure = rule.getFlaggedEventRuleClosureConfig();
                         boolean canClose = FlaggedEventUtil.allowClose(event, closure);

@@ -19,9 +19,9 @@ public class FilteredAlarmContext extends V3Context {
     private Controller controller;
     private Long occurredTime;
     private Long clearedTime;
-    private RawAlarmContext rawAlarm;
-    private FlaggedEventRuleContext flaggedEventRule;
-    private FlaggedEventContext flaggedEvent;
-    private AlarmFilterRuleContext alarmFilterRule;
+    private RawAlarmContext alarm;
+    private FlaggedEventRuleContext flaggedAlarmProcess;
+    private FlaggedEventContext flaggedAlarm;
+    private AlarmFilterRuleContext alarmCorrelationRule;
     private V3AssetContext asset;
 }

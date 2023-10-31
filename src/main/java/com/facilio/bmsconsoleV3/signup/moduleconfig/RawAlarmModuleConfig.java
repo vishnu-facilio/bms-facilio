@@ -55,7 +55,7 @@ public class RawAlarmModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Raw Alarms");
+        allView.setDisplayName("All Alarms");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(RawAlarmModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();
@@ -66,7 +66,7 @@ public class RawAlarmModuleConfig extends BaseModuleConfig {
         viewFields.add(new ViewField("alarmDefinition","Alarm Definition"));
         viewFields.add(new ViewField("alarmCategory","Alarm Category"));
         viewFields.add(new ViewField("alarmType","Alarm Type"));
-        viewFields.add(new ViewField("strategy","Strategy"));
+        viewFields.add(new ViewField("alarmApproach","Alarm Approach"));
         viewFields.add(new ViewField("occurredTime","Occurred Time"));
         viewFields.add(new ViewField("clearedTime","Cleared Time"));
         allView.setFields(viewFields);

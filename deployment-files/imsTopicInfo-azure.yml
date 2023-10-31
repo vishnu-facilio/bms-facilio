@@ -17,6 +17,7 @@ topics:
       - { key: task_deviation_createWorkOrder/#, handler: com.facilio.ims.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 60 }
       - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, recordTimeout: 60 }
       - { key: __flaggedEvent__/#, handler: com.facilio.remotemonitoring.wms.FlaggedEventHandler, recordTimeout: 120 }
+      - { key: controller__offline__alarm__/#, handler: com.facilio.remotemonitoring.wms.ControllerOfflineHandler, recordTimeout: 1800 }
 
   - topic: default-single
     keys:

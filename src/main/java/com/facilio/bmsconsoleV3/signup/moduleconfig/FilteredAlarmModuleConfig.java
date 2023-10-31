@@ -65,7 +65,7 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
         viewFields.add(new ViewField("controller", "Controller"));
         viewFields.add(new ViewField("client", "Client"));
         viewFields.add(new ViewField("alarmCategory", "Alarm Category"));
-        viewFields.add(new ViewField("rawAlarm", "Raw Alarm"));
+        viewFields.add(new ViewField(FilteredAlarmModule.RAW_ALARM_FIELD_NAME, "Alarm"));
         viewFields.add(new ViewField("occurredTime", "Occurred Time"));
         viewFields.add(new ViewField("clearedTime", "Cleared Time"));
 
@@ -172,7 +172,7 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
         FacilioField alarmType = moduleBean.getField("alarmType",moduleName);
         FacilioField alarmCategory = moduleBean.getField("alarmCategory",moduleName);
         FacilioField message = moduleBean.getField("message",moduleName);
-        FacilioField rawAlarm = moduleBean.getField("rawAlarm",moduleName);
+        FacilioField rawAlarm = moduleBean.getField(FilteredAlarmModule.RAW_ALARM_FIELD_NAME,moduleName);
 
         SummaryWidgetGroup alarmDetailsGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(alarmDetailsGroup, message, 1, 1, 1);

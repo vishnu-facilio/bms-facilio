@@ -18,6 +18,7 @@ import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
 import com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule;
 import com.facilio.remotemonitoring.signup.ControllerAlarmInfoModule;
 import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import lombok.extern.log4j.Log4j;
@@ -31,7 +32,7 @@ public class FlaggedEventScheduledJob extends FacilioJob {
     public void execute(JobContext jc) throws Exception {
         long flaggedEventRuleId = jc.getJobId();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE","flaggedEventRule",String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,String.valueOf(flaggedEventRuleId), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("SENT_TO_PROCESSING","sentToProcessing",String.valueOf(Boolean.FALSE), BooleanOperators.IS));
         List<FilteredAlarmContext> filteredAlarms = V3RecordAPI.getRecordsListWithSupplements(FilteredAlarmModule.MODULE_NAME, null, FilteredAlarmContext.class, criteria, null);
         if(CollectionUtils.isNotEmpty(filteredAlarms)) {

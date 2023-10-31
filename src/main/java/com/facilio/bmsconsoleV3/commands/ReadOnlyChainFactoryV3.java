@@ -677,4 +677,11 @@ public class ReadOnlyChainFactoryV3 {
         chain.addCommand(new GetVirtualRelationDataCommand());
         return chain;
     }
+
+    public static FacilioChain flaggedEventAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ComputeTimeRemainingForFlaggedEventCommand());
+        c.addCommand(new FillFlaggedEventLogicalControllerCommand());
+        return c;
+    }
 }

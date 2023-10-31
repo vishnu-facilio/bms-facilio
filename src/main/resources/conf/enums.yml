@@ -471,8 +471,8 @@ enums:
   - name: ControllerType
     enumClassName: com.facilio.bmsconsole.context.ControllerType
 
-  - name: AlarmStrategy
-    enumClassName: com.facilio.remotemonitoring.context.AlarmStrategy
+  - name: AlarmApproach
+    enumClassName: com.facilio.remotemonitoring.context.AlarmApproach
 
   - name: AlarmFilterCriteriaType
     enumClassName: com.facilio.remotemonitoring.context.AlarmFilterCriteriaType
@@ -546,6 +546,6 @@ enums:
   - name: SFGType
     enumClassName: com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext$SFGType
 
-  - name: FilterType
-    enumClassName: com.facilio.remotemonitoring.context.FilterType
+  - name: RuleType
+    enumClassName: com.facilio.remotemonitoring.context.RuleType
 

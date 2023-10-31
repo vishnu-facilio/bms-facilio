@@ -62,7 +62,7 @@ public class AlarmAssetTaggingModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Alarm Asset Mapping");
+        allView.setDisplayName("All Alarm Asset Mappings");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(AlarmAssetTaggingModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();

@@ -3,12 +3,11 @@ package com.facilio.remotemonitoring.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.remotemonitoring.context.AlarmFilterCriteriaType;
 import com.facilio.remotemonitoring.context.AlarmFilterRuleContext;
 import com.facilio.remotemonitoring.context.FilterRuleCriteriaContext;
-import com.facilio.remotemonitoring.context.FilterType;
+import com.facilio.remotemonitoring.context.RuleType;
 import com.facilio.remotemonitoring.signup.AlarmFilterRuleCriteriaModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -40,7 +39,7 @@ public class AddAlarmFilterRuleCriteriaCommand extends FacilioCommand {
                         if(filterRuleCriteriaObject.getId() > 0){
                             recordIds.add(filterRuleCriteriaObject.getId());
                         }
-                        if(alarmFilterRule.getFilterType().equals(FilterType.ROLL_UP)){
+                        if(alarmFilterRule.getRuleType().equals(RuleType.ROLL_UP)){
                             filterRuleCriteriaObject.setFilterCriteria(AlarmFilterCriteriaType.ALARM_ROLL_UP);
                         }
                         addCriteriaList.add(filterRuleCriteriaObject);

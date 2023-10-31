@@ -11,14 +11,15 @@ import com.facilio.modules.fields.*;
 
 public class FlaggedEventModule extends SignUpData {
 
-    public static final String MODULE_NAME = "flaggedEvent";
+    public static final String MODULE_NAME = "flaggedAlarm";
+    public static final String FLAGGED_EVENT_RULE_FIELD_NAME = "flaggedAlarmProcess";
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule rawAlarmModule = new FacilioModule();
         rawAlarmModule.setName(MODULE_NAME);
-        rawAlarmModule.setDisplayName("Flagged Event");
-        rawAlarmModule.setDescription("Flagged Event");
+        rawAlarmModule.setDisplayName("Flagged Alarm");
+        rawAlarmModule.setDescription("Flagged Alarm");
         rawAlarmModule.setTableName("Flagged_Event");
         rawAlarmModule.setCustom(false);
         rawAlarmModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
@@ -50,8 +51,8 @@ public class FlaggedEventModule extends SignUpData {
 
         LookupField flaggedEventRuleField = new LookupField();
         flaggedEventRuleField.setDefault(true);
-        flaggedEventRuleField.setName("flaggedEventRule");
-        flaggedEventRuleField.setDisplayName("Flagged Event Rule");
+        flaggedEventRuleField.setName(FLAGGED_EVENT_RULE_FIELD_NAME);
+        flaggedEventRuleField.setDisplayName("Flagged Alarm Process");
         flaggedEventRuleField.setModule(mod);
         flaggedEventRuleField.setDataType(FieldType.LOOKUP);
         flaggedEventRuleField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);

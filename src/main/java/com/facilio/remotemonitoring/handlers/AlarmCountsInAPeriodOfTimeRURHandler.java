@@ -11,6 +11,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.compute.FilterAlarmUtil;
+import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.FilterRuleCriteriaContext;
 import com.facilio.remotemonitoring.context.FilteredAlarmContext;
@@ -18,10 +19,13 @@ import com.facilio.remotemonitoring.context.RawAlarmContext;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.tasker.FacilioTimer;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandler {
     @Override
@@ -36,7 +40,7 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
         criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_NOT_EMPTY));
         criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getOccurredTime()), NumberOperators.LESS_THAN));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
 
 
         if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
@@ -59,18 +63,18 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
         }
         if(filterRuleCriteria != null) {
             RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
+            if(filterRuleCriteria.getAlarmClearPeriod() != null) {
+                Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmClearPeriod()) / 1000;
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.CLEAR_ALARM_JOB, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
+            }
+        }
+        if(filterRuleCriteria != null) {
+            RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
             Long startTime = (rawAlarm.getOccurredTime() - filterRuleCriteria.getAlarmCountPeriod());
             Long endTime = rawAlarm.getOccurredTime();
             Long count = alarmCountWithInInterval(rawAlarm, startTime, endTime, lastClearedAlarmId);
             if((count + 1) >= filterRuleCriteria.getAlarmCount()) {
                 createFilteredAlarm(rawAlarm,filterRuleCriteria);
-            }
-        }
-        if(filterRuleCriteria != null) {
-            RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
-            if(filterRuleCriteria.getAlarmClearPeriod() != null) {
-                Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmClearPeriod()) / 1000;
-                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.CLEAR_ALARM_JOB, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
             }
         }
     }
@@ -79,9 +83,9 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
     public void createFilteredAlarm(RawAlarmContext rawAlarm,FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         if(rawAlarm != null && !rawAlarm.isFiltered()) {
             FilteredAlarmContext filteredAlarm = FilterAlarmUtil.constructFilteredAlarm(rawAlarm);
-            filteredAlarm.setAlarmFilterRule(filterRuleCriteria.getAlarmFilterRule());
-            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
+            filteredAlarm.setAlarmCorrelationRule(filterRuleCriteria.getAlarmFilterRule());
             RawAlarmUtil.markAsFiltered(rawAlarm.getId());
+            FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
         }
     }
 
@@ -95,17 +99,27 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
         criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(rawAlarm.getController().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(rawAlarm.getClient().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
+        if (rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0L) {
+            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
+        } else {
+            criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", "", CommonOperators.IS_EMPTY));
+        }
         SelectRecordsBuilder<RawAlarmContext> builder = new SelectRecordsBuilder<RawAlarmContext>()
                 .module(rawAlarmModule)
                 .select(modBean.getAllFields(rawAlarmModule.getName()))
                 .beanClass(RawAlarmContext.class)
                 .andCriteria(criteria)
                 .orderBy("ID DESC");
-        RawAlarmContext lastAlarmOfType = builder.fetchFirst();
-        if(lastAlarmOfType != null) {
-            if(lastAlarmOfType.getId() == rawAlarm.getId()) {
-                RawAlarmUtil.clearAlarm(rawAlarm,null);
+        List<RawAlarmContext> alarms = builder.get();
+        Long currentTime = System.currentTimeMillis();
+        if(CollectionUtils.isNotEmpty(alarms)) {
+            RawAlarmContext lastAlarmOfType = alarms.get(0);
+            if (lastAlarmOfType != null) {
+                if (lastAlarmOfType.getId() == rawAlarm.getId()) {
+                    RawAlarmUtil.clearAlarm(rawAlarm, currentTime);
+                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getId()));
+                }
             }
         }
     }

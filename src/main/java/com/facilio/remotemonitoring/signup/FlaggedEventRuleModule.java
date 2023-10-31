@@ -11,15 +11,15 @@ import com.facilio.modules.fields.*;
 
 public class FlaggedEventRuleModule extends SignUpData {
 
-    public static final String MODULE_NAME = "flaggedEventRule";
+    public static final String MODULE_NAME = "flaggedAlarmProcess";
 
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = new FacilioModule();
         module.setName(MODULE_NAME);
-        module.setDisplayName("Flagged Event Rule");
-        module.setDescription("Flagged Event Rule");
+        module.setDisplayName("Flagged Alarm Process");
+        module.setDescription("Flagged Alarm Process");
         module.setTableName("Flagged_Event_Rule");
         module.setCustom(false);
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

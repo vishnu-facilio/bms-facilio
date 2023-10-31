@@ -61,7 +61,7 @@ public class AlarmDefinitionMappingModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Regex Mapping");
+        allView.setDisplayName("All Regex Mappings");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(AlarmDefinitionMappingModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();
@@ -87,7 +87,7 @@ public class AlarmDefinitionMappingModuleConfig extends BaseModuleConfig {
         FacilioModule module = modBean.getModule(AlarmDefinitionMappingModule.MODULE_NAME);
 
         FacilioForm form = new FacilioForm();
-        form.setDisplayName("Alarm Regex Mapping");
+        form.setDisplayName("Alarm Regex Matcher");
         form.setName("default_"+ module.getName() +"_web");
         form.setModule(module);
         form.setLabelPosition(FacilioForm.LabelPosition.TOP);

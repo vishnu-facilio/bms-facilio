@@ -3797,11 +3797,11 @@ public class APIv3Config {
         return () -> new V3Config(AlarmFilterRuleContext.class,null)
                 .create()
                 .beforeSave(new AddSiteAndControllerCriteriaCommand())
-                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
+                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
                         new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
                 .update()
                 .beforeSave(new AddSiteAndControllerCriteriaCommand())
-                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule(),new DeleteExistingCriteriaForFilterRuleCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
+                .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteExistingCriteriaForFilterRuleCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
                         new ConstructUpdateCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
                 .list()
                 .fetchSupplement(AlarmFilterRuleModule.MODULE_NAME,"alarmType")
@@ -3816,7 +3816,7 @@ public class APIv3Config {
                 .afterFetch(ReadOnlyChainFactoryV3.getAlarmFilterRuleSummaryAfterFetchChain())
                 .delete()
                 .markAsDeleteByPeople()
-                .afterDelete(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteScheduledJobsForAlarmRule())
+                .afterDelete(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteExistingCriteriaForFilterRuleCommand(),new DeleteScheduledJobsForAlarmRule())
                 .build();
     }
 
@@ -3844,10 +3844,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getFilteredAlarmModule(){
         return () -> new V3Config(FilteredAlarmContext.class,null)
                 .update()
-                .afterSave(new ConstructAddCustomActivityCommandV3(),
+                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FILTER_ALARM_ACTIVITY))
                 .create()
-                .afterSave(new ConstructUpdateCustomActivityCommandV3(),
+                .afterSave(new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FILTER_ALARM_ACTIVITY))
                 .list()
                 .afterFetch(new FillFilterAlarmLogicalControllerCommand())
@@ -3856,13 +3856,13 @@ public class APIv3Config {
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmCategory")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmType")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"rawAlarm")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.RAW_ALARM_FIELD_NAME)
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"asset")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEventRule")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME)
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME)
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysModifiedByPeople")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmFilterRule")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.ALARM_FILTER_RULE_FIELD_NAME)
                 .delete()
                 .markAsDeleteByPeople()
                 .summary()
@@ -3872,13 +3872,13 @@ public class APIv3Config {
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"controller")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmCategory")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmType")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"rawAlarm")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.RAW_ALARM_FIELD_NAME)
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"asset")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEventRule")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME)
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME)
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"sysModifiedByPeople")
-                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,"alarmFilterRule")
+                .fetchSupplement(FilteredAlarmModule.MODULE_NAME,FilteredAlarmModule.ALARM_FILTER_RULE_FIELD_NAME)
                 .build();
     }
 
@@ -3923,7 +3923,7 @@ public class APIv3Config {
                 .afterSave(new FlaggedEventBureauInformationCommand(),new BureauEvaluationOrCreateWorkorder(),new FlaggedEventClosureCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .preCreate()
-                .afterSave(new FlaggedEventClosureCommand(),new ConstructAddCustomActivityCommandV3(),
+                .afterSave(new FlaggedEventClosureCommand(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .update()
                 .afterSave(new FlaggedEventClosureCommand(),new ConstructUpdateCustomActivityCommandV3(),
@@ -3935,10 +3935,8 @@ public class APIv3Config {
                 )
                 .afterTransaction(new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .list()
-                .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
-                .afterFetch(new FillFlaggedEventLogicalControllerCommand())
-                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
-                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
+                .afterFetch(ReadOnlyChainFactoryV3.flaggedEventAfterFetchChain())
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME)
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controller")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"asset")
@@ -3951,10 +3949,8 @@ public class APIv3Config {
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"site")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
                 .summary()
-                .afterFetch(new ComputeTimeRemainingForFlaggedEventCommand())
-                .afterFetch(new FillFlaggedEventLogicalControllerCommand())
-                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEventRule")
-                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"flaggedEvent")
+                .afterFetch(ReadOnlyChainFactoryV3.flaggedEventAfterFetchChain())
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME)
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"client")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controller")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"asset")
@@ -4112,11 +4108,15 @@ public class APIv3Config {
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"controller")
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"client")
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"sysModifiedByPeople")
                 .summary()
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"asset")
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"controller")
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"client")
                 .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"alarmDefinition")
+                .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"sysCreatedByPeople")
+                .fetchSupplement(AlarmAssetTaggingModule.MODULE_NAME,"sysModifiedByPeople")
                 .delete()
                 .markAsDeleteByPeople()
                 .afterDelete(new InvalidateAlarmAssetTaggingCacheCommand())

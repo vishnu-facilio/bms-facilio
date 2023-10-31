@@ -14,14 +14,14 @@ import com.facilio.modules.fields.StringField;
 
 public class AlarmDefinitionMappingModule extends SignUpData {
 
-    public static final String MODULE_NAME = "alarmDefinitionMapping";
+    public static final String MODULE_NAME = "alarmRegexMatcher";
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = new FacilioModule();
         module.setName(MODULE_NAME);
-        module.setDisplayName("Alarm Regex Mapping");
-        module.setDescription("Alarm Regex Mapping");
+        module.setDisplayName("Alarm Regex Matcher");
+        module.setDescription("Alarm Regex Matcher");
         module.setTableName("Alarm_Definition_Mapping");
         module.setCustom(false);
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

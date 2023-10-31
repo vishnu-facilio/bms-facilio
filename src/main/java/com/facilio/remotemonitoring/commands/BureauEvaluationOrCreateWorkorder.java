@@ -3,12 +3,9 @@ package com.facilio.remotemonitoring.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
@@ -17,7 +14,6 @@ import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
 import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
-import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.tasker.FacilioTimer;
@@ -40,8 +36,8 @@ public class BureauEvaluationOrCreateWorkorder extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(flaggedEvents)) {
             for(FlaggedEventContext flaggedEvent : flaggedEvents) {
                 boolean createWorkorder = false;
-                if(flaggedEvent.getFlaggedEventRule() != null) {
-                    FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedEventRule().getId());
+                if(flaggedEvent.getFlaggedAlarmProcess() != null) {
+                    FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
                     autoCloseFlaggedEventJob(flaggedEventRule,flaggedEvent);
                     cloneRuleAttachments(flaggedEventRule,flaggedEvent);
                     if(flaggedEventRule.shouldCreateWorkorder()) {

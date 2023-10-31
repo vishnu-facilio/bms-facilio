@@ -12,18 +12,24 @@ import com.facilio.modules.fields.*;
 public class FilteredAlarmModule extends SignUpData {
 
     public static final String MODULE_NAME = "filteredAlarm";
+
+    public static final String RAW_ALARM_FIELD_NAME = "alarm";
+    public static final String ALARM_FILTER_RULE_FIELD_NAME = "alarmCorrelationRule";
+    public static final String FLAGGED_ALARM_PROCESS_FIELD_NAME = "flaggedAlarmProcess";
+    public static final String FLAGGED_ALARM_FIELD_NAME = "flaggedAlarm";
+
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule rawAlarmModule = new FacilioModule();
-        rawAlarmModule.setName(MODULE_NAME);
-        rawAlarmModule.setDisplayName("Filtered Alarms");
-        rawAlarmModule.setDescription("Filtered Alarms");
-        rawAlarmModule.setTableName("Filtered_Alarms");
-        rawAlarmModule.setCustom(false);
-        rawAlarmModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
-        rawAlarmModule.setTrashEnabled(true);
-        modBean.addModule(rawAlarmModule);
+        FacilioModule alarmModule = new FacilioModule();
+        alarmModule.setName(MODULE_NAME);
+        alarmModule.setDisplayName("Filtered Alarms");
+        alarmModule.setDescription("Filtered Alarms");
+        alarmModule.setTableName("Filtered_Alarms");
+        alarmModule.setCustom(false);
+        alarmModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
+        alarmModule.setTrashEnabled(true);
+        modBean.addModule(alarmModule);
 
         FacilioModule mod = modBean.getModule(MODULE_NAME);
         LookupField siteLookup = new LookupField();
@@ -82,8 +88,8 @@ public class FilteredAlarmModule extends SignUpData {
 
         LookupField flaggedEventField = new LookupField();
         flaggedEventField.setDefault(true);
-        flaggedEventField.setName("flaggedEvent");
-        flaggedEventField.setDisplayName("Flagged Event");
+        flaggedEventField.setName(FLAGGED_ALARM_FIELD_NAME);
+        flaggedEventField.setDisplayName("Flagged Alarm");
         flaggedEventField.setModule(mod);
         flaggedEventField.setDataType(FieldType.LOOKUP);
         flaggedEventField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
@@ -127,8 +133,8 @@ public class FilteredAlarmModule extends SignUpData {
 
         LookupField rawAlarmField = new LookupField();
         rawAlarmField.setDefault(true);
-        rawAlarmField.setName("rawAlarm");
-        rawAlarmField.setDisplayName("Raw Alarm");
+        rawAlarmField.setName(RAW_ALARM_FIELD_NAME);
+        rawAlarmField.setDisplayName("Alarm");
         rawAlarmField.setModule(mod);
         rawAlarmField.setDataType(FieldType.LOOKUP);
         rawAlarmField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
@@ -136,27 +142,27 @@ public class FilteredAlarmModule extends SignUpData {
         rawAlarmField.setLookupModule(modBean.getModule(RawAlarmModule.MODULE_NAME));
         modBean.addField(rawAlarmField);
 
-        LookupField flaggedEventRule = new LookupField();
-        flaggedEventRule.setDefault(true);
-        flaggedEventRule.setName("flaggedEventRule");
-        flaggedEventRule.setDisplayName("Flagged Event Rule");
-        flaggedEventRule.setModule(mod);
-        flaggedEventRule.setDataType(FieldType.LOOKUP);
-        flaggedEventRule.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        flaggedEventRule.setColumnName("FLAGGED_EVENT_RULE");
-        flaggedEventRule.setLookupModule(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
-        modBean.addField(flaggedEventRule);
+        LookupField flaggedAlarmProcess = new LookupField();
+        flaggedAlarmProcess.setDefault(true);
+        flaggedAlarmProcess.setName(FLAGGED_ALARM_PROCESS_FIELD_NAME);
+        flaggedAlarmProcess.setDisplayName("Flagged Alarm Process");
+        flaggedAlarmProcess.setModule(mod);
+        flaggedAlarmProcess.setDataType(FieldType.LOOKUP);
+        flaggedAlarmProcess.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        flaggedAlarmProcess.setColumnName("FLAGGED_EVENT_RULE");
+        flaggedAlarmProcess.setLookupModule(modBean.getModule(FlaggedEventRuleModule.MODULE_NAME));
+        modBean.addField(flaggedAlarmProcess);
 
-        LookupField alarmFilterRule = new LookupField();
-        alarmFilterRule.setDefault(true);
-        alarmFilterRule.setName("alarmFilterRule");
-        alarmFilterRule.setDisplayName("Alarm Filter Rule");
-        alarmFilterRule.setModule(mod);
-        alarmFilterRule.setDataType(FieldType.LOOKUP);
-        alarmFilterRule.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        alarmFilterRule.setColumnName("ALARM_FILTER_RULE");
-        alarmFilterRule.setLookupModule(modBean.getModule(AlarmFilterRuleModule.MODULE_NAME));
-        modBean.addField(alarmFilterRule);
+        LookupField alarmCorrelationRule = new LookupField();
+        alarmCorrelationRule.setDefault(true);
+        alarmCorrelationRule.setName(ALARM_FILTER_RULE_FIELD_NAME);
+        alarmCorrelationRule.setDisplayName("Alarm Correlation Rule");
+        alarmCorrelationRule.setModule(mod);
+        alarmCorrelationRule.setDataType(FieldType.LOOKUP);
+        alarmCorrelationRule.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        alarmCorrelationRule.setColumnName("ALARM_FILTER_RULE");
+        alarmCorrelationRule.setLookupModule(modBean.getModule(AlarmFilterRuleModule.MODULE_NAME));
+        modBean.addField(alarmCorrelationRule);
 
         LookupField asset = new LookupField();
         asset.setDefault(true);

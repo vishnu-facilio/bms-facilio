@@ -9,8 +9,6 @@ import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Map;
-
 @Getter
 @Setter
 public class IncomingRawAlarmContext extends V3Context {
@@ -18,7 +16,7 @@ public class IncomingRawAlarmContext extends V3Context {
     private String message;
     private Controller controller;
     private V3SiteContext site;
-    private AlarmStrategy strategy;
+    private AlarmApproach alarmApproach;
     private Long occurredTime;
     private Long clearedTime;
     private RawAlarmSourceType sourceType;
@@ -45,20 +43,20 @@ public class IncomingRawAlarmContext extends V3Context {
         }
     }
 
-    public AlarmStrategy getStrategyEnum() {
-        return strategy;
+    public AlarmApproach getAlarmApproachEnum() {
+        return alarmApproach;
     }
 
-    public Integer getStrategy() {
-        if (strategy != null) {
-            return strategy.getIndex();
+    public Integer getAlarmApproach() {
+        if (alarmApproach != null) {
+            return alarmApproach.getIndex();
         }
         return null;
     }
 
-    public void setStrategy(Integer strategy) {
-        if (strategy != null) {
-            this.strategy = AlarmStrategy.valueOf(strategy);
+    public void setAlarmApproach(Integer alarmApproach) {
+        if (alarmApproach != null) {
+            this.alarmApproach = AlarmApproach.valueOf(alarmApproach);
         }
     }
 }

@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
@@ -28,7 +29,6 @@ import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
 import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
-import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
@@ -57,7 +57,7 @@ public class FilterAlarmUtil {
             List<AlarmFilterRuleContext> alarmFilterRules = alarmBean.getAlarmFilterRulesForClient(rawAlarm.getClient().getId());
             if (CollectionUtils.isNotEmpty(alarmFilterRules)) {
                 for (AlarmFilterRuleContext alarmFilterRule : alarmFilterRules) {
-                    if(alarmFilterRule.getStrategy() != null && alarmFilterRule.getStrategy() == rawAlarm.getStrategy() && alarmFilterRule.getAlarmType() != null && rawAlarm.getAlarmType() != null && alarmFilterRule.getAlarmType().getId() == rawAlarm.getAlarmType().getId()) {
+                    if(alarmFilterRule.getAlarmApproach() != null && alarmFilterRule.getAlarmApproach() == rawAlarm.getAlarmApproach() && alarmFilterRule.getAlarmType() != null && rawAlarm.getAlarmType() != null && alarmFilterRule.getAlarmType().getId() == rawAlarm.getAlarmType().getId()) {
                         boolean siteCriteriaMatched = true;
                         boolean controllerCriteriaMatched = true;
                         Criteria siteCriteria = alarmFilterRule.getSiteCriteria();
@@ -80,7 +80,7 @@ public class FilterAlarmUtil {
                         }
 
                         if (siteCriteriaMatched && controllerCriteriaMatched) {
-                            if (alarmFilterRule.getFilterType() == null || alarmFilterRule.getFilterType() != FilterType.ROLL_UP) {
+                            if (alarmFilterRule.getRuleType() == null || alarmFilterRule.getRuleType() != RuleType.ROLL_UP) {
                                 List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
                                 if (CollectionUtils.isNotEmpty(filterRuleCriteriaList) && rawAlarm.getAlarmDefinition() != null && rawAlarm.getController() != null) {
                                     for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
@@ -130,12 +130,17 @@ public class FilterAlarmUtil {
 
     public static void pushToStormFilterAlarmQueue(RawAlarmContext rawAlarm) throws Exception {
         if (AccountUtil.getCurrentOrg() != null) {
+            long controllerId = -1;
+            if (rawAlarm.getController() != null && rawAlarm.getController().getId() > -1) {
+                controllerId = rawAlarm.getController().getId();
+            }
             long orgId = AccountUtil.getCurrentOrg().getId();
+            String partitionKey = orgId + "#"+ controllerId;
             MessageQueue queue = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
             JSONObject input = new JSONObject();
             input.put("orgId", orgId);
             input.put("rawAlarm", FacilioUtil.getAsJSON(rawAlarm));
-            queue.put(getMessageProcessingTopicName(), new FacilioRecord(orgId + "#"+ rawAlarm.getController().getId(), input));
+            queue.put(getMessageProcessingTopicName(), new FacilioRecord(partitionKey, input));
         }
     }
 
@@ -151,7 +156,7 @@ public class FilterAlarmUtil {
         filteredAlarm.setClient(rawAlarm.getClient());
         filteredAlarm.setSite(rawAlarm.getSite());
         filteredAlarm.setController(rawAlarm.getController());
-        filteredAlarm.setRawAlarm(rawAlarm);
+        filteredAlarm.setAlarm(rawAlarm);
         filteredAlarm.setAsset(rawAlarm.getAsset());
         filteredAlarm.setMessage(rawAlarm.getMessage());
         return filteredAlarm;
@@ -177,7 +182,7 @@ public class FilterAlarmUtil {
         }
         return null;
     }
-    private static Long getRelatedParentAsset(Long childId,Long relationshipId) throws Exception {
+    public static Long getRelatedParentAsset(Long childId,Long relationshipId) throws Exception {
         List<Long> relatedAssets = getRelatedAssets(childId,relationshipId,true);
         if(CollectionUtils.isNotEmpty(relatedAssets)) {
             return relatedAssets.get(0);
@@ -266,11 +271,17 @@ public class FilterAlarmUtil {
             return;
         }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Map<String,Object> prop = new HashMap<>();
-        Map<String,Object> flaggedEventRuleProp = new HashMap<>();
-        flaggedEventRuleProp.put("id",flaggedEventRuleId);
-        prop.put("flaggedEventRule",flaggedEventRuleProp);
-        V3Util.updateBulkRecords(FilteredAlarmModule.MODULE_NAME, prop,Collections.singletonList(filterAlarmId),false);
+        FilteredAlarmContext updateFilteredAlarm = new FilteredAlarmContext();
+        FlaggedEventRuleContext rule = new FlaggedEventRuleContext();
+        rule.setId(flaggedEventRuleId);
+        updateFilteredAlarm.setFlaggedAlarmProcess(rule);
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("ID","id", String.valueOf(filterAlarmId), NumberOperators.EQUALS));
+        UpdateRecordBuilder<FilteredAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<FilteredAlarmContext>()
+                .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
+                .fields(Arrays.asList(modBean.getField(FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, FilteredAlarmModule.MODULE_NAME),modBean.getField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, FilteredAlarmModule.MODULE_NAME)))
+                .andCriteria(criteria);
+        updateRecordBuilder.update(updateFilteredAlarm);
     }
 
     public static void clearAlarms(List<Long> rawAlarmIds,Long clearedTime) throws Exception {
@@ -279,12 +290,28 @@ public class FilterAlarmUtil {
             FilteredAlarmContext updateFilteredAlarm = new FilteredAlarmContext();
             updateFilteredAlarm.setClearedTime(clearedTime);
             Criteria criteria = new Criteria();
-            criteria.addAndCondition(CriteriaAPI.getCondition("RAW_ALARM","rawAlarm", StringUtils.join(rawAlarmIds,","), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("RAW_ALARM","alarm", StringUtils.join(rawAlarmIds,","), NumberOperators.EQUALS));
             UpdateRecordBuilder<FilteredAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<FilteredAlarmContext>()
                     .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
-                    .fields(Arrays.asList(modBean.getField("clearedTime", FilteredAlarmModule.MODULE_NAME),modBean.getField("rawAlarm", FilteredAlarmModule.MODULE_NAME)))
+                    .fields(Arrays.asList(modBean.getField("clearedTime", FilteredAlarmModule.MODULE_NAME),modBean.getField("alarm", FilteredAlarmModule.MODULE_NAME)))
                     .andCriteria(criteria);
             updateRecordBuilder.update(updateFilteredAlarm);
+        }
+    }
+
+    public static void clearFlaggedEvent(List<Long> rawAlarmIds) throws Exception {
+        if(CollectionUtils.isNotEmpty(rawAlarmIds)) {
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("RAW_ALARM","alarm", StringUtils.join(rawAlarmIds,","), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT","flaggedAlarm", StringUtils.EMPTY, CommonOperators.IS_NOT_EMPTY));
+            List<FilteredAlarmContext> filteredAlarms = V3RecordAPI.getRecordsListWithSupplements (FilteredAlarmModule.MODULE_NAME, null, FilteredAlarmContext.class, criteria, null);
+            if(CollectionUtils.isNotEmpty(filteredAlarms)) {
+                for(FilteredAlarmContext filteredAlarm : filteredAlarms) {
+                    if(filteredAlarm.getFlaggedAlarm() != null && filteredAlarm.getFlaggedAlarm().getId() > -1) {
+                        FlaggedEventUtil.checkAndCloseAlarmFlaggedEvent(filteredAlarm.getFlaggedAlarm().getId());
+                    }
+                }
+            }
         }
     }
 }

@@ -15,14 +15,14 @@ import com.facilio.remotemonitoring.RemoteMonitorConstants;
 
 public class AlarmAssetTaggingModule extends SignUpData {
 
-    public static final String MODULE_NAME = "alarmAssetTagging";
+    public static final String MODULE_NAME = "alarmAssetMapping";
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = new FacilioModule();
         module.setName(MODULE_NAME);
-        module.setDisplayName("Alarm Asset Tagging");
-        module.setDescription("Alarm Asset Tagging");
+        module.setDisplayName("Alarm Asset Mapping");
+        module.setDescription("Alarm Asset Mapping");
         module.setTableName("Alarm_Asset_Tagging");
         module.setCustom(false);
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

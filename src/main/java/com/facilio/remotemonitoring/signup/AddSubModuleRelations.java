@@ -566,7 +566,7 @@ public class AddSubModuleRelations extends SignUpData {
 
         Criteria ruleLookupCriteria = new Criteria();
         ruleLookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule",FlaggedEventModule.MODULE_NAME), ruleLookupCriteria, LookupOperator.LOOKUP));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteria, LookupOperator.LOOKUP));
 
         createWorkorderSystemButton.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,createWorkorderSystemButton);

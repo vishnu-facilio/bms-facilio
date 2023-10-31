@@ -68,16 +68,16 @@ public class ControllerAlarmInfoModule extends SignUpData {
         asset.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modBean.addField(asset);
 
-        SystemEnumField strategyField = new SystemEnumField();
-        strategyField.setName("strategy");
-        strategyField.setDisplayName("Strategy");
-        strategyField.setModule(mod);
-        strategyField.setDataType(FieldType.SYSTEM_ENUM);
-        strategyField.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
-        strategyField.setDefault(true);
-        strategyField.setColumnName("STRATEGY");
-        strategyField.setEnumName("AlarmStrategy");
-        modBean.addField(strategyField);
+        SystemEnumField alarmApproach = new SystemEnumField();
+        alarmApproach.setName("alarmApproach");
+        alarmApproach.setDisplayName("Alarm Approach");
+        alarmApproach.setModule(mod);
+        alarmApproach.setDataType(FieldType.SYSTEM_ENUM);
+        alarmApproach.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
+        alarmApproach.setDefault(true);
+        alarmApproach.setColumnName("STRATEGY");
+        alarmApproach.setEnumName("AlarmApproach");
+        modBean.addField(alarmApproach);
 
         DateField clearedTime = new DateField();
         clearedTime.setName("alarmLastReceivedTime");

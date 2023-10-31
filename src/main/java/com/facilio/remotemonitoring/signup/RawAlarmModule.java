@@ -11,14 +11,15 @@ import com.facilio.modules.fields.*;
 
 public class RawAlarmModule extends SignUpData {
 
-    public static final String MODULE_NAME = "rawAlarm";
+    public static final String MODULE_NAME = "alarmEvent";
+//    public static final String
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule rawAlarmModule = new FacilioModule();
         rawAlarmModule.setName(MODULE_NAME);
-        rawAlarmModule.setDisplayName("Raw Alarms");
-        rawAlarmModule.setDescription("Raw Alarms");
+        rawAlarmModule.setDisplayName("Alarms");
+        rawAlarmModule.setDescription("Alarms");
         rawAlarmModule.setTableName("Raw_Alarms");
         rawAlarmModule.setCustom(false);
         rawAlarmModule.setType(FacilioModule.ModuleType.BASE_ENTITY);
@@ -70,14 +71,14 @@ public class RawAlarmModule extends SignUpData {
         modBean.addField(clearedTime);
 
         SystemEnumField strategyField = new SystemEnumField();
-        strategyField.setName("strategy");
-        strategyField.setDisplayName("Strategy");
+        strategyField.setName("alarmApproach");
+        strategyField.setDisplayName("Alarm Approach");
         strategyField.setModule(rawAlarmMod);
         strategyField.setDataType(FieldType.SYSTEM_ENUM);
         strategyField.setDisplayType(FacilioField.FieldDisplayType.SELECTBOX);
         strategyField.setDefault(true);
         strategyField.setColumnName("STRATEGY");
-        strategyField.setEnumName("AlarmStrategy");
+        strategyField.setEnumName("AlarmApproach");
         modBean.addField(strategyField);
 
         SystemEnumField sourceTypeField = new SystemEnumField();

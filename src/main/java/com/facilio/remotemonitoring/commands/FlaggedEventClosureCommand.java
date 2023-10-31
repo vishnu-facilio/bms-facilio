@@ -3,9 +3,7 @@ package com.facilio.remotemonitoring.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.FlaggedEventContext;
@@ -17,7 +15,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +28,7 @@ public class FlaggedEventClosureCommand extends FacilioCommand {
         AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
         if (CollectionUtils.isNotEmpty(flaggedEvents)) {
             for (FlaggedEventContext flaggedEvent : flaggedEvents) {
-                FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedEventRule().getId());
+                FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
                 if(flaggedEventRule != null && flaggedEventRule.getFlaggedEventRuleClosureConfig() != null) {
                     FlaggedEventRuleClosureConfigContext closureConfig = FlaggedEventUtil.getFlaggedEventClosureConfig(flaggedEventRule.getFlaggedEventRuleClosureConfig().getId());
                     if(closureConfig != null) {

@@ -10,14 +10,14 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 
 public class AlarmDefinitionTaggingModule extends SignUpData {
-    public static final String MODULE_NAME = "alarmDefinitionTagging";
+    public static final String MODULE_NAME = "alarmTypeMapping";
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = new FacilioModule();
         module.setName(MODULE_NAME);
-        module.setDisplayName("Alarm Definition Tagging");
-        module.setDescription("Alarm Definition Tagging");
+        module.setDisplayName("Alarm Type Mapping");
+        module.setDescription("Alarm Type Mapping");
         module.setTableName("Alarm_Definition_Tagging");
         module.setCustom(false);
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

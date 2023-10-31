@@ -61,7 +61,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Flagged Event");
+        allView.setDisplayName("All Flagged Alarms");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(FlaggedEventModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();
@@ -69,7 +69,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         viewFields.add(new ViewField("name", "Message"));
         viewFields.add(new ViewField("client", "Client"));
         viewFields.add(new ViewField("controller", "Controller"));
-        viewFields.add(new ViewField("flaggedEventRule", "Flagged Event Rule"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
         viewFields.add(new ViewField("status", "Status"));
         viewFields.add(new ViewField("workorder", "Workorder"));
 
@@ -120,7 +120,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryFieldsWidget", "Flagged Event Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryFieldsWidget", "Flagged Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("evaluationTeams", "Evaluation Teams", "List of Evaluation Teams")
@@ -136,7 +136,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .addTab("filteredAlarms", "Filtered Alarms", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("filteredAlarms", "Filtered Alarms", "List of filtered alarms")
-                .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedEvent"))
+                .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedAlarm"))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -156,7 +156,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
-                .addWidget("summaryFieldsWidget", "Flagged Event Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .addWidget("summaryFieldsWidget", "Flagged Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
                 .widgetDone()
                 .addWidget("evaluationTimeRemaining", "Evaluation Time Remaining", PageWidget.WidgetType.EVALUATION_TIME_REMAINING, "evaluationTimeRemaining_2_3", 9, 0, null, null)
                 .widgetDone()
@@ -176,7 +176,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .addTab("filteredAlarms", "FILTERED ALARMS", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("filteredAlarms", "Filtered Alarms", "List of filtered alarms")
-                .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedEvent"))
+                .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedAlarm"))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

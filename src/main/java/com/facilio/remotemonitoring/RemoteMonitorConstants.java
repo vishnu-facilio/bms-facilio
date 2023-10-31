@@ -10,12 +10,18 @@ public class RemoteMonitorConstants {
     public static final String FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB = "FlaggedEventBureauTakeActionJob";
     public static final String FLAGGED_EVENT_BUREAU_ACTIONS = "flaggedEventBureauActions";
     public static final String RAW_ALARMS = "rawAlarms";
-    public static final String FLAGGED_EVENT_RULE_ATTACHMENT_MOD_NAME = "flaggedEventRuleattachments";
-    public static final String FLAGGED_EVENT_ATTACHMENT_MOD_NAME = "flaggedEventattachments";
+    public static final String FLAGGED_EVENT_RULE_ATTACHMENT_MOD_NAME = "flaggedAlarmProcessattachments";
+    public static final String FLAGGED_EVENT_ATTACHMENT_MOD_NAME = "flaggedAlarmattachments";
     public static final String INHIBIT_REASON_ID = "inhibitReasonId";
     public static final String FLAGGED_EVENT_AUTO_CLOSURE_SCHEDULED_JOB = "FlaggedEventAutoClosureJob";
     public static final String CLOSE_VALUES = "FlaggedEventAutoClosureJob";
+    public static final String ID = "id";
+    public static final String SUBJECT = "subject";
 
+    public static class FlaggedEvent {
+        public static final String FLAGGED_EVENT = "flaggedEvent";
+
+    }
     public static class SystemAlarmTypes {
         public static final String UNDEFINED = "undefined";
         public static final String HEARBEAT = "heartbeat";

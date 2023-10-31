@@ -1,7 +1,5 @@
 package com.facilio.remotemonitoring.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -23,9 +21,9 @@ public class CloseButtonDetailsCommand extends FacilioCommand {
         result.put("canClose", false);
         if(id != null) {
             FlaggedEventContext event = FlaggedEventUtil.getFlaggedEvent(id);
-            if(event != null && event.getFlaggedEventRule() != null) {
+            if(event != null && event.getFlaggedAlarmProcess() != null) {
                 AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
-                FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(event.getFlaggedEventRule().getId());
+                FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(event.getFlaggedAlarmProcess().getId());
                 if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null) {
                     FlaggedEventRuleClosureConfigContext closure = rule.getFlaggedEventRuleClosureConfig();
                     boolean canClose = FlaggedEventUtil.allowClose(event, closure);

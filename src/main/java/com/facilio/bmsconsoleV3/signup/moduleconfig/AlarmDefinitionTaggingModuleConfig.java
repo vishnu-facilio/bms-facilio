@@ -61,7 +61,7 @@ public class AlarmDefinitionTaggingModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Alarm Definitions");
+        allView.setDisplayName("All Alarm Type Mappings");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(AlarmDefinitionTaggingModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();
@@ -88,7 +88,7 @@ public class AlarmDefinitionTaggingModuleConfig extends BaseModuleConfig {
         FacilioModule module = modBean.getModule(AlarmDefinitionTaggingModule.MODULE_NAME);
 
         FacilioForm form = new FacilioForm();
-        form.setDisplayName("Alarm Definition Tagging");
+        form.setDisplayName("Alarm Type Mapping");
         form.setName("default_"+ module.getName() +"_web");
         form.setModule(module);
         form.setLabelPosition(FacilioForm.LabelPosition.TOP);

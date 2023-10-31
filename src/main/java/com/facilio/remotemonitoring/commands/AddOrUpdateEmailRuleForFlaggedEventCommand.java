@@ -23,6 +23,7 @@ import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.context.FlaggedEventWorkorderFieldMappingContext;
+import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.util.FacilioUtil;
@@ -50,13 +51,13 @@ public class AddOrUpdateEmailRuleForFlaggedEventCommand extends FacilioCommand {
                 updateFlaggedEventRule.setId(flaggedEventRule.getId());
                 if(emailRule != null && emailRule.getActions() != null) {
                     Criteria criteria = new Criteria();
-                    criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule",FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+                    criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
                     updateFlaggedEventRule.setEmailNotificationRuleId(FlaggedEventUtil.addEmailRule(emailRule,"Email Notification Rule for Flagged Event from Rule- " + flaggedEventRule.getId(),criteria));
                 }
                 if(delayedEmailRule != null) {
                     if(flaggedEventRule.getFollowUpEmailDelayTimeOne() != null) {
                         Criteria criteria = new Criteria();
-                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME, FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
                         updateFlaggedEventRule.setDelayedEmailRuleOneId(FlaggedEventUtil.addScheduledEmailRule(delayedEmailRule, "Email Scheduled One Notification Rule for Flagged Event from Rule- " + flaggedEventRule.getId(), criteria,flaggedEventRule.getFollowUpEmailDelayTimeOne()));
 
                         if(flaggedEventRule.getFollowUpEmailDelayTimeTwo() != null) {
@@ -64,7 +65,7 @@ public class AddOrUpdateEmailRuleForFlaggedEventCommand extends FacilioCommand {
                                 FacilioUtil.throwIllegalArgumentException(true,"Invalid follow up email delay time");
                             }
                             Criteria criteria2 = new Criteria();
-                            criteria2.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+                            criteria2.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME, FlaggedEventModule.MODULE_NAME), String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
                             updateFlaggedEventRule.setDelayedEmailRuleTwoId(FlaggedEventUtil.addScheduledEmailRule(delayedEmailRule, "Email Scheduled Two Notification Rule for Flagged Event from Rule- " + flaggedEventRule.getId(), criteria2,flaggedEventRule.getFollowUpEmailDelayTimeTwo()));
                         }
                     }

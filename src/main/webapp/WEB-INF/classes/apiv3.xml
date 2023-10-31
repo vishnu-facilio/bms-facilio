@@ -2028,7 +2028,7 @@
 
     <package name="flaggedEventActions" extends="v3Api" namespace="/api/v3/flaggedEvent">
         <action name="*/createworkorder" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="createWorkorder">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
             <param name="checkPermission">true</param>
@@ -2038,7 +2038,7 @@
             <param name="buttonPermission">true</param>
         </action>
         <action name="*/takecustody" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="takeCustody">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
             <param name="checkPermission">true</param>
@@ -2048,7 +2048,7 @@
             <param name="buttonPermission">true</param>
         </action>
         <action name="*/pass" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="passToNextBureau">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
             <param name="checkPermission">true</param>
@@ -2058,7 +2058,7 @@
             <param name="buttonPermission">true</param>
         </action>
         <action name="*/inhibit" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="inhibit">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
             <param name="checkPermission">true</param>
@@ -2068,7 +2068,7 @@
             <param name="buttonPermission">true</param>
         </action>
         <action name="*/close" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="close">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
             <param name="checkPermission">true</param>
@@ -2078,7 +2078,7 @@
 <!--            <param name="buttonPermission">true</param>-->
         </action>
         <action name="*/closeButtonDetail" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="closeButtonDetail">
-            <param name="moduleName">flaggedEvent</param>
+            <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">GET:READ</param>
             <param name="checkPermission">true</param>
@@ -2159,7 +2159,7 @@
             <param name="checkPermission">true</param>
         </action>
         <action name="alarmFilterRule/ruleStatus/*" class="com.facilio.remotemonitoring.action.RuleAction" method="updateAlarmFilterRuleStatus">
-            <param name="moduleName">alarmFilterRule</param>
+            <param name="moduleName">alarmCorrelationRule</param>
             <param name="id">{1}</param>
             <param name="permission">
                 PATCH:UPDATE
@@ -2179,7 +2179,7 @@
     <package name="alarmFilterRule" namespace="/api/v3/alarmFilterRule" extends="v3Api">
         <action name="assetRelation/*" class="com.facilio.remotemonitoring.action.AlarmFilterRuleAction" method="getSelectedCategoryAssetRelationsships">
             <param name="assetCategoryId">{1}</param>
-            <param name="moduleName">alarmFilterRule</param>
+            <param name="moduleName">alarmCorrelationRule</param>
             <param name="permission">GET:READ</param>
             <param name="checkPermission">true</param>
         </action>

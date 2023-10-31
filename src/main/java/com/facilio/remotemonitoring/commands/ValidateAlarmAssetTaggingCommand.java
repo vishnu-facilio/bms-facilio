@@ -33,7 +33,7 @@ public class ValidateAlarmAssetTaggingCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(alarmAssetTaggings)) {
             for(AlarmAssetTaggingContext alarmAssetTagging : alarmAssetTaggings) {
                 if(alarmAssetTagging == null) {
-                    FacilioUtil.throwIllegalArgumentException(true,"Alarm Asset Tagging is required");
+                    FacilioUtil.throwIllegalArgumentException(true,"Alarm Asset Mapping is required");
                 }
                 if(alarmAssetTagging.getClient() == null || alarmAssetTagging.getClient().getId() < 0) {
                     FacilioUtil.throwIllegalArgumentException(true,"Client is required");
@@ -56,7 +56,7 @@ public class ValidateAlarmAssetTaggingCommand extends FacilioCommand {
                 if(CollectionUtils.isNotEmpty(fetchedAlarmTaggings)) {
                     for(AlarmAssetTaggingContext fetchedAlarmTagging : fetchedAlarmTaggings) {
                         if(fetchedAlarmTagging.getId() != alarmAssetTagging.getId()) {
-                            FacilioUtil.throwIllegalArgumentException(true,"Alarm Asset Tagging already exists");
+                            FacilioUtil.throwIllegalArgumentException(true,"Alarm Asset Mapping already exists");
                         }
                     }
                 }

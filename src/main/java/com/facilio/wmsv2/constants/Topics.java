@@ -22,4 +22,8 @@ public interface Topics {
     interface FlaggedEventCreation {
         String flaggedEventTopic = "__flaggedEvent__";
     }
+
+    interface ControllerOffline {
+        String controllerOfflineTopic = "controller__offline__alarm__";
+    }
 }

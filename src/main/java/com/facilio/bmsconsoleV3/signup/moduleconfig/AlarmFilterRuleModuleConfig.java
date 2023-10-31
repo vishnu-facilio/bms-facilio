@@ -59,7 +59,7 @@ public class AlarmFilterRuleModuleConfig extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
-        allView.setDisplayName("All Alarm Filter Rules");
+        allView.setDisplayName("All Alarm Correlation Rules");
         allView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
         allView.setModuleName(AlarmFilterRuleModule.MODULE_NAME);
         List<ViewField> viewFields = new ArrayList<>();
@@ -68,7 +68,7 @@ public class AlarmFilterRuleModuleConfig extends BaseModuleConfig {
         viewFields.add(new ViewField("description", "Description"));
         viewFields.add(new ViewField("client", "Client"));
         viewFields.add(new ViewField("alarmType", "Alarm Type"));
-        viewFields.add(new ViewField("strategy", "Strategy"));
+        viewFields.add(new ViewField("alarmApproach", "Alarm Approach"));
         viewFields.add(new ViewField("status", "Status"));
 
         allView.setFields(viewFields);
@@ -168,7 +168,7 @@ public class AlarmFilterRuleModuleConfig extends BaseModuleConfig {
         FacilioField name = moduleBean.getField("name",moduleName);
         FacilioField description = moduleBean.getField("description",moduleName);
         FacilioField alarmType = moduleBean.getField("alarmType",moduleName);
-        FacilioField strategy = moduleBean.getField("strategy",moduleName);
+        FacilioField strategy = moduleBean.getField("alarmApproach",moduleName);
         FacilioField client = moduleBean.getField("client",moduleName);
         FacilioField priority = moduleBean.getField("priority",moduleName);
 

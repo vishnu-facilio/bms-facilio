@@ -8,7 +8,7 @@ import com.facilio.modules.FacilioStringEnum;
 import lombok.Getter;
 import lombok.Setter;
 
-public enum FilterType implements FacilioStringEnum {
+public enum RuleType implements FacilioStringEnum {
 
     INDIVIDUAL("Individual"),
     CONTROLLER_OFFLINE("Connectivity Loss Alarm"),
@@ -16,7 +16,7 @@ public enum FilterType implements FacilioStringEnum {
 
     private String displayName;
 
-    FilterType(String displayName) {
+    RuleType(String displayName) {
         this.displayName = displayName;
     }
     @Override

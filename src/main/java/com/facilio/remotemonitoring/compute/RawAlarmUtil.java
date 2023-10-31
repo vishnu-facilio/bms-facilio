@@ -25,7 +25,6 @@ import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.AlarmDefinitionModule;
 import com.facilio.remotemonitoring.signup.AlarmDefinitionTaggingModule;
-import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.services.messageQueue.MessageQueue;
@@ -55,6 +54,9 @@ public class RawAlarmUtil {
         return false;
     }
 
+    public static void pushControllerOfflineAlarm(IncomingRawAlarmContext controllerOfflineAlarm) {
+
+    }
     public static void pushToStormRawAlarmQueue(IncomingRawAlarmContext rawAlarm) throws Exception {
         long controllerId = -1;
         if (rawAlarm.getController() != null && rawAlarm.getController().getId() > -1) {
@@ -300,7 +302,7 @@ public class RawAlarmUtil {
         updateRecordBuilder.update(alarm);
     }
 
-    public static void updateParentAlarmAndMarkAsFiltered(List<Long> ids,Long parentAlarmId) throws Exception {
+    public static void updateParentAlarmAndMarkAsFiltered(List<Long> ids, Long parentAlarmId) throws Exception {
         if (CollectionUtils.isNotEmpty(ids) && parentAlarmId != null) {
             RawAlarmContext parentAlarm = new RawAlarmContext();
             parentAlarm.setId(parentAlarmId);
@@ -318,6 +320,7 @@ public class RawAlarmUtil {
             updateRecordBuilder.update(alarm);
         }
     }
+
     public static void updateFilterCriteriaId(RawAlarmContext rawAlarm, FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         RawAlarmContext alarm = new RawAlarmContext();
         alarm.setFilterRuleCriteriaId(filterRuleCriteria.getId());
@@ -332,15 +335,15 @@ public class RawAlarmUtil {
                 .andCriteria(criteria);
         updateRecordBuilder.update(alarm);
     }
+
     public static void markAsFiltered(List<RawAlarmContext> rawAlarms) throws Exception {
-        if(CollectionUtils.isNotEmpty(rawAlarms)) {
+        if (CollectionUtils.isNotEmpty(rawAlarms)) {
             List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
-            Map<String,Object> prop = new HashMap<>();
-            prop.put("filtered",true);
-            V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop,ids,false);
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("filtered", true);
+            V3Util.updateBulkRecords(RawAlarmModule.MODULE_NAME, prop, ids, false);
         }
     }
-
     public static void clearAlarms(List<Long> ids,Long clearTime) throws Exception {
         if(CollectionUtils.isNotEmpty(ids)) {
             if(clearTime == null) {
@@ -416,7 +419,7 @@ public class RawAlarmUtil {
             }
         }
     }
-    public static List<Long> clearPreviousRawAlarmsForRTN(RawAlarmContext rawAlarm) throws Exception {
+    public static List<RawAlarmContext> clearPreviousRawAlarmsForRTN(RawAlarmContext rawAlarm) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule rawAlarmModule = modBean.getModule(RawAlarmModule.MODULE_NAME);
         Criteria criteria = new Criteria();
@@ -426,7 +429,7 @@ public class RawAlarmUtil {
         criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(rawAlarm.getClient().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_EMPTY));
-        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "strategy", String.valueOf(rawAlarm.getStrategy()), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
         if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
             criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
         } else {
@@ -451,7 +454,7 @@ public class RawAlarmUtil {
                 clearAlarms(ids,clearTime);
                 clearAllParentAlarms(rawAlarms,clearTime);
             }
-            return ids;
+            return rawAlarms;
         }
         return null;
     }

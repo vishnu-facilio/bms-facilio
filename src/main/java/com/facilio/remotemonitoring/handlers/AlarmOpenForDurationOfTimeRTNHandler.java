@@ -8,7 +8,6 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.compute.FilterAlarmUtil;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
@@ -22,7 +21,6 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +68,9 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
         if(rawAlarm != null && (rawAlarm.getClearedTime() == null || rawAlarm.getClearedTime() <= 0)) {
             if(!rawAlarm.isFiltered()) {
                 FilteredAlarmContext filteredAlarm = FilterAlarmUtil.constructFilteredAlarm(rawAlarm);
-                filteredAlarm.setAlarmFilterRule(filterRuleCriteria.getAlarmFilterRule());
-                FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
+                filteredAlarm.setAlarmCorrelationRule(filterRuleCriteria.getAlarmFilterRule());
                 RawAlarmUtil.markAsFiltered(rawAlarm.getId());
+                FilterAlarmUtil.addFilteredAlarm(filteredAlarm);
             }
         }
     }

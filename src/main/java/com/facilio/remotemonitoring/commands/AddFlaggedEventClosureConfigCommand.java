@@ -57,7 +57,7 @@ public class AddFlaggedEventClosureConfigCommand extends FacilioCommand {
                     closureConfig.setCloseEmailNotificationRuleId(null);
                     if(closureConfig.getCloseEmailRule() != null) {
                         Criteria criteria = new Criteria();
-                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("flaggedEventRule", FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
+                        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME, FlaggedEventModule.MODULE_NAME),String.valueOf(flaggedEventRule.getId()), PickListOperators.IS));
                         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME), StringUtils.join(Arrays.asList(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.getIndex(),FlaggedEventContext.FlaggedEventStatus.CLEARED.getIndex()),","), StringSystemEnumOperators.IS));
                         closureConfig.setCloseEmailNotificationRuleId(FlaggedEventUtil.addEmailRule(closureConfig.getCloseEmailRule(),"Email Notification Rule for Flagged Event Close - " + flaggedEventRule.getId(),criteria, EventType.CREATE_OR_EDIT));
                     }

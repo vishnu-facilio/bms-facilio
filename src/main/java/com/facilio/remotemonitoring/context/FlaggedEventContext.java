@@ -19,7 +19,7 @@ import java.util.List;
 public class FlaggedEventContext extends V3Context {
     private String name;
     private V3ClientContext client;
-    private FlaggedEventRuleContext flaggedEventRule;
+    private FlaggedEventRuleContext flaggedAlarmProcess;
     private Controller controller;
     private FlaggedEventStatus status;
     private V3WorkOrderContext workorder;
