@@ -222,7 +222,7 @@ public enum FieldTypeImportRowProcessor {
                             HashMap<String, Object> props,LoadLookupHelper lookupHelper) throws Exception {
             if(field.getDisplayType()== FacilioField.FieldDisplayType.EMAIL){
                 String cellValueString = cellValue.toString();
-                String regex = FacilioConstants.ContextNames.EMAIL_REGEX;
+                String regex = FacilioConstants.FormContextNames.EMAIL_REGEX;
                 Pattern pattern = Pattern.compile(regex);
                 Matcher matcher = pattern.matcher(cellValueString);
                 FacilioUtil.throwIllegalArgumentException(!matcher.matches(), "Invalid Email");
