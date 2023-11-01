@@ -192,6 +192,14 @@ public class APIModuleWidgets {
                 .addWidgetConfig("flexiblewebrelatedreadings_7","Related Readings - 7", WidgetConfigContext.ConfigType.FLEXIBLE,7,-1, PagesContext.PageLayoutType.WEB)
                 .done()
 
+                .addModuleWidget("inventoryusage","Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE)
+                .addWidgetConfig("flexiblewebinventoryusage_6","Inventory Usage - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("spareparts","Spare Parts", PageWidget.WidgetType.SPARE_PARTS)
+                .addWidgetConfig("flexiblewebspareparts_6","Spare Parts - 6", WidgetConfigContext.ConfigType.FLEXIBLE,6,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
 
                 ;
     }

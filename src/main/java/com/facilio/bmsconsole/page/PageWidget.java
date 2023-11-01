@@ -702,7 +702,8 @@ public class PageWidget {
 		INDUCTION_TEMPLATE_INSIGHT_GRAPH("inductionTemplateInsightGraph"),
 		INDUCTION_TEMPLATE_INSIGHT_SUMMARY("inductionTemplateInsightSummary"),
 		INDUCTION_TEMPLATE_TRIGGERS("inductionTemplateTriggers"),
-		INDUCTION_RESPONSE_SUMMARY("inductionResponseSummary");
+		INDUCTION_RESPONSE_SUMMARY("inductionResponseSummary"),
+		INVENTORY_USAGE("inventoryUsage");
 
 		private String name;
 		@Getter

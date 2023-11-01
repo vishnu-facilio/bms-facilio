@@ -1,7 +1,12 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
 import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.json.simple.JSONObject;
@@ -21,10 +26,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -113,6 +114,40 @@ public class AssetModule extends BaseModuleConfig{
 
         return assetView;
     }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editAsset = new SystemButtonRuleContext();
+        editAsset.setName("Edit");
+        editAsset.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editAsset.setIdentifier("editAsset");
+        editAsset.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editAsset.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editAsset.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,editAsset);
+        SystemButtonRuleContext duplicateAsset = new SystemButtonRuleContext();
+        duplicateAsset.setName("Duplicate");
+        duplicateAsset.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        duplicateAsset.setIdentifier("duplicateAsset");
+        duplicateAsset.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        duplicateAsset.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        duplicateAsset.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,duplicateAsset);
+        SystemButtonRuleContext applyDepreciation = new SystemButtonRuleContext();
+        applyDepreciation.setName("Apply Depreciation");
+        applyDepreciation.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        applyDepreciation.setIdentifier("assetDepreciation");
+        applyDepreciation.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,applyDepreciation);
+        SystemButtonRuleContext moveToStoreRoom = new SystemButtonRuleContext();
+        moveToStoreRoom.setName("Move to Storeroom");
+        moveToStoreRoom.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        moveToStoreRoom.setIdentifier("moveToStoreroom");
+        moveToStoreRoom.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,moveToStoreRoom);
+    }
+
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
@@ -143,6 +178,21 @@ public class AssetModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.ASSET_ACTIVITY);
+
+        Criteria criteria = new Criteria();
+        Condition rotatingItem = new Condition();
+        rotatingItem.setFieldName("rotatingItem");
+        rotatingItem.setColumnName("Assets.ROTATING_ITEM");
+        rotatingItem.setOperator(CommonOperators.IS_NOT_EMPTY);
+        rotatingItem.setModuleName(FacilioConstants.ContextNames.ASSET);
+        criteria.addOrCondition(rotatingItem);
+
+        Condition rotatingTool = new Condition();
+        rotatingTool.setFieldName("rotatingTool");
+        rotatingTool.setColumnName("Assets.ROTATING_TOOL");
+        rotatingTool.setOperator(CommonOperators.IS_NOT_EMPTY);
+        rotatingTool.setModuleName(FacilioConstants.ContextNames.ASSET);
+        criteria.addOrCondition(rotatingTool);
 
 
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
@@ -224,6 +274,17 @@ public class AssetModule extends BaseModuleConfig{
                     .columnDone()
                     .tabDone()
 
+
+                    .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("spareparts", null, null)
+                    .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
                     .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("latestdowntime", null, null)
@@ -240,6 +301,193 @@ public class AssetModule extends BaseModuleConfig{
                     .addWidget("assetfailurerate", "Mean Time Between Failure", PageWidget.WidgetType.FAILURE_RATE, "webfailurerate_8_6", 0, 0, null, null)
                     .widgetDone()
                     .addWidget("assetaveragerepairtime", "Mean Time To Repair", PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "webaveragerepairtime_8_6", 6, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("financial", "Financial", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("costdetail", null, null)
+                    .addWidget("assetcostdetail", "Asset Value Details", PageWidget.WidgetType.ASSET_COST_DETAILS, "webassetcostdetail_5_4", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetcostbreakup", "Maintenance Cost Value", PageWidget.WidgetType.COST_BREAKUP, "webcostbreakup_5_8", 4, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("maintenancecost", null, null)
+                    .addWidget("assetmaintenancecost", "Maintenance Cost Analysis", PageWidget.WidgetType.MAINTENANCE_COST_TREND, "flexiblewebmaintenancecosttrend_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("depreciationschedule", null, null)
+                    .addWidget("assetdepreciationschedule", "Depreciation Timeline", PageWidget.WidgetType.DEPRECIATION_SCHEDULE, "flexiblewebdepreciationschedule_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("depreciationcosttrend", null, null)
+                    .addWidget("assetdepreciationcosttrend", "Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_COST_TREND, "flexiblewebdepreciationcosttrend_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("safetyplan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.SAFETY_PLAN)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("safetyplanhazard", null, null)
+                    .addWidget("assetsafetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("assetsafetyplanprecaution", null, null)
+                    .addWidget("assetsafetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("classification", null, null)
+                    .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("relatedlist", "Related List", "List of all related records across modules")
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("activity", null, null)
+                    .addWidget("activity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .layoutDone()
+                    .pageDone()
+
+
+
+                    .addPage("assetinventorypage", "Asset Inventory Page", "", criteria, isTemplate, isDefault, true)
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("locationdetails", null, null)
+                    .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("operatinghours", null, null)
+                    .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("plannedmaintenance", "", null)
+                    .addWidget("assetplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("unplannedmaintenance", "", null)
+                    .addWidget("assetunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("workorderdetails", null, null)
+                    .addWidget("assetworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("recentlyclosedppm", null, null)
+                    .addWidget("assetrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("fault", "Fault", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("faultreport", "", null)
+                    .addWidget("assetfaultreport", "Fault Reports", PageWidget.WidgetType.FAULT_REPORT, "flexiblewebfaultreport_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("faultinsight", null, null)
+                    .addWidget("assetfaultinsight", "Fault Insights", PageWidget.WidgetType.FAULT_INSIGHT, "flexiblewebfaultinsight_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("assetreadings", null, null)
+                    .addWidget("readings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("assetcommand", null, null)
+                    .addWidget("assetcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("spareparts", null, null)
+                    .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("latestdowntime", null, null)
+                    .addWidget("assetlatestdowntime", "Latest Downtime Reported", PageWidget.WidgetType.LATEST_DOWNTIME, "weblatestdowntime_3_6", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetoveralldowntime", "Overall Downtime", PageWidget.WidgetType.OVERALL_DOWNTIME, "weboveralldowntime_3_6", 6, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("downtimehistory", null, null)
+                    .addWidget("assetdowntimehistory", "Downtime History", PageWidget.WidgetType.DOWNTIME_HISTORY, "flexibledowntimehistory_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("failurerate", null, null)
+                    .addWidget("assetfailurerate", "Mean Time Between Failure", PageWidget.WidgetType.FAILURE_RATE, "webfailurerate_8_6", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetaveragerepairtime", "Mean Time To Repair", PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "webaveragerepairtime_8_6", 6, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("inventoryusage", "Inventory Usage", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("inventoryusage", null, null)
+                    .addWidget("inventoryusage", "Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE, "flexiblewebinventoryusage_6", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -397,6 +645,15 @@ public class AssetModule extends BaseModuleConfig{
                     .columnDone()
                     .tabDone()
 
+                    .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("spareparts", null, null)
+                    .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
                     .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("latestdowntime", null, null)
@@ -485,7 +742,193 @@ public class AssetModule extends BaseModuleConfig{
                     .columnDone()
                     .tabDone()
                     .layoutDone()
-                    .pageDone().getCustomPages();
+                    .pageDone()
+
+                    .addPage("assetinventorypage", "Asset Inventory Page", "", criteria, isTemplate, isDefault, true)
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("locationdetails", null, null)
+                    .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("operatinghours", null, null)
+                    .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("plannedmaintenance", "", null)
+                    .addWidget("assetplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("unplannedmaintenance", "", null)
+                    .addWidget("assetunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("workorderdetails", null, null)
+                    .addWidget("assetworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("recentlyclosedppm", null, null)
+                    .addWidget("assetrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("fault", "Fault", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("faultreport", "", null)
+                    .addWidget("assetfaultreport", "Fault Reports", PageWidget.WidgetType.FAULT_REPORT, "flexiblewebfaultreport_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("faultinsight", null, null)
+                    .addWidget("assetfaultinsight", "Fault Insights", PageWidget.WidgetType.FAULT_INSIGHT, "flexiblewebfaultinsight_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("assetreadings", null, null)
+                    .addWidget("readings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("assetcommand", null, null)
+                    .addWidget("assetcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("spareparts", null, null)
+                    .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("latestdowntime", null, null)
+                    .addWidget("assetlatestdowntime", "Latest Downtime Reported", PageWidget.WidgetType.LATEST_DOWNTIME, "weblatestdowntime_3_6", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetoveralldowntime", "Overall Downtime", PageWidget.WidgetType.OVERALL_DOWNTIME, "weboveralldowntime_3_6", 6, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("downtimehistory", null, null)
+                    .addWidget("assetdowntimehistory", "Downtime History", PageWidget.WidgetType.DOWNTIME_HISTORY, "flexibledowntimehistory_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("failurerate", null, null)
+                    .addWidget("assetfailurerate", "Mean Time Between Failure", PageWidget.WidgetType.FAILURE_RATE, "webfailurerate_8_6", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetaveragerepairtime", "Mean Time To Repair", PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "webaveragerepairtime_8_6", 6, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("inventoryusage", "Inventory Usage", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("inventoryusage", null, null)
+                    .addWidget("inventoryusage", "Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE, "flexiblewebinventoryusage_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("financial", "Financial", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("costdetail", null, null)
+                    .addWidget("assetcostdetail", "Asset Value Details", PageWidget.WidgetType.ASSET_COST_DETAILS, "webassetcostdetail_5_4", 0, 0, null, null)
+                    .widgetDone()
+                    .addWidget("assetcostbreakup", "Maintenance Cost Value", PageWidget.WidgetType.COST_BREAKUP, "webcostbreakup_5_8", 4, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("maintenancecost", null, null)
+                    .addWidget("assetmaintenancecost", "Maintenance Cost Analysis", PageWidget.WidgetType.MAINTENANCE_COST_TREND, "flexiblewebmaintenancecosttrend_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("depreciationschedule", null, null)
+                    .addWidget("assetdepreciationschedule", "Depreciation Timeline", PageWidget.WidgetType.DEPRECIATION_SCHEDULE, "flexiblewebdepreciationschedule_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("depreciationcosttrend", null, null)
+                    .addWidget("assetdepreciationcosttrend", "Depreciation Analysis", PageWidget.WidgetType.DEPRECIATION_COST_TREND, "flexiblewebdepreciationcosttrend_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("safetyplan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.SAFETY_PLAN)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("safetyplanhazard", null, null)
+                    .addWidget("assetsafetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("assetsafetyplanprecaution", null, null)
+                    .addWidget("assetsafetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("classification", null, null)
+                    .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("relatedlist", "Related List", "List of all related records across modules")
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("activity", null, null)
+                    .addWidget("activity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+                    .layoutDone()
+                    .pageDone()
+                    .getCustomPages();
         }
         else if(app.getDomainType() == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
             return new ModulePages()
@@ -540,7 +983,72 @@ public class AssetModule extends BaseModuleConfig{
 
                     .layoutDone()
 
-                    .pageDone().getCustomPages();
+                    .pageDone()
+
+                    .addPage("assetinventorypage", "Asset Inventory Page", "", criteria, isTemplate, isDefault, true)
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("locationdetails", null, null)
+                    .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("operatinghours", null, null)
+                    .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("plannedmaintenance", "", null)
+                    .addWidget("assetplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("unplannedmaintenance", "", null)
+                    .addWidget("assetunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("workorderdetails", null, null)
+                    .addWidget("assetworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("recentlyclosedppm", null, null)
+                    .addWidget("assetrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("inventoryusage", "Inventory Usage", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("inventoryusage", null, null)
+                    .addWidget("inventoryusage", "Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE, "flexiblewebinventoryusage_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .layoutDone()
+
+                    .pageDone()
+
+                    .getCustomPages();
         }
         else {
             return new ModulePages()
@@ -604,7 +1112,82 @@ public class AssetModule extends BaseModuleConfig{
                     .tabDone()
 
                     .layoutDone()
-                    .pageDone().getCustomPages();
+                    .pageDone()
+
+
+                    .addPage("assetinventorypage", "Asset Inventory Page", "", criteria, isTemplate, isDefault, true)
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("locationdetails", null, null)
+                    .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("operatinghours", null, null)
+                    .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("maintenance", "Maintenance", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("plannedmaintenance", "", null)
+                    .addWidget("assetplannedmaintenance", "Planned Maintenance", PageWidget.WidgetType.PLANNED_MAINTENANCE, "flexiblewebplannedmaintenance_7", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("unplannedmaintenance", "", null)
+                    .addWidget("assetunplannedmaintenance", "Reactive Maintenance", PageWidget.WidgetType.UNPLANNED_MAINTENANCE, "flexiblewebunplannedmaintenance_7", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("workorderdetails", null, null)
+                    .addWidget("assetworkorderdetail", "Maintenance Insights", PageWidget.WidgetType.WORKORDER_INSIGHT, "flexiblewebworkorderinsight_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("recentlyclosedppm", null, null)
+                    .addWidget("assetrecentlyclosed", "Recently Closed Work order", PageWidget.WidgetType.RECENTLY_CLOSED_PM, "flexiblewebrecentlyclosedpm_4", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("inventoryusage", "Inventory Usage", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("inventoryusage", null, null)
+                    .addWidget("inventoryusage", "Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE, "flexiblewebinventoryusage_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("activity", null, null)
+                    .addWidget("activity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .layoutDone()
+                    .pageDone()
+
+
+                    .getCustomPages();
         }
 
     }
@@ -612,6 +1195,23 @@ public class AssetModule extends BaseModuleConfig{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.ASSET_ACTIVITY);
+
+
+        Criteria criteria = new Criteria();
+        Condition rotatingItem = new Condition();
+        rotatingItem.setFieldName("rotatingItem");
+        rotatingItem.setColumnName("Assets.ROTATING_ITEM");
+        rotatingItem.setOperator(CommonOperators.IS_NOT_EMPTY);
+        rotatingItem.setModuleName(FacilioConstants.ContextNames.ASSET);
+        criteria.addOrCondition(rotatingItem);
+
+        Condition rotatingTool = new Condition();
+        rotatingTool.setFieldName("rotatingTool");
+        rotatingTool.setColumnName("Assets.ROTATING_TOOL");
+        rotatingTool.setOperator(CommonOperators.IS_NOT_EMPTY);
+        rotatingTool.setModuleName(FacilioConstants.ContextNames.ASSET);
+        criteria.addOrCondition(rotatingTool);
+
         return new ModulePages()
                 .addPage("assetdefaultpage", "Default Asset Page", "", null, isTemplate, isDefault, true)
 
@@ -668,6 +1268,15 @@ public class AssetModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
+                .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("spareparts", null, null)
+                .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
                 .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("latestdowntime", null, null)
@@ -715,6 +1324,126 @@ public class AssetModule extends BaseModuleConfig{
                 .layoutDone()
                 .pageDone()
 
+
+                .addPage("assetinventorypage", "Asset Inventory Page", "", criteria, isTemplate, isDefault, true)
+
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Asset details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("locationdetails", null, null)
+                .addWidget("assetlocationdetails", "Location details", PageWidget.WidgetType.ASSET_LOCATION, "flexiblewebassetlocation_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("operatinghours", null, null)
+                .addWidget("assetoperatinghours", "Operating hours", PageWidget.WidgetType.OPERATING_HOURS, "flexibleweboperatinghours_4", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("fault", "Fault", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("faultreport", "", null)
+                .addWidget("assetfaultreport", "Fault Reports", PageWidget.WidgetType.FAULT_REPORT, "flexiblewebfaultreport_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("faultinsight", null, null)
+                .addWidget("assetfaultinsight", "Fault Insights", PageWidget.WidgetType.FAULT_INSIGHT, "flexiblewebfaultinsight_4", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("readings", "Readings", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("assetreadings", null, null)
+                .addWidget("readings", "Readings", PageWidget.WidgetType.READINGS, "flexiblewebreadings_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("assetcommand", null, null)
+                .addWidget("assetcommand", "Commands", PageWidget.WidgetType.COMMANDS_WIDGET, "flexiblewebcommandswidget_7", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("spareparts", "Spare Parts", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.ASSET_SPARE_PARTS)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("spareparts", null, null)
+                .addWidget("spareparts", "Spare Parts", PageWidget.WidgetType.SPARE_PARTS, "flexiblewebspareparts_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("performance", "Performance", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("latestdowntime", null, null)
+                .addWidget("assetlatestdowntime", "Latest Downtime Reported", PageWidget.WidgetType.LATEST_DOWNTIME, "weblatestdowntime_3_6", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("assetoveralldowntime", "Overall Downtime", PageWidget.WidgetType.OVERALL_DOWNTIME, "weboveralldowntime_3_6", 6, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("downtimehistory", null, null)
+                .addWidget("assetdowntimehistory", "Downtime History", PageWidget.WidgetType.DOWNTIME_HISTORY, "flexibledowntimehistory_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("failurerate", null, null)
+                .addWidget("assetfailurerate", "Mean Time Between Failure", PageWidget.WidgetType.FAILURE_RATE, "webfailurerate_8_6", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("assetaveragerepairtime", "Mean Time To Repair", PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "webaveragerepairtime_8_6", 6, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("inventoryusage", "Inventory Usage", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("inventoryusage", null, null)
+                .addWidget("inventoryusage", "Inventory Usage", PageWidget.WidgetType.INVENTORY_USAGE, "flexiblewebinventoryusage_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relatedlist", "Related List", "List of all related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("activity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+                .pageDone()
 
                 .getCustomPages();
     }

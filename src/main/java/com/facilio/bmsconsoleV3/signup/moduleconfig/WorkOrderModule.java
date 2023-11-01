@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
@@ -13,8 +14,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -36,6 +40,47 @@ public class WorkOrderModule extends BaseModuleConfig {
 
     public WorkOrderModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.WORK_ORDER);
+    }
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editWorkorder = new SystemButtonRuleContext();
+        editWorkorder.setName("Edit");
+        editWorkorder.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editWorkorder.setIdentifier("editWorkorder");
+        editWorkorder.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editWorkorder.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editWorkorder.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,editWorkorder);
+
+        SystemButtonRuleContext printWorkorder = new SystemButtonRuleContext();
+        printWorkorder.setName("Print");
+        printWorkorder.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printWorkorder.setIdentifier("printWorkorder");
+        printWorkorder.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,printWorkorder);
+
+        SystemButtonRuleContext downloadWorkorder = new SystemButtonRuleContext();
+        downloadWorkorder.setName("Download");
+        downloadWorkorder.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadWorkorder.setIdentifier("downloadWorkorder");
+        downloadWorkorder.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,downloadWorkorder);
+
+        SystemButtonRuleContext workorderAssetBreakdown = new SystemButtonRuleContext();
+        workorderAssetBreakdown.setName("Asset Breakdown");
+        workorderAssetBreakdown.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        workorderAssetBreakdown.setIdentifier("workorderAssetBreakdown");
+        workorderAssetBreakdown.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,workorderAssetBreakdown);
+
+        SystemButtonRuleContext prerequisiteApprove = new SystemButtonRuleContext();
+        prerequisiteApprove.setName("Prerequisite Approve");
+        prerequisiteApprove.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        prerequisiteApprove.setIdentifier("prerequisiteApprove");
+        prerequisiteApprove.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,prerequisiteApprove);
     }
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
