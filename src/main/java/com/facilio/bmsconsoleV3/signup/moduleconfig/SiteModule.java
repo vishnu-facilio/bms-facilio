@@ -474,7 +474,7 @@ public class SiteModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("buildingsAndSpaces","Buildings & Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addTab("buildingsAndSpaces","Buildings and Spaces", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("buildings","",null)
                 .addWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS,"flexibleWebBuildings_6",0,0,buildingsParam,null)
@@ -635,7 +635,7 @@ public class SiteModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("buildingsAndSpaces","Buildings & Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addTab("buildingsAndSpaces","Buildings and Spaces", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("buildings","",null)
                 .addWidget("buildings","Buildings", PageWidget.WidgetType.BUILDINGS,"flexibleWebBuildings_6",0,0,buildingsParam,null)

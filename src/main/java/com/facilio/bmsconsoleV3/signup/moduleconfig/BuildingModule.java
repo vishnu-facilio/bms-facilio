@@ -198,7 +198,7 @@ public class BuildingModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("floorsAndSpaces","Floors & Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addTab("floorsAndSpaces","Floors and Spaces", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("floors","",null)
                 .addWidget("floors","Floors", PageWidget.WidgetType.FLOORS,"flexibleWebFloors_7",0,0,floorParam,null)
