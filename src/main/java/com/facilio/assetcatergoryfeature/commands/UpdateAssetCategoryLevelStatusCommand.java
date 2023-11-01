@@ -22,6 +22,7 @@ public class UpdateAssetCategoryLevelStatusCommand extends FacilioCommand {
 
         if (categoryId != null) {
             AssetCategoryFeatureStatusUtil.updateCategoryLevelExecStatus(connectedCategoryContext, categoryId);
+
             NamespaceBean nsBean= Constants.getNsBean();
             nsBean.updateNsCacheWithCategory(categoryId, Collections.singletonList(NSType.valueOf(nsType)));
         }

@@ -32,6 +32,7 @@ import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import com.google.common.collect.Lists;
 import lombok.NonNull;
+import lombok.extern.log4j.Log4j;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jgrapht.Graph;
@@ -49,6 +50,7 @@ import static com.facilio.modules.FieldFactory.getField;
 import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpis;
 import static com.facilio.readingrule.util.NewReadingRuleAPI.getReadingRules;
 
+@Log4j
 public class CommonConnectedUtil {
 
     private static final int MAX_HOPS = 5;
@@ -487,7 +489,6 @@ public class CommonConnectedUtil {
     public static Map<String, Object> getConnectedData(NameSpaceContext ns) throws Exception {
 
         List<Map<String, Object>> props = getConnectedDataRecordSelectorBasedOnType(ns).get();
-
         if (CollectionUtils.isNotEmpty(props)) {
             return props.get(0);
         }
@@ -525,7 +526,7 @@ public class CommonConnectedUtil {
 
         switch (type) {
             case FAULT_IMPACT_RULE:
-                selectRecordBuilder.innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on(ModuleFactory.getNewReadingRuleModule().getTableName() + ".IMPACT_ID = " + module.getTableName() + ".ID");
+                selectRecordBuilder.innerJoin(modBean.getModule(FacilioConstants.FaultImpact.MODULE_NAME).getTableName()).on(modBean.getModule(FacilioConstants.FaultImpact.MODULE_NAME).getTableName() + ".ID = " + module.getTableName() + ".IMPACT_ID");
                 break;
             case VIRTUAL_METER:
                 String virtualMeterTemplateTable=modBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE).getTableName();

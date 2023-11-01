@@ -5,7 +5,7 @@ import com.facilio.modules.FacilioIntEnum;
 
 public enum NSType implements FacilioIntEnum {
     READING_RULE("Reading Rule", FacilioConstants.ReadingRules.NEW_READING_RULE),
-    FAULT_IMPACT_RULE("Fault Impact Rule",FacilioConstants.FaultImpact.MODULE_NAME),
+    FAULT_IMPACT_RULE("Fault Impact Rule",FacilioConstants.ReadingRules.NEW_READING_RULE),
     KPI_RULE("KPI",FacilioConstants.ReadingKpi.READING_KPI),
     SENSOR_RULE("Sensor Rule",FacilioConstants.ContextNames.SENSOR_RULE_MODULE),
     VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)
