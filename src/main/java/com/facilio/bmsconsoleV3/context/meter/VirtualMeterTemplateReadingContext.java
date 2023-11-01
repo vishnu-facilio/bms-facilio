@@ -21,7 +21,7 @@ public class VirtualMeterTemplateReadingContext extends V3Context implements ICo
     private Boolean status;
     int resourceType;
     ResourceCategory<? extends V3Context> category;
-    ResourceType resourceTypeEnum=ResourceType.METER_CATEGORY;
+    ResourceType resourceTypeEnum = ResourceType.METER_CATEGORY;
 
     public NamespaceFrequency getFrequencyEnum() {
         return this.frequency;

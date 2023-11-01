@@ -1,9 +1,13 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -16,6 +20,7 @@ import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 

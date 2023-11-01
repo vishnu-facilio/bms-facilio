@@ -1,8 +1,8 @@
 package com.facilio.ns.context;
 
+import com.facilio.alarms.sensor.FacilioDataProcessing;
 import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.connected.IConnectedRule;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import lombok.Getter;
@@ -33,13 +33,12 @@ public class NameSpaceContext implements Serializable {
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
         this.executorId = ns.executorId;
-        this.resourceType=ns.resourceType;
-        this.parentRule=ns.parentRule;
+        this.resourceType = ns.resourceType;
+        this.categoryId = ns.categoryId;
     }
 
-    /**
-     * this constructor is used in storm to clone NameSpaceContext
-     */
+
+    @FacilioDataProcessing
     public NameSpaceContext(NameSpaceCacheContext ns) {
         this.id = ns.id;
         this.orgId = ns.orgId;
@@ -55,8 +54,8 @@ public class NameSpaceContext implements Serializable {
         this.assetCategoryContext = ns.assetCategoryContext;
         this.execMode = ns.execMode;
         this.executorId = ns.executorId;
-        this.resourceType=ns.resourceType;
-        this.parentRule=ns.parentRule;
+        this.resourceType = ns.resourceType;
+        this.categoryId = ns.categoryId;
     }
 
     Long id;
@@ -72,6 +71,8 @@ public class NameSpaceContext implements Serializable {
     NSType type;
 
     Integer execMode;
+
+    Long categoryId;
 
     public void setExecMode(int mode) {
         this.execMode = mode;
@@ -105,8 +106,6 @@ public class NameSpaceContext implements Serializable {
     {
         fields = new ArrayList<>();
     }
-
-    IConnectedRule parentRule;
 
     public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId) {
         this.type = type;

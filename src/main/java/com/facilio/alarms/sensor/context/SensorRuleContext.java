@@ -66,7 +66,7 @@ public class SensorRuleContext extends V3Context implements IConnectedRule {
 
     SensorAlarmDetailsContext sensorAlarmDetails;
 
-    int resourceType=ResourceType.ASSET_CATEGORY.getIndex();
+    int resourceType = ResourceType.ASSET_CATEGORY.getIndex();
 
     ResourceCategory<? extends V3Context> category;
 

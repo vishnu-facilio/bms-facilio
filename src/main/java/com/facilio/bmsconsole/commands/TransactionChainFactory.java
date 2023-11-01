@@ -7278,12 +7278,7 @@ public class TransactionChainFactory {
 	}
 
 	public static FacilioChain getAddFDDReadingModuleChain(boolean isMeter) {
-		FacilioChain c = getDefaultChain();
-		c.addCommand(isMeter ? new GetUtilityTypeModuleCommand() : new GetCategoryModuleCommand());
-		c.addCommand(getAddReadingsChain());
-		c.addCommand(isMeter ? new GetUtilityTypeResourcesCommand() : new GetCategoryResourcesCommand());
-		c.addCommand(addReadingDataMetaForCategory());
-		return c;
+		return isMeter ? getAddUtilityTypeReadingChain() : getAddCategoryReadingChain();
 	}
 
 	public static FacilioChain updateDecommissionedResources() {

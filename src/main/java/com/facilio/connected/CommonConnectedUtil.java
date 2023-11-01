@@ -309,7 +309,7 @@ public class CommonConnectedUtil {
                 firstCircle.add(parentRuleId);
                 categoryIds.add(catId);
                 IConnectedRule connectedRule = fetchConnectedRule(parentRuleId, type);
-                ResourceCategory resourceCategory=connectedRule.getCategory();
+                ResourceCategory resourceCategory = connectedRule.getCategory();
                 resourceIds.addAll(NamespaceAPI.getMatchedResources(connectedRule.getNs(),resourceCategory));
             }
         }
@@ -485,22 +485,8 @@ public class CommonConnectedUtil {
     }
 
     public static Map<String, Object> getConnectedData(NameSpaceContext ns) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        NSType type = ns.getTypeEnum();
-        FacilioModule module = modBean.getModule(type.getModuleName());
 
-        List<FacilioField> fields = getFields(type, module);
-
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .select(fields)
-                .table(module.getTableName())
-                .andCondition(CriteriaAPI.getIdCondition(ns.getParentRuleId(), module));
-
-        if(type.equals(NSType.FAULT_IMPACT_RULE)){
-            selectRecordBuilder.innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on(ModuleFactory.getNewReadingRuleModule().getTableName()+".IMPACT_ID = "+module.getTableName()+".ID");
-        }
-
-        List<Map<String, Object>> props = selectRecordBuilder.get();
+        List<Map<String, Object>> props = getConnectedDataRecordSelectorBasedOnType(ns).get();
 
         if (CollectionUtils.isNotEmpty(props)) {
             return props.get(0);
@@ -510,9 +496,7 @@ public class CommonConnectedUtil {
 
     private static List<FacilioField> getFields(NSType type, FacilioModule module) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        List<FacilioField> fields = new ArrayList<FacilioField>() {{
-            add(getField("status", "STATUS", FieldType.BOOLEAN));
-        }};
+        List<FacilioField> fields = new ArrayList<>();
         switch (type) {
             case FAULT_IMPACT_RULE:
                 fields.add(getField("categoryId", "ASSET_CATEGORY", FieldType.NUMBER));
@@ -525,5 +509,28 @@ public class CommonConnectedUtil {
                 fields.add(getField("resourceType", "RESOURCE_TYPE", FieldType.NUMBER));
         }
         return fields;
+    }
+
+    private static GenericSelectRecordBuilder getConnectedDataRecordSelectorBasedOnType(NameSpaceContext ns) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        NSType type = ns.getTypeEnum();
+        FacilioModule module = modBean.getModule(type.getModuleName());
+
+        List<FacilioField> fields = getFields(type, module);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(ns.getParentRuleId(), module));
+
+        switch (type) {
+            case FAULT_IMPACT_RULE:
+                selectRecordBuilder.innerJoin(ModuleFactory.getNewReadingRuleModule().getTableName()).on(ModuleFactory.getNewReadingRuleModule().getTableName() + ".IMPACT_ID = " + module.getTableName() + ".ID");
+                break;
+            case VIRTUAL_METER:
+                String virtualMeterTemplateTable=modBean.getModule(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE).getTableName();
+                selectRecordBuilder.innerJoin(virtualMeterTemplateTable).on( virtualMeterTemplateTable +".ID = " + module.getTableName() + ".VIRTUAL_METER_TEMPLATE_ID");
+        }
+        return selectRecordBuilder;
     }
 }

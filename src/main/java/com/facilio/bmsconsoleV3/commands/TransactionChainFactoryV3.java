@@ -3583,7 +3583,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addSensorRuleNsChain(){
 
         FacilioChain c = getDefaultChain();
-        c.addCommand(new ConstructNsFieldsCommand());
+        c.addCommand(new ConstructNsFieldsForSensorCommand());
         c.addCommand(new SetParentIdForNamespaceCommand());
         c.addCommand(addNsAndNsFieldsChain());
         return c;

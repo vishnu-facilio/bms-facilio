@@ -3,7 +3,6 @@ package com.facilio.alarms.sensor.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -14,7 +13,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;

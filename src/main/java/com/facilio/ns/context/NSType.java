@@ -8,7 +8,7 @@ public enum NSType implements FacilioIntEnum {
     FAULT_IMPACT_RULE("Fault Impact Rule",FacilioConstants.FaultImpact.MODULE_NAME),
     KPI_RULE("KPI",FacilioConstants.ReadingKpi.READING_KPI),
     SENSOR_RULE("Sensor Rule",FacilioConstants.ContextNames.SENSOR_RULE_MODULE),
-    VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE)
+    VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)
     ;
 
     private String name;

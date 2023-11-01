@@ -5,15 +5,13 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.*;
-import com.facilio.v3.context.Constants;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ConstructNsFieldsCommand extends FacilioCommand {
+public class ConstructNsFieldsForSensorCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {

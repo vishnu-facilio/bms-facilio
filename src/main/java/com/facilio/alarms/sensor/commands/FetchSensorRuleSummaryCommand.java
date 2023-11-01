@@ -5,7 +5,6 @@ import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.alarms.sensor.context.SensorRulePropContext;
 import com.facilio.alarms.sensor.util.NewSensorRuleUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
@@ -13,7 +12,6 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
