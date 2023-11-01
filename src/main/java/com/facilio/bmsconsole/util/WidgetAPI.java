@@ -279,8 +279,10 @@ public class WidgetAPI {
     public static void setConfigDetailsForWidgets(PagesContext.PageLayoutType layoutType, PageSectionWidgetContext widget) throws Exception {
         FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
         WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(), widget.getWidgetConfigName(), layoutType);
-        Objects.requireNonNull(config, "widget configuration does not exists for configId -- " + widget.getWidgetConfigId() + " or configName -- " + widget.getWidgetConfigName()
-                + " for layoutType -- " + layoutType);
+        if(config == null) {
+            throw new IllegalArgumentException("widget configuration does not exists for configId -- " + widget.getWidgetConfigId() + " or configName -- " + widget.getWidgetConfigName()
+                    + " for layoutType -- " + layoutType);
+        }
 
         widget.setWidgetConfigId(config.getId());
         widget.setConfigType(config.getConfigType());
