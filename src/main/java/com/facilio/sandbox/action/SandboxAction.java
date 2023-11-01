@@ -168,7 +168,7 @@ public class SandboxAction extends FacilioAction {
 
         Organization currentOrg = AccountUtil.getCurrentOrg();
         String appDomainName = currentOrg != null ? currentOrg.getDomain() + "." + FacilioProperties.getSandboxSubDomain() : null;
-        AppDomain appDomainObj = StringUtils.isNotEmpty(appDomainName) ? IAMAppUtil.getAppDomain(appDomainName, sandboxOrg.getOrgId()) : null;
+        AppDomain appDomainObj = StringUtils.isNotEmpty(appDomainName) ? IAMAppUtil.getAppDomain(appDomainName) : null;
         com.facilio.identity.client.dto.AppDomain appDomain = appDomainObj != null ?
                 IdentityClient.getDefaultInstance().getAppDomainBean().getAppDomain(appDomainObj.getDomain()) : null;
 

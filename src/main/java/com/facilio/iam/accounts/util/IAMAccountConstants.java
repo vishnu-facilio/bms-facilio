@@ -811,6 +811,8 @@ public class IAMAccountConstants {
 			securityPolicyId.setModule(module);
 			fields.add(securityPolicyId);
 
+			fields.add(FieldFactory.getField("domainCategory", "Domain Category", "DOMAIN_CATEGORY", module, FieldType.NUMBER));
+
 			return fields;
 		}
 		
