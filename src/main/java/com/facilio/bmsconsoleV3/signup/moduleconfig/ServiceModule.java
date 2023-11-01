@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -236,6 +237,8 @@ public class ServiceModule extends BaseModuleConfig{
         editService.setName("Edit");
         editService.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         editService.setIdentifier("edit");
+        editService.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editService.setPermissionRequired(true);
         editService.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,editService);
 
@@ -243,6 +246,8 @@ public class ServiceModule extends BaseModuleConfig{
         deleteService.setName("Delete");
         deleteService.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
         deleteService.setIdentifier("delete");
+        deleteService.setPermission(AccountConstants.ModulePermission.DELETE.name());
+        deleteService.setPermissionRequired(true);
         deleteService.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,deleteService);
     }

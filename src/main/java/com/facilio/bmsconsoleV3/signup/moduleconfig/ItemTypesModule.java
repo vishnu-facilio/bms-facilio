@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -320,6 +321,8 @@ public class ItemTypesModule extends BaseModuleConfig{
         editItemTypes.setName("Edit");
         editItemTypes.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         editItemTypes.setIdentifier("edit");
+        editItemTypes.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editItemTypes.setPermissionRequired(true);
         editItemTypes.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ITEM_TYPES,editItemTypes);
     }

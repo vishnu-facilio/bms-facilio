@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -8,8 +9,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -26,7 +30,10 @@ public class FacilityModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY);
     }
 
-
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -303,6 +310,24 @@ public class FacilityModule extends BaseModuleConfig{
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
         return FieldUtil.getAsJSON(widgetGroup);
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit");
+        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        edit.setPermissionRequired(true);
+        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+
+        SystemButtonRuleContext bookNow = new SystemButtonRuleContext();
+        bookNow.setName("Book Now");
+        bookNow.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        bookNow.setIdentifier("bookNow");
+        bookNow.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,edit);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,bookNow);
     }
 
 }

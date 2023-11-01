@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
@@ -11,8 +12,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +35,10 @@ import java.util.*;
 public class ServiceRequestModule extends BaseModuleConfig{
     public ServiceRequestModule(){
         setModuleName(FacilioConstants.ContextNames.SERVICE_REQUEST);
+    }
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
     }
 
     @Override
@@ -466,6 +474,16 @@ public class ServiceRequestModule extends BaseModuleConfig{
 
         return glimpseList;
 
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext editServiceRequest = new SystemButtonRuleContext();
+        editServiceRequest.setName("Edit");
+        editServiceRequest.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editServiceRequest.setIdentifier("edit");
+        editServiceRequest.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editServiceRequest.setPermissionRequired(true);
+        editServiceRequest.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE_REQUEST,editServiceRequest);
     }
 
 }

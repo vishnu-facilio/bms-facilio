@@ -939,5 +939,69 @@ public class APIFieldsConfig {
                 .addFixedFields(Arrays.asList("billUid"))
                 .done();
     }
+    @Module(FacilioConstants.ContextNames.SERVICE_REQUEST)
+    public static Supplier<FieldConfig> getServiceRequestFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.ContextNames.INVENTORY_REQUEST)
+    public static Supplier<FieldConfig> getInventoryRequestFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
+    public static Supplier<FieldConfig> getFacilityFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING)
+    public static Supplier<FieldConfig> getBookingFieldConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .done()
+
+                .advancedFields()
+                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .done();
+    }
 
 }

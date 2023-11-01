@@ -8,8 +8,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -28,7 +31,10 @@ public class FacilityBookingModule extends BaseModuleConfig{
     public FacilityBookingModule(){
         setModuleName(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING);
     }
-
+    @Override
+    public void addData() throws Exception {
+        addSystemButtons();
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -441,5 +447,14 @@ public class FacilityBookingModule extends BaseModuleConfig{
                 .tabDone()
                 .layoutDone()
                 .pageDone().getCustomPages();
+    }
+    private static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext cancelBooking = new SystemButtonRuleContext();
+        cancelBooking.setName("Cancel Booking");
+        cancelBooking.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        cancelBooking.setIdentifier("cancelBooking");
+        cancelBooking.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,cancelBooking);
     }
 }

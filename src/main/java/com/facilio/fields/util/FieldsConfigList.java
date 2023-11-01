@@ -271,6 +271,19 @@ public class FieldsConfigList {
             "stateFlowId","approvalFlowId","approvalStatus","localId","meta","sourceDownloadUrl","sourceUrl","sourceType","serviceAddress","sourceType","sourceUrl","supplierServiceId"
     );
 
+    public static final List<String> SERVICE_REQUEST_FIELDS_EXCLUDE = Arrays.asList(
+        "appId","approvalFlowId","localId","slaPolicyId","stateFlowId"
+    );
+    public static final List<String> INVENTORY_REQUEST_FIELDS_EXCLUDE = Arrays.asList(
+            "parentId","approvalFlowId","stateFlowId"
+    );
+    public static final List<String> FACILITY_FIELDS_EXCLUDE = Arrays.asList(
+            "parentId","approvalFlowId","stateFlowId","parentModuleId"
+    );
+    public static final List<String> BOOKING_FIELDS_EXCLUDE = Arrays.asList(
+            "approvalFlowId","stateFlowId"
+    );
+
     public static List<String> getNameField() {
         return Arrays.asList("name");
     }
