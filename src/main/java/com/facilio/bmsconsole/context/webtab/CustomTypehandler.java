@@ -1,26 +1,29 @@
 package com.facilio.bmsconsole.context.webtab;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.collections4.CollectionUtils;
+import lombok.extern.log4j.Log4j;
 
-import java.util.List;
 import java.util.Map;
-
+@Log4j
 public class CustomTypehandler implements WebTabHandler {
     @Override
     public boolean hasPermission(WebTabContext webtab, Map<String,String> parameters, String action) {
-        Boolean isFileApi = Boolean.valueOf(parameters.get("isFileApi"));
-        if(webtab != null && WebTabUtil.isPortfolioTab(webtab)) {
-            if (isFileApi != null && isFileApi && webtab != null) {
-                return V3PermissionUtil.currentUserHasPermission(webtab, action, AccountUtil.getCurrentUser().getRole());
+        boolean isAttachmentAPI = Boolean.parseBoolean(parameters.get("isAttachmentApi"));
+        try {
+            if (isAttachmentAPI) {
+                return WebTabUtil.isAttachmentAPIAccessible();
             }
+            if(webtab != null && WebTabUtil.isPortfolioTab(webtab)) {
+                return V3PermissionUtil.currentUserHasPermission(webtab.getId(), action);
+            }
+        }catch (Exception e){
+            LOGGER.info("Error in CustomTypeHandler permission check");
         }
-        return true;
+
+        return false;
     }
 
     @Override

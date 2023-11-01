@@ -10363,11 +10363,6 @@ public class FieldFactory extends BaseFieldFactory {
         return getNewPermissionFields(false);
     }
     public static List<FacilioField> getNewPermissionFields(boolean skipLicense) throws Exception {
-        if (!skipLicense) {
-            if (V3PermissionUtil.isFeatureEnabled()) {
-                return getNewTabPermissionFields();
-            }
-        }
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getNewPermissionModule();
 

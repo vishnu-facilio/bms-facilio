@@ -888,10 +888,8 @@ public class ViewAction extends FacilioAction {
 	}
 
 	private static boolean isAllowed() throws Exception {
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
-			if(!AccountUtil.isPrivilegedRole()) {
-				return false;
-			}
+		if(!AccountUtil.isPrivilegedRole()) {
+			return false;
 		}
 		return true;
 	}

@@ -16,7 +16,7 @@ public class ValidateModuleAttachments extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean isValidRequest = true;
-        if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+        if(AccountUtil.getCurrentOrg() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             isValidRequest = false;
             Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
@@ -41,7 +41,7 @@ public class ValidateModuleAttachments extends FacilioCommand {
                 if(attachmentModule != null && parentModule != null && recordModule != null) {
                     FacilioModule attachmentParentModule = modBean.getParentModule(attachmentModule.getModuleId());
                     if(attachmentParentModule != null && attachmentParentModule.getName().equals(parentModule.getName())) {
-                        boolean hasPermission = WebTabUtil.checkModulePermissionForTab(FacilioConstants.ContextNames.READ_PERMISSIONS,recordModule.getName());
+                        boolean hasPermission = WebTabUtil.isAuthorizedAccess(recordModule.getName(),FacilioConstants.ContextNames.READ_PERMISSIONS,null,null);
                         if(hasPermission) {
                             ModuleBaseWithCustomFields record = V3RecordAPI.getRecord(recordModule.getModuleId(), recordId);
                             if (record != null) {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -9,6 +8,7 @@ import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.webtab.WebTabHandler;
+import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -20,7 +20,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.util.ValidatePermissionUtil;
+import com.facilio.v3.context.Constants;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,7 +33,10 @@ import org.apache.struts2.dispatcher.Parameter;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.URL;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class WebTabUtil {
@@ -61,31 +64,11 @@ public class WebTabUtil {
         }
         if (handler != null) {
             return handler.hasPermission(tab, params, action);
+        }else {
+            LOGGER.info("WebTabHandler is missing for this TabType of TabId - " + tab.getId());
         }
-        return true;
+        return false;
     }
-
-    public static boolean checkModulePermission(String action, String moduleName, boolean isV3Permission) throws Exception {
-        Role role = AccountUtil.getCurrentUser().getRole();
-        //portfolio is handled for space module - check for facilio main app
-        moduleName = getSpecialModule(moduleName);
-        boolean hasPerm = PermissionUtil.currentUserHasPermission(moduleName, action, role);
-        if (isV3Permission) {
-            if (PermissionUtil.permCheckSysModules().contains(moduleName)) {
-                return hasPerm;
-            } else {
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioModule module = modBean.getModule(moduleName);
-                if (module != null) {
-                    if (module.isCustom()) {
-                        return hasPerm;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
 
     public static String getSpecialModule(String moduleName) {
         if (moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("basespace")) {
@@ -95,34 +78,6 @@ public class WebTabUtil {
             return FacilioConstants.ContextNames.WORK_ORDER;
         }
         return moduleName;
-    }
-
-    //    Temp Solution
-    public static boolean checkModulePermissionForTab(String action, String moduleName) throws Exception {
-        Role role = AccountUtil.getCurrentUser().getRole();
-        if (role != null && role.isPrevileged()) {
-            return true;
-        }
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        //portfolio is handled for portfolio tab
-        moduleName = getSpecialModule(moduleName);
-        FacilioModule module = modBean.getModule(moduleName);
-        ApplicationContext currentApp = AccountUtil.getCurrentApp();
-
-
-        if (module != null && currentApp != null) {
-            List<Long> tabIds;
-            if (moduleName.equals("site") || moduleName.equals("building") || moduleName.equals("floor") || moduleName.equals("space")) {
-                tabIds = Collections.singletonList(getPortfolioTabId(currentApp));
-            } else {
-                tabIds = ApplicationApi.getTabForModules(currentApp.getId(), module.getModuleId());
-            }
-            if (CollectionUtils.isNotEmpty(tabIds)) {
-                boolean hasPerm = currentUserHasPermission(tabIds.get(0), action, role);
-                return hasPerm;
-            }
-        }
-        return false;
     }
 
     private static Long getPortfolioTabId(ApplicationContext currentApp) throws Exception {
@@ -164,15 +119,9 @@ public class WebTabUtil {
             if (role.isPrevileged()){
                 return true;
             }
-            if (V3PermissionUtil.isFeatureEnabled()) {
-                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-                boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);
-                return hasPerm;
-            } else {
-                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-                boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
-                return hasPerm;
-            }
+            long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+            boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
+            return hasPerm;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -189,17 +138,20 @@ public class WebTabUtil {
             if (actList[0].equals(method)) {
                 action = getActionParam(actList[1]);
                 break;
+            } else if (actList[0].contains("ALL")) {
+                action = getActionParam("ALL");
+                break;
             }
         }
         return action;
     }
-    public static boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,boolean isTabPermision, String method) throws Exception {
-        return isAuthorizedAccess(moduleName,action,isV3Permission,tabType,isSetupPermission,isTabPermision,method,null,null);
+    public static boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
+        return isAuthorizedAccess(moduleName,action,null,null);
     }
 
-    public static boolean isAuthorizedAccess(String moduleName, String action, boolean isV3Permission,String tabType,boolean isSetupPermission,boolean isTabPermision, String method, Map<String,String> parameters,Long webTabId) throws Exception {
+    public static boolean isAuthorizedAccess(String moduleName, String action, Map<String,String> parameters,Long webTabId) throws Exception {
 
-        if (action == null || "".equals(action.trim())) {
+        if (AccountUtil.getCurrentOrg().getOrgId() == 1516) {
             return true;
         }
 
@@ -218,71 +170,37 @@ public class WebTabUtil {
             return true;
         }
 
-        try {
-            if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
-                return true;
-            }
-            HttpServletRequest request = ServletActionContext.getRequest();
-            if(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI())) {
-                return true;
-            }
-        } catch (Exception e) {
-            LOGGER.info("Error checking whitelisted API");
-        }
-        if (AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
-            try {
-                HttpServletRequest request = ServletActionContext.getRequest();
-                String currentTab = request.getHeader("X-Tab-Id");
-                if(webTabId != null) {
-                    currentTab = String.valueOf(webTabId);
-                }
-                if (currentTab != null && !currentTab.isEmpty()) {
-                    long tabId = Long.parseLong(currentTab);
-                    boolean hasPerm = WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters);
-                    if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                        permissionLogsForTabs(tabId, moduleName, role.getName(), action);
-                    }
-
-//                  This is a temporary solution but logs will be added
-                    if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
-                        if(isTabPermision) {
-                            return hasPerm;
-                        }
-                        if (isV3Permission) {
-                            return WebTabUtil.checkModulePermissionForTab(action, moduleName);
-                        }
-                    }
-//                  For now not throwing this. Need to change this immediately
-//                  return checkAndReturnHasWebtabPermission(hasPerm);
-                } else {
-                    LOGGER.info("scope interceptor tab permission - Tab id is empty " + getReferrerUri());
-                }
-            } catch (Exception e) {
-                LOGGER.info("scope interceptor error occured tab");
-            }
-            return checkAndReturnHasWebtabPermission(false);
-        } else {
-            try{
-                boolean hasPerm = WebTabUtil.checkModulePermission(action,moduleName,isV3Permission);
-                if(!hasPerm && (isV3Permission || isSetupPermission)) {
-                    permissionLogsForModule(moduleName,role.getName(),action);
-                }
-                if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403)) {
-                    if(method != null && method.equalsIgnoreCase("GET")) {
-                        return hasPerm;
-                    }
-                }
-                return true;
-            } catch (Exception e) {
-                LOGGER.info("scope interceptor error occured module");
-            }
+        if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
             return true;
         }
+        HttpServletRequest request = ServletActionContext.getRequest();
+        if(request.getRequestURI() != null && !APIPermissionUtil.shouldCheckPermission(request.getRequestURI())) {
+            return true;
+        }
+        try {
+            String currentTab = request.getHeader("X-Tab-Id");
+            long tabId = -1L;
+
+            if(webTabId != null) {
+                currentTab = String.valueOf(webTabId);
+            }
+
+            if (currentTab != null && !currentTab.isEmpty()) {
+                tabId = Long.parseLong(currentTab);
+                return WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters);
+            } else {
+                permissionLogsForTabs(tabId, moduleName, action);
+                return false;
+            }
+        } catch (Exception e) {
+            LOGGER.info("scope interceptor error occured tab");
+        }
+        return AccountUtil.getCurrentOrg() == null;
     }
 
 
 
-    private static void permissionLogsForTabs(Long tabId,String moduleName,String roleName,String action) throws Exception {
+    private static void permissionLogsForTabs(Long tabId,String moduleName,String action) throws Exception {
         try {
             WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
             WebTabContext tab = tabBean.getWebTab(tabId);
@@ -292,7 +210,9 @@ public class WebTabUtil {
             else if (tab != null) {
                 ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
                 List<String> modulesList = ApplicationApi.getModulesForTab(tabId);
+                String roleName = AccountUtil.getCurrentUser().getRole().getName();
                 String commonString = " Role Name - " + roleName + " - Action " + action + " - referrer - " + getReferrerUri();
+
                 if (app == null) {
                     LOGGER.info("scope interceptor tab permission Case 1 : Application is empty - tab name" + tab.getName() + commonString);
                 }
@@ -333,18 +253,6 @@ public class WebTabUtil {
         return "";
     }
 
-    private static boolean checkAndReturnHasWebtabPermission(boolean hasPerm) {
-        try {
-            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
-                return hasPerm;
-            }
-        } catch(Exception e) {
-            LOGGER.info("Error occured in checkAndReturnHasWebtabPermission method");
-        }
-        return true;
-    }
-
-
     private static Parameter getActionParam(String action) {
         return new Parameter.Request(FacilioConstants.ContextNames.ACTION,action);
     }
@@ -372,5 +280,28 @@ public class WebTabUtil {
             }
         }
         return null;
+    }
+
+    public static boolean isAttachmentAPIAccessible() throws Exception {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        long currentTabId = Long.parseLong(request.getHeader("X-Tab-Id"));
+        ApplicationContext currentApp = AccountUtil.getCurrentApp();
+
+        if(currentTabId > 0 && currentApp != null){
+            String token = request.getHeader("q");
+            Map<String, String> decodedClaims = FileJWTUtil.validateJWT(token);
+
+            if(MapUtils.isNotEmpty(decodedClaims) && decodedClaims.containsKey("moduleId")) {
+                Long moduleId = Long.valueOf(decodedClaims.get("moduleId"));
+                ModuleBean modBean = Constants.getModBean();
+                FacilioModule module = modBean.getModule(moduleId);
+                List<Long> tabIds = ApplicationApi.getTabForModules(currentApp.getId(), module.getModuleId());
+
+                if(CollectionUtils.isNotEmpty(tabIds) && tabIds.contains(currentTabId)){
+                    return V3PermissionUtil.currentUserHasPermission(currentTabId,FacilioConstants.ContextNames.READ_PERMISSIONS);
+                }
+            }
+        }
+        return false;
     }
 }

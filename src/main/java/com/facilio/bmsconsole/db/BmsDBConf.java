@@ -299,7 +299,6 @@ public class BmsDBConf extends DBConf {
     @Override
     public void fetchFileUrls(Collection<FacilioField> selectFields, List<Map<String,Object>> records, List<Long> fileIds, Connection conn) throws Exception {
         FileStore fs = FacilioFactory.getFileStore();
-        boolean throwNoPermissionLicense = AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB);
         // TODO get filePrivateUrl in bulk
         Map<Long, FileInfo> files = fs.getFileInfoAsMap(fileIds, conn);
         Map<Long, Object> orgUserMap = new HashMap<>();
@@ -310,7 +309,7 @@ public class BmsDBConf extends DBConf {
                         Long id = (Long) record.get(field.getName() + "Id");
                         FileInfo info = files.get(id);
                         String url = null,downloadUrl = null;
-                        if(throwNoPermissionLicense && record != null && record.containsKey("id") && record.containsKey("moduleId")) {
+                        if( record != null && record.containsKey("id") && record.containsKey("moduleId")) {
                             Long recordId = (Long) record.get("id");
                             Long moduleId = (Long) record.get("moduleId");
                             url = fs.getPrivateUrl(moduleId,recordId,id,true);

@@ -110,43 +110,58 @@
         <default-interceptor-ref name="defaultInterceptor" />
         <action name="serviceAppointment" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">serviceAppointment</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="serviceAppointment/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">serviceAppointment</param>
             <param name="id">{1}</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="serviceAppointment/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">serviceAppointment</param>
             <param name="viewName">{1}</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="serviceAppointment/view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">serviceAppointment</param>
             <param name="viewName">{1}</param>
             <param name="type">count</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="picklist/*"
                 class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
                 method="pickList">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="serviceAppointment/dispatch" class="com.facilio.fsm.actions.fsmAction" method="dispatchServiceAppointment">
+            <param name="deprecated">true</param>
         </action>
     </package>
     <package name="dispatcherboard" namespace="/api/fsm/board" extends="fsmApi">
-        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="fetchDispatcherBoardList" />
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="fetchDispatcherBoardList">
+            <param name="deprecated">true</param>
+        </action>
     </package>
     <package name="resource" namespace="/api/fsm/resource" extends="fsmApi">
-        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="resourceList"></action>
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="resourceList">
+            <param name="deprecated">true</param>
+        </action>
     </package>
     <package name="events" extends="fsmApi" namespace="/api/fsm/events">
-        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="eventsList"/>
+        <action name="list" class="com.facilio.fsm.actions.fsmAction" method="eventsList">
+            <param name="deprecated">true</param>
+        </action>
     </package>
     <package name="mapView" extends="fsmApi" namespace="/api/fsm/mapView">
-        <action name="data" class="com.facilio.fsm.actions.fsmAction" method="mapViewData"/>
+        <action name="data" class="com.facilio.fsm.actions.fsmAction" method="mapViewData">
+            <param name="deprecated">true</param>
+        </action>
     </package>
     <package name="service" extends="fsmApi" namespace="/api/fsm/serviceappointment">
         <action name="list" class="com.facilio.fsm.actions.fsmAction" method="serviceAppointmentList">
+            <param name="deprecated">true</param>
         </action>
     </package>
 </struts>

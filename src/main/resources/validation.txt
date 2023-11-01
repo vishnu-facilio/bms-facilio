@@ -2469,6 +2469,7 @@
 /api/v2/application/fetchList
 /api/v2/application/markAsDefault
 /api/v2/application/fetchDetails
+/api/v2/application/fetchDefaultApp
 /api/v2/application/users/add
 /api/v2/application/users/delete
 /api/v2/application/users/list

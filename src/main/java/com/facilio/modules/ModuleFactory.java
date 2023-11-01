@@ -4436,11 +4436,6 @@ public class ModuleFactory {
 		return getNewPermissionModule(false);
 	}
 	public static FacilioModule getNewPermissionModule(boolean skipLicence) throws Exception {
-		if(!skipLicence) {
-			if (V3PermissionUtil.isFeatureEnabled()) {
-				return getNewTabPermissionModule();
-			}
-		}
 		FacilioModule module = new FacilioModule();
 		module.setName(FacilioConstants.ContextNames.NEW_PERMISSIONS);
 		module.setTableName("NewPermission");

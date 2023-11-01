@@ -29,38 +29,50 @@
             <result name="success" type="json">
                 <param name="statusCode">200</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="iotPushV3" namespace="/api/v3/iot/data" extends="v3Api">
         <action name="push" class="com.facilio.agentv2.actions.RestPushAgentV3Action" method="push">
+            <param name="deprecated">true</param>
         </action>
     </package>
     
     <package name="agentV3Api" namespace="/api/v3/agent" extends="v3Api">
    		<action name="*" class="com.facilio.agentv2.AgentV3Action" method="fetchAgent">
    		 	<param name="id">{1}</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="connections" class="com.facilio.agentv2.AgentV3Action" method="getMessageSource">
+            <param name="deprecated">true</param>
         </action>
         <action name="addConnection" class="com.facilio.agentv2.AgentV3Action" method="addMessageSource">
+            <param name="deprecated">true</param>
         </action>
         <action name="runWorkflow" class="com.facilio.agentv2.AgentV3Action" method="runWorkflow">
+            <param name="deprecated">true</param>
         </action>
         <action name="toggleJob" class="com.facilio.agentv2.AgentV3Action" method="toggleJob">
+            <param name="deprecated">true</param>
         </action>
         <action name="create" class="com.facilio.agentv2.AgentV3Action" method="createAgent">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="PointV3Api" namespace="/api/v3/point" extends="v3Api">
         <action name="list" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getPoints">
+            <param name="deprecated">true</param>
         </action>
         <action name="count" class="com.facilio.agentv2.actions.GetPointsActionV3" method="getCount">
+            <param name="deprecated">true</param>
         </action>
         <action name="export" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPoints">
+            <param name="deprecated">true</param>
         </action>
         <action name="exportV2" class="com.facilio.agentv2.actions.GetPointsActionV3" method="exportPointsV2">
+            <param name="deprecated">true</param>
         </action>
     </package>
 

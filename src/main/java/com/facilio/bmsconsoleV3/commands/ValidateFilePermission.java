@@ -18,7 +18,7 @@ public class ValidateFilePermission extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean validRequest = true;
-        if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+        if(AccountUtil.getCurrentOrg() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Boolean isModuleFile = (Boolean) context.getOrDefault("isModuleFile", false);
             Long fileId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FILE_ID, -1l);
@@ -37,7 +37,7 @@ public class ValidateFilePermission extends FacilioCommand {
                     module = modBean.getModule(moduleName);
                     if(module != null) {
                         LOGGER.info("Module Name ==> " + module.getName());
-                        boolean hasPermission = WebTabUtil.checkModulePermissionForTab(FacilioConstants.ContextNames.READ_PERMISSIONS, moduleName);
+                        boolean hasPermission = WebTabUtil.isAuthorizedAccess(moduleName,FacilioConstants.ContextNames.READ_PERMISSIONS, null, null);
                         LOGGER.info("Has Permission ==> " + hasPermission);
                         if (hasPermission) {
                             LOGGER.info("Record Id ==> " + recordId);
@@ -51,7 +51,7 @@ public class ValidateFilePermission extends FacilioCommand {
             } else if(StringUtils.isNotEmpty(specialTabType) && !specialTabType.equals("null")){
                 Long tabId = WebTabUtil.getTabForTabType(specialTabType);
                 if(tabId != null) {
-                    boolean hasPermission = WebTabUtil.isAuthorizedAccess(null, FacilioConstants.ContextNames.READ_PERMISSIONS, false, null, false, true, "GET", null, tabId);
+                    boolean hasPermission = WebTabUtil.isAuthorizedAccess(null, FacilioConstants.ContextNames.READ_PERMISSIONS, null, tabId);
                     if(hasPermission) {
                         validRequest = true;
                     }

@@ -4,11 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.lang3.StringUtils;
+import com.facilio.services.factory.FacilioFactory;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
 	/**
@@ -43,7 +40,7 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 //			url = fs.getPrivateUrl(this.parentId);
 //		}
 		if (this.photoId > 0) {
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if(AccountUtil.getCurrentOrg() != null) {
 				if(getModuleId() > 0) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(getModuleId());

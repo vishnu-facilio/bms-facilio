@@ -106,6 +106,7 @@
 				method="handleException">
 			<interceptor-ref name="defaultStack" />
 			<param name="sendErrorCode">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 

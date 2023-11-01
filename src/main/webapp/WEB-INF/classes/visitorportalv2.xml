@@ -57,60 +57,101 @@
 		</global-results>
 		
 		<action name="addMe" class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors" />
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors">
+			<param name="deprecated">true</param>
+		</action>
 		<action name="addVisitor"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="list"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" />
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" />
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" >
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="addVisitorLog" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging">
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="v2portalAccount"> 
+			method="v2portalAccount">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
 	<package name="visitoreventPortalApiV2" namespace="/api/v2/portal/visitorInvite"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addVisitorInvites" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addVisitorInvites" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="updateVisitorInvites" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="list"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteVisitorInvites" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="addInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addInvitees" />
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="addInvitees" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="deleteInvitees"
-			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" />			
+			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="deleteInvitees" >
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 	
 		<package name="visitorloggingPortalApiV2" namespace="/api/v2/portal/visitorLogging"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="list"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="details"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" >
+			<param name="deprecated">true</param>
+		</action>
 		<action name="preRegister"
-			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" />
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" >
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 
 

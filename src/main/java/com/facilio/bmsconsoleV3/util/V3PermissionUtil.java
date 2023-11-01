@@ -1,9 +1,9 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.NewPermission;
-import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
@@ -11,24 +11,20 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 public class V3PermissionUtil {
 
@@ -172,52 +168,17 @@ public class V3PermissionUtil {
         return false;
     }
 
-    public static boolean currentUserHasPermission(WebTabContext tab, String moduleName, String action, Role role) {
-
+    public static boolean currentUserHasPermission(long tabId, String action) {
         try {
-            long tabId = tab.getId();
-            if (moduleName.equalsIgnoreCase("planned"))
-                moduleName = FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE;
-            if (V3PermissionUtil.isFeatureEnabled()) {
-                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-                if (!moduleNames.isEmpty()) {
-                    if (moduleNames.contains(moduleName)) {
-                        boolean hasPerm = PermissionUtil.hasPermission(permission, action, tabId);
-                        return hasPerm;
-                    }
-                }
-            } else {
-                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-                List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-                if (!moduleNames.isEmpty()) {
-                    if (moduleNames.contains(moduleName)) {
-                        boolean hasPerm = PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
-                        return hasPerm;
-                    }
-                }
-            }
+            long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, AccountUtil.getCurrentUser().getRole().getRoleId());
+            return PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
     }
 
-    public static boolean currentUserHasPermission(WebTabContext tab, String action, Role role) {
-
-        try {
-            long tabId = tab.getId();
-            if (V3PermissionUtil.isFeatureEnabled()) {
-                NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-                return PermissionUtil.hasPermission(permission, action, tabId);
-            } else {
-                long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-                return PermissionUtil.hasPermission(rolePermissionVal, action, tabId);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
+    public static boolean isAllowedEnvironment(){
+        return !(FacilioProperties.isProduction() || FacilioProperties.isOnpremise());
     }
-
 }

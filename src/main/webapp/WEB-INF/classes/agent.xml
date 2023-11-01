@@ -38,6 +38,7 @@
             <result name="invalidToken" type="json">
                 <param name="includeProperties">errorStatus</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
 
     </package>
@@ -68,6 +69,7 @@
             <result name="invalidToken" type="json">
                 <param name="includeProperties">errorStatus</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
 
     </package>
@@ -127,97 +129,126 @@
 
         <!--1-->
         <action name="list" class="com.facilio.agentv2.AgentAction" method="listAgents"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--2-->
         <action name="ping" class="com.facilio.agentv2.actions.AgentIdAction" method="pingAgent"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--3-->
         <action name="create" class="com.facilio.agentv2.actions.AddAgentAction" method="createAgent">
+            <param name="deprecated">true</param>
         </action>
 
         <!--4-->
         <action name="get" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentUsingId"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--5-->
         <action name="download" class="com.facilio.agentv2.AgentAction" method="download">
+            <param name="deprecated">true</param>
         </action>
 
         <!--6-->
         <action name="edit" class="com.facilio.agentv2.actions.UpdateAgentAction" method="edit">
+            <param name="deprecated">true</param>
         </action>
 
         <!--7-->
         <action name="count" class="com.facilio.agentv2.AgentAction" method="getAgentCount"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--8-->
         <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteAgent"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--9-->
         <action name="restart" class="com.facilio.agentv2.actions.IdsAction" method="restartAgent"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--10-->
         <action name="jvmStatus" class="com.facilio.agentv2.actions.AgentIdAction" method="getjvmStatus"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--11-->
         <action name="threadDump" class="com.facilio.agentv2.actions.AgentIdAction" method="getThreadDump"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--12-->
         <action name="downloadAgent" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="metrics" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetrics">
+            <param name="deprecated">true</param>
         </action>
         
         <action name="metricsCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getMetricsCount">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="overview" class="com.facilio.agentv2.AgentAction" method="getOverview">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="agentOverview" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentOverView">
+            <param name="deprecated">true</param>
         </action>
 
 
         <action name="getIotMessages" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessages">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getIotMessage" class="com.facilio.agentv2.AgentAction" method="getIotMessage">
+            <param name="deprecated">true</param>
         </action>
         
         <action name="deviceSearch" class="com.facilio.agentv2.AgentAction" method="getDeviceSearchList">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="iotMessageCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getIotMessageCount">
+            <param name="deprecated">true</param>
         </action>
 
 
         <action name="getPointCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getPointCount">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getFilter" class="com.facilio.agentv2.AgentAction" method="getAgentFilter">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="data" class="com.facilio.agentv2.AgentAction" method="getAlertsPoints">
+            <param name="deprecated">true</param>
         </action>
         <action name="addClientToPolicy" class="com.facilio.agentv2.AgentAction" method="addClientToPolicy">
+            <param name="deprecated">true</param>
         </action>
         <action name="addVersion" class="com.facilio.agentv2.actions.AgentVersionAction" method="addAgentVersion">
+            <param name="deprecated">true</param>
         </action>
         <action name="upgradeAgent" class="com.facilio.agentv2.actions.VersionLogAction" method="upgradeAgent">
+            <param name="deprecated">true</param>
         </action>
         <action name="versions" class="com.facilio.agentv2.AgentAction" method="listAgentVersions">
+            <param name="deprecated">true</param>
         </action>
         <action name="logs" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentLogs">
+            <param name="deprecated">true</param>
         </action>
         <action name="logCount" class="com.facilio.agentv2.actions.AgentIdAction" method="getLogCount">
+            <param name="deprecated">true</param>
         </action>
         <action name="agentDownload" class="com.facilio.bmsconsole.actions.AgentDownloadAction" method="downloadAgent">
          <result name="success" type="stream">
@@ -226,9 +257,11 @@
                 <param name="contentDisposition">attachment;filename="${filename}"</param>
                 <param name="bufferSize">1024</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
 		<action name="agentControl" class="com.facilio.agent.agentcontrol.AgentControl" method="sendToKafka">
-		</action>
+		    <param name="deprecated">true</param>
+        </action>
 		<action name="certificate" class="com.facilio.agentv2.AgentAction" method="downloadCertificate">
 		 <result name="success" type="stream">
              <param name="contentType">application/octet-stream</param>
@@ -236,6 +269,7 @@
                 <param name="contentDisposition">attachment;filename="${filename}"</param>
                 <param name="bufferSize">1024</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
         <action name="config" class="com.facilio.agentv2.AgentAction" method="downloadConfig">
             <result name="success" type="stream">
@@ -244,15 +278,20 @@
                 <param name="contentDisposition">attachment;filename="${filename}"</param>
                 <param name="bufferSize">1024</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
 
-        <action name="addAgentWorkflowRule" class="com.facilio.agentv2.AgentAction" method="addAgentWorkflowRule"></action>
+        <action name="addAgentWorkflowRule" class="com.facilio.agentv2.AgentAction" method="addAgentWorkflowRule">
+            <param name="deprecated">true</param>
+        </action>
     </package>
 
     <package name="ControllerThreadApiV2" namespace="/api/v2/agent/threadDump" extends="agent">
         <action name="list" class="com.facilio.agentv2.AgentAction" method="listThreadDump">
+            <param name="deprecated">true</param>
         </action>
         <action name="count" class="com.facilio.agentv2.AgentAction" method="countThreadDump">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
@@ -260,58 +299,72 @@
 
 		<!-- Get controllers and count -->
 		<action name="controllers" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllersData"> 
+            <param name="deprecated">true</param>
         </action>
 
         <!--1-->
         <action name="count" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllerCount"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--3-->
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getControllers"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--4-->
         <action name="get" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getControllerUsingId">  <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 		
 		<action name="controllersList" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getControllers">  <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--5-->
         <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteControllers">
+            <param name="deprecated">true</param>
         </action>
 
 
         <!--6-->
         <action name="discover" class="com.facilio.agentv2.actions.TypeAgentAction"
                 method="discoverControllers"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 		
         <!--8-->
         <action name="update" class="com.facilio.agentv2.actions.UpdateControllerAction" method="updateController">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="reset" class="com.facilio.agentv2.actions.ControllerActions" method="resetController">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getControllerForDevice" class="com.facilio.agentv2.AgentAction"
                 method="getControllerUsingIdentifier">
+            <param name="deprecated">true</param>
         </action> <!--testing purpose-->
 
         <action name="typeList" class="com.facilio.agentv2.actions.TypeAgentAction"
                 method="getControllerOfTypeForAgent"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getUsingId" class="com.facilio.agentv2.AgentAction" method="getControllerUsingId"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction"
                 method="getControllerFilter"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="filterControllerTypes" class="com.facilio.agentv2.actions.AgentIdAction"
                 method="getControllerTypeFilter"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
     </package>
@@ -319,218 +372,280 @@
     <package name="PointsApiV2" namespace="/api/v2/point" extends="agent">
 
         <action name="list" class="com.facilio.agentv2.AgentAction" method="listPoints"> <!--DONE--> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="count" class="com.facilio.agentv2.AgentAction" method="PointsCount"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="pointscount" class="com.facilio.agentv2.actions.GetPointsAction" method="getCount"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="getPoints" class="com.facilio.agentv2.actions.GetPointsAction" method="getPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="set" class="com.facilio.agentv2.actions.SetValueAction" method="setValue">
+            <param name="deprecated">true</param>
         </action>
 
         <!-- <action name="configure"  class="com.facilio.agentv2.AgentAction" method="configurePoint"> &lt;!&ndash;DONE&ndash;&gt; &lt;!&ndash;TOTEST&ndash;&gt;
+            <param name="deprecated">true</param>
          </action>-->
 
         <action name="configure" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="configurePoints">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="configureAll" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="configureAllPoints">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="unconfigure" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="unConfigurePoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="subscribe" class="com.facilio.agentv2.actions.SubscribeAndUnscribeAction"
                 method="subscribePoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="unsubscribe" class="com.facilio.agentv2.actions.SubscribeAndUnscribeAction"
                 method="unsubscribePoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="discover" class="com.facilio.agentv2.actions.ControllerActions"
                 method="discoverPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="remove" class="com.facilio.agentv2.actions.controllerTypeIdsAction"
                 method="removePoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <!--.. list points using controllerId..-->
         <action name="getControllerConfPoints" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getConfiguredPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getControllerSubPoints" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getSubscribedPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getControllerUnonfPoints" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getUnconfiguredPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getControllerCommPoints" class="com.facilio.agentv2.actions.ControllerActions"
                 method="getCommissionedPoints"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="makeWritable" class="com.facilio.agentv2.actions.IdsAction"
                 method="makeWritable"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
 
         <action name="disableWritable" class="com.facilio.agentv2.actions.IdsAction"
                 method="disableWritable"> <!--DONE-->
+            <param name="deprecated">true</param>
         </action>
         <action name="export" class="com.facilio.bmsconsole.actions.CommissionAction" method="exportPoints">
+            <param name="deprecated">true</param>
         </action>
     </package>
 	
     <package name="DeviceApiV2" namespace="/api/v2/device" extends="agent">
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="devices"> <!--DONEDONE-->
+            <param name="deprecated">true</param>
         </action>
         
         <action name="getlist" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceOrControllersData"> <!--DONEDONE-->
+            <param name="deprecated">true</param>
         </action>
         
         <action name="add" class="com.facilio.agentv2.actions.AddFieldDeviceAction" method="addDevice">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="discoverPoints" class="com.facilio.agentv2.actions.IdsAction" method="discoverDevicePoints">
+            <param name="deprecated">true</param>
         </action>
 
         <!--<action name="agetDeviceCount" class="com.facilio.agentv2.actions.AgentIdAction" method="countAgentDevices">
+            <param name="deprecated">true</param>
         </action>
 -->
         <action name="count" class="com.facilio.agentv2.actions.AgentIdAction" method="devicesCount">
+            <param name="deprecated">true</param>
         </action>
 
         <!--
                 <action name="countType" class="com.facilio.agentv2.actions.AgentDeviceAction" method="countTypeDevice">
+                    <param name="deprecated">true</param>
                 </action>
         -->
 
         <action name="delete" class="com.facilio.agentv2.actions.IdsAction" method="deleteDevice">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="get" class="com.facilio.agentv2.actions.DeviceIdActions" method="device">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getFilter" class="com.facilio.agentv2.actions.AgentIdAction" method="getDeviceFilter">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getModbusDevices" class="com.facilio.agentv2.actions.AgentIdAction" method="getModbusDevice">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
 
     <package name="dbMigration" namespace="/api/v2/db" extends="agent">
         <action name="getSqlite" class="com.facilio.agentv2.actions.AgentIdAction" method="getSqlite">
+            <param name="deprecated">true</param>
         </action>
         <action name="migrate" class="com.facilio.agentv2.actions.AgentIdAction" method="migrate">
+            <param name="deprecated">true</param>
         </action>
         <action name="validateSQL" class="com.facilio.agentv2.actions.SQLiteAction" method="validateDb">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="modbus" namespace="/api/v2/modbus" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.ModbusControllerAction"
                 method="addModbusController">
+            <param name="deprecated">true</param>
         </action>
          <action name="addMiscController" class="com.facilio.agentv2.actions.AddMiscControllerAction"
                 method="addMiscController">
-        </action>
+            <param name="deprecated">true</param>
+         </action>
         <action name="addPoint" class="com.facilio.agentv2.actions.ModbusPointAction"
                 method="createModbusPoint">
+            <param name="deprecated">true</param>
         </action>
 
         <!--<action name="addRtuNetwork" class="com.facilio.agentv2.actions.RtuNetworkAction" method="addRtuNetwork">
+            <param name="deprecated">true</param>
         </action>-->
 
         <action name="addIpControllers" class="com.facilio.agentv2.actions.BulkAddMosbusIpAction" method="addControllers">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="addIpPoints" class="com.facilio.agentv2.actions.BulkAddModbusIpPointAction" method="addPoints">
+            <param name="deprecated">true</param>
         </action>
 		
 		<action name="rtuNetworks" class="com.facilio.agentv2.actions.AgentIdAction" method="getRtuNetworks">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="modbusDeviceImport" namespace="/api/v2/modbus/deviceImport" extends="agent">
         <action name="import" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusDevice">
+            <param name="deprecated">true</param>
         </action>
         <action name="retry" class="com.facilio.agentv2.AgentAction" method="retry">
+            <param name="deprecated">true</param>
         </action>
         <action name="getPending" class="com.facilio.agentv2.actions.AgentIdAction" method="getPendingControllerImports">
+            <param name="deprecated">true</param>
         </action>
         <action name="ignore" class="com.facilio.agentv2.AgentAction" method="ignoreImport">
+            <param name="deprecated">true</param>
         </action>
         <action name="pendingCount" class="com.facilio.agentv2.actions.AgentIdAction" method="pendingDeviceImportCount">
+            <param name="deprecated">true</param>
         </action>
 
     </package>
 
     <package name="modbusPointImport" namespace="/api/v2/modbus/pointImport" extends="agent">
         <action name="retry" class="com.facilio.agentv2.AgentAction" method="retry">
+            <param name="deprecated">true</param>
         </action>
         <action name="import" class="com.facilio.agentv2.actions.UploadFileAction" method="bulkAddModbusPoint">
+            <param name="deprecated">true</param>
         </action>
         <action name="getPending" class="com.facilio.agentv2.actions.DeviceIdActions" method="getPenfingPointImports">
+            <param name="deprecated">true</param>
         </action>
         <action name="pendingCount" class="com.facilio.agentv2.actions.DeviceIdActions" method="penfingPointImportsCount">
+            <param name="deprecated">true</param>
         </action>
         <action name="ignore" class="com.facilio.agentv2.AgentAction" method="ignoreImport">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="opcDa" namespace="/api/v2/opcda" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.OpcDaControllerAction" method="addController">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
 
     <package name="opcUa" namespace="/api/v2/opcUa" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.OpcUaControllerAction" method="addController">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="bacnet" namespace="/api/v2/bacnet" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.BacnetIpControllerAction" method="addController">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="rdm" namespace="/api/v2/rdm" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.RdmControllerAction" method="addController">
+            <param name="deprecated">true</param>
         </action>
     </package>
     <package name="e2" namespace="/api/v2/e2" extends="agent">
         <action name="addController" class="com.facilio.agentv2.actions.E2ControllerAction" method="addController">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="agentMetrics" namespace="/api/v2/agent/metrics" extends="agent">
         <action name="list" class="com.facilio.agentv2.actions.AgentIdAction" method="getAgentMetrics">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="test" namespace="/api/v2/agent/test" extends="agent">
         <!--<action name="addModbucControllers" class="com.facilio.agentv2.AgentAction" method="addModbusControllers">
+            <param name="deprecated">true</param>
         </action>-->
         <action name="getPolicyGist" class="com.facilio.agentv2.AgentAction" method="getPolicyGist">
+            <param name="deprecated">true</param>
         </action>
     </package>
     <package name="altairSmartEdgeIntegration" namespace="/api/v2/agent/integration/altair" extends="agent">
         <action name="getIntegrationList" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="getAltairIntegrations">
+            <param name="deprecated">true</param>
         </action>
         <action name="addIntegration" class="com.facilio.agentv2.actions.AgentIntegrationAction" method="addAltairIntegration">
+            <param name="deprecated">true</param>
         </action>
     </package>
 
     <package name="inboundConnectionConf" namespace="/api/v2/agent/inboundConnections" extends="agent">
         <action name="add" class="com.facilio.agentv2.actions.InboundConnectionsAction" method="add">
+            <param name="deprecated">true</param>
         </action>
     </package>
     <package name="inboundConnections" namespace="/api/agent/inbound/wegot"
@@ -555,6 +670,7 @@
             <result name="success" type="json">
                 <param name="statusCode">200</param>
             </result>
+            <param name="deprecated">true</param>
         </action>
     </package>
 

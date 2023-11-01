@@ -46,7 +46,8 @@
 
 <!--		<action name="migration">-->
 <!--			<result name="success">/jsps/pm/Migration.jsp</result>-->
-<!--		</action>-->
+<!--	<param name="deprecated">true</param>	-->
+<!--</action>&ndash;&gt;-->
 <!--	</package>-->
 
 	<!-- check baseapiv1.xml for baseV1Api package details -->
@@ -56,17 +57,20 @@
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="sendResetPassword" class="com.facilio.auth.actions.FacilioAuthAction" method="sendResetPassword">
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="tracklead" class="com.facilio.bmsconsole.actions.LeadTracker">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="signup" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="signup">
@@ -74,18 +78,21 @@
 			<result name="success" type="json">
 				<param name="includeProperties">response</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="verifyusers" class="com.facilio.bmsconsole.actions.UserAction"
 				method="userVerify">
 			<result name="success" type="json">
 				<param name="includeProperties">users.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="fetchFormMeta">
 			<result name="success" type="json">
 				<param name="includeProperties">form.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
@@ -93,6 +100,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="acceptInvite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="acceptInvite">
@@ -100,6 +108,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="verifyEmail">
@@ -107,6 +116,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">invitation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="resetExpiredPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 				method="resetExpiredPassword">
@@ -117,6 +127,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="resetPassword">
@@ -128,6 +139,7 @@
 				<param name="statusCode">400</param>
 				<param name="includeProperties">invitation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="apiLogin">
@@ -135,6 +147,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="apiLogout">
@@ -142,24 +155,28 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="currentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="switchaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="switchCurrentAccount">
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="notification" class="com.facilio.bmsconsole.actions.NotificationAction"
 			method="notificationList">
 			<result name="success" type="json">
 				<param name="includeProperties">unread,unseen,notifications,notifications\[\d+\],notifications\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="workorder" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
@@ -174,6 +191,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="campus" class="com.facilio.bmsconsole.actions.CampusAction"
 			method="campusList">
@@ -224,6 +242,7 @@
 			<result name="success" type="json">
 				<param name="root">pickList</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action> -->
 		<action name="locations" class="com.facilio.bmsconsole.actions.LocationActions"
 			method="locationsList">
@@ -241,7 +260,6 @@
 			<result name="success" type="json">
 				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
 			</result>
-
 		</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction"
 			method="groupList">
@@ -280,6 +298,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">fileUrl</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">
@@ -296,6 +315,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="taskList">
@@ -310,6 +330,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action> -->
 		
 		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -318,6 +339,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="dashboardTree" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -325,12 +347,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
-		</action>		
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="ratecards" class="com.facilio.bmsconsole.actions.TenantAction" method="fetchAllRateCards">
 			<result name="success" type="json">
 				<param name="root">rateCards</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="validatePermalink" class="com.facilio.bmsconsole.actions.LoginAction" method="validatePermalink">
@@ -341,6 +365,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="orgLogo" class="com.facilio.auth.actions.FacilioAuthAction" method="getLogo">
 			<param name="auth">false</param>
@@ -350,6 +375,7 @@
 			<result name="error" type="httpheader">
 				<param name="status">404</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="tvApi" namespace="/api/tv" extends="homeApi">
@@ -357,6 +383,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="generatecode" class="com.facilio.tv.TVAction" method="generateCode">
@@ -369,6 +396,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="validatecode" class="com.facilio.tv.TVAction" method="validateCode">
@@ -381,6 +409,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="tabwidgetApi" namespace="/api/tabwidget"
@@ -391,6 +420,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^tabWidget.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="spaceCategoryAPI" namespace="/api/spacecategory" extends="homeApi">
@@ -480,7 +510,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">signup_allowed</param>
 			</result>
-		</action>	
+		</action>
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
 			<param name="moduleName">setup</param>
@@ -523,7 +553,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">locationId</param>
 			</result>
-		</action>			
+		</action>
 	</package>
 	<package name="businessHoursApi" namespace="/api/businesshours" extends="homeApi">
 		<action name="add"
@@ -890,6 +920,7 @@
 			<result name="success" type="json">
 				<param name="root">assetsReadings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getAssetsWithReadings" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -897,6 +928,7 @@
 			<result name="success" type="json">
 				<param name="root">assetsReadings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getReadingsForSpecificAssetCategory" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -904,6 +936,7 @@
 			<result name="success" type="json">
 				<param name="root">assetsReadings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getAssetCategoryWithReadings" class="com.facilio.bmsconsole.actions.AssetAction" 
@@ -911,6 +944,7 @@
 			<result name="success" type="json">
 				<param name="root">assetCategoriesWithReadings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -942,7 +976,6 @@
 			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
 			<param name="setupTab">CATEGORY</param>
 			<result name="success" type="json">
-				<param name="root">ticketCategory</param>
 			</result>
 		</action>
 		<action name="updateTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
@@ -967,18 +1000,21 @@
 			<result name="success" type="json">
 				<param name="root">ticketPriority</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketPriority">
 			<result name="success" type="json">
 				<param name="root">ticketPriority</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteTicketPriority" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketPriority">
 			<result name="success" type="json">
 				<param name="root">ticketPriority</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketType">
@@ -1106,6 +1142,7 @@
 			<result name="success" type="json">
 				<param name="root">alarmSeverity</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1117,6 +1154,7 @@
 				 <param name="ignoreHierarchy">false</param>
 				<param name="root">viewObj</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="deleteView">
@@ -1124,24 +1162,28 @@
 			<result name="success" type="json">
 				<param name="root">view</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeView">
 			<result name="success" type="json">
 				<param name="includeProperties">views.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="customizeColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeColumns">
 			<result name="success" type="json">
 				<param name="includeProperties">fields.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="customizeSortColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeSortColumns">
 			<result name="success" type="json">
 				<param name="includeProperties">sortFields.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
@@ -1152,27 +1194,32 @@
 				<param name="root">viewObj</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="woScheduleView" class="com.facilio.bmsconsole.actions.ViewAction" method="addWoScheduleView">
 			<result name="success" type="json">
 				<param name="includeProperties">reportId</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="woScheduleViewList" class="com.facilio.bmsconsole.actions.ViewAction" method="woScheduledList">
 			<result name="success" type="json">
 				<param name="includeProperties">^scheduledReports.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="editWoScheduledView" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledView">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteScheduledView" class="com.facilio.bmsconsole.actions.ViewAction" method="deleteScheduledView">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1287,6 +1334,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getspacespecificlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1295,6 +1343,7 @@
 				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingAndValue.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getallspacereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1322,6 +1371,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getassetspecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1330,6 +1380,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getassetspecificlatestdata" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1338,6 +1389,7 @@
 				<param name="excludeProperties">readingAndValue.readingData.*\.orgId,readingAndValue.readingData.*\.moduleId,readingAndValue.readingData.*\.data,readingAndValue.readingData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingAndValue.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="getallassetreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1355,6 +1407,7 @@
 				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingValues.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="addassignedoccupancydata" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1363,6 +1416,7 @@
 				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingValues.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="addenergydata" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1371,6 +1425,7 @@
 				<param name="excludeProperties">readingValues.*\.orgId,readingValues.*\.moduleId,readingValues.*\.data,readingValues.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">readingValues.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="addspacedata" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1472,12 +1527,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update_rdm" class="com.facilio.bmsconsole.actions.ReadingAction" method="updateReadingDataMeta1">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="calculateFormulField" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -1485,6 +1542,7 @@
 			<result name="success" type="json">
 				<param name="root">readingValues</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 	</package>
@@ -1496,6 +1554,7 @@
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1503,6 +1562,7 @@
 			<result name="success" type="json">
 				<param name="root">photos</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="readingFromImage" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1510,6 +1570,7 @@
 			<result name="success" type="json">
 				<param name="root">detectedTexts</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="justUpload" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1517,6 +1578,7 @@
 			<result name="success" type="json">
 				<param name="root">photos</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="readingFromImageFile" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1524,6 +1586,7 @@
 			<result name="success" type="json">
 				<param name="root">detectedTexts</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1532,6 +1595,7 @@
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="addspacephotos" class="com.facilio.bmsconsole.actions.PhotosAction"
@@ -1598,6 +1662,7 @@
 				<param name="excludeProperties">photos.*\.orgId,photos.*\.moduleId,photos.*\.customProps</param>
 				<param name="includeProperties">photos.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1608,6 +1673,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">moduleId, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="addfields" class="com.facilio.bmsconsole.actions.ModuleAction"
@@ -1615,6 +1681,7 @@
 			<result name="success" type="json">
 				<param name="root">fieldIds</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
@@ -1656,6 +1723,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="deletefields" class="com.facilio.bmsconsole.actions.ModuleAction"
@@ -1665,6 +1733,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">rowsDeleted</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1675,6 +1744,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^field.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1713,6 +1783,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^workOrderIds.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -1934,7 +2005,7 @@
 			<result name="success" type="json">
 				<param name="root">activities</param>
 			</result>
-		</action> 
+		</action>
 		
 		<action name="getEstimatedWorkDuration" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="getEstimatedWorkDuration">
 			<param name="moduleName">workorder</param>
@@ -2062,6 +2133,7 @@
 			<result name="success" type="json">
 				<param name="root">templates</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.TemplateAction" method="fetchTemplate">
@@ -2070,7 +2142,8 @@
 				<param name="root">template</param>
 				<param name="excludeProperties">taskTemplates, sectionTemplates</param>
 			</result>
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="deletetemplate" class="com.facilio.bmsconsole.actions.TemplateAction"
 			method="deleteTemplate">
@@ -2157,7 +2230,6 @@
 	<package name="attachmentApi" namespace="/api/attachment" extends="homeApi">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="addAttachment">
-			<param name="checkSubModulePermission">true</param>
 			<param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
@@ -2169,6 +2241,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^attachmentId\[\d+\]</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -2221,30 +2294,35 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getEnergyConsumption" class="com.facilio.bmsconsole.actions.ReportActions"
 			method="getEnergyConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.ReportActions"
 			method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getTopNSpaces" class="com.facilio.bmsconsole.actions.ReportActions"
 			method="getTopNSpaces">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getServiceBreakDown" class="com.facilio.bmsconsole.actions.ReportActions"
 			method="getServiceBreakDown">
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -2255,61 +2333,71 @@
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
-		</action>
+			<param name="deprecated">true</param>
+			</action>
 	
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildings">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllBuildingsWithRootMeter" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildingsWithRootMeter">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllBuildingsWithRootMeterMeta" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildingsWithRootMeterMeta">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllChiller" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllChiller">
 			<result name="success" type="json">
 				<param name="includeProperties">^chillerPlantsJson.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getConsumptionDetails" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getConsumptionDetails">
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getBuildingRankings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getBuildingRankings">
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getServiceConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getServiceConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getConsumption" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getConsumption">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -2319,28 +2407,33 @@
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*,^exportUrl.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllWorkOrderReports"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="getAllWorkOrderReports">
 				<result name="success" type="json">
 				<param name="includeProperties">^allWorkOrderJsonReports.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="technician"
 			class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="technician">
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="pmTaskList" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="preventiveMaintenance">
 				<result name="success" type="json">
 				<param name="root">pms</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="map" class="com.facilio.bmsconsole.actions.WorkOrderReportAction" method="map">
 				<result name="success" type="json">
 				<param name="includeProperties">^woStats.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -2350,6 +2443,7 @@
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="severityStats" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2357,12 +2451,14 @@
 				<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="topLocations" class="com.facilio.bmsconsole.actions.AlarmReportAction"
 			method="topLocations">
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getBuildingMap" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2370,6 +2466,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 
@@ -2378,6 +2475,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmTypeStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="siteMap" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2385,6 +2483,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmTypeStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2392,6 +2491,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmTypeStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="alarmresolution" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2399,6 +2499,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="energyresolution" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2406,6 +2507,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="alarmtechresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2413,6 +2515,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="energytechresponse" class="com.facilio.bmsconsole.actions.AlarmReportAction"
@@ -2420,6 +2523,7 @@
 				<result name="success" type="json">
 				<param name="root">alarmResponseStats</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -2484,7 +2588,6 @@
 			<result name="error" type="json">
 				<param name="root">error</param>
 			</result>
-		
 		</action>
 
 		<action name="reportcards" class="com.facilio.bmsconsole.actions.CampusAction"
@@ -2870,12 +2973,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.UserAction"
 			method="deleteUserAvatar">
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -2883,10 +2988,12 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
 			<result name="success" type="json">
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getNotificationPreferences" class="com.facilio.bmsconsole.actions.UserAction" method="getNotificationPreferences">
 			<result name="success" type="json">
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -2895,16 +3002,19 @@
 			<result name="success" type="json">
 				<param name="includeProperties">unread</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="readall" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAllAsRead">
 			<result name="success" type="json">
 				<param name="includeProperties">unread</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="seenall" class="com.facilio.bmsconsole.actions.NotificationAction" method="markAllAsSeen">
 			<result name="success" type="json">
 				<param name="includeProperties">unseen</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -2954,6 +3064,7 @@
 			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addticketnote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addTicketNote">
@@ -2961,6 +3072,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addspacenote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addSpaceNote">
@@ -2968,6 +3080,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addassetnote" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="addAssetNote">
@@ -2975,6 +3088,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
@@ -2983,6 +3097,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction"
@@ -2991,6 +3106,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="getspacenotes" class="com.facilio.bmsconsole.actions.NoteAction"
@@ -2999,6 +3115,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="getassetnotes" class="com.facilio.bmsconsole.actions.NoteAction"
@@ -3007,6 +3124,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="getStoreRoomNotes" class="com.facilio.bmsconsole.actions.NoteAction"
@@ -3015,6 +3133,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -3031,7 +3150,6 @@
 			<result name="error" type="json">
 				<param name="root">error</param>
 			</result>
-	
 		</action>
 	    <action name="getTenantForAsset" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="getTenantForAssetId">
@@ -3043,7 +3161,6 @@
 			<result name="error" type="json">
 				<param name="root">error</param>
 			</result>
-	
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3104,7 +3221,8 @@
 	<result name="success" type="json">
 	<param name="includeProperties">tenantsUsers,tenantsUsers\[\d+\],tenantsUsers\[\d+\].*</param>
 	</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 	
 	
 	<action name="getTenantReportCards" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3112,27 +3230,31 @@
 	<result name="success" type="json">
 	<param name="includeProperties">reports,reports\[\d+\],reports\[\d+\].*,reportcards,reportcards\[\d+\],reportcards\[\d+\].*</param>
 	</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 	
 	<action name="getTenantReadingCards" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="getTenantReadingCards">
 	<result name="success" type="json">
 	<param name="includeProperties">reports,reports\[\d+\],reports\[\d+\].*</param>
 	</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 	
 	<action name="updateportalaccess" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="updatePortalAccess">
 	<result name="success" type="json">
 	<param name="root">^user.*</param>
 	</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 	
 	<action name="getmeterreadings" class="com.facilio.bmsconsole.actions.TenantAction"
 	method="getMeterReadings">
 	<result name="success" type="json">
 	<param name="root">readingData</param>
 	</result>
+		<param name="deprecated">true</param>
 	</action>
 	
 	<action name="showinportal" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3140,7 +3262,8 @@
 	<result name="success" type="json">
 	<param name="root">tenantReadingData</param>
 	</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 		
 		
 		<action name="generatebill" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3148,6 +3271,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^billDetails.*, fileUrl</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="details" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3180,6 +3304,7 @@
 			<result name="success" type="json">
 				<param name="root">rateCard</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3188,6 +3313,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3196,6 +3322,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
@@ -3205,6 +3332,7 @@
 			<result name="success" type="json">
 				<param name="root">rateCard</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -3214,11 +3342,13 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^parsedData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="importParsedData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importParsedData">
 			<result name="success" type="json">
 				<param name="includeProperties">^parsedData.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAssets" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="getAssets">
@@ -3227,6 +3357,7 @@
 				<result name="success" type="json">
 				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*,chillerAssets,chillerAssets\[\d+\],chillerAssets\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="upload" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="upload">
@@ -3235,11 +3366,13 @@
 				<result name="success" type="json">
 				<param name="includeProperties">importProcessContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="checkModule" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="checkModule">
 				<result name="success" type="json">
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="processImport">
@@ -3253,6 +3386,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="importData" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importData">
 			<result name="success" type="json">
@@ -3262,11 +3396,13 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteFile" class="com.facilio.bmsconsole.actions.ImportDataAction" method="deleteFile">
 			<result name="success" type="json">
 				<param name="statusCode">200</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportDataAction" method="checkImportStatus">
 			<result name="success" type="json">
@@ -3275,6 +3411,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="beginimportvalidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="beginImportValidation">
 			<result name="success" type="json">
@@ -3283,6 +3420,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchdataforValidation" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchDataForValidation">
 			<result name="success" type="json">
@@ -3292,6 +3430,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchallunvalidated" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchAllUnvalidated">
 			<result name="success" type="json">
@@ -3301,6 +3440,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchimporthistory" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchImportHistory">
 			<result name="success" type="json">
@@ -3310,6 +3450,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="validateddata" class="com.facilio.bmsconsole.actions.ImportDataAction" method="finishValidation">
 			<result name="success" type="json">
@@ -3319,6 +3460,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="importreading" class="com.facilio.bmsconsole.actions.ImportDataAction" method="importReading">
 			<result name="success" type="json">
@@ -3327,6 +3469,7 @@
 			<result name="error" type="json">
 				<param name="statusCode">500</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="timeseriesapi" namespace="/api/timeseries" extends="homeApi">
@@ -3340,24 +3483,28 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="devices" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="deviceList">
 			<result name="success" type="json">
 				<param name="root">allDevices</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getFieldMap" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getDefaultFieldMap">
 			<result name="success" type="json">
 				<param name="root">fieldMap</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getMarkedReadings" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="markedReadings">
 			<result name="success" type="json">
 				<param name="root">markedData</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="tspublish" class="com.facilio.bmsconsole.actions.TimeSeries"
 				method="publish">
@@ -3369,6 +3516,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
@@ -3378,21 +3526,21 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^user.*,^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addPhoto" class="com.facilio.bmsconsole.actions.WidgetAction"
 			method="addPhoto">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT,CREATE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^url.*,^photoId.*</param>
 			</result>
 		</action>
-		
+
 	</package>
-	
+
 	<package name="workflow" namespace="/api/workflow" extends="homeApi">
-	
+
 		<action name="getAllNameSpace" class="com.facilio.workflows.action.WorkflowAction" method="getAllNameSpace">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3401,8 +3549,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="getAllFunctions" class="com.facilio.workflows.action.WorkflowAction" method="getAllFunctions">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3411,12 +3560,13 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 	</package>
-	
+
 	<package name="screen" namespace="/api/screen" extends="homeApi">
-	
+
 		<action name="getAllScreens" class="com.facilio.screen.action.ScreenAction" method="getScreens">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3425,8 +3575,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="getAllRemoteScreens" class="com.facilio.screen.action.ScreenAction" method="getRemoteScreens">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3435,8 +3586,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="getRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="getRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3445,8 +3597,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="getScreen" class="com.facilio.screen.action.ScreenAction" method="getScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3455,9 +3608,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addScreen" class="com.facilio.screen.action.ScreenAction" method="addScreen">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:CREATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3467,9 +3620,8 @@
 				<param name="statusCode">400</param>
 			</result>
 		</action>
-		
+
 		<action name="updateScreen" class="com.facilio.screen.action.ScreenAction" method="updateScreen">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3479,9 +3631,8 @@
 				<param name="statusCode">400</param>
 			</result>
 		</action>
-		
+
 		<action name="deleteScreen" class="com.facilio.screen.action.ScreenAction" method="deleteScreen">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3491,7 +3642,7 @@
 				<param name="statusCode">400</param>
 			</result>
 		</action>
-		
+
 		<action name="addRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="addRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3500,8 +3651,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="connectRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="connectRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3510,8 +3662,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="updateRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="updateRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3520,8 +3673,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="refreshRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="refreshRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3530,8 +3684,9 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 		<action name="deleteRemoteScreen" class="com.facilio.screen.action.ScreenAction" method="deleteRemoteScreen">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -3540,61 +3695,59 @@
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
-		
+
 	</package>
-	
+
 	<package name="dashboard" namespace="/api/dashboard" extends="homeApi">
 		<action name="populateDefaultReports" class="com.facilio.bmsconsole.actions.DashboardAction" method="populateDefaultReports">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardTab">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
 		</action>
 		<action name="updateDashboardTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsList">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardTabContexts,dashboardTabContexts\[\d+\],dashboardTabContexts\[\d+\].*</param>
 			</result>
-		</action>			
+		</action>
 		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
 		<action name="enableDashboardTabs" class="com.facilio.bmsconsole.actions.DashboardAction" method="enableDashboardTabs">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">PUT:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
-		
+
 		<action name="updateTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabWithWidgets">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
 		</action>
 		<action name="updateTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsListWithWidgets">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
@@ -3604,19 +3757,21 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboards.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">
 			<result name="success" type="json">
 				<param name="includeProperties">modules,modules\[\d+\],modules\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addWidget" class="com.facilio.bmsconsole.actions.DashboardAction" method="addWidget">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardWidget.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboard">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardId</param>
@@ -3627,7 +3782,6 @@
 			</result>
 		</action>
 		<action name="deleteDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardTab">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:DELETE</param>
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardTabId</param>
@@ -3638,85 +3792,94 @@
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^meterIds.*,^readingAlarms.*,^reportColumns.*,^reportFieldLabelMap.*,^variance.*,^safelimit.*,^benchmarks.*,^heatMapRange.*,^booleanResultGrouping.*,^booleanResultOptions.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAswaqData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getAswaqData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^resultJSON.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getUTCData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUTCData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^resultJSON.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReport">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getReportMetaForAlarms" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReportMetaForAlarms">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportMeta.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateReport" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateReport">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getCardData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^cardResult.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportData.*,^reportContext.*,^baseLineComparisionDiff.*,^entityName.*,^readingAlarms.*,^heatMapRange.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getTabularData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getTabularData">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^reportData.*,^reportColumns.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getUnderlyingData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getUnderlyingData">
 			<result name="success" type="json">
 				<param name="excludeProperties">reportData.*\.orgId,reportData.*\.moduleId,reportData.*\.data,reportData.*\.readings.*\.(date|week|hour|month|day)</param>
 				<param name="includeProperties">^reportData.*,displayFields,displayFields\[\d+\],displayFields\[\d+\].*,</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getSubMeters" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSubMeters">
 			<result name="success" type="json">
 				<param name="includeProperties">energyMeters,energyMeters\[\d+\],energyMeters\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateDashboardPublishStatus" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardPublishStatus">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardFolder">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
 		<action name="updateDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardFolder">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
 			</result>
 		</action>
 		<action name="deleteDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDashboardFolder">
-			<param name="checkTabPermission">true</param>
 			<param name="permission">POST:CREATE,EDIT</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardFolderContext.*</param>
@@ -3734,46 +3897,55 @@
 				<param name="statusCode">400</param>
 				<param name="includeProperties">^errorString.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteWidgetFromDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteWidgetFromDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateRefreshInterval" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateRefreshInterval">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<!-- <action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboard</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action> -->
 		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="deleteDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="derivationList" class="com.facilio.bmsconsole.actions.DashboardAction" method="derivationList">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivations.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="calculateBenchmark" class="com.facilio.bmsconsole.actions.DashboardAction" method="calculateBenchmarkValue">
 			<result name="success" type="json">
 				<param name="includeProperties">value</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboard">
 			<param name="linkName">{1}</param>
@@ -3781,12 +3953,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardJson.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getTabWidgets" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardTab">
 			<param name="translationImpl">DashboardWidgetTranslation</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
@@ -3794,12 +3968,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action> -->
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
 			<param name="dashboardId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -3808,13 +3984,15 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboards.*</param>
 			</result>
-		</action>
+		<param name="deprecated">true</param>
+	</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardPublish">
 			<param name="dashboardId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardPublishing.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -3831,16 +4009,19 @@
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updatedefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="updatedefaultMetricUnits">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updatedefaultMetricUnit" class="com.facilio.bmsconsole.actions.UnitAction" method="updatedefaultMetricUnit">
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="shifts" namespace="/api/shifts" extends="homeApi">
@@ -3848,26 +4029,31 @@
 			<result name="success" type="json">
 				<param name="includeProperties">shift.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="all" class="com.facilio.bmsconsole.actions.ShiftAction" method="all">
 			<result name="success" type="json">
 				<param name="includeProperties">shifts.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ShiftAction" method="update">
 			<result name="success" type="json">
 				<param name="includeProperties">shift.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ShiftAction" method="delete">
 			<result name="success" type="json">
 				<param name="includeProperties">result,users.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="sample" namespace="/api/sample" extends="homeApi">
 		<action name="*">
 			<result>/jsps/samples/{1}.jsp</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -3877,16 +4063,19 @@
 			<result name="success" type="json">
 				<param name="includeProperties">form.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getFields" class="com.facilio.bmsconsole.actions.FormAction" method="fetchFormFields">
 			<result name="success" type="json">
 				<param name="includeProperties">fields.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -3897,6 +4086,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">meta.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	

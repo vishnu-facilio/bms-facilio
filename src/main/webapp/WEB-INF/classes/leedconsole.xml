@@ -50,18 +50,21 @@
 			<result name="success" type="json">
 				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 				
 		<action name="leedlist" class="com.facilio.leed.actions.LeedAction" method="leedList">
 			<result name="success" type="json">
 				<param name="includeProperties">isLoginRequired,viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="importleeds" class="com.facilio.leed.actions.LeedAction" method="importLeedList">
 			<result name="success" type="json">
 				<param name="includeProperties">viewlayout.*,viewlayout\[\d+\],viewlayout\[\d+\].*,leedList,leedList\[\d+\],leedList\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addLeed" class="com.facilio.leed.actions.LeedAction" method="addLeedConfiguration">
@@ -69,6 +72,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">buildingId</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 	</package>
@@ -81,6 +85,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		
@@ -89,6 +94,7 @@
 			<param name="permission">ORG_ACCESS_ADMINISTER</param> -->
 			<result name="success" type="json">
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addmeterconsumptiondata" class="com.facilio.leed.actions.LeedAction" method="AddMeterNConsumptionData">
@@ -97,6 +103,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">meterList,meterList*,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		
@@ -107,6 +114,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">meterList,meterList\[\d+\],meterList\[\d+\].*,consumptionArray,consumptionArray\[\d+\],consumptionArray\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 
@@ -153,17 +161,20 @@
 	<action name="buildingdetails" class="com.facilio.leed.actions.BuildingHome" method="detailspage">
 		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 		<result >/leed/BuildingDetails.jsp</result>
+		<param name="deprecated">true</param>
 	</action>
 	
 	<action name="addcomsumption" class="com.facilio.leed.actions.BuildingHome" method="addConsumptionData">
 		<param name="permission">SPACEMANAGEMENT_ACCESS_ENABLE</param>
 		<result >/leed/BuildingDetails.jsp</result>
+		<param name="deprecated">true</param>
 	</action>
 	-->
 	<action name="index" >
 		
 		<result >/leed/index.jsp</result>
-		</action>		
+		<param name="deprecated">true</param>
+	</action>
   
 	</package>
 	

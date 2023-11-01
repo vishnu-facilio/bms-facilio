@@ -47,91 +47,112 @@
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
 			<param name="approval">true</param>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2portalAccount"> 
 			<param name="auth">false</param>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="servicePortalHome" class="com.facilio.bmsconsole.actions.EmployeeAction"
 			method="getEmployeeOccupantPortalSummary"> 
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="v2fetchFormMeta">
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="notelist" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="v2getNotesList">
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
 			method="v2getActivitiesList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="fetchActivity">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="v2addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addattachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="v2addAttachment">
-		</action>       
+			<param name="deprecated">true</param>
+		</action>
 		
-		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms"></action>
+		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms">
+			<param name="deprecated">true</param>
+		</action>
 	
 	    <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
         method="v2SignupPortalUser">
-        </action>
+        	<param name="deprecated">true</param>
+		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardList">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="serviceWorkOrderApiV2" namespace="/api/v2/service/workorders" extends="servicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
 		    <param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
 			<param name="workOrderId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="close"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2closeWorkorder">
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-		</action> 
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="servicePreviewApiV2" namespace="/api/v2/service/files/preview" extends="filePreview,newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>	
 	<package name="assetServiceApiV2" namespace="/api/v2/service/assets" extends="servicePortalApiV2">
@@ -139,12 +160,14 @@
 			method="fetchAssetFromQR">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="workflowServiceApiv2" namespace="/api/v2/service/workflow"
 		extends="servicePortalApiV2">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="serviceDownloadApiV2" namespace="/api/v2/service/files/download" extends="fileDownload,servicePortalApiV2">
@@ -152,57 +175,80 @@
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 			<param name="isDownload">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="serviceReportApiv2" namespace="/api/v2/service/report" extends="servicePortalApiV2">
 		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getReportFields" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="getReportFields">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromAlarm">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="serviceFormApiv2" namespace="/api/v2/service/forms" extends="servicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -231,91 +277,114 @@
 		<default-interceptor-ref name="defaultInterceptor" />
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getGroups">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="view" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="viewList">
 			<result name="success" type="json">
 				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
 		<param name="auth">false</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="workorders" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">myrequests</param>
 			<param name="approval">true</param>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2portalAccount">
 			<param name="auth">false</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getFormMeta" class="com.facilio.bmsconsole.actions.FormAction"
 			method="v2fetchFormMeta">
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="notelist" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="v2getNotesList">
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="activities" class="com.facilio.bmsconsole.actions.WorkOrderRequestAction"
 			method="v2getActivitiesList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-		</action>	
+			<param name="deprecated">true</param>
+		</action>
 		<action name="activity" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="fetchActivity">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="attachment" class="com.facilio.bmsconsole.actions.AttachmentAction" method="v2attachmentList">
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addNotes" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="v2addNote">
 			<param name="permission">WORKORDER_READ,TASK_READ</param>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addattachment" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="v2addAttachment">
-		</action>       
+			<param name="deprecated">true</param>
+		</action>
 		
-		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms"></action>
+		<action name="getFormList" class="com.facilio.bmsconsole.actions.FormAction" method="getServicePortalForms">
+			<param name="deprecated">true</param>
+		</action>
 	
 	    <action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction"
         method="v2SignupPortalUser">
-        </action>
+        	<param name="deprecated">true</param>
+		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardList">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction" method="getRoles">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction" method="getAllBuildings">
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="basespace"
 			class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
@@ -325,6 +394,7 @@
 		<action name="getById"
 			class="com.facilio.bmsconsole.actions.GraphicsAction"
 			method="getGraphicsDetails">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -340,61 +410,99 @@
 	<package name="controlActionModule" namespace="/api/service/v2/controlAction"
 		extends="newServicePortalApiV2">
 		<action name="setReadingValue"
-			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+				class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="setReadingValueForSpace"
-			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace"></action>
+				class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="getControlGroups"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlGroupMeta"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="getControlActionCommands"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllablePoints"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="addControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="deleteControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlActionRules"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateRDM"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlModeForBaseSpaces"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlModeForBaseSpaces"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlModeForBaseSpaces">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableAssets"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableFields"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="addControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="deleteControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="metaData"
-		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="metaData">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableCategoryList"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategoryList">
@@ -403,6 +511,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getControllableCategories"
@@ -412,12 +521,14 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
 	<package name="extendNewServicePortalApiV2" namespace="/api/service/v2" extends="newServicePortalApiV2">
 		<action name="forms" class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="formType">3</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -427,23 +538,27 @@
 			method="getApplicationDetails">
 			<param name="auth">true</param>
 			<param name="translationImpl">WebTabTranslation</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
 	<package name="newServiceWorkOrderApiV2" namespace="/api/service/v2/workorders" extends="newServicePortalApiV2">
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="addPortalOrders">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2updateWorkOrder">
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="close"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2closeWorkorder">
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-		</action> 
+			<param name="deprecated">true</param>
+		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderCount">
@@ -451,7 +566,8 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="approval">true</param>
 			<param name="count">true</param>
-		</action> 
+			<param name="deprecated">true</param>
+		</action>
 		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="workOrderList">
 			<param name="moduleName">workorder</param>
@@ -460,9 +576,11 @@
 			<result name="success" type="json">
 				<param name="includeProperties">woCount</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2viewWorkOrder">
 			<param name="workOrderId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="newServicePreviewApiV2" namespace="/api/service/v2/files/preview" extends="filePreview,newServicePortalApiV2">
@@ -470,6 +588,7 @@
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 			<param name="auth">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="newAssetServiceApiV2" namespace="/api/service/v2/assets" extends="newServicePortalApiV2">
@@ -477,6 +596,7 @@
 			method="fetchAssetFromQR">
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="assetListServiceApiv2" namespace="/api/service/v2/assets/view" extends="newServicePortalApiV2">
@@ -484,6 +604,7 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">READ</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -505,72 +626,99 @@
 		extends="newServicePortalApiV2">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getDefaultWorkflowResult"
 			class="com.facilio.workflows.action.WorkflowAction"
-			method="getDefaultWorkflowResultV2"></action>
+				method="getDefaultWorkflowResultV2">
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="newServiceDownloadApiV2" namespace="/api/service/v2/files/download" extends="fileDownload,newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FileAction" method="previewFile">
 			<param name="permission">READ</param>
 			<param name="fileID">{1}</param>
 			<param name="isDownload">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="newServiceReportApiv2" namespace="/api/service/v2/report" extends="newServicePortalApiV2">
 		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getReportFields" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="getReportFields">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromCard">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReadingsFromAlarm">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="workorderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchWorkorderData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addReadingReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addOrUpdateReadingReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addWorkOrderReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addWorkOrderReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction" method="exportReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="sendMail" class="com.facilio.bmsconsole.actions.V2ReportAction" method="sendReportMail">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="schedule" class="com.facilio.bmsconsole.actions.V2ReportAction" method="scheduleReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReportFolders" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportFolders">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="addReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="fetchReportWithData" class="com.facilio.bmsconsole.actions.V2ReportAction" method="fetchReportWithData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="updateReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="updateReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="deleteReportFolder" class="com.facilio.bmsconsole.actions.V2ReportAction" method="deleteReportFolder">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="duplicateReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="duplicateReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="moveReport" class="com.facilio.bmsconsole.actions.V2ReportAction" method="moveReport">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="search" class="com.facilio.bmsconsole.actions.V2ReportAction" method="searchReportAndFolders">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="executeReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="executeReport">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="newServiceFormApiv2" namespace="/api/service/v2/forms" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 			<param name="formType">3</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="assetLatestDataApiv2"
@@ -578,11 +726,13 @@
 		<action name="getReadingsForSpaces"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingDataForSpaces">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<!-- Vendor Portal apis -->
@@ -593,6 +743,7 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
 			<param name="vendorPortal">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorattachmentApi" namespace="/api/service/attachment"
@@ -600,6 +751,7 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="deleteAttachment">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -617,6 +769,7 @@
 			method="getInsuranceList" >
 			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="portalDocuments" namespace="/api/service/v2/documents"
@@ -630,6 +783,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.DocumentAction" method="getDocumentList">
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorVisitorLoggingInvites" namespace="/api/service/v2/visitorLogging/invites/view"
@@ -638,6 +792,7 @@
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
 			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="serviceVisitorLoggingInvites" namespace="/api/service/v2/visitorlogging/invites/view"
@@ -645,6 +800,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorInviteList">
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorVisitorInvite" namespace="/api/service/v2/visitorInvite"
@@ -652,7 +808,8 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
 			<param name="vendorPortal">true</param>
-			</action>
+			<param name="deprecated">true</param>
+		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 	</package>
@@ -672,19 +829,22 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
 			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
-			</action>
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="serviceVisitorLoggingLogs" namespace="/api/service/v2/visitorlogging/view"
 		extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList">
 			<param name="viewName">{1}</param>
 			<param name="tenantPortal">true</param>
-			</action>
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="portalBaseSpaceApiV2" namespace="/api/service/v2/basespaces" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="basespaceDetailsWithHierarchy" >
 			<param name="spaceId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorWorkorder" namespace="/api/service/workorder/summary" extends="newServicePortalApiV2">
@@ -697,6 +857,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^workorder.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorWorkorderSummary" namespace="/api/service/v2/workorder/summary" extends="newServicePortalApiV2">
@@ -706,6 +867,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="workOrderId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="serviceApprovalTransition" extends="newServicePortalApiV2" namespace="/api/service/v2/approval">
@@ -733,6 +895,7 @@
 			method="v2updateStatus">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="closeAllTask"
@@ -740,6 +903,7 @@
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="closeResourceTasks"
@@ -747,6 +911,7 @@
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="closeSectionsTasks"
@@ -754,6 +919,7 @@
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="updateAllTask"
@@ -761,6 +927,7 @@
 			method="v2updateAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update"
@@ -768,6 +935,7 @@
 			method="v2updateTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="sync"
@@ -775,6 +943,7 @@
 			method="syncOfflineTasks">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="parents"
@@ -782,6 +951,7 @@
 			method="v2multipleTaskList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="*"
@@ -789,6 +959,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="taskId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
@@ -799,12 +970,14 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="recordId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="closeAllTask"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -812,6 +985,7 @@
 		extends="newServicePortalApiV2">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2addNote">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -820,23 +994,28 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="noteList"
 			class="com.facilio.bmsconsole.actions.NoteAction" method="v2noteList">
 			<param name="module">ticketnotes</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorPhotosV2Api" namespace="/api/service/v2/photos"
 		extends="newServicePortalApiV2">
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2uploadPhotos">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2deletePhotos">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2getPhotosList">
 			<param name="module">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorReadingFields" namespace="/api/service/v2"
@@ -848,18 +1027,21 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorModuleMetaApiV2" namespace="/api/service/module"
 		extends="newServicePortalApiV2">
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorV2ModuleMetaApi" namespace="/api/service/v2/module"
 		extends="newServicePortalApiV2">
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorV2ModuleMetaApiV2" namespace="/api/service/v2/modules/meta" extends="newServicePortalApiV2">
@@ -867,6 +1049,7 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2metadata">
 			<param name="moduleName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -874,6 +1057,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	 <package name="VendorModuleDataApiv2" namespace="/api/service/v2/module/data"
@@ -881,18 +1065,22 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="addModuleData">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="moduleDataDetails">
 			<param name="id">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="updateModuleData">
+			<param name="deprecated">true</param>
 		</action>
 		
 	</package>
@@ -902,6 +1090,7 @@
 			class="com.facilio.bmsconsole.actions.WorkorderItemsAction"
 			method="workorderItemsList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorworkorderItemsApi"
@@ -909,15 +1098,18 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.WorkorderItemsAction"
 			method="deleteWorkorderItems">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.WorkorderItemsAction"
 			method="addOrUpdateWorkorderItems">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkorderItemsAction"
 			method="workorderPartsList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorStoreRoomListApiv2"
@@ -928,6 +1120,7 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorworkorderToolsApi"
@@ -935,10 +1128,12 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.WorkorderToolsAction"
 			method="deleteWorkorderTools">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.WorkorderToolsAction"
 			method="addOrUpdateWorkorderTools">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -947,10 +1142,12 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction"
 			method="deleteWorkorderLabour">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction"
 			method="addOrUpdateWorkorderLabour">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -960,6 +1157,7 @@
 			class="com.facilio.bmsconsole.actions.WorkorderToolsAction"
 			method="workorderToolsList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorworkorderCostsApi"
@@ -967,15 +1165,18 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.WorkorderCostAction"
 			method="deleteWorkorderCosts">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.WorkorderCostAction"
 			method="updateWorkorderCost">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.WorkorderCostAction"
 			method="addWorkorderCost">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -985,6 +1186,7 @@
 			class="com.facilio.bmsconsole.actions.WorkorderCostAction"
 			method="workorderCostsList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -994,6 +1196,7 @@
 				class="com.facilio.bmsconsole.actions.WorkOrderServiceAction"
 				method="workorderServiceList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1005,16 +1208,19 @@
 			method="itemsList">
 			<param name="moduleName">inventory</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="showItemTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
 			method="showItemTransactionListForReturn">
 			<param name="moduleName">inventory</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="showItemTransactionListForIssue"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
 			method="showItemTransactionListForIssue">
 			<param name="moduleName">inventory</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendoritemTransactionsCountApi"
@@ -1023,6 +1229,7 @@
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
 			method="itemTransactionsCount">
 			<param name="moduleName">inventory</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendoritemTypesListApiv2"
@@ -1031,6 +1238,7 @@
 			class="com.facilio.bmsconsole.actions.ItemTypesAction"
 			method="itemTypesList">
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -1040,6 +1248,7 @@
 			class="com.facilio.bmsconsole.actions.ToolTypesAction"
 			method="toolTypesList">
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendortoolTransactionsList"
@@ -1049,16 +1258,19 @@
 			method="toolsTransactionsList">
 			<param name="moduleName">inventory</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="showToolTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction"
 			method="showToolTransactionListForReturn">
 			<param name="moduleName">inventory</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="showToolTransactionListForIssue"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction"
 			method="showToolTransactionListForIssue">
 			<param name="moduleName">inventory</param>
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
@@ -1068,6 +1280,7 @@
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourList">
 			<param name="moduleName">labour</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendoritemListApiv2" namespace="/api/service/v2/item/view"
@@ -1076,6 +1289,7 @@
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemList">
 			<param name="moduleName">inventory</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendortoolListApiv2" namespace="/api/service/v2/tool/view"
@@ -1084,6 +1298,7 @@
 			class="com.facilio.bmsconsole.actions.ToolAction" method="toolList">
 			<param name="moduleName">inventory</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorWorkorderLabourList"
@@ -1092,6 +1307,7 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderLabourAction"
 			method="workorderLabourList">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorInventoryRequestListApiv2"
@@ -1102,6 +1318,7 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="VendorWorkpermit" namespace="/api/service/v2/workpermit"
@@ -1120,7 +1337,8 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" >
 			<param name="viewName">{1}</param>
-	</action>
+		<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="VendorWorkPermitApiv2"
 		namespace="/api/service/v2/vendorworkpermit" extends="newServicePortalApiV2">
@@ -1128,7 +1346,8 @@
 			class="com.facilio.bmsconsole.actions.WorkPermitAction" method="getWorkPermitList" >
 			<param name="viewName">{1}</param>
 			<param name="vendorPortal">true</param>
-	</action>
+		<param name="deprecated">true</param>
+		</action>
 	</package>
 	<package name="ServicePortalState" namespace="/api/service/v2/state"
 	extends="newServicePortalApiV2">
@@ -1142,7 +1361,8 @@
 			<result name="success" type="json">
 				<param name="includeProperties">assets,assets\[\d+\],assets\[\d+\].*</param>
 			</result>
-		</action>
+		<param name="deprecated">true</param>
+	</action>
 	</package>
 	<package name="vendorPortalhazardPrecaution" namespace="/api/service/v2/hazardPrecaution"
 			 extends="newServicePortalApiV2">
@@ -1152,6 +1372,7 @@
 				class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="deleteHazardPrecautionList" />
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.HazardPrecautionAction" method="hazardPrecautionList">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="vendorPortalworkorderHazard" namespace="/api/service/v2/workorderHazard"
@@ -1162,12 +1383,14 @@
 				class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="deleteWorkOrderHazardList" />
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.WorkorderHazardAction" method="workorderHazardList">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="vendorPortalformRuleApiv2" namespace="/api/service/v2/form/rule"
 			 extends="newServicePortalApiV2">
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -1175,6 +1398,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction"
 			method="fetchPage">
 			<param name="moduleName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="ServiceNoteApi" namespace="/api/service/note" extends="newServicePortalApiV2">
@@ -1184,6 +1408,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^note.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="get" class="com.facilio.bmsconsole.actions.NoteAction"
 			method="getNotesList">
@@ -1191,6 +1416,7 @@
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		</package>
 		
@@ -1201,6 +1427,7 @@
 					<param name="enumAsBean">true</param>
 					<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
 				</result>
+				<param name="deprecated">true</param>
 			</action>
 		</package>
 		
@@ -1209,6 +1436,7 @@
 			<action name="*"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 				<param name="viewName">{1}</param>
+				<param name="deprecated">true</param>
 			</action>
 		</package>
 	<!-- Vendor apis end -->
@@ -1229,11 +1457,13 @@
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.TenantAction" method="v2fetchTenant" >
 			<param name="tenantPortal">true</param>
-			</action>
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.TenantAction"
 			method="v2fetchAllTenants">
 		    <param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 			
 	</package>
@@ -1241,7 +1471,8 @@
 	<package name="TenantVisitorInviteList" namespace="/api/service/v2/visitorinvite" extends="newServicePortalApiV2">
 		<action name="*" class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInvitesList" >
 		<param name="viewName">{1}</param>
-			</action>
+			<param name="deprecated">true</param>
+		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VisitorInviteAction" method="getVisitorInviteDetails" />
 	</package>
@@ -1267,23 +1498,28 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="addVendor">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="updateVendor">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="details"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorDetails">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorDetails">
 			<param name="vendorId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorsCount">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="tenantVendorsListApiv2"
@@ -1292,6 +1528,7 @@
 			class="com.facilio.bmsconsole.actions.VendorAction"
 			method="vendorList">
 			<param name="viewName">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="tenantUnitApiv2" namespace="/api/service/v2/space" extends="newServicePortalApiV2">
@@ -1305,6 +1542,7 @@
 				class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"
 				method="addRentalLeaseContract">
 			<param name="moduleName">contract</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="tenantPortalReservationApiV2"
@@ -1312,6 +1550,7 @@
 	<action name="add"
 			class="com.facilio.bmsconsole.actions.ReservationAction"
 			method="addReservation">
+		<param name="deprecated">true</param>
 	</action>
 	</package>
 
@@ -1324,7 +1563,8 @@
 				<param name="root">view</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
-		</action>
+		<param name="deprecated">true</param>
+	</action>
 	</package>
 	<package name="TenantContacts" namespace="/api/service/v2/contacts"
 		extends="newServicePortalApiV2">
@@ -1348,6 +1588,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		</package>
 		<package name="TenantvisitorSettings" namespace="/api/service/v2/visitorSettings"
@@ -1360,11 +1601,13 @@
 		<action name="getReadingsForSpaces"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingDataForSpaces">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
 			<param name="parentId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="TenantVisitorlogging" namespace="/api/service/v2/visitorLogging"
@@ -1375,61 +1618,99 @@
 	<package name="servicePortalControlActionModule" namespace="/api/service/v2/controlAction" extends="newServicePortalApiV2">
 
 		<action name="setReadingValue"
-			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+				class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="setReadingValueForSpace"
-			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace"></action>
+				class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValueForSpace">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="getControlGroups"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlGroupMeta"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta">
+			<param name="deprecated">true</param>
+		</action>
 			
 		<action name="getControlActionCommands"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllablePoints"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="addControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="deleteControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlActionRules"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControlActionRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateRDM"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlModeForBaseSpaces"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlModeForBaseSpaces"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlModeForBaseSpaces">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableAssets"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableFields"
-		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="addControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="updateControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="deleteControlGroup"
-		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="metaData"
-		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
+		class="com.facilio.controlaction.action.ControlActionAction" method="metaData">
+			<param name="deprecated">true</param>
+		</action>
 		
 		<action name="getControllableCategoryList"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableCategoryList">
@@ -1438,6 +1719,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="getControllableCategories"
@@ -1447,11 +1729,13 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 	</package>
 	<package name="serviceDashboardCardApiv2" namespace="/api/service/v2/dashboard/cards" extends="newServicePortalApiV2">
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.CardAction" method="getCardData">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -1460,7 +1744,8 @@
 	<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction" method="v2workOrderList">
 			<param name="viewName">{1}</param>
 			<param name="includeParentFilter">true</param>
-		</action>
+		<param name="deprecated">true</param>
+	</action>
 		</package>
 		<package name = "servicePortalUsers" namespace="/api/service/setup" extends="newServicePortalApiV2">
 		<action name="portalusers" class="com.facilio.bmsconsole.actions.UserAction" method="portalUserList">
@@ -1469,6 +1754,7 @@
 			<param name="cache">org</param>
 			<result name="success" type="json">
 				<param name="includeProperties">users.*</param></result>
+			<param name="deprecated">true</param>
 		</action>
 		</package>
 	<!-- Tenant apis end -->
@@ -1476,6 +1762,7 @@
 	
 	<package name="pdfServiceApi" namespace="/api/service/v2/integ/pdf" extends="newServicePortalApiV2">
 		<action name="create" class="com.facilio.pdf.actions.PdfAction" method="createPdf">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -1507,6 +1794,7 @@
 	
 	<package name="filesServiceApiV2" namespace="/api/service/v3/modules/data" extends="serviceApiV3">
 		<action name="files" class="com.facilio.v3.RESTAPIHandler" method="files">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	

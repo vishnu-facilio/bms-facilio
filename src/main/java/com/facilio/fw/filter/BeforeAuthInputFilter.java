@@ -92,19 +92,19 @@ public class BeforeAuthInputFilter implements Filter {
                     httpServletResponse.setHeader("X-Rate-Limit-Reset", String.valueOf(Instant.ofEpochMilli(expiryTime).atZone(ZoneId.systemDefault()).toLocalDateTime()));
                 }
             } catch (Exception e) {
-                    log(securityRequestWrapper, "APILimiter exception thrown: "+e);
-                    if (!FacilioProperties.isProduction()) {
-                        throw new RuntimeException(e);
-                    }
+                log(securityRequestWrapper, "APILimiter exception thrown: "+e);
+                if (!FacilioProperties.isProduction()) {
+                    throw new RuntimeException(e);
                 }
             }
+        }
 
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
         if (!(matcher.isMatch() && config.getRequestConfig(httpServletRequest.getMethod(),matcher.getMatchedPattern())!=null)) {
             if(!httpServletRequest.getRequestURI().startsWith("/api")) {
                 filterChain.doFilter(servletRequest, servletResponse);
-               return;
+                return;
             }
             if ( !isAllowed() || exclution.isMatch()) {
                 if(!exclution.isMatch()){
@@ -172,7 +172,7 @@ public class BeforeAuthInputFilter implements Filter {
     }
 
     private boolean isAllowed() {
-        return !(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equals("stage2") || FacilioProperties.isOnpremise());
+        return !(FacilioProperties.isProduction() || FacilioProperties.isOnpremise());
     }
     @Override
     public void destroy() {

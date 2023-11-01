@@ -44,8 +44,8 @@ public class FillFacilityBookingDetailsCommandV3 extends FacilioCommand {
     }
 
     private boolean checkTabPermissions(boolean showCancel) throws Exception{
-        boolean hasUpdatePermission = WebTabUtil.checkModulePermissionForTab("UPDATE",FacilioConstants.ContextNames.FACILITY_BOOKING);
-        boolean hasDeletePermission = WebTabUtil.checkModulePermissionForTab("DELETE",FacilioConstants.ContextNames.FACILITY_BOOKING);
+        boolean hasUpdatePermission = WebTabUtil.isAuthorizedAccess(FacilioConstants.ContextNames.FACILITY_BOOKING,"UPDATE",null,null);
+        boolean hasDeletePermission = WebTabUtil.isAuthorizedAccess(FacilioConstants.ContextNames.FACILITY_BOOKING,"UPDATE",null,null);
         if(hasDeletePermission || hasUpdatePermission){
             return true;
         }else{

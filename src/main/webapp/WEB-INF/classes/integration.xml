@@ -80,6 +80,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	<action name="servicelookup" class="com.facilio.auth.actions.FacilioAuthAction" method="servicelookup">
 		<param name="auth">false</param>
@@ -89,6 +90,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
   	
     <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv3">
@@ -101,6 +103,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="loginWithUserNameAndPassword" class="com.facilio.auth.actions.FacilioAuthAction" method="loginWithUserNameAndPassword">
@@ -125,6 +128,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="authorizeproxyuser" class="com.facilio.auth.actions.FacilioAuthAction" method="authorizeproxyuser">
@@ -137,6 +141,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 
@@ -150,6 +155,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="getMfaSettingsUsingDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="getMfaSettingsUsingDigest">
@@ -160,6 +166,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="configureMFAUsingDigest" class="com.facilio.auth.actions.FacilioAuthAction"
@@ -171,6 +178,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="loginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="loginWithPasswordAndDigest">
@@ -183,6 +191,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	<action name="serviceLoginWithPasswordAndDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="serviceLoginWithPasswordAndDigest">
 		<param name="auth">false</param>
@@ -194,6 +203,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="assertDomainWithDigest" class="com.facilio.auth.actions.FacilioAuthAction" method="assertDomainWithDigest">
@@ -206,6 +216,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="domainDetails" class="com.facilio.auth.actions.FacilioAuthAction" method="domainDetails">
@@ -218,6 +229,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	
 	<action name="google_sign_in" class="com.facilio.auth.actions.FacilioAuthAction" method="googleSignIn">
@@ -230,6 +242,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	
 	<action name="receiveIssue" class="com.facilio.auth.actions.FacilioAuthAction" method="postIssueResponse">
@@ -237,6 +250,7 @@
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
@@ -247,6 +261,7 @@
 		<result name="invalid" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="changepassword" class="com.facilio.auth.actions.FacilioAuthAction" method="changePassword">
@@ -256,19 +271,22 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	<action name="apilogin" class="com.facilio.auth.actions.FacilioAuthAction" method="generateAuthToken">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	<action name="apiPortallogin" class="com.facilio.auth.actions.FacilioAuthAction" method="generatePortalAuthToken">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
-	</action>	
+		<param name="deprecated">true</param>
+	</action>
 	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction" method="signupUser">
 		<param name="auth">false</param>
 		<result name="success" type="json">
@@ -277,6 +295,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 	<action name="loadWebView" class="com.facilio.auth.actions.FacilioAuthAction" method="loadWebView">
 		<param name="auth">false</param>
@@ -286,6 +305,7 @@
 		<result name="error" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="orgLogo" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchLogo">
@@ -310,6 +330,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 	<action name="termsOfService" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchTermsOfService">
@@ -322,6 +343,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
+		<param name="deprecated">true</param>
 	</action>
 
 		<action name="domainlink" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchDomainLink">
@@ -334,6 +356,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -347,6 +370,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="dclookup" class="com.facilio.auth.actions.FacilioAuthAction" method="dclookup">
 			<param name="auth">false</param>
@@ -356,6 +380,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="verifyEmailRegistration" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyEmailv2">
 			<param name="auth">false</param>
@@ -365,6 +390,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="addUserv2" class="com.facilio.bmsconsole.actions.UserAction" method="addUserv2">
@@ -375,6 +401,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 		
 		<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
@@ -382,7 +409,8 @@
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 		</result>
-	</action>
+		<param name="deprecated">true</param>
+		</action>
 
 	</package>
 		

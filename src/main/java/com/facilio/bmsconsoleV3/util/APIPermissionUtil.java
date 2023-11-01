@@ -3,7 +3,6 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.security.requestvalidator.retree.Matcher;
 import com.facilio.security.requestvalidator.retree.URLReTree;
 import com.facilio.util.FacilioUtil;
-import com.facilio.util.ValidatePermissionUtil;
 import lombok.extern.log4j.Log4j;
 
 import java.io.BufferedReader;
@@ -18,7 +17,7 @@ public class APIPermissionUtil {
 
     public static void init() {
         try {
-            ValidatePermissionUtil util = new ValidatePermissionUtil();
+            APIPermissionUtil util = new APIPermissionUtil();
             File file = new File(util.getClass().getClassLoader().getResource(FacilioUtil.normalizePath("conf/excludepermission.txt")).getFile());
             BufferedReader reader = new BufferedReader(new FileReader(file));
             List<String> skipPermissionUrls = new ArrayList<>();

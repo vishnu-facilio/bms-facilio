@@ -1,49 +1,23 @@
 package com.facilio.workflows.functions;
 
-import java.io.File;
-import java.io.InputStream;
-import java.net.URLEncoder;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.logging.Level;
-
-import com.facilio.accounts.sso.SSOUtil;
-import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
-import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.scriptengine.annotation.ScriptNameSpace;
-import com.facilio.scriptengine.context.ScriptContext;
-import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
-import com.facilio.services.CryptoUtils;
-import lombok.extern.log4j.Log4j;
-import org.apache.commons.codec.digest.Crypt;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.sso.SSOUtil;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.FieldPermissionContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.TenantContactContext;
-import com.facilio.bmsconsole.context.VendorContactContext;
-import com.facilio.bmsconsole.context.VendorContext;
-import com.facilio.bmsconsole.context.VisitorTypeContext;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -60,18 +34,16 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAppUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
+import com.facilio.scriptengine.annotation.ScriptNameSpace;
+import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.exceptions.FunctionParamException;
-import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
-import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.scriptengine.systemfunctions.FacilioNameSpaceConstants;
 import com.facilio.service.FacilioHttpUtilsFW;
+import com.facilio.services.CryptoUtils;
 import com.facilio.services.FacilioHttpUtils;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -85,8 +57,20 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.json.simple.JSONObject;
 
-;@Log4j
+import java.io.File;
+import java.io.InputStream;
+import java.net.URLEncoder;
+import java.util.*;
+import java.util.Map.Entry;
+
+;
+
+@Log4j
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.DEFAULT_FUNCTION)
 public class FacilioDefaultFunction  {
 		public Object allMatch(ScriptContext scriptContext, Map<String, Object> globalParam, Object... objects) throws Exception {
@@ -178,7 +162,7 @@ public class FacilioDefaultFunction  {
 				fileId = (long) Double.parseDouble(objects[0].toString());
 			}
 			String url = null;
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if (AccountUtil.getCurrentOrg() != null) {
 
 				url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD, fileId,false);
 			} else {

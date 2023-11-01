@@ -2,11 +2,11 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.amazonaws.regions.Regions;
-import com.facilio.accounts.dto.*;
-import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.audit.AuditData;
 import com.facilio.audit.DBAudit;
 import com.facilio.audit.FacilioAudit;
@@ -16,39 +16,35 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ConnectedDeviceContext;
+import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.filters.AccessLogFilter;
-import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
-import com.facilio.service.FacilioService;
-import com.facilio.util.ValidatePermissionUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.baggage.Baggage;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -58,11 +54,8 @@ import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class ScopeInterceptor extends AbstractInterceptor {
 
@@ -375,67 +368,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         AccountUtil.setTimeZone(timezoneVar);
 
-
-                        Parameter action = ActionContext.getContext().getParameters().get("permission");
-                        Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-                        Parameter permissionModuleName = ActionContext.getContext().getParameters().get("permissionModuleName");
-                        Boolean checkPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkPermission")));
-                        Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
-                        Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
-                        Boolean deprecated = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("deprecated")));
-                        Boolean checkTabPermission = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("checkTabPermission")));
-
-                        if (permissionModuleName != null && permissionModuleName.getValue() != null) {
-                            moduleName = permissionModuleName;
-                        }
-                        if(parentModuleName != null && parentModuleName.getValue() != null) {
-                            moduleName = parentModuleName;
-                        }
-                        boolean isSetupPermission = false;
-                        if(setupTab != null && setupTab.getValue() != null) {
-                            moduleName = getModuleNameParam("setup");
-
-                            isSetupPermission = true;
-                        }
-                        String method = request.getMethod();
-                        boolean isV3Permission = false;
-                        boolean isTabPermision = false;
-
-                        if(((checkPermission != null && checkPermission) || (checkTabPermission != null && checkTabPermission)) && action != null && action.getValue() != null) {
-                            if(checkPermission != null && checkPermission) {
-                                isV3Permission = true;
-                            } else if(checkTabPermission != null && checkTabPermission) {
-                                isTabPermision = true;
-                            }
-                            action = WebTabUtil.getActions(action,method);
-                        }
-
-                        try {
-                            if (APIPermissionUtil.shouldCheckPermission(request.getRequestURI())) {
-                                if (!(isV3Permission || isTabPermision || isSetupPermission)) {
-                                    String authorisationReq = ActionContext.getContext().getParameters().get("authorise").getValue();
-                                    if (StringUtils.isEmpty(authorisationReq) || authorisationReq.equals("true")) {
-                                        LOGGER.info("API Permission missing for " + request.getRequestURI());
-//                                        if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise() || (FacilioProperties.getEnvironment() != null && FacilioProperties.getEnvironment().equals("stage2")))) {
-//                                            return logAndReturn("unauthorized", null, startTime, request);
-//                                        }
-                                    }
-                                }
-                            }
-                        } catch (Exception e) {
-                            LOGGER.error("Error while checking API permission");
-                        }
-
-
-                        if(throwDeprecatedApiError(deprecated)) {
-                            return logAndReturn("unauthorized", null, startTime, request);
-                        }
-
-                        if (action != null && action.getValue() != null && (isTabPermision || (moduleName != null && moduleName.getValue() != null)) && !WebTabUtil.isAuthorizedAccess(moduleName.getValue(), action.getValue(), isV3Permission,setupTab.getValue(), isSetupPermission, isTabPermision, method)) {
-                            if (isSetupPermission || isV3Permission || isTabPermision) {
-                                if (!(request.getRequestURI() != null && ValidatePermissionUtil.hasUrl(request.getRequestURI()))) {
-                                    return logAndReturn("unauthorized", null, startTime, request);
-                                }
+                        if (AccountUtil.getCurrentOrg() != null) {
+                            if (V3PermissionUtil.isAllowedEnvironment() && APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !checkSubModulePermission()) {
+                                return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
                             }
                         }
 
@@ -555,11 +490,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return null;
     }
 
-
-    private Parameter getModuleNameParam(String moduleName) {
-        return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-    }
-
     private boolean isAuthRequired() {
         String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
         if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
@@ -568,16 +498,55 @@ public class ScopeInterceptor extends AbstractInterceptor {
         return false;
     }
 
+    private boolean checkSubModulePermission() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Parameter action = ActionContext.getContext().getParameters().get("permission");
+        Parameter parentModuleParam = ActionContext.getContext().getParameters().get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+        Parameter recordId = ActionContext.getContext().getParameters().get(FacilioConstants.ContextNames.RECORD_ID);
+        Parameter module = ActionContext.getContext().getParameters().get("moduleName");
 
-    private static boolean throwDeprecatedApiError(Boolean deprecated) {
-        try {
-            if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(FeatureLicense.THROW_403_WEBTAB)) {
-                if(deprecated != null && deprecated) {
-                    return true;
+        if(parentModuleParam!=null && parentModuleParam.getValue()!=null) {
+            FacilioModule subModule = null;
+            if(module != null && module.getValue() != null) {
+                String subModuleName = module.getValue();
+                subModule = modBean.getModule(subModuleName);
+            }
+            String parentModuleName = null;
+            if(subModule != null && subModule.getModuleId() > 0) {
+                FacilioModule parentModule = modBean.getParentModule(subModule.getModuleId());
+                if (parentModule != null) {
+                    parentModuleName = WebTabUtil.getSpecialModule(parentModule.getName());
+                }
+            }else {
+                parentModuleName = parentModuleParam.getValue();
+            }
+            if (StringUtils.isNotEmpty(parentModuleName)) {
+                Map<String, String> parameters = new HashMap<>();
+                parameters.put(FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME, parentModuleName);
+                if(action != null && action.getValue() != null) {
+                    String method = ServletActionContext.getRequest().getMethod();
+                    action = WebTabUtil.getActions(action,method);
+                }
+                boolean havingPermission = false;
+                if(action!=null && action.getValue()!=null) {
+                    havingPermission = WebTabUtil.isAuthorizedAccess(parentModuleName, action.getValue(), parameters, null);
+                }
+                if(recordId != null && recordId.getValue() != null) {
+                    boolean parentRecordAccessible = isParentRecordAccessible(parentModuleName, Long.parseLong(recordId.getValue()));
+                    return havingPermission && parentRecordAccessible;
                 }
             }
-        } catch (Exception e) {
-            LOGGER.info("Error checking deprecated API");
+            return false;
+        }
+        return true;
+    }
+
+    private static boolean isParentRecordAccessible(String moduleName,Long recordId) throws Exception {
+        if(StringUtils.isNotEmpty(moduleName) && recordId != null) {
+            ModuleBaseWithCustomFields record = V3RecordAPI.getRecord(moduleName,recordId);
+            if(record != null) {
+                return true;
+            }
         }
         return false;
     }

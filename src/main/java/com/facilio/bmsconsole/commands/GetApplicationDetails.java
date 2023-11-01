@@ -108,32 +108,14 @@ public class GetApplicationDetails extends FacilioCommand {
 											moduleName = (String) webtab.getConfigJSON().get("type");
 										}
 									}
-									if(V3PermissionUtil.isFeatureEnabled()){
-										webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
-									}else{
-										webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
-										webtab.setPermission(NewPermissionUtil.getTabPermissions(webtab, roleId));
-									}
+									webtab.setPermission(NewPermissionUtil.getPermissions(webtab.getType(), moduleName));
+									webtab.setPermission(NewPermissionUtil.getTabPermissions(webtab, roleId));
 									if (webtab.getTypeEnum() == Type.SETTINGS) {
-										if(V3PermissionUtil.isFeatureEnabled()){
-											webtab.setPermission(V3PermissionUtil.getPermissionValue(webtab,roleId));
-										}else{
-											webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
-										}
+										webtab.setPermission(NewPermissionUtil.getPermissionFromConfig(webtab.getType(), webtab.getConfigJSON()));
 									}
 									if (AccountUtil.getCurrentUser() != null) {
-										if(V3PermissionUtil.isFeatureEnabled()){
-											NewPermission permission = ApplicationApi.getRolesPermissionForTab(webtab.getId(),
-													AccountUtil.getCurrentUser().getRoleId());
-											if (permission != null) {
-												webtab.setPermissionVal(permission.getPermission());
-												webtab.setPermissionVal2(permission.getPermission2());
-											}
-										}
-										else {
-											webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
-													AccountUtil.getCurrentUser().getRoleId()));
-										}
+										webtab.setPermissionVal(ApplicationApi.getRolesPermissionValForTab(webtab.getId(),
+												AccountUtil.getCurrentUser().getRoleId()));
 									}
 									List<FacilioModule> modules = new ArrayList<>();
 									if (CollectionUtils.isNotEmpty(webtab.getModuleIds())) {

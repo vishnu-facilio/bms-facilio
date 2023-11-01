@@ -1,47 +1,15 @@
 package com.facilio.services.filestore;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.imageio.*;
-import javax.imageio.metadata.*;
-import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageInputStream;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.constants.FacilioConstants;
-import lombok.Getter;
-import lombok.SneakyThrows;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -58,7 +26,28 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.FacilioUtil;
+import lombok.Getter;
+import lombok.SneakyThrows;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.imgscalr.Scalr;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.*;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public abstract class FileStore {
 
@@ -670,7 +659,7 @@ public abstract class FileStore {
 	}
 
 	public String getDownloadUrl(long fileId) throws Exception {
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null) {
 			return getUrl (-1, -1, fileId, true, -1, -1,false);
 		}
 		return getUrl(fileId, true, -1, -1);
@@ -1093,7 +1082,7 @@ public abstract class FileStore {
 
 	private String getUrl (long moduleId, long recordId, long fileId, boolean isDownload, int width, int height,boolean isModuleFile) throws Exception {
 		StringBuilder url = new StringBuilder();
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null) {
 			if(FacilioProperties.isDevelopment()) {
 				url.append(FacilioProperties.getClientAppUrl());
 			}

@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
-import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -31,18 +30,6 @@ public class AddNewPermissionsForRoleCommand extends FacilioCommand {
 			permissions = setPermission(newPermissionWithBool,roleId);
 		}
 
-		if(V3PermissionUtil.isFeatureEnabled()){
-			permissions = new ArrayList<>();
-			List<WebTabContext> webTabs = (List<WebTabContext>) context.get(FacilioConstants.ContextNames.WEB_TABS);
-			if(CollectionUtils.isNotEmpty(webTabs)){
-				for(WebTabContext webTab : webTabs) {
-					NewPermission newPermission = V3PermissionUtil.getPermissionValueForTab(webTab);
-					if(newPermission.getPermission() > 0 || newPermission.getPermission2() > 0) {
-						permissions.add(newPermission);
-					}
-				}
-			}
-		}
 		if (roleId > 0 && permissions != null && !permissions.isEmpty()) {
 			for (NewPermission permission : permissions) {
 				permission.setRoleId(roleId);

@@ -44,26 +44,36 @@
     </package>
     <package name="dcApi" namespace="/api/v3/internal/dc" extends="v3InternalApi">
         <action name="lookup"  class="com.facilio.auth.actions.FacilioDCAction" method="dclookup">
+            <param name="deprecated">true</param>
         </action>
         
         <action name="add" class="com.facilio.auth.actions.FacilioDCAction" method="addUser">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="deleteDevicePassCode" class="com.facilio.auth.actions.FacilioDCAction" method="deleteDevicePassCode">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="markCodeAsConnected" class="com.facilio.auth.actions.FacilioDCAction" method="markCodeAsConnected">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getDeviceCodeInfo" class="com.facilio.auth.actions.FacilioDCAction" method="getDeviceCodeInfo">
+            <param name="deprecated">true</param>
         </action>
 
         <action name="getDevicePasscode" class="com.facilio.auth.actions.FacilioDCAction" method="getDevicePasscode">
+            <param name="deprecated">true</param>
         </action>
 
-        <action name="deleteDCLookup" class="com.facilio.auth.actions.FacilioDCAction" method="deleteUserFromDCLookup"></action>
+        <action name="deleteDCLookup" class="com.facilio.auth.actions.FacilioDCAction" method="deleteUserFromDCLookup">
+            <param name="deprecated">true</param>
+        </action>
 
-        <action name="getConnectedDevice" class="com.facilio.auth.actions.FacilioDCAction" method="getConnectedDeviceForId"></action>
+        <action name="getConnectedDevice" class="com.facilio.auth.actions.FacilioDCAction" method="getConnectedDeviceForId">
+            <param name="deprecated">true</param>
+        </action>
 
     </package>
 

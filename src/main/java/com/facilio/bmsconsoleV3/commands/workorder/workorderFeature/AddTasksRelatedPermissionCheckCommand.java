@@ -111,9 +111,7 @@ public class AddTasksRelatedPermissionCheckCommand extends FacilioCommand {
             }
         }else {
             WebTabContext tab = AccountUtil.getCurrentTab();
-            Role role = AccountUtil.getCurrentUser().getRole();
-            boolean hasActionPermission = V3PermissionUtil.currentUserHasPermission(tab, moduleName, action, role);
-            return hasActionPermission;
+            return V3PermissionUtil.currentUserHasPermission(tab.getId(), action);
         }
 
         return false;

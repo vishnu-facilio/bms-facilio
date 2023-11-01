@@ -390,11 +390,8 @@ public class RoleBeanImpl implements RoleBean {
 
 	private void deleteV3Permissions(long roleId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder();
-		if(V3PermissionUtil.isFeatureEnabled()) {
-			builder.table(ModuleFactory.getNewPermissionModule(true).getTableName());
-		} else {
-			builder.table(ModuleFactory.getNewTabPermissionModule().getTableName());
-		}
+
+		builder.table(ModuleFactory.getNewTabPermissionModule().getTableName());
 		builder.andCondition(CriteriaAPI.getCondition("ROLE_ID","roleId",String.valueOf(roleId),NumberOperators.EQUALS));
 		builder.delete();
 	}

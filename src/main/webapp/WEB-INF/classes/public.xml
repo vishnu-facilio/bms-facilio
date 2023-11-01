@@ -26,6 +26,7 @@
 			class="com.facilio.bmsconsole.actions.V3FileAction"
 			method="previewFile">
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="publicFilesPreviewv3" namespace="/api/v3/files/preview" extends="filePreview,publicApi">
@@ -33,6 +34,7 @@
 				class="com.facilio.bmsconsole.actions.V3FileAction"
 				method="previewFile">
 			<param name="permission">READ</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="publicFilesDownloadv3" namespace="/api/v3/files/download" extends="fileDownload,publicApi">
@@ -41,6 +43,7 @@
 				method="previewFile">
 			<param name="permission">READ</param>
 			<param name="isDownload">true</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="publicFilesPreviewv2" namespace="/api/v3/file/public" extends="filePreview,publicApi">
@@ -48,6 +51,7 @@
 				class="com.facilio.bmsconsole.actions.PublicFileAction"
 				method="previewPublicFile">
 			<param name="token">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 </struts>

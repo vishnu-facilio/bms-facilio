@@ -8,10 +8,12 @@
 		<action name="addmobilesetting" class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		<action name="removemobilesetting" class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		<action name="userlist" class="com.facilio.bmsconsole.actions.UserAction" method="v2userList">
 			<param name="moduleName">setup</param>
@@ -126,14 +128,17 @@
 				<param name="contentType">text/html</param>
 				<param name="inputName">resultStream</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="approvalRuleApiV2" namespace="/api/v2/setup/approvalrule" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="addApprovalRule">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateApprovalRule">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="fetchApprovalRule">
@@ -143,25 +148,32 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 				<param name="excludeProperties">result.rule.actions</param>
 			</result>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="scheduledRuleApiV2" namespace="/api/v2/setup/scheduledrule" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="addScheduledRule">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.V2WorkflowAction" method="updateScheduledRule">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="scheduledActionApiV2" namespace="/api/v2/setup/scheduledaction" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ScheduledAction" method="addScheduledAction">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ScheduledAction" method="updateScheduledAction">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ScheduledAction" method="deleteScheduledAction">
+			<param name="deprecated">true</param>
 		</action>
 		<action name="run" class="com.facilio.bmsconsole.actions.ScheduledAction" method="executeScheduledAction">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -219,6 +231,7 @@
 		<action name="imapfetch"
 				class="com.facilio.bmsconsole.actions.SetupActions" method="fetchMailImap" >
 			<param name="moduleName">setup</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -279,19 +292,19 @@
         <action name="add" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="addSurveyRule">
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
-        </action>
+		</action>
         <action name="edit" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="updateSurveyRule">
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
-        </action>
+		</action>
         <action name="delete" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="deleteSurveyRule">
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
-        </action>
+		</action>
         <action name="fetch" class="com.facilio.bmsconsole.actions.SurveyRuleAction" method="fetchSurveyRule">
             <param name="moduleName">setup</param>
             <param name="permission">WORKORDER_SETTINGS</param>
-        </action>
+		</action>
     </package>
 
 	<package name="assetSetupApiV2" namespace="/api/v2/setup/asset" extends="v2Api">
@@ -330,30 +343,38 @@
 	<package name="newAgentSetupApiV2" namespace="/api/v2/setup/newAgent" extends="setupApiV2">
 
 		<action name="pubSubEndpoint" class="com.facilio.bmsconsole.actions.DeviceAction" method="pubSubListener">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
 	<package name="agentApiV2" namespace="/api/v2/setup/agent" extends="setupApiV2">
 		<action name="list" class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">
+			<param name="deprecated">true</param>
 		</action>
 
 		<!--<action name="delete" class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteAgent">
+			<param name="deprecated">true</param>
 		</action>
 			-->
 		<action name="edit" class="com.facilio.bmsconsole.actions.ControllerAction" method="editAgent">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="log" class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogMessage">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="logCount" class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogCount">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="fetchMessage" class="com.facilio.bmsconsole.actions.ControllerAction" method="getPublishMessage">
+			<param name="deprecated">true</param>
 		</action>
 
 
 		<!--<action name="metrics" class="com.facilio.bmsconsole.actions.ControllerAction" method="getMetrics">
+			<param name="deprecated">true</param>
 		</action>
 		-->
 
@@ -361,9 +382,11 @@
 
 	<package name="controllerApiV2" namespace="/api/v2/setup/controller" extends="setupApiV2">
 		<action name="list" class="com.facilio.bmsconsole.actions.ControllerAction" method="fetchControllerDetails">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="edit" class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerEdit">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -374,24 +397,29 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.ImportPointsDataAction" method="upload">
 			<param name="controllerId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 
 
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportPointsDataAction" method="processImport">
+			<param name="deprecated">true</param>
 		</action>
 
 		<action name="checkImport" class="com.facilio.bmsconsole.actions.ImportPointsDataAction" method="checkImportStatus">
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
 	<package name="setupDashboardCardApiv2" namespace="/api/v2/dashboard/cards" extends="setupApiV2">
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.CardAction" method="getCardData">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="copyAssetReadingsV2" namespace="/api/v2/setup/copyassetreadings" extends="setupApiV2">
 
 		<action name="*" class="com.facilio.bmsconsole.actions.CopyAssetReadingsData" method="copyAssetReadings">
 			<param name="sourceOrgId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -399,6 +427,7 @@
 
 		<action name="*" class="com.facilio.bmsconsole.actions.MigratingDemoAssetReadings" method="removeDuplicateReading">
 			<param name="categoryId">{1}</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 </struts>

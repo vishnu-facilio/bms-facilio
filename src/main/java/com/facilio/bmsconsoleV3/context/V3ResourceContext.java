@@ -85,7 +85,7 @@ public class V3ResourceContext extends V3Context {
 			FileStore fs = FacilioFactory.getFileStore();
 			avatarUrl = fs.getPrivateUrl(this.photoId);
 		}
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null) {
 			FileStore fs = FacilioFactory.getFileStore();
 			if(this.photoId != null) {
 				avatarUrl = fs.getPrivateUrl(-1, -1, this.photoId, false);

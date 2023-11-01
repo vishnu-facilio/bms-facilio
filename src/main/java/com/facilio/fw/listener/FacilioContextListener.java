@@ -9,8 +9,6 @@ import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
-import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
-import com.facilio.fields.util.FieldsConfigChain;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
@@ -22,6 +20,7 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.TransactionMonitor;
 import com.facilio.db.util.DBConf;
 import com.facilio.db.util.SQLScriptRunner;
+import com.facilio.fields.util.FieldsConfigChain;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.FacilioCacheConfig;
@@ -51,7 +50,6 @@ import com.facilio.tasker.FacilioScheduler;
 import com.facilio.translation.TranslationConf;
 import com.facilio.util.FacilioUtil;
 import com.facilio.util.RedisSubscribeTopics;
-import com.facilio.util.ValidatePermissionUtil;
 import com.facilio.util.ValueGeneratorUtil;
 import com.facilio.v3.util.ChainUtil;
 import com.facilio.weather.service.WeatherServiceType;
@@ -139,7 +137,6 @@ public class FacilioContextListener implements ServletContextListener {
 
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
-			ValidatePermissionUtil.initialize();
 			ValueGeneratorUtil.initialize();
 			Operator.getOperator(1);
 			registerMBeans();

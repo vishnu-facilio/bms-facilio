@@ -114,14 +114,17 @@
     	<action name="*/*" class="com.facilio.v4.action.RestAPIHandlerV4">
     		<param name="moduleName">{1}</param>
     		<param name="id">{2}</param>
+            <param name="deprecated">true</param>
         </action>
         <action name="*" class="com.facilio.v4.action.RestAPIHandlerV4">
         	<param name="moduleName">{1}</param>
+            <param name="deprecated">true</param>
         </action>
 	</package>
 	
 	<package name="v4Apisample" extends="v4BaseApi" namespace="/api/v4/sample">
         <action name="sample" class="com.facilio.v4.action.RestAPIHandlerV4" method="sample">
+            <param name="deprecated">true</param>
         </action>
 	</package>
 </struts>

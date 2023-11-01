@@ -1,33 +1,17 @@
 package com.facilio.accounts.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.facilio.accounts.dto.*;
-import com.facilio.beans.WebTabBean;
-import com.facilio.bmsconsole.util.NewPermissionUtil;
-import com.facilio.bmsconsoleV3.util.AppModulePermissionUtil;
-import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
-import com.facilio.delegate.context.DelegationType;
-import com.facilio.delegate.util.DelegationUtil;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.WebTabContext.Type;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.NewPermissionUtil;
+import com.facilio.bmsconsoleV3.util.AppModulePermissionUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
@@ -35,9 +19,20 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.delegate.context.DelegationType;
+import com.facilio.delegate.util.DelegationUtil;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.*;
 
 public class PermissionUtil {
 	private static final Logger log = LogManager.getLogger(PermissionUtil.class.getName());
@@ -198,11 +193,7 @@ public class PermissionUtil {
 	public static Criteria getCurrentUserPermissionCriteria(String moduleName, String action) {
 			try {
 				if (AccountUtil.isFeatureEnabled(FeatureLicense.WEB_TAB)) {
-					if(V3PermissionUtil.isFeatureEnabled()) {
-						return getV3NewPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
-					} else {
-						return getNewPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
-					}
+					return getNewPermissionCriteria(AccountUtil.getCurrentUser().getRole(), moduleName, action);
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -713,34 +704,24 @@ public class PermissionUtil {
 	public static boolean currentUserHasPermission(long tabId, String moduleName, String action, Role role, String tabType) {
 
 		try {
-			if (moduleName.equalsIgnoreCase("planned"))
+			if (moduleName.equalsIgnoreCase("planned")) {
 				moduleName = ContextNames.PREVENTIVE_MAINTENANCE;
-			if(V3PermissionUtil.isFeatureEnabled()){
-				NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-				List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-				if (!moduleNames.isEmpty()) {
-					if (moduleNames.contains(moduleName) || moduleName.equalsIgnoreCase("setup")) {
-						boolean hasPerm =  hasPermission(permission, action, tabId);
-						return hasPerm;
-					}
+			}
+			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
+			if (!moduleNames.isEmpty()) {
+				if (moduleNames.contains(moduleName) ){
+					boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
+					return hasPerm;
 				}
-			} else {
-				long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-				List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
-				if (!moduleNames.isEmpty()) {
-					if (moduleNames.contains(moduleName) ){
-						boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
+			}
+			else if(moduleName.equalsIgnoreCase("setup")) {
+				WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+				WebTabContext tab = tabBean.getWebTab(tabId);
+				if(tab != null) {
+					if (tabType != null && tab.getTypeEnum().name().equals(tabType)) {
+						boolean hasPerm = hasPermission(rolePermissionVal, action, tabId);
 						return hasPerm;
-					}
-				}
-				else if(moduleName.equalsIgnoreCase("setup")) {
-					WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-					WebTabContext tab = tabBean.getWebTab(tabId);
-					if(tab != null) {
-						if (tabType != null && tab.getTypeEnum().name().equals(tabType)) {
-							boolean hasPerm = hasPermission(rolePermissionVal, action, tabId);
-							return hasPerm;
-						}
 					}
 				}
 			}
@@ -753,15 +734,9 @@ public class PermissionUtil {
 	public static boolean userHasPermission(long tabId, String moduleName, String action, Role role) {
 
 		try {
-			if(V3PermissionUtil.isFeatureEnabled()) {
-				NewPermission permission = ApplicationApi.getRolesPermissionForTab(tabId, role.getRoleId());
-				boolean hasPerm = hasPermission(permission, action, tabId);
-				return hasPerm;
-			} else {
-				long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
-				boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
-				return hasPerm;
-			}
+			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
+			boolean hasPerm =  hasPermission(rolePermissionVal, action, tabId);
+			return hasPerm;
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

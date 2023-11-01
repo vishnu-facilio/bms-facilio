@@ -1,16 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.services.filestore.PublicFileUtil;
-import org.apache.commons.lang.StringUtils;
-import org.apache.struts2.ServletActionContext;
-
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import org.apache.commons.lang.StringUtils;
+import org.apache.struts2.ServletActionContext;
 
 public class AttachmentContext extends ModuleBaseWithCustomFields {
 	
@@ -111,7 +109,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				return builder.toString();
 			}
 			FileStore fs = FacilioFactory.getFileStore();
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if(AccountUtil.getCurrentOrg() != null) {
 				previewUrl = getFileUrl(false);
 			} else {
 				previewUrl = fs.getPrivateUrl(this.fileId);
@@ -124,7 +122,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
-			if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+			if(AccountUtil.getCurrentOrg() != null) {
 				downloadUrl = getFileUrl(true);
 			} else {
 				downloadUrl = fs.getDownloadUrl(this.fileId);
@@ -162,7 +160,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 			FileStore fs = FacilioFactory.getFileStore();
 			originalUrl = fs.orginalFileUrl(this.fileId);
 		}
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null) {
 			originalUrl = null;
 		}
 		return originalUrl;

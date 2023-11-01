@@ -22,6 +22,7 @@
 	</package>
 	<package name="clientInternalApi" namespace="/api/internal/v2/client" extends="internalApiv2">
 		<action name="checkminversion"  class="com.facilio.internal.InternalAction" method="checkMinClientVersion">
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -29,13 +30,16 @@
 		<action name="addmobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2addMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="v2removeMobileSetting">
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
+			<param name="deprecated">true</param>
 		</action>
 		<action name="getUserByEmail"  class="com.facilio.bmsconsole.actions.UserAction" method="getUserByEmail">
-		</action>
+
+		<param name="deprecated">true</param></action>
 		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
 			<param name="auth">false</param>
 			<param name="authorise">false</param>
@@ -44,13 +48,19 @@
 	</package>
 	
 	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="v2Api">
-		<action name="create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf"></action>
+		<action name="create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf">
+			<param name="deprecated">true</param>
+		</action>
 
-		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf"></action>
+		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf">
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 
 	<package name="screenshotApiV2" namespace="/api/v2/integ/screenshot" extends="v2Api">
-		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generateScreenshot"></action>
+		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generateScreenshot">
+			<param name="deprecated">true</param>
+		</action>
 	</package>
 
 </struts>

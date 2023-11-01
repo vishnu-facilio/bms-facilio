@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.File;
-import java.util.List;
-
-import com.facilio.constants.FacilioConstants;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.services.filestore.FileStore;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.opensymphony.xwork2.ActionSupport;
+import org.json.simple.JSONObject;
+
+import java.io.File;
+import java.util.List;
 
 public class WidgetAction extends ActionSupport {
 
@@ -100,7 +99,7 @@ public class WidgetAction extends ActionSupport {
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		String url = null;
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null) {
 			url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD,fileId,false);
 		} else {
 			url = fs.getPrivateUrl(fileId);

@@ -1,24 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.bmsconsole.util.FileJWTUtil;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
 
 public class V3FilePreviewCommad extends FacilioCommand {
 	@Override
@@ -38,7 +36,7 @@ public class V3FilePreviewCommad extends FacilioCommand {
 			Map<String, String> decodedjwtClaims = FileJWTUtil.validateJWT(token);
 			if (decodedjwtClaims != null && !decodedjwtClaims.isEmpty()) {
 				long expiresAt = Long.valueOf(decodedjwtClaims.get("expiresAt"));
-				if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+				if(AccountUtil.getCurrentOrg() != null) {
 					Boolean isModuleFile = Boolean.valueOf(decodedjwtClaims.get("moduleFile"));
 					String specialTabType = String.valueOf(decodedjwtClaims.get(FacilioConstants.ContextNames.WEB_TAB_TYPE));
 					if(isModuleFile != null && isModuleFile) {

@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context.webtab;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.WebTabUtil;
@@ -11,11 +10,8 @@ import java.util.Map;
 public class PortfolioTypeHandler implements WebTabHandler {
     @Override
     public boolean hasPermission(WebTabContext webtab, Map<String, String> parameters, String action) {
-        Boolean isFileApi = Boolean.valueOf(parameters.get("isFileApi"));
         if(webtab != null && WebTabUtil.isNewPortfolioTab(webtab)) {
-            if (isFileApi != null && isFileApi && webtab != null) {
-                return V3PermissionUtil.currentUserHasPermission(webtab, action, AccountUtil.getCurrentUser().getRole());
-            }
+            return V3PermissionUtil.currentUserHasPermission(webtab.getId(), action);
         }
         return true;
     }
