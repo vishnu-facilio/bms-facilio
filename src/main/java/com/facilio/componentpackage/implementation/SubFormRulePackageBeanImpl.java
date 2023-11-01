@@ -200,18 +200,33 @@ public class SubFormRulePackageBeanImpl implements PackageBean<FormRuleContext> 
             for (XMLBuilder triggerFieldElement : triggerFieldsElementList) {
                 FormRuleTriggerFieldContext triggerFieldContext = new FormRuleTriggerFieldContext();
                 long fieldId = -1;
+                long formFieldId = -1;
                 String displayName = triggerFieldElement.getElement(PackageConstants.FormRuleConstants.FORM_FIELD_DISPLAY_NAME).getText();
                 if (triggerFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME) != null) {
                     String facilioFieldName = triggerFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME).getText();
                     String fieldModuleName = triggerFieldElement.getElement(PackageConstants.MODULENAME).getText();
                     FacilioField facilioField = moduleBean.getField(facilioFieldName, fieldModuleName);
                     fieldId = facilioField != null ? facilioField.getFieldId() : -1;
+
+                    FormField formField = new FormField();
+                    formField.setFormId(form.getId());
+                    formField.setFieldId(fieldId);
+                    formField.setDisplayName(displayName);
+                    formFieldId = PackageBeanUtil.getFormFieldId(formField);
+
+                    if(formFieldId<0){
+
+                        FacilioField subFacilioField = moduleBean.getField(facilioFieldName, subFormModuleName);
+                        fieldId = subFacilioField != null ? subFacilioField.getFieldId() : -1;
+
+                        FormField subFormField = new FormField();
+                        subFormField.setFormId(subForm.getId());
+                        subFormField.setFieldId(fieldId);
+                        subFormField.setDisplayName(displayName);
+                        formFieldId = PackageBeanUtil.getFormFieldId(subFormField);
+                    }
                 }
-                FormField formField = new FormField();
-                formField.setFormId(form.getId());
-                formField.setFieldId(fieldId);
-                formField.setDisplayName(displayName);
-                long formFieldId = PackageBeanUtil.getFormFieldId(formField);
+
 
                 triggerFieldContext.setFieldId(formFieldId);
                 triggerFieldList.add(triggerFieldContext);

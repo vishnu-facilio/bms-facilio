@@ -540,7 +540,7 @@ public class PackageConstants {
         public static final String SITE_NAME = "Site_Name";
         public static final String EMAIL = "Email";
         public static final String PHONE = "Phone";
-        public static final String PEOPLE_GROUP_MEMBER = "People_Group_Member";
+        public static final String PEOPLE_GROUP_MEMBERS = "People_Group_Members";
         public static final String IS_ACTIVE = "Is_Active";
     }
     public static class PeopleGroupMembersConstants {

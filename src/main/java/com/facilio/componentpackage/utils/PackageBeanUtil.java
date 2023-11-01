@@ -1354,6 +1354,16 @@ public class PackageBeanUtil {
 
         return builder.get();
     }
+    public static List<?> getModuleDataForId(Long id, FacilioModule module, Class<?> clazz) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                .table(module.getTableName())
+                .module(module)
+                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                .select(moduleBean.getAllFields(module.getName()))
+                .andCondition(CriteriaAPI.getIdCondition(id, module));
+        return builder.get();
+    }
 
     public static List<?> getModuleData(Criteria criteria, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();

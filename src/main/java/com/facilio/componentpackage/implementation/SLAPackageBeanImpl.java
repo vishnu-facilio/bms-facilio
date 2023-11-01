@@ -472,11 +472,13 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
 
                                 for (XMLBuilder valueElement : valueElements) {
                                     String emailStructureName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).getText();
-                                    Template emailStructureTemplate = TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE);
-                                    String templateName = valueElement.getElement("name").getText();
-                                    if (emailStructureTemplate != null) {
-                                        templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
+                                    if(emailStructureName != null && !emailStructureName.isEmpty()){
+                                        Template emailStructureTemplate = TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE);
+                                        if (emailStructureTemplate != null) {
+                                            templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
+                                        }
                                     }
+                                    String templateName = valueElement.getElement("name").getText();
                                     templateJson.put("message", valueElement.getElement("message").getCData());
                                     templateJson.put("name", templateName);
                                     templateJson.put("subject", valueElement.getElement("subject").getText());

@@ -6,6 +6,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityService;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -19,7 +20,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.function.Unchecked;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
@@ -38,13 +38,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.facilio.backgroundactivity.util.BackgroundActivityAPI.isActivityLicenseEnabled;
 
 @Log4j
 public class SandboxAPI {
@@ -337,5 +332,20 @@ public class SandboxAPI {
             return appDomainObj;
         }
         return null;
+    }
+    public static List<Integer> getSkippedComponentsFromOrgInfo(long orgId) throws Exception {
+        Map<String, Object> skipComponentsFromOrgInfo = CommonCommandUtil.getOrgInfo(orgId,"skipComponents");
+        if (skipComponentsFromOrgInfo != null && !skipComponentsFromOrgInfo.isEmpty()) {
+            String skipComponentString = (String) skipComponentsFromOrgInfo.get("value");
+            if (skipComponentString != null && !skipComponentString.isEmpty()) {
+                List<Integer> skipComponentIndexes = Arrays.stream(skipComponentString.split(","))
+                        .map(String::trim)
+                        .map(Integer::valueOf)
+                        .collect(Collectors.toList());
+                return skipComponentIndexes;
+            }
+            return new ArrayList<>();
+        }
+        return new ArrayList<>();
     }
 }

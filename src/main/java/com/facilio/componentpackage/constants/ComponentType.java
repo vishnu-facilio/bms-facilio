@@ -36,7 +36,7 @@ public enum ComponentType implements FacilioIntEnum {
     SPACE_CATEGORY(SpaceCategoryPackageBeanImpl.class, MODULE, false),
     PEOPLE(PeoplePackageBeanImpl.class, APP, false),
     USER(UserPackageBeanImpl.class, APP, true),
-    TEAM(null, APP, false),
+    TEAM(GroupPackageBeanImpl.class, APP, false),
     SITE(null, null, false),
     TICKET_STATUS(TicketStatePackageBeanImpl.class, MODULE, false),
     FUNCTION_NAMESPACE(FunctionNameSpacePackageBeanImpl.class, null, false),
