@@ -10,7 +10,7 @@ public class UpdateIAMUserCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
-        if(user!=null && !user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().getIsSuperAdmin()){
+        if(user!=null && !user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().isSuperAdmin()){
             ApplicationUserUtil.updateAppUser(user);
         }
         return false;

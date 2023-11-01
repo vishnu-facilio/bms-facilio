@@ -22,7 +22,7 @@ public class UpdatePeopleCommand extends FacilioCommand {
         c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
 
-        if(!user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().getIsSuperAdmin()){
+        if(!user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().isSuperAdmin()){
             PeopleContext existingPeople = PeopleAPI.getPeople(user.getUser().getEmail());
             user.setPeopleId(existingPeople.getId());
             if (user.getPeople() != null) {
