@@ -80,8 +80,10 @@ public class NameSpaceContext implements Serializable {
 
     NSExecMode execModeEnum;
     public void setExecModeEnum(NSExecMode mode) {
-        this.execMode = mode.getValue();
-        this.execModeEnum = mode;
+        if(mode!=null) {
+            this.execMode = mode.getValue();
+            this.execModeEnum = mode;
+        }
     }
 
     Long executorId;
