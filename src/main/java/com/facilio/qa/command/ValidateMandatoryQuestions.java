@@ -33,9 +33,12 @@ public class ValidateMandatoryQuestions extends FacilioCommand {
                 }
 
                 if (question.mandatory()) {
-                    boolean answered = answer != null && !question.getQuestionType().getAnswerHandler().checkIfAnswerIsNull(answer);
-                    if (!answered) {
-                        getUnAnsweredMandatoryQuestion().add(question);
+                    List<Long> activeQuestionIds = (List<Long>) context.get("activeQuestionIds");
+                    if(activeQuestionIds.contains(question.getId())) {
+                        boolean answered = answer != null && !question.getQuestionType().getAnswerHandler().checkIfAnswerIsNull(answer);
+                        if (!answered) {
+                            getUnAnsweredMandatoryQuestion().add(question);
+                        }
                     }
                 }
             }

@@ -44,6 +44,9 @@ public class ExecuteOnSubmitProcessOfResponse extends FacilioCommand {
 
                     FacilioChain onSubmitProcess = QAndATransactionChainFactory.onSubmitProcessOfResponse();
                     onSubmitProcess.getContext().put(FacilioConstants.QAndA.RESPONSE, response);
+                    if(response.getData().containsKey("activeQuestionIds")) {
+                        onSubmitProcess.getContext().put("activeQuestionIds", response.getData().get("activeQuestionIds"));
+                    }
 
                     onSubmitProcess.execute();
                 }

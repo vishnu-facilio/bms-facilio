@@ -1,10 +1,14 @@
 package com.facilio.qa.command;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.qa.context.QuestionType;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
@@ -36,11 +40,20 @@ public class ExecuteDisplayLogicRules extends FacilioCommand {
 		Boolean isDisplyLogicExecutionOnPageLoad = (Boolean) context.getOrDefault(DisplayLogicUtil.IS_DISPLAY_LOGIC_EXECUTION_ON_PAGE_LOAD, false);
 
 		Map<Long, QuestionContext> questionMap = null;
+		List<Long> booleanQuestionIds =  new ArrayList<>();
+
 		if(isDisplyLogicExecutionOnPageLoad) {
 
 			List<PageContext> pages = Constants.getRecordList((FacilioContext) context);
 
 			questionMap = pages.stream().map(PageContext::getQuestions).flatMap(List::stream).collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
+
+			for (Map.Entry<Long, QuestionContext> entry : questionMap.entrySet()) {
+				if(entry.getValue().getQuestionType() == QuestionType.BOOLEAN){
+					booleanQuestionIds.add(entry.getKey());
+				}
+			}
+
 		}
 
 		if(displayLogics != null) {
@@ -57,10 +70,17 @@ public class ExecuteDisplayLogicRules extends FacilioCommand {
 					context.put(DisplayLogicUtil.QUESTION_CONTEXT, questionMap.get(displayLogic.getQuestionId()));
 				}
 
-				Boolean criteriaFlag =true;
+				Boolean criteriaFlag = true;
 
 				if(criteria !=null && mainRecordMap != null) {
 					 criteriaFlag = criteria.computePredicate(mainRecordMap).evaluate(mainRecordMap);
+					 if(criteria.getConditions()!=null && !criteria.getConditions().isEmpty() && criteria.getConditions().size()>0 && booleanQuestionIds!=null){
+						 for (Map.Entry<String, Condition> entry : criteria.getConditions().entrySet()) {
+							 if(booleanQuestionIds.contains(Long.parseLong(entry.getValue().getFieldName())) && entry.getValue().getOperator() == BooleanOperators.IS && mainRecordMap.get(entry.getValue().getFieldName())==null){
+								 criteriaFlag = false;
+							 }
+						 }
+					 }
 				}
 				for(DisplayLogicAction displayLogicAction :displayLogic.getActions()) {
 
