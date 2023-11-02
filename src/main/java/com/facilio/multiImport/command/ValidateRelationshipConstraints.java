@@ -33,7 +33,6 @@ public class ValidateRelationshipConstraints extends FacilioCommand {
     private boolean isUpdateMode;
     Map<Long, ImportRowContext> logIdVsImportRows;
     Map<ImportFieldMappingContext, RelationMappingContext> relationShipFieldMap = null;
-    List<ImportFieldMappingContext> relMappingFields = null;
     List<Pair<Long, ModuleBaseWithCustomFields>> records = null;
 
     Map<RelationMappingContext, RelationContext> relationMappingVsRelationMap = new HashMap<>();
@@ -52,7 +51,7 @@ public class ValidateRelationshipConstraints extends FacilioCommand {
 
         init(context);
 
-        if (CollectionUtils.isEmpty(records) || CollectionUtils.isEmpty(relMappingFields)) {
+        if (CollectionUtils.isEmpty(records) || MapUtils.isEmpty(relationShipFieldMap)) {
             return false;
         }
 
@@ -83,12 +82,10 @@ public class ValidateRelationshipConstraints extends FacilioCommand {
 
     private void init(Context context){
         moduleName = Constants.getModuleName(context);
-        ImportFileSheetsContext importSheet = ImportConstants.getImportSheet(context);
         Map<String, List<Pair<Long, ModuleBaseWithCustomFields>>> recordMap = isUpdateMode ? ImportConstants.getUpdateRecordMap(context) : ImportConstants.getInsertRecordMap(context);
         records = recordMap.get(moduleName);
         logIdVsImportRows = ImportConstants.getLogIdVsRowContextMap(context);
         relationShipFieldMap = ImportConstants.getRelationshipFieldMapping(context);
-        relMappingFields = importSheet.getRelationFieldMapping();
         ImportConstants.setRelationMappingVsRelationMap(context,relationMappingVsRelationMap);
     }
     private void fillRelationMappingVsRelationMap() throws Exception{

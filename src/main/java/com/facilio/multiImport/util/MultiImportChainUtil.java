@@ -258,8 +258,8 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeSaveCommand);
         transactionChain.addCommand(new AddMultiSelectFieldsCommand());
-        transactionChain.addCommand(new ValidateRelationshipConstraints(false));
         if(!isOneLevelImport){
+            transactionChain.addCommand(new ValidateRelationshipConstraints(false));
             transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(false));
         }
         transactionChain.addCommand(new ImportSaveCommand(module));
@@ -298,8 +298,8 @@ public class MultiImportChainUtil {
         addIfNotNull(transactionChain, initCommand);
         addIfNotNull(transactionChain, beforeUpdateCommand);
         transactionChain.addCommand(new SetSupplementsForImportUpdateCommand());
-        transactionChain.addCommand(new ValidateRelationshipConstraints(true));
         if(!isOneLevelImport){
+            transactionChain.addCommand(new ValidateRelationshipConstraints(true));
             transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(true));
         }
         transactionChain.addCommand(new ImportUpdateCommand(module));
