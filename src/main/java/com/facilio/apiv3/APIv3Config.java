@@ -233,6 +233,7 @@ import com.facilio.fsm.commands.serviceOrders.LoadSupplementsForSOCommand;
 import com.facilio.fsm.commands.serviceOrders.SetServiceTaskCommandV3;
 import com.facilio.fsm.commands.serviceTasks.DeleteSATaskRelCommand;
 import com.facilio.fsm.commands.serviceTasks.LoadTaskPlansCommandV3;
+import com.facilio.fsm.commands.serviceTasks.SetTaskAttachmentsCountCommand;
 import com.facilio.fsm.commands.timeOff.FetchTimeOffSupplementsCommand;
 import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
 import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
@@ -4154,6 +4155,7 @@ public class APIv3Config {
                 .afterSave(new FsmTransactionChainFactoryV3().getTaskAfterUpdateChain())
                 .list()
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
+                .afterFetch(new SetTaskAttachmentsCountCommand())
                 .summary()
                 .beforeFetch(new LoadServiceTaskLookupCommandV3())
                 .afterFetch(new LoadTaskPlansCommandV3())

@@ -30,6 +30,7 @@ public class ServiceTaskContext extends V3Context {
     private List<ServiceOrderItemsContext> serviceOrderItems;
     private List<ServiceOrderToolsContext> serviceOrderTools;
     private List<ServiceOrderServiceContext> serviceOrderServices;
+    private Integer attachmentsCount;
 
 
 
@@ -251,5 +252,13 @@ public class ServiceTaskContext extends V3Context {
 
     public void setServiceOrderServices(List<ServiceOrderServiceContext> serviceOrderServices) {
         this.serviceOrderServices = serviceOrderServices;
+    }
+
+    public Integer getAttachmentsCount() {
+        return attachmentsCount;
+    }
+
+    public void setAttachmentsCount(Integer attachmentsCount) {
+        this.attachmentsCount = attachmentsCount;
     }
 }
