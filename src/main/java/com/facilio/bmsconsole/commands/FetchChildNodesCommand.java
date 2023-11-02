@@ -8,6 +8,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -105,6 +106,7 @@ public class FetchChildNodesCommand extends FacilioCommand {
                 .select(moduleFields)
                 .innerJoin(resourceModule.getTableName())
                 .on(resourceModule.getTableName()+".id = "+baseSpaceModule.getTableName()+".id")
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("building"), Collections.singleton(parentId), NumberOperators.EQUALS))
                 .orCondition(CriteriaAPI.getCondition(fieldMap.get("site"), Collections.singleton(parentId),NumberOperators.EQUALS))
                 .orCondition(CriteriaAPI.getCondition(fieldMap.get("floor"), Collections.singleton(parentId),NumberOperators.EQUALS));
