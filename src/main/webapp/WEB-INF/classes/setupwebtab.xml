@@ -896,4 +896,48 @@
         <action name="update" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="updateNumberFormat"/>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.NumberFormatAction" method="deleteNumberFromat"/>
     </package>
+
+    <package name="readingsSetupv1" namespace="/api/v1/setup/readings" extends="v2Api">
+        <action name="getSubModuleRel" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSubModuleRel">
+        </action>
+        <action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+            <result name="success" type="json">
+                <param name="enumAsBean">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, ^result.*</param>
+                <param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+            </result>
+        </action>
+        <action name="spacecategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+            <param name="assetReading">false</param>
+            <result name="success" type="json">
+                <param name="enumAsBean">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, ^result.*</param>
+                <param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
+            </result>
+        </action>
+        <action name="site" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+            <param name="site">true</param>
+            <result name="success" type="json">
+                <param name="enumAsBean">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, ^result.*</param>
+                <param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
+            </result>
+        </action>
+        <action name="utilitytype" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getUtilityTypeReadings">
+            <param name="permission">ALL</param>
+            <param name="setupTab">READINGS</param>
+            <result name="success" type="json">
+                <param name="enumAsBean">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">responseCode, ^result.*</param>
+                <param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+            </result>
+        </action>
+
+    </package>
 </struts>

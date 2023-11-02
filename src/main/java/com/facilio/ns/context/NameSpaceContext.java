@@ -107,11 +107,12 @@ public class NameSpaceContext implements Serializable {
         fields = new ArrayList<>();
     }
 
-    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId) {
+    public NameSpaceContext(NSType type, Long parentRuleId, Long execInterval, Long workflowId,Long categoryId) {
         this.type = type;
         this.parentRuleId = parentRuleId;
         this.execInterval = execInterval;
         this.workflowId = workflowId;
+        this.categoryId=categoryId;
     }
 
     public void addField(NameSpaceField... fs) {

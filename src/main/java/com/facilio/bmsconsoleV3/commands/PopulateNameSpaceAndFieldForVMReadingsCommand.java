@@ -32,11 +32,13 @@ public class PopulateNameSpaceAndFieldForVMReadingsCommand extends FacilioComman
         		vmTemplateReading.getNs().setExecInterval(vmTemplateReading.getFrequencyEnum().getMs());
         		vmTemplateReading.getNs().setType(NSType.VIRTUAL_METER.getIndex());
 				vmTemplateReading.getNs().setStatus(Boolean.TRUE);
+				vmTemplateReading.getNs().setCategoryId(vmTemplateReading.getVirtualMeterTemplate().getUtilityType().getId());
         		
         		FacilioChain chain = TransactionChainFactoryV3.addNamespaceAndFieldsChain();
         		FacilioContext newContext = chain.getContext();
         		
         		newContext.put(WorkflowV2Util.WORKFLOW_CONTEXT,vmTemplateReading.getNs().getWorkflowContext());
+				newContext.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,vmTemplateReading.getNs().getCategoryId());
         		newContext.put(NamespaceConstants.NAMESPACE,vmTemplateReading.getNs());
         		newContext.put(NamespaceConstants.PARENT_RULE_ID,vmTemplateReading.getId());
         		newContext.put(NamespaceConstants.NAMESPACE_FIELDS,vmTemplateReading.getNs().getFields());
