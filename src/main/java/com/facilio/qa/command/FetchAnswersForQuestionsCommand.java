@@ -22,6 +22,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +37,11 @@ public class FetchAnswersForQuestionsCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(pages) && responseId != null) {
             Map<Long, QuestionContext> questions = pages.stream().flatMap(QAndAUtil::getQuestionStream).collect(Collectors.toMap(QuestionContext::getId, Function.identity()));
             QAndAUtil.populateAnswersForQuestions(questions, getResponseCriteria(pages.get(0).getParent().getId(), responseId), true); // Assuming we will always fetch pages of single template
+            if(context.get("responseCreatedTime")!=null){
+                for (PageContext page : pages) {
+                    page.getQuestions().removeIf(question -> question.getAnswer()==null && question.getAnswers()==null && ((Long)context.get("responseCreatedTime")) < question.getSysCreatedTime());
+                }
+            }
             populateScores(pages.get(0).getParent().getId(), pages, questions);
         }
         return false;

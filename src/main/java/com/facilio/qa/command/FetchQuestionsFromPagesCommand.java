@@ -47,15 +47,16 @@ public class FetchQuestionsFromPagesCommand extends FacilioCommand {
                 createdTime = FacilioUtil.parseLong(responseList.get("createdTime"));
             }
         }
-        if(createdTime!=null){
-            FacilioField questionSysCreatedTimeField = modBean.getField("sysCreatedTime", FacilioConstants.QAndA.QUESTION);
-            Criteria criteria = new Criteria();
-            Condition condition = CriteriaAPI.getCondition(questionSysCreatedTimeField, String.valueOf(createdTime), DateOperators.IS_BEFORE);
-            criteria.addAndCondition(condition);
-            QAndAUtil.populateQuestionsInPages(pages,criteria);
-        } else {
+        context.put("responseCreatedTime",createdTime);
+//        if(createdTime!=null){
+//            FacilioField questionSysCreatedTimeField = modBean.getField("sysCreatedTime", FacilioConstants.QAndA.QUESTION);
+//            Criteria criteria = new Criteria();
+//            Condition condition = CriteriaAPI.getCondition(questionSysCreatedTimeField, String.valueOf(createdTime), DateOperators.IS_BEFORE);
+//            criteria.addAndCondition(condition);
+//            QAndAUtil.populateQuestionsInPages(pages,criteria);
+//        } else {
             QAndAUtil.populateQuestionsInPages(pages);
-        }
+//        }
         return false;
     }
     private Long getResponseId (FacilioContext context) {
