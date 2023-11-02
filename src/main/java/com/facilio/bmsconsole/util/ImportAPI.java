@@ -23,7 +23,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -57,7 +56,7 @@ public class ImportAPI {
         		missingInSheet = new ArrayList<String>();
         		while(ctr.hasNext()) {
         			Cell cell = (Cell)ctr.next();
-        			if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+        			if(cell.getCellType() == CellType.BLANK) {
         				if(i == 0) {
         					columnheadings.add(null);
         				}
@@ -90,7 +89,7 @@ public class ImportAPI {
             	Iterator<Cell> cellItr = row.cellIterator();
             	while (cellItr.hasNext()) {
             		Cell cell = cellItr.next();
-            		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+            		if(cell.getCellType() == CellType.BLANK) {
             			columnheadings.add(null);
             		}
             		else {
@@ -315,7 +314,7 @@ public class ImportAPI {
 				if (cell == null) {
 					firstRow.put(columnHeadings.get(i), null);
 				}
-				else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+				else if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 					throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column "
 							+ columnHeadings.get(i) + " Kindly Use Plain text");
 				} else {
@@ -340,22 +339,22 @@ public class ImportAPI {
 		
 		// Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
 		// todo add Date Time Format Handling 
-		if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
+		if (cellValue.getCellType() == CellType.BLANK) {
 			val = null;
 		}
-		else if (cellValue.getCellTypeEnum() == CellType.STRING) {
+		else if (cellValue.getCellType() == CellType.STRING) {
 			if (cellValue.getStringValue().trim().length() == 0) {
 				val = null;
 			} else {
 				val = cellValue.getStringValue().trim();
 			}
 
-		} else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
+		} else if (cellValue.getCellType() == CellType.NUMERIC) {
 			val = cellValue.getNumberValue();
 			
-		} else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
+		} else if (cellValue.getCellType() == CellType.BOOLEAN) {
 			val = cellValue.getBooleanValue();
-		} else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
+		} else if (cellValue.getCellType() == CellType.ERROR) {
 			throw new Exception("Error Evaulating Cell");
 		} else {
 			val = null;

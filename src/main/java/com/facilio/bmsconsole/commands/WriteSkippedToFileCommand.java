@@ -152,7 +152,7 @@ public class WriteSkippedToFileCommand extends FacilioCommand {
 				for(String Heading: columnHeadings) {
 					cell = row.createCell(columnHeadings.indexOf(Heading)+ 1);
 					if(colVal.get(Heading) == null) {
-						cell.setCellType(Cell.CELL_TYPE_BLANK);
+						cell.setCellType(CellType.BLANK);
 					}
 					else {
 						cell.setCellValue(colVal.get(Heading).toString());
@@ -168,7 +168,7 @@ public class WriteSkippedToFileCommand extends FacilioCommand {
 				for(String Heading: columnHeadings) {
 					cell = row.createCell(columnHeadings.indexOf(Heading)+ 1);
 					if(colVal.get(Heading) == null) {
-						cell.setCellType(Cell.CELL_TYPE_BLANK);
+						cell.setCellType(CellType.BLANK);
 					}
 					else {
 						cell.setCellValue(colVal.get(Heading).toString());

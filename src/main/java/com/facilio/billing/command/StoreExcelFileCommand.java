@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import org.apache.commons.chain.Context;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -69,7 +70,7 @@ public class StoreExcelFileCommand extends FacilioCommand {
 					Iterator<Cell> cellIterator = row.cellIterator();
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
-						if (cell.getCellType() == Cell.CELL_TYPE_STRING) {
+						if (cell.getCellType() == CellType.STRING ) {
 							String cellvalue = cell.getStringCellValue();
 							if ((cellvalue.startsWith("${")) && (cellvalue.endsWith("}"))) {
 								String cellfinder = "S_" + sheet.getSheetName() + "_R_" + row.getRowNum() + "_C_" + cell.getColumnIndex();

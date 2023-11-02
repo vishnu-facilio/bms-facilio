@@ -248,7 +248,7 @@ public class ModbusImportUtils {
             for (int i = 0; i < firstRow.getPhysicalNumberOfCells(); i++) {
                 Cell cell = firstRow.getCell(i);
                 Objects.requireNonNull(cell, "theres no cell in first row");
-                if (cell.getCellTypeEnum().equals(CellType.STRING)) {
+                if (cell.getCellType().equals(CellType.STRING)) {
                     if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.NAME)) {
                         nameIndex = i;
                     } else if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.IP)) {
@@ -331,7 +331,7 @@ public class ModbusImportUtils {
             for (int i = 0; i < firstRow.getPhysicalNumberOfCells(); i++) {
                 Cell cell = firstRow.getCell(i);
                 Objects.requireNonNull(cell, "theres no cell in first row");
-                if (cell.getCellTypeEnum().equals(CellType.STRING)) {
+                if (cell.getCellType().equals(CellType.STRING)) {
                     if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.NAME)) {
                         nameIndex = i;
                     } else if (cell.getStringCellValue().equalsIgnoreCase(AgentConstants.DATA_TYPE)) {

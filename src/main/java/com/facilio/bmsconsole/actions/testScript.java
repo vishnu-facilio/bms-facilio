@@ -8,12 +8,7 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.facilio.util.FacilioUtil;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 
 public class testScript {
 
@@ -29,11 +24,11 @@ public class testScript {
 			while(rowIterator.hasNext()) {
 				Row row = rowIterator.next();
 				Cell cel = row.getCell(1);
-				if(cel.getCellTypeEnum().getCode() == Cell.CELL_TYPE_STRING) {
+				if(cel.getCellType() == CellType.STRING) {
 					System.out.println(cel.getStringCellValue());
 				}
-				else if(cel.getCellTypeEnum().getCode() == Cell.CELL_TYPE_NUMERIC) {
-					if(HSSFDateUtil.isCellDateFormatted(cel)) {
+				else if(cel.getCellType() == CellType.NUMERIC) {
+					if(DateUtil.isCellDateFormatted(cel)) {
 						Date date = cel.getDateCellValue();
 						System.out.println(date.getSeconds());
 						Calendar calendar = Calendar.getInstance();

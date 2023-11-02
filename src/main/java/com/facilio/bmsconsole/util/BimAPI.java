@@ -9,13 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellValue;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -135,7 +129,7 @@ public class BimAPI {
 				if (cell == null) {
 					firstRow.put(columnHeadings.get(i), null);
 				}
-				else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+				else if (cell.getCellType() == CellType.NUMERIC  && DateUtil.isCellDateFormatted(cell)) {
 					throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column "
 							+ columnHeadings.get(i) + " Kindly Use Plain text");
 				} else {
@@ -164,7 +158,7 @@ public class BimAPI {
         	Iterator<Cell> cellItr = row.cellIterator();
         	while (cellItr.hasNext()) {
         		Cell cell = cellItr.next();
-        		if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+        		if(cell.getCellType() == CellType.BLANK ) {
         			columnheadings.add(null);
         		}
         		else {

@@ -13,13 +13,7 @@ import java.util.logging.Logger;
 
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -119,24 +113,24 @@ public class DataParseForReadingsCommand extends FacilioCommand {
 					}
 
 					Object val = 0.0;
-					if (cell.getCellTypeEnum() == CellType.STRING) {
+					if (cell.getCellType() == CellType.STRING) {
 
 						val = cell.getStringCellValue();
 					}
-					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-						if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
+					else if (cell.getCellType() == CellType.NUMERIC || cell.getCellType() == CellType.FORMULA) {
+						if(DateUtil.isCellDateFormatted(cell) && cell.getCellType() == CellType.NUMERIC) {
 							Date date = cell.getDateCellValue();
 							Instant date1 = date.toInstant();
 							val = date1.getEpochSecond()*1000;
 						}
-						else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+						else if(cell.getCellType() == CellType.FORMULA) {
 							val = cell.getNumericCellValue();
 						}
 						else {
 							val = cell.getNumericCellValue();
 						}
 					}
-					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
+					else if(cell.getCellType() == CellType.BOOLEAN) {
 						val = cell.getBooleanCellValue();
 					}
 					else {

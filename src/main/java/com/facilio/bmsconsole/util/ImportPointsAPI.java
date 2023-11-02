@@ -13,10 +13,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -64,7 +62,7 @@ public class ImportPointsAPI {
 				missingInSheet = new ArrayList<String>();
 				while(ctr.hasNext()) {
 					Cell cell = (Cell)ctr.next();
-					if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+					if(cell.getCellType() == CellType.BLANK) {
 						if(i == 0) {
 							columnheadings.add(null);
 						}
@@ -97,7 +95,7 @@ public class ImportPointsAPI {
 				Iterator<Cell> cellItr = row.cellIterator();
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
-					if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+					if(cell.getCellType() == CellType.BLANK) {
 						columnheadings.add(null);
 					}
 					else {
@@ -328,11 +326,11 @@ public class ImportPointsAPI {
 					continue;
 				}
 				else {
-					if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
+					if(cell == null || (cell.getCellType() == CellType.BLANK)) {
 						continue;
 					}
 					else {
-						CellType type = cell.getCellTypeEnum();
+						CellType type = cell.getCellType();
 						
 						 if(type == CellType.STRING)
 						{

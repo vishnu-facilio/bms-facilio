@@ -15,13 +15,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
 
 import com.facilio.bmsconsole.actions.PointsProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
@@ -128,23 +122,23 @@ public class PointsParseDataForImportCommand implements Command {
 
 					Object val = 0.0;
 					try {
-						if (cell.getCellTypeEnum() == CellType.STRING) {
+						if (cell.getCellType() == CellType.STRING) {
 
 							val = cell.getStringCellValue().trim();
-						} else if (cell.getCellTypeEnum() == CellType.NUMERIC
-								|| cell.getCellTypeEnum() == CellType.FORMULA) {
-							if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+						} else if (cell.getCellType() == CellType.NUMERIC
+								|| cell.getCellType() == CellType.FORMULA) {
+							if (cell.getCellType() == CellType.NUMERIC && DateUtil.isCellDateFormatted(cell)) {
 								Date date = cell.getDateCellValue();
 								Instant date1 = date.toInstant();
 								val = date1.getEpochSecond()*1000;
 							} 
-							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
+							else if(cell.getCellType() == CellType.FORMULA) {
 								val = cell.getStringCellValue();
 							}
 							else {
 								val = cell.getNumericCellValue();
 							}
-						} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
+						} else if (cell.getCellType() == CellType.BOOLEAN) {
 							val = cell.getBooleanCellValue();
 						} else {
 							val = null;

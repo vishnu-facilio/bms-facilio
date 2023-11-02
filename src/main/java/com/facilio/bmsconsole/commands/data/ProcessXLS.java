@@ -31,7 +31,6 @@ import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
 
 import java.io.InputStream;
@@ -60,7 +59,7 @@ public class ProcessXLS extends FacilioCommand {
 	    }
 	    for (int cellNum = row.getFirstCellNum(); cellNum < row.getLastCellNum(); cellNum++) {
 	        Cell cell = row.getCell(cellNum);
-	        if (cell != null && cell.getCellType() != Cell.CELL_TYPE_BLANK && StringUtils.isNotBlank(cell.toString())) {
+	        if (cell != null && cell.getCellType() != CellType.BLANK && StringUtils.isNotBlank(cell.toString())) {
 	            return false;
 	        }
 	    }
@@ -120,12 +119,12 @@ public class ProcessXLS extends FacilioCommand {
 					}
 
 					Object val = 0.0;
-					if (cell.getCellTypeEnum() == CellType.STRING) {
+					if (cell.getCellType() == CellType.STRING) {
 
 						val = cell.getStringCellValue();
 					}
-					else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-						if(HSSFDateUtil.isCellDateFormatted(cell)) {
+					else if (cell.getCellType() == CellType.NUMERIC || cell.getCellType() == CellType.FORMULA) {
+						if(DateUtil.isCellDateFormatted(cell)) {
 							Date date = cell.getDateCellValue();
 							 Instant date1 = date.toInstant();
 							 val = date1.getEpochSecond()*1000;
@@ -134,7 +133,7 @@ public class ProcessXLS extends FacilioCommand {
 							val = cell.getNumericCellValue();
 						}
 					}
-					else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
+					else if(cell.getCellType() == CellType.BOOLEAN) {
 						val = cell.getBooleanCellValue();
 					}
 					else {

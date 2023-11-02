@@ -1,9 +1,7 @@
 package com.facilio.multiImport.importFileReader;
 
 import com.facilio.multiImport.multiImportExceptions.ImportParseException;
-import com.facilio.multiImport.util.MultiImportApi;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.*;
 import org.json.simple.JSONArray;
 
@@ -204,25 +202,25 @@ public class XLSheetReader implements AbstractImportSheetReader {
 
         // Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
 
-        if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
+        if (cellValue.getCellType() == CellType.BLANK) {
             val = null;
-        } else if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+        } else if (cell.getCellType() == CellType.NUMERIC  && DateUtil.isCellDateFormatted(cell)) {
             CellStyle style = cell.getCellStyle();
             Date date = cell.getDateCellValue();
             val = date.getTime();
-        } else if (cellValue.getCellTypeEnum() == CellType.STRING) {
+        } else if (cellValue.getCellType() == CellType.STRING) {
             if (cellValue.getStringValue().trim().length() == 0) {
                 val = null;
             } else {
                 val = cellValue.getStringValue().trim();
             }
 
-        } else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
+        } else if (cellValue.getCellType() == CellType.NUMERIC) {
             val = cellValue.getNumberValue();
 
-        } else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
+        } else if (cellValue.getCellType() == CellType.BOOLEAN) {
             val = cellValue.getBooleanValue();
-        } else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
+        } else if (cell.getCellType() == CellType.ERROR) {
             throw new Exception("Error Evaluating Cell");
         } else {
             val = null;
