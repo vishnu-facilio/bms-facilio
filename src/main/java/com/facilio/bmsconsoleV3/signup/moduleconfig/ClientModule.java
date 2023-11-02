@@ -158,6 +158,8 @@ public class ClientModule extends BaseModuleConfig{
         moduleToRemove.add("alarmDefinitionTagging");
         moduleToRemove.add("serviceOrder");
         moduleToRemove.add("serviceAppointment");
+        moduleToRemove.add("contact");
+        moduleToRemove.add("alarmAssetTagging");
 
         return  new ModulePages()
                 .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)

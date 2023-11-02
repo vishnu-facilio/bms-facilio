@@ -80,7 +80,6 @@ fieldListType:
       - MULTI_LOOKUP
       - MULTI_ENUM
       - SCORE
-      - LARGE_TEXT
       - BIG_STRING
       - STRING_SYSTEM_ENUM
       - URL_FIELD
