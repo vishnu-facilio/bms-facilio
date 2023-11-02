@@ -35,16 +35,22 @@ public class FieldsConfigList {
     );
 
     public static final List<String> ASSET_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
-            "category", "department", "description", "manufacturer",
-            "name", "purchasedDate", "qrVal", "retireDate", "serialNumber",
-            "state", "supplier", "tagNumber", "type", "space", "unitPrice",
-            "warrantyExpiryDate", "distanceMoved", "connected", "sysCreatedTime",
-            "sysCreatedBy", "sysModifiedTime", "sysModifiedBy", "moduleState",
-            "siteId", "id", "rotatingItemType", "storeRoom"
+            "name","category","sysCreatedBy","sysCreatedTime", "department","id",
+            "decommission","manufacturer",
+            "sysModifiedTime", "sysModifiedBy", "purchasedDate","rotatingItemType",
+            "siteId","space","storeRoom",
+            "type","unitPrice","decommissionedBy","moduleState"
     );
 
     public static final List<String> ASSET_VIEW_FIELDS_EXCLUDE = Arrays.asList(
             "hideToCustomer", "parentAssetId", "stateFlowId"
+    );
+    public static final List<String> ASSET_VIEW_FIELDS = Arrays.asList(
+            "category","department","manufacturer","moduleState",
+            "purchasedDate","rotatingItemType","storeRoom",
+            "type","unitPrice","decommissionedBy","decommission",
+            "sysCreatedBy","sysCreatedTime","sysModifiedTime", "sysModifiedBy",
+            "siteId"
     );
 
     public static final List<String> NEW_ALARMS_FIELDS_INCLUDE = Arrays.asList( //SORT

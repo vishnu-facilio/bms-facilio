@@ -29,7 +29,7 @@ public class APIFieldsConfig {
                 .done()
 
                 .viewFields()
-                .skip(FieldsConfigList.ASSET_VIEW_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.ASSET_VIEW_FIELDS)
                 .addFixedFields(FieldsConfigList.getNameField())
                 .done();
     }
