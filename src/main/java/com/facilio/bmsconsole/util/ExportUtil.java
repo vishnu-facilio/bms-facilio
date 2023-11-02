@@ -662,7 +662,7 @@ public class ExportUtil {
 		} else if (minutes > 0.99) {
 		      return   Math.round(minutes) + " Mins";
 		} else {
-		      return time + " Secs ";
+		      return Math.round(time) + " Secs ";
 	    }
 	}
 
