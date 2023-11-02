@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.bmsconsoleV3.context.EmailFromAddress;
 import com.facilio.chain.FacilioChain;
@@ -37,6 +38,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -386,7 +388,7 @@ public abstract class EmailClient extends BaseEmailClient {
 
     boolean canSendEmail(JSONObject mailJson) throws Exception {
         Organization currentOrg = AccountUtil.getCurrentOrg();
-        if (FacilioProperties.isDevelopment() || SandboxAPI.isSandboxOrg(currentOrg)) {
+        if (FacilioProperties.isDevelopment() || SandboxAPI.isSandboxOrg(currentOrg) || !hasPermission(currentOrg)) {
             return false;
         }
         return (getEmailAddresses(mailJson, TO).size() >0 );
@@ -394,6 +396,15 @@ public abstract class EmailClient extends BaseEmailClient {
 
     Set<String> getEmailAddresses(JSONObject mailJson, String key) throws Exception {
         return getEmailAddresses(mailJson, key, false);
+    }
+
+    private boolean hasPermission(Organization currentOrg) throws Exception {
+        boolean sendEmail = true;
+        if (currentOrg != null) {
+            Map<String, Object> sendEmailMap = CommonCommandUtil.getOrgInfo(currentOrg.getOrgId(), "canSendEmail");
+            sendEmail = MapUtils.isEmpty(sendEmailMap) || Boolean.parseBoolean(String.valueOf(sendEmailMap.get("value")));
+        }
+        return sendEmail;
     }
 
     private Set<String> getEmailAddresses(JSONObject mailJson, String key, boolean checkActive) throws Exception {
