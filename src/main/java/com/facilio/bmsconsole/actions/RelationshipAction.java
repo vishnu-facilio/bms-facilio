@@ -40,6 +40,8 @@ public class RelationshipAction extends FacilioAction {
 	public String fromModuleName;
 	@Getter
 	public long recordId;
+	@Getter
+	public Integer relationCategory;
 
 	public String addOrUpdateRelationShip() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -78,6 +80,7 @@ public class RelationshipAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getFromModuleName());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getRecordId());
+		context.put(FacilioConstants.ContextNames.RELATION_CATEGORY_NAME, this.getRelationCategory());
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", this.getPage());
 		pagination.put("perPage", this.getPerPage());

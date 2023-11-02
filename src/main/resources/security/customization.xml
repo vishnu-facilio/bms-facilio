@@ -50,6 +50,7 @@
         <urlparams>
             <property name="fromModuleName" type="string" mandatory="true"/>
             <property name="recordId" type="number" mandatory="true"/>
+            <property name="relationCategory" type="number" mandatory="true"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
         </urlparams>
