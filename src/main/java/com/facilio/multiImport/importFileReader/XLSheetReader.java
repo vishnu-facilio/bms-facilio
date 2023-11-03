@@ -44,10 +44,11 @@ public class XLSheetReader implements AbstractImportSheetReader {
             for (Cell cell : row) {
                 Object val;
                 try{
+                    String cellName = headerIndex.get(cell.getColumnIndex());
                     CellValue cellValue = parent.evaluator.evaluate(cell);
-                    val = XLSheetReader.getValueFromCell(cell,cellValue);
-                }catch (Exception e){
-                    val = e.getMessage();
+                    val = XLSheetReader.getValueFromCell(cell,cellValue,cellName);
+                }catch (ImportParseException e){
+                    val = e.getClientMessage();
                 }
                 if (val!=null) {
                     isRowEmpty = false;
@@ -112,7 +113,7 @@ public class XLSheetReader implements AbstractImportSheetReader {
             Object val;
             try {
                 CellValue cellValue = parent.evaluator.evaluate(cell);
-                val = XLSheetReader.getValueFromCell(cell, cellValue);
+                val = XLSheetReader.getValueFromCell(cell, cellValue,cellName);
             } catch (Exception e) {
                 ImportParseException parseException = new ImportParseException(cellName, e);
                 throw parseException;
@@ -196,16 +197,18 @@ public class XLSheetReader implements AbstractImportSheetReader {
 
         return this.getRowVal();
     }
-    public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
+    public static Object getValueFromCell(Cell cell, CellValue cellValue,String columnName) throws ImportParseException {
 
-        Object val = 0.0;
-
+        if(cellValue == null){
+            return null;
+        }
         // Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
+
+        Object val = null;
 
         if (cellValue.getCellType() == CellType.BLANK) {
             val = null;
         } else if (cell.getCellType() == CellType.NUMERIC  && DateUtil.isCellDateFormatted(cell)) {
-            CellStyle style = cell.getCellStyle();
             Date date = cell.getDateCellValue();
             val = date.getTime();
         } else if (cellValue.getCellType() == CellType.STRING) {
@@ -221,9 +224,7 @@ public class XLSheetReader implements AbstractImportSheetReader {
         } else if (cellValue.getCellType() == CellType.BOOLEAN) {
             val = cellValue.getBooleanValue();
         } else if (cell.getCellType() == CellType.ERROR) {
-            throw new Exception("Error Evaluating Cell");
-        } else {
-            val = null;
+            throw new ImportParseException(columnName,new IllegalArgumentException("Error Evaluating Cell"));
         }
 
         return val;
