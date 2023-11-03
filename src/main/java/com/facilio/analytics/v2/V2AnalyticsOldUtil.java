@@ -346,7 +346,7 @@ public class V2AnalyticsOldUtil {
                 if(v2_measure_list.size() > 0) {
                     v2_report.setMeasures(v2_measure_list);
                 }
-                if(v2_report != null && v2_report.getCriteriaId() > 0 )
+                if(v2_report != null && v2_report.getCriteriaId() != null &&  v2_report.getCriteriaId() > 0 )
                 {
                     V2ReportFiltersContext globalCriteria = new V2ReportFiltersContext();
                     globalCriteria.setCriteria(CriteriaAPI.getCriteria(v2_report.getCriteriaId()));
