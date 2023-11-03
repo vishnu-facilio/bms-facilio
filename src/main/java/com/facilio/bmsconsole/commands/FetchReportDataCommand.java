@@ -486,22 +486,31 @@ public class FetchReportDataCommand extends FacilioCommand {
     }
 
     private void applyJoin(String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
+        applyJoin(on, joinModule, selectBuilder, null);
+    }
+    private void applyJoin(String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) {
         if (joinModule != null && (joinModule.isCustom() && !baseModule.equals(joinModule))) {
             selectBuilder.innerJoin(joinModule.getTableName())
                     .alias(getAndSetModuleAlias(joinModule.getName()))
                     .on(on);
         } else {
-            selectBuilder.innerJoin(joinModule.getTableName())
-                    .on(on);
+            if(addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, joinModule))) {
+                selectBuilder.innerJoin(joinModule.getTableName()).on(on);
+            }
         }
-        selectBuilder.addJoinModules(Collections.singletonList(joinModule));
+        if(addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, joinModule))) {
+            selectBuilder.addJoinModules(Collections.singletonList(joinModule));
+        }
 
         FacilioModule prevModule = joinModule;
         FacilioModule extendedModule = prevModule.getExtendModule();
         while (extendedModule != null) {
-            selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
-            selectBuilder.innerJoin(extendedModule.getTableName())
-                    .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+            if(addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, extendedModule)))
+            {
+                selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
+                selectBuilder.innerJoin(extendedModule.getTableName())
+                        .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+            }
             prevModule = extendedModule;
             extendedModule = extendedModule.getExtendModule();
         }
@@ -710,7 +719,7 @@ public class FetchReportDataCommand extends FacilioCommand {
                     {
                         Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dp.getyAxis().getField().getModule().getName()));
                         FacilioField child_field = fieldsMap.get("parentId");
-                        applyJoin(new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dp.getParentReadingModule(), newSelectBuilder);
+                        applyJoin(new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dp.getParentReadingModule(), newSelectBuilder, addedModules);
                         Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(dp.getV2Criteria(), dp.getParentReadingModule());
                         if(parent_criteria != null) {
                             newSelectBuilder.andCriteria(parent_criteria);

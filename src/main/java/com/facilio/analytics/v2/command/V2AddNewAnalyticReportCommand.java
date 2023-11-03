@@ -5,6 +5,7 @@ import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.report.context.ReportContext;
 import org.apache.commons.chain.Context;
@@ -39,6 +40,20 @@ public class V2AddNewAnalyticReportCommand extends FacilioCommand {
 
     private void generateAndSetMeasureCriteria(V2ReportContext reportContext, String actionType)throws Exception
     {
+        if(actionType != null && actionType.equals("update") && reportContext.getG_criteria() != null && reportContext.getG_criteria().getCriteriaId() > 0)
+        {
+            Criteria old_global_criteria = CriteriaAPI.getCriteria(reportContext.getG_criteria().getCriteriaId());
+            Criteria new_global_criteria = reportContext.getG_criteria().getCriteria();
+            if(new_global_criteria == null || (new_global_criteria != null && new_global_criteria != null && !new_global_criteria.equals(old_global_criteria))){
+                CriteriaAPI.deleteCriteria(reportContext.getG_criteria().getCriteriaId());
+            }
+        }
+        if(reportContext.getG_criteria() != null && reportContext.getG_criteria().getCriteria() != null && !reportContext.getG_criteria().getCriteria().isEmpty()){
+            long criteriaId = V2AnalyticsOldUtil.generateCriteriaId(reportContext.getG_criteria().getCriteria(), reportContext.getG_criteria().getModuleName());
+            if(criteriaId > 0) {
+                reportContext.setCriteriaId(criteriaId);
+            }
+        }
         for(V2MeasuresContext measure: reportContext.getMeasures())
         {
             if(actionType != null && actionType.equals("update") && measure.getCriteriaId() > 0)

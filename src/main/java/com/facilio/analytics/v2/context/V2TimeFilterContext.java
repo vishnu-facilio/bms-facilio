@@ -10,7 +10,6 @@ import lombok.Setter;
 @Setter
 public class V2TimeFilterContext {
 
-    public int operatorId;
     public Integer offset;
     public DateOperators dateOperator;
     private DateRange dateRange;

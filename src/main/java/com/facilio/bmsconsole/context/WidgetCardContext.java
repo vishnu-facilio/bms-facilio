@@ -72,6 +72,12 @@ public class WidgetCardContext extends DashboardWidgetContext {
 	private Long parentId;
 	public void setParentId(Long parentId) { this.parentId = parentId; }
 	public Long getParentId() { return this.parentId; }
+	private Long criteriaId;
+	public void setCriteriaId(Long criteriaId) { this.criteriaId = criteriaId; }
+	public Long getCriteriaId() { return this.criteriaId; }
+	private Long categoryId;
+	public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
+	public Long getCategoryId() { return this.categoryId; }
 	private List<WidgetCardContext> childCards;
 	public void setChildCards(List<WidgetCardContext> childCards) { this.childCards = childCards; }
 	public List<WidgetCardContext> getChildCards() { return this.childCards; }

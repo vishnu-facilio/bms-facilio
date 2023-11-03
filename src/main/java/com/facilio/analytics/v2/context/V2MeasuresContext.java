@@ -41,6 +41,7 @@ public class V2MeasuresContext {
     private boolean defaultSortPoint;
     public int aggr;
     public Long dynamicKpiId;
+    public int limit = -1;
     /**
      * below keys added for supporting relationship measure specific relationship
      */
@@ -70,6 +71,12 @@ public class V2MeasuresContext {
         this.criteriaTypeEnum = criteriaType;
     }
 
+    public ReportDataPointContext.OrderByFunction getOrderByFunction() {
+        return orderByFunction;
+    }
+    public void setOrderByFunction(int orderByFunction) {
+        this.orderByFunction = ReportDataPointContext.OrderByFunction.valueOf(orderByFunction);;
+    }
 
     public static enum Criteria_Type implements FacilioIntEnum
     {

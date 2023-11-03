@@ -402,7 +402,10 @@ public class ReportDataPointContext implements  Cloneable{
 		this.expressionString = expressionString;
 	}
 
+	@Setter @Getter
+	private boolean fetchMeters;
 	private boolean fetchResource;
+
 	public boolean isFetchResource() {
 		return fetchResource;
 	}

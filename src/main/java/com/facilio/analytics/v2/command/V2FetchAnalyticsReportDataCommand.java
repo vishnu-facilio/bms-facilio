@@ -2,6 +2,7 @@ package com.facilio.analytics.v2.command;
 
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
+import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
 import com.facilio.chain.FacilioChain;
@@ -38,12 +39,14 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     private ModuleBean modBean;
     private FacilioModule baseModule;
     private JSONObject dashboard_user_filter=null;
+    private V2ReportContext report_v2;
     private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
     @Override
     public boolean executeCommand(Context context)throws Exception
     {
+        report_v2 = (V2ReportContext) context.get("report_v2");
         dashboard_user_filter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE);
-        isClickHouseEnabled = true;//AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE);
+        isClickHouseEnabled = (Boolean) context.get("isClickHouseEnabled");
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
         V2AnalyticsOldUtil.calculateBaseLineRange(report);
@@ -157,13 +160,20 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
 
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
         Map<String, List<Map<String, Object>>> props = new HashMap<>();
-        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues);
+        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules);
         props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
+
+        if (dp.getLimit() != -1 && xValues == null) {
+            data.setxValues(V2AnalyticsOldUtil.getXValues(dataProps, dp.getxAxis().getFieldName(), dp.getxAxis().getDataTypeEnum()));
+            if (data.getxValues() == null || data.getxValues().isEmpty()) {
+                noMatch = true;
+            }
+        }
         if (report.getBaseLines() != null && !report.getBaseLines().isEmpty())
         {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines())
             {
-                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues));
+                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules));
                 data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
             }
         }
@@ -253,16 +263,24 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
     }
 
-    private List<Map<String, Object>> fetchAnalyitcsReportData(ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, FacilioField xAggrField, String xValues)throws Exception
+    private List<Map<String, Object>> fetchAnalyitcsReportData(ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules)throws Exception
     {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
         V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine);
         V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder);
-        V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues);
+        V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
+        V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
-        List<Map<String, Object>> props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE ,
-                ()-> newSelectBuilder.getAsProps());
-        LOGGER.debug("SELECT BUILDER --- " + newSelectBuilder);
+        List<Map<String, Object>> props = null;
+        if(isClickHouseEnabled) {
+            props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
+                    () -> newSelectBuilder.getAsProps());
+            LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
+//            throw new Exception();
+        } else {
+            props = newSelectBuilder.getAsProps();
+            LOGGER.debug("SELECT BUILDER EXECUTED IN MYSQL--- " + newSelectBuilder);
+        }
         return props;
     }
 

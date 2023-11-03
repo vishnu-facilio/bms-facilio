@@ -33,18 +33,26 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
     {
         String type = (String )context.get("type");
         String searchText = (String)context.get("searchText");
+        Long category = (Long)context.get("category");
         List<FacilioModule> modules = (ArrayList<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
         if(type != null && type.equals("asset"))
         {
-            context.put("fields",this.getReadingsList(modules, searchText ));
+            context.put("fields",this.getReadingsList(modules, searchText , category, Boolean.TRUE));
         }
         else if(type != null && type.equals("meter")){
-            context.put("fields", this.getReadingsList(modules, searchText));
+            context.put("fields", this.getReadingsList(modules, searchText, category, Boolean.TRUE));
+        }
+        else if(type != null && type.equals("weather")){
+            context.put("fields", this.getWeatherFields((List<FacilioField>) context.get("fields"), searchText, category));
+        }
+        else if(type != null && type.equals("fault"))
+        {
+            context.put("fields",this.getReadingsList(modules, searchText , category, Boolean.FALSE));
         }
         return false;
     }
 
-    private Map<Long, Map<String,Object>> getReadingsList(List<FacilioModule> reading_modules, String searchText )throws Exception
+    private Map<Long, Map<String,Object>> getReadingsList(List<FacilioModule> reading_modules, String searchText , Long categoryId, boolean isSkipFaultRuleFields)throws Exception
     {
         Map<Long, Map<String,Object>> fieldMap =new HashMap<>();
         if(reading_modules != null && !reading_modules.isEmpty())
@@ -60,12 +68,32 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
             {
                 if (!default_fields.contains(field.getName()) )
                 {
-                    if(canSkipField(field) || (searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText))) {
+                    if(canSkipField(field) || (searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText)) || (isSkipFaultRuleFields && field.getName().equals("ruleResult"))) {
                         continue;
                     }
-
-                    fieldMap.put(field.getFieldId(), constructFieldObject(field));
+                    else if(!isSkipFaultRuleFields){
+                        if(field.getName().equals("ruleResult")){
+                            fieldMap.put(field.getFieldId(), constructFieldObject(field, categoryId));
+                        }
+                    }else {
+                        fieldMap.put(field.getFieldId(), constructFieldObject(field, categoryId));
+                    }
                 }
+            }
+        }
+        return fieldMap;
+    }
+    private Map<Long, Map<String,Object>> getWeatherFields(List<FacilioField> fields, String searchText, Long categoryId) throws Exception
+    {
+        Map<Long, Map<String,Object>> fieldMap =new HashMap<>();
+        if(fields != null){
+            for(FacilioField field : fields)
+            {
+                if(searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText))
+                {
+                    continue;
+                }
+                fieldMap.put(field.getFieldId(), constructFieldObject(field, categoryId));
             }
         }
         return fieldMap;
@@ -81,13 +109,14 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
     }
 
     private static boolean canSkipField(FacilioField field) {
-        return field.getName().equals("info") && field.getColumnName().equals("SYS_INFO");
+        return field.getName().equals("info") && field.getColumnName().equals("SYS_INFO") || field.getName().equals("ruleResult");
     }
-    private static Map<String, Object> constructFieldObject(FacilioField field)
+    private static Map<String, Object> constructFieldObject(FacilioField field, Long category)
     {
         Map<String, Object> details =new HashMap<>();
         details.put("name", field.getName());
         details.put("displayName", field.getDisplayName());
+        details.put("categoryId", category);
         details.put("fieldId", field.getFieldId());
         details.put("id", field.getFieldId());
         details.put("dataType", field.getDataType());

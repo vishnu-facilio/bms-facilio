@@ -2,10 +2,7 @@ package com.facilio.analytics.v2;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.analytics.v2.context.V2AnalyticsMeasureContext;
-import com.facilio.analytics.v2.context.V2AnalyticsReportResponseContext;
-import com.facilio.analytics.v2.context.V2MeasuresContext;
-import com.facilio.analytics.v2.context.V2ReportContext;
+import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ModuleSettingContext;
@@ -52,6 +49,16 @@ public class V2AnalyticsOldUtil {
             ReadingAnalysisContext.ReportMode.SPACE,
             ReadingAnalysisContext.ReportMode.FLOOR
     );
+
+    private static final HashMap<V2DimensionContext.DimensionType, String> DIMENSION_TYPE_VS_MODULES = new HashMap<V2DimensionContext.DimensionType, String>(){{
+            put(V2DimensionContext.DimensionType.ASSET, "asset");
+            put(V2DimensionContext.DimensionType.SITE, "site");
+            put(V2DimensionContext.DimensionType.METER, "meter");
+            put(V2DimensionContext.DimensionType.FLOOR, "floor");
+            put(V2DimensionContext.DimensionType.SPACE, "space");
+    }};
+
+
     public static ReportContext constructReportOld(V2ReportContext report, ReportContext report_context)throws Exception
     {
         report_context.setName(report.getName());
@@ -128,13 +135,18 @@ public class V2AnalyticsOldUtil {
             case FLOOR:
             case SPACE:
             case RESOURCE:
+            case METERS:
                 if(fieldMap.get("parentId")!= null) {
                     xField = fieldMap.get("parentId");
                 }else {
                     FacilioModule module = bean.getModule(mode.getStringVal());
                     xField = FieldFactory.getIdField(module);
                 }
-                dataPoint.setFetchResource(true);
+                if(mode == ReadingAnalysisContext.ReportMode.METERS){
+                    dataPoint.setFetchMeters(true);
+                }else {
+                    dataPoint.setFetchResource(true);
+                }
                 break;
             case TIMESERIES:
             case CONSOLIDATED:
@@ -333,6 +345,15 @@ public class V2AnalyticsOldUtil {
                 }
                 if(v2_measure_list.size() > 0) {
                     v2_report.setMeasures(v2_measure_list);
+                }
+                if(v2_report != null && v2_report.getCriteriaId() > 0 )
+                {
+                    V2ReportFiltersContext globalCriteria = new V2ReportFiltersContext();
+                    globalCriteria.setCriteria(CriteriaAPI.getCriteria(v2_report.getCriteriaId()));
+                    globalCriteria.setCriteriaId(v2_report.getCriteriaId());
+                    globalCriteria.setModuleName(DIMENSION_TYPE_VS_MODULES.get(v2_report.getDimensions().getDimensionTypeEnum()));
+                    v2_report.setG_criteria(globalCriteria);
+                    v2_report.setCriteriaId(null);
                 }
                 return v2_report;
             }
@@ -560,21 +581,37 @@ public class V2AnalyticsOldUtil {
     }
     public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)
     {
+        applyJoin(moduleVsAlias, baseModule, on, joinModule, selectBuilder, null);
+    }
+    public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules)
+    {
         if (joinModule != null && (joinModule.isCustom() && !baseModule.equals(joinModule))) {
             selectBuilder.innerJoin(joinModule.getTableName())
                     .alias(V2AnalyticsOldUtil.getAndSetModuleAlias(joinModule.getName(), moduleVsAlias))
                     .on(on);
+            selectBuilder.addJoinModules(Collections.singletonList(joinModule));
         } else {
-            selectBuilder.innerJoin(joinModule.getTableName()).on(on);
+            if (addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, joinModule))) {
+                selectBuilder.innerJoin(joinModule.getTableName()).on(on);
+                if(addedModules != null) {
+                    addedModules.add(joinModule);
+                }
+                selectBuilder.addJoinModules(Collections.singletonList(joinModule));
+            }
         }
-        selectBuilder.addJoinModules(Collections.singletonList(joinModule));
         FacilioModule prevModule = joinModule;
         FacilioModule extendedModule = prevModule.getExtendModule();
         while (extendedModule != null)
         {
-            selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
-            selectBuilder.innerJoin(extendedModule.getTableName())
+            if (addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, extendedModule)))
+            {
+                if(addedModules != null){
+                    addedModules.add(extendedModule);
+                }
+                selectBuilder.addJoinModules(Collections.singletonList(extendedModule));
+                selectBuilder.innerJoin(extendedModule.getTableName())
                     .on(prevModule.getTableName() + ".ID = " + extendedModule.getTableName() + ".ID");
+            }
             prevModule = extendedModule;
             extendedModule = extendedModule.getExtendModule();
         }
@@ -756,7 +793,7 @@ public class V2AnalyticsOldUtil {
 
         }
     }
-    public static void applyMeasureCriteriaV2(HashMap<String, String> moduleVsAlias, FacilioField xAggrField, FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, String xValues)throws Exception
+    public static void applyMeasureCriteriaV2(HashMap<String, String> moduleVsAlias, FacilioField xAggrField, FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, String xValues, Set<FacilioModule> addedModules)throws Exception
     {
         if (xValues != null)
         {
@@ -772,7 +809,7 @@ public class V2AnalyticsOldUtil {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
                     FacilioField child_field = fieldsMap.get("parentId");
-                    applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder);
+                    applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
                     Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(dataPoint.getV2Criteria(), dataPoint.getParentReadingModule());
                     if(parent_criteria != null)
                     {
@@ -903,5 +940,38 @@ public class V2AnalyticsOldUtil {
             selectBuilder.andCriteria(criteria);
         }
         return selectBuilder.constructQueryString();
+    }
+
+    public static void applyAnalyticGlobalFilterCriteria(FacilioModule baseModule,ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, V2ReportFiltersContext filterContext, Set<FacilioModule> addedModules)throws Exception
+    {
+        if(filterContext != null && filterContext.getCriteria() != null && !filterContext.getCriteria().isEmpty() && filterContext.getModuleName() != null)
+        {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule criteriaModule = modBean.getModule(filterContext.getModuleName());
+            Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
+            FacilioField child_field = fieldsMap.get("parentId");
+            FacilioField parent_field = FieldFactory.getIdField(criteriaModule);
+            applyJoin(null,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), criteriaModule, selectBuilder, addedModules);
+            Criteria global_criteria = V2AnalyticsOldUtil.setFieldInCriteria(filterContext.getCriteria(), criteriaModule);
+            if(global_criteria != null) {
+                selectBuilder.andCriteria(global_criteria);
+            }
+        }
+    }
+    public static String getXValues(List<Map<String, Object>> props, String key, FieldType type) {
+        if (props != null && !props.isEmpty()) {
+            StringJoiner xValues = new StringJoiner(",");
+            for (Map<String, Object> prop : props) {
+                Object val = prop.get(key);
+                if (val != null) {
+                    if (val instanceof Map && type == FieldType.LOOKUP) {
+                        val = ((Map) val).get("id");
+                    }
+                    xValues.add(val.toString());
+                }
+            }
+            return xValues.toString();
+        }
+        return null;
     }
 }

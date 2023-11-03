@@ -4,6 +4,7 @@ import com.facilio.db.criteria.Criteria;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,12 +18,17 @@ public class V2AnalyticsCardWidgetContext
     public Long criteriaId;
     public int criteriaType;
     public Long fieldId;
+    public String title;
+    public JSONObject cardStyle;
+    public String baselineTrend;
     public boolean isModuleKpi;
     public boolean isReadingKpi;
     public String parentModuleName;
     public int aggr;
     public V2TimeFilterContext timeFilter;
     public String baseline;
+    public String displayName;
+    public String type;
 
     @JsonIgnore
     public HashMap<String, Map<String, Object>> result = new HashMap<>();

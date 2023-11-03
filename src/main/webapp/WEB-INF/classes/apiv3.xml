@@ -2006,6 +2006,9 @@
     </package>
     <package name="v2CardAnalytics" namespace="/api/v3/card" extends="v3Api">
         <action name="fetch" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetch"/>
+        <action name="data/*" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetchData">
+            <param name="cardId">{1}</param>
+        </action>
     </package>
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="list"/>

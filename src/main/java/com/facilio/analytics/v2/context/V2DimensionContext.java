@@ -40,7 +40,7 @@ public class V2DimensionContext {
 
     public enum DimensionType implements FacilioIntEnum
     {
-        TIME("Time"), READING("Reading"), ASSET("Asset"), SITE("Site"), FLOOR("Floor"), SPACE("Space"), MV("M&V");
+        TIME("Time"), READING("Reading"), ASSET("Asset"), SITE("Site"), FLOOR("Floor"), SPACE("Space"), MV("M&V"), METER("Meter");
 
         private String name;
 

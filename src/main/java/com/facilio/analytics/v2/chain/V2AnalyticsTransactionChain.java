@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.*;
 import com.facilio.bmsconsoleV3.commands.meter.GetUtilityTypeReadingsCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
 import com.facilio.chain.FacilioChain;
+import com.facilio.weather.commands.GetWeatherReadingFieldsCommand;
 
 public class V2AnalyticsTransactionChain
 {
@@ -87,10 +88,12 @@ public class V2AnalyticsTransactionChain
     public static FacilioChain getReadingsFromCategoryChain(String type)throws Exception
     {
         FacilioChain chain = getDefaultChain();
-        if(type != null && type.equals("asset")) {
+        if(type != null && (type.equals("asset") || type.equals("fault"))) {
             chain.addCommand(new GetCategoryReadingsCommand());
         }else if(type != null && type.equals("meter")) {
             chain.addCommand(new GetUtilityTypeReadingsCommand());
+        }else if(type != null && type.equals("weather")){
+            chain.addCommand(new GetWeatherReadingFieldsCommand());
         }
         chain.addCommand(new V2GetReadingsFromCategoryCommand());
         return chain;
@@ -106,6 +109,15 @@ public class V2AnalyticsTransactionChain
     {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new V2ConstructCardCommand());
+        return chain;
+    }
+
+    public static FacilioChain getAnalyticCardDataChain()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2GetAnalyticCardWidgetCommand());
+        chain.addCommand(new V2FetchAnalyticDataCommand());
+        chain.addCommand(new ApplyConditionalFormattingForCard());
         return chain;
     }
 

@@ -543,4 +543,9 @@
             <property name="linkName" type="string" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/card/data/:cardId" method="GET">
+        <urlparams>
+            <property name="cardId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

@@ -17,6 +17,8 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.formatter.DecimalFormatter;
@@ -72,7 +74,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                      */
 
                     Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
-                    cardContext.getResult().put("value", this.setResultJson(range, result, field));
+                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getLabel(), result, field, null));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
                     {
@@ -80,8 +82,9 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         baseline.setAdjustType(BaseLineContext.AdjustType.NONE);
                         DateRange baseline_range = baseline.calculateBaseLineRange(range, baseline.getAdjustTypeEnum());
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
+                        cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
                         baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
-                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline_range, baseline_result, field));
+                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend()));
                     }
                     /**
                      * Select Builder construction to fetch card data ends here
@@ -90,15 +93,19 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
         }
     }
-    private Map<String, Object> setResultJson(DateRange range, Object value, FacilioField field)throws Exception
+    private Map<String, Object> setResultJson(String period, Object value, FacilioField field, String trend)throws Exception
     {
         Map<String, Object> result_json = new HashMap<>();
         result_json.put("dataType", field.getDataTypeEnum());
         result_json.put("value", value);
         result_json.put("actualValue", value);
-        if(range != null){
-            result_json.put("dateRange", range);
+        result_json.put("period",period);
+        if(trend != null && !trend.equals("")){
+            result_json.put("baselineTrend",trend);
         }
+//        if(range != null){
+//            result_json.put("dateRange", range);
+//        }
         if (field instanceof NumberField) {
             NumberField numberField = (NumberField)field;
             result_json.put("unit", numberField.getUnit());
@@ -106,26 +113,33 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 result_json.put("value", UnitsUtil.convertToSiUnit(value, Unit.valueOf(numberField.getUnitId())));
             }
         }
-
-//        if (field.getDataTypeEnum() == FieldType.BOOLEAN) {
-//            if (value == true && field.get.trueVal != null) {
-//                valueMap["value"] = fieldMapInfo.trueVal;
-//            } else if (cardValue == false && fieldMapInfo.falseVal != null) {
-//                valueMap["value"] = fieldMapInfo.falseVal;
-//            }
-//            if (baselineCardValue == true && fieldMapInfo.trueVal != null) {
-//                baselineValueMap["value"] = fieldMapInfo.trueVal;
-//            } else if (baselineCardValue == false && fieldMapInfo.falseVal != null) {
-//                baselineValueMap["value"] = fieldMapInfo.falseVal;
-//            }
-//        } else if (enumMap != null) {
-//            if (cardValue != null && enumMap.get(cardValue) != null) {
-//                valueMap["value"] = enumMap.get(cardValue);
-//            }
-//            if (baselineCardValue != null && enumMap.get(baselineCardValue) != null) {
-//                baselineValueMap["value"] = enumMap.get(baselineCardValue);
-//            }
-//        }
+        else if (field.getDataTypeEnum() == FieldType.BOOLEAN && value != null)
+        {
+            BooleanField boolField = (BooleanField) field;
+            HashMap<String, String> enumMap = new HashMap<>();
+            if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
+                enumMap.put("1", boolField.getTrueVal());
+                enumMap.put("0", boolField.getFalseVal());
+            }
+            else {
+                enumMap.put("1", "True");
+                enumMap.put("0", "False");
+            }
+            String str_value = value.toString();
+            if (str_value.equals("1") && boolField.getTrueVal() != null) {
+                result_json.put("value", boolField.getTrueVal());
+            } else if (str_value.equals("0") && boolField.getFalseVal() != null) {
+                result_json.put("value", boolField.getFalseVal());
+            }else{
+                result_json.put("value", enumMap.get(str_value));
+            }
+        }
+        else if (field instanceof EnumField && value != null) {
+            Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
+            if(enumMap.containsKey(Integer.parseInt(value.toString()))){
+                result_json.put("value", enumMap.get(Integer.parseInt(value.toString())));
+            }
+        }
         return result_json;
     }
     private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria)throws Exception
@@ -137,7 +151,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
         {
             Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(cardContext.getCriteria(), parentModuleForCriteria);
             if (parent_criteria != null) {
-                selectBuilder.innerJoin(cardContext.getParentModuleName()).on(new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString());
+                V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder);
                 selectBuilder.andCriteria(parent_criteria);
             }
         }

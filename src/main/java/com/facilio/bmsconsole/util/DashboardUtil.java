@@ -3725,6 +3725,22 @@ public class DashboardUtil {
 				.addRecords(widgetFieldMappingProps);
 		insertRecordBuilder.save();
 	}
+	public static long generateCriteriaId(Criteria criteria, String moduleName)throws Exception
+	{
+		if(criteria != null)
+		{
+			if (moduleName != null) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				for (String key : criteria.getConditions().keySet()) {
+					Condition condition = criteria.getConditions().get(key);
+					FacilioField field = modBean.getField(condition.getFieldName(), moduleName);
+					condition.setField(field);
+				}
+			}
+			return CriteriaAPI.addCriteria(criteria, AccountUtil.getCurrentOrg().getId());
+		}
+		return -1l;
+	}
 }
 class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
 { 

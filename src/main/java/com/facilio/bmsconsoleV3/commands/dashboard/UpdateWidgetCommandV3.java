@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
@@ -18,6 +19,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -98,7 +100,20 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                             Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
                             widgetCardContext.setCustomScriptId(customScriptId);
                         }
-
+                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+                            long criteriaId = -1;
+                            WidgetCardContext cardContext = (WidgetCardContext) DashboardUtil.getWidget(updatewidget.getId());
+                            if(cardContext.getCriteriaId() != null && cardContext.getCriteriaId() > 0) {
+                                CriteriaAPI.deleteCriteria(cardContext.getCriteriaId());
+                            }
+                            JSONObject cardParams = widgetCardContext.getCardParams();
+                            if(cardParams != null){
+                                widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
+                                Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
+                                criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
+                                widgetCardContext.setCriteriaId(criteriaId);
+                            }
+                        }
                         GenericUpdateRecordBuilder updateWidgetCard = new GenericUpdateRecordBuilder()
                                 .table(ModuleFactory.getWidgetCardModule().getTableName())
                                 .fields(FieldFactory.getWidgetCardFields())

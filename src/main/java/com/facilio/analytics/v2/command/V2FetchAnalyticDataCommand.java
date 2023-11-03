@@ -27,22 +27,28 @@ public class V2FetchAnalyticDataCommand extends FacilioCommand {
             context.put("result", card_chain.getContext().get("result"));
             return false;
         }
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
-        {
-            try {
-                FacilioChain chain = V2AnalyticsTransactionChain.getCHAnalyticsDataChain();
-                chain.setContext((FacilioContext) context);
-                chain.execute();
-            }
-            catch (Exception e){
-                LOGGER.debug("executing in mysql because of error in clickhouse", e);
-                this.executeMysqlFetchData((FacilioContext) context);
-            }
+//        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
+//        {
+        try {
+            FacilioChain chain = V2AnalyticsTransactionChain.getCHAnalyticsDataChain();
+            context.put("isClickHouseEnabled", AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE));//AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE));
+            chain.setContext((FacilioContext) context);
+
+            chain.execute();
         }
-        else
-        {
-           this.executeMysqlFetchData((FacilioContext) context);
+        catch (Exception e){
+            LOGGER.debug("executing in mysql because of error in clickhouse", e);
+            FacilioChain chain = V2AnalyticsTransactionChain.getCHAnalyticsDataChain();
+            context.put("isClickHouseEnabled", Boolean.FALSE);
+            chain.setContext((FacilioContext) context);
+            chain.execute();
+//                this.executeMysqlFetchData((FacilioContext) context);
         }
+//        }
+//        else
+//        {
+//           this.executeMysqlFetchData((FacilioContext) context);
+//        }
         return false;
     }
 

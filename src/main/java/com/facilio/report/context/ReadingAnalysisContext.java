@@ -185,7 +185,8 @@ public class ReadingAnalysisContext {
 		RESOURCE("asset"),
 		FLOOR("floor"),
 		SPACE("space"),
-		TIME_DURATION("timeduration")
+		TIME_DURATION("timeduration"),
+		METERS("Meters")
 		;
 		
 		private String strVal;

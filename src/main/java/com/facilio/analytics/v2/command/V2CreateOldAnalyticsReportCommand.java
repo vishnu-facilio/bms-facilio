@@ -1,6 +1,7 @@
 package com.facilio.analytics.v2.command;
 
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.context.V2DimensionContext;
 import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
@@ -16,6 +17,7 @@ import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -48,6 +50,7 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
         List<V2MeasuresContext> measures = report.getMeasures();
         JSONObject resourceAlias = new JSONObject();
         List<ReportDataPointContext> dataPoints = new ArrayList<>();
+        boolean sortdataPointFlag=true;
         for(V2MeasuresContext measure : measures)
         {
             ReportDataPointContext dataPoint = new ReportDataPointContext();
@@ -88,11 +91,17 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 String moduleName = measure.getModuleName();
                 if (moduleName == null) {
                     moduleName = FacilioConstants.ContextNames.RESOURCE;
+                    dataPoint.setModuleName(FacilioConstants.ContextNames.RESOURCE);
                 }
                 if (dataPoint.isFetchResource()) {
                     resourceAlias.put(reportContext.getxAlias(), moduleName);
+                    reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES,  resourceAlias);
                 }
-                dataPoint.setModuleName(FacilioConstants.ContextNames.RESOURCE);
+                else if(dataPoint.isFetchMeters()){
+                    resourceAlias.put(reportContext.getxAlias(), FacilioConstants.Meter.METER);
+                    reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES,  resourceAlias);
+                    dataPoint.setModuleName(FacilioConstants.Meter.METER);
+                }
                 dataPoint.setName(dataPoint.getyAxis().getField().getDisplayName());
                 dataPoint.setResourceName("");
                 /**
@@ -117,6 +126,30 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 FacilioModule parentModule = modBean.getModule(measure.getParentModuleName());
                 dataPoint.setParentReadingModule(parentModule);
             }
+            if (dataPoint.getxAxis().getField() != null && measure.getOrderByFunction() != null && measure.getOrderByFunction() != ReportDataPointContext.OrderByFunction.NONE) {
+                dataPoint.setDefaultSortPoint(true);
+                dataPoint.setOrderByFunc(measure.getOrderByFunction());
+                List<String> orderBy = new ArrayList<>();
+                orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
+                orderBy.add(dataPoint.getxAxis().getField().getName());
+                dataPoint.setOrderBy(orderBy);
+                if(measure.getLimit() != -1){
+                    dataPoint.setLimit(measure.getLimit());
+                }
+                sortdataPointFlag = false;
+            }
+            else if(sortdataPointFlag && report.getDimensions().getDimension_type() != V2DimensionContext.DimensionType.TIME.getIndex())
+            {
+                sortdataPointFlag = false;
+                dataPoint.setDefaultSortPoint(true);
+                dataPoint.setOrderByFunc(ReportDataPointContext.OrderByFunction.valueOf(3));
+                List<String> orderBy = new ArrayList<>();
+                orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
+                orderBy.add(dataPoint.getxAxis().getField().getName());
+                dataPoint.setOrderBy(orderBy);
+                dataPoint.setLimit(20);
+            }
+
             dataPoints.add(dataPoint);
         }
         reportContext.setDataPoints(dataPoints);
@@ -139,12 +172,7 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
             default:
                 break;
         }
-        if (aggr != null) {
-            if (report.getxAggrEnum() != null) {
-                if (report.getxAggrEnum() != BmsAggregateOperators.CommonAggregateOperator.ACTUAL || report.getxAggrEnum() != BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY) {
-                    throw new IllegalArgumentException("Report X Aggr cannot be specified explicitly for these modes");
-                }
-            }
+        if(aggr != null){
             report.setxAggr(aggr);
         }
     }

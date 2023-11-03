@@ -15,4 +15,5 @@ public class V2CardResponseContext {
     private JSONObject baseline;
     private V2TimeFilterContext timeFilter;
     private JSONObject styles;
+    private JSONObject cardStyle;
 }
