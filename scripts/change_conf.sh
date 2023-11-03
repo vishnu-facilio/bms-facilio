@@ -331,6 +331,15 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "uk-production-kafka" ]; then
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
 fi
 
+if [ "$DEPLOYMENT_GROUP_NAME" = "preprod-kafka" ]; then
+    echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+    cp $FACILIO_HOME/deployment-files/awsprops-preprod-kafka.properties $CONF_DIR/awsprops.properties
+    cp $FACILIO_HOME/deployment-files/log4j-preprod-kafka.properties $CLASSES_DIR/log4j.properties
+    cp $FACILIO_HOME/deployment-files/service-production.yml $CONF_DIR/service.yml
+    cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
+    echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
+fi
+
 if [ "$DEPLOYMENT_GROUP_NAME" = "uk-preprod-kafka" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/deployment-files/awsprops-preprod-uk-kafka.properties $CONF_DIR/awsprops.properties

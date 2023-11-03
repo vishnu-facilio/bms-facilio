@@ -153,6 +153,10 @@ files:
     destination: /home/facilio/deployment-files/
   - source: /awsprops-preprod-uk-kafka.properties
     destination: /home/facilio/deployment-files/
+  - source: /awsprops-preprod-kafka.properties
+    destination: /home/facilio/deployment-files/
+  - source: /log4j-preprod-kafka.properties
+    destination: /home/facilio/deployment-files/
   - source: /awsprops-stage-scheduler-uk.properties
     destination: /home/facilio/deployment-files/
   - source: /awsprops-stage-user-uk.properties
