@@ -334,7 +334,9 @@ public class ImportAPI {
 	}
 	
 	public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
-		
+		if(cellValue == null){
+			return null;
+		}
 		Object val = 0.0;
 		
 		// Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
