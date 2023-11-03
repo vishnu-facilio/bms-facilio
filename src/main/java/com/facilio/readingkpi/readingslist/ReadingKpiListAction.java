@@ -23,7 +23,7 @@ public class ReadingKpiListAction extends V3Action {
     private String groupBy; // Can have values kpi, asset, meter, site, space
     private String moduleName;
     private String searchModuleName;
-    private Long assetCategoryId;
+    private Long assetCategoryId; // can also be utility type id
     private Long resourceType;
 
     public String getGroupBy() {
@@ -54,6 +54,7 @@ public class ReadingKpiListAction extends V3Action {
         context.put(FacilioConstants.ContextNames.REPORT_GROUP_BY, getGroupBy());
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getSearchModuleName());
         context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+        context.put(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID, getAssetCategoryId());
         setPaginationAndFetchCount(context);
         addFiltersToContext(context);
         chain.execute();
@@ -69,7 +70,7 @@ public class ReadingKpiListAction extends V3Action {
         context.put(FacilioConstants.ContextNames.SEARCH_QUERY, getSearchText());
         context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
         context.put(FacilioConstants.ContextNames.FREQUENCY, getFrequencies());
-        context.put(FacilioConstants.ContextNames.ASSET_CATEGORY_ID, getAssetCategoryId());
+        context.put(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID, getAssetCategoryId());
 
 
         chain.execute();

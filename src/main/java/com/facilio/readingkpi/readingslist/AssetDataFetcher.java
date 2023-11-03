@@ -33,7 +33,7 @@ public class AssetDataFetcher extends KpiAnalyticsDataFetcher {
                 .innerJoin(resourceModule.getTableName())
                 .on(resourceModule.getTableName() + ".ID=" + assetModule.getTableName() + ".ID")
                 .orderBy(assetModule.getTableName() + ".ID DESC");
-        Long categoryId = (Long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY_ID);
+        Long categoryId = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
         if (categoryId != null) {
             builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("category"), Collections.singleton(categoryId), NumberOperators.EQUALS));
         }

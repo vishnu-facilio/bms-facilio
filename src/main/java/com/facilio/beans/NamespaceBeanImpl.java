@@ -83,8 +83,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
         long id = insertBuilder.insert(FieldUtil.getAsProperties(ns));
         ns.setId(id);
 
-        NamespaceAPI.addInclusions(ns,resourceType);
-
+        NamespaceAPI.addInclusions(ns);
         return id;
     }
 
@@ -221,7 +220,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
         if (CollectionUtils.isEmpty(includedAssetIds)) {
             NamespaceAPI.deleteExistingInclusionRecords(ns);
         }
-        NamespaceAPI.addInclusions(ns,resourceType);
+        NamespaceAPI.addInclusions(ns);
     }
 
 }

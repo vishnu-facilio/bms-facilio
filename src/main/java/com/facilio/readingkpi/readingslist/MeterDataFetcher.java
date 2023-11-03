@@ -29,7 +29,7 @@ public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
                 .table(module.getTableName())
                 .orderBy(module.getTableName() + ".ID DESC");
 
-        Long utilityType = (Long) context.get(FacilioConstants.Meter.UTILITY_TYPE);
+        Long utilityType = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
         if (utilityType != null) {
             builder.andCondition(CriteriaAPI.getCondition(utilityTypeField, String.valueOf(utilityType), PickListOperators.IS));
         }

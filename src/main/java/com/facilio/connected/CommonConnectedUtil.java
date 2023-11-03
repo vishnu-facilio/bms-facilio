@@ -453,6 +453,26 @@ public class CommonConnectedUtil {
         return null;
     }
 
+    public static Long getCategoryForResource(Long resourceId, ResourceType resourceType) throws Exception {
+        switch (resourceType) {
+            case ASSET_CATEGORY:
+                return Optional.ofNullable(AssetsAPI.getAssetInfo(resourceId))
+                        .map(AssetContext::getCategory)
+                        .map(ModuleBaseWithCustomFields::getId)
+                        .orElse(-1L);
+            case METER_CATEGORY:
+                return Optional.ofNullable(MetersAPI.getMeter(resourceId))
+                        .map(V3MeterContext::getUtilityType)
+                        .map(ModuleBaseWithCustomFields::getId)
+                        .orElse(-1L);
+            case SPACE_CATEGORY:
+            case SITE:
+                return -1L;
+            default:
+                throw new IllegalStateException("Unexpected value: " + resourceType);
+        }
+    }
+
     public static List<Long> getResourceIdsBasedOnCategory(ResourceType resourceType, Long categoryId) throws Exception {
         switch (resourceType) {
             case ASSET_CATEGORY:

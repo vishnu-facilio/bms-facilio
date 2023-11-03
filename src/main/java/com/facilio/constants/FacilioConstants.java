@@ -4456,7 +4456,8 @@ public class FacilioConstants {
 		public static final String KPI_FILTER_CRITERIA = "kpiFilterCriteria";
 		public static final String KPI_RECORDS = "kpiRecords";
 		public static final String REALTIME_KPI_RECORDS = "realTimeKpiRecords";
-	}
+		public static final String RESOURCE_CATEGORY_ID = "resourceCategoryId";
+    }
 
 
 	public static class ReadingRules {

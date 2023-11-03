@@ -843,7 +843,7 @@ public class ReadingKpiAPI {
 
     public static void addFilterToBuilder(Context context, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
         String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
-        if (StringUtils.isNotEmpty(searchText)) {
+        if (fieldsMap != null  && StringUtils.isNotEmpty(searchText)) {
             builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchText, StringOperators.CONTAINS));
         }
 
@@ -883,7 +883,7 @@ public class ReadingKpiAPI {
         return selectDistinctField;
     }
 
-    private static GenericSelectRecordBuilder addPaginationPropsToBuilder(Context context, GenericSelectRecordBuilder builder) {
+    public static GenericSelectRecordBuilder addPaginationPropsToBuilder(Context context, GenericSelectRecordBuilder builder) {
         Integer page = (Integer) context.get(FacilioConstants.ContextNames.PAGE);
         Integer perPage = (Integer) context.get(FacilioConstants.ContextNames.PER_PAGE);
 

@@ -258,6 +258,13 @@ public class MetersAPI {
 		return updateBuilder.update(meter);
 	}
 
+	public static V3MeterContext getMeter(Long meterId) throws Exception {
+		List<V3MeterContext> meters = getMeters(Collections.singletonList(meterId));
+		if (CollectionUtils.isNotEmpty(meters)) {
+			return meters.get(0);
+		}
+		throw new IllegalArgumentException("Invalid meter Id");
+	}
 
 	public static List<V3MeterContext> getMeters(List<Long> meterIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

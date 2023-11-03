@@ -234,16 +234,12 @@ public class NamespaceAPI {
         return props;
     }
 
-    public static void addInclusions(NameSpaceContext ns, ResourceType resourceType) throws Exception {
+    public static void addInclusions(NameSpaceContext ns) throws Exception {
         List<Long> assetIds = ns.getIncludedAssetIds();
         if (CollectionUtils.isNotEmpty(assetIds)) {
-            List<Long> filteredResourceIds = CommonConnectedUtil.getResourcesBasedOnType(resourceType, assetIds);
-
-            throwIfAssetNotFound(assetIds, filteredResourceIds);
-
             deleteExistingInclusionRecords(ns);
 
-            List<Map<String, Object>> inclusionList = getInclusionList(ns.getId(), filteredResourceIds);
+            List<Map<String, Object>> inclusionList = getInclusionList(ns.getId(), assetIds);
 
             new GenericInsertRecordBuilder()
                     .fields(NamespaceModuleAndFieldFactory.getNamespaceInclusionFields())
@@ -270,18 +266,6 @@ public class NamespaceAPI {
         }
 
         return resourceIds;
-    }
-
-
-    private static void throwIfAssetNotFound(List<Long> assetIds, List<Long> filteredResourceIds) {
-        if (assetIds.size() != filteredResourceIds.size()) {
-            for (Long asset : assetIds) {
-                boolean present = filteredResourceIds.stream().filter(assetCtx -> assetCtx == asset).findAny().isPresent();
-                if (!present) {
-                    throw new RuntimeException("Asset (" + asset + ") is not found");
-                }
-            }
-        }
     }
 
     public static List<Long> getFieldIdsForNamespace(Long nsId) throws Exception {

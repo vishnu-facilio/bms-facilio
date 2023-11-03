@@ -23,6 +23,17 @@ public class ReadingKPIDataFetcher extends KpiAnalyticsDataFetcher {
         super(module, context, additionalSelectFields);
     }
 
+    /**
+     * Query:
+     * SELECT DISTINCT(ReadingKPI.ID) AS `id`, ReadingKPI.NAME AS `name`, ReadingKPI.KPI_TYPE AS `kpiType`, ReadingKPI.FREQUENCY AS `frequency`
+     * FROM ReadingKPI
+     * LEFT JOIN Reading_Data_Meta ON Reading_Data_Meta.FIELD_ID=ReadingKPI.READING_FIELD_ID
+     * WHERE ReadingKPI.ORGID = 1 AND
+     * ReadingKPI.STATUS = true AND (Reading_Data_Meta.VALUE IS NULL OR Reading_Data_Meta.VALUE != -1)
+     * AND ReadingKPI.RESOURCE_TYPE = resType
+     * AND (ReadingKPI.SYS_DELETED IS NULL OR ReadingKPI.SYS_DELETED = false)
+     * LIMIT 20 OFFSET 0;
+     */
     @Override
     public GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

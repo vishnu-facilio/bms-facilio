@@ -1,9 +1,9 @@
 package com.facilio.readingkpi.readingslist;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
@@ -14,7 +14,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
@@ -22,7 +21,6 @@ import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.KPIType;
-import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
@@ -116,7 +114,7 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule kpiModule = modBean.getModule(FacilioConstants.ReadingKpi.READING_KPI);
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingKpi.READING_KPI);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+        Map<String, FacilioField> kpiFieldsMap = FieldFactory.getAsMap(fields);
 
         FacilioModule nsModule = NamespaceModuleAndFieldFactory.getNamespaceModule();
         FacilioModule nsInclModule = NamespaceModuleAndFieldFactory.getNamespaceInclusionModule();
@@ -128,7 +126,13 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
         resIdCriteria.addAndCondition(CriteriaAPI.getCondition(nsInclFieldsMap.get("resourceId"), Collections.singleton(recordId), NumberOperators.EQUALS));
         resIdCriteria.addOrCondition(CriteriaAPI.getCondition(nsInclFieldsMap.get("resourceId"), CommonOperators.IS_EMPTY));
 
-        Long categoryId = (Long) context.getOrDefault(FacilioConstants.ContextNames.ASSET_CATEGORY_ID, getCategoryForResource(recordId, context));
+        String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
+        ResourceType resourceType = ResourceType.getResourceTypeFromModuleName(groupBy);
+        Long categoryId = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
+        if (categoryId == null) {
+            categoryId = CommonConnectedUtil.getCategoryForResource(recordId, resourceType);
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(kpiModule.getTableName())
                 .innerJoin(nsModule.getTableName())
@@ -136,34 +140,18 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
                 .leftJoin(nsInclModule.getTableName())
                 .on(nsModule.getTableName() + ".ID=" + nsInclModule.getTableName() + ".NAMESPACE_ID")
                 .andCriteria(resIdCriteria)
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("kpiType"), String.valueOf(KPIType.DYNAMIC.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(kpiFieldsMap.get("kpiType"), String.valueOf(KPIType.DYNAMIC.getIndex()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("type"), String.valueOf(NSType.KPI_RULE.getIndex()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(kpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(Boolean.TRUE), BooleanOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(kpiFieldsMap.get("status"), String.valueOf(Boolean.TRUE), BooleanOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(kpiFieldsMap.get("resourceType"), String.valueOf(resourceType.getIndex()), NumberOperators.EQUALS));
         if (categoryId > 0) {
-            builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
+            builder.andCondition(CriteriaAPI.getCondition(kpiFieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
         }
 
-        ReadingKpiAPI.addFilterToBuilder(context, fieldsMap, builder);
+        ReadingKpiAPI.addFilterToBuilder(context, kpiFieldsMap, builder);
         return fetchCount
                 ? getCountBuilder(builder, kpiModule)
-                : getDataBuilder(context, kpiModule, fieldsMap, builder);
-    }
-
-    private static Long getCategoryForResource(Long recordId, Context context) throws Exception {
-        String groupBy = (String) context.get(FacilioConstants.ContextNames.REPORT_GROUP_BY);
-        switch (groupBy) {
-            case FacilioConstants.ContextNames.ASSET:
-                return Optional.ofNullable(AssetsAPI.getAssetInfo(recordId))
-                        .map(AssetContext::getCategory)
-                        .map(ModuleBaseWithCustomFields::getId)
-                        .orElse(-1L);
-            case FacilioConstants.ContextNames.SITE:
-            case FacilioConstants.Meter.METER:
-            case FacilioConstants.ContextNames.KPI:
-                return -1L;
-            default:
-                throw new IllegalStateException("Unexpected value: " + groupBy);
-        }
+                : getDataBuilder(context, kpiModule, kpiFieldsMap, builder);
     }
 }
