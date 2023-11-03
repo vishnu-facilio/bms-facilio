@@ -633,7 +633,6 @@ public class ViewAPI {
 				else {
 					viewProp.put("groupCriteriaId", -99);
 				}
-				addGroupByChildModuleIdInViewProp(view, viewProp);
 
 				if(isNew)
 				{
@@ -718,8 +717,6 @@ public class ViewAPI {
 					else {
 						timeLineViewProps.put("groupCriteriaId", -99);
 					}
-
-					addGroupByChildModuleIdInViewProp(view, viewProp);
 
 					FacilioModule timelineViewModule = ModuleFactory.getTimelineViewModule();
 					List<FacilioField> timelineViewFields = FieldFactory.getTimelineViewFields(timelineViewModule);
