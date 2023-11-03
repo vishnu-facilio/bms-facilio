@@ -7,6 +7,14 @@ import com.facilio.bmsconsole.context.ServiceCatalogGroupContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
+import java.util.Map;
 
 public class ServiceCatalogAction extends FacilioAction {
 
@@ -204,4 +212,16 @@ public class ServiceCatalogAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.MODULE_LIST, context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return SUCCESS;
     }
+
+    public static List<Map<String, Object>> getServiceCatalogGroupProp() throws Exception {
+        FacilioModule module = ModuleFactory.getServiceCatalogGroupModule();
+        List<FacilioField> fields = FieldFactory.getServiceCatalogGroupFields();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .select(fields);
+
+        List<Map<String, Object>> props = builder.get();
+        return props;
+    }
+
 }

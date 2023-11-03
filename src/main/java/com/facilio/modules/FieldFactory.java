@@ -10088,6 +10088,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getIdField(module));
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
 
         return fields;
     }

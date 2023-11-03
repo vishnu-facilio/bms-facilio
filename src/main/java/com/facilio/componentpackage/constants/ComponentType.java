@@ -74,6 +74,8 @@ public enum ComponentType implements FacilioIntEnum {
     PERMISSION_SET(PermissionSetPackageImpl.class,MODULE,false),
     PERMISSION_SET_CONFIG(PermissionSetConfigPackageImpl.class,MODULE,false),
     PEOPLE_PERMISSION_SET_CONFIG(PeoplePermissionSetConfigPackageImpl.class,MODULE,false),
+    SERVICE_CATALOG_GROUP(ServiceCatalogGroupPackageBeanImpl.class,null,false),
+    SERVICE_CATALOG_ITEM(ServiceCatalogItemPackageImpl.class,null,false)
     ;
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
@@ -138,6 +140,8 @@ public enum ComponentType implements FacilioIntEnum {
             add(PERMISSION_SET);
             add(PERMISSION_SET_CONFIG);
             add(PEOPLE_PERMISSION_SET_CONFIG);
+            add(SERVICE_CATALOG_GROUP);
+            add(SERVICE_CATALOG_ITEM);
         }};
         return componentOrder;
     }

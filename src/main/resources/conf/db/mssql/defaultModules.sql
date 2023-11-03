@@ -10892,7 +10892,7 @@ INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NA
 INSERT INTO BooleanFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 -- Adding default complaint type service category
-INSERT INTO Service_Catalog_Group (ORGID, NAME, DESCRIPTION) VALUES (${orgId}, 'complaint', 'Complaint category');
+INSERT INTO Service_Catalog_Group (ORGID, NAME, DESCRIPTION, LINK_NAME) VALUES (${orgId}, 'complaint', 'Complaint category',"complaintcatagory");
 
 
 --Inventory Requests default stateflow

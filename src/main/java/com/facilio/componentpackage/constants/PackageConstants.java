@@ -772,4 +772,18 @@ public class PackageConstants {
         public static final String PERMISSION_SET_LINK_NAME = "Permission_Set_Link_Name";
         public static final String PEOPLE_MAIL = "People_Mail";
     }
+    
+    public static final class ServiceCatalogConstants{
+        public static final String NAME="Name";
+        public static final String DESCRIPTION="Description";
+        public static final String LINK_NAME="LinkName";
+        public static final String GROUP_LINK_NAME="GroupLinkName";
+        public static final String TYPE="Type";
+        public static final String MODULE_NAME="ModuleName";
+        public static final String FORM_NAME="FormName";
+        public static final String EXTERNAL_URL="ExternalURL";
+        public static final String APP_NAME="AppName";
+        public static final String SHARING="Sharing";
+        public static final String PHOTO="Photo";
+    }
 }
