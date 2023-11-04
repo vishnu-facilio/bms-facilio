@@ -1660,6 +1660,21 @@ public class ReadingsAPI {
 		FacilioChain getCategoryReadingChain = FacilioChainFactory.getCategoryReadingsChain();
 		getCategoryReadingChain.execute(context);
 
+		return getFacilioFieldList(context);
+	}
+
+	public static List<FacilioField> getV2getUtilityTypeReadings(Long utilityType) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, false);
+		context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, utilityType);
+
+		FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
+		getCategoryReadingChain.execute(context);
+
+		return getFacilioFieldList(context);
+	}
+
+	private static List<FacilioField> getFacilioFieldList(FacilioContext context) {
 		List<FacilioModule> facilioModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		return facilioModules.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
 	}

@@ -3,7 +3,12 @@ package com.facilio.connected.scopeHandler;
 import com.facilio.bmsconsole.util.CommissioningApi;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.V3Context;
+import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.List;
 import java.util.Map;
 
 import java.util.Set;
@@ -48,4 +53,20 @@ public class SpaceCommissioningHandler implements ScopeCommissioningHandler {
     public Map<Long,String> getChildTypes(Set<Long>categoryIds) throws Exception{
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public Map<String, FacilioField> getReadings(Long id) throws Exception {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public Pair<Long, Long> getParentIdAndCategoryId(V3Context v3Context) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public FacilioField getTypeField() {
+        throw new RuntimeException("Not implemented");
+    }
+
 }

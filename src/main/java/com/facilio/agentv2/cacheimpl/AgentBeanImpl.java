@@ -178,6 +178,15 @@ public class AgentBeanImpl implements AgentBean {
             }
         }
 
+        if (containsValueCheck(AgentConstants.READING_SCOPE, jsonObject)) {
+            String var = jsonObject.get(AgentConstants.READING_SCOPE).toString();
+            int scope = Integer.parseInt(var);
+            if (agent.getReadingScope() != scope) {
+                agent.setReadingScope(scope);
+                agent.setLastModifiedTime(currTime);
+            }
+        }
+
         if (containsValueCheck(AgentConstants.AUTO_MAPPING_PARENT_FIELD_ID, jsonObject)) {
             String var = jsonObject.get(AgentConstants.AUTO_MAPPING_PARENT_FIELD_ID).toString();
             long newAutoMappingParentFieldId = Long.parseLong(var);

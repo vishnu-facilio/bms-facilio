@@ -16,10 +16,9 @@ import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.connected.ResourceType;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -30,7 +29,6 @@ import com.facilio.util.AckUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -210,7 +208,9 @@ public class PointsUtil {
         ReadingDataMeta meta = new ReadingDataMeta();
         meta.setResourceId(point.getResourceId());
         meta.setFieldId(point.getFieldId());
-
+        if(point.getUnit() > 0){
+            meta.setUnit(point.getUnit());
+        }
         meta.setInputType(ReadingDataMeta.ReadingInputType.CONTROLLER_MAPPED);
         if (point.isWritable()) {
             meta.setReadingType(ReadingDataMeta.ReadingType.WRITE);
@@ -219,18 +219,19 @@ public class PointsUtil {
         return meta;
     }
 
-    public static Pair<Long, Long> getCategoryAndParentId(long parentFieldId, String fieldValue) throws Exception {
+    public static Pair<Long, Long> getCategoryAndParentId(int scope, long parentFieldId, String fieldValue) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-        List<FacilioField> fields = getAssetFields(module);
+        ResourceType resourceType = ResourceType.valueOf(scope);
+        FacilioModule module = modBean.getModule(resourceType.getModuleName());
+        List<FacilioField> fields = getFields(module, resourceType);
         V3Context parent = getParentUsingFieldId(module, fields, parentFieldId, fieldValue);
+
         if (parent == null) {
             LOGGER.info("Auto Commission :: Parent is not found with field value of " + fieldValue + ", field id " + parentFieldId);
             return null;
         }
-        V3AssetContext assetContext = (V3AssetContext) parent;
-        Pair<Long, Long> pair = new ImmutablePair<>(assetContext.getCategory().getId(), assetContext.getId());
-        return pair;
+
+        return resourceType.getScopeHandler().getParentIdAndCategoryId(parent);
     }
 
     private static V3Context getParentUsingFieldId(FacilioModule module, List<FacilioField> fields, long fieldId, String fieldValue) throws Exception {
@@ -257,10 +258,10 @@ public class PointsUtil {
         return beanClass;
     }
 
-    private static List<FacilioField> getAssetFields(FacilioModule module) {
+    private static List<FacilioField> getFields(FacilioModule module, ResourceType resourceType) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
-        fields.add(FieldFactory.getField("category", "CATEGORY", module, FieldType.LOOKUP));
         fields.add(FieldFactory.getIdField(module));
+        fields.add(resourceType.getScopeHandler().getTypeField());
         return fields;
     }
 }

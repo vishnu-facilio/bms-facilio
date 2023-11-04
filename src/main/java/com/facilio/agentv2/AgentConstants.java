@@ -120,6 +120,7 @@ public class AgentConstants
     public static final String DISPLAY_NAME = "displayName";
     public static final String ALLOW_AUTO_MAPPING = "allowAutoMapping";
     public static final String AUTO_MAPPING_PARENT_FIELD_ID = "autoMappingParentFieldId";
+    public static final String SCOPE = "scope";
     public static final String DESCRIPTION = "description";
     public static final String POINT_TYPE = "pointType";
     public static final String DEVICE_NAME = "deviceName";

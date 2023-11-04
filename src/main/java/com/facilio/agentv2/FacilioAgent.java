@@ -3,6 +3,7 @@ package com.facilio.agentv2;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.FacilioIntEnum;
 import org.json.simple.JSONObject;
 
@@ -63,6 +64,8 @@ public class FacilioAgent implements Serializable {
     @JsonInclude
     private long autoMappingParentFieldId;
     @JsonInclude
+    private ResourceType readingScope;
+    @JsonInclude
     private boolean allowAutoMapping;
 
     public boolean isAllowAutoMapping() {
@@ -79,6 +82,21 @@ public class FacilioAgent implements Serializable {
 
     public void setAutoMappingParentFieldId(long autoMappingParentFieldId) {
         this.autoMappingParentFieldId = autoMappingParentFieldId;
+    }
+
+    public int getReadingScope() {
+        if (readingScope != null) {
+            return readingScope.getIndex();
+        }
+        return -1;
+    }
+
+    public ResourceType getReadingScopeEnum(){
+        return readingScope;
+    }
+
+    public void setReadingScope(int readingScope) {
+        this.readingScope = ResourceType.valueOf(readingScope);
     }
 
     public Integer getControllerAlarmIntervalInMins() {

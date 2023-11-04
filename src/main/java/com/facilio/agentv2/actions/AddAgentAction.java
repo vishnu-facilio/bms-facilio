@@ -28,21 +28,23 @@ import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
 
-@Setter @Getter
+@Setter
+@Getter
 public class AddAgentAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AddAgentAction.class.getName());
-    @Size(min = 0, max = 100,message = "Agent name must have 3-100 characters")
+    @Size(min = 0, max = 100, message = "Agent name must have 3-100 characters")
     private String agentName;
-    @Min(value = 1,message = "Data interval can't be less than 1")
+    @Min(value = 1, message = "Data interval can't be less than 1")
     @NotNull
     private long dataInterval;
     private long messageSourceId;
     private String subscribeTopics;
     private long siteId;
     private long autoMappingParentFieldId;
+    private int readingScope;
     private String type;
     private String displayName;
-    private int agentType=-1;
+    private int agentType = -1;
     private String userName;
     private String password;
     private String url;
@@ -52,19 +54,20 @@ public class AddAgentAction extends AgentActionV2 {
     private String ipAddress;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
     private boolean allowAutoMapping;
+
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioContext context = addAgentChain.getContext();
             FacilioAgent agent = getFacilioAgent();
-            context.put(AgentConstants.AGENT,agent);
+            context.put(AgentConstants.AGENT, agent);
             addAgentChain.execute();
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
-        } catch (Exception e){
-            LOGGER.info("Exception while adding agent",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResult(AgentConstants.RESULT,ERROR);
+        } catch (Exception e) {
+            LOGGER.info("Exception while adding agent", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            setResult(AgentConstants.RESULT, ERROR);
             internalError();
         }
         return SUCCESS;
@@ -82,15 +85,18 @@ public class AddAgentAction extends AgentActionV2 {
         agent.setMessageSourceId(getMessageSourceId());
         agent.setSubscribeTopics(getSubscribeTopics());
         agent.setWritable(isAgentWritable());
-        switch (AgentType.valueOf(agentType)){
+        switch (AgentType.valueOf(agentType)) {
             case REST:
                 long orgId = currentOrg.getOrgId();
                 long inboundId = getInboundId(agent, orgId);
                 agent.setInboundConnectionId(inboundId);
             case CLOUD:
             case CUSTOM:
-                agent.setAllowAutoMapping(isAllowAutoMapping());
-                agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
+                if(isAllowAutoMapping()){
+                    agent.setAllowAutoMapping(true);
+                    agent.setReadingScope(getReadingScope());
+                    agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
+                }
                 agent.setConnected(true);
                 break;
             case RDM:
@@ -135,24 +141,24 @@ public class AddAgentAction extends AgentActionV2 {
         return name.toLowerCase().replaceAll("[^a-zA-Z0-9\\-]+", "");
     }
 
-    private String generateKey () {
-    	SecureRandom random = new SecureRandom();
-        byte[] bytes = new byte[256/8];
+    private String generateKey() {
+        SecureRandom random = new SecureRandom();
+        byte[] bytes = new byte[256 / 8];
         random.nextBytes(bytes);
-    	return DatatypeConverter.printHexBinary(bytes).toLowerCase();
+        return DatatypeConverter.printHexBinary(bytes).toLowerCase();
     }
 
-    private long insertApiKey(String agentName,long orgId) throws Exception {
-        Map<String,Object> prop = new HashMap<>();
-        prop.put(AgentConstants.API_KEY,generateKey());
-        prop.put("sender",agentName);
-        prop.put(AgentConstants.NAME,agentName);
-        prop.put(AgentConstants.CREATED_TIME,System.currentTimeMillis());
-        prop.put("authType",1);
-        prop.put(AgentConstants.ORGID,orgId);
+    private long insertApiKey(String agentName, long orgId) throws Exception {
+        Map<String, Object> prop = new HashMap<>();
+        prop.put(AgentConstants.API_KEY, generateKey());
+        prop.put("sender", agentName);
+        prop.put(AgentConstants.NAME, agentName);
+        prop.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
+        prop.put("authType", 1);
+        prop.put(AgentConstants.ORGID, orgId);
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
-        .fields(FieldFactory.getInboundConnectionsFields())
-        .table(ModuleFactory.getInboundConnectionsModule().getTableName());
-       return builder.insert(prop);
+                .fields(FieldFactory.getInboundConnectionsFields())
+                .table(ModuleFactory.getInboundConnectionsModule().getTableName());
+        return builder.insert(prop);
     }
 }
