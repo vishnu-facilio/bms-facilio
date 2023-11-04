@@ -41,6 +41,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.esapi.ESAPI;
+import org.owasp.esapi.codecs.MySQLCodec;
 
 import java.time.Instant;
 import java.util.*;
@@ -953,7 +955,7 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
                     canBeEmptyCriteria.addOrCondition(CriteriaAPI.getCondition(tableAlias+"."+primaryField.getName(),primaryField.getName(),primaryValue,StringOperators.IS));
                     selectBuilder.andCriteria(canBeEmptyCriteria);
                 }else{
-                    set = appendSingleQuotesTString(set);
+                    set = encodeAndAppendSingleQuotesToString(set);
                     String primaryValue = StringUtils.join(set, ",");
                     selectBuilder.innerJoin(primaryField.getTableName()).alias(tableAlias.toString())
                             .on(tableAlias+".ID="+childLookupField.getCompleteColumnName()+" AND "+tableAlias+"."+primaryField.getName()+" IN ("+primaryValue+")");
@@ -1085,7 +1087,8 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
         if (CollectionUtils.isEmpty(siteNames)) {
             return Collections.EMPTY_MAP;
         }
-
+        siteNames = siteNames.stream().map(siteName -> siteName.replace(",", StringOperators.DELIMITED_COMMA))
+                .collect(Collectors.toSet());
         List<SiteContext> sites = SpaceAPI.getSitesByNameWithoutScoping(siteNames);
 
         Map<String, SiteContext> sitesMap = new HashMap<>();
@@ -1210,11 +1213,16 @@ public class V3ProcessMultiImportCommand extends FacilioCommand {
 
         return loadLookUpExtraSelectFields;
     }
-    private Set<String> appendSingleQuotesTString(Set<String> set){
+    private Set<String> encodeAndAppendSingleQuotesToString(Set<String> set){
         if(CollectionUtils.isEmpty(set)){
             return set;
         }
-        return set.stream().map(s->"\'"+s+"\'").collect(Collectors.toSet());
+        return set.stream().map(s->{
+                    s = s.replace(StringOperators.DELIMITED_COMMA,",");
+                    return "\'"+ ESAPI.encoder().encodeForSQL(new MySQLCodec(MySQLCodec.Mode.STANDARD), s)+ "\'";
+
+                }
+        ).collect(Collectors.toSet());
     }
     private String getLookupIdentifierData(BaseLookupField lookupField,String data) throws Exception{
         String lookupFieldName = lookupField.getName();

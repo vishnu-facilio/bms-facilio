@@ -253,7 +253,8 @@ public class FilterMultiImportDataCommand extends FacilioCommand {
             Object value = datum.get(field.getName());
             switch (field.getDataTypeEnum()) {
                 case STRING:
-                    criteria.addAndCondition(CriteriaAPI.getCondition(field, String.valueOf(value), StringOperators.IS));
+                    String strValue = value.toString().replace(",", StringOperators.DELIMITED_COMMA);
+                    criteria.addAndCondition(CriteriaAPI.getCondition(field, strValue, StringOperators.IS));
                     break;
 
                 case ID:

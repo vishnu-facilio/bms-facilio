@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -223,7 +224,8 @@ public abstract class BaseMultiImportProcessCommand extends FacilioCommand {
         if (CollectionUtils.isEmpty(siteNames)) {
             return Collections.EMPTY_MAP;
         }
-
+        siteNames = siteNames.stream().map(siteName -> siteName.replace(",", StringOperators.DELIMITED_COMMA))
+                .collect(Collectors.toSet());
         List<SiteContext> sites = SpaceAPI.getSitesByNameWithoutScoping(siteNames);
 
         Map<String, SiteContext> sitesMap = new HashMap<>();
