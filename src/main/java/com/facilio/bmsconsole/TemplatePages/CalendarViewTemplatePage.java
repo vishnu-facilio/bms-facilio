@@ -132,8 +132,8 @@ public class CalendarViewTemplatePage implements TemplatePageFactory {
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("asset", "Asset", "")
-                .addWidget("assetwidget", "Asset", PageWidget.WidgetType.CALENDAR_ASSOCIATION_LIST, "flexiblewebcalendarassociationlist_8", 0, 0, assetTabWidgetParam, null)
+                .addSection("asset", "Assets", "")
+                .addWidget("assetwidget", "Assets", PageWidget.WidgetType.CALENDAR_ASSOCIATION_LIST, "flexiblewebcalendarassociationlist_8", 0, 0, assetTabWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("sites", "Sites", "")
