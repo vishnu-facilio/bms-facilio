@@ -38,9 +38,14 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
         Map<String,FacilioModule> allSystemModules = (Map<String,FacilioModule>) context.get(DataMigrationConstants.ALL_SYSTEM_MODULES);
         int limit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 5000);
 
+        int actualLimit = 0;
+        boolean getLimitedRecords = true;
         if (limit <= 0) {
+            getLimitedRecords = false;
             limit = 5000;
         }
+
+        actualLimit = getLimitedRecords ? limit : limit+1;
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -85,7 +90,7 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
 
                 List<Map<String, Object>> props = new ArrayList<>();
                 try {
-                    props = sourceConnection.getModuleData(sourceModule, sourceFields, sourceSupplements, offset, limit, null, moduleCriteria);
+                    props = sourceConnection.getModuleData(sourceModule, sourceFields, sourceSupplements, offset, actualLimit, null, moduleCriteria);
                 } catch (Exception e) {
                     isModuleMigrated = true;
                     LOGGER.error("Get record error for module : " + moduleName, e);
@@ -122,6 +127,10 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
 
                 }
             } while (!isModuleMigrated);
+
+            if(CollectionUtils.isEmpty(propsForCsv)){
+                continue;
+            }
 
             // module data csv creation
             moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords, allMigrationModuleNames);

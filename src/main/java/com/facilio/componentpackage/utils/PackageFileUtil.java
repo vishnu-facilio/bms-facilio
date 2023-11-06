@@ -88,6 +88,7 @@ public class PackageFileUtil {
                     if (Objects.equals(fileContext.getExtension(), "xml")) {
                         content = fileContext.getXmlContent().getAsXMLString();
                     } else if (Objects.equals(fileContext.getExtension(), "csv")) {
+                        LOGGER.info("Zipped csv file name : " + fileContext.getName());
                         File fileContent = fileContext.getCsvContent();
                         String csvFilePath = fileContent.getPath();
                         StringBuilder csvContent = new StringBuilder();

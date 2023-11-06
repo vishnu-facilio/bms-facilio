@@ -110,10 +110,17 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
                     }
                 } while (!isModuleMigrated);
                 toBeFetchRecords.remove(moduleName);
+
+                if(CollectionUtils.isEmpty(propsForCsv)){
+                    continue;
+                }
+
                 if (allModuleNamesXml.contains(moduleName)) {
                     String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
                     moduleCsvFile = dataFolder.getFile(moduleFileName).getCsvContent();
                     PackageFileUtil.updateCsvFile(sourceModule, moduleCsvFile, propsForCsv, sourceFields, fetchedRecords, numberLookupDetails, toBeFetchRecords,allDataMigrationModules);
+                    LOGGER.info("File updated for : " +moduleName + " : update props " + propsForCsv);
+
                 } else {
 
                     PackageFileContext dataConfigFileContext = rootFolder.getFile(PackageConstants.DATA_CONF_FILE_NAME + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN);
@@ -122,7 +129,7 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
                     XMLBuilder moduleNamesXml = dataXML.element(PackageConstants.MODULE);
                     moduleNamesXml.attr(PackageConstants.NAME, moduleName);
                     moduleNamesXml.text(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN);
-                    LOGGER.info(moduleName + " : update props " + propsForCsv);
+                    LOGGER.info("File created for : " +moduleName + " : update props " + propsForCsv);
                     moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords,allDataMigrationModules);
                     dataFolder.addFile(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(moduleName, PackageConstants.CSV_FILE_EXTN, moduleCsvFile));
                 }
