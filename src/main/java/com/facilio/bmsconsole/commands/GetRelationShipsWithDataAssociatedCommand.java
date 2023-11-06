@@ -16,6 +16,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.context.RelationContext;
+import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
@@ -52,7 +53,7 @@ public class GetRelationShipsWithDataAssociatedCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.RELATIONSHIP_LIST,getRelationShips(perPage,offset,fromModuleName,recordId,category));
         return false;
     }
-    public static List<RelationContext> getRelationShips(int perPage , int offset, String moduleName,Long recordId,RelationContext.RelationCategory category) throws Exception{
+    public static List<RelationRequestContext> getRelationShips(int perPage , int offset, String moduleName,Long recordId,RelationContext.RelationCategory category) throws Exception{
         FacilioModule relationShipModule=ModuleFactory.getRelationModule();
         FacilioModule relationMappingShipModule=ModuleFactory.getRelationMappingModule();
         FacilioModule customRelationModule=ModuleFactory.getCustomRelationModule();
@@ -93,6 +94,7 @@ public class GetRelationShipsWithDataAssociatedCommand extends FacilioCommand {
             }
             relationships.add(relation);
         }
-        return relationships;
+        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationships, fromModule.getModuleId());
+        return relationRequests;
     }
 }
