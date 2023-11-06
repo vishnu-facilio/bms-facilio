@@ -140,6 +140,7 @@ public abstract class FileStore {
 	protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
 
 	public static final String DEFAULT_NAMESPACE = "default";
+	public static final String DEFAULT_FILE_NAME= "no_name";
 	public static final String DEFAULT_NAMESPACE_ORPHAN = "formOrphanFile";
 
 	private long orgId;
@@ -400,11 +401,17 @@ public abstract class FileStore {
 	protected abstract String getRootPath(String namespace);
 
 	public long addFile (String fileName, File file, String contentType) throws Exception {
+		if(StringUtils.isEmpty(fileName)){
+			fileName = DEFAULT_FILE_NAME;
+		}
 		return addFile(DEFAULT_NAMESPACE,fileName, file, contentType);
 	}
 	public abstract long addFile(String namespace, String fileName, File file, String contentType) throws Exception;
 
 	public long addFile(String fileName, File file, String contentType, int[] resize) throws Exception {
+		if(StringUtils.isEmpty(fileName)){
+			fileName = DEFAULT_FILE_NAME;
+		}
 		return addFile(DEFAULT_NAMESPACE, fileName, file, contentType, resize);
 	}
 	public abstract long addFile(String namespace, String fileName, File file, String contentType, int[] resize) throws Exception;
@@ -415,6 +422,9 @@ public abstract class FileStore {
 	public abstract long addOrphanedFile(String namespace, String fileName, File file, String contentType) throws Exception;
 
 	public long addFile(String fileName, String content, String contentType) throws Exception {
+		if(StringUtils.isEmpty(fileName)){
+			fileName = DEFAULT_FILE_NAME;
+		}
 		return addFile(DEFAULT_NAMESPACE, fileName, content, contentType);
 	}
 	public abstract long addFile(String namespace, String fileName, String content, String contentType) throws Exception;
