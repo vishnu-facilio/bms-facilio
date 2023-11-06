@@ -927,55 +927,53 @@ public class V3DashboardAPIHandler {
         String filterModule = user_filter.getModuleName();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(filterModule);
-        if(module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY){
             JSONObject placeHolders = dashboard_executed_data.getPlaceHolders();
             HashMap selected_filter_map = (HashMap) placeHolders.get(String.valueOf(user_filter.getLink_name()));
-            List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
-            Map<Object, List<ReportDataPointContext>> widget_field_map =  user_filter.getReadingWidgetFieldMap();
-            for (Map.Entry<Object, List<ReportDataPointContext>> widget_and_field : widget_field_map.entrySet())
-            {
-                Long widget_id = (Long) widget_and_field.getKey();
-                if(mappingIds.stream().anyMatch(mappings -> mappings.getTargetWidgetId().equals(widget_id))){
-                    JSONObject check = new JSONObject();
-                    for(ReportDataPointContext dataPointContext: widget_and_field.getValue()){
-                        if(mappingIds.stream().anyMatch(maps -> maps.getDataPointAlias().equals(dataPointContext.getAliases().get("actual")))){
-                            ReportYAxisContext yAxis = dataPointContext.getyAxis();
-                            FacilioField yField = modBean.getField(dataPointContext.getyAxis().getFieldId());
-                            yAxis.setField(yField.getModule(), yField);
-                            dataPointContext.setyAxis(yAxis);
-                            Integer operatorId = -1;
-                            Condition condition = new Condition();
-                            FacilioField appliedField = new FacilioField();
-                            if(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)){
-                                operatorId = BuildingOperator.BUILDING_IS.getOperatorId();
-                                List<FacilioField> fields = modBean.getAllFields("resource");
-                                appliedField = fields.stream().filter(field -> field.getName().equals("space")).collect(Collectors.toList()).get(0);
-                            }else{
-                                operatorId = 36;
-                                List<FacilioField> fields = modBean.getAllFields(yAxis.getModuleName());
-                                appliedField = fields.stream().filter(field -> field.getName().equals("parentId")).collect(Collectors.toList()).get(0);
+            if(selected_filter_map != null){
+                List<String> selected_filter_values = (ArrayList<String>) selected_filter_map.get("value");
+                Map<Object, List<ReportDataPointContext>> widget_field_map =  user_filter.getReadingWidgetFieldMap();
+                for (Map.Entry<Object, List<ReportDataPointContext>> widget_and_field : widget_field_map.entrySet())
+                {
+                    Long widget_id = (Long) widget_and_field.getKey();
+                    if(mappingIds.stream().anyMatch(mappings -> mappings.getTargetWidgetId().equals(widget_id))){
+                        JSONObject check = new JSONObject();
+                        for(ReportDataPointContext dataPointContext: widget_and_field.getValue()){
+                            if(mappingIds.stream().anyMatch(maps -> maps.getDataPointAlias().equals(dataPointContext.getAliases().get("actual")))){
+                                ReportYAxisContext yAxis = dataPointContext.getyAxis();
+                                FacilioField yField = modBean.getField(dataPointContext.getyAxis().getFieldId());
+                                yAxis.setField(yField.getModule(), yField);
+                                dataPointContext.setyAxis(yAxis);
+                                Integer operatorId = 36;
+                                Condition condition = new Condition();
+                                FacilioField appliedField = new FacilioField();
+                                if(module.getName().equals("assetcategory")){
+                                    appliedField = modBean.getField("category",dataPointContext.getParentReadingModule().getName());
+                                } else if(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)){
+                                    appliedField = modBean.getField("space",dataPointContext.getParentReadingModule().getName());
+                                }else{
+                                    appliedField = modBean.getField("parentId",yAxis.getModuleName());
+                                }
+                                condition.setField(appliedField);
+                                condition.setOperatorId(operatorId);
+                                StringBuilder values = new StringBuilder();
+                                for (String value : selected_filter_values) {
+                                    values.append(value);
+                                    values.append(",");
+                                }
+                                String filter_value = values.toString();
+                                if (filter_value != null && !"".equals(filter_value)) {
+                                    filter_value = filter_value.substring(0, filter_value.length() - 1);
+                                    condition.setValue(filter_value);
+                                }
+                                JSONObject criteria_obj = new JSONObject();
+                                criteria_obj.put(user_filter.getId(), condition);
+                                check.put(dataPointContext.getAliases().get("actual"),criteria_obj);
                             }
-                            condition.setField(appliedField);
-                            condition.setOperatorId(operatorId);
-                            StringBuilder values = new StringBuilder();
-                            for (String value : selected_filter_values) {
-                                values.append(value);
-                                values.append(",");
-                            }
-                            String filter_value = values.toString();
-                            if (filter_value != null && !"".equals(filter_value)) {
-                                filter_value = filter_value.substring(0, filter_value.length() - 1);
-                                condition.setValue(filter_value);
-                            }
-                            JSONObject criteria_obj = new JSONObject();
-                            criteria_obj.put(user_filter.getId(), condition);
-                            check.put(dataPointContext.getAliases().get("actual"),criteria_obj);
                         }
+                        dashboard_executed_data.getReading_filter_widget_map().put(widget_id,check);
                     }
-                    dashboard_executed_data.getReading_filter_widget_map().put(widget_id,check);
                 }
             }
-        }
     }
     public static void constructNewDefaultUserFilterValues(DashboardUserFilterContext user_filter, DashboardExecuteMetaContext dashboard_executed_data )throws Exception
     {

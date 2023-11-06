@@ -13,6 +13,7 @@ public class V2ModuleTimeFilterContext
     private String moduleName;
     private long startTime;
     private long endTime;
+    public int operatorId;
     private DateOperators dateOperators;
     private String label;
     public int getDateOperators() {

@@ -412,7 +412,9 @@ public class V2AnalyticsOldUtil {
                         }
                         V2ModuleMeasureContext measure_context = FieldUtil.getAsBeanFromJson(measure_json, V2ModuleMeasureContext.class);
                         if(measure.getCriteria_id() != null && measure.getCriteria_id() > 0){
-                            measure_context.setCriteria(CriteriaAPI.getCriteria(measure.getCriteria_id()).toString());
+                            Criteria criteria = CriteriaAPI.getCriteria(measure.getCriteria_id());
+                            JSONObject criteriaObj = FieldUtil.getAsJSON(criteria);
+                            measure_context.setCriteria(criteriaObj.toJSONString());
                         }
                         v2_measure_list.add(measure_context);
                     }
@@ -521,6 +523,7 @@ public class V2AnalyticsOldUtil {
     public static List<FacilioField> getFieldsForReportList()throws Exception
     {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReport1Fields());
+        Map<String, FacilioField> newReportFieldMap = FieldFactory.getAsMap(FieldFactory.getV2ReportModuleFields());
         List<FacilioField> selected_fields = new ArrayList<>();
         selected_fields.add(fieldMap.get("id"));
         selected_fields.add(fieldMap.get("reportFolderId"));
@@ -535,6 +538,7 @@ public class V2AnalyticsOldUtil {
         selected_fields.add(fieldMap.get("modifiedBy"));
         selected_fields.add(fieldMap.get("appId"));
         selected_fields.add(fieldMap.get("type"));
+        selected_fields.add(newReportFieldMap.get("kpi"));
         return selected_fields;
     }
     public static void calculateBaseLineRange(ReportContext report)
@@ -758,39 +762,38 @@ public class V2AnalyticsOldUtil {
     {
         if(dbUserFilter != null)
         {
-            Map<String, JSONObject> filterMap = (Map<String, JSONObject>) dbUserFilter.get(dataPoint.getAliases().get("actual"));
-            if(filterMap != null && !filterMap.isEmpty())
-            {
+            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(dataPoint.getAliases().get("actual"));
+            if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 FacilioField appliedField = modBean.getField("parentId", baseModule.getName());
                 Criteria criteria = new Criteria();
-                for(String alias: filterMap.keySet())
-                {
-                    Condition condition = new Condition();
-                    condition.setField(appliedField);
-                    HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
-                    Long operatorId = (Long) selected_dp_map.get("operatorId");
-                    condition.setOperatorId(operatorId.intValue());
-                    StringJoiner parentIds = new StringJoiner(",");
-                    if (alias.equals("space")) {
-                        List<Long> baseSpaceIds = new ArrayList<>();
-                        List<String> value = (List<String>) selected_dp_map.get("value");
-                        value.forEach(val -> baseSpaceIds.add(Long.parseLong(val)));
-                        List<Long> values = AssetsAPI.getAssetIdsFromBaseSpaceIds(baseSpaceIds);
-                        if (values != null && values.size() > 0) {
-                            values.forEach(id -> parentIds.add(String.valueOf(id)));
+                for(Map<String, JSONObject> filterMap : filterMappings) {
+                    for (String alias : filterMap.keySet()) {
+                        Condition condition = new Condition();
+                        condition.setField(appliedField);
+                        HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
+                        Long operatorId = (Long) selected_dp_map.get("operatorId");
+                        condition.setOperatorId(operatorId.intValue());
+                        StringJoiner parentIds = new StringJoiner(",");
+                        if (alias.equals("space")) {
+                            List<Long> baseSpaceIds = new ArrayList<>();
+                            List<String> value = (List<String>) selected_dp_map.get("value");
+                            value.forEach(val -> baseSpaceIds.add(Long.parseLong(val)));
+                            List<Long> values = AssetsAPI.getAssetIdsFromBaseSpaceIds(baseSpaceIds);
+                            if (values != null && values.size() > 0) {
+                                values.forEach(id -> parentIds.add(String.valueOf(id)));
+                            }
+                            condition.setValue(parentIds.toString());
+                        } else {
+                            List<String> selected_values = (List<String>) selected_dp_map.get("value");
+                            selected_values.forEach(id -> parentIds.add(id));
                             condition.setValue(parentIds.toString());
                         }
-                    } else {
-                        List<String> selected_values = (List<String>) selected_dp_map.get("value");
-                        selected_values.forEach(id -> parentIds.add(id));
-                        condition.setValue(parentIds.toString());
+                        criteria.addAndCondition(condition);
                     }
-                    criteria.addAndCondition(condition);
+                    selectBuilder.andCriteria(criteria);
                 }
-                selectBuilder.andCriteria(criteria);
             }
-
         }
     }
     public static void applyMeasureCriteriaV2(HashMap<String, String> moduleVsAlias, FacilioField xAggrField, FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, String xValues, Set<FacilioModule> addedModules)throws Exception

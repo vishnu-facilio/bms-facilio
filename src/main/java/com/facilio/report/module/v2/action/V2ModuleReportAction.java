@@ -35,6 +35,7 @@ public class V2ModuleReportAction extends V3Action {
         FacilioChain chain = V2TransactionChainFactory.getCreateModuleReportChain();
         FacilioContext context = chain.getContext();
         context.put("v2_report", report);
+        context.put("isKpi",false);
         context.put("actionType", FacilioConstants.ContextNames.CREATE);
         chain.execute();
         ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
@@ -47,6 +48,7 @@ public class V2ModuleReportAction extends V3Action {
         FacilioChain chain = V2TransactionChainFactory.getCreateModuleReportChain();
         FacilioContext context = chain.getContext();
         context.put("v2_report", report);
+        context.put("isKpi",false);
         context.put("actionType", FacilioConstants.ContextNames.UPDATE);
         chain.execute();
         ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
@@ -115,5 +117,70 @@ public class V2ModuleReportAction extends V3Action {
         {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "ReportContext is mandatory.");
         }
+    }
+    public String createKpi() throws Exception
+    {
+        validateData(FacilioConstants.ContextNames.CREATE);
+        FacilioChain chain = V2TransactionChainFactory.getCreateModuleKpiChain();
+        FacilioContext context = chain.getContext();
+        context.put("v2_report", report);
+        context.put("isKpi",true);
+        context.put("actionType", FacilioConstants.ContextNames.CREATE);
+        chain.execute();
+        ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
+        setData(FacilioConstants.ContextNames.REPORT_ID, report != null ? report.getId() : -1);
+        return V3Action.SUCCESS;
+    }
+    public String fetchKpi()throws Exception
+    {
+        FacilioChain chain = V2TransactionChainFactory.getV2FetchKpiChain();
+        FacilioContext context = chain.getContext();
+        context.put("v2_report", report);
+        chain.execute();
+        setData("value", context.get("value"));
+        if(context.get("v2_report") != null){
+            setData("v2_report", context.get("v2_report"));
+        }
+        return V3Action.SUCCESS;
+    }
+    public String deleteKpi()throws Exception
+    {
+        validateData(FacilioConstants.ContextNames.DELETE);
+        FacilioChain chain = V2TransactionChainFactory.getDeleteModuleReportChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.REPORT_ID, reportId);
+        context.put("isDeleteWithWidget", true);
+        context.put("actionType", FacilioConstants.ContextNames.DELETE);
+        chain.execute();
+        setData("result", "success");
+        return V3Action.SUCCESS;
+    }
+    public String editKpi()throws Exception
+    {
+        if(reportId != null && reportId > 0)
+        {
+            FacilioChain chain = V2TransactionChainFactory.getKpiDataChain();
+            FacilioContext context = chain.getContext();
+            context.put("reportId", reportId);
+            chain.execute();
+            setData("value", context.get("value"));
+            if(context.get("v2_report") != null){
+                setData("v2_report", context.get("v2_report"));
+            }
+        }
+        return V3Action.SUCCESS;
+    }
+    public String updateKpi() throws Exception
+    {
+        validateData(FacilioConstants.ContextNames.UPDATE);
+        FacilioChain chain = V2TransactionChainFactory.getCreateModuleKpiChain();
+        FacilioContext context = chain.getContext();
+        context.put("v2_report", report);
+        context.put("isKpi",true);
+        context.put("actionType", FacilioConstants.ContextNames.UPDATE);
+        chain.execute();
+        ReportContext report = (ReportContext)context.get(FacilioConstants.ContextNames.REPORT);
+        setData(FacilioConstants.ContextNames.REPORT_ID, report != null ? report.getId() : -1);
+        return V3Action.SUCCESS;
     }
 }

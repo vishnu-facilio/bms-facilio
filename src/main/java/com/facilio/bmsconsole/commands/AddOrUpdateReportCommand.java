@@ -50,21 +50,23 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		}
 		
 		Set<ReportFieldContext> reportFields = new HashSet<>();
-		for(ReportDataPointContext dataPoint : report.getDataPoints()) {
-			if (dataPoint.getTypeEnum() == DataPointType.DERIVATION) {
-				continue;
-			}
-			
-			if(dataPoint.getxAxis() != null)  {
-				reportFields.add(constructReportField(dataPoint.getxAxis().getModule(), dataPoint.getxAxis().getField(), report.getId()));
-			}
-			
-			if(dataPoint.getyAxis() != null && dataPoint.getDynamicKpi() == null) {
-				reportFields.add(constructReportField(dataPoint.getyAxis().getModule(), dataPoint.getyAxis().getField(), report.getId()));
-			}
-			
-			if(dataPoint.getDateField() != null) {
-				reportFields.add(constructReportField(dataPoint.getDateField().getModule(), dataPoint.getDateField().getField(), report.getId()));
+		if(report.getDataPoints() != null && report.getDataPoints().size() >0){
+			for(ReportDataPointContext dataPoint : report.getDataPoints()) {
+				if (dataPoint.getTypeEnum() == DataPointType.DERIVATION) {
+					continue;
+				}
+
+				if(dataPoint.getxAxis() != null)  {
+					reportFields.add(constructReportField(dataPoint.getxAxis().getModule(), dataPoint.getxAxis().getField(), report.getId()));
+				}
+
+				if(dataPoint.getyAxis() != null && dataPoint.getDynamicKpi() == null) {
+					reportFields.add(constructReportField(dataPoint.getyAxis().getModule(), dataPoint.getyAxis().getField(), report.getId()));
+				}
+
+				if(dataPoint.getDateField() != null) {
+					reportFields.add(constructReportField(dataPoint.getDateField().getModule(), dataPoint.getDateField().getField(), report.getId()));
+				}
 			}
 		}
 		if (report.getFilters() != null && !report.getFilters().isEmpty()) {

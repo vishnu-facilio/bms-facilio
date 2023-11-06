@@ -2,6 +2,7 @@ package com.facilio.report.module.v2.command;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -226,10 +227,13 @@ public class V2ConstructModuleReportCommand extends FacilioCommand {
         if (baseLines != null && !baseLines.isEmpty()) {
             JSONParser parser = new JSONParser();
             List<ReportBaseLineContext> baseLineList = FieldUtil.getAsBeanListFromJsonArray((JSONArray) parser.parse(baseLines), ReportBaseLineContext.class);
-            reportContext.setBaseLines(baseLineList);
-            for (ReportBaseLineContext reportBaseLine : reportContext.getBaseLines()) {
-                aliases.put(reportBaseLine.getBaseLine().getName(), measure_field.getDisplayName() + '-' +reportBaseLine.getBaseLine().getName());
+            for (ReportBaseLineContext reportBaseLine : baseLineList) {
+                BaseLineContext baseLineContext = BaseLineAPI.getBaseLine(reportBaseLine.getBaseLineId());
+                reportBaseLine.setAdjustType(BaseLineContext.AdjustType.WEEK);
+                reportBaseLine.setBaseLine(baseLineContext);
+                aliases.put(baseLineContext.getName(), measure_field.getDisplayName() + '-' +baseLineContext.getName());
             }
+            reportContext.setBaseLines(baseLineList);
         }
         reportContext.addDataPoint(dataPointContext);
     }

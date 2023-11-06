@@ -32,6 +32,8 @@ public class V2AnalyticsReportAction extends V3Action {
     public Long reportId ;
     private int reportType;
     private int page=1;
+    private boolean fetchOnlyKpi = false;
+    private String fetchOnlyModule;
     private int perPage=50;
     private boolean withCount;
     private String orderType;
@@ -87,6 +89,8 @@ public class V2AnalyticsReportAction extends V3Action {
         pagination.put("page", page);
         pagination.put("perPage", perPage);
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+        context.put("fetchOnlyKpi",fetchOnlyKpi);
+        context.put("fetchOnlyModule",fetchOnlyModule);
         context.put(FacilioConstants.ContextNames.ORDER_TYPE, orderType);
         context.put(FacilioConstants.ContextNames.WITH_COUNT, withCount);
         context.put(FacilioConstants.ContextNames.APP_ID,appId);

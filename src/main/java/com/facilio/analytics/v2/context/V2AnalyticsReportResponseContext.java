@@ -19,4 +19,5 @@ public class V2AnalyticsReportResponseContext{
     public Long modifiedBy;
     public Long reportFolderId;
     public Integer type;
+    public Boolean kpi;
 }

@@ -1998,6 +1998,17 @@
             <param name="reportId">{1}</param>
         </action>
     </package>
+    <package name="v2ModuleKpi" namespace="/api/v3/module/kpi" extends="v3Api">
+        <action name="fetch" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="fetchKpi"></action>
+        <action name="update" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="updateKpi"></action>
+        <action name="create" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="createKpi"></action>
+        <action name="delete/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="deleteKpi">
+            <param name="reportId">{1}</param>
+        </action>
+        <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="editKpi">
+            <param name="reportId">{1}</param>
+        </action>
+    </package>
     <package name="v2CardAnalytics" namespace="/api/v3/card" extends="v3Api">
         <action name="fetch" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetch"/>
         <action name="data/*" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetchData">

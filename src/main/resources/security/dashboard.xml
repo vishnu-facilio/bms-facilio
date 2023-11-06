@@ -485,8 +485,12 @@
             <property name="reportId" type="number" mandatory="true"/>
         </urlparams>
     </request>
-
     <request path="/api/v3/analytics/edit/:reportId" method="GET">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/analytics/edit/:reportId" method="PUT">
         <urlparams>
             <property name="reportId" type="number" mandatory="true"></property>
         </urlparams>
@@ -531,6 +535,25 @@
         <urlparams>
             <property name="categoryId" type="number" mandatory="true"></property>
         </urlparams>
+    </request>
+    <request path="/api/v3/module/kpi/fetch" method="PUT">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/module/kpi/create" method="POST">
+        <requestbody/>
+    </request>
+    <request path="/api/v3/module/kpi/edit/:reportId" method="GET">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/module/kpi/delete/:reportId" method="DELETE">
+        <urlparams>
+            <property name="reportId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/module/kpi/update" method="POST">
+        <requestbody/>
     </request>
     <request path="/api/v3/card/fetch" method="PUT">
         <requestbody type="object"></requestbody>

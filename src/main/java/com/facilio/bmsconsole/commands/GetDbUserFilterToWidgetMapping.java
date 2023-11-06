@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -154,7 +151,8 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 						   }
 					   }
-					   if(filter.getModule().getName().equals("asset")){
+					   List<String> supportedModules = Arrays.asList("asset","building","site","assetcategory");
+					   if(supportedModules.contains(filter.getModule().getName())){
 						   FacilioModule energyModule = modBean.getModule(report.getModuleId());
 						   if(energyModule != null && energyModule.getName().equals("energydata")) {
 							   List<ReportDataPointContext> dpContexts = new ArrayList<>();

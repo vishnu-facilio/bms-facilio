@@ -8803,7 +8803,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("timeFilterJson", "TIMELINE_FILTER", module, FieldType.STRING));
         fields.add(getField("groupByJson", "GROUP_BY", module, FieldType.STRING));
         fields.add(getField("criteriaId", "GLOBAL_CRITERIA_ID", module, FieldType.NUMBER));
-        
+        fields.add(getField("kpi", "IS_KPI", module, FieldType.BOOLEAN));
+
         return fields;
     }
     public static List<FacilioField> getV2ReportMeasureFields()throws Exception

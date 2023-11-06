@@ -4,10 +4,7 @@ import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
 import com.facilio.chain.FacilioChain;
-import com.facilio.report.module.v2.command.V2AddNewModuleReportCommand;
-import com.facilio.report.module.v2.command.V2ConstructModuleReportCommand;
-import com.facilio.report.module.v2.command.V2GetFolderListCommand;
-import com.facilio.report.module.v2.command.V2GetModuleReportCommand;
+import com.facilio.report.module.v2.command.*;
 
 public class V2TransactionChainFactory {
 
@@ -48,6 +45,27 @@ public class V2TransactionChainFactory {
         FacilioChain c = getDefaultChain();
         c.addCommand(new V2AddNewModuleReportCommand());
         c.addCommand(new ConstructReportDeleteCommand());
+        return c;
+    }
+    public static FacilioChain getV2FetchKpiChain()throws Exception
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new V2GetKpiValueCommand());
+        return c;
+    }
+    public static FacilioChain getKpiDataChain()throws Exception
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new V2GetModuleReportCommand());
+        c.addCommand(new V2GetKpiValueCommand());
+        return c;
+    }
+    public static FacilioChain getCreateModuleKpiChain()throws Exception
+    {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new V2ConstructModuleKpiCommand());
+        c.addCommand(new AddOrUpdateReportCommand());
+        c.addCommand(new V2AddNewModuleReportCommand());
         return c;
     }
 }

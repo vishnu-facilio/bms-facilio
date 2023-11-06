@@ -914,41 +914,42 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				if (report.getWorkflowId() != null && report.getWorkflowId() > 0) {
 					report.setTransformWorkflow(WorkflowUtil.getWorkflowContext(report.getWorkflowId(), true));
 				}
-				
-				for (ReportDataPointContext dataPoint : report.getDataPoints()) {
-					ReportFieldContext xAxis = dataPoint.getxAxis();
-					xAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
-					
-					ReportYAxisContext yAxis = dataPoint.getyAxis();
-					yAxis.setField(getModule(yAxis.getModuleId(), yAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
-					
-					if (CollectionUtils.isNotEmpty(dataPoint.getGroupByFields())) {
-						for (ReportGroupByField groupByField : dataPoint.getGroupByFields()) {
-							groupByField.setField(getModule(groupByField.getModuleId(), groupByField.getModuleName(), modBean), getField(groupByField.getFieldId(), groupByField.getModuleName(), groupByField.getFieldName(), modBean));
-						}
-					}
-					
-					if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
-						for (ReportUserFilterContext reportUserFilterContext : report.getUserFilters()) {
-							reportUserFilterContext.setField(modBean.getField(reportUserFilterContext.getFieldId()));
-						}
-					}
+				if(report.getDataPoints() != null && report.getDataPoints().size() > 0){
+					for (ReportDataPointContext dataPoint : report.getDataPoints()) {
+						ReportFieldContext xAxis = dataPoint.getxAxis();
+						xAxis.setField(getModule(xAxis.getModuleId(), xAxis.getModuleName(), modBean), getField(xAxis.getFieldId(), xAxis.getModuleName(), xAxis.getFieldName(), modBean));
 
-					if (CollectionUtils.isNotEmpty(dataPoint.getHavingCriteria())) {
-						for (ReportHavingContext reportHavingContext : dataPoint.getHavingCriteria()) {
-							FacilioField field = getField(reportHavingContext.getFieldId(), xAxis.getModuleName(), reportHavingContext.getFieldName(), modBean);
-							reportHavingContext.setField(field);
-						}
-  					}
+						ReportYAxisContext yAxis = dataPoint.getyAxis();
+						yAxis.setField(getModule(yAxis.getModuleId(), yAxis.getModuleName(), modBean), getField(yAxis.getFieldId(), yAxis.getModuleName(), yAxis.getFieldName(), modBean));
 
-					ReportFieldContext dateReportField = dataPoint.getDateField();
-					if (dataPoint.getDateFieldId() > 0 || dataPoint.getDateFieldName() != null) {
-						if (dateReportField == null) {
-							dateReportField = new ReportFieldContext();
+						if (CollectionUtils.isNotEmpty(dataPoint.getGroupByFields())) {
+							for (ReportGroupByField groupByField : dataPoint.getGroupByFields()) {
+								groupByField.setField(getModule(groupByField.getModuleId(), groupByField.getModuleName(), modBean), getField(groupByField.getFieldId(), groupByField.getModuleName(), groupByField.getFieldName(), modBean));
+							}
 						}
-						dateReportField.setField(null, getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+
+						if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+							for (ReportUserFilterContext reportUserFilterContext : report.getUserFilters()) {
+								reportUserFilterContext.setField(modBean.getField(reportUserFilterContext.getFieldId()));
+							}
+						}
+
+						if (CollectionUtils.isNotEmpty(dataPoint.getHavingCriteria())) {
+							for (ReportHavingContext reportHavingContext : dataPoint.getHavingCriteria()) {
+								FacilioField field = getField(reportHavingContext.getFieldId(), xAxis.getModuleName(), reportHavingContext.getFieldName(), modBean);
+								reportHavingContext.setField(field);
+							}
+						}
+
+						ReportFieldContext dateReportField = dataPoint.getDateField();
+						if (dataPoint.getDateFieldId() > 0 || dataPoint.getDateFieldName() != null) {
+							if (dateReportField == null) {
+								dateReportField = new ReportFieldContext();
+							}
+							dateReportField.setField(null, getField(dataPoint.getDateFieldId(), dataPoint.getDateFieldModuleName(), dataPoint.getDateFieldName(), modBean));
+						}
+						dataPoint.setDateField(dateReportField);
 					}
-					dataPoint.setDateField(dateReportField);
 				}
 				reports.add(report);
 			}

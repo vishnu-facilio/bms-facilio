@@ -39,6 +39,7 @@ public class V2ModuleReportContext
     private V2ModuleFilterContext filters;
     private ReportDrilldownPathContext drillDown;
     private String baseLines;
+    private boolean kpi = false;
     @JSON(serialize = false)
     public String getDimensionsJson() throws Exception {
         if (dimensions != null) {
