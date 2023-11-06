@@ -1,17 +1,18 @@
 package com.facilio.fields.fieldBuilder;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.modules.FieldType;
 import org.apache.commons.chain.Command;
 
 import java.util.List;
 
-    public interface FieldListBuilder {
+    public interface FieldListBuilder<T extends  FieldListBuilder<T>> {
 
         /**
          * @param fieldTypesToSkip these fieldTypes are skipped while fetching the fields list
          * @return  FieldListBuilder
          */
-        FieldListBuilder fieldTypesToSkip(List<FieldType> fieldTypesToSkip);
+        T fieldTypesToSkip(List<FieldType> fieldTypesToSkip);
 
         /**
          * other than development environment, addFields are given priority rather than that of skip fields
@@ -19,7 +20,7 @@ import java.util.List;
          * @return FieldListBuilder
          * @throws Exception if tried to add and skip fieldName at the same time for a fieldListType (only in development)
          */
-        FieldListBuilder add(List<String> fieldNames);
+        T add(List<String> fieldNames);
 
         /**
          * other than development environment, skipFields are not considered if addFields are configured for the fieldListType
@@ -27,7 +28,11 @@ import java.util.List;
          * @return FieldListBuilder
          * @throws Exception if tried to add and skip fieldName at the same time for a fieldListType (only in development)
          */
-        FieldListBuilder skip(List<String> fieldNames);
+        T skip(List<String> fieldNames);
+
+        T skipOnelevelFields(List<String> fieldNames);
+        AppDomainFieldListBuilder<T> addConfigForDomain(AppDomain.AppDomainType appDomainType);
+        AppFieldListBuilder<T> addConfigForApp(String appName);
 
         /**
          * This is used to add typeSpecificFields which can be obtained from the context
@@ -41,7 +46,7 @@ import java.util.List;
          * @param afterFetchCommand commands to be executed after the fields are fetched
          * @return FieldListBuilder
          */
-        FieldListBuilder afterFetch(Command... afterFetchCommand);
+        T afterFetch(Command... afterFetchCommand);
 
         FieldConfig done();
     }

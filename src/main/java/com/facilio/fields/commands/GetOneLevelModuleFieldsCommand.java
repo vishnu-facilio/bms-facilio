@@ -22,6 +22,8 @@ public class GetOneLevelModuleFieldsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         boolean fetchSupplementModuleFields = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
         if (fetchSupplementModuleFields) {
+            List<String> onelevelFieldsToSkip = (List<String>) context.get(FacilioConstants.FieldsConfig.ONE_LEVEL_FIELDS_TO_SKIP_LIST);
+            long appId = (long) context.get(FacilioConstants.ContextNames.APP_ID);
             List<Long> defaultFieldIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS);
             List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
             FieldListType fieldListType = (FieldListType) context.get(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE);
@@ -29,14 +31,14 @@ public class GetOneLevelModuleFieldsCommand extends FacilioCommand {
             List<FacilioField> lookupFields = fields.stream().filter(i -> i.getDataTypeEnum() == FieldType.LOOKUP).collect(Collectors.toList());
 
             List<String> lookupModuleNames = lookupFields.stream()
-                    .filter(field -> !field.getName().equals("siteId") && !LookupSpecialTypeUtil.isSpecialType(((LookupField)field).getLookupModule().getName()))
+                    .filter(field -> !field.getName().equals("siteId") && !LookupSpecialTypeUtil.isSpecialType(((LookupField)field).getLookupModule().getName()) && (CollectionUtils.isEmpty(onelevelFieldsToSkip) || !onelevelFieldsToSkip.contains(field.getName())))
                     .map(field -> ((LookupField)field).getLookupModule().getName())
                     .distinct()
                     .collect(Collectors.toList());
 
             Map<String, Object> supplements = new HashMap<>();
             for (String lookupModuleName : lookupModuleNames) {
-                FacilioContext supplementsContext = FieldsConfigChainUtil.fetchFieldList(lookupModuleName, fieldListType, defaultFieldIds, true);
+                FacilioContext supplementsContext = FieldsConfigChainUtil.fetchFieldList(lookupModuleName, appId, fieldListType, defaultFieldIds, true);
 
                 List<Object> lookupModuleFields = (List<Object>) supplementsContext.get(FacilioConstants.ContextNames.FIELDS);
                 if (CollectionUtils.isNotEmpty(lookupModuleFields)) {

@@ -16,10 +16,11 @@ public class FieldConfigAction extends FacilioAction {
     private String moduleName;
     private String fieldListType;
     private List<Long> defaultFieldIds;
+    private long appId;
 
     public String fetchFieldList() throws Exception {
         FieldListType fieldListTypeEnum = FieldListType.getValueOfType(fieldListType);
-        FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(getModuleName(), fieldListTypeEnum, defaultFieldIds);
+        FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(moduleName, appId, fieldListTypeEnum, defaultFieldIds);
 
         setResult(FacilioConstants.ContextNames.FIELDS, fieldsContext.get(FacilioConstants.ContextNames.FIELDS));
 

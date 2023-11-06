@@ -8,7 +8,8 @@ public enum FieldListType {
     SORTABLE("sortable"),
     VIEW_FIELDS("viewFields"),
     ADVANCED_FILTER_FIELDS("advancedFilterFields"),
-    PAGE_BUILDER_CRITERIA_FIELDS("pageBuilderCriteriaFields", ADVANCED_FILTER_FIELDS);
+    PAGE_BUILDER_CRITERIA_FIELDS("pageBuilderCriteriaFields", ADVANCED_FILTER_FIELDS),
+    SUMMARY_WIDGET_FIELDS("summaryWidgetFields");
 
     FieldListType(String name) {
         this.name = name;

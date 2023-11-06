@@ -31,7 +31,7 @@ public class FilterFieldsBasedOnAddOrSkipFields extends FacilioCommand {
             defaultFieldIds = new ArrayList<>();
         }
 
-        boolean isAddField = (boolean) context.get(FacilioConstants.FieldsConfig.IS_ADD_FIELD);
+        boolean isAddField = (boolean) context.getOrDefault(FacilioConstants.FieldsConfig.IS_ADD_FIELD, false);
         List<String> addOrSkipFieldsList = isAddField ? CollectionUtils.isNotEmpty(fieldsToAddList) ? fieldsToAddList : new ArrayList<>()
                 : CollectionUtils.isNotEmpty(fieldsToSkipList) ? fieldsToSkipList : new ArrayList<>();
 

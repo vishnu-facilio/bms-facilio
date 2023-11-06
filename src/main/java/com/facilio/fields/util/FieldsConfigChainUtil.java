@@ -1,10 +1,17 @@
 package com.facilio.fields.util;
 
+import com.facilio.accounts.dto.AppDomain;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fields.context.FieldListType;
+import com.facilio.fields.fieldBuilder.AppDomainFieldListHandler;
+import com.facilio.fields.fieldBuilder.AppFieldListHandler;
 import com.facilio.fields.fieldBuilder.FieldConfig;
+import com.facilio.fields.fieldBuilder.FieldListHandler;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
@@ -14,6 +21,7 @@ import com.facilio.v3.annotation.ModuleType;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.yaml.snakeyaml.Yaml;
@@ -118,19 +126,21 @@ public class FieldsConfigChainUtil {
         return null;
     }
 
-    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds) throws Exception {
-        return fetchFieldList(moduleName, fieldListType, defaultFieldIds, false);
+    public static FacilioContext fetchFieldList(String moduleName, long appId,  FieldListType fieldListType, List<Long> defaultFieldIds) throws Exception {
+        return fetchFieldList(moduleName, appId, fieldListType, defaultFieldIds, false);
     }
-    public static FacilioContext fetchFieldList(String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
+    public static FacilioContext fetchFieldList(String moduleName, long appId,  FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
         FacilioChain fieldsChain = null;
         FacilioContext fieldsContext = null;
+        ApplicationContext app = appId > 0 ? ApplicationApi.getApplicationForId(appId) : AccountUtil.getCurrentApp();
+        FacilioUtil.throwIllegalArgumentException(app == null, "Invalid appId");
         if (fieldListType == FieldListType.VIEW_FIELDS) {
-            fieldsChain = FieldsConfigChain.getViewFieldsConfigChain(moduleName);
+            fieldsChain = FieldsConfigChain.getViewFieldsConfigChain(moduleName, app);
         } else {
-            fieldsChain = FieldsConfigChain.getFieldsConfigChain(moduleName, fieldListType);
+            fieldsChain = FieldsConfigChain.getFieldsConfigChain(moduleName, app, fieldListType);
         }
         fieldsContext = fieldsChain.getContext();
-        addDefaultValuesToContext(fieldsContext, moduleName, fieldListType, defaultFieldIds, isOnelevel);
+        addDefaultValuesToContext(fieldsContext, moduleName, appId, fieldListType, defaultFieldIds, isOnelevel);
         if (isOnelevel) {
             fieldsContext.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
         }
@@ -139,8 +149,9 @@ public class FieldsConfigChainUtil {
     }
 
 
-    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
+    private static void addDefaultValuesToContext(FacilioContext context, String moduleName, long appId, FieldListType fieldListType, List<Long> defaultFieldIds, boolean isOnelevel) throws Exception {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        context.put(FacilioConstants.ContextNames.APP_ID, appId);
         context.put(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS, defaultFieldIds);
         context.put(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE, fieldListType);if (isOnelevel) {
             context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
@@ -197,5 +208,98 @@ public class FieldsConfigChainUtil {
             }
             FieldsConfigChain.FIELDS_CONFIG_MODULETYPE_HANDLER_MAP.put(moduleType, config);
         }
+    }
+
+    public static void addDomainBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
+        if(app != null) {
+            Map<AppDomain.AppDomainType, AppDomainFieldListHandler> appDomainFieldListHandlerMap = fieldHandler.getAppDomainFieldsConfigMap();
+            if (MapUtils.isNotEmpty(appDomainFieldListHandlerMap)) {
+                AppDomainFieldListHandler appDomainFieldListHandler = appDomainFieldListHandlerMap.get(AppDomain.AppDomainType.valueOf(app.getDomainType()));
+                if(appDomainFieldListHandler != null) {
+                    List<String> domainBasedSkipFields = (List<String>) appDomainFieldListHandler.getFieldsToSkip();
+                    if (CollectionUtils.isNotEmpty(domainBasedSkipFields)) {
+                        fieldsToSkipList.addAll(domainBasedSkipFields);
+                    }
+                    List<String> domainBasedOnelevelFieldsToSkip = appDomainFieldListHandler.getOnelevelFieldsToSkip();
+                    if (CollectionUtils.isNotEmpty(domainBasedOnelevelFieldsToSkip)) {
+                        onelevelFieldsToSkipList.addAll(domainBasedOnelevelFieldsToSkip);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void addAppBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
+        if(app != null) {
+            Map<String, AppFieldListHandler> appFieldListHandlerMap = fieldHandler.getAppFieldConfigMap();
+            if(MapUtils.isNotEmpty(appFieldListHandlerMap)) {
+                AppFieldListHandler appFieldListHandler = appFieldListHandlerMap.get(app.getLinkName());
+
+                if(appFieldListHandler != null) {
+                    List<String> appBasedSkipFields = (List<String>) appFieldListHandler.getFieldsToSkip();
+                    if (CollectionUtils.isNotEmpty(appBasedSkipFields)) {
+                        fieldsToSkipList.addAll(appBasedSkipFields);
+                    }
+                    List<String> appBasedOnelevelFieldsToSkip = appFieldListHandler.getOnelevelFieldsToSkip();
+                    if (CollectionUtils.isNotEmpty(appBasedOnelevelFieldsToSkip)) {
+                        onelevelFieldsToSkipList.addAll(appBasedOnelevelFieldsToSkip);
+                    }
+                }
+            }
+        }
+    }
+    public static void putAddAndSkipFieldsInContext(FacilioChain chain, List<String> excludeFields, Map<AccountUtil.FeatureLicense, List<String>> licenseBasedFieldsMap, List<String> fieldsToAddList, List<String> fieldsToSkipList,
+                                             List<String> onelevelFieldsToSkip, List<FieldType> fieldTypesToSkip, Map<String, Object> configMap) {
+        FacilioContext context = chain.getContext();
+        List<FieldType> fieldTypesToFetch = (List<FieldType>) configMap.get(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH);
+        FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(fieldTypesToFetch), "fieldTypes to fetch can't be empty");
+        List<FieldType> fieldTypesToFetchCopy = CollectionUtils.isNotEmpty(fieldTypesToFetch) ? new ArrayList<>(fieldTypesToFetch) : new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(fieldTypesToSkip)) {
+            fieldTypesToFetchCopy.removeAll(fieldTypesToSkip);
+        }
+        context.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, fieldTypesToFetchCopy);
+
+        FacilioField.AccessType accessType = (FacilioField.AccessType) configMap.get(FacilioConstants.FieldsConfig.ACCESS_TYPE);
+        if (accessType != null) {
+            context.put(FacilioConstants.FieldsConfig.ACCESS_TYPE, accessType);
+        }
+
+        List<String> skipFieldsList = new ArrayList<>();
+
+        List<String> skipConfigFields = (List<String>) configMap.get(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS);
+        if (CollectionUtils.isNotEmpty(skipConfigFields)) {
+            skipFieldsList.addAll(skipConfigFields);
+        }
+
+        if (CollectionUtils.isNotEmpty(excludeFields)) {
+            skipFieldsList.addAll(excludeFields);
+        }
+
+        if (CollectionUtils.isNotEmpty(fieldsToSkipList)) {
+            skipFieldsList.addAll(fieldsToSkipList);
+        }
+
+        if (CollectionUtils.isNotEmpty(fieldsToAddList)) {
+            if (CollectionUtils.isNotEmpty(skipFieldsList)) {
+                fieldsToAddList = new ArrayList<>(fieldsToAddList);
+                fieldsToAddList.removeAll(skipFieldsList);
+            }
+            context.put(FacilioConstants.FieldsConfig.IS_ADD_FIELD, true);
+            context.put(FacilioConstants.FieldsConfig.FIELDS_TO_ADD_LIST, Collections.unmodifiableList(fieldsToAddList));
+        } else if (CollectionUtils.isNotEmpty(skipFieldsList)) {
+            context.put(FacilioConstants.FieldsConfig.IS_ADD_FIELD, false);
+            context.put(FacilioConstants.FieldsConfig.FIELDS_TO_SKIP_LIST, Collections.unmodifiableList(skipFieldsList));
+        }
+
+        if(CollectionUtils.isNotEmpty(onelevelFieldsToSkip)) {
+            context.put(FacilioConstants.FieldsConfig.ONE_LEVEL_FIELDS_TO_SKIP_LIST, Collections.unmodifiableList(onelevelFieldsToSkip));
+        }
+
+        if (MapUtils.isNotEmpty(licenseBasedFieldsMap)) {
+            context.put(FacilioConstants.FieldsConfig.LICENSE_BASED_FIELDS_MAP, Collections.unmodifiableMap(licenseBasedFieldsMap));
+        }
+
+        boolean fetchSupplements = (boolean) configMap.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+        context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements);
     }
 }

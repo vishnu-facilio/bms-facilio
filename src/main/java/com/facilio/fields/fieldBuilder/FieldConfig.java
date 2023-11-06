@@ -39,6 +39,9 @@ public class FieldConfig {
     public FieldListHandler pageBuilderCriteriaFields() {
         return addType(FieldListType.PAGE_BUILDER_CRITERIA_FIELDS);
     }
+    public FieldListHandler summaryWidgetFields() {
+        return addType(FieldListType.SUMMARY_WIDGET_FIELDS);
+    }
     private FieldListHandler addType(FieldListType fieldListType) {
         String fieldListTypeName = fieldListType.getName();
         if (!fieldListTypeHandlerMap.containsKey(fieldListTypeName)) {

@@ -90,3 +90,35 @@ fieldListType:
   - name: PAGE_BUILDER_CRITERIA_FIELDS
     fetchSupplement: false
 
+  - name: SUMMARY_WIDGET_FIELDS
+    skipConfigFields:
+      - stateFlowId
+      - slaPolicyId
+      - formId
+      - approvalStatus
+      - approvalFlowId
+    fetchSupplement: false
+    fieldTypeNamesToFetch:
+      - STRING
+      - NUMBER
+      - DECIMAL
+      - BOOLEAN
+      - DATE
+      - DATE_TIME
+      - LOOKUP
+      - ENUM
+      - COUNTER
+      - ID
+      - SYSTEM_ENUM
+      - MULTI_LOOKUP
+      - MULTI_ENUM
+      - SCORE
+      - LINE_ITEM
+      - LARGE_TEXT
+      - BIG_STRING
+      - STRING_SYSTEM_ENUM
+      - URL_FIELD
+      - CURRENCY_FIELD
+    fieldResponseChain:
+      - com.facilio.fields.commands.SummaryWidgetFieldsResponseCommand
+

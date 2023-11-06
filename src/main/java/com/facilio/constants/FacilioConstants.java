@@ -273,6 +273,7 @@ public class FacilioConstants {
 		public static final String FIELDS_TO_ADD_LIST = "fieldsToAddList";
 		public static final String FIELD_TYPE_NAMES_TO_FETCH = "fieldTypeNamesToFetch";
 		public static final String FIELDS_TO_SKIP_LIST = "fieldsToSkipList";
+		public static final String ONE_LEVEL_FIELDS_TO_SKIP_LIST = "onelevelFieldsToSkipList";
 		public static final String FIELD_TYPES_TO_SKIP = "fieldTypesToSkip";
 		public static final String FIELD_TYPES_TO_FETCH = "fiedlTypesToFetch";
 		public static final String NAME = "name";
