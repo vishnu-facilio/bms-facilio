@@ -30,10 +30,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
-import com.facilio.bmsconsoleV3.commands.ConstructObjectFromConditions;
-import com.facilio.bmsconsoleV3.commands.GetConditionsListFromCriteria;
-import com.facilio.bmsconsoleV3.commands.GetValueForRecordIds;
-import com.facilio.bmsconsoleV3.commands.ValidateFilePermission;
+import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.bulkActions.DeleteModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.bulkActions.UpdateModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
@@ -3632,6 +3629,11 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPDFTemplateWidgetChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetPDFTemplateWidgetCommand());
+		return chain;
+	}
+	public static FacilioChain getFetchFilteredRelationListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new FetchFilteredRelationListCommand());
 		return chain;
 	}
 }

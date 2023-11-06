@@ -41,12 +41,15 @@ public class ValidateRelatedDataAndSetParamsCommand extends FacilioCommand {
             case ContextNames.RELATIONSHIP :
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationName);
-                FacilioModule fromModule = modBean.getModule(relationMapping.getFromModuleId());
-
                 if (relationMapping == null) {
                     throw new IllegalArgumentException("Invalid relation");
                 }
+                FacilioModule fromModule = modBean.getModule(relationMapping.getFromModuleId());
+
                 RelationContext relationContext = RelationUtil.getRelation(relationMapping.getRelationId(), false);
+                if (isRelationshipAction && relationContext.isVirtual()) {
+                    throw new IllegalArgumentException("Cannot add or update Virtual Relationship");
+                }
                 context.put(ContextNames.RELATION, relationContext);
 
                 if (!isRelationshipAction && !unAssociated && (relationMapping.getRelationType() == RelationRequestContext.RelationType.ONE_TO_ONE.getIndex()

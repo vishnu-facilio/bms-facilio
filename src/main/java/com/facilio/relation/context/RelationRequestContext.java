@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 
 @Getter
@@ -43,6 +42,7 @@ public class RelationRequestContext implements Serializable {
         return this.isCustom != null ? this.isCustom : true;
     }
     List<Long> virtualRelationIds;
+    List<VirtualRelationConfigContext> virtualRelationConfig;
     private Boolean isVirtual;
     public boolean isVirtual() {
         if (isVirtual != null) {

@@ -7306,9 +7306,9 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
-	public static FacilioChain getAddVirtualRelationChain() {
+	public static FacilioChain getAddOrUpdateVirtualRelationChain() {
 		FacilioChain chain = getDefaultChain();
-		chain.addCommand(new AddVirtualRelationCommand());
+		chain.addCommand(new AddOrUpdateVirtualRelationCommand());
 		return chain;
 	}
 

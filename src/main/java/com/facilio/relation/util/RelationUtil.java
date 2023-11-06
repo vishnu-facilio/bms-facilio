@@ -15,10 +15,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.ImportRelationshipRequestContext;
-import com.facilio.relation.context.RelationContext;
-import com.facilio.relation.context.RelationDataContext;
-import com.facilio.relation.context.RelationMappingContext;
-import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.context.*;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.ChainUtil;
@@ -54,11 +51,6 @@ public class RelationUtil {
         return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage, null);
     }
 
-    public static JSONObject getRecordsWithRelationship(Long relationMappingId, Long parentId, int page, int perPage, Criteria userCriteria) throws Exception {
-        RelationMappingContext mappingData = getRelationMapping(relationMappingId);
-        return getRecordsWithRelationship(mappingData.getMappingLinkName(), mappingData.getFromModule().getName(), parentId, page, perPage, userCriteria);
-    }
-
     public static JSONObject getRecordsWithReverseRelationship(Long relationMappingId, Long parentId, int page, int perPage) throws Exception {
         RelationMappingContext mappingData = getRelationMapping(relationMappingId);
         RelationContext relation = RelationUtil.getRelation(mappingData.getRelationId(), true);
@@ -81,15 +73,19 @@ public class RelationUtil {
     }
 
     public static JSONObject getRecordsWithRelationship(String relationLinkName, String moduleName, Long parentId, int page, int perPage, Criteria serverCriteria) throws Exception {
-        JSONObject relatedData = new JSONObject();
-        page = (page < 1) ? 1 : page;
-        perPage = (perPage < 1) ? WorkflowV2Util.SELECT_DEFAULT_LIMIT : perPage;
 
         if (serverCriteria == null) {
             serverCriteria = new Criteria();
         }
         serverCriteria.addAndCondition(CriteriaAPI.getCondition(relationLinkName, String.valueOf(parentId), RelationshipOperator.CONTAINS_RELATION));
 
+        return fetchRelatedData(moduleName, page, perPage, serverCriteria);
+    }
+
+    private static JSONObject fetchRelatedData(String moduleName, int page, int perPage, Criteria serverCriteria) throws Exception {
+        JSONObject relatedData = new JSONObject();
+        page = (page < 1) ? 1 : page;
+        perPage = (perPage < 1) ? WorkflowV2Util.SELECT_DEFAULT_LIMIT : perPage;
         FacilioContext listContext = V3Util.fetchList(moduleName, true, null, null, false, null, null,
                 null, null, page, perPage, false, null, serverCriteria,null);
 
@@ -101,6 +97,102 @@ public class RelationUtil {
         }
 
         return relatedData;
+    }
+
+    public static JSONObject getRecordsWithRelationship(Long relationMappingId, Long parentId, int page, int perPage, Criteria userCriteria) throws Exception {
+        RelationMappingContext relationMapping = getRelationMapping(relationMappingId);
+        RelationContext relationContext = relationMapping.getRelationContext();
+        if (relationContext.isVirtual()) {
+            return getVirtualRelationData(relationMapping.getMappingLinkName(), parentId, page, perPage, userCriteria);
+        }
+        return getRecordsWithRelationship(relationMapping.getMappingLinkName(), relationMapping.getFromModule().getName(), parentId, page, perPage, userCriteria);
+    }
+
+    private static JSONObject getVirtualRelationData(String relationLinkName, Long parentId, int page, int perPage, Criteria serverCriteria) throws Exception {
+        RelationMappingContext relationMapping = RelationUtil.getRelationMapping(relationLinkName);
+
+        RelationMappingContext.Position positionEnum = relationMapping.getPositionEnum();
+        String orderBy = Objects.equals(positionEnum, RelationMappingContext.Position.LEFT) ? "DESC" : "ASC";
+        long relationId = relationMapping.getRelationId();
+
+        List<Long> virtualRelationIds = getVirtualRelationIds(relationId, orderBy);
+        String relationOrderBy = "FIELD(ID, " + StringUtils.join(virtualRelationIds, ',') + ")";
+        List<RelationContext> relations = RelationUtil.getRelations(virtualRelationIds, true, relationOrderBy);
+
+        FacilioField rightIdField = FieldFactory.getField("rightId", "RIGHT_ID", FieldType.NUMBER);
+        FacilioField leftIdField = FieldFactory.getField("leftId", "LEFT_ID", FieldType.NUMBER);
+        FacilioField moduleIdField = FieldFactory.getField("moduleId", "MODULEID", FieldType.NUMBER);
+
+        List<Long> relatedIds;
+        RelationContext lastRelation = relations.get(relations.size() - 1);
+        RelationMappingContext mapping;
+
+        if (Objects.equals(positionEnum, RelationMappingContext.Position.RIGHT)) {
+            mapping = lastRelation.getMapping1();
+            relatedIds = getRelatedIds(relations, parentId, rightIdField, leftIdField, moduleIdField, page, perPage);
+        } else {
+            mapping = lastRelation.getMapping2();
+            relatedIds = getRelatedIds(relations, parentId, leftIdField, rightIdField, moduleIdField, page, perPage);
+        }
+
+        FacilioModule toModule = mapping.getToModule();
+
+        String relationModuleName = toModule.getName();
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(relatedIds, Constants.getModBean().getModule(relationModuleName)));
+        serverCriteria = serverCriteria == null || serverCriteria.isEmpty() ? new Criteria() : serverCriteria;
+        serverCriteria.andCriteria(criteria);
+
+        return fetchRelatedData(relationModuleName, page, perPage, serverCriteria);
+    }
+
+    public static List<Long> getRelatedIds(List<RelationContext> relations, long recordId, FacilioField rightIdField, FacilioField leftIdField, FacilioField moduleIdField, int page, int perPage) throws Exception {
+        int lastIndex = relations.size() - 1;
+        RelationContext relationContext = relations.get(lastIndex);
+        String subQueryString = constructBuilder(relations, lastIndex - 1, recordId, rightIdField, leftIdField, moduleIdField);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table("Custom_Relation")
+                .select(Collections.singleton(rightIdField))
+                .andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(relationContext.getRelationModuleId()), NumberOperators.EQUALS))
+                .andCustomWhere(leftIdField.getCompleteColumnName() + " IN (" + subQueryString + ")");
+
+        int offset = ((page-1) * perPage);
+        if (offset < 0) {
+            offset = 0;
+        }
+        selectRecordBuilder.offset(offset);
+        selectRecordBuilder.limit(perPage);
+
+        List<Map<String, Object>> maps = selectRecordBuilder.get();
+        return maps.stream().map(record -> (Long) record.get(rightIdField.getName())).collect(Collectors.toList());
+    }
+
+    private static String constructBuilder(List<RelationContext> relations, int i, long recordId, FacilioField rightIdField, FacilioField leftIdField, FacilioField moduleIdField) {
+        RelationContext relationContext = relations.get(i);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table("Custom_Relation")
+                .select(Collections.singleton(rightIdField))
+                .andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(relationContext.getRelationModuleId()), NumberOperators.EQUALS));
+
+        if (i == 0) {
+            selectRecordBuilder.andCustomWhere(leftIdField.getCompleteColumnName() + " = " + recordId);
+        } else {
+            selectRecordBuilder.andCustomWhere(leftIdField.getCompleteColumnName() + " IN (" + constructBuilder(relations, i - 1, recordId, rightIdField, leftIdField, moduleIdField) + ")");
+        }
+        return selectRecordBuilder.constructSelectStatement();
+    }
+
+    public static List<Long> getVirtualRelationIds(long parentId, String orderBy) throws Exception {
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getVirtualRelationshipConfigModule().getTableName())
+                .select(FieldFactory.getVirtualRelationshipConfigFields())
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", String.valueOf(parentId), NumberOperators.EQUALS))
+                .orderBy("SEQUENCE_NUMBER "+ orderBy);
+        List<Map<String, Object>> maps = selectRecordBuilder.get();
+        return maps.stream().map(record -> (Long) record.get("relationId")).collect(Collectors.toList());
     }
 
     public static RelationMappingContext getRelationMapping(Long mappingId) throws Exception {
@@ -331,6 +423,38 @@ public class RelationUtil {
         return requests;
     }
 
+    public static void setVirtualRelationData(RelationContext relation, RelationRequestContext request) throws Exception {
+        RelationMappingContext.Position position = RelationMappingContext.Position.valueOf(request.getPosition());
+        String orderBy = Objects.equals(position, RelationMappingContext.Position.LEFT) ? "ASC" : "DESC";
+        List<Long> virtualRelationIds = getVirtualRelationIds(relation.getId(), orderBy);
+
+        String relationOrderBy = "FIELD(ID, " + StringUtils.join(virtualRelationIds, ',') + ")";
+        List<RelationContext> relations = RelationUtil.getRelations(virtualRelationIds, true, relationOrderBy);
+
+        List<VirtualRelationConfigContext> virtualRelationConfigList = getVirtualRelationConfigContexts(relations, position);
+        request.setVirtualRelationConfig(virtualRelationConfigList);
+        request.setVirtualRelationIds(virtualRelationIds);
+    }
+
+    private static List<VirtualRelationConfigContext> getVirtualRelationConfigContexts(List<RelationContext> relations, RelationMappingContext.Position position) throws Exception {
+        List<VirtualRelationConfigContext> virtualRelationConfigList = new ArrayList<>();
+        for (RelationContext relationContext : relations) {
+            VirtualRelationConfigContext virtualRelationConfigContext = new VirtualRelationConfigContext();
+            RelationMappingContext mapping;
+            if (Objects.equals(position, RelationMappingContext.Position.LEFT)) {
+                mapping = relationContext.getMapping1();
+            } else {
+                mapping = relationContext.getMapping2();
+            }
+            virtualRelationConfigContext.setRelationId(relationContext.getId());
+            virtualRelationConfigContext.setFromModule(mapping.getFromModule());
+            virtualRelationConfigContext.setToModule(mapping.getToModule());
+            virtualRelationConfigContext.setRelationList(Collections.singletonList(getRelation(relationContext.getId(), true)));
+            virtualRelationConfigList.add(virtualRelationConfigContext);
+        }
+        return virtualRelationConfigList;
+    }
+
     private static void fillSameModuleRelationRequest(RelationRequestContext request, RelationContext relation, RelationMappingContext forwardMapping, RelationMappingContext reverseMapping) throws Exception {
         fillRelationMetaInfo(request, relation);
         fillForwardMappingDatainRequest(request, forwardMapping);
@@ -344,6 +468,7 @@ public class RelationUtil {
         request.setLinkName(relation.getLinkName());
         request.setRelationModule(relation.getRelationModule());
         request.setRelationCategory(relation.getRelationCategory());
+        request.setIsVirtual(relation.isVirtual());
     }
 
     private static void fillForwardMappingDatainRequest(RelationRequestContext request, RelationMappingContext mapping) throws Exception {
@@ -580,4 +705,5 @@ public class RelationUtil {
         List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, fromModuleId);
         return relationRequests;
     }
+
 }

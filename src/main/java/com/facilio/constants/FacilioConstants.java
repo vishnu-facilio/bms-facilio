@@ -4740,6 +4740,9 @@ public class FacilioConstants {
 		public static final String INCLUDE_HIDDEN_RELATIONS = "includeHiddenRelations";
 		public static final String RELATION_CATEGORY = "relationCategory";
 
+		public static final String RELATION_TYPE = "relationType";
+		public static final String RELATION_IDS = "relationIds";
+		public static final String SKIP_VIRTUAL_RELATIONS = "skipVirtualRelations";
     }
 	public static class SystemRelationMappingNames {
         public static final String BUILDING_TO_SPACE_MAPPING_NAME = "buildingToSpaceRelation";

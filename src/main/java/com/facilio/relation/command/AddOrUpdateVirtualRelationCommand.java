@@ -5,6 +5,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -24,7 +25,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class AddVirtualRelationCommand extends FacilioCommand {
+public class AddOrUpdateVirtualRelationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         RelationRequestContext relationRequest = (RelationRequestContext) context.get(FacilioConstants.ContextNames.RELATION);
@@ -34,11 +35,17 @@ public class AddVirtualRelationCommand extends FacilioCommand {
             throw new IllegalArgumentException("Minimum two Relations required to create a Virtual Relation");
         }
 
+        if (relationIds.size() > 4) {
+            throw new IllegalArgumentException("Cannot Chain more than Four Relations");
+        }
+
         Long firstRelationId = relationIds.get(0);
         Long lastRelationId = relationIds.get(relationIds.size() - 1);
 
-        Map<Long, RelationMappingContext> relationMapping = getRelationMapping(relationIds);
-        validateVirtualRelation(new ArrayList<>(relationMapping.values()));
+        List<RelationMappingContext> relationMapping = getRelationMapping(relationIds);
+        RelationMappingContext firstRelationMapping = relationMapping.stream().filter(relationMappingContext -> relationMappingContext.getRelationId() == firstRelationId).collect(Collectors.toList()).get(0);
+        RelationMappingContext lastRelationMapping = relationMapping.stream().filter(relationMappingContext -> relationMappingContext.getRelationId() == lastRelationId).collect(Collectors.toList()).get(0);
+        validateVirtualRelation(relationMapping);
 
         relationRequest.setIsVirtual(true);
 
@@ -46,12 +53,12 @@ public class AddVirtualRelationCommand extends FacilioCommand {
         relationCategory = relationCategory == null ? RelationContext.RelationCategory.NORMAL : relationCategory;
         relationRequest.setRelationCategory(relationCategory);
 
-        boolean isManyToManyType = relationMapping.values().stream().anyMatch(relationMappingContext -> !(relationMappingContext.getRelationTypeEnum().equals(RelationRequestContext.RelationType.ONE_TO_ONE)));
-        RelationRequestContext.RelationType relationType = isManyToManyType ? RelationRequestContext.RelationType.MANY_TO_MANY : RelationRequestContext.RelationType.ONE_TO_ONE ;
-        relationRequest.setRelationType(relationType);
+//        boolean isManyToManyType = relationMapping.values().stream().anyMatch(relationMappingContext -> !(relationMappingContext.getRelationTypeEnum().equals(RelationRequestContext.RelationType.ONE_TO_ONE)));
+//        RelationRequestContext.RelationType relationType = isManyToManyType ? RelationRequestContext.RelationType.MANY_TO_MANY : RelationRequestContext.RelationType.ONE_TO_ONE ;
+//        relationRequest.setRelationType(relationType);
 
-        relationRequest.setFromModuleId(relationMapping.get(firstRelationId).getFromModuleId());
-        relationRequest.setToModuleId(relationMapping.get(lastRelationId).getToModuleId());
+        relationRequest.setFromModuleId(firstRelationMapping.getFromModuleId());
+        relationRequest.setToModuleId(lastRelationMapping.getToModuleId());
 
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateRelationChain();
         FacilioContext relationContext = chain.getContext();
@@ -76,7 +83,8 @@ public class AddVirtualRelationCommand extends FacilioCommand {
         }
     }
 
-    private void createVirtualRelationConfig(long virtualRelationId, List<Long> relationIds) throws SQLException {
+    private void createVirtualRelationConfig(long virtualRelationId, List<Long> relationIds) throws Exception {
+        deleteVirtualRelationConfig(virtualRelationId);
         FacilioModule module = ModuleFactory.getVirtualRelationshipConfigModule();
         int seqNum = 1;
         GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
@@ -92,7 +100,14 @@ public class AddVirtualRelationCommand extends FacilioCommand {
         builder.save();
     }
 
-    private static Map<Long, RelationMappingContext> getRelationMapping(List<Long> relationIds) throws Exception {
+    private void deleteVirtualRelationConfig(long virtualRelationId) throws Exception {
+        GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getVirtualRelationshipConfigModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", String.valueOf(virtualRelationId), NumberOperators.EQUALS));
+        builder.delete();
+    }
+
+    private static List<RelationMappingContext> getRelationMapping(List<Long> relationIds) throws Exception {
         FacilioModule module = ModuleFactory.getRelationMappingModule();
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
@@ -102,10 +117,6 @@ public class AddVirtualRelationCommand extends FacilioCommand {
                 .orderBy("FIELD(RELATION_ID, "+ StringUtils.join(relationIds, ',') +")");
         List<Map<String, Object>> maps = builder.get();
         List<RelationMappingContext> relationMappingList = FieldUtil.getAsBeanListFromMapList(maps, RelationMappingContext.class);
-        Map<Long, RelationMappingContext> relationMappingContextMap = new HashMap<>();
-        for (RelationMappingContext relationMappingContext : relationMappingList) {
-            relationMappingContextMap.put(relationMappingContext.getRelationId(), relationMappingContext);
-        }
-        return relationMappingContextMap;
+        return  relationMappingList;
     }
 }

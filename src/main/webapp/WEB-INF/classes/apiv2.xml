@@ -708,7 +708,9 @@
 	</package>
 
 	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
-		<action name="add" class="com.facilio.relation.action.VirtualRelationAction" method="addVirtualRelation" />
+		<action name="addOrUpdate" class="com.facilio.relation.action.VirtualRelationAction" method="addOrUpdateVirtualRelation" />
+		<action name="fetchFilteredRelations"
+				class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" />
 	</package>
 
 	<package name="stateTransition"

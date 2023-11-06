@@ -1,6 +1,5 @@
 package com.facilio.relation.action;
 
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -8,10 +7,7 @@ import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.relation.context.RelationRequestContext;
-import com.facilio.relation.util.RelationUtil;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -82,7 +78,6 @@ public class RelationAction extends FacilioAction {
         setResult(FacilioConstants.ContextNames.RELATION_LIST, context.get(FacilioConstants.ContextNames.RELATION_LIST));
         return SUCCESS;
     }
-
     public String delete() throws Exception {
         FacilioChain chain = TransactionChainFactory.getDeleteRelationChain();
         FacilioContext context = chain.getContext();
