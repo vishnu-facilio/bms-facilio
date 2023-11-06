@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.facilio.accounts.dto.Permissions;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -22,6 +13,13 @@ import com.facilio.constants.FacilioConstants.Inspection;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 //This command is used for showing module list while adding Lookup field type in form builder and custom module list in other places.
 public class GetModuleListCommand extends FacilioCommand {
@@ -53,7 +51,6 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.ITEM,
 			ContextNames.ITEM_TYPES,
 			ContextNames.TOOL_TYPES,
-			ContextNames.SERVICE,
 			ContextNames.STORE_ROOM,
 			ContextNames.INVENTORY_REQUEST,
 			ContextNames.ASSET_CATEGORY,
@@ -91,7 +88,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.VENDOR_CONTACT,
 			ContextNames.TENANT_CONTACT,
 			ContextNames.CLIENT_CONTACT,
-			FacilioConstants.Trip.TRIP
+			FacilioConstants.Trip.TRIP,
+			ContextNames.TICKET_PRIORITY,
+			ContextNames.TICKET_CATEGORY
 	});
 
 	@Override
