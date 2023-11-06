@@ -159,4 +159,81 @@ public class SystemButtonApi {
         builder.delete();
 
     }
+
+    public static void addCreateButton(String moduleName) throws Exception{
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        addSystemButton(moduleName, createButton);
+    }
+
+    public static void addListEditButton(String moduleName) throws Exception{
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        addSystemButton(moduleName, listEditButton);
+    }
+
+    public static void addSummaryEditButton(String moduleName) throws Exception{
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        addSystemButton(moduleName, summaryEditButton);
+    }
+
+    public static void addListDeleteButton(String moduleName) throws Exception{
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        addSystemButton(moduleName, listDeleteButton);
+    }
+
+    public static void addBulkDeleteButton(String moduleName) throws Exception{
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        addSystemButton(moduleName, bulkDeleteButton);
+    }
+
+    public static void addExportAsCSV(String moduleName) throws Exception{
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        addSystemButton(moduleName, exportAsCSVButton);
+    }
+
+    public static void addExportAsExcel(String moduleName) throws Exception{
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        addSystemButton(moduleName, exportAsExcelButton);
+    }
 }
