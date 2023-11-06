@@ -124,19 +124,19 @@ public class FetchChildNodesCommand extends FacilioCommand {
                 if(nodeProp.get("moduleName").equals("Floor")){
                     nodeProp.put("parentId",prop.get("building"));
                 }else if(nodeProp.get("moduleName").equals("Space")){
-                    if(prop.get("floor")!=null && ((long)prop.get("floor")!=-1)){
-                        nodeProp.put("parentId",prop.get("floor"));
-                    }else if(prop.get("space1")!=null && ((long)prop.get("space1")!=-1)){
-                        nodeProp.put("parentId",prop.get("space1"));
-                    }else if(prop.get("space2")!=null && ((long)prop.get("space2")!=-1)){
-                        nodeProp.put("parentId",prop.get("space2"));
-                    }else if(prop.get("space3")!=null && ((long)prop.get("space3")!=-1)){
-                        nodeProp.put("parentId",prop.get("space3"));
+                     if(prop.get("space5")!=null && ((long)prop.get("space5")!=-1)){
+                        nodeProp.put("parentId",prop.get("space5"));
                     }else if(prop.get("space4")!=null && ((long)prop.get("space4")!=-1)){
                         nodeProp.put("parentId",prop.get("space4"));
-                    }else if(prop.get("space5")!=null && ((long)prop.get("space5")!=-1)){
-                        nodeProp.put("parentId",prop.get("space5"));
-                    }
+                    }else if(prop.get("space3")!=null && ((long)prop.get("space3")!=-1)){
+                        nodeProp.put("parentId",prop.get("space3"));
+                    }else if(prop.get("space2")!=null && ((long)prop.get("space2")!=-1)){
+                        nodeProp.put("parentId",prop.get("space2"));
+                    }else if(prop.get("space1")!=null && ((long)prop.get("space1")!=-1)){
+                        nodeProp.put("parentId",prop.get("space1"));
+                    }else if(prop.get("floor")!=null && ((long)prop.get("floor")!=-1)) {
+                         nodeProp.put("parentId", prop.get("floor"));
+                     }
                 }
                 if(nodeProp.containsKey("parentId")){
                     if(parentIdVsChildrenMap.containsKey(nodeProp.get("parentId").toString())){

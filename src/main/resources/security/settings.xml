@@ -659,13 +659,17 @@
         <requestbody type="object">
             <property name="businessHour" type="object">
                 <property name="businessHourType" type="string"/>
-                <property name="customHourType" type="string"/>
+                <property name="customHourType" type="string" mandatory="false"/>
                 <property name="name" type="string" mandatory="true"/>
-                <property name="singleDaybusinessHoursList" type="array">
-                    <property name="dayOfWeek" type="string"/>
-                    <property name="startTime" type="string"/>
-                    <property name="endTime" type="string"/>
+                <property name="singleDaybusinessHoursList" type="array" mandatory="false">
+                    <items type="object">
+                        <property name="dayOfWeek" type="string" mandatory="true"/>
+                        <property name="startTime" type="string" mandatory="false"/>
+                        <property name="endTime" type="string" mandatory="false"/>
+                    </items>
                 </property>
+            </property>
+            <property name="resourceid" type="number" mandatory="false">
             </property>
         </requestbody>
     </request>

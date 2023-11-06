@@ -201,9 +201,17 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getSpaceFieldConfig(){
         return () -> new FieldConfig()
 
+                .sortFields()
+                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
-                .addFixedFields(Arrays.asList("name"))
-                .addFixedSelectableFields(Arrays.asList("photo"))
+                .addFixedFields(FieldsConfigList.SPACE_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.SPACE_VIEW_FIELDS_INCLUDE)
                 .done();
     }
 
@@ -698,9 +706,35 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getSiteFieldsConfig(){
         return () -> new FieldConfig()
 
+                .sortFields()
+                .add(FieldsConfigList.SITE_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.SITE_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
-                .skip(FieldsConfigList.SITE_VIEW_FIELDS_EXCLUDE)
                 .addFixedFields(FieldsConfigList.SITE_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.SITE_VIEW_FIELDS_INCLUDE)
+                .done();
+    }
+
+    @Module(FacilioConstants.ContextNames.FLOOR)
+    public static Supplier<FieldConfig> getFloorFieldsConfig(){
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .add(FieldsConfigList.FLOOR_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.FLOOR_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .addFixedFields(FieldsConfigList.FLOOR_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.FLOOR_VIEW_FIELDS_INCLUDE)
                 .done();
     }
 
@@ -708,9 +742,17 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getBuidingFieldsConfig(){
         return () -> new FieldConfig()
 
+                .sortFields()
+                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
-                .skip(FieldsConfigList.BUILDING_VIEW_FIELDS_EXCLUDE)
                 .addFixedFields(FieldsConfigList.BUILDING_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.BUILDING_VIEW_FIELDS_INCLUDE)
                 .done();
     }
 

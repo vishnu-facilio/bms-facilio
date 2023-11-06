@@ -35,6 +35,9 @@ public class FieldsConfigList {
     public static final List<String> WORKORDER_VIEW_FIXED_FIELDS = Arrays.asList(
             "subject", "localId"
     );
+    public static final List<String> FLOOR_VIEW_FIXED_FIELDS = Arrays.asList(
+            "name"
+    );
 
     public static final List<String> ASSET_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
             "name","category","sysCreatedBy","sysCreatedTime", "department","id",
@@ -43,7 +46,18 @@ public class FieldsConfigList {
             "siteId","space","storeRoom",
             "type","unitPrice","decommissionedBy","moduleState"
     );
-
+    public static final List<String> SITE_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
+            "name","area","client","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","classification",
+            "grossFloorArea","decommission","siteType","id","moduleState","location"
+    );
+    public static final List<String> BUILDING_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
+            "name","area","client","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","classification",
+            "managedBy","decommission","site","id","moduleState","location","decommissionedBy"
+    );
+    public static final List<String> SPACE_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
+            "name","site","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","classification",
+            "floor","decommission","building","id","moduleState","location","decommissionedBy"
+    );
     public static final List<String> ASSET_VIEW_FIELDS_EXCLUDE = Arrays.asList(
             "hideToCustomer", "parentAssetId", "stateFlowId"
     );
@@ -162,7 +176,7 @@ public class FieldsConfigList {
     );
 
     public static final List<String> SITE_VIEW_FIXED_FIELDS = Arrays.asList(
-            "name", "id"
+            "name"
     );
 
     public static final List<String> BUILDING_VIEW_FIELDS_EXCLUDE = Arrays.asList(
@@ -172,7 +186,7 @@ public class FieldsConfigList {
     );
 
     public static final List<String> BUILDING_VIEW_FIXED_FIELDS = Arrays.asList(
-            "name", "id"
+            "name"
     );
 
     public static final List<String> SERVICE_VIEW_FIELDS_INCLUDE = Arrays.asList(
@@ -272,6 +286,35 @@ public class FieldsConfigList {
     public static final List<String> UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE = Arrays.asList(
             "stateFlowId","approvalFlowId","approvalStatus","localId","meta","sourceDownloadUrl","sourceUrl","sourceType","serviceAddress","sourceType","sourceUrl","supplierServiceId"
     );
+    public static final List<String> SITE_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "client", "grossFloorArea", "managedBy", "area",
+            "siteType", "classification", "moduleState", "decommission",
+            "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
+    );
+
+    public static final List<String> BUILDING_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "grossFloorArea", "area",
+            "site", "classification", "decommission","moduleState",
+            "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String>  SPACE_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "site", "classification", "decommission","moduleState","building","floor",
+            "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String>  SPACE_VIEW_FIXED_FIELDS = Arrays.asList(
+           "name"
+    );
+
+    public static final List<String> FLOOR_FIELDS_INCLUDE = Arrays.asList(
+            "grossFloorArea", "area",
+            "site", "classification", "decommission","moduleState",
+            "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> FLOOR_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "building", "site", "classification", "decommission","moduleState",
+            "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
+    );
+
 
     public static final List<String> SERVICE_REQUEST_FIELDS_EXCLUDE = Arrays.asList(
         "appId","approvalFlowId","localId","slaPolicyId","stateFlowId"
