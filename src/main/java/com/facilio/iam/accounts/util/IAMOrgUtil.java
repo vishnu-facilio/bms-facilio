@@ -32,7 +32,7 @@ public class IAMOrgUtil {
 	}
 
 	public static int rollbackDefaultJobs(long orgId) throws Exception{
-		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.IAM_SERVICE,() -> IAMUtil.getOrgBean().rollbackDefaultJobs(orgId));
+		return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.JOB_SERVICE,() -> IAMUtil.getOrgBean().rollbackDefaultJobs(orgId));
 	}
 
 	public static boolean updateOrg(long orgId, Organization org) throws Exception {
