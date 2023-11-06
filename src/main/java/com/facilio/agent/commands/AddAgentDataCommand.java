@@ -142,6 +142,7 @@ public class AddAgentDataCommand extends FacilioCommand {
             summaryContext.setPoint(pointName);
             if(point.getResourceId() != null) {
                 summaryContext.setAssetId(point.getResourceId());
+                summaryContext.setResourceId(point.getResourceId());
             }
             if(point.getFieldId() != null) {
                 summaryContext.setReadingId(point.getFieldId());
@@ -149,7 +150,6 @@ public class AddAgentDataCommand extends FacilioCommand {
             summaryContext.setValue(String.valueOf(value));
             summaryContext.setParentId(parentId);
             summaryContext.setControllerId(controller.getId());
-            summaryContext.setResourceId(point.getResourceId());
             summaryContext.setReadingScope(point.getReadingScope());
 
             if(errorPoints.containsKey(pointName)){
