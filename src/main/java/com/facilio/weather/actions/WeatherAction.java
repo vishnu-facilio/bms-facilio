@@ -30,7 +30,6 @@ public class WeatherAction extends V3Action {
     private String emailAddress;
 
     public String getStationCode() throws Exception {
-        WeatherAPI.callDummyClickhouseApi();
         FacilioChain chain = WeatherReadOnlyChainFactory.getWeatherStationChain();
         FacilioContext context = chain.getContext();
         context.put("lat", lat);

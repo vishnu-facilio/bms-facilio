@@ -317,6 +317,13 @@ public class IAMAccountConstants {
 			dbName.setColumnName("DATABASE_NAME");
 			dbName.setModule(module);
 			fields.add(dbName);
+
+			FacilioField chDbName = new FacilioField();
+			chDbName.setName("clickhouseDBName");
+			chDbName.setDataType(FieldType.STRING);
+			chDbName.setColumnName("CH_DATABASE_NAME");
+			chDbName.setModule(module);
+			fields.add(chDbName);
 			
 			FacilioField dateFormat = new FacilioField();
 			dateFormat.setName("dateFormat");

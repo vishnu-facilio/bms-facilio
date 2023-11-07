@@ -337,30 +337,4 @@ public class WeatherAPI {
 		return formattedResponse;
 	}
 
-	public static void callDummyClickhouseApi() throws Exception {
-		WeatherAPI.fetchDummyRecords(false);
-		WeatherAPI.fetchDummyRecords(true);
-	}
-
-	public static List<Map<String, Object>> fetchDummyRecords(boolean isCh) throws Exception {
-		LOGGER.info("CLICKHOUSE :: I am testing clickhouse apis "+isCh);
-		ModuleBean modBean = Constants.getModBean();
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_WEATHER_READING);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.NEW_WEATHER_READING);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
-				.select(fields)
-				.limit(3);
-		List<Map<String, Object>> result;
-
-		if(isCh) {
-			result = FacilioService.runAsServiceWihReturn(
-					FacilioConstants.Services.CLICKHOUSE, () -> selectBuilder.get());
-		} else {
-			result = selectBuilder.get();
-		}
-		LOGGER.info("Results in clickhouse ::"+result);
-		return result;
-	}
-
 }

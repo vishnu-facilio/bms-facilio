@@ -66,6 +66,7 @@ public class FacilioProperties {
     private static String defaultAppDB;
     private static String defaultAppDBForNewOrg;
     private static String defaultDataSource;
+    private static String defaultClickhouseDataSource;
     private static String defaultDataSourceForNewOrg;
     private static String queueSource;
     private static boolean isOnpremise = false;
@@ -340,6 +341,7 @@ public class FacilioProperties {
             proxyJwtTokenSecret = PROPERTIES.getProperty("proxy.jwt.secret");
             defaultDataSourceForNewOrg = PROPERTIES.getProperty("db.default.ds.new.org");
             defaultDB = PROPERTIES.getProperty("db.default.db");
+            defaultClickhouseDataSource = PROPERTIES.getProperty("ch.default.ds");
             defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
             defaultAppDBForNewOrg = PROPERTIES.getProperty("db.default.app.db.new.org");
             queueSource = PROPERTIES.getProperty("mQueue.source");
@@ -656,6 +658,13 @@ public class FacilioProperties {
 
     public static String getDefaultDataSource() {
         return defaultDataSource;
+    }
+
+    public static String getDefaultClickhouseDataSource() {
+        if(StringUtils.isEmpty(defaultClickhouseDataSource)) {
+            return getDefaultDataSource();
+        }
+        return defaultClickhouseDataSource;
     }
 
     public static String getDefaultDataSourceForNewOrg() {
