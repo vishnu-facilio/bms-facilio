@@ -321,6 +321,7 @@ public class PackageConstants {
 
         public static final String BASE_FIELD_NAME = "BaseFieldName";
         public static final String DUE_FIELD_NAME = "DueFieldName";
+        public static final String COMMITMENT = "Commitment";
         public static final String COMMITMENTS = "Commitments";
         public static final String ENTITIES = "Entities";
         public static final String VERBNAME = "VerbName";

@@ -627,6 +627,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldProp, FacilioField.class);
                 break;
         }
+        facilioField.setDisplayType(FacilioField.FieldDisplayType.TYPE_MAP.get(fieldProp.get("displayType")));
         return facilioField;
     }
 

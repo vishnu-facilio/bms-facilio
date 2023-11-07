@@ -64,7 +64,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
         Criteria commitmentCriteria = new Criteria();
         commitmentCriteria.addAndCondition(CriteriaAPI.getCondition("PARENT_RULE_ID", "parentRuleId", String.valueOf(slaRule.getId()), NumberOperators.EQUALS));
         List<WorkflowRuleContext> commitments = WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.SLA_WORKFLOW_RULE, true, commitmentCriteria, null, null);
-        XMLBuilder commitmentBuilder = element.element(PackageConstants.WorkFlowRuleConstants.COMMITMENTS);
+        XMLBuilder commitmentsBuilder = element.element(PackageConstants.WorkFlowRuleConstants.COMMITMENTS);
 
         Criteria slaCriteria = slaRule.getCriteria();
         if (slaCriteria != null){
@@ -74,6 +74,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
         if (CollectionUtils.isNotEmpty(commitments)) {
 
             for (WorkflowRuleContext slaWorkflowCommitment : commitments) {
+                XMLBuilder commitmentBuilder = commitmentsBuilder.element(PackageConstants.WorkFlowRuleConstants.COMMITMENT);
                 SLAWorkflowCommitmentRuleContext commitment = (SLAWorkflowCommitmentRuleContext) slaWorkflowCommitment;
                 Criteria criteria = commitment.getCriteria();
                 commitmentBuilder.element(PackageConstants.MODULENAME).text(commitment.getModuleName());
@@ -631,7 +632,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
             String commitmentName = commitmentBuilder.getElement(PackageConstants.NAME).getText();
             String commitmentActivityTypeStr = commitmentBuilder.getElement(PackageConstants.WorkFlowRuleConstants.ACTIVITY_TYPE).getText();
             String ruleType = commitmentBuilder.getElement(PackageConstants.WorkFlowRuleConstants.RULE_TYPE).getText();
-            XMLBuilder criteriaElement = builder.getElement(PackageConstants.CriteriaConstants.CRITERIA);
+            XMLBuilder criteriaElement = commitmentBuilder.getElement(PackageConstants.CriteriaConstants.CRITERIA);
             if (criteriaElement != null) {
                 Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
                 commitment.setCriteria(criteria);
