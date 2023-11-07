@@ -2,19 +2,17 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.TemplatePages.CalendarViewTemplatePage;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.PageColumnContext;
-import com.facilio.bmsconsole.context.PageTabContext;
-import com.facilio.bmsconsole.context.PagesContext;
-import com.facilio.bmsconsole.forms.*;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
@@ -72,20 +70,13 @@ public class CalendarModule extends BaseModuleConfig{
 
         return groupVsViews;
     }
-    private static FacilioView getAllCalendarView() throws Exception{
+    public static FacilioView getAllCalendarView() throws Exception{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Calendar");
         allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule calendarModule = modBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
-        if(calendarModule == null){
-            throw new IllegalArgumentException("calendar Module Not Found");
-        }
-        FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", calendarModule);
+        allView.setFields(getAllViewColumns());
 
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-        allView.setSortFields(sortFields);
         return allView;
     }
     @Override
@@ -188,38 +179,12 @@ public class CalendarModule extends BaseModuleConfig{
         calendarPages.add(controlActionCalendarPage);
         return calendarPages;
     }
-    private FormRuleContext addCalendarEditDisabilityRule() {
-
-        FormRuleContext singleRule = new FormRuleContext();
-        singleRule.setName("Calendar Edit Form Disability  Rule");
-        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
-        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
-        singleRule.setExecuteType(2);
-
-        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
-//        List<FormRuleTriggerFieldContext> triggerFieldContexts = new ArrayList<>();
-//        singleRule.setTriggerFields(triggerFieldContexts);
-        FormRuleActionContext filterAction = new FormRuleActionContext();
-        filterAction.setActionType(FormActionType.DISABLE_FIELD.getVal());
-
-        List<FormRuleActionFieldsContext> actionFieldsContexts = new ArrayList<>();
-
-        FormRuleActionFieldsContext typeActionField = new FormRuleActionFieldsContext();
-        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
-
-        typeActionField.setFormFieldName("Type");
-        actionField.setFormFieldName("Client");
-        actionFieldsContexts.add(typeActionField);
-        actionFieldsContexts.add(actionField);
-
-        filterAction.setFormRuleActionFieldsContext(actionFieldsContexts);
-
-        actions.add(filterAction);
-
-        singleRule.setActions(actions);
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
-        return singleRule;
+    private static List<ViewField> getAllViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("name", "Name"));
+        columns.add(new ViewField("calendarType", "Type"));
+        columns.add(new ViewField("client", "Client"));
+        return  columns;
     }
 
 }

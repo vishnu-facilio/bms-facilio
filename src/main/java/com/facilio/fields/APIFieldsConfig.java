@@ -1051,5 +1051,31 @@ public class APIFieldsConfig {
                 .done();
     }
 
+    @Module(FacilioConstants.Calendar.CALENDAR_MODULE_NAME)
+    public static Supplier<FieldConfig> getCalendarFieldConfig() {
+        return () -> new FieldConfig()
+                .advancedFields()
+                .add(FieldsConfigList.CALENDAR_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.CALENDAR_FIELDS_INCLUDE)
+                .done()
+                .sortFields()
+                .add(FieldsConfigList.CALENDAR_FIELDS_INCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.Calendar.EVENT_MODULE_NAME)
+    public static Supplier<FieldConfig> getCalendarEventFieldConfig() {
+        return () -> new FieldConfig()
+                .advancedFields()
+                .add(FieldsConfigList.CALENDAR_EVENTS_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.CALENDAR_EVENTS_FIELDS_INCLUDE)
+                .done()
+                .sortFields()
+                .add(FieldsConfigList.CALENDAR_EVENTS_SORT_FIELDS_INCLUDE)
+                .done();
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -60,20 +61,24 @@ public class CalendarEventModule extends BaseModuleConfig{
 
         return groupVsViews;
     }
-    private static FacilioView getAllCalendarEventView() throws Exception{
+    public static FacilioView getAllCalendarEventView() throws Exception{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Events");
         allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setFields(getAllViewColumns());
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule eventModule = modBean.getModule(FacilioConstants.Calendar.EVENT_MODULE_NAME);
-
-        FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", eventModule);
-
-        List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
-        allView.setSortFields(sortFields);
 
         return allView;
+    }
+    private static List<ViewField> getAllViewColumns() {
+        List<ViewField> columns = new ArrayList<ViewField>();
+        columns.add(new ViewField("name", "Name"));
+        columns.add(new ViewField("eventType", "Type"));
+        columns.add(new ViewField("eventFrequency", "Frequency"));
+        columns.add(new ViewField("validityStartTime", "Start Time"));
+        columns.add(new ViewField("validityEndTime", "End Time"));
+        columns.add(new ViewField("sysModifiedTime", "Modified Time"));
+        return  columns;
     }
 }
