@@ -27,8 +27,9 @@ public class InstallDataMigrationAction extends FacilioAction {
     private long sourceOrgId;
     private long packageId;
     private String dataMigrationLogModules;
+    private String skipDataMigrationModules;
     private long dataMigrationId;
-    private long transactionTimeout;
+    private int transactionTimeout;
     private boolean moduleDataInsertProcess;
 
 
@@ -36,24 +37,35 @@ public class InstallDataMigrationAction extends FacilioAction {
 
         LOGGER.info("####Sandbox - Initiating Data Package installation");
 
-        FacilioChain installDataMigrationChain = DataMigrationChainFactory.getInstallDataMigrationChain();
+        int transactionTimeout = getTransactionTimeout();
+        if(transactionTimeout<1){
+            transactionTimeout = 6000000;
+        }
+        FacilioChain installDataMigrationChain = DataMigrationChainFactory.getInstallDataMigrationChain(transactionTimeout);
         FacilioContext dataMigrationContext = installDataMigrationChain.getContext();
 
         this.setFetchStackTrace(true);
 
         List<String> dataMigrationLogModulesList = new ArrayList<>();
+        List<String> skipDataMigrationLogModulesList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(getDataMigrationLogModules())) {
             dataMigrationLogModulesList = Arrays.asList(getDataMigrationLogModules().split(","));
         }
 
+        if (StringUtils.isNotEmpty(getSkipDataMigrationModules())) {
+            skipDataMigrationLogModulesList = Arrays.asList(getSkipDataMigrationModules().split(","));
+        }
+
+
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.FILE, getFile());
         dataMigrationContext.put(DataMigrationConstants.TARGET_ORG_ID, getTargetOrgId());
         dataMigrationContext.put(DataMigrationConstants.PACKAGE_ID, getPackageId());
-        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, getTransactionTimeout());
+        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_ID, getDataMigrationId());
         dataMigrationContext.put(DataMigrationConstants.LOG_MODULES_LIST, dataMigrationLogModulesList);
+        dataMigrationContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipDataMigrationLogModulesList);
         dataMigrationContext.put(DataMigrationConstants.DATA_INSERT_PROCESS,isModuleDataInsertProcess());
 
         installDataMigrationChain.execute();

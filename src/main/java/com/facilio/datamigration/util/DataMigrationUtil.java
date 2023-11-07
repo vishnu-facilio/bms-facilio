@@ -19,6 +19,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import com.opencsv.CSVReader;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -28,6 +29,7 @@ import java.io.FileReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class DataMigrationUtil {
 
     public static List<SupplementRecord> getSupplementFields(Collection<FacilioField> fields) {
@@ -342,14 +344,11 @@ public class DataMigrationUtil {
 
     private static void addNumberLookupDetails(String fieldName, String lookupModuleName, Map<String, FacilioModule> targetModuleNameVsObj, Map<String, Map<String, Object>> numberFieldsVsLookupModules) throws Exception{
         HashMap lookupDetails = new HashMap<>();
-        boolean isSpecialModule = LookupSpecialTypeUtil.isSpecialType(lookupModuleName);
 
         lookupDetails.put("lookupModuleName", lookupModuleName);
-        if (!isSpecialModule) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule module = modBean.getModule(lookupModuleName);
-            lookupDetails.put("lookupModule",module);
-        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(lookupModuleName);
+        lookupDetails.put("lookupModule",module);
         numberFieldsVsLookupModules.put(fieldName, lookupDetails);
     }
 
@@ -513,6 +512,9 @@ public class DataMigrationUtil {
                 Map<String, Object> dataProp = getCsvInsertDataAsMap(fieldNames, newFieldValues, targetModule, packageChangSets, nonNullableModuleVsFieldVsLookupModules,targetConnection,dataMigrationObj);
                 insertDataProps.add(dataProp);
             }
+        }catch (Exception ex){
+            LOGGER.info("####Sandbox --- Exception while creating csv file from insert props modulename :" +targetModule.getName() +"Exception : "+ex);
+            throw new Exception(ex);
         }
         return insertDataProps;
     }
@@ -548,6 +550,10 @@ public class DataMigrationUtil {
                     case ID:
                     case DATE_TIME:
                     case NUMBER:
+                        if(Objects.equals(field.getName(), "site") || Objects.equals(field.getName(), "siteId")){
+                            dataProp.put(fieldNames[i],-1l);
+                            break;
+                        }
                         if (field.getDisplayType() == FacilioField.FieldDisplayType.DECIMAL || field.getDisplayType() == FacilioField.FieldDisplayType.TEXTBOX) {
                             Double fieldValue = Double.parseDouble(fieldValues[i]);
                             Object numberId = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, fieldNames[i], fieldValue);
@@ -742,6 +748,9 @@ public class DataMigrationUtil {
                 Map<String, Object> dataProp = getCsvUpdateDataAsMap(fieldNames, fieldValues, targetModule,targetFieldNameVsFields,numberLookupDetails,moduleIdVsOldIds);
                 updateDataProps.add(dataProp);
             }
+        }catch (Exception ex){
+            LOGGER.info("####Sandbox --- Exception while creating csv file from update props modulename :" +targetModule.getName() +"Exception : "+ex);
+            throw new Exception(ex);
         }
 
         for(Map.Entry<Long,List<Long>> entry :moduleIdVsOldIds.entrySet()) {
@@ -857,6 +866,13 @@ public class DataMigrationUtil {
                     put(FacilioConstants.ContextNames.SITE_ID,FacilioConstants.ContextNames.SITE);
                 }});
 
+                put("inventoryrequestlineitems",new HashMap<String,String>(){{
+                    put("inventoryRequestId",FacilioConstants.ContextNames.INVENTORY_REQUEST);
+                }});
+
+                put("inspectionTriggerResourceInclExcl",new HashMap<String,String>(){{
+                    put("inspectionTemplate","inspectionTemplate");
+                }});
 
             }}
     );

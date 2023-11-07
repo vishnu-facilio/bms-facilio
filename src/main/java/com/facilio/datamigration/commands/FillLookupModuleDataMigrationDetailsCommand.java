@@ -3,6 +3,7 @@ package com.facilio.datamigration.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.command.PostTransactionCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
@@ -20,6 +21,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +31,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
-public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand {
+public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand implements PostTransactionCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -38,7 +40,7 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
         Map<String, List<Long>> toBeFetchRecords = (Map<String, List<Long>>) context.get(PackageConstants.TO_BE_FETCH_RECORDS);
         Map<String, List<Long>> fetchedRecords = (Map<String, List<Long>>) context.get(PackageConstants.FETCHED_RECORDS);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (Map<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
-        List<String>  allDataMigrationModules = (List<String>) context.get(DataMigrationConstants.ALL_DATA_MIGRATION_MODULES);
+        List<String> allDataMigrationModules = (List<String>) context.get(DataMigrationConstants.ALL_DATA_MIGRATION_MODULES);
 
         long sourceOrgId = (long) context.getOrDefault(DataMigrationConstants.SOURCE_ORG_ID, -1l);
         AccountUtil.setCurrentAccount(sourceOrgId);
@@ -53,12 +55,12 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
 
                 List<Long> toBeFetchRecordIds = moduleNameVsRecordIs.getValue();
                 String moduleName = moduleNameVsRecordIs.getKey();
-                if(CollectionUtils.isEmpty(toBeFetchRecordIds)){
+                if (CollectionUtils.isEmpty(toBeFetchRecordIds)) {
                     toBeFetchRecords.remove(moduleName);
                     continue;
                 }
                 PackageFolderContext dataFolder = rootFolder.getFolder(PackageConstants.DATA_FOLDER_NAME);
-                List<String> allModuleNamesXml =  PackageFileUtil.getDataConfigModuleNames(rootFolder);
+                List<String> allModuleNamesXml = PackageFileUtil.getDataConfigModuleNames(rootFolder);
                 Map<String, String> moduleNameVsXmlFileName = PackageFileUtil.getModuleNameVsXmlFileName(rootFolder);
 
                 FacilioModule sourceModule = modBean.getModule(moduleName);
@@ -111,15 +113,15 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
                 } while (!isModuleMigrated);
                 toBeFetchRecords.remove(moduleName);
 
-                if(CollectionUtils.isEmpty(propsForCsv)){
+                if (CollectionUtils.isEmpty(propsForCsv)) {
                     continue;
                 }
 
                 if (allModuleNamesXml.contains(moduleName)) {
                     String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
                     moduleCsvFile = dataFolder.getFile(moduleFileName).getCsvContent();
-                    PackageFileUtil.updateCsvFile(sourceModule, moduleCsvFile, propsForCsv, sourceFields, fetchedRecords, numberLookupDetails, toBeFetchRecords,allDataMigrationModules);
-                    LOGGER.info("File updated for : " +moduleName + " : update props " + propsForCsv);
+                    PackageFileUtil.updateCsvFile(sourceModule, moduleCsvFile, propsForCsv, sourceFields, fetchedRecords, numberLookupDetails, toBeFetchRecords, allDataMigrationModules);
+                    LOGGER.info("File updated for : " + moduleName + " : update props " + propsForCsv);
 
                 } else {
 
@@ -129,8 +131,8 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
                     XMLBuilder moduleNamesXml = dataXML.element(PackageConstants.MODULE);
                     moduleNamesXml.attr(PackageConstants.NAME, moduleName);
                     moduleNamesXml.text(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN);
-                    LOGGER.info("File created for : " +moduleName + " : update props " + propsForCsv);
-                    moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords,allDataMigrationModules);
+                    LOGGER.info("File created for : " + moduleName + " : update props " + propsForCsv);
+                    moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords, allDataMigrationModules);
                     dataFolder.addFile(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(moduleName, PackageConstants.CSV_FILE_EXTN, moduleCsvFile));
                 }
             }
@@ -143,5 +145,28 @@ public class FillLookupModuleDataMigrationDetailsCommand extends FacilioCommand 
         context.put(PackageConstants.DOWNLOAD_URL, downloadUrl);
 
         return false;
+    }
+
+    @Override
+    public boolean postExecute() throws Exception {
+        String directoryPath = PackageFileUtil.getSandboxFolderPath();
+
+        File directory = new File(directoryPath);
+
+        if (directory.exists()) {
+            FileUtils.deleteDirectory(directory);
+        }
+        return false;
+    }
+
+    @Override
+    public void onError() throws Exception {
+        String directoryPath = PackageFileUtil.getSandboxFolderPath();
+
+        File directory = new File(directoryPath);
+
+        if (directory.exists()) {
+            FileUtils.deleteDirectory(directory);
+        }
     }
 }

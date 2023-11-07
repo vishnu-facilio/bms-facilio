@@ -63,6 +63,7 @@ public class DataMigrationConstants {
     public static final String MODULE_SEQUENCE = "moduleSequence";
     public static final String SKIP_MODULES_LIST = "skipModules";
     public static final String LOG_MODULES_LIST = "logModules";
+    public static final String SKIP_DATA_MIGRATION_MODULE_NAMES = "skipDataMigrationModuleNames";
     public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
     public static final String DATA_MIGRATION_MODULE_NAMES = "dataMigrationModuleNames";
     public static final String DATA_MIGRATION_MODULES = "dataMigrationModules";
@@ -70,6 +71,7 @@ public class DataMigrationConstants {
     public static final String ALL_DATA_MIGRATION_MODULES = "allDataMigrationModules";
     public static final String MODULES_VS_DETAILS = "ModulesVsInfo";
     public static final String LIMIT = "limit";
+    public static final String ALLOW_NOTES_AND__ATTACHMENTS = "allowNotesAndAttachments";
     public static final String PACKAGE_ID = "packageId";
     public static final String PACKAGE_CHANGE_SET = "packageChangSets";
     public static final String FILE = "file";

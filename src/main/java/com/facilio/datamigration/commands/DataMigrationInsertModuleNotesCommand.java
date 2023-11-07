@@ -15,6 +15,7 @@ import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class DataMigrationInsertModuleNotesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -35,13 +37,15 @@ public class DataMigrationInsertModuleNotesCommand extends FacilioCommand {
 
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
 
-        List<String> allModuleNamesXml =  PackageFileUtil.getDataConfigModuleNames(rootFolder);
+        List<String> allModuleNamesXml = PackageFileUtil.getDataConfigModuleNames(rootFolder);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<String> addedNotes = new ArrayList<>();
 
-        for(String moduleName : allModuleNamesXml){
+        for (String moduleName : allModuleNamesXml) {
 
-            FacilioModule parentNoteModule = DataMigrationUtil.getBaseExtendedModule(moduleName,modBean);;
+            LOGGER.info("####Sandbox --- Insert notes for module  :" + moduleName);
+            
+            FacilioModule parentNoteModule = DataMigrationUtil.getBaseExtendedModule(moduleName, modBean);
             List<FacilioModule> subModules = modBean.getSubModules(moduleName, FacilioModule.ModuleType.NOTES);
 
             List<NoteContext> notesWithoutPrent = new ArrayList<>();
@@ -60,7 +64,7 @@ public class DataMigrationInsertModuleNotesCommand extends FacilioCommand {
                     }
                 }
 
-                Map<Long,Long> oldVsNewParentIds =  PackageNotesUtil.addNotes(notesWithoutPrent,noteModule.getName(),moduleName);
+                Map<Long, Long> oldVsNewParentIds = PackageNotesUtil.addNotes(notesWithoutPrent, noteModule.getName(), moduleName);
 
                 for (NoteContext noteContext : notesWithPrent) {
                     long oldParentNoteId = noteContext.getParentNote().getId();
@@ -68,7 +72,7 @@ public class DataMigrationInsertModuleNotesCommand extends FacilioCommand {
                     noteContext.getParentNote().setId(newParentNoteId);
                 }
 
-                PackageNotesUtil.addNotes(notesWithPrent,noteModule.getName(),moduleName);
+                PackageNotesUtil.addNotes(notesWithPrent, noteModule.getName(), moduleName);
 
                 addedNotes.add(noteModule.getName());
             }

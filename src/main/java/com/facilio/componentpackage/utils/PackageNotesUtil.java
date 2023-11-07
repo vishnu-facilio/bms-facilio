@@ -80,12 +80,18 @@ public class PackageNotesUtil {
         for (Map.Entry<Long, List<Long>> entry : moduleIdVsOldIds.entrySet()) {
             Long moduleId = entry.getKey();
             List<Long> oldIds = entry.getValue();
+            if(CollectionUtils.isEmpty(oldIds)){
+                continue;
+            }
             Map<Long, Long> idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), moduleId, oldIds);
             moduleIdVsOldIdVsNewId.put(moduleId, idMappings);
         }
 
         Map<Long, Long> idMapping = moduleIdVsOldIdVsNewId.get(parentModule.getModuleId());
 
+        if(MapUtils.isEmpty(idMapping)){
+            return new ArrayList<>();
+        }
         for (NoteContext note : allNotes) {
             long oldParentId = note.getParentId();
             long newParentId = idMapping.getOrDefault(oldParentId,-1l);

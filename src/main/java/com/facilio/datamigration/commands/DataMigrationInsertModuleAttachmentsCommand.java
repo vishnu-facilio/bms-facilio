@@ -13,6 +13,7 @@ import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -20,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j
 public class DataMigrationInsertModuleAttachmentsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -37,6 +39,8 @@ public class DataMigrationInsertModuleAttachmentsCommand extends FacilioCommand 
 
         for(String moduleName : allModuleNamesXml){
 
+            LOGGER.info("####Sandbox --- Insert attachment for module  :" +moduleName );
+
             FacilioModule parentModule = DataMigrationUtil.getBaseExtendedModule(moduleName,modBean);
 
             List<FacilioModule> subModules = modBean.getSubModules(moduleName, FacilioModule.ModuleType.ATTACHMENTS);
@@ -46,6 +50,9 @@ public class DataMigrationInsertModuleAttachmentsCommand extends FacilioCommand 
                 File attachmentCsvFile = PackageFileUtil.getModuleCsvFile(rootFolder,attachmentModule.getName()+PackageConstants.FILE_EXTENSION_SEPARATOR+ PackageConstants.CSV_FILE_EXTN);
                 List<AttachmentContext> moduleAttachments = PackageFileUtil.getAttachmentListFromCsv(attachmentCsvFile,parentModule,targetConnection,dataFileFolder,dataMigrationObj);
 
+                if(CollectionUtils.isEmpty(moduleAttachments)){
+                    continue;
+                }
                 AttachmentsAPI.addAttachments(moduleAttachments, attachmentModule.getName());
                 addedAttachments.add(attachmentModule.getName());
             }

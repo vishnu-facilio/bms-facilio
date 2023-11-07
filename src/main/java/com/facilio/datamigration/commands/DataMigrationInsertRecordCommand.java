@@ -21,6 +21,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +37,9 @@ public class DataMigrationInsertRecordCommand extends FacilioCommand {
         long dataMigrationId = (long) context.getOrDefault(DataMigrationConstants.DATA_MIGRATION_ID, -1l);
         DataMigrationStatusContext dataMigrationObj = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
         PackageFolderContext rootFolder = (PackageFolderContext) context.get(PackageConstants.PACKAGE_ROOT_FOLDER);
-        long transactionTimeout = (long) context.get(DataMigrationConstants.TRANSACTION_TIME_OUT);
+        int transactionTimeout = (int) context.get(DataMigrationConstants.TRANSACTION_TIME_OUT);
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
+        List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
@@ -47,7 +49,26 @@ public class DataMigrationInsertRecordCommand extends FacilioCommand {
         Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets = PackageUtil.getAllPackageChangsets(packageId);
         Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules = DataMigrationUtil.getNonNullableModuleVsFieldVsLookupModules();
 
-        for (String moduleName : dataConfigModuleNames) {
+        List<String> allDataConfigModuleNames = new ArrayList<>();
+        for (Map<String, String> columnLookupMap : nonNullableModuleVsFieldVsLookupModules.values()) {
+            for (String lookupName : columnLookupMap.values()) {
+                if(!allDataConfigModuleNames.contains(lookupName)){
+                    allDataConfigModuleNames.add(lookupName);
+                }
+            }
+        }
+
+        for(String dataConfigModuleName :dataConfigModuleNames){
+            if(!allDataConfigModuleNames.contains(dataConfigModuleName)){
+                allDataConfigModuleNames.add(dataConfigModuleName);
+            }
+        }
+
+        for (String moduleName : allDataConfigModuleNames) {
+
+            if(skipDataMigrationModules.contains(moduleName)){
+                continue;
+            }
 
             LOGGER.info("Migration - Insert - Started for moduleName -" + moduleName);
 

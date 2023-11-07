@@ -36,7 +36,8 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
         long sourceOrgId = (long) context.getOrDefault(DataMigrationConstants.SOURCE_ORG_ID, -1l);
         HashMap<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
         Map<String,FacilioModule> allSystemModules = (Map<String,FacilioModule>) context.get(DataMigrationConstants.ALL_SYSTEM_MODULES);
-        int limit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 5000);
+        int limit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 0);
+        boolean allowNotesAndAttachments = (boolean) context.get(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS);
 
         int actualLimit = 0;
         boolean getLimitedRecords = true;
@@ -143,41 +144,42 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
                 dataModuleNameConfigXML.attr(PackageConstants.NAME, moduleName);
                 dataModuleNameConfigXML.text(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN);
 
-                //module data attachments csv creation
-                List<AttachmentContext> moduleAttachments = new ArrayList<>();
-                List<FacilioModule> subAttachmentModules = moduleBean.getSubModules(sourceModule.getName(), FacilioModule.ModuleType.ATTACHMENTS);
-                if (CollectionUtils.isNotEmpty(subAttachmentModules)) {
-                    FacilioModule attachmentModule = subAttachmentModules.get(0);
-                    if (!fetchedAttachmentsModule.contains(attachmentModule.getName())) {
-                        moduleAttachments = AttachmentsAPI.getAttachments(attachmentModule.getName(), -1l, false);
-                        fetchedAttachmentsModule.add(attachmentModule.getName());
-                        if (CollectionUtils.isNotEmpty(moduleAttachments)) {
-                            moduleAttachmentsCsv = PackageFileUtil.exportAttachmentsAsCSVFile(attachmentModule, dataFolder, moduleAttachments, dataFileFolder, moduleBean);
+                if(allowNotesAndAttachments) {
+                    //module data attachments csv creation
+                    List<AttachmentContext> moduleAttachments = new ArrayList<>();
+                    List<FacilioModule> subAttachmentModules = moduleBean.getSubModules(sourceModule.getName(), FacilioModule.ModuleType.ATTACHMENTS);
+                    if (CollectionUtils.isNotEmpty(subAttachmentModules)) {
+                        FacilioModule attachmentModule = subAttachmentModules.get(0);
+                        if (!fetchedAttachmentsModule.contains(attachmentModule.getName())) {
+                            moduleAttachments = AttachmentsAPI.getAttachments(attachmentModule.getName(), -1l, false);
+                            fetchedAttachmentsModule.add(attachmentModule.getName());
+                            if (CollectionUtils.isNotEmpty(moduleAttachments)) {
+                                moduleAttachmentsCsv = PackageFileUtil.exportAttachmentsAsCSVFile(attachmentModule, dataFolder, moduleAttachments, dataFileFolder, moduleBean);
+                            }
                         }
-                    }
-                    if (moduleAttachmentsCsv != null) {
-                        dataFolder.addFile(attachmentModule.getName() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(attachmentModule.getName(), PackageConstants.CSV_FILE_EXTN, moduleAttachmentsCsv));
-                    }
-                }
-
-                //module data notes csv creation
-                List<NoteContext> moduleNotes = new ArrayList<>();
-                List<FacilioModule> subModules = moduleBean.getSubModules(sourceModule.getName(), FacilioModule.ModuleType.NOTES);
-                if (CollectionUtils.isNotEmpty(subModules)) {
-                    FacilioModule noteModule = subModules.get(0);
-                    if (!fetchedNotesModule.contains(noteModule.getName())) {
-                        moduleNotes = PackageNotesUtil.getAllNotes(noteModule);
-                        fetchedNotesModule.add(noteModule.getName());
-                        if (CollectionUtils.isNotEmpty(moduleNotes)) {
-                            moduleNotesCsvFile = PackageFileUtil.exportNotesAsCSVFile(noteModule, rootFolder, moduleNotes);
+                        if (moduleAttachmentsCsv != null) {
+                            dataFolder.addFile(attachmentModule.getName() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(attachmentModule.getName(), PackageConstants.CSV_FILE_EXTN, moduleAttachmentsCsv));
                         }
                     }
 
-                    if (moduleNotesCsvFile != null) {
-                        dataFolder.addFile(noteModule.getName() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(noteModule.getName(), PackageConstants.CSV_FILE_EXTN, moduleNotesCsvFile));
+                    //module data notes csv creation
+                    List<NoteContext> moduleNotes = new ArrayList<>();
+                    List<FacilioModule> subModules = moduleBean.getSubModules(sourceModule.getName(), FacilioModule.ModuleType.NOTES);
+                    if (CollectionUtils.isNotEmpty(subModules)) {
+                        FacilioModule noteModule = subModules.get(0);
+                        if (!fetchedNotesModule.contains(noteModule.getName())) {
+                            moduleNotes = PackageNotesUtil.getAllNotes(noteModule);
+                            fetchedNotesModule.add(noteModule.getName());
+                            if (CollectionUtils.isNotEmpty(moduleNotes)) {
+                                moduleNotesCsvFile = PackageFileUtil.exportNotesAsCSVFile(noteModule, rootFolder, moduleNotes);
+                            }
+                        }
+
+                        if (moduleNotesCsvFile != null) {
+                            dataFolder.addFile(noteModule.getName() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(noteModule.getName(), PackageConstants.CSV_FILE_EXTN, moduleNotesCsvFile));
+                        }
                     }
                 }
-
                 if (moduleCsvFile != null) {
                     dataFolder.addFile(moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN, new PackageFileContext(moduleName, PackageConstants.CSV_FILE_EXTN, moduleCsvFile));
                 }

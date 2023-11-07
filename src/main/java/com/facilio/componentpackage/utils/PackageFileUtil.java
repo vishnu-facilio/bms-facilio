@@ -441,7 +441,7 @@ public class PackageFileUtil {
                     } else if (numberLookupDetails.containsKey(fieldName)) {
                         Map<String, Object> fieldLookupModuleDetails = numberLookupDetails.get(fieldName);
                         lookupModule = (FacilioModule) fieldLookupModuleDetails.get("lookupModule");
-                        lookupModuleName = lookupModule.getName();
+                        lookupModuleName = (String) fieldLookupModuleDetails.get("lookupModuleName");
                         FacilioModule.ModuleType moduleType = lookupModule.getTypeEnum();
                         value = record.get(fieldName);
                         long longValue = ((Number) value).longValue();
@@ -693,6 +693,9 @@ public class PackageFileUtil {
                 AttachmentContext AttachmentContext = getCsvAttachment(fieldNames, fieldValues,dataFileFolder,parentModule, moduleIdVsOldIds);
                 allModuleAttachments.add(AttachmentContext);
             }
+        }catch (Exception ex){
+            LOGGER.info("####Sandbox --- Exception while creating csv attachment file from props modulename :" +parentModule.getName() +"Exception : "+ex);
+            throw new Exception(ex);
         }
 
         for (Map.Entry<Long, List<Long>> entry : moduleIdVsOldIds.entrySet()) {
@@ -743,7 +746,7 @@ public class PackageFileUtil {
                     attachmentContext.setFileName(fieldValue);
                 } else if (Objects.equals(fieldName, "contentType")) {
                     attachmentContext.setContentType(fieldValue);
-                } else if (Objects.equals(fieldName, "recordId")) {
+                } else if (Objects.equals(fieldName, "recordId") || Objects.equals(fieldName, "parent")) {
                     long oldId = Long.parseLong(fieldValue);
                     if (!oldIds.contains(oldId)) {
                         oldIds.add(oldId);
@@ -774,4 +777,8 @@ public class PackageFileUtil {
                     Arrays.asList(PackageConstants.META_FILES_FOLDER_NAME,PackageConstants.DATA_ATTACHMENT_FILE_FOLDER_NAME)
             )
     );
+
+    public static String getSandboxFolderPath() {
+        return System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox" + File.separator + "Unzipped-Package-Files" ;
+    }
 }

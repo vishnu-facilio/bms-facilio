@@ -18,6 +18,7 @@ public class DataMigrationStatusContext {
     private long sysCreatedBy = -1;
     private long sysModifiedTime = -1;
     private DataMigrationStatus status;
+    private long packageId = -1;
 
     public DataMigrationStatus getStatusEnum() {
         return status;

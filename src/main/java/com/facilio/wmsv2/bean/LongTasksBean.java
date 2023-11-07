@@ -11,5 +11,6 @@ public interface LongTasksBean {
     void addDefaultSignupDataToSandbox(JSONObject data) throws Exception;
     void createPackageForSandboxData(JSONObject data) throws Exception;
     void installPackageForSandboxData(JSONObject data) throws Exception;
-
+    void createDataCSVPackageForSandbox(JSONObject data) throws Exception;
+    void installDataCSVPackageForSandbox(JSONObject data) throws Exception;
 }

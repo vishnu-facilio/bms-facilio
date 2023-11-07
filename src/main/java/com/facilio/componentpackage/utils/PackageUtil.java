@@ -45,6 +45,22 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Map<Long, List<FacilioField>>>> ASSET_CATEGORY_ID_VS_READING_FIELDS = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
     private static ThreadLocal<String> PACKAGE_ROOT_PATH = new ThreadLocal<>();         // Root folder path
+    private static ThreadLocal<Long> PACKAGE_ID = new ThreadLocal<>();
+    private static ThreadLocal<Long> DATA_MIGRATION_ID = new ThreadLocal<>();           // Data Migration Id
+
+    public static void setPackageId(Long packageId) {
+        PACKAGE_ID.set(packageId);
+    }
+    public static Long getPackageId() {
+        return PACKAGE_ID.get();
+    }
+
+    public static void setDataMigrationId(Long dataMigrationId) {
+        DATA_MIGRATION_ID.set(dataMigrationId);
+    }
+    public static Long getDataMigrationId() {
+        return DATA_MIGRATION_ID.get();
+    }
 
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);

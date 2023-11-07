@@ -5,13 +5,13 @@ import com.facilio.componentpackage.command.UnzipPackageFileCommand;
 
 public class DataMigrationChainFactory {
 
-	private static FacilioChain getDefaultChain() {
+	private static FacilioChain getDefaultChain(int transactionTimeout) {
 		//setting transaction timeout as 100 minutes
-		return FacilioChain.getTransactionChain(6000000);
+		return FacilioChain.getTransactionChain(transactionTimeout);
     }
 
 		public static FacilioChain getDataMigrationChain() {
-			FacilioChain c = getDefaultChain();
+			FacilioChain c = getDefaultChain(6000000);
 			c.addCommand(new ValidateDataMigrationRequestCommand());
 			c.addCommand(new CheckAndAddDataMigrationStatusCommand());
 			c.addCommand(new PreFillCustomizationMappingCommand());
@@ -22,9 +22,9 @@ public class DataMigrationChainFactory {
 			return c;
 		}
 
-	public static FacilioChain getCopyDataMigrationChain() {
+	public static FacilioChain getCopyDataMigrationChain(int transactionTimeout) {
 
-		FacilioChain c = getDefaultChain();
+		FacilioChain c = getDefaultChain(transactionTimeout);
 		c.addCommand(new ValidateCopyDataMigrationCommand());
 		c.addCommand(new CheckAndAddDataMigrationStatusCommand());
 		c.addCommand(new FillDataMigrationModuleDetailsCommand());
@@ -34,9 +34,9 @@ public class DataMigrationChainFactory {
 		return c;
 	}
 
-	public static FacilioChain getInstallDataMigrationChain(){
+	public static FacilioChain getInstallDataMigrationChain(int transactionTimeout){
 
-		FacilioChain c = getDefaultChain();
+		FacilioChain c = getDefaultChain(transactionTimeout);
 		c.addCommand(new ValidateInsertDataMigrationCommand());
 		c.addCommand(new UnzipPackageFileCommand());
 		c.addCommand(new DataMigrationInsertRecordCommand());

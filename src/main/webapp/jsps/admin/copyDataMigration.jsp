@@ -31,6 +31,24 @@
             <textarea id="dataMigrationModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
         </td>
     </tr>
+    <tr id="skipDataMigrationModulesIdRow">
+        <td class="table-head"><h4>Skip migration for modules</h4></td>
+        <td>
+            <textarea id="skipDataMigrationModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
+        </td>
+    </tr>
+    <tr id="allowNotesAndAttachmentsIdRow">
+        <td class="table-head"><h4>Allow Notes And Attachments</h4></td>
+        <td>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="action" id="allowNotesAndAttachments" value= "true"> True
+            </label>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="action" id="don't allowNotesAndAttachments" value= "false"> False
+            </label>
+        </td>
+    </tr>
+
     <tr id="dataMigrationLogModulesIdRow">
         <td class="table-head"><h4>Log Module Names</h4></td>
         <td>
@@ -81,13 +99,14 @@
     function hideOrShowFields() {
         const showFileRadioChecked = $("#showFileRadio").is(":checked");
         $("#dataMigrationModulesIdRow").toggle(showFileRadioChecked);
+        $("#allowNotesAndAttachmentsIdRow").toggle(showFileRadioChecked);
         $("#limitRow").toggle(showFileRadioChecked);
         // $("#targetOrgIdRow").toggle(!showFileRadioChecked);
         $("#fileRow").toggle(!showFileRadioChecked);
         $("#packageIdRow").toggle(!showFileRadioChecked);
         $("#dataMigrationLogModulesIdRow").toggle(!showFileRadioChecked);
         $("#dataMigrationIdRow").toggle(!showFileRadioChecked);
-        $("#transactionTimeoutIdRow").toggle(!showFileRadioChecked);
+        // $("#transactionTimeoutIdRow").toggle(!showFileRadioChecked);
     }
 
     function sendAjax() {
@@ -101,6 +120,7 @@
                 fromAdminTool: true,
             };
 
+            dataObject.allowNotesAndAttachments = (document.getElementById("allowNotesAndAttachments").checked) ? true : false;
             $.ajax({
                 url: "/admin/createDataPackage",
                 type: "POST",
@@ -133,6 +153,7 @@
             formData.append('dataMigrationId', $('#dataMigrationId').val());
             formData.append('sourceOrgId', $('#sourceOrgId').val());
             formData.append('moduleDataInsertProcess', true);
+            formData.append('skipDataMigrationModules',$('#skipDataMigrationModules').val());
 
             $.ajax({
                 url: "/admin/installDataPackage",

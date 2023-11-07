@@ -27,12 +27,19 @@ public class CopyDataMigrationAction extends FacilioAction {
     private String dataMigrationModules;
     private int limit;
     private boolean fromAdminTool = false;
+    private int transactionTimeout;
+    private boolean allowNotesAndAttachments = true;
 
     public String execute() throws Exception {
 
         LOGGER.info("####Sandbox - Initiating Data Package creation");
 
-        FacilioChain copyDataMigrationChain = DataMigrationChainFactory.getCopyDataMigrationChain();
+        int transactionTimeout = getTransactionTimeout();
+        if(transactionTimeout<1){
+            transactionTimeout = 6000000;
+        }
+
+        FacilioChain copyDataMigrationChain = DataMigrationChainFactory.getCopyDataMigrationChain(transactionTimeout);
         FacilioContext dataMigrationContext = copyDataMigrationChain.getContext();
 
         this.setFetchStackTrace(true);
@@ -44,10 +51,12 @@ public class CopyDataMigrationAction extends FacilioAction {
         }
 
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
+        dataMigrationContext.put(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS,isAllowNotesAndAttachments());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.TARGET_ORG_ID, getTargetOrgId());
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES, new ArrayList<String>(dataMigrationModulesList));
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL,isFromAdminTool());
+        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
 
         copyDataMigrationChain.execute();
         LOGGER.info("####Sandbox - Completed Data Package creation");
