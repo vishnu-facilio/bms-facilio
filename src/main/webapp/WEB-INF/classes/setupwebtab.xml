@@ -940,4 +940,10 @@
         </action>
 
     </package>
+
+    <package name="virtualRelationSetupV1" namespace="/api/v1/setup/virtualRelation" extends="v2Api">
+        <action name="addOrUpdate" class="com.facilio.relation.action.VirtualRelationAction" method="addOrUpdateVirtualRelation" />
+        <action name="fetchFilteredRelations"
+                class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" />
+    </package>
 </struts>

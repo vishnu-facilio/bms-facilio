@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -29,6 +30,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.delegate.context.DelegationType;
+import com.facilio.fields.context.FieldListType;
+import com.facilio.fields.context.ModuleViewField;
+import com.facilio.fields.util.FieldsConfigChainUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -1592,8 +1596,13 @@ public class ViewAPI {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		}
 		List<ViewField> columns = new ArrayList<>();
-		List<FacilioField> allFields = modBean.getAllFields(module.getName()); // todo - get fields from Fields Framework..
-		for (FacilioField field : allFields) {
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(module.getName(), AccountUtil.getCurrentApp().getId(), FieldListType.VIEW_FIELDS, null);
+		List<ModuleViewField>  moduleViewFields = (List<ModuleViewField>) fieldsContext.get(FacilioConstants.ContextNames.FIELDS);
+		Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
+
+		for (ModuleViewField moduleViewField : moduleViewFields) {
+			FacilioField field = allFieldsAsMap.get(moduleViewField.getName());
 			ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 			viewField.setFieldName(viewField.getName());
 			viewField.setFieldId(field.getFieldId());

@@ -4254,4 +4254,34 @@
             <property name="scheduleInfo" type="string" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/virtualRelation/fetchFilteredRelations" method="GET">
+        <urlparams>
+            <property name ="moduleName" type="string" />
+            <property name ="relationType" type="number" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/virtualRelation/addOrUpdate" method="POST">
+        <requestbody>
+            <property name="relation" type="object">
+                <property name="description" type="string" />
+                <property name="fromModuleDisplayName" type="string" />
+                <property name="fromModuleId" type="string" />
+                <property name="id" type="string" />
+                <property name="isVirtual" type="boolean" />
+                <property name="moduleName" type="string" />
+                <property name="name" type="string" />
+                <property name="relationModuleName" type="string" />
+                <property name="relationName" type="string" />
+                <property name="relationType" type="number" />
+                <property name="reverseRelationName" type="string" />
+                <property name="toModuleDisplayName" type="string" />
+                <property name="toModuleId" type="number" />
+                <property name="virtualRelationIds" type="array">
+                    <items type="number" />
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
 </config>
