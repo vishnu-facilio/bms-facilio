@@ -1396,10 +1396,11 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/pickList/forms/:moduleName/:fieldName" method="GET">
+    <request path="/api/v3/pickList/forms/:moduleName/:fieldName/:extendedModuleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="fieldName" type="string" mandatory="true"/>
+            <property name="extendedModuleName" type="string" mandatory="false"/>
             <property name="page" type="number" mandatory="false"/>
             <property name="perPage" type="number" mandatory="false"/>
             <property name="search" type="string" mandatory="false"/>

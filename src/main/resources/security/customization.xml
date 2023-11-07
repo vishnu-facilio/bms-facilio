@@ -71,6 +71,20 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/modules/:moduleName/relatedList/:relatedFieldName/:extendedModuleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="relatedFieldName" type="string" mandatory="true"/>
+            <property name="extendedModuleName" type="string" mandatory="false"/>
+            <property name="viewName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
+
     <!-- Modules Setup -->
     <request path="/api/v1/setup/modules/add" method="POST">
         <urlparams>

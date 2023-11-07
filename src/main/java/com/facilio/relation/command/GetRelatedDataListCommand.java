@@ -49,6 +49,7 @@ public class GetRelatedDataListCommand extends FacilioCommand {
         Map<String, List<Object>> queryParams = (Map<String, List<Object>>) context.get(FacilioConstants.ContextNames.QUERY_PARAMS);
         RelationMappingContext.Position relationPosition = (RelationMappingContext.Position) context.get(FacilioConstants.ContextNames.RELATION_POSITION_TYPE);
         RelationContext relationContext = (RelationContext) context.getOrDefault(FacilioConstants.ContextNames.RELATION, new RelationContext());
+        String extendedModuleName = (String) context.get(FacilioConstants.ContextNames.EXTENDED_MODULE_NAME);
 
         FacilioContext listContext;
         JSONObject recordJSON = new JSONObject();
@@ -132,6 +133,11 @@ public class GetRelatedDataListCommand extends FacilioCommand {
                 ConfigParams configParams = new ConfigParams();
                 configParams.setSelectableFieldNames(selectableFieldNames);
                 configParams.setIsSubFormRecord(isSubFormRecord);
+
+                if(StringUtils.isNotEmpty(extendedModuleName)){
+                    moduleName = extendedModuleName;
+                }
+
                 listContext = V3Util.fetchList(moduleName, true, viewName, filters, excludeParentFilter, clientCriteria,
                         orderBy, orderType,search, page, perPage, withCount, queryParams, filterServerCriteria, withoutCustomButtons,fetchOnlyViewColumnFields,quickFilter,configParams);
 

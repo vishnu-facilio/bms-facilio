@@ -1841,6 +1841,11 @@
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
         </action>
+        <action name="*/relatedList/*/*" class="com.facilio.bmsconsoleV3.actions.RelatedModuleDataAction" method="getRelatedListData">
+            <param name="moduleName">{1}</param>
+            <param name="relatedFieldName">{2}</param>
+            <param name="extendedModuleName">{3}</param>
+        </action>
     </package>
 
     <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
@@ -1853,9 +1858,10 @@
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
             <param name="checkPermission">true</param>
         </action>
-        <action name="/forms/*/*" class="com.facilio.bmsconsoleV3.actions.FormPickListAction" method="getPickListData">
+        <action name="/forms/*/*/*" class="com.facilio.bmsconsoleV3.actions.FormPickListAction" method="getPickListData">
             <param name="moduleName">{1}</param>
             <param name="fieldName">{2}</param>
+            <param name="extendedModuleName">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
             <param name="checkPermission">true</param>
         </action>

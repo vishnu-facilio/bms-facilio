@@ -995,6 +995,7 @@ public class FacilioConstants {
 		public static final String IS_HIDDEN_MODULE = "isHiddenModule";
 
 		public static final String SUB_MODULE_NAME = "subModuleName";
+		public static final String EXTENDED_MODULE_NAME = "extendedModuleName";
 		public static final String DATA_MODULE_NAME = "dataModuleName";
 		public static final String SUMMARY_MODULE_NAME = "summaryModuleName";
 		public static final String MODULE_SETTING = "setting";

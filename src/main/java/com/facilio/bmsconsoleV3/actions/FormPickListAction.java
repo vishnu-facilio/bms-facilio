@@ -28,12 +28,15 @@ import java.util.List;
 @Getter@Setter
 public class FormPickListAction extends RESTAPIHandler {
     private String fieldName;
+    private String extendedModuleName;
+
     public String getPickListData() throws Exception{
 
         FacilioChain chain = ReadOnlyChainFactory.getFormsPickListChain();
         FacilioContext context=new FacilioContext();
         context.put(FacilioConstants.ContextNames.MODULE_FIELD_NAME,this.getFieldName());
         context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
+        context.put(FacilioConstants.ContextNames.EXTENDED_MODULE_NAME ,extendedModuleName);
 
         JSONObject pagination = new JSONObject();
         pagination.put("page", this.getPage());

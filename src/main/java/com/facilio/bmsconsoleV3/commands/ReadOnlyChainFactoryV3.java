@@ -293,6 +293,13 @@ public class ReadOnlyChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getRelatedModuleDataChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateRelatedModuleDataAndSetParamsCommand());
+        c.addCommand(new GetRelatedDataListCommand());
+        return c;
+    }
+
     public static FacilioChain getAssociateDissociateDataChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ValidateRelatedDataAndSetParamsCommand());

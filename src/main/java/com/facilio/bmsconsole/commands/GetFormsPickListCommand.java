@@ -14,6 +14,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.Arrays;
@@ -37,6 +38,7 @@ public class GetFormsPickListCommand extends FacilioCommand {
         String orderBy= (String) context.getOrDefault(FacilioConstants.ContextNames.ORDER_BY,null);
         String orderType= (String) context.getOrDefault(FacilioConstants.ContextNames.ORDER_TYPE,null);
         boolean withCount= (boolean) context.getOrDefault(FacilioConstants.ContextNames.WITH_COUNT,false);
+        String extendedModuleName = (String) context.getOrDefault(FacilioConstants.ContextNames.EXTENDED_MODULE_NAME,null);
 
         Map<String, List<Object>> queryParams= (Map<String, List<Object>>) context.getOrDefault(FacilioConstants.ContextNames.QUERY_PARAMS,null);
         int page=1,perPage=50;
@@ -59,6 +61,11 @@ public class GetFormsPickListCommand extends FacilioCommand {
         else{
             throw new IllegalArgumentException("The Fields is Not a LookupFields");
         }
+
+        if(StringUtils.isNotEmpty(extendedModuleName)){
+            lookupModuleName = extendedModuleName;
+        }
+
         if(LookupSpecialTypeUtil.isSpecialType(lookupModuleName)) {
             List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
             context.put(FacilioConstants.ContextNames.IS_SPECIAL_MODULE,true);
