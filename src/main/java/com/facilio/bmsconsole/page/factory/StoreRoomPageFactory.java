@@ -3,11 +3,13 @@ package com.facilio.bmsconsole.page.factory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -96,10 +98,10 @@ public class StoreRoomPageFactory extends PageFactory{
         addRelationshipSection(page, tab3, module.getModuleId());
         Page.Section tab3Sec1 = getRelatedListSectionObj(page);
         tab3.addSection(tab3Sec1);
-        
-        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId());
-        addSubModuleRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.INVENTORY_REQUEST, module.getModuleId());
+
         addRelatedListWidgets(tab3Sec1, module.getModuleId());
+        addStoreroomRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId());
+        addStoreroomRelatedListWidget(tab3Sec1, FacilioConstants.ContextNames.INVENTORY_REQUEST, module.getModuleId());
         if (PageFactory.hasStoreRoomPermission(module)) {
             Page.Tab tab4 = page.new Tab("Issuance");
             page.addTab(tab4);
@@ -110,7 +112,27 @@ public class StoreRoomPageFactory extends PageFactory{
 
         return page;
     }
+    static void addStoreroomRelatedListWidget(Page.Section section, String moduleName, long parenModuleId) throws Exception {
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(fields)) {
+            for (FacilioField field : fields) {
+                PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.NEW_RELATED_LIST);
+                JSONObject relatedList = new JSONObject();
+                relatedList.put("module", module);
+                relatedList.put("field", field);
+                relatedList.put("isEditable", false);
+                relatedList.put("isDeletable", false);
+                relatedListWidget.setRelatedList(relatedList);
+                relatedListWidget.addToLayoutParams(section, 24, 10);
+                section.addWidget(relatedListWidget);
+            }
+        }
+    }
     private static PageWidget addIssuesAndReturnsWidget(Page.Section section) {
 
         PageWidget purchasedItemsWidget = new PageWidget();

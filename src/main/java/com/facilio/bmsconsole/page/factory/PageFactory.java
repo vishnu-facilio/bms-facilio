@@ -271,8 +271,8 @@ public class PageFactory {
 				break;
 			}
 			case ContextNames.STORE_ROOM: {
-				relatedListPermissionSets.addAll(addSubModuleRelatedListWidgetForPermission(section, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId()));
-				relatedListPermissionSets.addAll(addSubModuleRelatedListWidgetForPermission(section, FacilioConstants.ContextNames.INVENTORY_REQUEST, module.getModuleId()));
+				relatedListPermissionSets.addAll(addStoreroomRelatedListWidgetForPermission(section, FacilioConstants.ContextNames.PURCHASE_ORDER, module.getModuleId()));
+				relatedListPermissionSets.addAll(addStoreroomRelatedListWidgetForPermission(section, FacilioConstants.ContextNames.INVENTORY_REQUEST, module.getModuleId()));
 				break;
 			}
 			case ContextNames.REQUEST_FOR_QUOTATION: {
@@ -313,6 +313,31 @@ public class PageFactory {
 					section.addWidget(relatedListWidget);
 				}
 				relatedListPermissionSets.add(new RelatedListPermissionSet(parenModuleId, cloneModule.getModuleId(), field.getFieldId(), cloneModule.getDisplayName()));
+			}
+		}
+		return relatedListPermissionSets;
+	}
+	static List<RelatedListPermissionSet> addStoreroomRelatedListWidgetForPermission(Page.Section section, String moduleName, long parenModuleId) throws Exception {
+		List<RelatedListPermissionSet> relatedListPermissionSets = new ArrayList<>();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+		List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == parenModuleId)).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(fields)) {
+			for (FacilioField field : fields) {
+				PageWidget relatedListWidget = new PageWidget(PageWidget.WidgetType.NEW_RELATED_LIST);
+				JSONObject relatedList = new JSONObject();
+				relatedList.put("module", module);
+				relatedList.put("field", field);
+				relatedList.put("isEditable", false);
+				relatedList.put("isDeletable", false);
+				relatedListWidget.setRelatedList(relatedList);
+				relatedListWidget.addToLayoutParams(section, 24, 10);
+				if (relatedListHasPermission(parenModuleId, module, field)) {
+					section.addWidget(relatedListWidget);
+				}
+				relatedListPermissionSets.add(new RelatedListPermissionSet(parenModuleId, module.getModuleId(), field.getFieldId(), module.getDisplayName()));
 			}
 		}
 		return relatedListPermissionSets;
