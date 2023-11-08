@@ -1949,9 +1949,10 @@
         </action>
     </package>
     <package name="getCalendarSlots" extends="v3Api" namespace="/api/v3/calendar">
-        <action name="getCalendarSlots"
-                class="com.facilio.bmsconsoleV3.actions.CalendarAction"
-                method="getCalendarSlots"></action>
+        <action name="getCalendarSlots"  class="com.facilio.bmsconsoleV3.actions.CalendarAction"  method="getCalendarSlots">
+            <param name="moduleName">calendar</param>
+            <param name="permission">GET:READ</param>
+        </action>
     </package>
 
     <package name="serviceRequestSiteApi" extends="v3Api" namespace="/api/v3/serviceRequest">
@@ -2097,12 +2098,36 @@
     </package>
 
     <package name="controlActionV3Api" namespace="/api/v3/ControlAction" extends="v3Api">
-        <action name="publishV3ControlAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionAction" method="v3ControlActionPublish"/>
-        <action name="unPublishV3ControlAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionAction" method="v3ControlActionUnPublish"></action>
+        <action name="publishV3ControlAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionAction" method="v3ControlActionPublish">
+            <param name="moduleName">controlAction</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">publish</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="unPublishV3ControlAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionAction" method="v3ControlActionUnPublish">
+            <param name="moduleName">controlAction</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">unPublish</param>
+            <param name="buttonPermission">true</param>
+        </action>
     </package>
     <package name="controlActionTemplateV3Api" namespace="/api/v3/ControlActionTemplate" extends="v3Api">
-        <action name="activate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="activateControlActionTemplate"/>
-        <action name="inActivate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="inActivateControlActionTemplate"></action>
+        <action name="activate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="activateControlActionTemplate">
+            <param name="moduleName">controlActionTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">publish</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="inActivate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="inActivateControlActionTemplate">
+            <param name="moduleName">controlActionTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">unPublish</param>
+            <param name="buttonPermission">true</param>
+        </action>
     </package>
 
 
