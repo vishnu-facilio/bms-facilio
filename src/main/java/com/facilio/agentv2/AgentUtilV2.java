@@ -173,7 +173,6 @@ public class AgentUtilV2
                         break;
                 }
             }
-            long timeStamp = (long) payload.get(AgentConstants.TIMESTAMP);
             if(payload.containsKey(AgentConstants.STATUS)){ // for LWT
                 Status status = Status.valueOf(((Number) payload.get(AgentConstants.STATUS)).intValue());
                 if(status == Status.CONNECTION_LOST || status == Status.DISCONNECTED){

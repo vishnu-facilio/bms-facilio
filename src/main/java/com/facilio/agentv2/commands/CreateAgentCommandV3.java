@@ -84,7 +84,7 @@ public class CreateAgentCommandV3 extends FacilioCommand {
     }
 
     private void setAgentName(String name, FacilioAgent agent, Organization currentOrg) {
-        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(agent.getDisplayName())) {
+        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(agent.getName())) {
             agent.setName(agent.getDisplayName());
             return;
         }

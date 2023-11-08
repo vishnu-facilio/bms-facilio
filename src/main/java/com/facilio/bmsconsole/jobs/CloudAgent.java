@@ -4,6 +4,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 import com.facilio.agent.controller.FacilioControllerType;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.util.FacilioUtil;
@@ -118,13 +119,13 @@ public class CloudAgent extends FacilioJob {
                 if (timeStamp == null) {
                     timeStamp = toTime;
                 }
-                Map<String, Object> data = (Map<String, Object>) result.get("data");
-                
-                PublishType type = PublishType.TIMESERIES;
+				Object data = result.get("data");
+
+				PublishType type = PublishType.TIMESERIES;
 				if ((boolean) result.getOrDefault("event", false)) {
 					// For alarms
 					type = PublishType.EVENTS;
-					payload.putAll(data);
+					payload.putAll((Map<String, Object>) data);
 				}
 				else {
 					// For timeseries or cov
@@ -145,10 +146,19 @@ public class CloudAgent extends FacilioJob {
 					payload.put("controller", controller);
 
 	                if (data != null) {
-	                    payload.put("data", Collections.singletonList(data));
+						if(data instanceof ArrayList){
+							payload.put("data", data);
+						} else {
+							payload.put("data", Collections.singletonList((Map<String, Object>) data));
+						}
 	                }
+					if(result.containsKey(AgentConstants.VERSION) && result.get(AgentConstants.VERSION) != null) {
+						payload.put(AgentConstants.VERSION, Integer.parseInt(result.get(AgentConstants.VERSION).toString()));
+					}
+					if(result.containsKey(AgentConstants.UNIQUE_ID) && result.get(AgentConstants.UNIQUE_ID) != null) {
+						payload.put(AgentConstants.UNIQUE_ID, result.get(AgentConstants.UNIQUE_ID));
+					}
 				}
-				
 				payload.put("publishType", type.asInt());
                 payload.put("timestamp", timeStamp);
 			}

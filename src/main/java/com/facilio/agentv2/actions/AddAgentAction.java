@@ -87,10 +87,10 @@ public class AddAgentAction extends AgentActionV2 {
                 long orgId = currentOrg.getOrgId();
                 long inboundId = getInboundId(agent, orgId);
                 agent.setInboundConnectionId(inboundId);
-                agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
-                agent.setAllowAutoMapping(isAllowAutoMapping());
             case CLOUD:
             case CUSTOM:
+                agent.setAllowAutoMapping(isAllowAutoMapping());
+                agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
                 agent.setConnected(true);
                 break;
             case RDM:
@@ -115,7 +115,7 @@ public class AddAgentAction extends AgentActionV2 {
     }
 
     private void setAgentName(FacilioAgent agent, Organization currentOrg) {
-        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(agent.getDisplayName())) {
+        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(agent.getName())) {
             agent.setName(agent.getDisplayName());
             return;
         }
