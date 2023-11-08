@@ -62,7 +62,7 @@ public class FieldsConfigList {
             "hideToCustomer", "parentAssetId", "stateFlowId"
     );
     public static final List<String> ASSET_VIEW_FIELDS = Arrays.asList(
-            "category","department","manufacturer","moduleState",
+            "name","category","department","manufacturer","moduleState",
             "purchasedDate","rotatingItemType","storeRoom",
             "type","unitPrice","decommissionedBy","decommission",
             "sysCreatedBy","sysCreatedTime","sysModifiedTime", "sysModifiedBy",

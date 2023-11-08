@@ -590,6 +590,7 @@ public class WorkOrderModule extends BaseModuleConfig {
         FacilioField sysCreatedByField = moduleBean.getField("createdBy", moduleName);
         FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
         FacilioField modifiedTimeField=moduleBean.getField("modifiedTime",moduleName);
+        FacilioField modifiedByField=moduleBean.getField("sysModifiedBy",moduleName);
 
         SummaryWidgetGroup otherWidgetGroup = new SummaryWidgetGroup();
         otherWidgetGroup.setName("otherDetails");
@@ -601,7 +602,8 @@ public class WorkOrderModule extends BaseModuleConfig {
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(otherWidgetGroup,stateFlowField,1,4,1);
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(otherWidgetGroup,sysCreatedByField,2,1,1);
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(otherWidgetGroup,sysCreatedTimeField,2,2,1);
-        SummaryWidgetUtil. addSummaryFieldInWidgetGroup(otherWidgetGroup,modifiedTimeField,2,3,1);
+        SummaryWidgetUtil. addSummaryFieldInWidgetGroup(otherWidgetGroup,modifiedByField,2,3,1);
+        SummaryWidgetUtil. addSummaryFieldInWidgetGroup(otherWidgetGroup,modifiedTimeField,2,4,1);
         otherWidgetGroup.setColumns(4);
 
 
