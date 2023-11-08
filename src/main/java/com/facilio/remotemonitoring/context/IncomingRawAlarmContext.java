@@ -21,7 +21,7 @@ public class IncomingRawAlarmContext extends V3Context {
     private Long clearedTime;
     private RawAlarmSourceType sourceType;
     private V3AssetContext asset;
-
+    private AlarmTypeContext alarmType;
     public enum RawAlarmSourceType implements FacilioStringEnum {
         SCRIPT("Script"),
         CONTROLLER("Controller"),

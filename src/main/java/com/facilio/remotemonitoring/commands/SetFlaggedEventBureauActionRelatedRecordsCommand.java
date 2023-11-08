@@ -7,6 +7,7 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,9 @@ public class SetFlaggedEventBureauActionRelatedRecordsCommand extends FacilioCom
                 Long flaggedEventBureauActionId = flaggedEventBureauAction.getId();
                 flaggedEventBureauAction.setConfiguredinhibitReasonList(RemoteMonitorUtils.getInhibitReasonList(flaggedEventBureauActionId));
                 flaggedEventBureauAction.setCloseIssueReasonOptionList(RemoteMonitorUtils.getCloseIssueReasonOptionContexts(flaggedEventBureauActionId));
+                Map<String, Object> prop = new HashMap<>();
+                prop.put("statusDisplayName", flaggedEventBureauAction.getEventStatus().getValue());
+                flaggedEventBureauAction.addData(prop);
             }
         }
         return false;

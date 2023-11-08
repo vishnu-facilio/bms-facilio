@@ -26,6 +26,7 @@ public class RemoteMonitorConstants {
         public static final String UNDEFINED = "undefined";
         public static final String HEARBEAT = "heartbeat";
         public static final String CONTROLLER_OFFLINE = "controlleroffline";
+        public static final String SITE_OFFLINE = "siteoffline";
 
     }
 }

@@ -143,7 +143,7 @@ public class AlarmAssetTaggingModuleConfig extends BaseModuleConfig {
 
         pageMap.put(app.getLinkName(), Arrays.asList(new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
                 .addWidget("summaryFieldsWidget", "Summary Widget", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
@@ -155,7 +155,7 @@ public class AlarmAssetTaggingModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("relatedlist", "Related List", "List of related records across modules")
                 .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))

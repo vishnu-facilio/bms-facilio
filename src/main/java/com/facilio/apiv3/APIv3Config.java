@@ -1,5 +1,6 @@
 package com.facilio.apiv3;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.alarms.AgentAlarmContext;
 import com.facilio.agentv2.controller.Controller;
@@ -196,6 +197,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCatego
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.*;
 import com.facilio.bmsconsoleV3.interfaces.customfields.modules.WorkOrderModuleCustomFieldCount;
+import com.facilio.cache.CacheUtil;
 import com.facilio.classification.chain.ClassificationChain;
 import com.facilio.classification.command.BeforeSaveClassificationCommand;
 import com.facilio.classification.context.ClassificationContext;
@@ -239,6 +241,7 @@ import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
 import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
 import com.facilio.fsm.commands.trip.FetchTripSupplementsCommand;
 import com.facilio.fsm.context.*;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
 import com.facilio.mailtracking.commands.OutgoingRecipientLoadSupplementsCommand;
@@ -3756,6 +3759,7 @@ public class APIv3Config {
                                 }
                             }
                         }
+                        LRUCache.getAlarmTypeCache().removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getOrgId()));
                         return false;
                     }
                 })
@@ -3798,11 +3802,11 @@ public class APIv3Config {
     public static Supplier<V3Config> getAlarmFilterRuleModule(){
         return () -> new V3Config(AlarmFilterRuleContext.class,null)
                 .create()
-                .beforeSave(new AddSiteAndControllerCriteriaCommand())
+                .beforeSave(new ValidateAlarmFilterRuleCommand(), new AddSiteAndControllerCriteriaCommand())
                 .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
                         new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
                 .update()
-                .beforeSave(new AddSiteAndControllerCriteriaCommand())
+                .beforeSave(new ValidateAlarmFilterRuleCommand(), new AddSiteAndControllerCriteriaCommand())
                 .afterSave(new AlarmFilterRuleInvalidateCacheCommand(),new DeleteExistingCriteriaForFilterRuleCommand(),new AddAlarmFilterRuleCriteriaCommand(),new AlarmNotReceivedForDurationJobScheduler(),
                         new ConstructUpdateCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.ALARM_FILTER_RULE_ACTIVITY))
                 .list()

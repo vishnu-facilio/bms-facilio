@@ -1,6 +1,7 @@
 package com.facilio.remotemonitoring.signup;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -82,6 +83,11 @@ public class FlaggedEventModule extends SignUpData {
         controllerField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.CONTROLLER));
         modBean.addField(controllerField);
 
+        FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        FacilioModule flaggedAlarmModule = modBean.getModule(FlaggedEventModule.MODULE_NAME);
+        long workOrderModuleId = workOrderModule.getModuleId();
+        long flaggedAlarmModuleId = flaggedAlarmModule.getModuleId();
+        modBean.addSubModule(workOrderModuleId, flaggedAlarmModuleId, 1);
         LookupField workorder = new LookupField();
         workorder.setDefault(true);
         workorder.setName("workorder");
@@ -153,5 +159,12 @@ public class FlaggedEventModule extends SignUpData {
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedByPeople", mod));
 
+        addSystemButtons();
+
+    }
+
+    private static void addSystemButtons() throws Exception{
+        SystemButtonApi.addExportAsCSV(MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(MODULE_NAME);
     }
 }

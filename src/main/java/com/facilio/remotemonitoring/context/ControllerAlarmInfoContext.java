@@ -16,6 +16,7 @@ public class ControllerAlarmInfoContext extends V3Context {
     private AlarmApproach alarmApproach;
     private Boolean filtered;
     private V3AssetContext asset;
+    private RawAlarmContext lastAlarmEvent;
     public AlarmApproach getAlarmApproachEnum() {
         return alarmApproach;
     }

@@ -1,6 +1,7 @@
 package com.facilio.remotemonitoring.signup;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -203,5 +204,11 @@ public class RawAlarmModule extends SignUpData {
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", rawAlarmMod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedByPeople", rawAlarmMod));
 
+        addSystemButtons();
+    }
+
+    private static void addSystemButtons() throws Exception{
+        SystemButtonApi.addExportAsCSV(MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(MODULE_NAME);
     }
 }

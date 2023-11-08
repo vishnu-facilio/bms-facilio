@@ -86,41 +86,33 @@ public class ControllerOfflineHandler extends ImsHandler {
                         updateControllerAlarmInfo.setFiltered(true);
                         V3RecordAPI.updateRecord(updateControllerAlarmInfo,modBean.getModule(ControllerAlarmInfoModule.MODULE_NAME), Collections.singletonList(modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME)),Collections.singletonList(controllerAlarmInfo.getId()));
                         RawAlarmContext rawAlarm = constructRawAlarm(filterRuleCriteria,controller,controllerAlarmInfo);
-                        Pair<AlarmDefinitionMappingContext,RawAlarmContext> pair = RawAlarmUtil.processMessage(rawAlarm);
-                        if(pair != null) {
-                            RawAlarmContext processedRawAlarm = RawAlarmUtil.checkAndCreateAlarmDefinition(pair.getLeft(),pair.getRight());
-                            if(processedRawAlarm.getAlarmDefinition() != null) {
-                                processedRawAlarm = RawAlarmUtil.tagRawAlarm(processedRawAlarm);
-                                if(processedRawAlarm.getAlarmApproachEnum() == AlarmApproach.RETURN_TO_NORMAL) {
-                                    RawAlarmUtil.clearPreviousRawAlarmsForRTN(processedRawAlarm);
-                                }
-                                processedRawAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
-                                RawAlarmContext addedAlarm = RawAlarmUtil.addAndGetRawAlarm(processedRawAlarm);
-                                AlarmFilterCriteriaType.NO_ALARM_RECEIVED_FOR_SPECIFIC_PERIOD.getHandler(rawAlarm).createFilteredAlarm(addedAlarm,filterRuleCriteria);
-                            }
-                        }
+                        rawAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
+                        rawAlarm.setRelatedAlarmIds(Collections.singletonList(controllerAlarmInfo.getLastAlarmEvent().getId()));
+                        RawAlarmUtil.pushToStormRawAlarmQueue(rawAlarm);
                     }
                 }
             }
         }
     }
+
     private static RawAlarmContext constructRawAlarm(FilterRuleCriteriaContext filterRuleCriteria,Controller controller,ControllerAlarmInfoContext controllerAlarmInfo) throws Exception {
         if(filterRuleCriteria.getAlarmFilterRule() != null && controllerAlarmInfo != null) {
             RawAlarmContext rawAlarm = new RawAlarmContext();
-            rawAlarm.setFiltered(true);
             rawAlarm.setController(controller);
             rawAlarm.setAsset(controllerAlarmInfo.getAsset());
-            rawAlarm.setAlarmApproach(filterRuleCriteria.getAlarmFilterRule().getAlarmApproach());
+            rawAlarm.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
             V3SiteContext site = new V3SiteContext();
             site.setId(controller.getSiteId());
             rawAlarm.setSite(site);
             rawAlarm.setOccurredTime(System.currentTimeMillis());
-            rawAlarm.setFilterRuleCriteriaId(filterRuleCriteria.getId());
             rawAlarm.setClient(filterRuleCriteria.getAlarmFilterRule().getClient());
             rawAlarm.setAsset(controllerAlarmInfo.getAsset());
             rawAlarm.setProcessed(true);
             rawAlarm.setMessage(filterRuleCriteria.getMessage());
             rawAlarm.setSourceType(RawAlarmContext.RawAlarmSourceType.SYSTEM);
+            AlarmTypeContext alarmType = new AlarmTypeContext();
+            alarmType.setLinkName(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE);
+            rawAlarm.setAlarmType(alarmType);
             return rawAlarm;
         }
         return null;

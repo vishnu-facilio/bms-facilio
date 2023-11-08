@@ -60,9 +60,10 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
             if (CollectionUtils.isNotEmpty(controllerAlarmInfoList)) {
                 ControllerAlarmInfoContext updateControllerAlarmInfo = new ControllerAlarmInfoContext();
                 updateControllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());
+                updateControllerAlarmInfo.setLastAlarmEvent(rawAlarm);
                 updateControllerAlarmInfo.setFiltered(false);
                 List<Long> controllerInfoIds = controllerAlarmInfoList.stream().map(ControllerAlarmInfoContext::getId).collect(Collectors.toList());
-                V3RecordAPI.updateRecord(updateControllerAlarmInfo, controllerInfoModule, Arrays.asList(modBean.getField("alarmLastReceivedTime", ControllerAlarmInfoModule.MODULE_NAME),modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME)), controllerInfoIds);
+                V3RecordAPI.updateRecord(updateControllerAlarmInfo, controllerInfoModule, Arrays.asList(modBean.getField("alarmLastReceivedTime", ControllerAlarmInfoModule.MODULE_NAME),modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME),modBean.getField("lastAlarmEvent", ControllerAlarmInfoModule.MODULE_NAME)), controllerInfoIds);
             } else {
                 ControllerAlarmInfoContext controllerAlarmInfo = new ControllerAlarmInfoContext();
                 controllerAlarmInfo.setController(rawAlarm.getController());
@@ -71,6 +72,7 @@ public class NoAlarmReceivedForDurationOfTimeRTNHandler implements AlarmCriteria
                 controllerAlarmInfo.setAlarmType(rawAlarm.getAlarmType());
                 controllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());
                 controllerAlarmInfo.setFiltered(false);
+                controllerAlarmInfo.setLastAlarmEvent(rawAlarm);
                 controllerAlarmInfo.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
                 V3RecordAPI.addRecord(false, Collections.singletonList(controllerAlarmInfo), controllerInfoModule, modBean.getAllFields(controllerInfoModule.getName()));
             }

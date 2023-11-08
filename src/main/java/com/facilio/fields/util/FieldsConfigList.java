@@ -211,7 +211,10 @@ public class FieldsConfigList {
             "currentPrice", "approvalStatus", "approvalFlowId", "classification",
             "agentId", "lastIssuedToUser", "lastIssuedToWo", "lastIssuedTime",
             "moveApprovalNeeded", "currentSpaceId", "controllerType", "commissionedTime",
-            "decommission"
+            "decommission","writable","viewRecommissionedBtn","storeRoom"
+    );
+    public static final List<String> CONTROLLER_FIELDS_TO_INCLUDE = Arrays.asList(
+            "name","description","category","sysCreatedBy","createdTime","sysModifiedBy","sysModifiedTime","identifiedLocation"
     );
     public static final List<String> WORKPERMIT_VIEW_FIELDS_EXCLUDE = Arrays.asList(
             "ticket", "approvalFlowId", "stateFlowId", "isRecurring",

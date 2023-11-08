@@ -10,10 +10,12 @@ import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.BureauInhibitReasonListContext;
 import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
 import com.facilio.remotemonitoring.context.FlaggedEventContext;
+import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.handlers.timer.TeamActionHandler;
 import com.facilio.remotemonitoring.signup.BureauInhibitReasonListModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventBureauActionModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
@@ -31,16 +33,16 @@ public class ComputeTimeRemainingForFlaggedEventCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(flaggedEvents)) {
             for (FlaggedEventContext flaggedEvent : flaggedEvents) {
                 if(flaggedEvent.getCurrentBureauActionDetail() != null) {
-                    if(flaggedEvent.getCurrentBureauActionDetail() != null) {
-                        FacilioContext actionContext = V3Util.getSummary(FlaggedEventBureauActionModule.MODULE_NAME, Collections.singletonList(flaggedEvent.getCurrentBureauActionDetail().getId()));
-                        FlaggedEventBureauActionsContext actionsContext = (FlaggedEventBureauActionsContext) Constants.getRecordListFromContext(actionContext, FlaggedEventBureauActionModule.MODULE_NAME).get(0);
-                        if(actionsContext.getEventStatus() != null) {
-                            FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus eventStatus = actionsContext.getEventStatus();
-                            if(eventStatus != null) {
-                                TeamActionHandler handler = eventStatus.getTeamActionHandler();
-                                if(handler != null) {
-                                    flaggedEvent.setActionRemainingTime(handler.calculateRemainingTime(actionsContext,flaggedEvent));
-                                }
+                    FacilioContext actionContext = V3Util.getSummary(FlaggedEventBureauActionModule.MODULE_NAME, Collections.singletonList(flaggedEvent.getCurrentBureauActionDetail().getId()));
+                    FlaggedEventBureauActionsContext actionsContext = (FlaggedEventBureauActionsContext) Constants.getRecordListFromContext(actionContext, FlaggedEventBureauActionModule.MODULE_NAME).get(0);
+                    FacilioContext flaggedAlarmProcessContext = V3Util.getSummary(FlaggedEventRuleModule.MODULE_NAME, Collections.singletonList(flaggedEvent.getFlaggedAlarmProcess().getId()));
+                    FlaggedEventRuleContext flaggedAlarmProcess = (FlaggedEventRuleContext) Constants.getRecordListFromContext(flaggedAlarmProcessContext, FlaggedEventRuleModule.MODULE_NAME).get(0);
+                    if(actionsContext.getEventStatus() != null && flaggedAlarmProcess.getCreateWorkorder()) {
+                        FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus eventStatus = actionsContext.getEventStatus();
+                        if(eventStatus != null) {
+                            TeamActionHandler handler = eventStatus.getTeamActionHandler();
+                            if(handler != null) {
+                                flaggedEvent.setActionRemainingTime(handler.calculateRemainingTime(actionsContext,flaggedEvent));
                             }
                         }
                     }

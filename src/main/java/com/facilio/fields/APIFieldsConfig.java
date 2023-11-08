@@ -582,7 +582,13 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .advancedFields()
-                .add(FieldsConfigList.CONTROLLER_FIELDS_TO_EXCLUDE)
+                .add(FieldsConfigList.CONTROLLER_FIELDS_TO_INCLUDE)
+                .done()
+                .sortFields()
+                .add(FieldsConfigList.CONTROLLER_FIELDS_TO_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.CONTROLLER_FIELDS_TO_INCLUDE)
                 .done();
     }
 

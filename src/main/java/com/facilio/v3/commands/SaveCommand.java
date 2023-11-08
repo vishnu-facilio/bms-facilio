@@ -112,7 +112,7 @@ public class SaveCommand extends FacilioCommand {
 
     private void addSupplements (InsertRecordBuilder insertRecordBuilder, SaveOptions options) {
         Collection<SupplementRecord> supplementFields = options == null ? null : options.getSupplements();
-        LOGGER.info("Save Command - Supplement Field - "+supplementFields);
+        LOGGER.debug("Save Command - Supplement Field - "+supplementFields);
         if (CollectionUtils.isNotEmpty(supplementFields)) {
             insertRecordBuilder.insertSupplements(supplementFields);
         }

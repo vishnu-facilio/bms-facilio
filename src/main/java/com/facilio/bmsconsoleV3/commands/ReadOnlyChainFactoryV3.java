@@ -696,6 +696,7 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ComputeTimeRemainingForFlaggedEventCommand());
         c.addCommand(new FillFlaggedEventLogicalControllerCommand());
+        c.addCommand(new SetFlaggedAlarmStatusDisplayNameCommand());
         return c;
     }
 }

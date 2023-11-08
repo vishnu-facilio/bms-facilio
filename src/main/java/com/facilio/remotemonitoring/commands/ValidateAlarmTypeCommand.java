@@ -1,8 +1,11 @@
 package com.facilio.remotemonitoring.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.cache.CacheUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fw.cache.LRUCache;
 import com.facilio.remotemonitoring.context.AlarmTypeContext;
 import com.facilio.remotemonitoring.signup.AlarmTypeModule;
 import com.facilio.v3.context.Constants;
@@ -34,6 +37,7 @@ public class ValidateAlarmTypeCommand extends FacilioCommand {
                     String linkName = constructLinkName(null, alarmType.getName());
                     alarmType.setLinkName(linkName);
                 }
+                LRUCache.getAlarmTypeCache().removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getOrgId()));
             }
         }
 

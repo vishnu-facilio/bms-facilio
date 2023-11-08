@@ -10,9 +10,10 @@ import lombok.Setter;
 
 public enum RuleType implements FacilioStringEnum {
 
-    INDIVIDUAL("Individual"),
-    CONTROLLER_OFFLINE("Connectivity Loss Alarm"),
-    ROLL_UP("Roll Up");
+    INDIVIDUAL("Filter"),
+    CONTROLLER_OFFLINE("Connection Loss"),
+    ROLL_UP("Roll Up"),
+    SITE_OFFLINE("Site Offline");
 
     private String displayName;
 

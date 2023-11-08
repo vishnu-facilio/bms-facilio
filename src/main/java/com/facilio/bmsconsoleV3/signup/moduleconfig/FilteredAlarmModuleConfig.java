@@ -114,7 +114,7 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
 
         pageMap.put(app.getLinkName(), Arrays.asList(new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
                 .addWidget("summaryFieldsWidget", "Filtered Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
@@ -126,7 +126,7 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("related", "RELATED", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("relatedlist", "Related List", "List of related records across modules")
                 .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
@@ -134,7 +134,7 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
@@ -154,17 +154,19 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
         FacilioField siteField = moduleBean.getField("site",moduleName);
         FacilioField clientField = moduleBean.getField("client",moduleName);
         FacilioField controllerField = moduleBean.getField("controller",moduleName);
+        FacilioField assetField = moduleBean.getField("asset", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, siteField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, clientField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, assetField, 1, 4, 1);
 
 
         widgetGroup.setName("generalInformation");
         widgetGroup.setDisplayName("General Information");
-        widgetGroup.setColumns(3);
+        widgetGroup.setColumns(4);
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
         FacilioField occurredTime = moduleBean.getField("occurredTime",moduleName);

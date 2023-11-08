@@ -91,7 +91,11 @@ public class AddOrUpdateEmailRuleForFlaggedEventCommand extends FacilioCommand {
             }
             FacilioContext context = chain.getContext();
             context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-            chain.execute();
+            try {
+                chain.execute();
+            } catch (Exception e) {
+                throw new IllegalArgumentException(e.getMessage());
+            }
             WorkflowContext addedWorkflow = (WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT);
             if(addedWorkflow != null && addedWorkflow.getId() > 0) {
                 return addedWorkflow.getId();

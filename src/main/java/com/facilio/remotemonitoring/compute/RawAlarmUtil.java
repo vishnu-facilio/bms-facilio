@@ -54,9 +54,31 @@ public class RawAlarmUtil {
         return false;
     }
 
-    public static void pushControllerOfflineAlarm(IncomingRawAlarmContext controllerOfflineAlarm) {
 
+    public static void pushControllerOfflineOpenAlarm(String message,Long occurredTime,Controller controller) throws Exception {
+        AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
+        IncomingRawAlarmContext controllerOfflineAlarm = new IncomingRawAlarmContext();
+        controllerOfflineAlarm.setMessage(message);
+        controllerOfflineAlarm.setController(controller);
+        controllerOfflineAlarm.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
+        controllerOfflineAlarm.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.CONTROLLER);
+        controllerOfflineAlarm.setOccurredTime(occurredTime);
+        controllerOfflineAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
+        pushToStormRawAlarmQueue(controllerOfflineAlarm);
     }
+
+    public static void pushControllerOfflineClearAlarm(String message,Long clearedTime,Controller controller) throws Exception {
+        AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
+        IncomingRawAlarmContext controllerOfflineAlarm = new IncomingRawAlarmContext();
+        controllerOfflineAlarm.setMessage(message);
+        controllerOfflineAlarm.setController(controller);
+        controllerOfflineAlarm.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
+        controllerOfflineAlarm.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.CONTROLLER);
+        controllerOfflineAlarm.setClearedTime(clearedTime);
+        controllerOfflineAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
+        pushToStormRawAlarmQueue(controllerOfflineAlarm);
+    }
+
     public static void pushToStormRawAlarmQueue(IncomingRawAlarmContext rawAlarm) throws Exception {
         long controllerId = -1;
         if (rawAlarm.getController() != null && rawAlarm.getController().getId() > -1) {
@@ -145,14 +167,10 @@ public class RawAlarmUtil {
 
     public static RawAlarmContext checkAndCreateAlarmDefinition(AlarmDefinitionMappingContext matchedAlarmDefinitionMapping, RawAlarmContext rawAlarm) throws Exception {
         if (matchedAlarmDefinitionMapping == null && rawAlarm != null) {
-            AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
             AlarmDefinitionContext alarmDefinition = getNameMatchingDefinitionRecord(rawAlarm.getMessage(), rawAlarm.getClient());
             if (alarmDefinition == null) {
                 alarmDefinition = createAlarmDefinition(rawAlarm.getMessage(), rawAlarm.getClient());
                 if (alarmDefinition != null) {
-                    if (rawAlarm.getSourceType() != null && rawAlarm.getSourceType() == RawAlarmContext.RawAlarmSourceType.SYSTEM) {
-                        rawAlarm.setAlarmType(alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE));
-                    }
                     createAlarmDefinitionTagging(alarmDefinition, rawAlarm);
                 }
             }
@@ -181,12 +199,17 @@ public class RawAlarmUtil {
     private static AlarmDefinitionTaggingContext createAlarmDefinitionTagging(AlarmDefinitionContext alarmDefinitionContext, RawAlarmContext rawAlarm) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
-        AlarmTypeContext uncategorisedAlarmType = alarmBean.getUncategorisedAlarmType();
-        if (uncategorisedAlarmType != null && alarmDefinitionContext != null) {
+        AlarmTypeContext alarmType;
+        if(rawAlarm.getAlarmType() != null && StringUtils.isNotEmpty(rawAlarm.getAlarmType().getLinkName())) {
+            alarmType = alarmBean.getAlarmType(rawAlarm.getAlarmType().getLinkName());
+        } else {
+            alarmType = alarmBean.getAlarmType(RemoteMonitorConstants.SystemAlarmTypes.UNDEFINED);
+        }
+        if (alarmType != null && alarmDefinitionContext != null) {
             AlarmDefinitionTaggingContext alarmDefinitionTagging = new AlarmDefinitionTaggingContext();
             alarmDefinitionTagging.setName(alarmDefinitionContext.getName());
             alarmDefinitionTagging.setClient(alarmDefinitionContext.getClient());
-            alarmDefinitionTagging.setAlarmType(uncategorisedAlarmType);
+            alarmDefinitionTagging.setAlarmType(alarmType);
             alarmDefinitionTagging.setAlarmDefinition(alarmDefinitionContext);
             alarmDefinitionTagging.setControllerType(rawAlarm.getController().getControllerType());
             FacilioContext alarmDefinitionTaggingContext = V3Util.createRecord(modBean.getModule(AlarmDefinitionTaggingModule.MODULE_NAME), FieldUtil.getAsProperties(alarmDefinitionTagging));
@@ -302,7 +325,7 @@ public class RawAlarmUtil {
         updateRecordBuilder.update(alarm);
     }
 
-    public static void updateParentAlarmAndMarkAsFiltered(List<Long> ids, Long parentAlarmId) throws Exception {
+    public static void updateParentAlarm(List<Long> ids, Long parentAlarmId) throws Exception {
         if (CollectionUtils.isNotEmpty(ids) && parentAlarmId != null) {
             RawAlarmContext parentAlarm = new RawAlarmContext();
             parentAlarm.setId(parentAlarmId);
@@ -315,7 +338,22 @@ public class RawAlarmUtil {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
                     .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
-                    .fields(Arrays.asList(modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME), modBean.getField("filtered", RawAlarmModule.MODULE_NAME)))
+                    .fields(Arrays.asList(modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME)))
+                    .andCriteria(criteria);
+            updateRecordBuilder.update(alarm);
+        }
+    }
+    public static void updateMarkAsFiltered(List<Long> ids) throws Exception {
+        if (CollectionUtils.isNotEmpty(ids)) {
+            RawAlarmContext alarm = new RawAlarmContext();
+            alarm.setFiltered(true);
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), NumberOperators.EQUALS));
+
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            UpdateRecordBuilder<RawAlarmContext> updateRecordBuilder = new UpdateRecordBuilder<RawAlarmContext>()
+                    .module(modBean.getModule(RawAlarmModule.MODULE_NAME))
+                    .fields(Arrays.asList(modBean.getField("filtered", RawAlarmModule.MODULE_NAME)))
                     .andCriteria(criteria);
             updateRecordBuilder.update(alarm);
         }
@@ -386,16 +424,20 @@ public class RawAlarmUtil {
         if(CollectionUtils.isNotEmpty(alarms)) {
             for(RawAlarmContext alarm : alarms) {
                 if(alarm != null && alarm.getParentAlarm() != null) {
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    List<SupplementRecord> supplements = new ArrayList<>();
+                    supplements.add((SupplementRecord) modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME));
                     Criteria criteria = new Criteria();
                     criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ALARM", "parentAlarm", String.valueOf(alarm.getParentAlarm().getId()), NumberOperators.EQUALS));
                     criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
-                    List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
+                    List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, supplements);
                     boolean allCleared = true;
                     if (CollectionUtils.isNotEmpty(rawAlarms)) {
                         allCleared = false;
                     }
                     if (allCleared) {
                         clearAlarm(alarm.getParentAlarm(),clearTime);
+                        FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(alarm.getParentAlarm().getId()));
                     }
                 }
             }
@@ -405,16 +447,20 @@ public class RawAlarmUtil {
         if(alarm != null) {
             RawAlarmContext rawAlarm = fetchRawAlarm(alarm.getId());
             if(rawAlarm != null && rawAlarm.getParentAlarm() != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                List<SupplementRecord> supplements = new ArrayList<>();
+                supplements.add((SupplementRecord) modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME));
                 Criteria criteria = new Criteria();
                 criteria.addAndCondition(CriteriaAPI.getCondition("PARENT_ALARM", "parentAlarm", String.valueOf(rawAlarm.getParentAlarm().getId()), NumberOperators.EQUALS));
                 criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
-                List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
+                List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, supplements);
                 boolean allCleared = true;
                 if (CollectionUtils.isNotEmpty(rawAlarms)) {
                     allCleared = false;
                 }
                 if (allCleared) {
                     clearAlarm(rawAlarm.getParentAlarm(),clearTime);
+                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getParentAlarm().getId()));
                 }
             }
         }

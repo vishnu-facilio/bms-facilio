@@ -2,12 +2,18 @@ package com.facilio.remotemonitoring.beans;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerType;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.cache.CacheUtil;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.cache.FWLRUCaches;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.remotemonitoring.context.*;
+import com.facilio.remotemonitoring.signup.AlarmTypeModule;
 import lombok.NonNull;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -74,6 +80,15 @@ public class AlarmRuleBeanCacheImpl extends AlarmRuleBeanImpl implements AlarmRu
         String key = CacheUtil.ALARM_ASSET_TAGGING_KEY(AccountUtil.getCurrentOrg().getId(), clientId, controllerId,alarmDefinitionId);
         return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(alarmAssetTaggingCache, key, () -> {
             return super.getAlarmAssetTagging(clientId,alarmDefinitionId,controllerId);
+        });
+    }
+
+    @Override
+    public AlarmTypeContext getAlarmType(String linkname) throws Exception {
+        FacilioCache<String, AlarmTypeContext> alarmTypeCache = LRUCache.getAlarmTypeCache();
+        String key = CacheUtil.ALARM_TYPE_KEY(AccountUtil.getCurrentOrg().getId(),linkname);
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(alarmTypeCache, key, () -> {
+            return super.getAlarmType(linkname);
         });
     }
 }

@@ -1,6 +1,7 @@
 package com.facilio.remotemonitoring.signup;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -12,12 +13,13 @@ import com.facilio.modules.fields.*;
 
 public class AlarmCategoryModule extends SignUpData {
     public static final String MODULE_NAME = "alarmCategory";
+    public static final String MODULE_DISPLAY_NAME = "Alarm Category";
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule alarmCategoryModule = new FacilioModule();
         alarmCategoryModule.setName(MODULE_NAME);
-        alarmCategoryModule.setDisplayName("Alarm Category");
+        alarmCategoryModule.setDisplayName(MODULE_DISPLAY_NAME);
         alarmCategoryModule.setDescription("Alarm Category");
         alarmCategoryModule.setTableName("Alarm_Category");
         alarmCategoryModule.setCustom(false);
@@ -64,5 +66,16 @@ public class AlarmCategoryModule extends SignUpData {
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", alarmCatModule));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", alarmCatModule));
         modBean.addField(FieldFactory.getSystemField("sysModifiedByPeople", alarmCatModule));
+
+        addSystemButtons();
+    }
+
+    private static void addSystemButtons() throws Exception{
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(MODULE_NAME);
+        SystemButtonApi.addExportAsCSV(MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(MODULE_NAME);
+        SystemButtonApi.addListEditButton(MODULE_NAME);
+        SystemButtonApi.addListDeleteButton(MODULE_NAME);
+        SystemButtonApi.addBulkDeleteButton(MODULE_NAME);
     }
 }

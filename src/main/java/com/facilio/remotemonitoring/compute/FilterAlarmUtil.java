@@ -40,6 +40,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class FilterAlarmUtil {
     public static void pushRawAlarmToFilterProcessQueue(RawAlarmContext rawAlarm) throws Exception {
@@ -79,8 +80,8 @@ public class FilterAlarmUtil {
                             }
                         }
 
-                        if (siteCriteriaMatched && controllerCriteriaMatched) {
-                            if (alarmFilterRule.getRuleType() == null || alarmFilterRule.getRuleType() != RuleType.ROLL_UP) {
+                        if (siteCriteriaMatched && controllerCriteriaMatched && alarmFilterRule.getRuleType() != null) {
+                            if (alarmFilterRule.getRuleType() == RuleType.INDIVIDUAL || alarmFilterRule.getRuleType() == RuleType.CONTROLLER_OFFLINE) {
                                 List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
                                 if (CollectionUtils.isNotEmpty(filterRuleCriteriaList) && rawAlarm.getAlarmDefinition() != null && rawAlarm.getController() != null) {
                                     for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
@@ -91,7 +92,7 @@ public class FilterAlarmUtil {
                                         }
                                     }
                                 }
-                            } else {
+                            } else if(alarmFilterRule.getRuleType() == RuleType.ROLL_UP){
                                 if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
                                     V3AssetContext asset = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET,rawAlarm.getAsset().getId(), V3AssetContext.class);
                                     if(asset != null && asset.getCategory() != null && asset.getCategory().getId() > 0) {
@@ -106,6 +107,13 @@ public class FilterAlarmUtil {
                                                 }
                                             }
                                         }
+                                    }
+                                }
+                            } else if(alarmFilterRule.getRuleType() == RuleType.SITE_OFFLINE) {
+                                List<FilterRuleCriteriaContext> filterRuleCriteriaList = alarmFilterRule.getFilterRuleCriteriaList();
+                                if (CollectionUtils.isNotEmpty(filterRuleCriteriaList)) {
+                                    for (FilterRuleCriteriaContext filterRuleCriteria : filterRuleCriteriaList) {
+                                        return Pair.of(alarmFilterRule, filterRuleCriteria);
                                     }
                                 }
                             }
@@ -226,7 +234,7 @@ public class FilterAlarmUtil {
         return resIds;
     }
 
-    public static void addFilteredAlarm(FilteredAlarmContext filteredAlarm) throws Exception {
+    public static long addFilteredAlarm(FilteredAlarmContext filteredAlarm) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
                 .module(modBean.getModule(FilteredAlarmModule.MODULE_NAME))
@@ -239,6 +247,7 @@ public class FilterAlarmUtil {
         lookUpfields.add((LookupField) siteField);
         FilteredAlarmContext fetchFilteredAlarm = V3RecordAPI.getRecord(FilteredAlarmModule.MODULE_NAME,id,FilteredAlarmContext.class,lookUpfields);
         updateFlaggedEventRuleInFilteredAlarm(fetchFilteredAlarm);
+        return id;
     }
 
     private static void updateFlaggedEventRuleInFilteredAlarm(FilteredAlarmContext filteredAlarm) throws Exception {
@@ -313,5 +322,18 @@ public class FilterAlarmUtil {
                 }
             }
         }
+    }
+
+    public static List<Long> getSiteControllers(Long siteId) throws Exception {
+        if(siteId != null && siteId > 0) {
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition("Controllers.SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+            List<Controller> controllers = V3RecordAPI.getRecordsListWithSupplements(FacilioConstants.ContextNames.CONTROLLER, null, Controller.class, criteria, null);
+            if(CollectionUtils.isNotEmpty(controllers)) {
+                List<Long> controllerIds = controllers.stream().map(Controller::getId).collect(Collectors.toList());
+                return controllerIds;
+            }
+        }
+        return null;
     }
 }

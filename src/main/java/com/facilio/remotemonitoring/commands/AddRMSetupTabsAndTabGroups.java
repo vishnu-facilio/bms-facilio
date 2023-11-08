@@ -65,6 +65,8 @@ public class AddRMSetupTabsAndTabGroups extends FacilioCommand {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Modules", "modules", WebTabContext.Type.MODULES, null, appId, null));
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
+            webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
+
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 

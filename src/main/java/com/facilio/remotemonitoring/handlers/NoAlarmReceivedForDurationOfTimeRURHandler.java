@@ -55,11 +55,12 @@ public class NoAlarmReceivedForDurationOfTimeRURHandler implements AlarmCriteria
             }
             List<ControllerAlarmInfoContext> controllerAlarmInfoList = V3RecordAPI.getRecordsListWithSupplements(ControllerAlarmInfoModule.MODULE_NAME, null, ControllerAlarmInfoContext.class, criteria, null);
             if (CollectionUtils.isNotEmpty(controllerAlarmInfoList)) {
+                ControllerAlarmInfoContext updateControllerAlarmInfo = new ControllerAlarmInfoContext();
+                updateControllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());
+                updateControllerAlarmInfo.setLastAlarmEvent(rawAlarm);
+                updateControllerAlarmInfo.setFiltered(false);
                 List<Long> controllerInfoIds = controllerAlarmInfoList.stream().map(ControllerAlarmInfoContext::getId).collect(Collectors.toList());
-                Map<String,Object> prop = new HashMap<>();
-                prop.put("alarmLastReceivedTime",System.currentTimeMillis());
-                prop.put("filtered",false);
-                V3Util.updateBulkRecords(controllerInfoModule.getName(), prop,controllerInfoIds,false);
+                V3RecordAPI.updateRecord(updateControllerAlarmInfo, controllerInfoModule, Arrays.asList(modBean.getField("alarmLastReceivedTime", ControllerAlarmInfoModule.MODULE_NAME),modBean.getField("filtered", ControllerAlarmInfoModule.MODULE_NAME),modBean.getField("lastAlarmEvent", ControllerAlarmInfoModule.MODULE_NAME)), controllerInfoIds);
 
             } else {
                 ControllerAlarmInfoContext controllerAlarmInfo = new ControllerAlarmInfoContext();
@@ -70,6 +71,7 @@ public class NoAlarmReceivedForDurationOfTimeRURHandler implements AlarmCriteria
                 controllerAlarmInfo.setAlarmLastReceivedTime(System.currentTimeMillis());
                 controllerAlarmInfo.setFiltered(false);
                 controllerAlarmInfo.setAlarmApproach(AlarmApproach.REPEAT_UNTIL_RESOLVED.getIndex());
+                controllerAlarmInfo.setLastAlarmEvent(rawAlarm);
                 V3Util.createRecord(controllerInfoModule, Collections.singletonList(controllerAlarmInfo));
             }
         }

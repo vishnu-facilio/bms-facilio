@@ -33,5 +33,12 @@ public class DefaultAlarmTypeAndCategory extends SignUpData {
         controllerOfflineAlarmType.setLinkName(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE);
         controllerOfflineAlarmType.setUncategorisedAlarm(true);
         V3RecordAPI.addRecord(false, Collections.singletonList(controllerOfflineAlarmType), modBean.getModule(AlarmTypeModule.MODULE_NAME), modBean.getAllFields(AlarmTypeModule.MODULE_NAME),false);
+
+        AlarmTypeContext siteOfflineAlarmType = new AlarmTypeContext();
+        siteOfflineAlarmType.setName("Site Offline");
+        siteOfflineAlarmType.setDescription("Site Offline Alarm Type");
+        siteOfflineAlarmType.setLinkName(RemoteMonitorConstants.SystemAlarmTypes.SITE_OFFLINE);
+        siteOfflineAlarmType.setUncategorisedAlarm(true);
+        V3RecordAPI.addRecord(false, Collections.singletonList(siteOfflineAlarmType), modBean.getModule(AlarmTypeModule.MODULE_NAME), modBean.getAllFields(AlarmTypeModule.MODULE_NAME),false);
     }
 }

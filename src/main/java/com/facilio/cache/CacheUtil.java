@@ -190,7 +190,9 @@ public class CacheUtil {
 		return APP_ID + KEY_SEPARATOR + appId;
 	}
 
-
+	public static String ALARM_TYPE_KEY(long orgId, String linkName) {
+		return ORG_KEY(orgId) + ALARM_TYPE + KEY_SEPARATOR + linkName;
+	}
 	public static String ALARM_TYPE_KEY(long alarmTypeId) {
 		return ALARM_TYPE + KEY_SEPARATOR + alarmTypeId;
 	}

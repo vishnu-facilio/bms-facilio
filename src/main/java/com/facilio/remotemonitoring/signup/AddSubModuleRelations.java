@@ -553,6 +553,8 @@ public class AddSubModuleRelations extends SignUpData {
 
         //Flagged Event Create Workorder Button
         SystemButtonRuleContext createWorkorderSystemButton = new SystemButtonRuleContext();
+        createWorkorderSystemButton.setPermissionRequired(true);
+        createWorkorderSystemButton.setPermission("READ");
         createWorkorderSystemButton.setIdentifier("flagged_event_create_workorder");
         Criteria criteria = new Criteria();
         createWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
@@ -561,12 +563,14 @@ public class AddSubModuleRelations extends SignUpData {
 
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
-        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"INHIBIT,UNDER_CUSTODY,ACTION_TAKEN", StringSystemEnumOperators.IS));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY,ACTION_TAKEN", StringSystemEnumOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
 
         Criteria ruleLookupCriteria = new Criteria();
         ruleLookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteria, LookupOperator.LOOKUP));
+
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"OPEN", StringSystemEnumOperators.IS));
 
         createWorkorderSystemButton.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,createWorkorderSystemButton);
@@ -577,6 +581,8 @@ public class AddSubModuleRelations extends SignUpData {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
         systemButton.setIdentifier("flagged_event_take_custody");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -608,10 +614,12 @@ public class AddSubModuleRelations extends SignUpData {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
         systemButton.setIdentifier("inhibit_flagged_event_button");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        systemButton.setName("Inhibit");
+        systemButton.setName("Snooze");
 
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
@@ -628,6 +636,8 @@ public class AddSubModuleRelations extends SignUpData {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
         systemButton.setIdentifier("pass_to_next_bureau_flagged_event_button");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -649,6 +659,8 @@ public class AddSubModuleRelations extends SignUpData {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
         systemButton.setIdentifier("flagged_event_take_action");
         systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());

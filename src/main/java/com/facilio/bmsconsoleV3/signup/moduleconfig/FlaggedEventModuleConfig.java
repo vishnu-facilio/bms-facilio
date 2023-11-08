@@ -14,12 +14,15 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.PeopleOperator;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.criteria.operators.TeamOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.remotemonitoring.signup.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -37,14 +40,22 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         Map<String, Object> groupDetails;
 
         int order = 1;
-        ArrayList<FacilioView> filteredAlarmViews = new ArrayList<FacilioView>();
-        filteredAlarmViews.add(getAllAlarms().setOrder(order++));
+        ArrayList<FacilioView> flaggedAlarmViews = new ArrayList<FacilioView>();
+        flaggedAlarmViews.add(getAllAlarms().setOrder(order++));
+        flaggedAlarmViews.add(getOpenFlaggedAlarms().setOrder(order++));
+        flaggedAlarmViews.add(getClosedFlaggedAlarms().setOrder(order++));
+        flaggedAlarmViews.add(getWOCreatedFlaggedAlarms().setOrder(order++));
+        flaggedAlarmViews.add(getAssignedToMyTeamFlaggedAlarms().setOrder(order++));
+        flaggedAlarmViews.add(getAssignedToMeFlaggedAlarms().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FlaggedEventModule.MODULE_NAME);
-        groupDetails.put("views", filteredAlarmViews);
+        groupDetails.put("views", flaggedAlarmViews);
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        groupDetails.put("appLinkNames", appLinkNames);
         groupVsViews.add(groupDetails);
 
         return groupVsViews;
@@ -79,6 +90,217 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         allView.setAppLinkNames(appLinkNames);
 
         return allView;
+    }
+
+    private static FacilioView getOpenFlaggedAlarms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Criteria criteria = new Criteria();
+        FacilioField statusField = modBean.getField("status", FlaggedEventModule.MODULE_NAME);
+        Condition openStatusCondition = new Condition();
+        openStatusCondition.setField(statusField);
+        openStatusCondition.setOperator(StringOperators.IS);
+        openStatusCondition.setValue(FlaggedEventContext.FlaggedEventStatus.OPEN.getIndex());
+        criteria.addAndCondition(openStatusCondition);
+
+        FacilioField sysCreatedTime = new FacilioField();
+        sysCreatedTime.setName("sysCreatedTime");
+        sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+        sysCreatedTime.setDataType(FieldType.NUMBER);
+        sysCreatedTime.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+
+        FacilioView openFlaggedAlarmView = new FacilioView();
+        openFlaggedAlarmView.setName("open");
+        openFlaggedAlarmView.setDisplayName("Open Flagged Alarms");
+        openFlaggedAlarmView.setCriteria(criteria);
+        openFlaggedAlarmView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
+        openFlaggedAlarmView.setModuleName(FlaggedEventModule.MODULE_NAME);
+
+        List<ViewField> viewFields = new ArrayList<>();
+        viewFields.add(new ViewField("name", "Message"));
+        viewFields.add(new ViewField("client", "Client"));
+        viewFields.add(new ViewField("controller", "Controller"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
+        viewFields.add(new ViewField("status", "Status"));
+        viewFields.add(new ViewField("workorder", "Workorder"));
+
+        openFlaggedAlarmView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        openFlaggedAlarmView.setAppLinkNames(appLinkNames);
+
+        return openFlaggedAlarmView;
+    }
+
+    private static FacilioView getClosedFlaggedAlarms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Criteria criteria = new Criteria();
+        FacilioField statusField = modBean.getField("status", FlaggedEventModule.MODULE_NAME);
+
+        Condition clearedStatusCondition = new Condition();
+        clearedStatusCondition.setField(statusField);
+        clearedStatusCondition.setOperator(StringOperators.IS);
+        clearedStatusCondition.setValue(FlaggedEventContext.FlaggedEventStatus.CLEARED.getIndex());
+        criteria.addOrCondition(clearedStatusCondition);
+
+        Condition autoClosedStatusCondition = new Condition();
+        autoClosedStatusCondition.setField(statusField);
+        autoClosedStatusCondition.setOperator(StringOperators.IS);
+        autoClosedStatusCondition.setValue(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED.getIndex());
+        criteria.addOrCondition(autoClosedStatusCondition);
+
+
+        FacilioField sysCreatedTime = new FacilioField();
+        sysCreatedTime.setName("sysCreatedTime");
+        sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+        sysCreatedTime.setDataType(FieldType.NUMBER);
+        sysCreatedTime.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+
+        FacilioView closedFlaggedAlarmView = new FacilioView();
+        closedFlaggedAlarmView.setName("closed");
+        closedFlaggedAlarmView.setDisplayName("Closed Flagged Alarms");
+        closedFlaggedAlarmView.setCriteria(criteria);
+        closedFlaggedAlarmView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
+        closedFlaggedAlarmView.setModuleName(FlaggedEventModule.MODULE_NAME);
+
+        List<ViewField> viewFields = new ArrayList<>();
+        viewFields.add(new ViewField("name", "Message"));
+        viewFields.add(new ViewField("client", "Client"));
+        viewFields.add(new ViewField("controller", "Controller"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
+        viewFields.add(new ViewField("status", "Status"));
+        viewFields.add(new ViewField("workorder", "Workorder"));
+
+        closedFlaggedAlarmView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        closedFlaggedAlarmView.setAppLinkNames(appLinkNames);
+
+        return closedFlaggedAlarmView;
+    }
+
+    private static FacilioView getWOCreatedFlaggedAlarms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Criteria criteria = new Criteria();
+
+        FacilioField statusField = modBean.getField("status", FlaggedEventModule.MODULE_NAME);
+        Condition woCreatedStatusCondition = new Condition();
+        woCreatedStatusCondition.setField(statusField);
+        woCreatedStatusCondition.setOperator(StringOperators.IS);
+        woCreatedStatusCondition.setValue(FlaggedEventContext.FlaggedEventStatus.WORKORDER_CREATED.getIndex());
+        criteria.addAndCondition(woCreatedStatusCondition);
+
+        FacilioField sysCreatedTime = new FacilioField();
+        sysCreatedTime.setName("sysCreatedTime");
+        sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+        sysCreatedTime.setDataType(FieldType.NUMBER);
+        sysCreatedTime.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+
+        FacilioView woCreatedFlaggedAlarmView = new FacilioView();
+        woCreatedFlaggedAlarmView.setName("wocreated");
+        woCreatedFlaggedAlarmView.setDisplayName("Work Order Created Flagged Alarms");
+        woCreatedFlaggedAlarmView.setCriteria(criteria);
+        woCreatedFlaggedAlarmView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
+        woCreatedFlaggedAlarmView.setModuleName(FlaggedEventModule.MODULE_NAME);
+
+        List<ViewField> viewFields = new ArrayList<>();
+        viewFields.add(new ViewField("name", "Message"));
+        viewFields.add(new ViewField("client", "Client"));
+        viewFields.add(new ViewField("controller", "Controller"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
+        viewFields.add(new ViewField("status", "Status"));
+        viewFields.add(new ViewField("workorder", "Workorder"));
+
+        woCreatedFlaggedAlarmView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        woCreatedFlaggedAlarmView.setAppLinkNames(appLinkNames);
+
+        return woCreatedFlaggedAlarmView;
+    }
+
+    private static FacilioView getAssignedToMyTeamFlaggedAlarms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        Criteria criteria = new Criteria();
+
+        FacilioField teamField = modBean.getField("team", FlaggedEventModule.MODULE_NAME);
+        Condition myTeamFlaggedAlarmsCondition = new Condition();
+        myTeamFlaggedAlarmsCondition.setField(teamField);
+        myTeamFlaggedAlarmsCondition.setOperator(TeamOperator.CURRENT_PEOPLE_IN_TEAM);
+        criteria.addAndCondition(myTeamFlaggedAlarmsCondition);
+
+        FacilioField sysCreatedTime = new FacilioField();
+        sysCreatedTime.setName("sysCreatedTime");
+        sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+        sysCreatedTime.setDataType(FieldType.NUMBER);
+        sysCreatedTime.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+
+        FacilioView assignedToMyTeamFlaggedAlarmView = new FacilioView();
+        assignedToMyTeamFlaggedAlarmView.setName("myteam");
+        assignedToMyTeamFlaggedAlarmView.setDisplayName("Assigned To My Team Flagged Alarms");
+        assignedToMyTeamFlaggedAlarmView.setCriteria(criteria);
+        assignedToMyTeamFlaggedAlarmView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
+        assignedToMyTeamFlaggedAlarmView.setModuleName(FlaggedEventModule.MODULE_NAME);
+
+        List<ViewField> viewFields = new ArrayList<>();
+        viewFields.add(new ViewField("name", "Message"));
+        viewFields.add(new ViewField("client", "Client"));
+        viewFields.add(new ViewField("controller", "Controller"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
+        viewFields.add(new ViewField("status", "Status"));
+        viewFields.add(new ViewField("workorder", "Workorder"));
+
+        assignedToMyTeamFlaggedAlarmView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        assignedToMyTeamFlaggedAlarmView.setAppLinkNames(appLinkNames);
+
+        return assignedToMyTeamFlaggedAlarmView;
+    }
+
+    private static FacilioView getAssignedToMeFlaggedAlarms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        Criteria criteria = new Criteria();
+
+        FacilioField assignedPeopleField = modBean.getField("assignedPeople", FlaggedEventModule.MODULE_NAME);
+        Condition myFlaggedAlarmsCondition = new Condition();
+        myFlaggedAlarmsCondition.setField(assignedPeopleField);
+        myFlaggedAlarmsCondition.setOperator(PeopleOperator.CURRENT_USER);
+        criteria.addAndCondition(myFlaggedAlarmsCondition);
+
+        FacilioField sysCreatedTime = new FacilioField();
+        sysCreatedTime.setName("sysCreatedTime");
+        sysCreatedTime.setColumnName("SYS_CREATED_TIME");
+        sysCreatedTime.setDataType(FieldType.NUMBER);
+        sysCreatedTime.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+
+        FacilioView assignedToMeFlaggedAlarmView = new FacilioView();
+        assignedToMeFlaggedAlarmView.setName("assignedtome");
+        assignedToMeFlaggedAlarmView.setDisplayName("Assign To Me Flagged Alarms");
+        assignedToMeFlaggedAlarmView.setCriteria(criteria);
+        assignedToMeFlaggedAlarmView.setSortFields(Arrays.asList(new SortField(sysCreatedTime, false)));
+        assignedToMeFlaggedAlarmView.setModuleName(FlaggedEventModule.MODULE_NAME);
+
+        List<ViewField> viewFields = new ArrayList<>();
+        viewFields.add(new ViewField("name", "Message"));
+        viewFields.add(new ViewField("client", "Client"));
+        viewFields.add(new ViewField("controller", "Controller"));
+        viewFields.add(new ViewField(FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, "Flagged Alarm Process"));
+        viewFields.add(new ViewField("status", "Status"));
+        viewFields.add(new ViewField("workorder", "Workorder"));
+
+        assignedToMeFlaggedAlarmView.setFields(viewFields);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
+        assignedToMeFlaggedAlarmView.setAppLinkNames(appLinkNames);
+
+        return assignedToMeFlaggedAlarmView;
     }
 
     @Override
@@ -153,7 +375,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .pageDone()
                 .addPage("pageWithEvaluationDetails", "Page With Evaluation Details", "", getGageWithEvaluationDetailCriteria(), true, false, false)
                 .addWebLayout()
-                .addTab("summary", "SUMMARY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", null, null)
                 .addWidget("summaryFieldsWidget", "Flagged Alarm Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6_9", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
@@ -173,7 +395,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("filteredAlarms", "FILTERED ALARMS", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("filteredAlarms", "Filtered Alarms", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("filteredAlarms", "Filtered Alarms", "List of filtered alarms")
                 .addWidget("filteredAlarmsRelated", "Filtered Alarms", PageWidget.WidgetType.RELATED_LIST, "relatedListwidgetViewWidget_6_12", 0, 0, null, getSingleRelatedListForModule(modBean.getModule(FlaggedEventModule.MODULE_NAME), FilteredAlarmModule.MODULE_NAME,"flaggedAlarm"))
@@ -181,7 +403,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("history", "HISTORY", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
                 .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
@@ -211,7 +433,9 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
 
         FacilioField nameField = moduleBean.getField("name",moduleName);
         FacilioField clientField = moduleBean.getField("client",moduleName);
+        FacilioField siteField = moduleBean.getField("site", moduleName);
         FacilioField controllerField = moduleBean.getField("controller",moduleName);
+        FacilioField assetField = moduleBean.getField("asset", moduleName);
         FacilioField workorderField = moduleBean.getField("workorder",moduleName);
         FacilioField team = moduleBean.getField("team",moduleName);
         FacilioField people = moduleBean.getField("assignedPeople",moduleName);
@@ -220,10 +444,12 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, clientField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, workorderField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, team, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, people, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, siteField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, assetField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, workorderField, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, team, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, people, 2, 4, 1);
 
 
         widgetGroup.setName("generalInformation");

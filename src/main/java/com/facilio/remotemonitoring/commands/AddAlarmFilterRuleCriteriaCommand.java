@@ -42,6 +42,9 @@ public class AddAlarmFilterRuleCriteriaCommand extends FacilioCommand {
                         if(alarmFilterRule.getRuleType().equals(RuleType.ROLL_UP)){
                             filterRuleCriteriaObject.setFilterCriteria(AlarmFilterCriteriaType.ALARM_ROLL_UP);
                         }
+                        if(alarmFilterRule.getRuleType().equals(RuleType.SITE_OFFLINE)){
+                            filterRuleCriteriaObject.setFilterCriteria(AlarmFilterCriteriaType.SITE_OFFLINE_ALARM);
+                        }
                         addCriteriaList.add(filterRuleCriteriaObject);
                     }
                 }

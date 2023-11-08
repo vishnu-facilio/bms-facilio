@@ -99,5 +99,15 @@ public class ControllerAlarmInfoModule extends SignUpData {
         filteredField.setDisplayType(FacilioField.FieldDisplayType.RADIO);
         modBean.addField(filteredField);
 
+        LookupField alarmEvent = new LookupField();
+        alarmEvent.setDefault(true);
+        alarmEvent.setName("lastAlarmEvent");
+        alarmEvent.setDisplayName("Last Alarm Event");
+        alarmEvent.setModule(mod);
+        alarmEvent.setDataType(FieldType.LOOKUP);
+        alarmEvent.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        alarmEvent.setColumnName("LAST_ALARM_EVENT");
+        alarmEvent.setLookupModule(modBean.getModule(RawAlarmModule.MODULE_NAME));
+        modBean.addField(alarmEvent);
     }
 }
