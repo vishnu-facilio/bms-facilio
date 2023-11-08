@@ -25,6 +25,7 @@ public class FetchAgentDataLoggerSupplementsCommand extends FacilioCommand {
 
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
@@ -33,7 +34,15 @@ public class FetchAgentDataLoggerSupplementsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("agent"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("controller"));
 
+        long agentAppId = ApplicationApi
+                .getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP);
+
+        FacilioView view = ViewAPI.getView(moduleName,module.getModuleId(), moduleName, Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId(), agentAppId);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchLookupsList);
+        if(view !=null ){
+            context.put(FacilioConstants.ContextNames.CUSTOM_VIEW,view);
+        }
+
 
         return false;
     }
