@@ -44,6 +44,9 @@ public class MessageQueueTopic {
         prop.put(AgentConstants.MESSAGE_SOURCE, source.getName());
         prop.put(AgentConstants.MAX_CONSUMERS_PER_INSTANCE, 1);
         prop.put(AgentConstants.MAX_CONSUMERS, 2);
+        if (FacilioProperties.isNewVersion()) {
+            prop.put(AgentConstants.VERSION, "v2");
+        }
         long count = new GenericInsertRecordBuilder().fields(MESSAGE_TOPIC_FIELDS)
                 .table(MESSAGE_TOPIC_MODULE.getTableName())
                 .insert(prop);

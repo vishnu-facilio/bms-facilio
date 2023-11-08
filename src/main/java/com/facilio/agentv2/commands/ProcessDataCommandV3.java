@@ -168,6 +168,7 @@ public class ProcessDataCommandV3 extends FacilioCommand {
         if (categoryId > 0 && parentId > 0) {
             point.setCategoryId(categoryId);
             point.setResourceId(parentId);
+            point.setReadingScope(1);
             if (field != null) {
                 LOGGER.debug("Mapping " + point.getName() + " with field " + field.getName() + ", fieldId " + field.getFieldId());
                 point.setFieldId(field.getFieldId());
