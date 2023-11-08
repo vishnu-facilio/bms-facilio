@@ -9,18 +9,17 @@ import lombok.Setter;
 import org.json.simple.JSONObject;
 
 @Getter @Setter
-public class RelatedModuleDataAction extends RelatedDataAction {
+public class LookupModuleDataAction extends RelatedDataAction {
     private String moduleName;
     private String relatedFieldName;
     private String extendedModuleName;
     
-    public String getRelatedListData() throws Exception {
+    public String getLookupListData() throws Exception {
         FacilioChain getChain = ReadOnlyChainFactoryV3.getRelatedModuleDataChain();
 
         FacilioContext chainContext = getChain.getContext();
         addGetChainContext(chainContext);
 
-        chainContext.put(FacilioConstants.ContextNames.WIDGET_TYPE, FacilioConstants.ContextNames.RELATED_LIST);
         chainContext.put(FacilioConstants.ContextNames.RELATED_MODULE_NAME, moduleName);
         chainContext.put(FacilioConstants.ContextNames.RELATED_FIELD_NAME, relatedFieldName);
         chainContext.put(FacilioConstants.ContextNames.EXTENDED_MODULE_NAME, extendedModuleName);

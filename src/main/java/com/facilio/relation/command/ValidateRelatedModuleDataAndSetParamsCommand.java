@@ -6,7 +6,9 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants.*;
@@ -28,17 +30,7 @@ public class ValidateRelatedModuleDataAndSetParamsCommand extends FacilioCommand
     public boolean executeCommand(Context context) throws Exception {
         String relatedFieldName = (String) context.get(ContextNames.RELATED_FIELD_NAME);
         String relatedModuleName = (String) context.get(ContextNames.RELATED_MODULE_NAME);
-
-        if(StringUtils.isNotEmpty(relatedFieldName)) {
-            ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            FacilioModule relatedModule = moduleBean.getModule(relatedFieldName);
-
-            if(relatedModule == null) {
-                throw new IllegalArgumentException("Invalid Related Field Name");
-            }
-
-            relatedModuleName = relatedModule.getName();
-        }
+        String extendedModuleName = (String) context.get(ContextNames.EXTENDED_MODULE_NAME);
 
         if(StringUtils.isEmpty(relatedModuleName)) {
             throw new IllegalArgumentException("Related Module Name cannot be null");
@@ -47,7 +39,34 @@ public class ValidateRelatedModuleDataAndSetParamsCommand extends FacilioCommand
         if (StringUtils.isEmpty(relatedFieldName)) {
             throw new IllegalArgumentException("Related Field Name cannot be null");
         }
-        context.put(ContextNames.MODULE_NAME, relatedModuleName);
+
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField relatedField = moduleBean.getField(relatedFieldName, relatedModuleName);
+
+        if(relatedField == null){
+            throw new IllegalArgumentException("Invalid related field");
+        }
+
+        String lookupModuleName = ((BaseLookupField) relatedField).getLookupModule().getName();
+        if(StringUtils.isNotEmpty(extendedModuleName)) {
+            FacilioModule relatedModule = moduleBean.getModule(extendedModuleName);
+            boolean flag = false;
+            while (relatedModule != null) {
+                String extendedName = relatedModule.getName();
+                if (extendedName.equals(lookupModuleName)) {
+                    flag = true;
+                    break;
+                }
+                relatedModule = relatedModule.getExtendModule();
+            }
+
+            if (!flag) {
+                throw new IllegalArgumentException("Invalid extended module name");
+            }
+        }
+
+        context.put(ContextNames.MODULE_NAME, lookupModuleName);
+
         return false;
     }
 

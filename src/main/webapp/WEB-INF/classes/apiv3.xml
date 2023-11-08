@@ -1841,10 +1841,15 @@
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
         </action>
-        <action name="*/relatedList/*/*" class="com.facilio.bmsconsoleV3.actions.RelatedModuleDataAction" method="getRelatedListData">
+    </package>
+
+    <package name="lookupModuleAction" namespace="/api/v3/modules" extends="v3Api">
+        <action name="*/lookupData/*/*" class="com.facilio.bmsconsoleV3.actions.LookupModuleDataAction" method="getLookupListData">
             <param name="moduleName">{1}</param>
             <param name="relatedFieldName">{2}</param>
             <param name="extendedModuleName">{3}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
         </action>
     </package>
 
