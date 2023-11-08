@@ -120,8 +120,11 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         if(oldPeopleRecord instanceof V3TenantContactContext){
             String appLinkName = FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP;
             if(((V3TenantContactContext)people).isTenantPortalAccess()){
-                rolemap.put(appLinkName, rolemaps.get(appLinkName));
-                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                Long roleId = rolemaps.get(appLinkName);
+                if(roleId != null && roleId > 0){
+                    rolemap.put(appLinkName, roleId);
+                    updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                }
             }else if(!((V3TenantContactContext)people).isTenantPortalAccess()){
                 if(StringUtils.isNotEmpty(people.getEmail())){
                     rolemaps.remove(appLinkName);
@@ -138,8 +141,11 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         if(oldPeopleRecord instanceof V3VendorContactContext){
             String appLinkName = FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP;
             if(((V3VendorContactContext) people).isVendorPortalAccess()){
-                rolemap.put(appLinkName, rolemaps.get(appLinkName));
-                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                Long roleId = rolemaps.get(appLinkName);
+                if(roleId != null && roleId > 0){
+                    rolemap.put(appLinkName, roleId);
+                    updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                }
             }else if(!((V3VendorContactContext) people).isVendorPortalAccess()){
                 if(StringUtils.isNotEmpty(people.getEmail())){
                     rolemaps.remove(appLinkName);
@@ -155,8 +161,11 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         if(oldPeopleRecord instanceof V3ClientContactContext){
             String appLinkName = FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP;
             if(((V3ClientContactContext) people).isClientPortalAccess()){
-                rolemap.put(appLinkName, rolemaps.get(appLinkName));
-                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                Long roleId = rolemaps.get(appLinkName);
+                if(roleId != null && roleId > 0){
+                    rolemap.put(appLinkName, roleId);
+                    updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                }
             }else if(!((V3ClientContactContext) people).isClientPortalAccess()){
                 if(StringUtils.isNotEmpty(people.getEmail())){
                     rolemaps.remove(appLinkName);
@@ -172,8 +181,11 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         if(oldPeopleRecord instanceof V3EmployeeContext){
             String appLinkName = FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP;
             if(people.isEmployeePortalAccess()){
-                rolemap.put(appLinkName, rolemaps.get(appLinkName));
-                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                Long roleId = rolemaps.get(appLinkName);
+                if(roleId != null && roleId > 0){
+                    rolemap.put(appLinkName, roleId);
+                    updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+                }
             }else if(!people.isEmployeePortalAccess()){
                 if(StringUtils.isNotEmpty(people.getEmail())){
                     rolemaps.remove(appLinkName);
@@ -251,8 +263,11 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
         Map<String,Long> rolemap = new HashMap<>();
         String appLinkName = FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP;
         if(people.isOccupantPortalAccess()){
-            rolemap.put(appLinkName, rolemaps.get(appLinkName));
-            updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            Long roleId = rolemaps.get(appLinkName);
+            if(roleId != null && roleId > 0){
+                rolemap.put(appLinkName, roleId);
+                updateAppAccess(rolemap,people,orgId,securityPolicyId,sendInvitation,password);
+            }
         }else if(!people.isOccupantPortalAccess()){
             if(StringUtils.isNotEmpty(people.getEmail())){
                 rolemaps.remove(appLinkName);
