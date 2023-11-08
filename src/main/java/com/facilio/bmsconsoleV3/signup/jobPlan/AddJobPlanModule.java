@@ -726,7 +726,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         Criteria sfgCriteria =new Criteria();
         sfgCriteria.addAndCondition(CriteriaAPI.getCondition("IS_SFG20","isSfg", String.valueOf(true), BooleanOperators.IS));
 
-        jpPages.add(new PagesContext("defaultJobplanSummary", "Default Job Plan Summary","", sfgCriteria, false, false, true)
+        jpPages.add(new PagesContext("sfgJobplanSummary", "SFG-20 Job Plan Summary","", sfgCriteria, false, false, true)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -775,7 +775,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
                 .layoutDone());
 
 
-        jpPages.add(new PagesContext("sfgJobplanSummary", "SFG-20 Job Plan Summary","", null, false, true, true)
+        jpPages.add(new PagesContext("defaultJobplanSummary", "Default Job Plan Summary","", null, false, true, true)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
