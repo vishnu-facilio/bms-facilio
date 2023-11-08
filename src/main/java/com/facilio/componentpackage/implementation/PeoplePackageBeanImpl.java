@@ -25,11 +25,13 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.beans.ModuleBean;
 import com.facilio.modules.FieldUtil;
 import com.facilio.v3.util.V3Util;
+import lombok.extern.log4j.Log4j;
 
 import java.util.*;
 import java.util.stream.Collectors;
 import com.facilio.fw.BeanFactory;
 
+@Log4j
 public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtendedProps> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -121,6 +123,12 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                         default:
                             break;
                     }
+                }
+
+                if (peopleTypeEnum != null && PEOPLE_TYPE_LIST.contains(peopleTypeEnum)
+                        && (people.getBaseProp() == null || people.getSubProp() == null)) {
+                    LOGGER.info("####Sandbox Tracking - Improper People Info - " + people.getId() + " Name - " + people.getName());
+                    continue;
                 }
 
                 peopleIdVsPeople.put(people.getId(), people);

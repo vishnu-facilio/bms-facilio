@@ -36,6 +36,7 @@ import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.exceptions.SecurityPolicyException;
 import com.facilio.iam.accounts.util.*;
 import com.facilio.modules.*;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
@@ -2886,6 +2887,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return null;
 		}
 		if(orgId != null && orgId > 0){
+			Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+			boolean isSandboxOrg = SandboxAPI.isSandboxOrg(org);
+			orgId = isSandboxOrg ? org.getProductionOrgId() : orgId;
+			selectBuilder.andCriteria(getDomainCategoryCriteria(isSandboxOrg));
+
 			criteria.addAndCondition(CriteriaAPI.getCondition("App_Domain.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		}
 		if(domainType == 1 || domainType == 6) {
@@ -2899,6 +2905,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 
+	}
+
+	private static Criteria getDomainCategoryCriteria(boolean isSandboxOrg) {
+		Criteria domainCategoryCriteria = new Criteria();
+		if (isSandboxOrg) {
+			domainCategoryCriteria.addAndCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_CATEGORY", "domainCategory", String.valueOf(AppDomain.DomainCategory.SANDBOX.getIndex()), NumberOperators.EQUALS));
+		} else {
+			domainCategoryCriteria.addAndCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_CATEGORY", "domainCategory", String.valueOf(AppDomain.DomainCategory.PRODUCTION.getIndex()), NumberOperators.EQUALS));
+			domainCategoryCriteria.addOrCondition(CriteriaAPI.getCondition("App_Domain.DOMAIN_CATEGORY", "domainCategory", "1", CommonOperators.IS_EMPTY));
+		}
+		return domainCategoryCriteria;
 	}
 
 	public String getPortalDomainUrlForUser(String username ,AppDomainType appDomainType) throws Exception {
