@@ -2189,5 +2189,13 @@
         <action name="monthlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterMonthlyConsumption"></action>
         <action name="yearlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterYearlyConsumption"></action>
         <action name="peak" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterPeak"></action>
-    </package>    
+    </package>
+
+    <package name="servicePlannedMaintenance" namespace="/api/v3/servicePlannedMaintenance"
+             extends="v3Api">
+        <action name="getNextExecutionDates"
+                class="com.facilio.fsm.actions.ServicePlannedMaintenanceAction"
+                method="getNextExecutionDates">
+        </action>
+    </package>
 </struts>

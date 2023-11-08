@@ -4200,7 +4200,7 @@
             </property>
         </requestbody>
     </request>
-    
+
     <request path="/api/v3/meterConsumption/monthlyConsumption" method="POST">
         <requestbody type="object">
             <property name="id" type="number"/>
@@ -4241,5 +4241,13 @@
         <urlparams>
             <property name="relationShipId" type="number"/>
         </urlparams>
-    </request>    
+    </request>
+
+    <request path="/api/v3/servicePlannedMaintenance/getNextExecutionDates">
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="startTime" type="number" mandatory="true"/>
+            <property name="scheduleInfo" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
 </config>
