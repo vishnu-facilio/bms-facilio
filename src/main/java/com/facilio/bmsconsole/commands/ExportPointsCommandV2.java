@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import com.drew.metadata.Age;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -12,6 +15,7 @@ import com.facilio.bmsconsoleV3.signup.Point.AddBacnetIpPointModule;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -50,6 +54,7 @@ public class ExportPointsCommandV2 extends FacilioCommand {
         FileInfo.FileFormat fileFormat = (FileInfo.FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
         String viewName = (String) context.get(FacilioConstants.ContextNames.VIEW_NAME);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        int readingScope = (int) context.get(AgentConstants.READING_SCOPE);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(moduleName);
@@ -70,6 +75,10 @@ public class ExportPointsCommandV2 extends FacilioCommand {
         if(context.containsKey(FacilioConstants.ContextNames.FILTERS)) {
             filters = (String) context.get(FacilioConstants.ContextNames.FILTERS);
         }
+        if (readingScope > 0){
+            Condition condition = CriteriaAPI.getCondition("SCOPE",AgentConstants.READING_SCOPE, String.valueOf(readingScope), NumberOperators.EQUALS);
+            criteria.addAndCondition(condition);
+        }
 
         List<ViewField> viewFields = new ArrayList<ViewField>();
         List<ModuleBaseWithCustomFields> records = new ArrayList<ModuleBaseWithCustomFields>();
@@ -77,6 +86,8 @@ public class ExportPointsCommandV2 extends FacilioCommand {
 
         Set<Long> fieldIds = new HashSet<>();
         List<Long> pointIds = new ArrayList<>();
+        Set<Long> resourceIds = new HashSet<>();
+        Set<Long> categoryIds = new HashSet<>();
 
         for (ModuleBaseWithCustomFields record:records){
             Map<String,Object>data = record.getData();
@@ -91,13 +102,27 @@ public class ExportPointsCommandV2 extends FacilioCommand {
                     data.put(AgentConstants.UNIT,unit);
                 }
             }
+            if (data.containsKey(AgentConstants.RESOURCE_ID)){
+                long resourceId = (long)data.get(AgentConstants.RESOURCE_ID);
+                resourceIds.add(resourceId);
+            }
+            if (data.containsKey(AgentConstants.ASSET_CATEGORY_ID)){
+                long categoryId = (long)data.get(AgentConstants.ASSET_CATEGORY_ID);
+                categoryIds.add(categoryId);
+            }
             if (record.getId() > 0){
                 pointIds.add(record.getId());
             }
+            if (!data.containsKey(AgentConstants.DATA_INTERVAL)){
+                data.put(AgentConstants.DATA_INTERVAL,"Agent Interval");
+            }
         }
 
-        if (!fieldIds.isEmpty()) {
+        if (!fieldIds.isEmpty() && readingScope > 0) {
             addReading(fieldIds, records);
+        }
+        if (readingScope > 0){
+            addCommissionedDetails(resourceIds,categoryIds,records,ResourceType.valueOf(readingScope));
         }
 
         if (!pointIds.isEmpty()){
@@ -114,10 +139,36 @@ public class ExportPointsCommandV2 extends FacilioCommand {
         for (ModuleBaseWithCustomFields record : records){
             Map<String,Object>point = record.getData();
             Map<String, Object> field = fields.get(point.get(AgentConstants.FIELD_ID));
-            point.put(AgentConstants.FIELD_ID,field.get(AgentConstants.NAME));
+            if (field != null){
+                point.put(AgentConstants.FIELD_ID,field.get(AgentConstants.NAME));
+            }
         }
 
     }
+    private void addCommissionedDetails(Set<Long> resourceIds ,Set<Long> categoryIds , List<ModuleBaseWithCustomFields>records , ResourceType resourceType) throws Exception{
+        Map<Long, String> categoryMap = new HashMap<>();
+        Map<Long,String> resourceMap = new HashMap<>();
+        switch (resourceType){
+            case ASSET_CATEGORY:
+                categoryMap = CommissioningApi.getParent(categoryIds,"assetCategory");
+                resourceMap = CommissioningApi.getParent(resourceIds,resourceType.getModuleName());
+                break;
+            case METER_CATEGORY:
+                categoryMap = CommissioningApi.getParent(categoryIds,"utilitytype");
+                resourceMap = CommissioningApi.getParent(resourceIds,resourceType.getModuleName());
+                break;
+        }
+        for (ModuleBaseWithCustomFields record : records){
+            Map<String,Object> point = record.getData();
+            Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);
+            Long categoryId = (Long) point.get(AgentConstants.ASSET_CATEGORY_ID);
+            String category = categoryMap.get(categoryId);
+            String resource = resourceMap.get(resourceId);
+            point.put(AgentConstants.ASSET_CATEGORY_ID,category);
+            point.put(AgentConstants.RESOURCE_ID,resource);
+        }
+    }
+
 
     private void addEnumStates(List<Long> pointIds, List<ModuleBaseWithCustomFields> records, List<ViewField> viewFields,FacilioModule module) throws Exception {
         List<Map<String, Object>> readingInputValues = ReadingsAPI.getReadingInputValues(pointIds);

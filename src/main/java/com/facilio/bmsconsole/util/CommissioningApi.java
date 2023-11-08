@@ -9,7 +9,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.AddCommissioningLogModule;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
@@ -194,7 +196,7 @@ public class CommissioningApi {
 		updateBuilder.updateViaMap(map);
 	}
 
-	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs) throws Exception {
+	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs,ResourceType resourceType) throws Exception {
 		List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 		String message = null; 
 		for(ReadingDataMeta rdm: rdmList) {
@@ -210,9 +212,16 @@ public class CommissioningApi {
 					break;
 			}
 			if (message != null) {
-				ResourceContext resource = ResourceAPI.getResource(rdm.getResourceId());
+				String resourceName = null;
+				if (resourceType.equals(ResourceType.ASSET_CATEGORY)){
+					ResourceContext resource = ResourceAPI.getResource(rdm.getResourceId());
+					resourceName = resource.getName();
+				} else if (resourceType.equals(ResourceType.METER_CATEGORY)) {
+					V3MeterContext meter = MetersAPI.getMeter(rdm.getResourceId());
+					resourceName = meter.getName();
+				}
 				StringBuilder builder = new StringBuilder(rdm.getField().getDisplayName())
-						.append(" reading of ").append(resource.getName()).append(message);
+						.append(" reading of ").append(resourceName).append(message);
 				throw new IllegalArgumentException(builder.toString());
 			}
 		}
@@ -321,9 +330,16 @@ public class CommissioningApi {
 			if(resourceId != null && fieldId != null) {
 				String key = resourceId+"_"+ fieldId;
 				if (mappedDetials.contains(key)) {
-					ResourceContext resource = ResourceAPI.getResource(resourceId);
+					String resourceName = null;
+					if (oldLog.getReadingScopeEnum() == ResourceType.ASSET_CATEGORY){
+						ResourceContext resource = ResourceAPI.getResource(resourceId);
+						resourceName = resource.getName();
+					} else if (oldLog.getReadingScopeEnum() == ResourceType.METER_CATEGORY) {
+						V3MeterContext meter = MetersAPI.getMeter(resourceId);
+						resourceName = meter.getName();
+					}
 					StringBuilder builder = new StringBuilder(modBean.getField(fieldId).getDisplayName())
-							.append(" reading of ").append(resource.getName()).append(" is mapped more than once.");
+							.append(" reading of ").append(resourceName).append(" is mapped more than once.");
 					throw new IllegalArgumentException(builder.toString());
 				}
 				mappedDetials.add(key);
@@ -341,7 +357,7 @@ public class CommissioningApi {
 		}			
 		
 		if (!rdmPairs.isEmpty()) {
-			return checkRDMType(rdmPairs);
+			return checkRDMType(rdmPairs,oldLog.getReadingScopeEnum());
 		}
 		return null;
 	}

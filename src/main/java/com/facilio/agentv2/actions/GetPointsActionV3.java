@@ -4,12 +4,17 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.v3.V3Action;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -42,6 +47,7 @@ public class GetPointsActionV3 extends V3Action {
     private int type=-1;
     private String moduleName;
     private Integer viewLimit = -1;
+    private int readingScope = -1;
     /**
      * Get the Point count.Based on the Point filter. e.g.UNCONFIGURED..etc.
      *
@@ -105,7 +111,7 @@ public class GetPointsActionV3 extends V3Action {
         context.put(FacilioConstants.ContextNames.STATUS,status);
         context.put(AgentConstants.CONTROLLER_TYPE,controllerType);
         context.put(AgentConstants.CONTROLLERIDS,controllerIds);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,FacilioConstants.ContextNames.POINTS);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         exportModule.execute();
         String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
         setData("fileUrl", fileUrl);
@@ -126,6 +132,7 @@ public class GetPointsActionV3 extends V3Action {
         if(!controllerIds.isEmpty()) {
             context.put(AgentConstants.CONTROLLERIDS, controllerIds);
         }
+        context.put(AgentConstants.READING_SCOPE,readingScope);
         chain.execute();
         String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
         setData("fileUrl", fileUrl);
