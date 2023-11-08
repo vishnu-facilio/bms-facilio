@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -31,11 +33,15 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.field.validation.date.DateValidatorType;
+import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.*;
+import com.facilio.ns.context.*;
+import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.util.FacilioUtil;
@@ -47,12 +53,14 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
+import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -778,6 +786,7 @@ public class PackageBeanUtil {
 
         workFlowBuilder.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(workflowContext.isV2Script()));
         workFlowBuilder.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(workflowContext.getWorkflowV2String());
+        workFlowBuilder.element(PackageConstants.FunctionConstants.UI_MODE).t(String.valueOf(workflowContext.getWorkflowUIMode()));
 
         return workFlowBuilder;
     }
@@ -789,10 +798,12 @@ public class PackageBeanUtil {
 
         String v2WorkFlowStr = workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).getCData();
         boolean isV2Script = Boolean.parseBoolean(workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).getText());
+        int wfUIMode=Integer.parseInt(workFlowBuilder.getElement(PackageConstants.FunctionConstants.UI_MODE).getText());
 
         WorkflowContext workflowContext = new WorkflowContext();
         workflowContext.setWorkflowV2String(v2WorkFlowStr);
         workflowContext.setIsV2Script(isV2Script);
+        workflowContext.setWorkflowUIMode(wfUIMode);
         return workflowContext;
     }
 
@@ -1000,7 +1011,7 @@ public class PackageBeanUtil {
         ModuleBean moduleBean = Constants.getModBean();
         for (ActionContext actionContext : actionsContextList) {
             // TODO - Handle DEFAULT_TEMPLATE_ID
-            if (actionContext.getDefaultTemplateId() > 0){
+            if (actionContext.getDefaultTemplateId() > 0) {
                 continue;
             }
 
@@ -1448,6 +1459,497 @@ public class PackageBeanUtil {
 
     }
 
+    public static XMLBuilder constructBuilderFromNameSpaceNdFields(NameSpaceContext nsCtx, XMLBuilder builder) throws Exception {
+
+        XMLBuilder nsBuilder = builder.e("Namespace");
+
+        nsBuilder.e("execInterval").text(String.valueOf(nsCtx.getExecInterval()));
+        nsBuilder.e("type").text(String.valueOf(nsCtx.getType()));
+
+        XMLBuilder inclAssets = nsBuilder.e("IncludedAssetIds");
+        if (CollectionUtils.isNotEmpty(nsCtx.getIncludedAssetIds())) {
+            for (Long assetId : nsCtx.getIncludedAssetIds()) {
+                inclAssets.e("resourceId").t(String.valueOf(assetId));
+            }
+        }
+
+        if (CollectionUtils.isNotEmpty(nsCtx.getFields())) {
+            nsBuilder.addElement(constructBuilderFromNameSpaceFields(nsCtx.getFields(), nsBuilder));
+        }
+
+        XMLBuilder workflowBuilder = nsBuilder.e("WorkflowContext");
+        constructBuilderFromWorkFlowContext(nsCtx.getWorkflowContext(), workflowBuilder);
+
+        return nsBuilder;
+    }
+
+    public static XMLBuilder constructBuilderFromNameSpaceFields(List<NameSpaceField> nsFldCtx ,XMLBuilder nsBuilder) throws Exception {
+
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        XMLBuilder fields = nsBuilder.e("Fields");
+
+        for (NameSpaceField fld : nsFldCtx) {
+            XMLBuilder field = fields.e("Field");
+            if (fld.getResourceId() != null) {
+                field.e("resourceId").text(String.valueOf(fld.getResourceId()));
+            }
+            field.e("varName").text(fld.getVarName());
+            field.e("aggregationType").text(String.valueOf(fld.getAggregationType()));
+            field.e("dataInterval").text(String.valueOf(fld.getDataInterval()));
+            field.e("nsFieldType").text(String.valueOf(fld.getNsFieldType()));
+            field.e(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME).text(moduleBean.getField(fld.getFieldId()).getName());
+            field.e(PackageConstants.NameSpaceConstants.VAR_NAME).text(fld.getVarName());
+            field.e(PackageConstants.NameSpaceConstants.AGG_TYPE).text(String.valueOf(fld.getAggregationType()));
+            field.e(PackageConstants.NameSpaceConstants.DATA_INTERVAL).text(String.valueOf(fld.getDataInterval()));
+            field.e(PackageConstants.NameSpaceConstants.NS_FIELD_TYPE).text(String.valueOf(fld.getNsFieldType()));
+            field.e(PackageConstants.NameSpaceConstants.FIELD_NAME).text(moduleBean.getField(fld.getFieldId()).getName());
+            field.e(PackageConstants.MODULENAME).text(moduleBean.getField(fld.getFieldId()).getModule().getName());
+        }
+        return fields;
+    }
+
+    public static NameSpaceContext constructNamespaceNdFieldsFromBuilder(XMLBuilder xmlBuilder) throws Exception {
+
+        if (xmlBuilder.getElement("Namespace") == null) {
+            return null;
+        }
+        NameSpaceContext ns = new NameSpaceContext();
+        XMLBuilder namespaceBuilder = xmlBuilder.getElement("Namespace");
+        if (NumberUtils.isNumber(namespaceBuilder.getElement("execInterval").getText())) {
+            Long execInterval = Long.valueOf(namespaceBuilder.getElement("execInterval").getText());
+            ns.setExecInterval(execInterval);
+        }
+        int nsType= Integer.parseInt(namespaceBuilder.getElement("type").getText());
+        XMLBuilder nsFieldsElement = namespaceBuilder.getElement("Fields");
+
+        if (nsFieldsElement != null) {
+            List<NameSpaceField> nameSpaceFields = constructNamespaceFieldsFromBuilder(nsFieldsElement);
+            XMLBuilder workflowBuilder = xmlBuilder.getElement("WorkflowContext");
+            WorkflowContext workflowContext = constructWorkflowContextFromBuilder(workflowBuilder);
+
+            XMLBuilder inclAssets = namespaceBuilder.getElement("IncludedAssetIds");
+            List<XMLBuilder> assets = inclAssets.getElementList("resourceId");
+            List<Long> includedAssets = assets.stream().map(m -> Long.valueOf(m.getText())).collect(Collectors.toList());
+            ns.setIncludedAssetIds(includedAssets);
+
+            ns.setWorkflowContext(workflowContext);
+            ns.setType(nsType);
+            ns.setFields(nameSpaceFields);
+        }
+        return ns;
+    }
+
+    public static List<NameSpaceField> constructNamespaceFieldsFromBuilder(XMLBuilder nsFieldsElement) throws Exception {
+        List<XMLBuilder> nsFieldList = nsFieldsElement.getFirstLevelElementListForTagName("Field");
+        List<NameSpaceField> nameSpaceFields = new ArrayList<>();
+        for (XMLBuilder fld : nsFieldList) {
+            NameSpaceField nsField = new NameSpaceField();
+            FacilioField facilioField = getFacilioFieldFromBuilder(fld);
+
+            if (fld.getElement("resourceId") != null) {
+                nsField.setResourceId(Long.valueOf(String.valueOf(fld.getElement("resourceId").getText())));
+            }
+            nsField.setVarName(fld.getElement("varName").getText());
+            nsField.setAggregationType(AggregationType.valueOf(fld.getElement("aggregationType").getText()));
+            nsField.setDataInterval(Long.valueOf(fld.getElement("dataInterval").getText()));
+            nsField.setNsFieldType(NsFieldType.valueOf(fld.getElement("nsFieldType").getText()));
+            nsField.setFieldId(facilioField.getFieldId());
+            nsField.setModuleId(facilioField.getModuleId());
+
+            nameSpaceFields.add(nsField);
+        }
+        return nameSpaceFields;
+    }
+
+    public static FacilioField getFacilioFieldFromBuilder(XMLBuilder fldBuilder) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String fieldName = fldBuilder.getElement(PackageConstants.NameSpaceConstants.FIELD_NAME).getText();
+        String fieldModuleName = fldBuilder.getElement(PackageConstants.MODULENAME).getText();
+        FacilioField facilioField = moduleBean.getField(fieldName, fieldModuleName);
+        return facilioField;
+    }
+
+    public static List<V3AssetCategoryContext> getAssetCategories(Boolean fetchSystem) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
+        Criteria criteria = new Criteria();
+        if (fetchSystem != null) {
+            criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
+        }
+        criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
+        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class,Boolean.FALSE);
+        return props;
+    }
+
+    public static Map<Long, Long> getAssetCategoryIdVsModuleId(Boolean fetchSystem) throws Exception {
+        Map<Long, Long> assetCategoryIdVsModuleId = new HashMap<>();
+        List<V3AssetCategoryContext> props = getAssetCategories(fetchSystem);
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (V3AssetCategoryContext prop : props) {
+                assetCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());
+            }
+        }
+        return assetCategoryIdVsModuleId;
+    }
+
+
+    public static Map<String, Long> getAssetCategoryNameVsId(Boolean fetchSystem) throws Exception {
+        Map<String, Long> assetCategoryIdVsModuleId = new HashMap<>();
+        List<V3AssetCategoryContext> props = getAssetCategories(fetchSystem);
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (V3AssetCategoryContext prop : props) {
+                assetCategoryIdVsModuleId.put( prop.getDisplayName(), prop.getId());
+            }
+        }
+        return assetCategoryIdVsModuleId;
+    }
+
+    public static void convertFacilioFieldToXML(FacilioField facilioField, XMLBuilder fieldElement) throws Exception {
+        fieldElement.element(PackageConstants.NAME).text(facilioField.getName());
+        fieldElement.element(PackageConstants.DISPLAY_NAME).text(facilioField.getDisplayName());
+        fieldElement.element(PackageConstants.MODULENAME).text(facilioField.getModule().getName());
+        fieldElement.element(PackageConstants.FieldXMLConstants.REQUIRED).text(String.valueOf(facilioField.isRequired()));
+        fieldElement.element(PackageConstants.FieldXMLConstants.IS_DEFAULT).text(String.valueOf(facilioField.isDefault()));
+        fieldElement.element(PackageConstants.FieldXMLConstants.DATA_TYPE).text(String.valueOf(facilioField.getDataType()));
+        fieldElement.element(PackageConstants.FieldXMLConstants.MAIN_FIELD).text(String.valueOf(facilioField.isMainField()));
+        fieldElement.element(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).text(String.valueOf(facilioField.getDisplayTypeInt()));
+
+        Map<String, Object> additionalFieldProps = fetchAdditionalFieldProps(facilioField);
+        for (Map.Entry<String, Object> entry : additionalFieldProps.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            value = (value == null) ? "" : value;
+
+            if (value instanceof List) {
+                XMLBuilder valuesListElement = fieldElement.element(key);
+                for (Map<String, Object> keyValuePair : (List<Map<String, Object>>) value) {
+                    XMLBuilder valueElement = valuesListElement.element(PackageConstants.VALUE_ELEMENT);
+                    for (Map.Entry<String, Object> specialProp : keyValuePair.entrySet()) {
+                        String specialPropKey = specialProp.getKey();
+                        Object specialPropValue = specialProp.getValue();
+                        valueElement.element(specialPropKey).text(String.valueOf(specialPropValue));
+                    }
+                }
+            } else {
+                fieldElement.element(key).text(String.valueOf(value));
+            }
+        }
+    }
+
+    private static Map<String, Object> fetchAdditionalFieldProps(FacilioField oldField) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        Map<String, Object> fieldProps = new HashMap<>();
+
+        switch (oldField.getDataTypeEnum()) {
+            case STRING:
+            case BIG_STRING:
+                fieldProps.put("regex", ((StringField) oldField).getRegex());
+                fieldProps.put("maxLength", ((StringField) oldField).getMaxLength());
+                break;
+
+            case NUMBER:
+            case DECIMAL:
+                fieldProps.put("unit", ((NumberField) oldField).getUnit());
+                fieldProps.put("unitId", ((NumberField) oldField).getUnitId());
+                fieldProps.put("metric", ((NumberField) oldField).getMetric());
+                fieldProps.put("minValue", ((NumberField) oldField).getMinValue());
+                fieldProps.put("maxValue", ((NumberField) oldField).getMaxValue());
+                fieldProps.put("counterField", ((NumberField) oldField).getCounterField());
+                break;
+
+            case ENUM:
+            case MULTI_ENUM:
+                List<Map<String, Object>> enumValuesProps = getEnumFieldValuesProps(((BaseEnumField) oldField).getValues());
+                fieldProps.put("values", enumValuesProps);
+                break;
+
+            case SYSTEM_ENUM:
+                fieldProps.put("enumName", ((SystemEnumField) oldField).getEnumName());
+                break;
+
+            case STRING_SYSTEM_ENUM:
+                fieldProps.put("enumName", ((StringSystemEnumField) oldField).getEnumName());
+                break;
+
+            case URL_FIELD:
+                fieldProps.put("showAlt", ((UrlField) oldField).getShowAlt());
+                fieldProps.put("target", ((UrlField) oldField).getTarget().toString());
+                break;
+
+            case DATE:
+            case DATE_TIME:
+                List<Map<String, Object>> daysOfWeekProps = getDaysOfWeekProps(((DateField) oldField).getAllowedDays());
+                fieldProps.put("allowedDays", daysOfWeekProps);
+                if (((DateField) oldField).getAllowedDate() != null) {
+                    fieldProps.put("allowedDate", ((DateField) oldField).getAllowedDate().name());
+                }
+                break;
+
+            case BOOLEAN:
+                fieldProps.put("trueVal", ((BooleanField) oldField).getTrueVal());
+                fieldProps.put("falseVal", ((BooleanField) oldField).getFalseVal());
+                break;
+
+            case LARGE_TEXT:
+                fieldProps.put("skipSizeCheck", ((LargeTextField)oldField).getSkipSizeCheck());
+                break;
+
+            case LOOKUP:
+            case MULTI_LOOKUP:
+                long lookupModuleId = ((BaseLookupField) oldField).getLookupModuleId();
+                if (lookupModuleId > 0) {
+                    FacilioModule lookupModule = moduleBean.getModule(lookupModuleId);
+                    fieldProps.put("lookupModuleName", lookupModule.getName());
+                } else {
+                    fieldProps.put("lookupModuleName", null);
+                }
+                fieldProps.put("specialType", ((BaseLookupField) oldField).getSpecialType());
+                fieldProps.put("relatedListDisplayName", ((BaseLookupField) oldField).getRelatedListDisplayName());
+                break;
+
+            case FILE:
+                if (((FileField) oldField).getFormatEnum() != null) {
+                    fieldProps.put("format", ((FileField) oldField).getFormatEnum().name());
+                }
+                break;
+
+            default:
+                break;
+        }
+        return fieldProps;
+    }
+
+    private static List<Map<String, Object>> getDaysOfWeekProps(List<DayOfWeek> values) {
+        if (CollectionUtils.isEmpty(values)) {
+            return null;
+        }
+
+        List<Map<String, Object>> propsList = new ArrayList<>();
+        for (DayOfWeek value : values) {
+            Map<String, Object> additionalProp = new HashMap<>();
+            additionalProp.put("value", value.name());
+            propsList.add(additionalProp);
+        }
+
+        return propsList;
+    }
+
+    private static List<Map<String, Object>> getEnumFieldValuesProps(List<EnumFieldValue<Integer>> enumFieldValues) {
+        if (CollectionUtils.isEmpty(enumFieldValues)) {
+            return null;
+        }
+
+        List<Map<String, Object>> propsList = new ArrayList<>();
+
+        for (EnumFieldValue<Integer> enumFieldValue : enumFieldValues) {
+            Map<String, Object> additionalProp = new HashMap<>();
+            additionalProp.put("index", enumFieldValue.getIndex());
+            additionalProp.put("value", enumFieldValue.getValue());
+            additionalProp.put("visible", enumFieldValue.getVisible());
+            additionalProp.put("sequence", enumFieldValue.getSequence());
+            propsList.add(additionalProp);
+        }
+
+        return propsList;
+    }
+
+    public static FacilioField getFieldFromXMLComponent(XMLBuilder fieldElement) throws Exception {
+        Map<String, Object> fieldProp = new HashMap<>();
+        fieldProp.put("name", fieldElement.getElement(PackageConstants.NAME).getText());
+        fieldProp.put("moduleName", fieldElement.getElement(PackageConstants.MODULENAME).getText());
+        fieldProp.put("displayName", fieldElement.getElement(PackageConstants.DISPLAY_NAME).getText());
+        fieldProp.put("dataType", Integer.parseInt(fieldElement.getElement(PackageConstants.FieldXMLConstants.DATA_TYPE).getText()));
+        fieldProp.put("isRequired", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.REQUIRED).getText()));
+        fieldProp.put("isDefault", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.IS_DEFAULT).getText()));
+        fieldProp.put("displayType", Integer.parseInt(fieldElement.getElement(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).getText()));
+        fieldProp.put("isMainField", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.MAIN_FIELD).getText()));
+
+        FacilioField facilioField = setAdditionalFieldProps(fieldProp, fieldElement);
+        return facilioField;
+    }
+
+
+    private static FacilioField setAdditionalFieldProps(Map<String, Object> fieldProp, XMLBuilder fieldElement) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        int dataTypeInt = (int) (fieldProp.get("dataType"));
+        FacilioField facilioField;
+
+        switch (FieldType.getCFType(dataTypeInt)) {
+            case STRING:
+            case BIG_STRING:
+                String regex = fieldElement.getElement("regex").getText();
+                int maxLength = Integer.parseInt(fieldElement.getElement("maxLength").getText());
+                facilioField = (StringField) FieldUtil.getAsBeanFromMap(fieldProp, StringField.class);
+                ((StringField)facilioField).setRegex(regex);
+                ((StringField) facilioField).setMaxLength(maxLength);
+                break;
+
+            case NUMBER:
+            case DECIMAL:
+                String unit = fieldElement.getElement("unit").getText();
+                int unitId = Integer.parseInt(fieldElement.getElement("unitId").getText());
+                int metric = Integer.parseInt(fieldElement.getElement("metric").getText());
+                Double minValue = StringUtils.isEmpty(fieldElement.getElement("minValue").getText()) ? null :
+                        Double.parseDouble(fieldElement.getElement("minValue").getText());
+                Double maxValue = StringUtils.isEmpty(fieldElement.getElement("maxValue").getText()) ? null :
+                        Double.parseDouble(fieldElement.getElement("maxValue").getText());
+                boolean counterField = Boolean.parseBoolean(fieldElement.getElement("counterField").getText());
+                facilioField = (NumberField) FieldUtil.getAsBeanFromMap(fieldProp, NumberField.class);
+                ((NumberField) facilioField).setUnit(unit);
+                ((NumberField) facilioField).setUnitId(unitId);
+                ((NumberField) facilioField).setMetric(metric);
+                ((NumberField) facilioField).setMinValue(minValue);
+                ((NumberField) facilioField).setMaxValue(maxValue);
+                ((NumberField) facilioField).setCounterField(counterField);
+                break;
+
+            case ENUM:
+            case MULTI_ENUM:
+                XMLBuilder enumValuesBuilder = fieldElement.getElement("values");
+                List<EnumFieldValue<Integer>> enumValues = getEnumFieldValues(enumValuesBuilder);
+                if (dataTypeInt == 8) {
+                    facilioField = (EnumField) FieldUtil.getAsBeanFromMap(fieldProp, EnumField.class);
+                    ((EnumField) facilioField).setValues(enumValues);
+                } else {
+                    facilioField = (MultiEnumField) FieldUtil.getAsBeanFromMap(fieldProp, MultiEnumField.class);
+                    ((MultiEnumField) facilioField).setValues(enumValues);
+                }
+                break;
+
+            case SYSTEM_ENUM:
+                facilioField = (SystemEnumField) FieldUtil.getAsBeanFromMap(fieldProp, SystemEnumField.class);
+                String enumName = fieldElement.getElement("enumName").getText();
+                ((SystemEnumField) facilioField).setEnumName(enumName);
+                break;
+
+            case STRING_SYSTEM_ENUM:
+                facilioField = (StringSystemEnumField) FieldUtil.getAsBeanFromMap(fieldProp, StringSystemEnumField.class);
+                String stringEnumName = fieldElement.getElement("enumName").getText();
+                ((StringSystemEnumField) facilioField).setEnumName(stringEnumName);
+                break;
+
+            case URL_FIELD:
+                facilioField = (UrlField) FieldUtil.getAsBeanFromMap(fieldProp, UrlField.class);
+                boolean showAlt = Boolean.parseBoolean(fieldElement.getElement("showAlt").getText());
+                String targetStr = fieldElement.getElement("target").getText();
+                UrlField.UrlTarget urlTarget = UrlField.UrlTarget.valueOf(targetStr);
+                ((UrlField) facilioField).setShowAlt(showAlt);
+                ((UrlField) facilioField).setTarget(urlTarget);
+                break;
+
+            case DATE:
+            case DATE_TIME:
+                facilioField = (DateField) FieldUtil.getAsBeanFromMap(fieldProp, DateField.class);
+                if (fieldElement.getElement("allowedDate") != null) {
+                    String allowedDateStr = fieldElement.getElement("allowedDate").getText();
+                    DateValidatorType allowedDate = DateValidatorType.valueOf(allowedDateStr);
+                    ((DateField) facilioField).setAllowedDate(allowedDate);
+                }
+                XMLBuilder valuesBuilder = fieldElement.getElement("allowedDays");
+                List<DayOfWeek> daysOfWeek = getDaysOfWeek(valuesBuilder);
+                ((DateField) facilioField).setAllowedDays(daysOfWeek);
+                break;
+
+            case BOOLEAN:
+                facilioField = (BooleanField) FieldUtil.getAsBeanFromMap(fieldProp, BooleanField.class);
+                String trueVal = fieldElement.getElement("trueVal").getText();
+                String falseVal = fieldElement.getElement("falseVal").getText();
+                ((BooleanField) facilioField).setTrueVal(trueVal);
+                ((BooleanField) facilioField).setFalseVal(falseVal);
+                break;
+
+            case LARGE_TEXT:
+                facilioField = (LargeTextField) FieldUtil.getAsBeanFromMap(fieldProp, LargeTextField.class);
+                boolean skipSizeCheck = Boolean.parseBoolean(fieldElement.getElement("skipSizeCheck").getText());
+                ((LargeTextField) facilioField).setSkipSizeCheck(skipSizeCheck);
+                break;
+
+            case FILE:
+                facilioField = (FileField) FieldUtil.getAsBeanFromMap(fieldProp, FileField.class);
+                if (fieldElement.getElement("format") != null) {
+                    String fileFormatString = fieldElement.getElement("format").getText();
+                    FileInfo.FileFormat fileFormat = FileInfo.FileFormat.valueOf(fileFormatString);
+                    ((FileField) facilioField).setFormat(fileFormat);
+                }
+                break;
+
+            case LOOKUP:
+            case MULTI_LOOKUP:
+                long lookupModuleId = -1;
+                FacilioModule lookupModule = null;
+                String specialType = fieldElement.getElement("specialType").getText();
+                String lookupModuleName = fieldElement.getElement("lookupModuleName").getText();
+                String relatedListDisplayName = fieldElement.getElement("relatedListDisplayName").getText();
+                if (StringUtils.isNotEmpty(lookupModuleName)) {
+                    lookupModule = moduleBean.getModule(lookupModuleName);
+                    if (lookupModule != null) lookupModuleId = lookupModule.getModuleId();
+                }
+
+                if (dataTypeInt == FieldType.LOOKUP.getTypeAsInt() ) {
+                    facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldProp, LookupField.class);
+                    ((LookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
+                    ((LookupField) facilioField).setLookupModuleId(lookupModuleId);
+                    ((LookupField) facilioField).setLookupModule(lookupModule);
+                    ((LookupField) facilioField).setSpecialType(specialType);
+                } else {
+                    facilioField = (MultiLookupField) FieldUtil.getAsBeanFromMap(fieldProp, MultiLookupField.class);
+                    ((MultiLookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
+                    ((MultiLookupField) facilioField).setLookupModuleId(lookupModuleId);
+                    ((MultiLookupField) facilioField).setLookupModule(lookupModule);
+                    ((MultiLookupField) facilioField).setSpecialType(specialType);
+                }
+                break;
+
+            case CURRENCY_FIELD:
+                facilioField = (CurrencyField) FieldUtil.getAsBeanFromMap(fieldProp, CurrencyField.class);
+                break;
+
+            default:
+                facilioField = (FacilioField) FieldUtil.getAsBeanFromMap(fieldProp, FacilioField.class);
+                break;
+        }
+        return facilioField;
+    }
+
+    private static List<EnumFieldValue<Integer>> getEnumFieldValues(XMLBuilder valuesBuilder) {
+        if (valuesBuilder == null) {
+            return null;
+        }
+
+        List<EnumFieldValue<Integer>> enumFieldValues = new ArrayList<>();
+
+        List<XMLBuilder> allValues = valuesBuilder.getElementList(PackageConstants.VALUE_ELEMENT);
+        for (XMLBuilder xmlBuilder : allValues) {
+            String value = xmlBuilder.getElement("value").getText();
+            Integer index = Integer.valueOf(xmlBuilder.getElement("index").getText());
+            int sequence = Integer.parseInt(xmlBuilder.getElement("sequence").getText());
+            boolean visible = Boolean.parseBoolean(xmlBuilder.getElement("visible").getText());
+
+            EnumFieldValue<Integer> enumFieldValue = new EnumFieldValue<>(index, value, sequence, visible);
+            enumFieldValues.add(enumFieldValue);
+        }
+
+        return enumFieldValues;
+    }
+
+    private static List<DayOfWeek> getDaysOfWeek(XMLBuilder valuesBuilder) {
+        if (valuesBuilder == null) {
+            return null;
+        }
+
+        List<DayOfWeek> dayOfWeeks = new ArrayList<>();
+
+        List<XMLBuilder> allValues = valuesBuilder.getElementList(PackageConstants.VALUE_ELEMENT);
+        for (XMLBuilder xmlBuilder : allValues) {
+            String value = xmlBuilder.getElement("value").getText();
+            DayOfWeek dayOfWeek = DayOfWeek.valueOf(value);
+            dayOfWeeks.add(dayOfWeek);
+        }
+
+        return dayOfWeeks;
+    }
+
     public static void deleteV3OldRecordFromTargetOrg(String moduleName, Map<String, Long> sourceOrgComponentUIdVsId , List<Long> targetOrgComponentIds) throws Exception {
         if (CollectionUtils.isNotEmpty(targetOrgComponentIds) && MapUtils.isNotEmpty(sourceOrgComponentUIdVsId)) {
             targetOrgComponentIds.removeAll(sourceOrgComponentUIdVsId.values());
@@ -1460,6 +1962,24 @@ public class PackageBeanUtil {
             }
         }
     }
+
+    public static FacilioField getFieldFromDB(FacilioModule module, String fieldName) throws Exception {
+        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(fieldsModule.getTableName())
+                .select(Collections.singleton(FieldFactory.getNumberField("fieldId", "FIELDID", fieldsModule)))
+                .andCondition(CriteriaAPI.getCondition("NAME", "name", fieldName, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+        Map<String, Object> fieldObj = selectBuilder.fetchFirst();
+
+        if (MapUtils.isNotEmpty(fieldObj)) {
+            return FieldUtil.getAsBeanFromMap(fieldObj, FacilioField.class);
+        }
+        return null;
+    }
+
     public static List<Map<String, Object>> addEMailAttachments(XMLBuilder element) throws Exception {
         XMLBuilder attachmentListElement = element.getElement(PackageConstants.EmailConstants.ATTACHMENT_LIST);
         List<Map<String, Object>> attachmentList = new ArrayList<>();

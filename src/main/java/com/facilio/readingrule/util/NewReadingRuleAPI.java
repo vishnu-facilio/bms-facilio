@@ -21,6 +21,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -48,14 +49,6 @@ import static com.facilio.modules.FieldFactory.getStringField;
 
 @Log4j
 public class NewReadingRuleAPI {
-
-    // TODO refactor the entire api for NewReadingRules module
-    public static class RuleReadingsConstant {
-        public static String RULE_READING_RESULT = "ruleResult";
-        public static String RULE_READING_INFO = "info";
-        public static String RULE_READING_ENERGY_IMPACT = "energyImpact";
-        public static String RULE_READING_COST_IMPACT = "costImpact";
-    }
 
     public static final String READING_RULE_FIELD_TABLE_NAME = "Rule_Readings";
 
@@ -144,9 +137,9 @@ public class NewReadingRuleAPI {
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getIdCondition(ruleId, modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
+                CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
         if (CollectionUtils.isNotEmpty(rules)) {
-            return rules.get(0);
+             return rules.get(0);
         }
         throw new IllegalArgumentException("Invalid Rule Id");
     }
@@ -156,7 +149,7 @@ public class NewReadingRuleAPI {
         String search = null;
         int page = 0, perPage = 50;
         String orderBy = null, orderType = null;
-        if (paramsMap != null) {
+        if(paramsMap != null){
             page = (int) paramsMap.get("page");
             perPage = (int) paramsMap.get("perPage");
             search = (String) paramsMap.get("search");
@@ -165,7 +158,7 @@ public class NewReadingRuleAPI {
                 orderType = (String) paramsMap.get("orderType");
             }
         }
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null, null);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null,null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
@@ -372,5 +365,46 @@ public class NewReadingRuleAPI {
         if(category != null) {
             rule.setCategory(new ResourceCategory<>(type, category));
         }
+    }
+
+
+    private static List<Map<String, Object>> getNewReadingRule(List<Condition> conditions) throws Exception {
+
+        String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
+        ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getNewReadingRuleFields())
+                .table(bean.getModule(moduleName).getTableName());
+
+        if (CollectionUtils.isNotEmpty(conditions)) {
+            Criteria criteria = new Criteria();
+            criteria.addAndConditions(conditions);
+            selectBuilder.andCriteria(criteria);
+        }
+
+        List<Map<String, Object>> maps = selectBuilder.get();
+        return maps;
+    }
+
+
+    public static String getNewReadingRuleLinkNameWithRuleId(Long ruleId) throws Exception {
+
+        List<Condition> builderConditions = new ArrayList<>();
+        builderConditions.add(CriteriaAPI.getCondition("ID", "id", String.valueOf(ruleId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> maps = getNewReadingRule(builderConditions);
+        if (CollectionUtils.isNotEmpty(maps)) {
+            List<String> linkNames = maps.stream().map(m -> (String) m.get("linkName")).collect(Collectors.toList());
+            return linkNames.get(0);
+        }
+        return null;
+    }
+
+    public static class RuleReadingsConstant {
+        public static String RULE_READING_RESULT = "ruleResult";
+        public static String RULE_READING_INFO = "info";
+        public static String RULE_READING_ENERGY_IMPACT = "energyImpact";
+        public static String RULE_READING_COST_IMPACT = "costImpact";
     }
 }

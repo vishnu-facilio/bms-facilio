@@ -62,6 +62,10 @@ public enum ComponentType implements FacilioIntEnum {
     GLOBAL_VARIABLE(GlobalVariablePackageBeanImpl.class,MODULE,false),
     SLA_ENTITY(SLAEntityPackageBeanImpl.class,MODULE,false),
     SLA_POLICY(SLAPackageBeanImpl.class,MODULE,false),
+    FAULT_IMPACT(FaultImpactPackageBeanImpl.class,MODULE,Boolean.FALSE),
+    READING_RULE(ReadingRulePackageBeanImpl.class,MODULE,Boolean.TRUE),
+    READING_KPI(ReadingKpiPackageBeanImpl.class, MODULE,Boolean.FALSE),
+    ASSET_READINGS(ReadingsPackageBeanImpl.class,MODULE,Boolean.FALSE),
     CONNECTOR(ConnectorPackageBeanImpl.class,null,false)
     ;
 
@@ -85,6 +89,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(SPACE_CATEGORY);
             add(FIELD);
             add(SITE);
+            add(ASSET_READINGS);
             add(NAMED_CRITERIA);
             add(FUNCTION_NAMESPACE);
             add(FUNCTION);
@@ -115,6 +120,9 @@ public enum ComponentType implements FacilioIntEnum {
             add(GLOBAL_VARIABLE);
             add(SLA_ENTITY);
             add(SLA_POLICY);
+            add(FAULT_IMPACT);
+            add(READING_RULE);
+            add(READING_KPI);
             add(CONNECTOR);
         }};
         return componentOrder;

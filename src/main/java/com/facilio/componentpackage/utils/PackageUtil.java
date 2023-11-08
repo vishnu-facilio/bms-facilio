@@ -42,6 +42,7 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail/Name vs PeopleId
     private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail/Name
     private static ThreadLocal<Map<String, String>> PEOPLE_OLD_VS_NEW_MAIL = ThreadLocal.withInitial(HashMap::new);                 // People oldMail vs newMail from AdminTool
+    private static ThreadLocal<Map<String, Map<Long, List<FacilioField>>>> ASSET_CATEGORY_ID_VS_READING_FIELDS = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
     private static ThreadLocal<String> PACKAGE_ROOT_PATH = new ThreadLocal<>();         // Root folder path
 
@@ -49,7 +50,7 @@ public class PackageUtil {
         isInstallThread.set(true);
     }
 
-    public static Boolean isInstallThread() throws Exception {
+    public static Boolean isInstallThread(){
         return isInstallThread.get();
     }
 
@@ -116,7 +117,7 @@ public class PackageUtil {
         Map<String, String> ticketStatusIdVsNameForModule = getTicketStatusIdVsNameForModule(moduleName);
         ticketStatusIdVsNameForModule.putAll(records);
     }
-    
+
     public static Map<String, String> getTicketStatusNameVsIdForModule(String moduleName) {
         return TICKET_STATUS_CONF_FOR_CONTEXT.get().computeIfAbsent(moduleName, k -> new HashMap<>());
     }
@@ -124,6 +125,15 @@ public class PackageUtil {
     public static void addTicketStatusNameVsIdForModule(String moduleName, Map<String, String> records) {
         Map<String, String> ticketStatusNameVsIdForModule = getTicketStatusNameVsIdForModule(moduleName);
         ticketStatusNameVsIdForModule.putAll(records);
+    }
+
+    public static Map<Long, List<FacilioField>> getAssetCategoryIdVsReadingFields(String moduleName) {
+        return ASSET_CATEGORY_ID_VS_READING_FIELDS.get().computeIfAbsent(moduleName, k -> new HashMap<>());
+    }
+
+    public static void addAssetCategoryIdVsReadingFields(String moduleName, Map<Long, List<FacilioField>> records) {
+        Map<Long, List<FacilioField>> assetCategoryIdVsReadingFields = getAssetCategoryIdVsReadingFields(moduleName);
+        assetCategoryIdVsReadingFields.putAll(records);
     }
 
     public static long getPeopleId(String peopleMail) {
@@ -207,6 +217,7 @@ public class PackageUtil {
         PICKLIST_CONF_FOR_CONTEXT.remove();
         TICKET_STATUS_CONF_FOR_XML.remove();
         TICKET_STATUS_CONF_FOR_CONTEXT.remove();
+        ASSET_CATEGORY_ID_VS_READING_FIELDS.remove();
 
         USER_CONFIG_FOR_XML.remove();
         USER_CONFIG_FOR_CONTEXT.remove();

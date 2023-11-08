@@ -2451,17 +2451,18 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField("name", "Name", "NAME", module, FieldType.STRING, true));
         fields.add(getDefaultField("description", "Description", "DESCRIPTION", module, FieldType.STRING));
         fields.add(getDefaultField("alarmType", "Applied To", "ALARM_APPLIED_TO", module, FieldType.NUMBER));
-        fields.add(getDefaultField("createdTime", "Created Time", "CREATED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField("createdBy", "Created By", "CREATED_BY", module, FieldType.NUMBER));
-        fields.add(getDefaultField("modifiedTime", "Modified Time", "MODIFIED_TIME", module, FieldType.NUMBER));
-        fields.add(getDefaultField("modifiedBy", "Modified By", "MODIFIED_BY", module, FieldType.NUMBER));
+        fields.add(getDefaultField("linkName", "Link Name", "LINK_NAME", module, FieldType.STRING));
+        fields.add(getDefaultField("createdTime", "Sys Created Time", "SYS_CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField("createdBy", "Created By", "SYS_CREATED_BY", module, FieldType.NUMBER));
+        fields.add(getDefaultField("modifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getDefaultField("modifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.NUMBER));
         fields.add(getDefaultField("status", "Status", "STATUS", module, FieldType.BOOLEAN));
         fields.add(getDefaultField("readingModuleId", "Reading Module Id", "READING_MODULE_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("readingFieldId", "Reading Field Id", "READING_FIELD_ID", module, FieldType.NUMBER));
-        fields.add(getDefaultField("workflowId", "WORKFLOW ID", "WORKFLOW_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("assetCategoryId", "Asset Category Id", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("impactId", "Impact Id", "IMPACT_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("autoClear", "Auto Clear", "AUTO_CLEAR", module, FieldType.BOOLEAN));
+        fields.add(getDefaultField("moduleId", "Module Id", "MODULEID", module, FieldType.NUMBER));
         return fields;
     }
 
@@ -7638,6 +7639,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSiteIdField(module));
         fields.add(getNameField(module));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("metricId", "METRIC_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("metricName", "METRIC_NAME", module, FieldType.STRING));

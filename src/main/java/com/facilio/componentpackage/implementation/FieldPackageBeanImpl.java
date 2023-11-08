@@ -72,36 +72,9 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
     @Override
     public void convertToXMLComponent(FacilioField facilioField, XMLBuilder fieldElement) throws Exception {
-        fieldElement.element(PackageConstants.NAME).text(facilioField.getName());
-        fieldElement.element(PackageConstants.DISPLAY_NAME).text(facilioField.getDisplayName());
-        fieldElement.element(PackageConstants.MODULENAME).text(facilioField.getModule().getName());
-        fieldElement.element(FieldXMLConstants.REQUIRED).text(String.valueOf(facilioField.isRequired()));
-        fieldElement.element(FieldXMLConstants.IS_DEFAULT).text(String.valueOf(facilioField.isDefault()));
-        fieldElement.element(FieldXMLConstants.DATA_TYPE).text(String.valueOf(facilioField.getDataType()));
-        fieldElement.element(FieldXMLConstants.MAIN_FIELD).text(String.valueOf(facilioField.isMainField()));
-        fieldElement.element(FieldXMLConstants.DISPLAY_TYPE).text(String.valueOf(facilioField.getDisplayTypeInt()));
-
-        Map<String, Object> additionalFieldProps = fetchAdditionalFieldProps(facilioField);
-        for (Map.Entry<String, Object> entry : additionalFieldProps.entrySet()) {
-            String key = entry.getKey();
-            Object value = entry.getValue();
-            value = (value == null) ? "" : value;
-
-            if (value instanceof List) {
-                XMLBuilder valuesListElement = fieldElement.element(key);
-                for (Map<String, Object> keyValuePair : (List<Map<String, Object>>) value) {
-                    XMLBuilder valueElement = valuesListElement.element(PackageConstants.VALUE_ELEMENT);
-                    for (Map.Entry<String, Object> specialProp : keyValuePair.entrySet()) {
-                        String specialPropKey = specialProp.getKey();
-                        Object specialPropValue = specialProp.getValue();
-                        valueElement.element(specialPropKey).text(String.valueOf(specialPropValue));
-                    }
-                }
-            } else {
-                fieldElement.element(key).text(String.valueOf(value));
-            }
-        }
+        PackageBeanUtil.convertFacilioFieldToXML(facilioField, fieldElement);
     }
+
 
     @Override
     public Map<String, String> validateComponentToCreate(List<XMLBuilder> components) throws Exception {
@@ -161,9 +134,9 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 continue;
             }
 
-            FacilioField field = getFieldFromDB(module, fieldName);
+            FacilioField field = PackageBeanUtil.getFieldFromDB(module, fieldName);
             if (fieldName.equals("id") || fieldName.equals("siteId")) {
-                field = getFieldFromDB(module, fieldName);
+                field = PackageBeanUtil.getFieldFromDB(module, fieldName);
             }
             if (field != null) {
                 uniqueIdentifierVsFieldId.put(uniqueIdentifier, field.getFieldId());
@@ -183,7 +156,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder fieldElement = idVsData.getValue();
-            FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
+            FacilioField facilioField = PackageBeanUtil.getFieldFromXMLComponent(fieldElement);
             String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
 
             if (StringUtils.isNotEmpty(moduleName) && !moduleNameVsFields.containsKey(moduleName)) {
@@ -232,7 +205,7 @@ public class FieldPackageBeanImpl implements PackageBean<FacilioField> {
                 FacilioField dbField = null;
                 XMLBuilder fieldElement = uniqueIdentifierVsComponent.getValue();
                 String moduleName = fieldElement.getElement(PackageConstants.MODULENAME).getText();
-                FacilioField facilioField = getFieldFromXMLComponent(fieldElement);
+                FacilioField facilioField = PackageBeanUtil.getFieldFromXMLComponent(fieldElement);
                 facilioField.setFieldId(fieldId);
 
                 // set additional details for EnumFieldValues

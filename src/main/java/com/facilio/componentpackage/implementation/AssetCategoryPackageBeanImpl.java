@@ -29,12 +29,12 @@ import java.util.*;
 public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategoryContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
-        return getAssetCategoryIdVsModuleId(true);
+        return PackageBeanUtil.getAssetCategoryIdVsModuleId(true);
     }
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return getAssetCategoryIdVsModuleId(false);
+        return PackageBeanUtil.getAssetCategoryIdVsModuleId(false);
     }
 
     @Override
@@ -230,21 +230,6 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     }
     public void updateAssetCategory(V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
         V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.ASSET_CATEGORY, v3AssetCategoryContext.getId(), FieldUtil.getAsJSON(v3AssetCategoryContext), null, null, null, null, null,null,null, null,null);
-    }
-    public Map<Long, Long> getAssetCategoryIdVsModuleId(Boolean fetchSystem) throws Exception {
-        Map<Long, Long> assetCategoryIdVsModuleId = new HashMap<>();
-        ModuleBean modBean = Constants.getModBean();
-        FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
-        criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
-        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class, false);
-        if (CollectionUtils.isNotEmpty(props)) {
-            for (V3AssetCategoryContext prop : props) {
-                assetCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());
-            }
-        }
-        return assetCategoryIdVsModuleId;
     }
 
 }

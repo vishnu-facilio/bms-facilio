@@ -1,5 +1,7 @@
 package com.facilio.readingkpi.commands.create;
 
+import com.facilio.bmsconsole.context.KPICategoryContext;
+import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -41,11 +43,25 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                     kpi.setReadingFieldId(null);
                     kpi.setReadingModuleId(null);
                 }
+                if(kpi.getCategoryId() == null) { //TODO: should be delete this code
+                    kpi.setCategoryId(kpi.getAssetCategoryId());
+                }
                 setReadingParent(kpi, context);
+                addKpiCategory(kpi);
                 ReadingKpiAPI.setCategory(kpi);
             }
         }
         return false;
+    }
+
+    private void addKpiCategory(ReadingKPIContext kpi) throws Exception {
+        if (kpi.getKpiCategory() == null && kpi.getKpiCategoryStr() != null) {
+            KPICategoryContext kpiCategory = new KPICategoryContext();
+            kpiCategory.setName(kpi.getKpiCategoryStr());
+
+            KPIUtil.addKPICategoryContext(kpiCategory);
+            kpi.setKpiCategory(kpiCategory.getId());
+        }
     }
 
     private void addReadingRelatedFieldsAndDataToContext(Context context, ReadingKPIContext kpi, String kpiName) {

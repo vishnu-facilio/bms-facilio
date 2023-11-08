@@ -24,12 +24,22 @@ public class NamespaceFieldRelated {
 
     AggregationType relAggregationType; // related fields aggregation type
 
+    public NamespaceFieldRelated() {
+
+    }
+
     public void setRelAggregationType(AggregationType relAggregationType) {
         this.relAggregationType = relAggregationType;
         this.relAggregationTypeInt = relAggregationType.getIndex();
     }
 
     Integer relAggregationTypeInt;
+
+    public NamespaceFieldRelated(RelationMappingContext relMapContext, Criteria criteria, AggregationType relAggregationType) {
+        this.relMapContext = relMapContext;
+        this.criteria = criteria;
+        this.relAggregationType = relAggregationType;
+    }
 
     public void setRelAggregationTypeInt(int relAggregationTypeInt) {
         if (relAggregationType != null) {

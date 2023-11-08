@@ -36,6 +36,7 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
     private String name;
     private String description;
     private Long kpiCategory;
+    String kpiCategoryStr;
     private NamespaceFrequency frequency;
     private KPIType kpiType;
     private String customUnit;

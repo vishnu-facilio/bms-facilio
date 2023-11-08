@@ -28,8 +28,11 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.V3Context;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -1732,6 +1735,13 @@ public class AssetsAPI {
 
 		ruleBuilder.select(Collections.singletonList(FieldFactory.getIdField(module)));
 		return (long) ruleBuilder.fetchFirst().get("id");
+	}
+
+	public static List<V3AssetCategoryContext> getAssetCategories(List<Long> ids) throws Exception {
+		String moduleName = FacilioConstants.ContextNames.ASSET_CATEGORY;
+		FacilioContext summary = V3Util.getSummary(moduleName, ids);
+		List<V3AssetCategoryContext> assetCategoryList = Constants.getRecordListFromContext(summary, moduleName);
+		return assetCategoryList;
 	}
 }
 

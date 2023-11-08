@@ -55,6 +55,8 @@ public class PackageConstants {
 
     public static final String TYPE_STRING = "typeString";
     public static final String CONSTANT = "constant";
+    public static final String LINK_NAME="linkName";
+    public static final String STATUS="status";
     public static final String CSV_FILE_EXTN = "csv";
     public static final String DATA_FOLDER_NAME = "datas";
     public static final String DATA_ATTACHMENT_FILE_FOLDER_NAME = "dataAttachmentFiles";
@@ -435,6 +437,8 @@ public class PackageConstants {
         public static final String PARENT_CATEGORY_NAME = "Parent_Category_Name";
         public static final String ASSET_MODULE_NAME = "Asset_Module_Name";
         public static final String IS_DEFAULT = "Is_Default";
+        public static final String DESCRIPTION="Description";
+        public static final String ASSET_CATEGORY="AssetCategory";
 
     }
     public static class CustomButtonConstants{
@@ -551,8 +555,9 @@ public class PackageConstants {
         public static final String SITE_NAME = "Site_Name";
         public static final String EMAIL = "Email";
         public static final String PHONE = "Phone";
-        public static final String PEOPLE_GROUP_MEMBERS = "People_Group_Members";
+        public static final String PEOPLE_GROUP_MEMBER = "People_Group_Member";
         public static final String IS_ACTIVE = "Is_Active";
+        public static final String PEOPLE_GROUP_MEMBERS = "People_Group_Members";
     }
     public static class PeopleGroupMembersConstants {
         public static final String PEOPLE = "People";
@@ -583,6 +588,56 @@ public class PackageConstants {
         public static final String FILTER_CRITERIA = "Filter_Criteria";
         public static final String FORM_FIELD_DISPLAY_NAME = "Form_Field_Display_Name";
     }
+
+    public static class ReadingKPIConstants{
+        public static final String FREQUENCY="Frequency";
+        public static final String KPI_CATEGORY="KPI_Category";
+        public static final String METRIC_UNIT="Metric_Unit";
+        public static final String UNIT="Unit";
+        public static final String KPI_TYPE="KPI_Type";
+        public static final String RESOURCE_TYPE="Resource_Type";
+
+    }
+
+    public static class NameSpaceConstants {
+        public static final String NAMESPACE = "Namespace";
+        public static final String NAMESPACE_FIELD = "Namespace_Fields";
+        public static final String EXEC_INTERVAL = "execInterval";
+        public static final String NS_TYPE = "type";
+        public static final String INCLUDED_ASSETS = "Included_AssetIds";
+        public static final String VAR_NAME = "varName";
+        public static final String AGG_TYPE = "aggregationType";
+        public static final String DATA_INTERVAL = "dataInterval";
+        public static final String NS_FIELD_TYPE = "nsFieldType";
+        public static final String RELATED_READINGS = "Related_Readings";
+        public static final String RELATED_INFO = "Related_Info";
+        public static final String RELATION_AGG_TYPE = "relAggregationType";
+        public static final String FIELD_NAME = "fieldName";
+
+    }
+
+    public static class ReadingRuleConstants {
+        public static final String ALARM_DETAILS = "Alarm_Details";
+        public static final String MESSAGE = "message";
+        public static final String SEVERITY = "severity";
+        public static final String FAULT_TYPE = "faultType";
+        public static final String PROBLEM = "problem";
+        public static final String POSSIBLE_CAUSES = "possibleCauses";
+        public static final String RECOMMENDATIONS = "recommendations";
+        public static final String RCA_CONDITIONS = "RCA_Conditions";
+        public static final String RCA_GROUPS = "Groups";
+        public static final String RCA = "Root_Cause";
+        public static final String DATA_SET_INTERVAL = "dataSetInterval";
+        public static final String RULE_INTERVAL = "ruleInterval";
+        public static final String RCA_RULE_IDS = "RCA_RuleIds";
+        public static final String AUTO_CLEAR = "autoClear";
+    }
+
+    public static class FaultImpactConstants {
+        public static final String PM_ASSIGNMENT_TYPE = "PMAssignment_Type";
+        public static final String FAULT_IMPACT = "faultImpact";
+    }
+
 
     public static class UserConstants {
         public static final String ROLE = "Role";

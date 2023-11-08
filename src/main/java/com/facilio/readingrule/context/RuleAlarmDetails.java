@@ -46,7 +46,7 @@ public class RuleAlarmDetails implements Serializable {
 
     public void setPossibleCausesStr(String possibleCausesStr) throws ParseException {
         List<String> causes = new ArrayList<>();
-        if (possibleCausesStr != null) {
+        if (possibleCausesStr != null && !possibleCausesStr.isEmpty()) {
             JSONParser parser = new JSONParser();
             JSONArray arr = (JSONArray) parser.parse(possibleCausesStr);
             for (int i = 0; i < arr.size(); i++) {
@@ -58,7 +58,7 @@ public class RuleAlarmDetails implements Serializable {
 
     public void setPossibleCauses(List<String> possibleCauses) {
         this.possibleCauses = possibleCauses;
-        if (possibleCauses != null) {
+        if (possibleCauses != null ) {
             JSONArray arr = new JSONArray();
             for (String el : possibleCauses) {
                 arr.add(el);
@@ -72,7 +72,7 @@ public class RuleAlarmDetails implements Serializable {
 
     public void setRecommendationsStr(String recommendationsStr) throws ParseException {
         List<String> recoms = new ArrayList<>();
-        if (recommendationsStr != null) {
+        if (recommendationsStr != null && !recommendationsStr.isEmpty()) {
             JSONParser parser = new JSONParser();
             JSONArray arr = (JSONArray) parser.parse(recommendationsStr);
             for (int i = 0; i < arr.size(); i++) {

@@ -72,6 +72,8 @@ import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatus
 import com.facilio.faults.LoadOccurrenceForAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.connected.commands.AddExecutorCommand;
+import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.ns.command.*;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
 import com.facilio.permission.commands.AddOrUpdatePermissionSet;
@@ -79,6 +81,7 @@ import com.facilio.permission.commands.DeletePermissionSetCommand;
 import com.facilio.permission.commands.FetchPermissionSetCommand;
 import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 
+import com.facilio.readingkpi.commands.create.SetFieldAndModuleCommand;
 import com.facilio.readingrule.command.*;
 
 import com.facilio.utility.commands.*;
@@ -265,12 +268,10 @@ import com.facilio.ns.command.AddNamespaceFieldsCommand;
 import com.facilio.ns.command.SetParentIdForNamespaceCommand;
 import com.facilio.qa.command.BaseSchedulerSingleInstanceCommand;
 import com.facilio.readingkpi.commands.create.PrepareReadingKpiCreationCommand;
-import com.facilio.readingkpi.commands.create.SetFieldAndModuleIdCommand;
 import com.facilio.readingkpi.commands.list.AddNamespaceInKpiListCommand;
 import com.facilio.readingkpi.commands.list.FetchMetricAndUnitCommand;
 import com.facilio.readingkpi.commands.update.PrepareReadingKpiForUpdateCommand;
 import com.facilio.readingkpi.commands.update.UpdateNamespaceAndFieldsCommand;
-import com.facilio.ns.command.UpdateNamespaceCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactAfterSaveCommand;
 import com.facilio.readingrule.faultimpact.command.FaultImpactBeforeSaveCommand;
 import com.facilio.readingrule.rca.command.AddRCAGroupCommand;
@@ -295,6 +296,7 @@ import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
+import org.apache.commons.lang3.BooleanUtils;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -2646,7 +2648,8 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addReadingKpi() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new PrepareReadingKpiCreationCommand());
-        chain.addCommand(new SetFieldAndModuleIdCommand());
+        chain.addCommand(new AddReadingCategoryCommand());
+        chain.addCommand(new SetFieldAndModuleCommand());
         return chain;
     }
 
@@ -3128,7 +3131,8 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
-    public static FacilioChain addReadingRuleChain() {
+
+    public static FacilioChain addReadingRuleChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReadingRuleDependenciesCommand());
         c.addCommand(addRuleReadingsModuleChain());
@@ -3139,9 +3143,16 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addRuleReadingsModuleChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddRuleReadingsModuleCommand());
-        c.addCommand(getAddCategoryReadingChain());
+        c.addCommand(addConnectedReadingModulesCommand());
         return c;
     }
+
+    private static FacilioChain addConnectedReadingModulesCommand() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddReadingCategoryCommand());
+        return c;
+    }
+
 
     public static FacilioChain afterSaveReadingRuleChain() {
         FacilioChain c = getDefaultChain();

@@ -16,6 +16,7 @@ import org.apache.commons.collections.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+
 @Log4j
 public class AddNewReadingRuleCommand extends FacilioCommand {
 
@@ -24,26 +25,34 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<NewReadingRuleContext> list = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(list)) {
+        if (CollectionUtils.isNotEmpty(list)) {
             for (NewReadingRuleContext readingRule : list) {
-
-                FacilioModule readingModule = Constants.getModBean().getModule((Long) context.get(FacilioConstants.ContextNames.MODULE_ID));
-                readingRule.setReadingModuleId(readingModule.getModuleId());
-                readingRule.setReadingFieldId(getReadingFieldId(context));
-
-                readingRule.setLinkName(readingModule.getName());
+                setReadingModuleNdField(context, readingRule);
 
                 if (readingRule.getImpact() != null) {
                     readingRule.setImpactId(readingRule.getImpact().getId());
                 }
                 readingRule.setStatus(Boolean.TRUE);
                 readingRule.setAutoClear(Boolean.TRUE);
-                
+
                 context.put(NamespaceConstants.NAMESPACE, readingRule.getNs());
                 context.put(FacilioConstants.ContextNames.ASSETS, readingRule.getMatchedResources());
             }
         }
         return Boolean.FALSE;
+    }
+
+    private void setReadingModuleNdField(Context context, NewReadingRuleContext readingRule) throws Exception {
+        FacilioModule module;
+        if (context.get(FacilioConstants.ContextNames.MODULE_ID) != null) {
+            module = Constants.getModBean().getModule((Long) context.get(FacilioConstants.ContextNames.MODULE_ID));
+            readingRule.setReadingModuleId(module.getModuleId());
+            readingRule.setReadingFieldId(getReadingFieldId(context));
+        } else {
+            module = Constants.getModBean().getModule(readingRule.getReadingModuleId());
+        }
+        readingRule.setLinkName(module.getName());
+
     }
 
     private Long getReadingFieldId(Context ctx) throws Exception {
