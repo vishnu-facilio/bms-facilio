@@ -1,5 +1,6 @@
 package com.facilio.fields;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fields.fieldBuilder.FieldConfig;
@@ -706,6 +707,9 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getSiteFieldsConfig(){
         return () -> new FieldConfig()
 
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.FSM, Arrays.asList("territory"))
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.CLIENT, Arrays.asList("client"))
+
                 .sortFields()
                 .add(FieldsConfigList.SITE_FIELDS_INCLUDE)
                 .done()
@@ -717,6 +721,39 @@ public class APIFieldsConfig {
                 .viewFields()
                 .addFixedFields(FieldsConfigList.SITE_VIEW_FIXED_FIELDS)
                 .add(FieldsConfigList.SITE_VIEW_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("territory"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("territory"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("territory"))
+                .appFieldConfigDone()
+
+                .addConfigForDomain(AppDomain.AppDomainType.TENANT_PORTAL)
+                .skipFields(Arrays.asList("territory"))
+                .domainFieldConfigDone()
+
+                .addConfigForDomain(AppDomain.AppDomainType.VENDOR_PORTAL)
+                .skipFields(Arrays.asList("territory"))
+                .domainFieldConfigDone()
+
+                .addConfigForDomain(AppDomain.AppDomainType.SERVICE_PORTAL)
+                .skipFields(Arrays.asList("territory"))
+                .domainFieldConfigDone()
+
+                .addConfigForDomain(AppDomain.AppDomainType.CLIENT_PORTAL)
+                .skipFields(Arrays.asList("territory"))
+                .domainFieldConfigDone()
+
+                .addConfigForDomain(AppDomain.AppDomainType.EMPLOYEE_PORTAL)
+                .skipFields(Arrays.asList("territory"))
+                .domainFieldConfigDone()
+
                 .done();
     }
 

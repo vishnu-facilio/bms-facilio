@@ -228,7 +228,8 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 				<param name="excludeNullProperties">true</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 
 		<action name="attachments"
@@ -8240,29 +8241,34 @@
 		<action name="getBaseSpaceChildren"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getBaseSpaceDirectChildren">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 	</package>
 	<package name="portfolioApiV2" namespace="/api/v2/portfolio" extends="v2Api">
 		<action name="cards"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getPortfolioCardData">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 		<action name="search"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getSearchResult">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 		<action name="tree"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="fetchParentNodes">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 		<action name="boundedSpaces"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getBoundedSpaces">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 	</package>
 
@@ -8271,17 +8277,20 @@
 			<param name="deprecated">true</param>
 		</action>
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" >
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" >
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 	</package>
 
 	<!--	to remove after client code change-->
 	<package name="baseSpaceTreeApiV2" namespace="/api/v2/basespace/tree" extends="v2Api">
 		<action name="fetchParentNodes" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="fetchParentNodes" >
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 	</package>
 

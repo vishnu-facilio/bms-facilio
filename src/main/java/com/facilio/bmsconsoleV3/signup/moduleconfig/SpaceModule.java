@@ -258,8 +258,11 @@ public class SpaceModule extends BaseModuleConfig {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
             if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)){
                 appNameVsPage.put(appName, createEnergyAppSpaceDefaultPage(app, module, true, false));
-            }
-            else {
+            }else  if(appName.equals(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)){
+                appNameVsPage.put(appName, createRemoteMonitoringAppSpaceDefaultPage(app, module, true, false));
+            }else if(appName.equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.FSM_APP)){
+                appNameVsPage.put(appName, createFSMAppSpaceDefaultPage(app, module, true, false));
+            }else {
                 appNameVsPage.put(appName, createSpaceDefaultPage(app, module, true, false));
             }
         }
@@ -288,9 +291,11 @@ public class SpaceModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .addSection("spaceInsights","",null)
-                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_7",0,0,spaceParam,null)
+                .addWidget("spaceLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
                 .widgetDone()
-                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_5",7,0,null,null)
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -345,10 +350,161 @@ public class SpaceModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
-                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("classification", null, null)
                 .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("spaceRelatedlist", "Related List", "List of related records across modules")
+                .addWidget("spacerelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("spaceActivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+                .pageDone().getCustomPages();
+    }
+    private List<PagesContext> createRemoteMonitoringAppSpaceDefaultPage(ApplicationContext app,FacilioModule module,boolean isDefault,boolean isTemplate) throws Exception{
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.SPACE_ACTIVITY);
+
+        JSONObject spaceParam = new JSONObject();
+        spaceParam.put("moduleName","space");
+        spaceParam.put("parentName","space");
+
+        JSONObject notesModuleParam = new JSONObject();
+        notesModuleParam.put(FacilioConstants.ContextNames.NOTES_MODULE_NAME,"basespacenotes");
+
+        JSONObject attachmentModuleParam = new JSONObject();
+        attachmentModuleParam.put(FacilioConstants.ContextNames.ATTACHMENTS_MODULE_NAME,"basespaceattachments");
+
+        return new ModulePages()
+                .addPage("spaceDefaultPage","Default Space Page","",null,isTemplate,isDefault,true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Space details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("spaceInsights","",null)
+                .addWidget("spaceLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
+                .widgetDone()
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("subSpaces","Sub Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("subspaces","",null)
+                .addWidget("subspaces","Sub Spaces", PageWidget.WidgetType.SUB_SPACES,"flexibleWebSubSpaces_7",0,0,spaceParam,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("spaceRelatedlist", "Related List", "List of related records across modules")
+                .addWidget("spacerelated", "Related", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("activity", null, null)
+                .addWidget("spaceActivity", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+                .pageDone().getCustomPages();
+    }
+    private List<PagesContext> createFSMAppSpaceDefaultPage(ApplicationContext app,FacilioModule module,boolean isDefault,boolean isTemplate) throws Exception{
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.SPACE_ACTIVITY);
+
+        JSONObject spaceParam = new JSONObject();
+        spaceParam.put("moduleName","space");
+        spaceParam.put("parentName","space");
+
+        JSONObject notesModuleParam = new JSONObject();
+        notesModuleParam.put(FacilioConstants.ContextNames.NOTES_MODULE_NAME,"basespacenotes");
+
+        JSONObject attachmentModuleParam = new JSONObject();
+        attachmentModuleParam.put(FacilioConstants.ContextNames.ATTACHMENTS_MODULE_NAME,"basespaceattachments");
+
+        return new ModulePages()
+                .addPage("spaceDefaultPage","Default Space Page","",null,isTemplate,isDefault,true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Space details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("spaceInsights","",null)
+                .addWidget("spaceLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
+                .widgetDone()
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false,notesModuleParam,attachmentModuleParam))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("subSpaces","Sub Spaces", PageTabContext.TabType.SIMPLE,true,null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("subspaces","",null)
+                .addWidget("subspaces","Sub Spaces", PageWidget.WidgetType.SUB_SPACES,"flexibleWebSubSpaces_7",0,0,spaceParam,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -402,9 +558,11 @@ public class SpaceModule extends BaseModuleConfig {
                 .widgetDone()
                 .sectionDone()
                 .addSection("spaceInsights","",null)
-                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_7",0,0,spaceParam,null)
+                .addWidget("spaceLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
                 .widgetDone()
-                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_5",7,0,null,null)
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .widgetDone()
+                .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)

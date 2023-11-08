@@ -2530,7 +2530,7 @@
 	<package name="baseSpaceApi" namespace="/api/basespace" extends="homeApi">
 		<action name="children" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="childrenList">
-				<param name="moduleName">space</param>
+				<param name="tabType">PORTFOLIO</param>
 				<param name="permission">READ</param>
 				<result name="success" type="json">
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
@@ -2609,8 +2609,8 @@
 
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.CampusAction"
 				method="getSiteInsights">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
+			<param name="tabType">PORTFOLIO</param>
+			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
 			</result>
@@ -2675,8 +2675,8 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.BuildingAction"
 				method="getSpaceInsights">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
+			<param name="tabType">PORTFOLIO</param>
+			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
 			</result>
@@ -2731,8 +2731,8 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.FloorAction"
 				method="getSpaceInsights">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
+			<param name="tabType">PORTFOLIO</param>
+			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
 			</result>
@@ -2814,8 +2814,8 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.SpaceAction"
 				method="getSpaceInsights">
-			<param name="moduleName">space</param>
-			<param name="permission">READ</param>
+			<param name="tabType">PORTFOLIO</param>
+			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
 			</result>
@@ -3832,7 +3832,8 @@
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^cardResult.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">PORTFOLIO</param>
 		</action>
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">

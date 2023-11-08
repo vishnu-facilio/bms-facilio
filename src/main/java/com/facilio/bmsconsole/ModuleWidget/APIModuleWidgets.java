@@ -460,6 +460,9 @@ public class APIModuleWidgets {
                 .addWidgetConfig("webSpaceInsights_4_7","Space Insights - 4 - 7", WidgetConfigContext.ConfigType.FIXED,4,7, PagesContext.PageLayoutType.WEB)
                 .done()
 
+                .addModuleWidget("spaceLocation","Space Location", PageWidget.WidgetType.SPACE_LOCATION)
+                .done()
+
                 .addModuleWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
                 .addWidgetConfig("webOperatingHours_4_5","Operating Hours - 4 - 5", WidgetConfigContext.ConfigType.FIXED,4,5, PagesContext.PageLayoutType.WEB)
                 .done()
@@ -495,6 +498,9 @@ public class APIModuleWidgets {
                 .addModuleWidget("spaceOperatingHours","Space Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
                 .done()
 
+                .addModuleWidget("spaceLocation","Space Location", PageWidget.WidgetType.SPACE_LOCATION)
+                .done()
+
                 .addModuleWidget("spaces","Spaces", PageWidget.WidgetType.SPACES)
                 .addWidgetConfig("flexibleWebSpaces_7","Spaces - 7", WidgetConfigContext.ConfigType.FLEXIBLE,7,-1, PagesContext.PageLayoutType.WEB)
                 .done()
@@ -528,6 +534,8 @@ public class APIModuleWidgets {
                 .addModuleWidget("spaceOperatingHours","Space Operating Hours", PageWidget.WidgetType.OPERATING_HOURS)
                 .done()
 
+                .addModuleWidget("spaceLocation","Space Location", PageWidget.WidgetType.SPACE_LOCATION)
+                .done()
 
                 .addModuleWidget("floors","Floors", PageWidget.WidgetType.FLOORS)
                 .addWidgetConfig("flexibleWebFloors_7","Floors - 7", WidgetConfigContext.ConfigType.FLEXIBLE,7,-1, PagesContext.PageLayoutType.WEB)

@@ -157,7 +157,7 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
-                    .addTab("safetyplan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.SAFETY_PLAN)
+                    .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("safetyplanhazard", null, null)
                     .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)

@@ -891,6 +891,7 @@ public class NewPermissionUtil {
         }
         switch (tabType) {
             case 1:
+            case 103:
                 return moduleTabType.getOrDefault(action, -1L);
             case 2:
                 return approvalTabType.getOrDefault(action, -1);
