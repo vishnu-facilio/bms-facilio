@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 
 public class FacilioIndexJsp {
     public static final Logger LOGGER = LogManager.getLogger(FacilioIndexJsp.class.getName());
-    public static final String NEW_SERVER_QUERY_PARAM_KEY = "newServer", NEW_SERVER_QUERY_PARAM_VAL = "true";
+    public static final String NEW_SERVER_QUERY_PARAM_KEY = "version", NEW_SERVER_QUERY_PARAM_VAL = "revive";
     public static final String NEW_VERSION_GROUP_NAME = "v2";
 
     public static boolean redirectToNewVersion(HttpServletRequest request) {
