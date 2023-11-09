@@ -24,6 +24,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import javax.swing.text.View;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -56,12 +57,15 @@ public class ControlActionModule extends BaseModuleConfig {
 
         List<ViewField> fields = new ArrayList<>();
         fields.add(new ViewField("name","Name"));
-        fields.add(new ViewField("description","Description"));
-        fields.add(new ViewField("controlActionSourceType","Source"));
-        fields.add(new ViewField("controlActionType","Action Type"));
         fields.add(new ViewField("assetCategory","Asset Category"));
+        fields.add(new ViewField("controlActionType","Action Type"));
+        fields.add(new ViewField("controlActionSourceType","Source"));
         fields.add(new ViewField("scheduledActionDateTime","Schedule Action Time"));
+        fields.add(new ViewField("scheduleActionStatus","Schedule Action Status"));
         fields.add(new ViewField("revertActionDateTime","Revert Action Time"));
+        fields.add(new ViewField("revertActionStatus","Revert Action Status"));
+        fields.add(new ViewField("controlActionExecutionType","Execution Type"));
+        fields.add(new ViewField("controlActionTemplate","Control Action Template"));
         fields.add(new ViewField("controlActionStatus","Status"));
         allView.setFields(fields);
 

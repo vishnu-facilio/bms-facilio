@@ -31,8 +31,8 @@ public class V3ControlActionTemplateContext extends V3ControlActionContext{
     }
 
     public static enum ControlActionTemplateStatus implements FacilioIntEnum {
-        IN_ACTIVE("In Active"),
-        ACTIVE("Active");
+        IN_ACTIVE("UnPublished"),
+        ACTIVE("Published");
         @Override
         public String getValue() {
             return this.name;

@@ -3290,8 +3290,10 @@ public class APIv3Config {
     public static Supplier<V3Config> getCalendarEvent(){
         return () -> new V3Config(V3EventContext.class,null)
                 .create()
+                .beforeSave(TransactionChainFactoryV3.getEventBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getEventAfterCreateChain())
                 .update()
+                .beforeSave(TransactionChainFactoryV3.getEventBeforeSaveChain())
                 .afterSave(TransactionChainFactoryV3.getEventAfterUpdateChain())
                 .afterTransaction(new CalendarSlotCreateCommand())
                 .delete().markAsDeleteByPeople()

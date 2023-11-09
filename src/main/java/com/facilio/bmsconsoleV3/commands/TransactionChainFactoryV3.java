@@ -4212,4 +4212,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new removeDummyAccountCommand());
         return c;
     }
+    public static FacilioChain getEventBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateEventDetailsCommand());
+        return c;
+    }
 }

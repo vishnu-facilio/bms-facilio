@@ -1024,5 +1024,32 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE)
                 .done();
      }           
+    @Module(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME)
+    public static Supplier<FieldConfig> getControlActionFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.CONTROL_ACTION_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.CONTROL_ACTION_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .skip(FieldsConfigList.CONTROL_ACTION_FIELDS_EXCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME)
+    public static Supplier<FieldConfig> getControlActionTemplateFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.CONTROL_ACTION_TEMPLATE_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.CONTROL_ACTION_TEMPLATE_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .skip(FieldsConfigList.CONTROL_ACTION_TEMPLATE_FIELDS_EXCLUDE)
+                .done();
+    }
+
 
 }

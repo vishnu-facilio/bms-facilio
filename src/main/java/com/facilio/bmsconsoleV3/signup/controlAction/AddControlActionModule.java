@@ -70,7 +70,7 @@ public class AddControlActionModule extends SignUpData {
                 FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(sourceType);
 
-        SystemEnumField calendarType = SignupUtil.getSystemEnumField(controlActionModule,"controlActionType","Type","CONTROL_ACTION_TYPE","ControlActionTypeEnum",
+        SystemEnumField calendarType = SignupUtil.getSystemEnumField(controlActionModule,"controlActionType","Action Type","CONTROL_ACTION_TYPE","ControlActionTypeEnum",
                 FacilioField.FieldDisplayType.TEXTBOX,true,false,true,orgId);
         fields.add(calendarType);
 
@@ -79,10 +79,10 @@ public class AddControlActionModule extends SignUpData {
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, true, false, true, orgId);
         fields.add(assetCategoryField);
 
-        FacilioField  scheduledActionDateTime = FieldFactory.getDefaultField("scheduledActionDateTime","Scheduled Action Date Time","SCHEDULED_ACTION_DATE_TIME", FieldType.DATE_TIME);
+        FacilioField  scheduledActionDateTime = FieldFactory.getDefaultField("scheduledActionDateTime","Scheduled Action Time","SCHEDULED_ACTION_DATE_TIME", FieldType.DATE_TIME);
         fields.add(scheduledActionDateTime);
 
-        FacilioField revertActionDateTime = FieldFactory.getDefaultField("revertActionDateTime","Revert Action Date Time","REVERT_ACTION_DATE_TIME",FieldType.DATE_TIME);
+        FacilioField revertActionDateTime = FieldFactory.getDefaultField("revertActionDateTime","Revert Action Time","REVERT_ACTION_DATE_TIME",FieldType.DATE_TIME);
         fields.add(revertActionDateTime);
 
         NumberField siteCriteriaId = SignupUtil.getNumberField(controlActionModule,"siteCriteriaId","Site Criteria Id","SITE_CRITERIA_ID",

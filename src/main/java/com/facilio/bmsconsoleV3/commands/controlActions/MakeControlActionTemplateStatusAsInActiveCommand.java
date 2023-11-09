@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.controlActions;
 
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -22,6 +23,10 @@ public class MakeControlActionTemplateStatusAsInActiveCommand extends FacilioCom
         }
         for(V3ControlActionTemplateContext controlActionTemplateContext : controlActionTemplateContextList) {
             controlActionTemplateContext.setControlActionTemplateStatus(V3ControlActionTemplateContext.ControlActionTemplateStatus.IN_ACTIVE.getVal());
+            if(controlActionTemplateContext.getControlActionExecutionType() == null || controlActionTemplateContext.getControlActionExecutionType() <= 0) {
+                controlActionTemplateContext.setControlActionExecutionType(V3ControlActionContext.ControlActionExecutionType.ACTUAL.getVal());
+            }
+            controlActionTemplateContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getVal());
         }
         return false;
     }

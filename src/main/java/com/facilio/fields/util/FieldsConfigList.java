@@ -336,7 +336,34 @@ public class FieldsConfigList {
     public static final List<String> VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE = Arrays.asList(
             "name","utilityType","scope","relationShipId","vmTemplateStatus","sysModifiedTime","sysModifiedByPeople","spaceCategory","assetCategory","sysCreatedTime","sysCreatedByPeople"
     );
-            
+    public static final List<String> CONTROL_ACTION_FIELDS_INCLUDE = Arrays.asList(
+            "sysModifiedTime","sysModifiedByPeople","sysCreatedTime","sysCreatedByPeople"
+    );
+    public static final List<String> CONTROL_ACTION_FIELDS_EXCLUDE = Arrays.asList(
+            "description","siteCriteriaId","assetCriteriaId","controllerCriteriaId","approvalStatus","approvalFlowId",
+            "localId","firstLevelApproval","secondLevelApproval"
+    );
+    public static final List<String> CONTROL_ACTION_TEMPLATE_FIELDS_INCLUDE = Arrays.asList(
+            "controlActionExecutionType","sysModifiedTime","sysModifiedByPeople","sysCreatedTime","sysCreatedByPeople"
+    );
+    public static final List<String> CONTROL_ACTION_TEMPLATE_FIELDS_EXCLUDE = Arrays.asList(
+            "description","siteCriteriaId","assetCriteriaId","controllerCriteriaId","approvalStatus","approvalFlowId",
+            "description","controlActionSourceType","scheduledActionDateTime","revertActionDateTime","siteCriteriaId",
+            "assetCriteriaId","controllerCriteriaId","approvalStatus","approvalFlowId","controlActionStatus","scheduleActionStatus",
+            "revertActionStatus","controlActionExecutionType","isEnableRevert","localId","firstLevelApproval","secondLevelApproval",
+            "controlActionTemplate"
+    );
+    public static final List<String> CALENDAR_FIELDS_INCLUDE = Arrays.asList(
+            "name","calendarType","client","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
+    );
+    public static final List<String> CALENDAR_EVENTS_FIELDS_INCLUDE = Arrays.asList(
+            "name","eventType","eventFrequency","validityStartTime","validityEndTime","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
+    );
+    public static final List<String> CALENDAR_EVENTS_SORT_FIELDS_INCLUDE = Arrays.asList(
+            "name","eventType","eventFrequency","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
+    );
+
+
     public static List<String> getNameField() {
         return Arrays.asList("name");
     }

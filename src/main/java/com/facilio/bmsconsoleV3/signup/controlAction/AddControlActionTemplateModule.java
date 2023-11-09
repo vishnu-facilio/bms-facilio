@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
-import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -49,7 +48,7 @@ public class AddControlActionTemplateModule extends SignUpData {
         controlActionTemplate.setOrgId(orgId);
 
         List<FacilioField> fields = new ArrayList<>();
-        StringField subject = SignupUtil.getStringField(controlActionTemplate,"subject","Control Action Template Name","SUBJECT", FacilioField.FieldDisplayType.TEXTBOX,
+        StringField subject = SignupUtil.getStringField(controlActionTemplate,"subject","Name","SUBJECT", FacilioField.FieldDisplayType.TEXTBOX,
                 true,false,true,true,orgId);
         fields.add(subject);
         FacilioModule calendarModule = moduleBean.getModule(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);

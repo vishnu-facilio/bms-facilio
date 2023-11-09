@@ -27,6 +27,9 @@ public class SetControlActionInitialStatusCommand extends FacilioCommand {
             if(controlActionContext.getControlActionSourceType() == V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal()){
                 controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal());
             }
+            if(controlActionContext.getControlActionExecutionType() == null || controlActionContext.getControlActionExecutionType() <= 0){
+                controlActionContext.setControlActionExecutionType(V3ControlActionContext.ControlActionExecutionType.ACTUAL.getVal());
+            }
         }
         return false;
     }

@@ -46,11 +46,12 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
 
 
         List<ViewField> fields = new ArrayList<>();
-        fields.add(new ViewField("subject","Control Action Template Name"));
-        fields.add(new ViewField("description","Description"));
-        fields.add(new ViewField("controlActionType","Action Type"));
+        fields.add(new ViewField("subject","Name"));
         fields.add(new ViewField("assetCategory","Asset Category"));
+        fields.add(new ViewField("controlActionType","Action Type"));
+        fields.add(new ViewField("controlActionTemplateType","Template Type"));
         fields.add(new ViewField("calendar","Calendar"));
+        fields.add(new ViewField("controlActionTemplateStatus","Template Status"));
         allView.setFields(fields);
 
 

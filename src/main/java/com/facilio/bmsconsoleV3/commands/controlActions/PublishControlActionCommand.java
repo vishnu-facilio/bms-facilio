@@ -28,6 +28,9 @@ public class PublishControlActionCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Long controlActionId = (Long) context.get("controlActionId");
         V3ControlActionContext controlActionContext = ControlActionAPI.getControlAction(controlActionId);
+        if(controlActionContext.getScheduledActionDateTime() <= System.currentTimeMillis()){
+            throw new IllegalArgumentException("Schedule Action Time Must be Greater Than Current Time");
+        }
         controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal());
         ControlActionAPI.updateControlAction(controlActionContext);
         ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.PUBLISHED.getValue(), controlActionId);

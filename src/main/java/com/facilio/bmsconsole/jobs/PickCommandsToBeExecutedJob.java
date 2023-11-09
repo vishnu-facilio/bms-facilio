@@ -49,12 +49,14 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
         if(jobName.equals("PickCommandsToBeExecutedScheduledAction")){
             controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
             controlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
-            V3Util.updateBulkRecords(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME, FacilioUtil.getAsMap(FieldUtil.getAsJSON(controlActionContext)), Collections.singletonList(controlActionContext.getId()),false);
+            ControlActionAPI.updateControlAction(controlActionContext);
+            ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getValue(),controlActionContext.getId());
         }
         if(jobName.equals("PickCommandsToBeExecutedRevertAction")){
             controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getVal());
             controlActionContext.setRevertActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getVal());
-            V3Util.updateBulkRecords(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME, FacilioUtil.getAsMap(FieldUtil.getAsJSON(controlActionContext)), Collections.singletonList(controlActionContext.getId()),false);
+            ControlActionAPI.updateControlAction(controlActionContext);
+            ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_IN_PROGRESS.getValue(),controlActionContext.getId());
         }
         List<V3CommandsContext> commandsContextList = ControlActionAPI.pickCommandsToBeExecuted(controlActionId,actionTime);
         if(CollectionUtils.isEmpty(commandsContextList)){

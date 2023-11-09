@@ -31,6 +31,9 @@ public class V3EventTimeSlotContext extends V3Context {
         return endMin;
     }
     public Integer convertMillisecondsToMinute(Long milliSecond){
+        if(milliSecond == null){
+            return null;
+        }
         return Math.toIntExact(milliSecond / 60000);
     }
 }
