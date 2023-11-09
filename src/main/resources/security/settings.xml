@@ -4205,25 +4205,25 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/meterConsumption/monthlyConsumption" method="POST">
-        <requestbody type="object">
+    <request path="/api/v3/meterConsumption/monthlyConsumption" method="GET">
+        <urlparams>
             <property name="id" type="number"/>
             <property name="utilityTypeModuleName" type="string"/>
-        </requestbody>
+        </urlparams>
     </request>
 
-    <request path="/api/v3/meterConsumption/yearlyConsumption" method="POST">
-        <requestbody type="object">
+    <request path="/api/v3/meterConsumption/yearlyConsumption" method="GET">
+        <urlparams>
             <property name="id" type="number"/>
             <property name="utilityTypeModuleName" type="string"/>
-        </requestbody>
+        </urlparams>
     </request>
 
-    <request path="/api/v3/meterConsumption/peak" method="POST">
-        <requestbody type="object">
+    <request path="/api/v3/meterConsumption/peak" method="GET">
+        <urlparams>
             <property name="id" type="number"/>
             <property name="utilityTypeModuleName" type="string"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v3/virtualMeterTemplate/publish" method="POST">

@@ -1965,9 +1965,24 @@
 
 
     <package name="virtualMeterTemplate" namespace="/api/v3/virtualMeterTemplate" extends="v3Api">
-        <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate"></action>
-        <action name="generateVM" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="generateVirtualMeter"></action>
-        <action name="filterResources" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="fetchVMGeneratedResources"></action>
+        <action name="publish" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="publishVMTemplate">
+            <param name="moduleName">virtualMeterTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">virtualMeterTemplatePublish</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="generateVM" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="generateVirtualMeter">
+            <param name="moduleName">virtualMeterTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">generateVirtualMeter</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="filterResources" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="fetchVMGeneratedResources">
+            <param name="moduleName">virtualMeterTemplate</param>
+            <param name="permission">GET:READ</param>
+        </action>
     </package>
 
 
@@ -2222,9 +2237,18 @@
     </package>
 
     <package name="meterConsumption" namespace="/api/v3/meterConsumption" extends="v3Api">
-        <action name="monthlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterMonthlyConsumption"></action>
-        <action name="yearlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterYearlyConsumption"></action>
-        <action name="peak" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterPeak"></action>
+        <action name="monthlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterMonthlyConsumption">
+            <param name="moduleName">meter</param>
+            <param name="permission">GET:READ</param>
+        </action>
+        <action name="yearlyConsumption" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterYearlyConsumption">
+            <param name="moduleName">meter</param>
+            <param name="permission">GET:READ</param>
+        </action>
+        <action name="peak" class="com.facilio.bmsconsoleV3.actions.MeterAction" method="getMeterPeak">
+            <param name="moduleName">meter</param>
+            <param name="permission">GET:READ</param>
+        </action>
     </package>
 
     <package name="servicePlannedMaintenance" namespace="/api/v3/servicePlannedMaintenance"
