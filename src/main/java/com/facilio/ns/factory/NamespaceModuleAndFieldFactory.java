@@ -76,6 +76,7 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("execMode", "EXECUTOR_MODE", module));
         fields.add(getNumberField("executorId", "EXECUTOR_ID", module));
         fields.add(getBooleanField("isDeleted", "SYS_DELETED", module));
+        fields.add(getNumberField("resourceType", "RESOURCE_TYPE", module));
         return fields;
     }
 

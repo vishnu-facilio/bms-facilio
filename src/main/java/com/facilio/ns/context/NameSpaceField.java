@@ -1,5 +1,6 @@
 package com.facilio.ns.context;
 
+import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -34,6 +35,7 @@ public class NameSpaceField implements Cloneable, Serializable {
     @JsonIgnore
     FacilioModule module;
 
+    @FacilioDataProcessing
     Long parentResourceId; // used in storm, when related nsFields are created, their resIds are their relations, but the parentResourceId is the field's resource Id
 
     Long dataInterval;

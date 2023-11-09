@@ -24,6 +24,7 @@ public class AddNamespaceCommand extends FacilioCommand {
         V3Util.throwRestException(categoryId==null,ErrorCode.VALIDATION_ERROR,"CategoryId cannot be null in Base Rule");
 
         ns.setCategoryId(categoryId);
+        ns.setResourceType(resourceType.getIndex());
         Long id = Constants.getNsBean().addNamespace(ns,resourceType);
 
         context.put(NamespaceConstants.NAMESPACE_ID, id);

@@ -1,6 +1,6 @@
 package com.facilio.ns.context;
 
-import com.facilio.alarms.sensor.FacilioDataProcessing;
+import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.annotations.ImmutableChildClass;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -52,7 +52,7 @@ public class NameSpaceContext implements Serializable {
         this.fields = ns.fields;
         this.loggerLevel = ns.loggerLevel;
         this.assetCategoryContext = ns.assetCategoryContext;
-        this.execMode = ns.execMode;
+        this.setExecMode(ns.getExecMode());
         this.executorId = ns.executorId;
         this.resourceType = ns.resourceType;
         this.categoryId = ns.categoryId;

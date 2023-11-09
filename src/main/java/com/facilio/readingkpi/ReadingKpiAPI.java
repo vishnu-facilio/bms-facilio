@@ -63,7 +63,31 @@ import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstru
 @Log4j
 public class ReadingKpiAPI {
 
+    public static List<ReadingKPIContext> getAllActiveKpis() throws Exception {
+        return getAllActiveKpis(null, null);
+    }
+
+    public static List<ReadingKPIContext> getAllActiveKpis(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
+        FacilioContext context = getAllActiveKpisWithMeta(paramsMap, userCriteria);
+        Map<String, Object> readingKpiMap = (Map<String, Object>) context.get(Constants.RECORD_MAP);
+        return (List<ReadingKPIContext>) readingKpiMap.get(FacilioConstants.ReadingKpi.READING_KPI);
+    }
+
+    public static List<ReadingKPIContext> getAllKpisWithMeta() throws Exception {
+        return getAllKpisWithMeta(null, null);
+    }
+
+    public static List<ReadingKPIContext> getAllKpisWithMeta(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
+        FacilioContext context = getAllKpisWithMeta(paramsMap, userCriteria, false);
+        Map<String, Object> readingKpiMap = (Map<String, Object>) context.get(Constants.RECORD_MAP);
+        return (List<ReadingKPIContext>) readingKpiMap.get(FacilioConstants.ReadingKpi.READING_KPI);
+    }
+
     public static FacilioContext getAllActiveKpisWithMeta(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
+        return getAllKpisWithMeta(paramsMap, userCriteria, true);
+    }
+
+    public static FacilioContext getAllKpisWithMeta(Map<String, Object> paramsMap, Criteria userCriteria, boolean fetchOnlyActive) throws Exception {
         String moduleName = FacilioConstants.ReadingKpi.READING_KPI;
         String search = null;
         int page = 0, perPage = 50;
@@ -79,16 +103,12 @@ public class ReadingKpiAPI {
         }
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ReadingKpi.READING_KPI));
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+        if (fetchOnlyActive) {
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
+        }
         criteria.andCriteria(userCriteria);
 
         return V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, criteria, null);
-    }
-
-    public static List<ReadingKPIContext> getAllActiveKpis(Map<String, Object> paramsMap, Criteria userCriteria) throws Exception {
-        FacilioContext context = getAllActiveKpisWithMeta(paramsMap, userCriteria);
-        Map<String, Object> readingKpiMap = (Map<String, Object>) context.get(Constants.RECORD_MAP);
-        return (List<ReadingKPIContext>) readingKpiMap.get(FacilioConstants.ReadingKpi.READING_KPI);
     }
 
     public static List<Map<String, Object>> getListOfAssetCategoriesOfAllKpis() throws Exception {
@@ -843,7 +863,7 @@ public class ReadingKpiAPI {
 
     public static void addFilterToBuilder(Context context, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {
         String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH_QUERY);
-        if (fieldsMap != null  && StringUtils.isNotEmpty(searchText)) {
+        if (fieldsMap != null && StringUtils.isNotEmpty(searchText)) {
             builder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), searchText, StringOperators.CONTAINS));
         }
 

@@ -1,5 +1,6 @@
 package com.facilio.ns.context;
 
+import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.relation.context.RelationMappingContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,6 +52,7 @@ public class NamespaceFieldRelated {
     }
 
     @JsonIgnore
+    @FacilioDataProcessing
     List<Long> resourceIds; // used in storm to prevent double fetch
 
     @Override

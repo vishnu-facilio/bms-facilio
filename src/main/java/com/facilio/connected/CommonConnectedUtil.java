@@ -34,6 +34,7 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.AsSubgraph;
@@ -233,9 +234,9 @@ public class CommonConnectedUtil {
 
         Map<Long, Long> conRuleIdVsFieldId = getFieldIdVsConRuleId(type).entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
 
-        List<Long> categoryIds = new ArrayList<>();
-        categoryIds.add(categoryId);
-        fetchConRuleFamilyUpwards(connectedRuleId, type, categoryIds, conRuleIdVsFieldId, directedGraph, new ArrayList<>(resourceIds), 0);
+        Set<String> resourceCategories = new HashSet<>();
+        resourceCategories.add(categoryId + "_" + ns.getResourceType());
+        fetchConRuleFamilyUpwards(connectedRuleId, type, resourceCategories, conRuleIdVsFieldId, directedGraph, new ArrayList<>(resourceIds), 0);
         return directedGraph;
     }
 
@@ -253,9 +254,9 @@ public class CommonConnectedUtil {
         return new HashMap<>();
     }
 
-    private static void fetchConRuleFamilyUpwards(Long conRuleId, NSType type, List<Long> categoryIds, Map<Long, Long> conRuleIdVsFieldId, DirectedAcyclicGraph<Long, DefaultEdge> directedGraph, List<Long> resourceIds, int hops) throws Exception {
+    private static void fetchConRuleFamilyUpwards(Long conRuleId, NSType type, Set<String> resourceCategories, Map<Long, Long> conRuleIdVsFieldId, DirectedAcyclicGraph<Long, DefaultEdge> directedGraph, List<Long> resourceIds, int hops) throws Exception {
         if (hops >= MAX_HOPS) return;
-        Set<Long> firstCircle = getFirstCircleRelationUpwards(conRuleId, type, categoryIds, conRuleIdVsFieldId, resourceIds);
+        Set<Long> firstCircle = getFirstCircleRelationUpwards(conRuleId, type, resourceCategories, conRuleIdVsFieldId, resourceIds);
         if (CollectionUtils.isNotEmpty(firstCircle)) {
             boolean firstIter = true;
             for (Long nextConRule : firstCircle) {
@@ -265,12 +266,12 @@ public class CommonConnectedUtil {
                     hops++;
                     firstIter = false;
                 }
-                fetchConRuleFamilyUpwards(nextConRule, type, categoryIds, conRuleIdVsFieldId, directedGraph, resourceIds, hops);
+                fetchConRuleFamilyUpwards(nextConRule, type, resourceCategories, conRuleIdVsFieldId, directedGraph, resourceIds, hops);
             }
         }
     }
 
-    public static Set<Long> getFirstCircleRelationUpwards(Long conRuleId, NSType type, List<Long> categoryIds, Map<Long, Long> conRuleIdVsFieldId, List<Long> resourceIds) throws Exception {
+    public static Set<Long> getFirstCircleRelationUpwards(Long conRuleId, NSType type, Set<String> resourceCategories, Map<Long, Long> conRuleIdVsFieldId, List<Long> resourceIds) throws Exception {
         FacilioModule namespaceModule = NamespaceModuleAndFieldFactory.getNamespaceModule();
         Map<String, FacilioField> namespaceFieldMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceFields());
 
@@ -278,37 +279,56 @@ public class CommonConnectedUtil {
 
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(namespaceModule.getTableName())
-                .select(Arrays.asList(namespaceFieldMap.get("parentRuleId"), namespaceFieldMap.get("categoryId"), namespaceFieldsFieldMap.get("resourceId")))
+                .select(Arrays.asList(namespaceFieldMap.get("parentRuleId"), namespaceFieldMap.get("categoryId"), namespaceFieldMap.get("resourceType"), namespaceFieldsFieldMap.get("resourceId")))
                 .innerJoin("Namespace_Fields")
                 .on("Namespace.ID = Namespace_Fields.NAMESPACE_ID")
                 .andCondition(CriteriaAPI.getCondition(namespaceFieldMap.get("status"), String.valueOf(true), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(namespaceFieldsFieldMap.get("fieldId"), Collections.singleton(conRuleIdVsFieldId.get(conRuleId)), NumberOperators.EQUALS));
 
 
-        List<Map<String, Object>> props = selectRecordBuilder.get();
-        if (CollectionUtils.isEmpty(props)) {
+        List<Map<String, Object>> nameSpaces = selectRecordBuilder.get();
+        if (CollectionUtils.isEmpty(nameSpaces)) {
             return new HashSet<>();
         }
 
-        return getFirstCircleFromProps(categoryIds, type, resourceIds, props);
+        return getFirstCircleFromProps(resourceCategories, type, resourceIds, nameSpaces);
     }
 
-    private static Set<Long> getFirstCircleFromProps(List<Long> categoryIds, NSType type, List<Long> resourceIds, List<Map<String, Object>> props) throws Exception {
+    private static Set<Long> getFirstCircleFromProps(Set<String> resourceCatIds, NSType type, List<Long> resourceIds, List<Map<String, Object>> nameSpaces) throws Exception {
         Set<Long> firstCircle = new OrderedHashSet<>();
-        for (Map<String, Object> prop : props) {
-            Long parentRuleId = (Long) prop.get("parentRuleId");
-            Long catId = (Long) prop.get("categoryId");
-            // if the rule is of same category, or if the main graph contains other categories (captured in categoryIds) directly add
-            if (categoryIds.contains(catId)) {
+        for (Map<String, Object> ns : nameSpaces) {
+            Long parentRuleId = (Long) ns.get("parentRuleId");
+            Long catId = (Long) ns.get("categoryId");
+            Integer resourceType = (Integer) ns.get("resourceType");
+            // if the rule is of same resource category(categoryId + resourceType),
+            // or if the main graph contains other categories (captured in resourceCatIds) directly add
+            if (resourceCatIds.contains(catId + "_" + resourceType)) {
                 firstCircle.add(parentRuleId);
                 continue;
             }
             // else check if the namespace field's resource id is in the list of resources given by user or the field
-            Long resourceId = (Long) prop.get("resourceId");
+            Long resourceId = (Long) ns.get("resourceId");
             if (resourceIds.contains(resourceId)) {
                 firstCircle.add(parentRuleId);
-                categoryIds.add(catId);
+                resourceCatIds.add(catId + "_" + resourceType);
                 IConnectedRule connectedRule = fetchConnectedRule(parentRuleId, type);
+
+                /*
+                 Given the matched conRule will be recomputed, it means,
+                 all the matched resources are indirectly chosen,
+                 (that is, the children of this conRule must be recomputed for these matched resources)
+                 hence they are included in resourceIds while fetching the subsequent child namespaces,
+                 so that if any of these resources are used in any of the child namespace,
+                 that conRule will also be included in the family
+
+                 Example: History is being run for EM Kpi
+                 1. EM kpi (Chosen Assets -> all)
+                 2. AHU kpi (Chosen Assets -> AHU 1, AHU 2, AHU 3) it uses the em kpi via a direct asset EM1
+                 3. Chiller kpi uses this AHU kpi via the direct asset AHU 3
+                 So now, AHU kpi will be recomputed for all 3 AHUs chosen, that implies,
+                 Any of the kpis that uses AHU kpi via any of the 3 AHUs must also be recomputed,
+                 so we must add AHU 1 2 and 3 in the resourceIds list for the Chiller Kpi to be chosen in the next iteration
+                */
                 resourceIds.addAll(NamespaceAPI.getMatchedResources(connectedRule.getNs()));
             }
         }
@@ -483,22 +503,6 @@ public class CommonConnectedUtil {
                 return meters.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
             case SITE:
                 throw new Exception("Not supported yet");
-        }
-        return new ArrayList<>();
-    }
-
-    public static List<Long> getResourcesBasedOnType(int resourceType, List<Long> assetIds) throws Exception {
-        ResourceType resourceTypeEnum=ResourceType.valueOf(resourceType);
-        return getResourcesBasedOnType(resourceTypeEnum,assetIds);
-    }
-    public static List<Long> getResourcesBasedOnType(ResourceType resourceType, List<Long> assetIds) throws Exception {
-        switch (resourceType) {
-            case ASSET_CATEGORY:
-                List<AssetContext> assetInfo = AssetsAPI.getAssetInfo(assetIds);
-                return assetInfo.stream().map(m -> m.getId()).collect(Collectors.toList());
-            case METER_CATEGORY:
-                List<V3MeterContext> meterInfo = MetersAPI.getMeters(assetIds);
-                return meterInfo.stream().map(m -> m.getId()).collect(Collectors.toList());
         }
         return new ArrayList<>();
     }

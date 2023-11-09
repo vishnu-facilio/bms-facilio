@@ -1,13 +1,12 @@
 package com.facilio.ns;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.alarms.sensor.FacilioDataProcessing;
 import com.facilio.assetcatergoryfeature.util.AssetCategoryFeatureStatusUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.NamespaceBean;
 import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.connected.IConnectedRule;
-import com.facilio.connected.ResourceCategory;
 import com.facilio.connected.ResourceType;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

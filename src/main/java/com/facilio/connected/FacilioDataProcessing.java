@@ -1,4 +1,4 @@
-package com.facilio.alarms.sensor;
+package com.facilio.connected;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

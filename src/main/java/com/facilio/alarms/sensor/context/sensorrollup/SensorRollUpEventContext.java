@@ -1,6 +1,6 @@
 package com.facilio.alarms.sensor.context.sensorrollup;
 
-import com.facilio.alarms.sensor.FacilioDataProcessing;
+import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.alarms.sensor.context.SensorAlarmDetailsContext;
 import com.facilio.alarms.sensor.context.SensorRuleContext;
 import com.facilio.beans.ModuleBean;
