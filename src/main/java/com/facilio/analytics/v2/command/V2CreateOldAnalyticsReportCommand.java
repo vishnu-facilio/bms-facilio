@@ -84,18 +84,20 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 FacilioField measureField = modBean.getField(measure.getFieldId());
                 yAxis.setField(measureField.getModule(), measureField);
                 yAxis.setAggr(measure.getAggr());
+                dataPoint.setModuleName(measure.getModuleName());
                 dataPoint.setyAxis(yAxis);
                 dataPoint.setCriteriaType(measure.getCriteriaType() > 0 ? measure.getCriteriaType() : V2MeasuresContext.Criteria_Type.ALL.getIndex());
                 Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(measureField.getModule().getName()));
                 V2AnalyticsOldUtil.setXAndDateFields(dataPoint, report.getReportModeEnum(), fieldMap);
-                String moduleName = measure.getModuleName();
-                if (moduleName == null) {
-                    moduleName = FacilioConstants.ContextNames.RESOURCE;
+                if (measure.getModuleName() == null) {
                     dataPoint.setModuleName(FacilioConstants.ContextNames.RESOURCE);
                 }
-                if (dataPoint.isFetchResource()) {
-                    resourceAlias.put(reportContext.getxAlias(), moduleName);
+                if (dataPoint.isFetchResource() || dataPoint.isFetchMetersWithResource()) {
+                    resourceAlias.put(reportContext.getxAlias(), FacilioConstants.ContextNames.RESOURCE);
                     reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_RESOURCE_ALIASES,  resourceAlias);
+                    if(dataPoint.isFetchMetersWithResource()){
+                        dataPoint.setModuleName(FacilioConstants.Meter.METER);
+                    }
                 }
                 else if(dataPoint.isFetchMeters()){
                     resourceAlias.put(reportContext.getxAlias(), FacilioConstants.Meter.METER);
@@ -131,7 +133,6 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 dataPoint.setOrderByFunc(measure.getOrderByFunction());
                 List<String> orderBy = new ArrayList<>();
                 orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
-                orderBy.add(dataPoint.getxAxis().getField().getName());
                 dataPoint.setOrderBy(orderBy);
                 if(measure.getLimit() != -1){
                     dataPoint.setLimit(measure.getLimit());
@@ -145,7 +146,6 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 dataPoint.setOrderByFunc(ReportDataPointContext.OrderByFunction.valueOf(3));
                 List<String> orderBy = new ArrayList<>();
                 orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
-                orderBy.add(dataPoint.getxAxis().getField().getName());
                 dataPoint.setOrderBy(orderBy);
                 dataPoint.setLimit(20);
             }

@@ -5932,6 +5932,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Report1_V2");
 		return module;
 	}
+	public static FacilioModule getV2ReportUserFilterModule()throws Exception
+	{
+		FacilioModule module = new FacilioModule();
+		module.setName("report1_v2_user_filter");
+		module.setDisplayName("Report1 V2 User Filter");
+		module.setTableName("Report1_V2_User_Filter");
+		return module;
+	}
 	public static FacilioModule getReportV2MeasureModule()throws Exception
 	{
 		FacilioModule module = new FacilioModule();

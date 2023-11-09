@@ -8821,6 +8821,21 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("criteria_id", "CRITERIA_ID", module, FieldType.NUMBER));
         return fields;
     }
+    public static List<FacilioField> getV2ReportUserFilterFields()throws Exception
+    {
+        FacilioModule module = ModuleFactory.getV2ReportUserFilterModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+
+        fields.add(getField("reportId", "REPORT_ID", module, FieldType.NUMBER));
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+        fields.add(getField("moduleName", "MODULE_NAME", module, FieldType.STRING));
+        fields.add(getField("special_field_name", "SPECIAL_FIELD_NAME", module, FieldType.STRING));
+        fields.add(getField("default_values", "DEFAULT_VALUES", module, FieldType.STRING));
+
+        return fields;
+    }
+
 //	public static List<FacilioField> getModulesFields(){
 //		FacilioModule module = ModuleFactory.getModuleModule();
 //		List<FacilioField> fields = new ArrayList<>();

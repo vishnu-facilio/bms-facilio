@@ -51,6 +51,19 @@ public class V2MeasuresContext {
     /**
      * above keys added for supporting relationship measure specific relationship
      */
+    /**
+     *  params for data filter criteria starts here
+     */
+
+    private Long data_criteriaId;
+    private Criteria data_criteria;
+    private String data_moduleName;
+    private int data_aggr;
+
+    /**
+     *  params for data filter criteria ends here
+     */
+
     private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){

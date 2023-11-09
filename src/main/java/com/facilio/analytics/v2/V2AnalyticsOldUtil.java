@@ -145,7 +145,11 @@ public class V2AnalyticsOldUtil {
                 if(mode == ReadingAnalysisContext.ReportMode.METERS){
                     dataPoint.setFetchMeters(true);
                 }else {
-                    dataPoint.setFetchResource(true);
+                    if(dataPoint.getModuleName() != null && dataPoint.getModuleName().equals(FacilioConstants.Meter.METER)){
+                        dataPoint.setFetchMetersWithResource(true);
+                    }else {
+                        dataPoint.setFetchResource(true);
+                    }
                 }
                 break;
             case TIMESERIES:
@@ -346,15 +350,16 @@ public class V2AnalyticsOldUtil {
                 if(v2_measure_list.size() > 0) {
                     v2_report.setMeasures(v2_measure_list);
                 }
+                V2ReportFiltersContext globalCriteria = new V2ReportFiltersContext();
                 if(v2_report != null && v2_report.getCriteriaId() != null &&  v2_report.getCriteriaId() > 0 )
                 {
-                    V2ReportFiltersContext globalCriteria = new V2ReportFiltersContext();
                     globalCriteria.setCriteria(CriteriaAPI.getCriteria(v2_report.getCriteriaId()));
                     globalCriteria.setCriteriaId(v2_report.getCriteriaId());
                     globalCriteria.setModuleName(DIMENSION_TYPE_VS_MODULES.get(v2_report.getDimensions().getDimensionTypeEnum()));
                     v2_report.setG_criteria(globalCriteria);
                     v2_report.setCriteriaId(null);
                 }
+                globalCriteria.setAnalytics_user_filters(V2AnalyticsOldUtil.getNewReportV2UserFilter(v2_report.getReportId()));
                 return v2_report;
             }
         }
@@ -574,6 +579,22 @@ public class V2AnalyticsOldUtil {
         }
         return null;
     }
+    public static ReportDataPointContext isSortDPPointIncluded(List<ReportDataPointContext> dataPoints, ReportDataPointContext sorteddp)
+    {
+        Iterator<ReportDataPointContext> itr = dataPoints.iterator();
+        while (itr.hasNext())
+        {
+            ReportDataPointContext dp = itr.next();
+            if (dp.isDefaultSortPoint())
+            {
+                if (dp.getLimit() == -1 || dp.getOrderByFuncEnum() == ReportDataPointContext.OrderByFunction.NONE) {
+                    throw new IllegalArgumentException("Default sort datapoint should have order by and limit");
+                }
+                return dp;
+            }
+        }
+        return null;
+    }
     public static String getAndSetModuleAlias(String moduleName, HashMap<String, String> moduleVsAlias) {
         String alias = "";
         if (moduleVsAlias.containsKey(moduleName)) {
@@ -583,11 +604,11 @@ public class V2AnalyticsOldUtil {
         moduleVsAlias.put(moduleName, alias);
         return alias;
     }
-    public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)
+    public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
     {
         applyJoin(moduleVsAlias, baseModule, on, joinModule, selectBuilder, null);
     }
-    public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules)
+    public static void applyJoin(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception
     {
         if (joinModule != null && (joinModule.isCustom() && !baseModule.equals(joinModule))) {
             selectBuilder.innerJoin(joinModule.getTableName())
@@ -595,7 +616,7 @@ public class V2AnalyticsOldUtil {
                     .on(on);
             selectBuilder.addJoinModules(Collections.singletonList(joinModule));
         } else {
-            if (addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, joinModule))) {
+            if (addedModules == null || (addedModules != null && !V2AnalyticsOldUtil.isExistInAddedModules(addedModules, joinModule))) {
                 selectBuilder.innerJoin(joinModule.getTableName()).on(on);
                 if(addedModules != null) {
                     addedModules.add(joinModule);
@@ -607,7 +628,7 @@ public class V2AnalyticsOldUtil {
         FacilioModule extendedModule = prevModule.getExtendModule();
         while (extendedModule != null)
         {
-            if (addedModules == null || (addedModules != null && !isAlreadyAdded(addedModules, extendedModule)))
+            if (addedModules == null || (addedModules != null && !V2AnalyticsOldUtil.isExistInAddedModules(addedModules, extendedModule)))
             {
                 if(addedModules != null){
                     addedModules.add(extendedModule);
@@ -620,6 +641,21 @@ public class V2AnalyticsOldUtil {
             extendedModule = extendedModule.getExtendModule();
         }
     }
+
+    public static boolean isExistInAddedModules(Set<FacilioModule> addedModules, FacilioModule module)throws Exception
+    {
+        if(addedModules != null){
+            for(FacilioModule existing_module: addedModules)
+            {
+                if(existing_module != null && existing_module.getName().equals(module.getName()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public static void joinModuleIfRequired(HashMap<String, String> moduleVsAlias, FacilioModule baseModule, ReportFieldContext axis, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = StringUtils.isNotEmpty(axis.getModuleName()) ? modBean.getModule(axis.getModuleName()) : axis.getModule();
@@ -668,6 +704,29 @@ public class V2AnalyticsOldUtil {
         FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE));
 
+        FacilioField spaceField = null;
+        switch ((BmsAggregateOperators.SpaceAggregateOperator) aggr) {
+            case SITE:
+                spaceField = fieldMap.get("site").clone();
+                break;
+            case BUILDING:
+                spaceField = fieldMap.get("building").clone();
+                break;
+            case FLOOR:
+                spaceField = fieldMap.get("floor").clone();
+                break;
+            case SPACE:
+                selectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName() + ".SPACE_TYPE", "SPACE_TYPE", String.valueOf(BaseSpaceContext.SpaceType.valueOf(aggr.toString()).getIntVal()), NumberOperators.EQUALS));
+                spaceField = FieldFactory.getIdField(baseSpaceModule);
+                break;
+            default:
+                throw new RuntimeException("Cannot be here!!");
+        }
+        spaceField.setName(field.getName());
+        spaceField.setDataType(FieldType.NUMBER);
+        if(dp.getModuleName() != null && dp.getModuleName().equals(FacilioConstants.Meter.METER) && dp.isFetchMetersWithResource()) {
+            return spaceField;
+        }
         if (!isAlreadyAdded(addedModules, resourceModule)) {
             selectBuilder.addJoinModules(Collections.singletonList(resourceModule));
             StringBuilder join_criteria = new StringBuilder(resourceModule.getTableName()).append(".ID = ").append(field.getCompleteColumnName());
@@ -688,24 +747,7 @@ public class V2AnalyticsOldUtil {
                 .on(space_join_criteria.toString());
         addedModules.add(baseSpaceModule);
 
-        FacilioField spaceField = null;
-        switch ((BmsAggregateOperators.SpaceAggregateOperator) aggr) {
-            case SITE:
-                spaceField = fieldMap.get("site").clone();
-                break;
-            case BUILDING:
-                spaceField = fieldMap.get("building").clone();
-                break;
-            case FLOOR:
-                spaceField = fieldMap.get("floor").clone();
-                break;
-            case SPACE:
-                selectBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceModule.getTableName() + ".SPACE_TYPE", "SPACE_TYPE", String.valueOf(BaseSpaceContext.SpaceType.valueOf(aggr.toString()).getIntVal()), NumberOperators.EQUALS));
-                spaceField = FieldFactory.getIdField(baseSpaceModule);
-                break;
-            default:
-                throw new RuntimeException("Cannot be here!!");
-        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(resourceModule.getTableName())
                 .select(Collections.singletonList(FieldFactory.getIdField(resourceModule)))
@@ -717,8 +759,6 @@ public class V2AnalyticsOldUtil {
             builder.andCriteria(spaceCriteria);
         }
         selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
-        spaceField.setName(field.getName());
-        spaceField.setDataType(FieldType.NUMBER);
         return spaceField;
     }
     public static void setGroupByTimeAggregator(ReportDataPointContext dp, AggregateOperator groupByTimeAggr, StringJoiner groupBy)throws Exception
@@ -961,6 +1001,52 @@ public class V2AnalyticsOldUtil {
             }
         }
     }
+
+    public static void applyResourcesJoinOnMeter(SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, FacilioModule baseModule, V2DimensionContext dimension , ReportDataPointContext dataPoint, Set<FacilioModule> addedModules)throws Exception
+    {
+        if(dataPoint.isFetchMetersWithResource())
+        {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
+            FacilioField child_field = fieldsMap.get("parentId");
+            FacilioField parent_field = FieldFactory.getIdField(meterModule);
+            applyJoin(null,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), meterModule, selectBuilder, addedModules);
+
+            if(dimension.getDimension_type() != V2DimensionContext.DimensionType.ASSET.getIndex() && dimension.getDimension_type() != V2DimensionContext.DimensionType.METER.getIndex()) {
+                FacilioField meter_child_field = null;
+                if(dimension.getDimension_type() == V2DimensionContext.DimensionType.SITE.getIndex()){
+                    meter_child_field = modBean.getField("siteId", meterModule.getName());
+                }else {
+                    Map<String, FacilioField> meter_fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(meterModule.getName()));
+                    meter_child_field = meter_fieldsMap.get("meterLocation");
+                }
+                V2AnalyticsOldUtil.applyResourcesJoinsForMeter(selectBuilder, meter_child_field , addedModules);
+            }
+        }
+    }
+
+    public static void applyResourcesJoinsForMeter(SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, FacilioField meter_field , Set<FacilioModule> addedModules)throws Exception
+    {
+        FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
+        if (!V2AnalyticsOldUtil.isAlreadyAdded(addedModules, resourceModule)) {
+
+            FacilioField resource_id_field = FieldFactory.getIdField(resourceModule);
+            selectBuilder.addJoinModules(Collections.singletonList(resourceModule));
+            StringBuilder join_criteria = new StringBuilder(resource_id_field.getCompleteColumnName()).append(" = ").append(meter_field.getCompleteColumnName());
+            join_criteria.append(" AND ").append(resourceModule.getTableName()).append(".ORGID = ").append(meter_field.getModule().getTableName()).append(".ORGID");
+            selectBuilder.innerJoin(resourceModule.getTableName())
+                    .on(join_criteria.toString());
+            addedModules.add(resourceModule);
+        }
+        FacilioModule baseSpaceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE);
+        selectBuilder.addJoinModules(Collections.singletonList(baseSpaceModule));
+        StringBuilder space_join_criteria = new StringBuilder(resourceModule.getTableName()).append(".SPACE_ID = ").append(baseSpaceModule.getTableName()).append(".ID");
+        space_join_criteria.append(" AND ").append(resourceModule.getTableName()).append(".ORGID = ").append(baseSpaceModule.getTableName()).append(".ORGID");
+        selectBuilder.innerJoin(baseSpaceModule.getTableName())
+                .on(space_join_criteria.toString());
+        addedModules.add(baseSpaceModule);
+    }
     public static String getXValues(List<Map<String, Object>> props, String key, FieldType type) {
         if (props != null && !props.isEmpty()) {
             StringJoiner xValues = new StringJoiner(",");
@@ -977,4 +1063,99 @@ public class V2AnalyticsOldUtil {
         }
         return null;
     }
+
+    public static void CREDActionV2UserFilter(Long reportId, List<V2AnalyticUserFilterContext> user_filters, String action)throws Exception
+    {
+        for(V2AnalyticUserFilterContext user_filter: user_filters)
+        {
+            user_filter.setReportId(reportId);
+            if(action.equals("create")) {
+                insertNewReportV2UserFilter(user_filter);
+            }
+            else if(action.equals("update"))
+            {
+                updateNewReportV2UserFilter(user_filter);
+            }
+            else if(action.equals("delete")){
+                deleteNewReportV2UserFilter(user_filter);
+            }
+        }
+    }
+    private static void deleteNewReportV2UserFilter(V2AnalyticUserFilterContext user_filter)throws Exception
+    {
+        GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                .table(ModuleFactory.getV2ReportUserFilterModule().getTableName())
+                        .andCondition(CriteriaAPI.getCondition("ID", "id", user_filter.getId()+"", NumberOperators.EQUALS));
+        deleteBuilder.delete();
+    }
+
+    private static void insertNewReportV2UserFilter(V2AnalyticUserFilterContext user_filter)throws Exception
+    {
+        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getV2ReportUserFilterModule().getTableName())
+                .fields(FieldFactory.getV2ReportUserFilterFields());
+
+        insertBuilder.insert(FieldUtil.getAsProperties(user_filter));
+    }
+    private static void updateNewReportV2UserFilter(V2AnalyticUserFilterContext user_filter)throws Exception
+    {
+            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getV2ReportUserFilterModule().getTableName())
+                    .fields(FieldFactory.getV2ReportUserFilterFields())
+                    .andCondition(CriteriaAPI.getCondition("ID", "id", user_filter.getId()+"", NumberOperators.EQUALS));
+            updateBuilder.update(FieldUtil.getAsProperties(user_filter));
+    }
+    public static void splitCreateUpdateAndDeleteFilter(Long reportId, List<V2AnalyticUserFilterContext> newUserFilters)throws Exception
+    {
+        List<V2AnalyticUserFilterContext> old_userFilters = V2AnalyticsOldUtil.getNewReportV2UserFilter(reportId);
+        if(old_userFilters != null && old_userFilters.size() > 0 && newUserFilters != null && newUserFilters.size() > 0)
+        {
+            Map<Long, V2AnalyticUserFilterContext> idMap = old_userFilters.stream()
+                    .collect(Collectors.toMap(V2AnalyticUserFilterContext::getId, userFilter -> userFilter));
+            List<V2AnalyticUserFilterContext> add = new ArrayList<>();
+            List<V2AnalyticUserFilterContext> update = new ArrayList<>();
+            List<V2AnalyticUserFilterContext> delete = new ArrayList<>();
+            List<Long> update_filter_ids = new ArrayList<>();
+            for(V2AnalyticUserFilterContext usr_filter : newUserFilters)
+            {
+                if(usr_filter.getId() > 0 && idMap.containsKey(usr_filter.getId()))
+                {
+                    update.add(idMap.get(usr_filter.getId()));
+                    update_filter_ids.add(usr_filter.getId());
+                }
+                else {
+                    add.add(usr_filter);
+                }
+            }
+            for(V2AnalyticUserFilterContext usr_filter : old_userFilters)
+            {
+                if(usr_filter.getId() > 0 && !update_filter_ids.contains(usr_filter.getId())){
+                    delete.add(usr_filter);
+                }
+            }
+            V2AnalyticsOldUtil.CREDActionV2UserFilter(reportId, add, "create");
+            V2AnalyticsOldUtil.CREDActionV2UserFilter(reportId, update, "update");
+            V2AnalyticsOldUtil.CREDActionV2UserFilter(reportId, delete, "delete");
+        }
+        else if(old_userFilters == null && newUserFilters != null && newUserFilters.size() > 0){
+            V2AnalyticsOldUtil.CREDActionV2UserFilter(reportId, newUserFilters, "create");
+        }else if(newUserFilters == null && old_userFilters != null && old_userFilters.size() > 0){
+            V2AnalyticsOldUtil.CREDActionV2UserFilter(reportId, old_userFilters, "delete");
+        }
+    }
+    private static List<V2AnalyticUserFilterContext> getNewReportV2UserFilter(Long reportId)throws Exception
+    {
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getV2ReportUserFilterModule().getTableName())
+                .select(FieldFactory.getV2ReportUserFilterFields())
+                        .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportId+"", NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = selectBuilder.get();
+        if(props != null && props.size() > 0)
+        {
+            return FieldUtil.getAsBeanListFromMapList(props, V2AnalyticUserFilterContext.class);
+        }
+        return null;
+    }
+
 }

@@ -68,7 +68,7 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
             {
                 if (!default_fields.contains(field.getName()) )
                 {
-                    if(canSkipField(field) || (searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText)) || (isSkipFaultRuleFields && field.getName().equals("ruleResult"))) {
+                    if(canSkipField(field) || (searchText != null && field.getDisplayName() != null && !field.getDisplayName().contains(searchText)) || (isSkipFaultRuleFields && (field.getName().equals("ruleResult") || field.getName().equals("costImpact") || field.getName().equals("energyImpact")))) {
                         continue;
                     }
                     else if(!isSkipFaultRuleFields){

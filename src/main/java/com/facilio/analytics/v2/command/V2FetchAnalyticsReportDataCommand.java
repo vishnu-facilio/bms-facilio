@@ -44,7 +44,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     @Override
     public boolean executeCommand(Context context)throws Exception
     {
-        report_v2 = (V2ReportContext) context.get("report_v2");
+        report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         dashboard_user_filter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE);
         isClickHouseEnabled = (Boolean) context.get("isClickHouseEnabled");
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -265,12 +265,13 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
 
     private List<Map<String, Object>> fetchAnalyitcsReportData(ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules)throws Exception
     {
+        V2AnalyticsOldUtil.applyResourcesJoinOnMeter(selectBuilder, baseModule, report_v2.getDimensions(), dataPoint, addedModules);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
         V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine);
         V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder);
-        V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
+        V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
         List<Map<String, Object>> props = null;
         if(isClickHouseEnabled) {
             props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,

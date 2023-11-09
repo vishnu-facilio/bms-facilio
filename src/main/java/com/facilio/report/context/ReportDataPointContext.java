@@ -404,6 +404,8 @@ public class ReportDataPointContext implements  Cloneable{
 
 	@Setter @Getter
 	private boolean fetchMeters;
+	@Setter @Getter
+	private boolean fetchMetersWithResource;
 	private boolean fetchResource;
 
 	public boolean isFetchResource() {
