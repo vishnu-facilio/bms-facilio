@@ -139,7 +139,7 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
                 }
                 String applicableModuleName = globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).getText();
                 FacilioModule applicableModule = modBean.getModule(applicableModuleName);
-                long applicableModuleId = applicableModule.getModuleId();
+                Long applicableModuleId = applicableModule!=null? applicableModule.getModuleId(): null;
 
                 globalScopeVariableContext.setApplicableModuleId(applicableModuleId);
                 globalScopeVariableContext.setStatus(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.STATUS).getText()));
