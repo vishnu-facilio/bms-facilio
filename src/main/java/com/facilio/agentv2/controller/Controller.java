@@ -62,7 +62,7 @@ public class Controller extends AssetContext {
     private long lastModifiedTime = -1;
 
     @JsonInclude
-    private long lastDataRecievedTime = -1;
+    private long lastDataReceivedTime = -1;
 
     private long deletedTime = -1;
 
@@ -186,12 +186,12 @@ public class Controller extends AssetContext {
         this.lastModifiedTime = lastModifiedTime;
     }
 
-    public long getLastDataRecievedTime() {
-        return lastDataRecievedTime;
+    public long getLastDataReceivedTime() {
+        return lastDataReceivedTime;
     }
 
-    public void setLastDataRecievedTime(long lastDataRecievedTime) {
-        this.lastDataRecievedTime = lastDataRecievedTime;
+    public void setLastDataReceivedTime(long lastDataReceivedTime) {
+        this.lastDataReceivedTime = lastDataReceivedTime;
     }
 
     public long getDeletedTime() {
@@ -255,64 +255,11 @@ public class Controller extends AssetContext {
         object.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
         object.put(AgentConstants.CONTROLLER_PROPS, "controllerProps");
         object.put(AgentConstants.AVAILABLE_POINTS, getAvailablePoints());
-        if (getCreatedTime() < 0) {
-            object.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
-        }
+        object.put(AgentConstants.CREATED_TIME, System.currentTimeMillis());
         object.put(AgentConstants.CREATED_TIME, getCreatedTime());
-//        if (getLastModifiedTime() < 0) {
-//            object.put(AgentConstants.LAST_MODIFIED_TIME, System.currentTimeMillis());
-//        }
         object.put(AgentConstants.LAST_MODIFIED_TIME, getLastModifiedTime());
-        object.put(AgentConstants.LAST_DATA_SENT_TIME, getLastDataRecievedTime());
-        //object.put(AgentConstants.DELETED_TIME, -1);
+        object.put(AgentConstants.LAST_DATA_RECEIVED_TIME, getLastDataReceivedTime());
         return object;
-    }
-
-    /**
-     * Builds a {@link Controller} from map.
-     *
-     * @param row can be {@link Map<String, Object>} from database or {@link JSONObject} from agent.
-     * @return {@link Controller} which will be an instance of corresponding child controller's Class.
-     */
-    @JsonIgnore
-    public Controller getControllerFromJSON(Map<String, Object> row) {
-        if (containsValueCheck(AgentConstants.ID, row)) {
-            setId((Long) row.get(AgentConstants.ID));
-        }
-        if (containsValueCheck(AgentConstants.NAME, row)) {
-            setName((String) row.get(AgentConstants.NAME));
-        }
-        if (containsValueCheck(AgentConstants.DATA_INTERVAL, row)) {
-            setDataInterval(JsonUtil.getLong(row.get(AgentConstants.DATA_INTERVAL)));
-        }
-        if (containsValueCheck(AgentConstants.WRITABLE, row)) {
-            setWritable(JsonUtil.getBoolean(row.get(AgentConstants.WRITABLE)));
-        }
-        if (containsValueCheck(AgentConstants.ACTIVE, row)) {
-            setActive(JsonUtil.getBoolean(row.get(AgentConstants.ACTIVE)));
-        }
-        if (containsValueCheck(AgentConstants.CONTROLLER_TYPE, row)) {
-            setControllerType(JsonUtil.getInt(row.get(AgentConstants.CONTROLLER_TYPE)));
-        }
-        if (containsValueCheck(AgentConstants.CONTROLLER_PROPS, row)) {
-            setControllerProps(row.get(AgentConstants.CONTROLLER_PROPS));
-        }
-        if (containsValueCheck(AgentConstants.AVAILABLE_POINTS, row)) {
-            setAvailablePoints(JsonUtil.getInt(row.get(AgentConstants.AVAILABLE_POINTS)));
-        }
-        if (containsValueCheck(AgentConstants.CREATED_TIME, row)) {
-            setCreatedTime(JsonUtil.getLong(row.get(AgentConstants.CREATED_TIME)));
-        }
-        if (containsValueCheck(AgentConstants.LAST_MODIFIED_TIME, row)) {
-            setLastModifiedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
-        }
-        if (containsValueCheck(AgentConstants.LAST_DATA_SENT_TIME, row)) {
-            setLastDataRecievedTime(JsonUtil.getLong(row.get(AgentConstants.LAST_MODIFIED_TIME)));
-        }
-        if (containsValueCheck(AgentConstants.DELETED_TIME, row)) {
-            setDeletedTime((Long) row.get(AgentConstants.DELETED_TIME));
-        }
-        return this;
     }
 
     /**
@@ -323,31 +270,7 @@ public class Controller extends AssetContext {
      * @return true if there's the specified key and its value is't null, and false if key is missing or has a null value.
      */
     public static boolean containsValueCheck(String key, Map<String, Object> jsonObject) {
-        if (jsonObject.containsKey(key) && (jsonObject.get(key) != null)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Checks if an object is null or empty.
-     *
-     * @param object
-     * @return
-     */
-    public static boolean isNotNull(Object object) {
-        if (object != null) {
-            if (object instanceof String) {
-                return !((String) object).isEmpty();
-            }
-            if (object instanceof Collection) {
-                return !(((Collection) object).isEmpty());
-            }
-            if (object instanceof Map) {
-                return !(((Map) object).isEmpty());
-            }
-        }
-        return (object != null);
+        return jsonObject.containsKey(key) && (jsonObject.get(key) != null);
     }
 
     @JsonIgnore

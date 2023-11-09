@@ -5,6 +5,7 @@ import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.CloudAgentUtil;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.RecordAPI;
@@ -51,10 +52,10 @@ public class AgentBeanImpl implements AgentBean {
     public List<FacilioAgent> getAgents(Collection<Long> ids, boolean fetchOnlyName) throws Exception {
         FacilioModule newAgentModule = ModuleFactory.getNewAgentModule();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getIdCondition(ids,newAgentModule));
+        criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, newAgentModule));
         criteria.addAndCondition(getDeletedTimeNullCondition(newAgentModule));
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
         List<String> fields = null;
         if (fetchOnlyName) {
             fields = Arrays.asList("id", AgentConstants.NAME, AgentConstants.DISPLAY_NAME);
@@ -85,7 +86,7 @@ public class AgentBeanImpl implements AgentBean {
             List<FacilioAgent> agents = getAgents(context);
             if (!agents.isEmpty()) {
                 return agents.get(0);
-            }else {
+            } else {
                 return null;
             }
         } else {
@@ -105,7 +106,7 @@ public class AgentBeanImpl implements AgentBean {
         agent.setLastModifiedTime(agent.getCreatedTime());
         context.put(AgentConstants.AGENT, agent);
         chain.execute(context);
-        if(context.containsKey(AgentConstants.AGENT_ID)){
+        if (context.containsKey(AgentConstants.AGENT_ID)) {
 
             Long agentId = (Long) context.get(AgentConstants.AGENT_ID);
             if ((agentId != null) && (agentId > 0)) {
@@ -113,9 +114,9 @@ public class AgentBeanImpl implements AgentBean {
                 return agentId;
             } else {
                 LOGGER.info("Failed adding agent " + agent.getName());
-                throw new Exception(" Agent added but agentId can't be obtained -> "+agentId);
+                throw new Exception(" Agent added but agentId can't be obtained -> " + agentId);
             }
-        }else {
+        } else {
             throw new Exception(" Agent added but context is missing agentId ");
         }
     }
@@ -139,6 +140,19 @@ public class AgentBeanImpl implements AgentBean {
             if (agent.getSiteId() == 0) {
                 agent.setSiteId(newSiteId);
                 agent.setLastModifiedTime(currTime);
+            }
+        }
+        if (containsValueCheck(AgentConstants.CONTROLLER_ALARM_INTERVAL_IN_MINS, jsonObject)) {
+            String intervalStr = jsonObject.get(AgentConstants.CONTROLLER_ALARM_INTERVAL_IN_MINS).toString();
+            Integer newInterval = Integer.parseInt(intervalStr);
+            if (agent.getControllerAlarmIntervalInMins() != newInterval) {
+                agent.setControllerAlarmIntervalInMins(newInterval);
+                agent.setLastModifiedTime(currTime);
+                if(newInterval == -99){
+                    ControllerUtilV2.createOrDeleteControllerOfflineAlarmJob(agent, false);
+                } else {
+                    ControllerUtilV2.createOrDeleteControllerOfflineAlarmJob(agent, true);
+                }
             }
         }
         if (containsValueCheck(AgentConstants.DATA_INTERVAL, jsonObject)) {
@@ -189,8 +203,7 @@ public class AgentBeanImpl implements AgentBean {
             WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(AgentConstants.WORKFLOW), WorkflowContext.class);
             agent.setWorkflow(workflow);
             CloudAgentUtil.editServiceAgent(agent);
-        }
-        else {
+        } else {
             addWorkflows(AgentConstants.WORKFLOW, agent, jsonObject, agent.getWorkflowId(), oldWorkflowIds, agent::setWorkflowId);
         }
 
@@ -220,12 +233,11 @@ public class AgentBeanImpl implements AgentBean {
             if (!validateWorkflows(agent, property)) {
                 throw new FacilioException("Workflow cannot be added for this agent type");
             }
-            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>)jsonObject.get(property), WorkflowContext.class);
-            if(workflow.validateWorkflow()) {
+            WorkflowContext workflow = FieldUtil.getAsBeanFromMap((Map<String, Object>) jsonObject.get(property), WorkflowContext.class);
+            if (workflow.validateWorkflow()) {
                 long workflowId = WorkflowUtil.addWorkflow(workflow);
                 setWorkflow.accept(workflowId);
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException(workflow.getErrorListener().getErrorsAsString());
             }
             if (oldWorkflowId > 0) {
@@ -254,7 +266,7 @@ public class AgentBeanImpl implements AgentBean {
                 .fields(FieldFactory.getNewAgentFields())
                 .andCondition(CriteriaAPI.getIdCondition(agent.getId(), agentDataModule));
         Map<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME,agent.getLastDataReceivedTime());
+        toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME, agent.getLastDataReceivedTime());
         try {
             if (updateRecordBuilder.update(toUpdate) > 0) {
             } else {
@@ -279,7 +291,7 @@ public class AgentBeanImpl implements AgentBean {
             fields.add(FieldFactory.getSiteIdField(agentDataModule));
             fields.add(FieldFactory.getAgentDataIntervalField(agentDataModule));
             fields.add(FieldFactory.getAgentTypeField(agentDataModule));
-            fields.add(FieldFactory.getAgentLastDataReveivedField(agentDataModule));
+            fields.add(FieldFactory.getLastDataReceivedField(agentDataModule));
             List<Long> ids = new ArrayList<>();
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(agentDataModule.getTableName())
@@ -291,27 +303,27 @@ public class AgentBeanImpl implements AgentBean {
             if (!data.isEmpty()) {
                 for (Map<String, Object> datum : data) {
                     ids.add((Long) datum.get(AgentConstants.ID));
-                    offlineCount+= AgentUtilV2.getAgentOfflineStatus(datum);
-                    if((datum.get(AgentConstants.SITE_ID) != null) && (((Number)datum.get(AgentConstants.SITE_ID)).longValue()>0) ){
+                    offlineCount += AgentUtilV2.getAgentOfflineStatus(datum);
+                    if ((datum.get(AgentConstants.SITE_ID) != null) && (((Number) datum.get(AgentConstants.SITE_ID)).longValue() > 0)) {
                         siteSet.add((Long) datum.get(AgentConstants.SITE_ID));
                     }
                 }
-            }else {
+            } else {
                 return new JSONObject();
             }
             JSONObject countData = new JSONObject();
-            countData.put(AgentConstants.RECORD_IDS,ids);
-            countData.put(AgentConstants.SITE_COUNT,siteSet.size());
-            countData.put(AgentConstants.TOTAL_COUNT,data.size());
-            countData.put(AgentConstants.ACTIVE_COUNT,(data.size()-offlineCount));
+            countData.put(AgentConstants.RECORD_IDS, ids);
+            countData.put(AgentConstants.SITE_COUNT, siteSet.size());
+            countData.put(AgentConstants.TOTAL_COUNT, data.size());
+            countData.put(AgentConstants.ACTIVE_COUNT, (data.size() - offlineCount));
             return countData;
         } catch (Exception e) {
-            LOGGER.info("Exception while getting agent count data ",e);
+            LOGGER.info("Exception while getting agent count data ", e);
         }
         return new JSONObject();
     }
 
-    public long getAgentCount(String querySearch,Criteria filterCriteria) {
+    public long getAgentCount(String querySearch, Criteria filterCriteria) {
         Map<String, FacilioField> fieldsmap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         try {
@@ -320,16 +332,16 @@ public class AgentBeanImpl implements AgentBean {
                     .table(agentDataModule.getTableName())
                     .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, fieldsmap.get(AgentConstants.ID))
                     .andCondition(getDeletedTimeNullCondition(agentDataModule));
-            if (querySearch != null){
-                builder.andCondition(CriteriaAPI.getCondition(fieldsmap.get("displayName"),querySearch, StringOperators.CONTAINS));
+            if (querySearch != null) {
+                builder.andCondition(CriteriaAPI.getCondition(fieldsmap.get("displayName"), querySearch, StringOperators.CONTAINS));
             }
-            if (filterCriteria != null){
+            if (filterCriteria != null) {
                 builder.andCriteria(filterCriteria);
             }
             List<Map<String, Object>> result = builder.get();
             return (long) result.get(0).get(AgentConstants.ID);
         } catch (Exception e) {
-            LOGGER.info("Exception while getting agent count ",e);
+            LOGGER.info("Exception while getting agent count ", e);
         }
         return 0;
     }
@@ -342,49 +354,50 @@ public class AgentBeanImpl implements AgentBean {
             context.put(AgentConstants.RECORD_IDS, ids);
             facilioChain.setContext(context);
             return !facilioChain.execute();
-        }catch (Exception e){
-            LOGGER.info("Exception while deleting agent ->"+ids+"--",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception while deleting agent ->" + ids + "--", e);
             return false;
         }
     }
+
     @Override
-    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination,List<Long>defaultIds,Criteria filterCriteria) throws Exception {
+    public List<Map<String, Object>> getAgentListData(boolean fetchDeleted, String querySearch, JSONObject pagination, List<Long> defaultIds, Criteria filterCriteria) throws Exception {
         FacilioModule agentDataModule = ModuleFactory.getNewAgentModule();
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
-        if( ! fieldMap.isEmpty()){
-            if(fieldMap.containsKey(AgentConstants.DELETED_TIME)){
+        if (!fieldMap.isEmpty()) {
+            if (fieldMap.containsKey(AgentConstants.DELETED_TIME)) {
                 fieldMap.remove(AgentConstants.DELETED_TIME);
             }
-            if(fieldMap.containsKey(AgentConstants.DEVICE_DETAILS)){
+            if (fieldMap.containsKey(AgentConstants.DEVICE_DETAILS)) {
                 fieldMap.remove(AgentConstants.DEVICE_DETAILS);
             }
-            if(fieldMap.containsKey(AgentConstants.PROCESSOR_VERSION)){
+            if (fieldMap.containsKey(AgentConstants.PROCESSOR_VERSION)) {
                 fieldMap.remove(AgentConstants.PROCESSOR_VERSION);
             }
         }
-        fieldMap.put(AgentConstants.CONTROLLERS,FieldFactory.getCountOfDistinctField(FieldFactory.getIdField(controllerModule),AgentConstants.CONTROLLERS));
+        fieldMap.put(AgentConstants.CONTROLLERS, FieldFactory.getCountOfDistinctField(FieldFactory.getIdField(controllerModule), AgentConstants.CONTROLLERS));
         GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(agentDataModule.getTableName())
                 .select(fieldMap.values())
                 .leftJoin(controllerModule.getTableName()).on(agentDataModule.getTableName() + ".ID = " + controllerModule.getTableName() + ".AGENT_ID")
                 .groupBy(agentDataModule.getTableName() + ".ID");
-        if (querySearch != null){
-            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"),querySearch, StringOperators.CONTAINS));
+        if (querySearch != null) {
+            genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"), querySearch, StringOperators.CONTAINS));
         }
-        if (filterCriteria != null){
+        if (filterCriteria != null) {
             genericSelectRecordBuilder.andCriteria(filterCriteria);
         }
-       String orderBy = "";
-        if(fieldMap.containsKey(AgentConstants.CONNECTED)){
+        String orderBy = "";
+        if (fieldMap.containsKey(AgentConstants.CONNECTED)) {
             String orderByConnected = fieldMap.get(AgentConstants.CONNECTED).getCompleteColumnName();
             String orderById = fieldMap.get(AgentConstants.ID).getCompleteColumnName();
-            orderBy = orderByConnected +","+orderById;
+            orderBy = orderByConnected + "," + orderById;
         }
         if (CollectionUtils.isNotEmpty(defaultIds)) {
-            orderBy = RecordAPI.getDefaultIdOrderBy(agentDataModule, defaultIds,orderBy);
+            orderBy = RecordAPI.getDefaultIdOrderBy(agentDataModule, defaultIds, orderBy);
         }
-        if (orderBy != null && !orderBy.isEmpty()){
+        if (orderBy != null && !orderBy.isEmpty()) {
             genericSelectRecordBuilder.orderBy(orderBy);
         }
         if (pagination != null) {
@@ -392,7 +405,7 @@ public class AgentBeanImpl implements AgentBean {
             int perPage = (int) pagination.get("perPage");
 
             if (perPage != -1) {
-                int offset = ((page-1) * perPage);
+                int offset = ((page - 1) * perPage);
                 if (offset < 0) {
                     offset = 0;
                 }
@@ -449,7 +462,7 @@ public class AgentBeanImpl implements AgentBean {
         filterFields.add(FieldFactory.getNewAgentTypeField(agentDataModule));
         filterFields.add(FieldFactory.getAgentConnectedField(agentDataModule));
         filterFields.add(FieldFactory.getAgentTypeField(agentDataModule));
-        filterFields.add(FieldFactory.getAgentLastDataReveivedField(agentDataModule));
+        filterFields.add(FieldFactory.getLastDataReceivedField(agentDataModule));
         filterFields.add(FieldFactory.getAgentDataIntervalField(agentDataModule));
         filterFields.add(FieldFactory.getField(AgentConstants.DISPLAY_NAME, "DISPLAY_NAME", agentDataModule, FieldType.STRING));
 
@@ -457,18 +470,18 @@ public class AgentBeanImpl implements AgentBean {
                 .table(agentDataModule.getTableName())
                 .select(filterFields)
                 .andCondition(getDeletedTimeNullCondition(agentDataModule));
-        List<Map<String,Object>> list =  selectRecordBuilder.get();
-        if(list == null || list.isEmpty()){
+        List<Map<String, Object>> list = selectRecordBuilder.get();
+        if (list == null || list.isEmpty()) {
             return Collections.emptyList();
         }
-        for(Map<String,Object> itr : list){
+        for (Map<String, Object> itr : list) {
             AgentUtilV2.getAgentOfflineStatus(itr);
         }
         return list;
     }
 
-    private static boolean containsValueCheck(String key,JSONObject jsonObject){
-        if (notNull(key)&& notNull(jsonObject) &&jsonObject.containsKey(key) && ( jsonObject.get(key) != null) ){
+    private static boolean containsValueCheck(String key, JSONObject jsonObject) {
+        if (notNull(key) && notNull(jsonObject) && jsonObject.containsKey(key) && (jsonObject.get(key) != null)) {
             return true;
         }
         return false;
@@ -481,18 +494,18 @@ public class AgentBeanImpl implements AgentBean {
     @Override
     public FacilioAgent getAgent(String agentName) throws Exception {
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()),agentName, StringOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getNewAgentModule()), agentName, StringOperators.IS));
         List<FacilioAgent> agents = getAgents(criteria);
-        if( !agents.isEmpty() ){
+        if (!agents.isEmpty()) {
             return agents.get(0);
         }
         return null;
     }
-    
+
     @Override
     public List<FacilioAgent> getAgents(Criteria criteria) throws Exception {
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
         List<FacilioAgent> agents = getAgents(context);
         return agents;
     }
@@ -538,15 +551,13 @@ public class AgentBeanImpl implements AgentBean {
                 scheduleInfo.addTime(time);
             }
             FacilioTimer.scheduleCalendarJob(agent.getId(), FacilioConstants.Job.CLOUD_AGENT_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "priority");
-        }
-        else {
+        } else {
             interval *= 60;
-            FacilioTimer.schedulePeriodicJob(agent.getId(), FacilioConstants.Job.CLOUD_AGENT_JOB_NAME, interval, (int)interval, "priority");
+            FacilioTimer.schedulePeriodicJob(agent.getId(), FacilioConstants.Job.CLOUD_AGENT_JOB_NAME, interval, (int) interval, "priority");
         }
     }
 
-    @Override
-    public void schedulePointsDataMissingJob(FacilioAgent agent) throws Exception {
+    public void scheduleJob(FacilioAgent agent, String jobName) throws Exception {
         long interval = 30;
 
         ScheduleInfo scheduleInfo = new ScheduleInfo();
@@ -558,7 +569,7 @@ public class AgentBeanImpl implements AgentBean {
             time = time.plusMinutes(interval);
             scheduleInfo.addTime(time);
         }
-        FacilioTimer.scheduleCalendarJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME, System.currentTimeMillis(), scheduleInfo, "facilio");
+        FacilioTimer.scheduleCalendarJob(agent.getId(), jobName, System.currentTimeMillis(), scheduleInfo, "facilio");
     }
 
 }

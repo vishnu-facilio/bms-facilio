@@ -63,29 +63,6 @@ public class ModbusTcpControllerContext extends Controller {
         return port;
     }
 
-
-    public static ModbusTcpControllerContext getModbusTcpControllerFromMap(Map<String, Object> controllerMap) throws Exception {
-        LOGGER.info(" controller map for modbus ip controller " + controllerMap);
-        if (controllerMap == null || controllerMap.isEmpty()) {
-            throw new Exception(" Map for controller can't be null or empty ->" + controllerMap);
-        }
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
-        if (containsValueCheck(AgentConstants.IDENTIFIER, controllerMap) && (controllerMap.containsKey(AgentConstants.AGENT_ID))) {
-            long agentId = ((Number) controllerMap.get(AgentConstants.AGENT_ID)).longValue();
-            String identifier = (String) controllerMap.get(AgentConstants.IDENTIFIER);
-            ModbusTcpControllerContext controller = new ModbusTcpControllerContext(((Number) controllerMap.get(AgentConstants.AGENT_ID)).longValue(), orgId);
-            //controller.processIdentifier((String) controllerMap.get(AgentConstants.IDENTIFIER));
-            return (ModbusTcpControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        if (containsValueCheck(AgentConstants.SLAVE_ID, controllerMap) && containsValueCheck(AgentConstants.IP_ADDRESS, controllerMap)) {
-            ModbusTcpControllerContext controller = new ModbusTcpControllerContext(JsonUtil.getLong(controllerMap.get(AgentKeys.AGENT_ID)), orgId);
-            controller.setSlaveId(Math.toIntExact(JsonUtil.getLong(controllerMap.get(AgentConstants.SLAVE_ID))));
-            controller.setIpAddress((String) controllerMap.get(AgentConstants.IP_ADDRESS));
-            return (ModbusTcpControllerContext) controller.getControllerFromJSON(controllerMap);
-        }
-        throw new Exception("Mandatory fields like " + AgentConstants.SLAVE_ID + " and " + AgentConstants.IP_ADDRESS + " are missing form input parameters " + controllerMap);
-    }
-
     public int getSlaveId() {
         return slaveId;
     }

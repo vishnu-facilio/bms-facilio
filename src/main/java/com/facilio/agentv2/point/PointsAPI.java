@@ -992,7 +992,6 @@ public class PointsAPI {
             case CONFIGURED:
                 point.filterConfigurePoints();
                 break;
-            case UNCONFIRURED:
             case UNCONFIGURED:
                 point.filterUnConfigurePoints();
                 point.filterUnSubscribePoints();
@@ -1002,6 +1001,6 @@ public class PointsAPI {
         }
     }
     public enum PointStatus {
-        UNCONFIRURED, CONFIGURED, SUBSCRIBED, COMMISSIONED,UNCONFIGURED
+        CONFIGURED, SUBSCRIBED, COMMISSIONED,UNCONFIGURED
     }
 }

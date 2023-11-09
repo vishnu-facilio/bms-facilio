@@ -47,5 +47,5 @@ public interface AgentBean {
 
     public void scheduleRestJob(FacilioAgent agent) throws Exception;
 
-    public void schedulePointsDataMissingJob(FacilioAgent agent) throws Exception;
+    public void scheduleJob(FacilioAgent agent, String jobName) throws Exception;
 }

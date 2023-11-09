@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.commands.AgentV2Command;
+import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.point.Point;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -30,8 +33,8 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
             isCov = !(Boolean) context.get(FacilioConstants.ContextNames.ADJUST_READING_TTIME);
         }
 
-
         FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
+        Controller controller = (Controller) context.get(AgentConstants.CONTROLLER);
         long timeStamp = Long.parseLong(context.get(FacilioConstants.ContextNames.TIMESTAMP).toString());
         Map<String, Map<String, Object>> snapshot = (Map<String, Map<String, Object>>) context.get(FacilioConstants.ContextNames.DataProcessor.DATA_SNAPSHOT);
         Map<String, Point> pointRecords = (Map<String, Point>) context.get(FacilioConstants.ContextNames.DataProcessor.POINT_RECORDS);
@@ -69,6 +72,7 @@ public class UpdateLastRecordedValueAndFilterPointsCommand extends AgentV2Comman
         context.put(AgentConstants.ERROR_POINTS, errorPoints);
         if (!points.isEmpty()) {
             PointsAPI.updatePointsValue(points, updatePointDataMissing);
+            ControllerUtilV2.processUpdateLastDataReceivedTimeAndClearControllerAlarm(agent, controller);
         }
 
         for (String pointName : pointsToRemove) {

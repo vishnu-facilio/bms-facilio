@@ -2,7 +2,6 @@ package com.facilio.agentv2.cacheimpl;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import com.facilio.agentv2.E2.E2ControllerContext;
 import com.facilio.agentv2.controller.Controller;
@@ -11,6 +10,7 @@ import com.facilio.agentv2.iotmessage.ControllerMessenger;
 import com.facilio.agentv2.misc.MiscControllerContext;
 import com.facilio.agentv2.point.GetPointRequest;
 import com.facilio.agentv2.rdm.RdmControllerContext;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.FacilioException;
 import com.facilio.modules.*;
@@ -352,8 +352,7 @@ public class ControllerBeanImpl implements ControllerBean {
     }
 
     void updateController(Controller controller) {
-        controller.setLastDataRecievedTime(System.currentTimeMillis());
-        controller.setLastModifiedTime(controller.getLastDataRecievedTime());
+        controller.setLastModifiedTime(System.currentTimeMillis());
         FacilioChain updateControllerChain = TransactionChainFactory.getUpdateControllerChain();
         FacilioContext context = updateControllerChain.getContext();
         context.put(FacilioConstants.ContextNames.RECORD, controller);
@@ -447,16 +446,6 @@ public class ControllerBeanImpl implements ControllerBean {
             context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
             context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROLLER_ASSET);
-            /*GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-                    .table(MODULE.getTableName())
-                    .fields(Collections.singletonList(FieldFactory.getDeletedTimeField(MODULE)))
-                    .andCondition(CriteriaAPI.getIdCondition(ids, MODULE));
-            int rowsAffected = builder.update(Collections.singletonMap(AgentConstants.DELETED_TIME, System.currentTimeMillis()));
-            if (rowsAffected > 0) {
-                return true;
-            } else {
-                LOGGER.info("Controller deletion failed, rows affected -> " + rowsAffected);
-            }*/
             deleteChain.execute();
             LOGGER.info(" rows affected in deleting controller -> " + context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
             LOGGER.info(" rows  in deleting controller -> " + context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -494,29 +483,6 @@ public class ControllerBeanImpl implements ControllerBean {
 
     }
 
-    public Map<Long, FacilioControllerType> getControllerIdsType(Long agentId) throws Exception {
-        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
-        List<FacilioField> idTypefields = new ArrayList<>();
-        idTypefields.add(FieldFactory.getIdField(controllerModule));
-        idTypefields.add(FieldFactory.getControllerTypeField(controllerModule));
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(controllerModule.getTableName())
-                .select(idTypefields);
-        if (agentId != null) {
-            builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), String.valueOf(agentId), NumberOperators.EQUALS));
-        }
-        //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
-        List<Map<String, Object>> results = builder.get();
-        if ((results != null) && (!results.isEmpty())) {
-            Map<Long, FacilioControllerType> ids = new HashMap<>();
-            results.forEach(row -> ids.put((Long) row.get(AgentConstants.ID), FacilioControllerType.valueOf(Integer.parseInt(String.valueOf(row.get(AgentConstants.CONTROLLER_TYPE))))));
-            return ids;
-        } else {
-            LOGGER.info(" result empty ");
-        }
-        return new HashMap<>();
-    }
-
     @Override
     public Set<Long> getControllerIds(List<Long> agentId) throws Exception {
         FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
@@ -528,9 +494,7 @@ public class ControllerBeanImpl implements ControllerBean {
         if (agentId != null) {
             builder.andCondition(CriteriaAPI.getCondition(FieldFactory.getNewAgentIdField(controllerModule), agentId, NumberOperators.EQUALS));
         }
-        //.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(FieldFactory.getPointFields()).get(AgentConstants.POINT_TYPE), String.valueOf(type.asInt()),NumberOperators.EQUALS));
         List<Map<String, Object>> results = builder.get();
-        LOGGER.info("controller query "+builder.toString());
         if ((results != null) && (!results.isEmpty())) {
             Set<Long> ids = new HashSet<>();
             results.forEach(row -> ids.add((Long) row.get(AgentConstants.ID)));
@@ -542,14 +506,14 @@ public class ControllerBeanImpl implements ControllerBean {
     }
 
     @Override
-    public JSONObject getControllerCountData(List<Long> agentIds) throws Exception {
-        JSONObject controlleCountData = new JSONObject();
-        controlleCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null,null));
-        return controlleCountData;
+    public JSONObject getControllerCountData(List<Long> agentIds) {
+        JSONObject controllerCountData = new JSONObject();
+        controllerCountData.put(AgentConstants.CONFIGURED_COUNT, getCount(agentIds,null,null,null));
+        return controllerCountData;
     }
 
     @Override
-    public JSONObject getControllerCountData(Long agentId) throws Exception {
+    public JSONObject getControllerCountData(Long agentId) {
         return getControllerCountData(Arrays.asList(agentId));
     }
 
@@ -564,12 +528,12 @@ public class ControllerBeanImpl implements ControllerBean {
     }
 
     @Override
-    public List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) throws Exception {
+    public List<Map<String, Object>> getControllerData(Long agentId, Long controllerId, FacilioContext contextProps) {
         List<Map<String, Object>> controllers = new ArrayList<>();
         List<Map<String, Object>> controllerData = new ArrayList<>();
         Integer controllerTypeValue = (Integer) contextProps.get(AgentConstants.CONTROLLER_TYPE);
         if(controllerTypeValue == null) {
-            throw new IllegalArgumentException("ControllerType should not be null : "+controllerTypeValue);
+            throw new IllegalArgumentException("ControllerType should not be null");
         }
         FacilioControllerType controllerType = FacilioControllerType.valueOf(controllerTypeValue);
         FacilioChain getControllerChain = TransactionChainFactory.getControllerDataChain();
@@ -704,21 +668,12 @@ public class ControllerBeanImpl implements ControllerBean {
     }
 
     public List<Map<String, Object>> getControllers(Collection<Long> ids) throws Exception {
-        return (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
+        return RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
     }
 
     public Map<String, Object> getController(Collection<Long> ids) throws Exception {
-        List<Map<String, Object>>ControllerList=  (List<Map<String, Object>>) RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
-        return (Map<String, Object>) ControllerList.get(0);
-    }
-
-    public Map<Long, Map<String, Object>> getControllerMap(Collection<Long> ids) throws Exception {
-        List<Map<String, Object>> controllers = getControllers(ids);
-        if (CollectionUtils.isNotEmpty(controllers)) {
-            return controllers.stream()
-                    .collect(Collectors.toMap(controller -> (long) controller.get("id"), controller -> controller));
-        }
-        return null;
+        List<Map<String, Object>>ControllerList= RecordAPI.getRecordsAsProps(ContextNames.CONTROLLER, ids, null);
+        return ControllerList.get(0);
     }
 
     public FacilioControllerType getControllerType(long controllerId) throws Exception {
@@ -737,19 +692,6 @@ public class ControllerBeanImpl implements ControllerBean {
         throw new FacilioException("Invalid no. of rows");
     }
 
-
-//    public boolean discoverPoint(List<Long> controllerIds) throws Exception {
-//        try {
-//            Controller controller = getControllers(controllerIds,null).get(0);
-//            Objects.requireNonNull(controller,"Controller doesn't exist");
-//            ControllerMessenger.discoverPoints(controller);
-//            return true;
-//        }catch (Exception e){
-//            LOGGER.error("Exception while discoverPoints -> ", e);
-//            throw e;
-//        }
-//    }
-
     public void discoverPoint(long controllerId, int timeout) throws Exception {
         try {
             Controller controller = getController(controllerId,null);
@@ -760,6 +702,7 @@ public class ControllerBeanImpl implements ControllerBean {
             throw e;
         }
     }
+
     public Controller getController(Long controllerId, Long agentId) throws Exception {
         GenericSelectRecordBuilder builder = getSelectControllersBuilder(Collections.singletonList(controllerId), agentId);
 
@@ -882,5 +825,24 @@ public class ControllerBeanImpl implements ControllerBean {
         Long pointCount =  (long) point.getPointsData().get(0).getOrDefault(AgentConstants.ID, 0L);
         return pointCount > 0;
     }
+
+    public void updateLastDataReceivedTime(Long agentId, Long controllerId, Long lastDataReceivedTime) throws Exception{
+        FacilioModule controllerModule = ModuleFactory.getNewControllerModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getIdField(controllerModule));
+        fields.add(FieldFactory.getLastDataReceivedField(controllerModule));
+        fields.add(FieldFactory.getNewAgentIdField(controllerModule));
+
+        GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+                .table(controllerModule.getTableName())
+                .fields(fields)
+                .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(controllerId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("AGENT_ID", "agentId", String.valueOf(agentId), NumberOperators.EQUALS));
+
+        Map<String, Object> toUpdate = new HashMap<>();
+        toUpdate.put(AgentConstants.LAST_DATA_RECEIVED_TIME, lastDataReceivedTime);
+
+        builder.update(toUpdate);
+     }
 }
 

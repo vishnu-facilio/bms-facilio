@@ -48,10 +48,10 @@ public class AddAgentAction extends AgentActionV2 {
     private String url;
     private int partitionId = 0;
     private Integer port;
+    private Integer controllerAlarmIntervalInMins;
     private String ipAddress;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
     private boolean allowAutoMapping;
-
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
@@ -101,6 +101,7 @@ public class AddAgentAction extends AgentActionV2 {
             case E2:
                 agent.setPort(getPort());
                 agent.setIpAddress(getIpAddress());
+                agent.setControllerAlarmIntervalInMins(getControllerAlarmIntervalInMins());
                 break;
         }
         return agent;

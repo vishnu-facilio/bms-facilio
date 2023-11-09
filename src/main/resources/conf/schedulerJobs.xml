@@ -226,6 +226,9 @@
 	<!-- PointsMissingAlarm Job -->
 	<job name="PointsDataMissingAlarmJob" classname="com.facilio.bmsconsole.jobs.PointsDataMissingAlarmJob" transactionTimeout="300000"/>
 
+	<!-- ControllerOfflineAlarm Job -->
+	<job name="ControllerOfflineAlarmJob" classname="com.facilio.bmsconsole.jobs.ControllerOfflineAlarmJob" transactionTimeout="300000"/>
+
 	<!-- create slots for facilities -->
 	<job name='CreateSlotForFacilities' classname= 'com.facilio.bmsconsoleV3.commands.facility.GenerateSlotCommand' transactionTimeout='600000'/>
 	<job name='ScheduleSlotCreation' classname= 'com.facilio.bmsconsoleV3.commands.facility.SlotCreationScheduler' transactionTimeout='600000'/>

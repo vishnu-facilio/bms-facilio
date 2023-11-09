@@ -150,7 +150,9 @@ public class AddAgentDataCommand extends FacilioCommand {
             summaryContext.setValue(String.valueOf(value));
             summaryContext.setParentId(parentId);
             summaryContext.setControllerId(controller.getId());
-            summaryContext.setReadingScope(point.getReadingScope());
+            if(point.getReadingScopeEnum() != null){
+                summaryContext.setReadingScope(point.getReadingScope());
+            }
 
             if(errorPoints.containsKey(pointName)){
                 //fail case

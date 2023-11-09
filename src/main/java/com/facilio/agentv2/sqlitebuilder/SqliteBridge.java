@@ -409,7 +409,7 @@ public class SqliteBridge{
         newController.setControllerProps(controller.getControllerProps());
         newController.setCreatedTime(controller.getCreatedTime());
         newController.setLastModifiedTime(controller.getLastModifiedTime());
-        newController.setLastDataRecievedTime(controller.getLastDataReceivedTime());
+        newController.setLastDataReceivedTime(controller.getLastDataReceivedTime());
     }
 
 

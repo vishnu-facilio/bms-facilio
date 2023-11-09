@@ -7,10 +7,8 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
-import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3WorkOrderModuleSettingAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
@@ -935,6 +933,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentKeys.NAME, "Link Name", "NAME", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.DATA_INTERVAL, "Data Interval", "DATA_INTERVAL", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.POINT_ALARM_INTERVAL, "Point Alarm Interval", "POINT_ALARM_INTERVAL", module, FieldType.NUMBER));
+        fields.add(getDefaultField(AgentConstants.CONTROLLER_ALARM_INTERVAL_IN_MINS, "Controller Alarm Interval", "CONTROLLER_ALARM_INTERVAL", module, FieldType.NUMBER));
         fields.add(getDefaultField(AgentConstants.TYPE, "Type", "TYPE", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.VERSION, "Version", "VERSION", module, FieldType.STRING));
         fields.add(getDefaultField(AgentConstants.LAST_MODIFIED_TIME, "Last Modified Time", "LAST_MODIFIED_TIME", module, FieldType.DATE_TIME));
@@ -977,7 +976,7 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
-    public static FacilioField getAgentLastDataReveivedField(FacilioModule module) {
+    public static FacilioField getLastDataReceivedField(FacilioModule module) {
         return getField(AgentConstants.LAST_DATA_RECEIVED_TIME, "LAST_DATA_RECEIVED_TIME", module, FieldType.NUMBER);
     }
 
@@ -1128,6 +1127,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField(AgentConstants.CONTROLLER_PROPS, "CONTROLLER_PROPS", module, FieldType.STRING));
         fields.add(getCreatedTime(module));
         fields.add(getLastModifiedTimeField(module));
+        fields.add(getLastDataReceivedField(module));
         return fields;
     }
 

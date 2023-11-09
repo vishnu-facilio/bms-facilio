@@ -122,8 +122,6 @@ public class DataProcessorV2 {
                     break;
                 case TIMESERIES:
                 case COV:
-
-
                     JSONObject timeSeriesPayload = (JSONObject) payload.clone();
                     Controller timeseriesController = getOrAddController(payload, agent);
                     if (timeseriesController == null) {
@@ -271,7 +269,6 @@ public class DataProcessorV2 {
     }
 
     private boolean executeTriggers(FacilioAgent agent) throws Exception {
-
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.INSTANT_JOB_NAME, "PostTimeseriesWorkflowExecutionJob");
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.TIMESERIES_COMPLETE);
@@ -281,7 +278,7 @@ public class DataProcessorV2 {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(triggerFields.get("agentId"), String.valueOf(agent.getId()), NumberOperators.EQUALS));
         context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
-        
+
         FacilioChain facilioChain = ReadOnlyChainFactory.executeNonModuleTriggersChain();
         facilioChain.setContext(context);
         return !facilioChain.execute();
@@ -291,11 +288,10 @@ public class DataProcessorV2 {
         if (payload.containsKey(AgentConstants.DATA)){
             try{
                 JSONArray controllerArray = (JSONArray) payload.get(AgentConstants.DATA);
-                if (controllerArray.size()==0){
-                    agentUtil.clearControllerAlarm(agent);
-                    agentUtil.makeControllersActive(agent);
-                }
-                else{
+                if (controllerArray.isEmpty()){
+                    ControllerUtilV2.clearControllerAlarm(agent);
+                    ControllerUtilV2.makeControllersActive(agent, null);
+                } else{
                     List<Controller> listOfControllers = new ArrayList<>();
                     for (Object controllerObj: controllerArray){
                         JSONObject controllerObject = (JSONObject) controllerObj;
@@ -304,18 +300,18 @@ public class DataProcessorV2 {
                         if (controllerObject.containsKey(AgentConstants.CONTROLLER_TYPE)) {
                             controllerPayload.put(AgentConstants.CONTROLLER_TYPE, controllerObject.remove(AgentConstants.CONTROLLER_TYPE));
                             controllerPayload.put(AgentConstants.CONTROLLER, controllerObject);
-                            Controller controllr = AgentConstants.getControllerBean().getController(controllerPayload, agent.getId());
-                            if (controllr!=null) {
-                                listOfControllers.add(controllr);
-                            }else {
+                            Controller controller = AgentConstants.getControllerBean().getController(controllerPayload, agent.getId());
+                            if (controller!=null) {
+                                listOfControllers.add(controller);
+                            } else {
                                 LOGGER.info("Controller is null while processing event");
                             }
                         }
                     }
-                    if (listOfControllers.size()>0){
-                        agentUtil.raiseControllerAlarm(agent,listOfControllers);
+                    if (!listOfControllers.isEmpty()){
+                        ControllerUtilV2.raiseControllerAlarm(agent, listOfControllers);
                         List<Long> controllerIds = listOfControllers.stream().map(controller -> controller.getId()).collect(Collectors.toList());
-                        agentUtil.makeControllersActiveAndInactive(agent, controllerIds);
+                        ControllerUtilV2.makeControllersActiveAndInactive(agent, controllerIds);
                     }
                 }
                 return true;
@@ -493,10 +489,10 @@ public class DataProcessorV2 {
             if (customController != null) {
                 context.put(AgentConstants.CONTROLLER_ID, customController.getId());
                 context.put(AgentConstants.AGENT_ID, customController.getAgentId());
-            } 
-            
+            }
+
             context.put(AgentConstants.DATA, payload);
-            
+
             if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
                 context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));
             } else {
@@ -534,15 +530,20 @@ public class DataProcessorV2 {
 
         FacilioAgent.AgentBMSAlarmProcessorType alarmProcessorType = agent.getAlarmProcessorTypeEnum();
         // If raw alarm or both
-        if (alarmProcessorType != null &&  alarmProcessorType != FacilioAgent.AgentBMSAlarmProcessorType.BMS_ALARM) {
-            Controller controller = getOrAddController(payload, agent);
-            processRawAlarm(agent,controller,events, timestamp);
-            if (alarmProcessorType == FacilioAgent.AgentBMSAlarmProcessorType.RAW_ALARM) {
-                return true;
+        try{
+            if (alarmProcessorType != null &&  alarmProcessorType != FacilioAgent.AgentBMSAlarmProcessorType.BMS_ALARM) {
+                Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
+                processRawAlarm(agent,controller,events, timestamp);
+                if (alarmProcessorType == FacilioAgent.AgentBMSAlarmProcessorType.RAW_ALARM) {
+                    return true;
+                }
             }
-            // removing controller object from payload for bmsevent
-            payload.remove("controller");
+        } catch (Exception e) {
+            LOGGER.error("Exception while processing raw alarm", e);
         }
+
+        // removing controller object from payload for bmsevent
+        payload.remove("controller");
 
         processBmsEvents(events, timestamp);
 
@@ -559,17 +560,16 @@ public class DataProcessorV2 {
             String state = (String) rawAlarm.get("state");
             if(state.equals("Alarm")) {
                 alarmContext.setOccurredTime(timestamp);
-            }
-            else {
+            } else {
                 alarmContext.setClearedTime(timestamp);
             }
             if (controller.getControllerType() == FacilioControllerType.E2.asInt()) {
                 alarmContext.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
             }
             RawAlarmUtil.pushToStormRawAlarmQueue(alarmContext);
+            ControllerUtilV2.processUpdateLastDataReceivedTimeAndClearControllerAlarm(agent, controller);
         }
     }
-
 
     private void processBmsEvents(JSONArray events, long timestamp) throws Exception {
         List<EventRuleContext> eventRules = new ArrayList<>();

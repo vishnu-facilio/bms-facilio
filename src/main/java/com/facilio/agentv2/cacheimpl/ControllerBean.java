@@ -71,4 +71,5 @@ public interface ControllerBean {
 
     public List<? extends Controller> getControllersToAdd(long agentId, FacilioControllerType controllerType, List<? extends Controller> controllerList) throws Exception;
 
+    void updateLastDataReceivedTime(Long agentId, Long controllerId, Long lastDataReceivedTime) throws Exception;
 }

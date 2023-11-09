@@ -7,6 +7,7 @@ import com.facilio.agent.fw.constants.FacilioCommand;
 import com.facilio.agent.fw.constants.Status;
 import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.controller.Controller;
+import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.point.PointEnum;
 import com.facilio.agentv2.point.PointsAPI;
@@ -34,6 +35,9 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
+import com.facilio.remotemonitoring.compute.RawAlarmUtil;
+import com.facilio.remotemonitoring.context.AlarmApproach;
+import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.taskengine.ScheduleInfo;
@@ -179,12 +183,12 @@ public class AgentUtilV2
                     LOGGER.info("Agent Connection Lost or Disconnected ");
                     agent.setConnected(false);
                     raiseAgentAlarm(agent);
-                    createOrDeletePointsDataMissingAlarmJob(agent, false);
+                    createOrDeleteJob(agent, false);
                 } else if (status == Status.CONNECTED){
                     LOGGER.info("Agent Connected");
                     agent.setConnected(true);
                     dropAgentAlarm( agent);
-                    createOrDeletePointsDataMissingAlarmJob(agent, true);
+                    createOrDeleteJob(agent, true);
                 } else {
                     LOGGER.info("Unknown status type - "+ status);
                 }
@@ -200,16 +204,23 @@ public class AgentUtilV2
         }
     }
 
-    private void createOrDeletePointsDataMissingAlarmJob(FacilioAgent agent, boolean createJob) throws Exception {
+    private void createOrDeleteJob(FacilioAgent agent, boolean createJob) throws Exception {
         if(createJob){
+            AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
             if(FacilioTimer.getJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME) == null){
                 LOGGER.info("Creating Points Data Missing Alarm Job for agent - "+ agent.getDisplayName());
-                AgentBean agentBean = (AgentBean) BeanFactory.lookup("AgentBean");
-                agentBean.schedulePointsDataMissingJob(agent);
+                agentBean.scheduleJob(agent, FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
+            }
+            if(FacilioTimer.getJob(agent.getId(), FacilioConstants.Job.CONTROLLER_OFFLINE_ALARM_JOB_NAME) == null &&
+                    agent.getControllerAlarmIntervalInMins() != null && agent.getControllerAlarmIntervalInMins() > 0){
+                LOGGER.info("Creating Controller Offline Alarm Job for agent - "+ agent.getDisplayName());
+                agentBean.scheduleJob(agent, FacilioConstants.Job.CONTROLLER_OFFLINE_ALARM_JOB_NAME);
             }
         } else {
             LOGGER.info("Deleting Points Data Missing Alarm Job for agent - "+ agent.getDisplayName());
             FacilioTimer.deleteJob(agent.getId(), FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
+            LOGGER.info("Deleting Controller Offline Alarm Job for agent - "+ agent.getDisplayName());
+            FacilioTimer.deleteJob(agent.getId(), FacilioConstants.Job.CONTROLLER_OFFLINE_ALARM_JOB_NAME);
         }
     }
 
@@ -325,22 +336,6 @@ public class AgentUtilV2
         return criteria;
     }
 
-    public static void togglePointsDataMissingAlarmJob(FacilioAgent agent) throws Exception {
-        String jobName = FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME;
-        boolean isActiveUpdateValue = agent.getConnected();
-        long jobId = agent.getId();
-
-        if(isActiveUpdateValue) {
-            FacilioTimer.activateJob(jobId, jobName);
-            LOGGER.info("Job Activated - Job Id : "+ jobId +", Job Name: " + jobName);
-        }
-        else {
-            FacilioTimer.inActivateJob(jobId, jobName);
-            LOGGER.info("Job InActivated - Job Id : "+ jobId +", Job Name: " + jobName);
-
-        }
-    }
-
     public static void dropAgentAlarm(FacilioAgent agent) throws Exception {
         long currentTime = System.currentTimeMillis();
         AgentEventContext event = getAgentEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY);
@@ -349,7 +344,7 @@ public class AgentUtilV2
 
     }
 
-    private static void addEventToDB(AgentEventContext event) throws Exception {
+    public static void addEventToDB(AgentEventContext event) throws Exception {
         List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
         eventList.add(event);
         FacilioContext context = new FacilioContext();
@@ -367,30 +362,7 @@ public class AgentUtilV2
 
     }
 
-    /**
-     * This method populates the agents from database and maps them to their name
-     */
-   /* public void populateAgentContextMap() {
-            List<FacilioAgent> agentList = AgentApiV2.getAgents();
-            LOGGER.info(" getting all agents "+agentList);
-            agentList.forEach(agent -> agentMap.put(agent.getName(),agent));
-            LOGGER.info("\n-\n-\n- after populating new agents" + agentMap + "\n-\n-\n-");
-    }*/
 
-    public void clearControllerAlarm(FacilioAgent agent) throws Exception {
-        long currentTime = System.currentTimeMillis();
-        AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CLEAR_SEVERITY,null);
-        addEventToDB(event);
-        LOGGER.info("Cleared Controller Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId()+ ")");
-    }
-
-    public void raiseControllerAlarm(FacilioAgent agent,List<Controller> controllers) throws Exception {
-        long currentTime = System.currentTimeMillis();
-        AgentEventContext event = getControllerEventContext(agent, currentTime, FacilioConstants.Alarm.CRITICAL_SEVERITY,controllers);
-        addEventToDB(event);
-        LOGGER.info("Added controller Alarm for Agent : " + agent.getDisplayName() + " ( ID :" + agent.getId() + ")");
-
-    }
 
     public static void raisePointAlarm(FacilioAgent agent, long points) throws Exception {
         long currentTime = System.currentTimeMillis();
@@ -423,29 +395,6 @@ public class AgentUtilV2
         event.setSiteId(AccountUtil.getCurrentSiteId());
         event.setAgent(agent);
         event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.POINT.getIndex());
-        return event;
-    }
-
-
-    private AgentEventContext getControllerEventContext(FacilioAgent agent, long currentTime, String severity, List<Controller> controllers) {
-        AgentEventContext event = new AgentEventContext();
-        event.setMessage("Controllers are unresponsive in agent " + agent.getDisplayName());
-        if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)){
-            StringBuilder descBuilder = new StringBuilder();
-            descBuilder.append("Count : " + controllers.size());
-            descBuilder.append(", Controllers Name: ");
-            for (Controller c : controllers) {
-                descBuilder.append(c.getName()).append(", ");
-            }
-            event.setDescription(descBuilder.toString());
-            event.setComment("Disconnected time : " + DateTimeUtil.getFormattedTime(currentTime));
-        }
-        event.setSeverityString(severity);
-        event.setCreatedTime(currentTime);
-        event.setSiteId(AccountUtil.getCurrentSiteId());
-        event.setAgent(agent);
-        event.setControllersList(controllers);
-        event.setAgentAlarmType(AgentAlarmContext.AgentAlarmType.CONTROLLER.getIndex());
         return event;
     }
 
@@ -609,36 +558,6 @@ public class AgentUtilV2
         return agentBean;
     }
 
-    public void makeControllersActive(FacilioAgent agent) throws SQLException {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
-
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getNewControllerModule().getTableName())
-                .fields(FieldFactory.getControllersField())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agent.getId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ACTIVE), String.valueOf(false), BooleanOperators.IS));
-        Map<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentConstants.ACTIVE, true);
-        updateBuilder.update(toUpdate);
-    }
-
-    public void makeControllersInActive(FacilioAgent agent, List<Long> controllerIds) throws SQLException {
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getControllersField());
-
-        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-                .table(ModuleFactory.getNewControllerModule().getTableName())
-                .fields(FieldFactory.getControllersField())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.AGENT_ID), String.valueOf(agent.getId()), StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentConstants.ID), controllerIds, StringOperators.IS));
-        Map<String, Object> toUpdate = new HashMap<>();
-        toUpdate.put(AgentConstants.ACTIVE, false);
-        updateBuilder.update(toUpdate);
-    }
-
-    public void makeControllersActiveAndInactive(FacilioAgent agent, List<Long> controllerIds) throws SQLException {
-        makeControllersActive(agent);
-        makeControllersInActive(agent, controllerIds);
-    }
     public static void scheduleMlBmsJob(long orgId) throws Exception{
         long interval = 120;
 
@@ -677,5 +596,4 @@ public class AgentUtilV2
         }
         return true;
     }
-
 }

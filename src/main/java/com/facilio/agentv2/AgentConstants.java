@@ -25,6 +25,7 @@ public class AgentConstants
     public static final String NAME = "name";
     public static final String DATA_INTERVAL = "interval";
     public static final String POINT_ALARM_INTERVAL = "pointAlarmInterval";
+    public static final String CONTROLLER_ALARM_INTERVAL_IN_MINS = "controllerAlarmIntervalInMins";
     public static final String WRITABLE = "writable";
     public static final String AGENT_WRITABLE = "agentWritable";
     public static final String ACTIVE = "active";
@@ -349,6 +350,9 @@ public class AgentConstants
     public static final String FILTER_INSTANCE_TYPES = "filterInstanceTypes";
     public static final String FILTERS = "filters";
     public static final String CONFIGURE_POINTS_COUNT = "configurePointsCount";
+
+    // Logs
+    public static final String CONTROLLER_OFFLINE_ALARM = "CONTROLLER OFFLINE ALARM :: ";
 
     //Points status
     public static final String UNCONFIGURED = "UNCONFIGURED";

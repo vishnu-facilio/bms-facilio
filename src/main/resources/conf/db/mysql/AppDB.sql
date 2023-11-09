@@ -8677,6 +8677,7 @@ CREATE TABLE IF NOT EXISTS Agent (
         DISPLAY_NAME varchar(250) ,
         DATA_INTERVAL bigint(20) DEFAULT 10 not null,
         POINT_ALARM_INTERVAL INT,
+        CONTROLLER_ALARM_INTERVAL INT,
         PROCESSOR_VERSION bigint(20),
         WRITABLE tinyint(4),
         VERSION varchar(20),

@@ -68,6 +68,12 @@ public class GetControllerRequest
         return withAgentId(agent.getId());
     }
 
+    public GetControllerRequest withCriteria(Criteria controllerCriteria) throws Exception {
+        criteria.andCriteria(controllerCriteria);
+        context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
+        return this;
+    }
+
     public GetControllerRequest withAgentId(long agentId) throws Exception {
         if (agentId > 0) {
             context.put(AgentConstants.AGENT_ID, agentId);

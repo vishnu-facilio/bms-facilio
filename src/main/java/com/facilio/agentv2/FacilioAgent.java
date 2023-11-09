@@ -59,6 +59,8 @@ public class FacilioAgent implements Serializable {
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
     private Integer pointAlarmInterval = null;
     @JsonInclude
+    private Integer controllerAlarmIntervalInMins = null;
+    @JsonInclude
     private long autoMappingParentFieldId;
     @JsonInclude
     private boolean allowAutoMapping;
@@ -77,6 +79,14 @@ public class FacilioAgent implements Serializable {
 
     public void setAutoMappingParentFieldId(long autoMappingParentFieldId) {
         this.autoMappingParentFieldId = autoMappingParentFieldId;
+    }
+
+    public Integer getControllerAlarmIntervalInMins() {
+        return controllerAlarmIntervalInMins;
+    }
+
+    public void setControllerAlarmIntervalInMins(Integer controllerAlarmIntervalInMins) {
+        this.controllerAlarmIntervalInMins = controllerAlarmIntervalInMins;
     }
 
     public Integer getPort() {
