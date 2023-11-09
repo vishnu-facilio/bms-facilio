@@ -1,0 +1,10 @@
+version: 1.0
+
+widgetModules:
+#  SUMMARY_FIELDS_WIDGET:
+#      - all
+#  ACTIVITY:
+#    - workorder
+#    - asset
+#  COMMENT:
+#    - all

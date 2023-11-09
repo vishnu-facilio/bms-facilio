@@ -263,35 +263,43 @@
 <!--        </action>-->
         <action name="changeStatus"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="changePageStatus">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="clone"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="clonePage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="list"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="getAllCustomPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="create"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="createCustomPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="fetch"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchCustomPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="patchCustomPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="deleteCustomPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
@@ -299,41 +307,49 @@
         <action name="fields/*"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="getPageCriteriaFieldsForModule">
             <param name="moduleName">{1}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
     <package name="PageColumns" namespace="/api/v1/setup/customPage/columns" extends="v2Api">
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageColumnsAction" method="addPageColumns">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageColumnsAction" method="getPageColumn">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
     <package name="PageSections" namespace="/api/v1/setup/customPage/section" extends="v2Api">
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="addPageSection">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="getPageSection">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="patchPageSection">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="deletePageSection">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="reorderPageSections">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
@@ -341,12 +357,14 @@
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsole.actions.SummaryWidgetAction"
                 method="addOrUpdateSummaryWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.SummaryWidgetAction"
                 method="fetchSummaryWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
@@ -354,22 +372,26 @@
         <action name="add"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="addBulkRelatedList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="updateBulkRelatedList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="fetchBulkRelatedList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="relatedModules/list"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="getRelatedModules">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
 
     </package>
@@ -378,22 +400,26 @@
         <action name="add"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="addBulkRelationshipWidget">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="updateBulkRelationshipWidget">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="fetchBulkRelationshipWidget">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="relationship/list"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="getRelationshipsOfModule">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
 
     </package>
@@ -401,69 +427,84 @@
     <package name="PageSectionWidgets" namespace="/api/v1/setup/customPage/widget" extends="v2Api">
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="createWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="updateWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="rearrange"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="rearrangeWidgets">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="deleteWidget">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="widgetDetail/get"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
     <package name="PageTabsSetup" namespace="/api/v1/setup/customPage/tabs" extends="v2Api">
         <action name="changeStatus"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="changeTabStatus">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="addPageTabs">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="fetch"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="patchPageTab">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="deletePageTabs">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="reorderPageTabs">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="connectedAppTab/add"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="addConnectedSummaryTabToPage">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 
     <package name="ModuleWidgetsConfig" namespace="/api/v1/setup/moduleWidgets" extends="v2Api">
         <action name="list"
                 class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetsForModule">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
         <action name="configs"
                 class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetConfigs">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 

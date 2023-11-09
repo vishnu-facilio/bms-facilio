@@ -1,0 +1,28 @@
+version: 1.0
+
+widgets:
+#  SUMMARY_FIELDS_WIDGET :
+#    WEB:
+#      - name: flexiblewebsummaryfieldswidget_5
+#        displayName: Summary Fields Widget - 5
+#        configType: FLEXIBLE
+#        minHeight: 5
+#    MOBILE:
+#      - name: flexiblemobilesummaryfieldswidget_14
+#        displayName: Summary Fields Widget - 14
+#        configType: FLEXIBLE
+#        minHeight: 14
+#
+#  COMMENT:
+#    WEB:
+#    - name: flexiblewebcomment_5
+#      displayName: Comment - 5
+#      configType: FLEXIBLE
+#      minHeight: 5
+#    MOBILE:
+#      - name: flexiblemobilecomment_8
+#        displayName: Comment - 8
+#        configType: FLEXIBLE
+#        minHeight: 8
+
+

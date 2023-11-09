@@ -2,11 +2,9 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ConnectedAppWidgetContext;
-import com.facilio.bmsconsole.context.PageSectionWidgetContext;
-import com.facilio.bmsconsole.context.PageTabContext;
-import com.facilio.bmsconsole.context.WidgetContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.Page;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ConnectedAppAPI;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.command.FacilioCommand;
@@ -41,12 +39,12 @@ public class GetWidgetsForModuleCommand extends FacilioCommand {
                 List<ConnectedAppWidgetContext> summaryWidgets = ConnectedAppAPI.getConnectedAppWidgets(ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE, entityId);
                 if(CollectionUtils.isNotEmpty(summaryWidgets)) {
                 for (ConnectedAppWidgetContext summaryWidget : summaryWidgets) {
-                    PageSectionWidgetContext widget = new PageSectionWidgetContext();
+                    WidgetConfigContext widget = new WidgetConfigContext();
                     widget.setDisplayName(summaryWidget.getWidgetName());
                     JSONObject summaryWidgetParams = new JSONObject();
                     summaryWidgetParams.put("widgetId", summaryWidget.getId());
                     summaryWidgetParams.put("name", summaryWidget.getWidgetName());
-                    widget.setWidgetParams(summaryWidgetParams);
+//                    widget.setWidgetParams(summaryWidgetParams);
                 }
                     context.put(FacilioConstants.Widget.WIDGETS, widgets);
                 }
@@ -54,7 +52,7 @@ public class GetWidgetsForModuleCommand extends FacilioCommand {
                 long moduleId = module.getModuleId();
                 widgets = WidgetAPI.getWidgetsForModule(moduleId);
                 if (CollectionUtils.isNotEmpty(widgets)) {
-                    widgets.removeIf(f -> f.getWidgetType().getFeatureId() != -1 && !hasLicenseEnabled(f.getWidgetType().getFeatureId()));
+                    widgets.removeIf(f -> (f.getWidgetType().getFeatureId() != -1 && !hasLicenseEnabled(f.getWidgetType().getFeatureId())) || f.getWidgetType() == PageWidget.WidgetType.CONNNECTED_APP);
                     context.put(FacilioConstants.Widget.WIDGETS, FieldUtil.getAsJSONArray(widgets, WidgetContext.class));
                 }
             }

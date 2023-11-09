@@ -12162,9 +12162,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("widgetId","WIDGETID",module));
         fields.add(getStringField("configType","CONFIG_TYPE",module));
         fields.add(getNumberField("minHeight","MIN_HEIGHT",module));
-        fields.add(getNumberField("maxHeight","MAX_HEIGHT",module));
+//        fields.add(getNumberField("maxHeight","MAX_HEIGHT",module));
         fields.add(getNumberField("minWidth","MIN_WIDTH",module));
-        fields.add(getNumberField("maxWidth","MAX_WIDTH",module));
+//        fields.add(getNumberField("maxWidth","MAX_WIDTH",module));
         fields.add(getStringField("layoutType","LAYOUT_TYPE", module));
         return fields;
     }

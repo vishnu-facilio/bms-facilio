@@ -9,6 +9,8 @@ import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
+import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
+import com.facilio.fields.util.FieldsConfigChain;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
@@ -165,6 +167,7 @@ public class FacilioContextListener implements ServletContextListener {
 			FacilioScheduler.initScheduler();
 			FacilioInstantJobScheduler.init();
 			ChainUtil.initRESTAPIHandler("com\\.facilio\\.apiv3");
+			WidgetConfigUtil.fillWidgetModuleAndConfigMap();
 			ModuleWidgetsUtil.initWidgetConfigHandler();
 			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();

@@ -275,6 +275,7 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="translationImpl">FormTranslation</param>
 			<param name="permission">ALL</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS</param>
 		</action>
 		
@@ -664,7 +665,7 @@
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
 			<param name="translationImpl">ButtonTranslation</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
 		<action name="getAvailableButtonsForRecords" class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtonsForRecords">
@@ -687,7 +688,7 @@
 		</action>
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getAvailableButtonsForList"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
@@ -1679,9 +1680,8 @@
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="translationImpl">ViewTranslation</param>
-			<param name= "permission">ALL</param>
+			<param name= "permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">EMAIL_LOGS</param>
-			<param name="deprecated">true</param>
 		</action>
 		<action name="getViewFromId"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="getViewFromId">
@@ -1703,7 +1703,7 @@
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="viewName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		
 		<action name="addGroup"
@@ -2926,7 +2926,7 @@
 			<param name="deprecated">true</param>
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
 		</action>
 	</package>
 
@@ -3379,7 +3379,7 @@
 				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
 			<param name="fieldListType">{1}</param>
 			<param name="moduleName">{2}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -8943,14 +8943,14 @@
 	<package name="customPageAPI" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="summaryFieldWidget"
 				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getMainSummaryWidget">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
 	<package name="PageTabs" namespace="/api/v2/customPage/tabs" extends="v2Api">
 		<action name="fetch"
 				class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -8992,21 +8992,21 @@
 	<package name="customPage" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="fetchForRecord"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
 	<package name="widgetDetail" namespace="/api/v2/customPage/widget/widgetDetail" extends="v2Api">
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
 	<package name="relationSummaryWidget" namespace="/api/v2/customPage/relation/summaryWidget" extends="v2Api">
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction" method="fetchSummaryWidgetForRelation">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -9021,7 +9021,7 @@
 	<package name="pageBuilderEnabledModules" namespace="/api/v2/moduleSetting/pageBuilder" extends="v2Api">
 		<action name="modules"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageBuilderEnabledModules">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 

@@ -181,7 +181,7 @@
         <action name="count"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="count">
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
 
     </package>
@@ -592,7 +592,7 @@
                 method="pickList">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 

@@ -2,28 +2,115 @@ package com.facilio.bmsconsole.widgetConfig;
 
 import com.facilio.bmsconsole.context.PageSectionWidgetContext;
 import com.facilio.bmsconsole.context.PagesContext;
+import com.facilio.bmsconsole.context.WidgetConfigContext;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.CustomPageAPI;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
+import org.yaml.snakeyaml.Yaml;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.io.InputStream;
+import java.util.*;
 
 public class WidgetConfigUtil {
+
+    private static final String WIDGET_CONF_PATH = FacilioUtil.normalizePath("conf/pageWidget/widgetConfig.yml");
+    private static final String WIDGET_MODULES_PATH = FacilioUtil.normalizePath("conf/pageWidget/widgetModules.yml");
+    public static final Map<String, Map<String, WidgetConfigContext>> WIDGET_LIST_CONFIG = initWidgetConfig();
+    public static final Map<String, List<String>> WIDGET_MODULES = initWidgetModules();
+
+    public static void fillWidgetModuleAndConfigMap() throws Exception {
+        initWidgetModules();
+        initWidgetConfig();
+    }
+
+    private static Map<String, List<String>> initWidgetModules() {
+        Yaml yaml = new Yaml();
+        Map<String, Object> json = null;
+
+        //read widget to modules
+        try (InputStream inputStream = WidgetConfigUtil.class.getClassLoader().getResourceAsStream(WIDGET_MODULES_PATH);) {
+            json = yaml.load(inputStream);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error occured while reading widgetModules yml file of pageBuilder "+e.getMessage());
+        }
+        Map<String, List<String>> widgetModulesMap = (Map<String, List<String>>)json.get("widgetModules");
+        if(MapUtils.isNotEmpty(widgetModulesMap)) {
+            return Collections.unmodifiableMap(widgetModulesMap);
+        }
+        return Collections.emptyMap();
+
+    }
+    public static Map<String, Map<String, WidgetConfigContext>> initWidgetConfig() {
+        Yaml yaml = new Yaml();
+        Map<String, Object> json = null;
+
+        //read widget configs
+        try (InputStream inputStream = WidgetConfigUtil.class.getClassLoader().getResourceAsStream(WIDGET_CONF_PATH);) {
+            json = yaml.load(inputStream);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error occured while reading widgetConfig yml file of pageBuilder "+e.getMessage());
+        }
+
+        Map<String, Map<String, WidgetConfigContext>> widgetListConfigMap = new HashMap<>();
+        if(json != null) {
+            Map<String, Map<String, Object>> widgets = (Map<String, Map<String, Object>>) json.get("widgets");
+
+            if (MapUtils.isNotEmpty(widgets)) {
+                for (Map.Entry<String, Map<String, Object>> widget : widgets.entrySet()) {
+                    String widgetTypeName = widget.getKey();
+                    Map<String, Object>  layoutWidgetConfigsMap = widget.getValue();
+
+                    Map<String, WidgetConfigContext> widgetConfigsMap = new HashMap<>();
+                    if(MapUtils.isNotEmpty(layoutWidgetConfigsMap)) {
+
+                        for (Map.Entry<String, Object> entry : layoutWidgetConfigsMap.entrySet()) {
+                            String layoutTypeEnumName = entry.getKey();
+                            if (StringUtils.isNotEmpty(layoutTypeEnumName)) {
+                                PagesContext.PageLayoutType layoutType = PagesContext.PageLayoutType.valueOf(layoutTypeEnumName);
+                                List<Map<String, Object>> widgetConfigsMapList = (List<Map<String, Object>>) entry.getValue();
+
+                                if (CollectionUtils.isNotEmpty(widgetConfigsMapList)) {
+                                    for (Map<String, Object> widgetConfig : widgetConfigsMapList) {
+                                        addWidgetConfigToList(widgetConfig, widgetConfigsMap, layoutType);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    widgetListConfigMap.put(widgetTypeName, widgetConfigsMap);
+                }
+            }
+        }
+        return Collections.unmodifiableMap(widgetListConfigMap);
+    }
+
+    private static void addWidgetConfigToList(Map<String, Object> widgetConfigMap, @NonNull Map<String, WidgetConfigContext> widgetConfigs, @NonNull PagesContext.PageLayoutType layoutType) {
+        WidgetConfigContext widgetConfigContext = new WidgetConfigContext();
+        String name = (String) widgetConfigMap.get("name");
+        widgetConfigContext.setName(name);
+        widgetConfigContext.setDisplayName((String) widgetConfigMap.get("displayName"));
+
+        WidgetConfigContext.ConfigType configType = WidgetConfigContext.ConfigType.valueOf((String) widgetConfigMap.get("configType"));
+        widgetConfigContext.setConfigType(configType);
+        widgetConfigContext.setLayoutType(layoutType);
+
+        widgetConfigContext.setMinHeight((int) widgetConfigMap.getOrDefault("minHeight", -1));
+        widgetConfigContext.setMinWidth((int) widgetConfigMap.getOrDefault("minWidth", -1));
+
+        widgetConfigs.put(name, widgetConfigContext);
+    }
 
     public static FacilioContext createWidget(Long appId, String moduleName, long sectionId, PageSectionWidgetContext widget, List<Map<String, Object>> widgetPositions, PagesContext.PageLayoutType layoutType, WidgetWrapperType widgetWrapperType) throws Exception {
         return createWidget(appId, moduleName, sectionId, widget, widgetPositions, layoutType, widgetWrapperType, false);

@@ -26,6 +26,7 @@ public class AddPageWidgetCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.get(FacilioConstants.CustomPage.LAYOUT_TYPE);
         layoutType = layoutType != null ? layoutType : PagesContext.PageLayoutType.WEB;
         Long sectionId = (Long) context.get(FacilioConstants.CustomPage.SECTION_ID);
@@ -55,7 +56,7 @@ public class AddPageWidgetCommand extends FacilioCommand {
             throw new IllegalArgumentException("linkName already exists or given linkName for widget is invalid");
         }
         widget.setName(name);
-        WidgetAPI.setConfigDetailsForWidgets(layoutType, widget);
+        WidgetAPI.setConfigDetailsForWidgets(moduleName, layoutType, widget);
         widget.setSysCreatedBy(AccountUtil.getCurrentUser().getId());
         widget.setSysCreatedTime(System.currentTimeMillis());
         if (widget.getSequenceNumber() <= 0) {

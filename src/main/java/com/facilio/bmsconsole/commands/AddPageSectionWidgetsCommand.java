@@ -26,6 +26,7 @@ public class AddPageSectionWidgetsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Boolean isSystem = (Boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_SYSTEM, false);
+        String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         PagesContext.PageLayoutType layoutType = (PagesContext.PageLayoutType) context.get(FacilioConstants.CustomPage.LAYOUT_TYPE);
         layoutType = layoutType != null ? layoutType : PagesContext.PageLayoutType.WEB;
 
@@ -64,7 +65,7 @@ public class AddPageSectionWidgetsCommand extends FacilioCommand {
                         widget.setName(name);
 
                         CustomPageAPI.validatePageWidget(widget, WidgetWrapperType.DEFAULT);
-                        WidgetAPI.setConfigDetailsForWidgets(layoutType, widget);
+                        WidgetAPI.setConfigDetailsForWidgets(moduleName, layoutType, widget);
                         widget.setSysCreatedBy(currentUser);
                         widget.setSysCreatedTime(currentTime);
                         if (widget.getSequenceNumber() <= 0) {
@@ -85,7 +86,6 @@ public class AddPageSectionWidgetsCommand extends FacilioCommand {
 
 
             //for adding list of widgetDetails
-            String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
             Long appId = (Long) context.get(FacilioConstants.ContextNames.APP_ID);
             for (PageSectionWidgetContext widget : widgets) {
                 if (widget.getWidgetDetail() != null) {

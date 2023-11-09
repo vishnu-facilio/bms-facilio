@@ -4,34 +4,31 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class WidgetAPI {
 
-    private static final Logger LOGGER = Logger.getLogger(WidgetAPI.class.getName());
     public static void addWidgets(String moduleName,List<WidgetContext> widgets)throws Exception{
 
         LOGGER.info("Started to add widget configurations for ORGID --"+ Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId() +" For module -- "+moduleName);
@@ -278,13 +275,30 @@ public class WidgetAPI {
         }
     }
 
-    public static void setConfigDetailsForWidgets(PagesContext.PageLayoutType layoutType, PageSectionWidgetContext widget) throws Exception {
-        FacilioUtil.throwIllegalArgumentException(widget.getWidgetType() == null, "widgetType can't be null");
-        WidgetConfigContext config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(), widget.getWidgetConfigName(), layoutType);
-        if(config == null) {
-            throw new IllegalArgumentException("widget configuration does not exists for configId -- " + widget.getWidgetConfigId() + " or configName -- " + widget.getWidgetConfigName()
-                    + " for layoutType -- " + layoutType);
+    public static void setConfigDetailsForWidgets(String moduleName, PagesContext.PageLayoutType layoutType, PageSectionWidgetContext widget) throws Exception {
+        PageWidget.WidgetType widgetType = widget.getWidgetType();
+        String widgetConfigName = widget.getWidgetConfigName();
+        FacilioUtil.throwIllegalArgumentException(widgetType == null, "widgetType can't be null");
+        WidgetConfigContext config = null;
+        boolean checkInYAML = false;
+        if (MapUtils.isNotEmpty(WidgetConfigUtil.WIDGET_LIST_CONFIG) && MapUtils.isNotEmpty(WidgetConfigUtil.WIDGET_MODULES)) {
+            List<String> modulesSharingWidgetType = WidgetConfigUtil.WIDGET_MODULES.get(widgetType.name());
+            if (CollectionUtils.isNotEmpty(modulesSharingWidgetType)) {
+                checkInYAML = modulesSharingWidgetType.contains("all") || modulesSharingWidgetType.contains(moduleName);
+            }
+            if (checkInYAML) {
+                config = WidgetConfigUtil.WIDGET_LIST_CONFIG.get(widgetType.name()).get(widgetConfigName);
+            }
         }
+
+        //TODO - After WidgetConfig.yml is used all widget configuration, remove this if check
+        if (config == null) {
+            config = WidgetAPI.getWidgetConfiguration(widget.getWidgetType(), widget.getWidgetConfigId(), widgetConfigName, layoutType);
+            LOGGER.warn("Move this widget config to .yml file - " + widgetConfigName);
+        }
+        FacilioUtil.throwIllegalArgumentException(config == null, "widget configuration does not exists for configId -- " + widget.getWidgetConfigId() + " or configName -- " + widgetConfigName
+                + " for layoutType -- " + layoutType);
+        FacilioUtil.throwIllegalArgumentException(config.getLayoutType() != layoutType, "");
 
         widget.setWidgetConfigId(config.getId());
         widget.setConfigType(config.getConfigType());

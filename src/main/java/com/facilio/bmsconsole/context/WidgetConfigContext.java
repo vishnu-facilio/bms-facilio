@@ -36,9 +36,9 @@ public class WidgetConfigContext {
     private String displayName;
     private long widgetId =-1;
     private long minHeight =-1;
-    private long maxHeight = -1;
+//    private long maxHeight = -1;
     private long minWidth = -1;
-    private long maxWidth = -1;
+//    private long maxWidth = -1;
     @JsonFormat(shape = JsonFormat.Shape.STRING)
     private ConfigType configType;
     public enum ConfigType implements FacilioIntEnum {

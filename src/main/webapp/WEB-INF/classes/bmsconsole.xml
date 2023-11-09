@@ -1686,7 +1686,7 @@
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
 			 <param name="translationImpl">ModuleTranslation</param>
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
             <param name="setupTab">ASSET_DEPRECIATION,WORKFLOWS,NOTIFICATIONS,APPROVALS,EMAIL_TEMPLATES</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
