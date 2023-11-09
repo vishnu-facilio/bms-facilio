@@ -304,16 +304,6 @@ public class FieldsConfigList {
     public static final List<String>  SPACE_VIEW_FIXED_FIELDS = Arrays.asList(
            "name"
     );
-    public static final List<String> CALENDAR_FIELDS_INCLUDE = Arrays.asList(
-            "name","calendarType","client","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
-    );
-    public static final List<String> CALENDAR_EVENTS_FIELDS_INCLUDE = Arrays.asList(
-            "name","eventType","eventFrequency","validityStartTime","validityEndTime","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
-    );
-    public static final List<String> CALENDAR_EVENTS_SORT_FIELDS_INCLUDE = Arrays.asList(
-            "name","eventType","eventFrequency","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
-    );
-
     public static final List<String> FLOOR_FIELDS_INCLUDE = Arrays.asList(
             "grossFloorArea", "area",
             "site", "classification", "decommission","moduleState",
