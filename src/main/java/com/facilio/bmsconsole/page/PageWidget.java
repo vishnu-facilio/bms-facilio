@@ -707,8 +707,8 @@ public class PageWidget {
 		INVENTORY_USAGE("inventoryUsage"),
 		PM_PLANNER_TRIGGER_DETAILS_WIDGET("pmPlannerTriggerDetailsWidget"),
 		PM_RESOURCE_PLANNER_DETAILS_WIDGET("pmResourcePlannerDetailsWidget"),
-		PM_SCHEDULER_DETAILS_WIDGET("pmSchedulerDetailsWidget")
-		;
+		PM_SCHEDULER_DETAILS_WIDGET("pmSchedulerDetailsWidget"),
+		METER_RELATIONSHIPS("meterRelationships");
 
 		private String name;
 		@Getter

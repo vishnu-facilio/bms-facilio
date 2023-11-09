@@ -82,6 +82,10 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                     .addModuleWidget("connectedApp", "Connected App", PageWidget.WidgetType.CONNNECTED_APP)
                         .addWidgetConfig("flexiblewebconnectedapp_6","Connected App - 6", WidgetConfigContext.ConfigType.FLEXIBLE, 6, -1, PagesContext.PageLayoutType.WEB)
                     .done()
+                    .addModuleWidget("meterRelationshipWidget", "Meter Relationship Widget", PageWidget.WidgetType.METER_RELATIONSHIPS)
+                    .addFlexibleWidgetConfig("flexiblewebmeterrelationshipwidget_10","Meter Relationship Widget - 10",10, PagesContext.PageLayoutType.WEB)
+                    .addFlexibleWidgetConfig("flexiblemobilemeterrelationshipwidget_8","Meter Relationship Widget - 8",8, PagesContext.PageLayoutType.MOBILE)
+                    .done()
                 .getWidgets();
     }
 }

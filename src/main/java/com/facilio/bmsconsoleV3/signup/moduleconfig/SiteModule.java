@@ -126,6 +126,18 @@ public class SiteModule extends BaseModuleConfig {
         downloadQR.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         downloadQR.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,downloadQR);
+
+        SystemButtonRuleContext addMeterRelationShip = new SystemButtonRuleContext();
+        addMeterRelationShip.setName("Add Meter Relationship");
+        addMeterRelationShip.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addMeterRelationShip.setIdentifier("addMeterRelationShip");
+        addMeterRelationShip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        List<SystemButtonAppRelContext> systemButtonAppRels = new ArrayList<>();
+        SystemButtonAppRelContext energyAppRelationshipButton = new SystemButtonAppRelContext();
+        energyAppRelationshipButton.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        systemButtonAppRels.add(energyAppRelationshipButton);
+        addMeterRelationShip.setSystemButtonAppRels(systemButtonAppRels);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addMeterRelationShip);
     }
 
     private void addDefaultSiteModuleConfig(long siteModuleId) throws Exception {
@@ -563,6 +575,7 @@ public class SiteModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
+
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
@@ -679,6 +692,15 @@ public class SiteModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
 
+                .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterRelations", "", "")
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)

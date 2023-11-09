@@ -149,6 +149,17 @@ public class SpaceModule extends BaseModuleConfig {
         downloadQR.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,downloadQR);
 
+        SystemButtonRuleContext addMeterRelationShip = new SystemButtonRuleContext();
+        addMeterRelationShip.setName("Add Meter Relationship");
+        addMeterRelationShip.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addMeterRelationShip.setIdentifier("addMeterRelationShip");
+        addMeterRelationShip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        List<SystemButtonAppRelContext> systemButtonAppRels = new ArrayList<>();
+        SystemButtonAppRelContext energyAppRelationshipButton = new SystemButtonAppRelContext();
+        energyAppRelationshipButton.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        systemButtonAppRels.add(energyAppRelationshipButton);
+        addMeterRelationShip.setSystemButtonAppRels(systemButtonAppRels);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addMeterRelationShip);
     }
 
 
@@ -420,6 +431,15 @@ public class SpaceModule extends BaseModuleConfig {
                 .sectionDone()
                 .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
                 .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET,"flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterRelations", "", "")
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

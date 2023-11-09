@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonAppRelContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.*;
@@ -146,6 +147,17 @@ public class AssetModule extends BaseModuleConfig{
         moveToStoreRoom.setIdentifier("moveToStoreroom");
         moveToStoreRoom.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,moveToStoreRoom);
+        SystemButtonRuleContext addMeterRelationShip = new SystemButtonRuleContext();
+        addMeterRelationShip.setName("Add Meter Relationship");
+        addMeterRelationShip.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addMeterRelationShip.setIdentifier("addMeterRelationShip");
+        addMeterRelationShip.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        List<SystemButtonAppRelContext> systemButtonAppRels = new ArrayList<>();
+        SystemButtonAppRelContext energyAppRelationshipButton = new SystemButtonAppRelContext();
+        energyAppRelationshipButton.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        systemButtonAppRels.add(energyAppRelationshipButton);
+        addMeterRelationShip.setSystemButtonAppRels(systemButtonAppRels);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,addMeterRelationShip);
     }
 
 
@@ -550,6 +562,7 @@ public class AssetModule extends BaseModuleConfig{
                     .sectionDone()
                     .columnDone()
                     .tabDone()
+
 
                     .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
@@ -1173,7 +1186,6 @@ public class AssetModule extends BaseModuleConfig{
                     .columnDone()
                     .tabDone()
 
-
                     .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("activity", null, null)
@@ -1312,6 +1324,15 @@ public class AssetModule extends BaseModuleConfig{
                 .columnDone()
                 .tabDone()
 
+                .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterRelations", "", "")
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("activity", null, null)
@@ -1428,6 +1449,15 @@ public class AssetModule extends BaseModuleConfig{
                 .sectionDone()
                 .addSection("relatedlist", "Related List", "List of all related records across modules")
                 .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("meterRelations", "", "")
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
