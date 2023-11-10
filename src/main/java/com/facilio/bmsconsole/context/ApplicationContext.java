@@ -277,4 +277,14 @@ public class ApplicationContext implements Serializable{
 
 	@Getter @Setter
 	private boolean hasSetupPermission;
+
+	@Getter @Setter
+	private Boolean status;
+
+	public boolean isActive() {
+		if (status != null) {
+			return status.booleanValue();
+		}
+		return false;
+	}
 }

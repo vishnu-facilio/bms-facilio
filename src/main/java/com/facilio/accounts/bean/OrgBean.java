@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -112,4 +113,6 @@ public interface OrgBean {
 	public Long getDefaultApplicationId() throws Exception;
 
 	public Long getOrgUserIdForPeople(long peopleID,long appID) throws Exception;
+	void setApplicationStatus(String[] applications, long orgId) throws Exception;
+	List<ApplicationContext> getAllApplications(long orgId) throws Exception;
 }

@@ -675,6 +675,12 @@ public class OrgBeanImpl implements OrgBean {
 		return value;
 	}
 
+	public void setApplicationStatus(String[] applications, long orgId) throws Exception {
+		ApplicationApi.setApplicationStatus(applications, orgId);
+	}
+	public List<ApplicationContext> getAllApplications(long orgId) throws Exception {
+		return ApplicationApi.getAllApplications(orgId);
+	}
 	private int addPreProdLicence(Map<LicenseMapping, Long> summodule) throws Exception {
 
 		Map<LicenseMapping, Long> prodValue = new HashMap<>(summodule);

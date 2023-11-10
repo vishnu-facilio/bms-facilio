@@ -135,6 +135,12 @@
 		<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/anomalyconsole.jsp</result>
 		</action>
+		<action name="appstatus" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/appStatus.jsp</result>
+		</action>
+		<action name="setappstatus" class="com.facilio.bmsconsole.actions.AdminAction" method="setApplicationStatus">
+			<result name="success" type="tiles">adminpage/appStatus.jsp</result>
+		</action>
 		<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sqlconsole.jsp</result>
 		</action>

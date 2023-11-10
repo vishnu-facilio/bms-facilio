@@ -133,7 +133,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     if (StringUtils.isNotEmpty(appLinkName)) {
                     	if(!appLinkName.equalsIgnoreCase("tv")) {
                             ApplicationContext application = ApplicationApi.getApplicationForLinkName(appLinkName, true);
-                            if (application != null) {
+                            if (application != null && application.isActive()) {
                                 appId = application.getId();
                             } else {
                                 String orgInitStatus = AccountUtil.handleOrgSignup(iamAccount.getOrg(), iamAccount.getUser());

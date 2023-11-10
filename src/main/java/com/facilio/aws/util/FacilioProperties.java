@@ -243,6 +243,8 @@ public class FacilioProperties {
 
     @Getter
     private static String sfgSecretKey;
+    @Getter
+    private static List<String> adminUsers;
 
     static {
         try {
@@ -506,6 +508,10 @@ public class FacilioProperties {
             if(isApiRateLimiterEnabled){
                 rateLimiterAllowedRequest = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.allowedRequest", "100"));
                 rateLimiterInterval = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.intervalInSeconds", "60"));
+            }
+            String adminUsersCsv = PROPERTIES.getProperty("admin.users");
+            if(StringUtils.isNotEmpty(adminUsersCsv)) {
+                adminUsers = Arrays.asList(adminUsersCsv.split(","));
             }
             LOGGER.info(getIotEndPoint() + "iot endpoint");
 

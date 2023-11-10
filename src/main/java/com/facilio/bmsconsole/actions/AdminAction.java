@@ -158,6 +158,9 @@ public class AdminAction extends ActionSupport {
 
 	@SuppressWarnings("unused")
 	public String addLicense() throws SQLException {
+		if(!ApplicationApi.isAdminControlAllowed()) {
+			return ERROR;
+		}
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String[] selectedFeatures = request.getParameterValues("selected");
 		Long orgId = Long.parseLong(request.getParameter("orgid"));
@@ -207,6 +210,18 @@ public class AdminAction extends ActionSupport {
 		return SUCCESS;
 	}
 
+	public String setApplicationStatus() throws Exception {
+		if(!ApplicationApi.isAdminControlAllowed()) {
+			return ERROR;
+		}
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String[] selectedApps = request.getParameterValues("selected");
+		if(selectedApps != null) {
+			Long orgId = Long.parseLong(request.getParameter("orgid"));
+			AccountUtil.getTransactionalOrgBean(orgId).setApplicationStatus(selectedApps, orgId);
+		}
+		return SUCCESS;
+	}
 
 	public String addModulePageBuilderConfig() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();

@@ -79,7 +79,13 @@ if (buildinfo == null) {
                <span class="nav-title">Agent Upgrade</span>
                </a>
            </li>
-        
+            <li>
+                <a href="appstatus">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">App Status</span>
+                </a>
+            </li>
            <li>
                <a href="data">
                <span class="nav-icon">

@@ -81,7 +81,7 @@ function showLicense() {
 		<input id="orginfo" type="text" value="<%= org == null ? "" : org.getId() %>" class="form-control" name="orgid" />
     </div>
     <div style="margin-top:30px;">
-		<button  id="show" type="submit"  >Submit</button>
+		<button  id="show" type="submit">Submit</button>
 		<% if (org != null) {  %>
 			<table style=" margin-top:40px;"  class="table table-bordered" >
 				<tr>
@@ -296,9 +296,7 @@ function showLicense() {
 					</table>
 				</div>
 				<%
-					String currentUserEmail = AccountUtil.getCurrentUser().getEmail();
-					List<String> allowedUserToUpdateLicence = Arrays.asList("vandhana@facilio.com","shivaraj@facilio.com","yoge@facilio.com","rupal@facilio.com");
-					if(!FacilioProperties.isProduction() || (allowedUserToUpdateLicence.contains(currentUserEmail))) {
+					if(ApplicationApi.isAdminControlAllowed()) {
   				%>
 						<input type="submit" name="addLicense" value="Update" />
 				<%  } %>

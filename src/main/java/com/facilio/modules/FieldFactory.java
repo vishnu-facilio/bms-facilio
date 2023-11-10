@@ -10265,6 +10265,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("appCategory", "APP_CATEGORY", module, FieldType.NUMBER));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
         fields.add(getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
 
         return fields;
     }

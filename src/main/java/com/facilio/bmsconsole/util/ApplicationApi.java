@@ -42,6 +42,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.apache.xpath.operations.Bool;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 
@@ -870,6 +871,7 @@ public class ApplicationApi {
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
         maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
         maintenanceApplication.setIsDefault(true);
+        maintenanceApplication.setStatus(true);
 
         ApplicationContext fsmApplication = new ApplicationContext(orgId, "Field Service Management", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FSM_APP,
@@ -2513,8 +2515,9 @@ public class ApplicationApi {
                 .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "ouid", String.valueOf(ouId),
                         NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("Application.DOMAIN_TYPE", "domainType",
-                        String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS));
-        ;
+                        String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Application.STATUS", "status",
+                        String.valueOf(true), BooleanOperators.IS));
 
         selectBuilder.orderBy("ID asc");
 
@@ -2563,6 +2566,47 @@ public class ApplicationApi {
         return getFilteredApplications(applications);
     }
 
+    public static List<ApplicationContext> getAllApplications(long orgId) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(ModuleFactory.getApplicationModule().getTableName())
+                .select(FieldFactory.getApplicationFields())
+                .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+        List<ApplicationContext> applications = FieldUtil.getAsBeanListFromMapList(builder.get(),
+                ApplicationContext.class);
+        return applications;
+    }
+
+    public static void setApplicationStatus(String[] apps,long orgId) throws Exception {
+        if(orgId > 0) {
+            List<Long> appIds = new ArrayList<>();
+            if (apps != null && apps.length > 0) {
+                for (String app : apps) {
+                    Long appId = Long.parseLong(app);
+                    if (appId != null) {
+                        appIds.add(appId);
+                    }
+                }
+            }
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getApplicationFields());
+            GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getApplicationModule().getTableName())
+                    .fields(Collections.singletonList(fieldsMap.get("status")))
+                    .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(appIds, ","), NumberOperators.EQUALS));
+            Map<String, Object> prop = new HashMap<>();
+            prop.put("status", true);
+            updateRecordBuilder.update(prop);
+
+            GenericUpdateRecordBuilder updateRecordBuilder1 = new GenericUpdateRecordBuilder()
+                    .table(ModuleFactory.getApplicationModule().getTableName())
+                    .fields(Collections.singletonList(fieldsMap.get("status")))
+                    .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(appIds, ","), NumberOperators.NOT_EQUALS));
+            Map<String, Object> prop1 = new HashMap<>();
+            prop1.put("status", false);
+            updateRecordBuilder1.update(prop1);
+        }
+    }
     public static List<ApplicationContext> getFilteredApplications(List<ApplicationContext> applications) throws Exception {
         List <ApplicationContext> apps = new ArrayList<>();
 
@@ -4014,7 +4058,9 @@ public class ApplicationApi {
                 .table(ModuleFactory.getApplicationRelatedAppsModule().getTableName())
                 .innerJoin(ModuleFactory.getApplicationModule().getTableName())
                 .on("Application.ID=Application_Related_Apps.RELATED_APPLICATION_ID")
-                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId",String.valueOf(appId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Application.STATUS","status",String.valueOf(true), BooleanOperators.IS));
+
         relatedApplication=FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), ApplicationContext.class);
         return relatedApplication;
     }
@@ -4141,5 +4187,22 @@ public class ApplicationApi {
             e.printStackTrace();
         }
 
+    }
+
+    public static boolean isAdminControlAllowed() {
+        if(!(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equals("stage2") || FacilioProperties.isOnpremise())) {
+            return true;
+        }
+        User user = AccountUtil.getCurrentUser();
+        if(StringUtils.isNotEmpty(user.getProxy())) {
+            return false;
+        }
+        List<String> adminUsers = FacilioProperties.getAdminUsers();
+        if(CollectionUtils.isNotEmpty(adminUsers)) {
+            if(adminUsers.contains(user.getEmail())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
