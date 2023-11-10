@@ -704,7 +704,10 @@
 		<action name="fetchRelations"
 				class="com.facilio.relation.action.RelationAction" method="fetchRelations" />
 		<action name="fetchMeterRelations"
-				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" />
+				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" >
+			<param name="moduleName">meter</param>
+			<param name="permission">GET:READ</param>
+		</action>
 	</package>
 
 	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
