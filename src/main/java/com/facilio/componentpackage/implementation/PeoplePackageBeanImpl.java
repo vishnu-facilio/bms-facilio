@@ -50,6 +50,9 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
+                if (StringUtils.isNotEmpty(peopleContext.getEmail()) && !V3PeopleAPI.VALID_EMAIL_ADDRESS_REGEX.matcher(peopleContext.getEmail()).find()) {
+                    continue;
+                }
                 peopleIdMap.put(peopleContext.getId(), -1L);
                 // PeopleMail & PeopleName are nullable columns
                 if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
