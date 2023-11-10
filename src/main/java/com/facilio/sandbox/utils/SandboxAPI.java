@@ -217,13 +217,9 @@ public class SandboxAPI {
     }
 
     public static boolean checkSandboxDomainIfExist(String domainName) throws Exception {
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .select(IAMAccountConstants.getOrgFields())
-                .table(IAMAccountConstants.getOrgModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", domainName, StringOperators.IS));
-        Map<String, Object> props = selectBuilder.fetchFirst();
-        if (props != null && props.containsKey("domain")) {
-            boolean avail = String.valueOf(props.get("domain")).equalsIgnoreCase(domainName);
+        Organization organization = IAMOrgUtil.getOrg(domainName);
+        if (organization!=null && StringUtils.isNotEmpty(organization.getDomain())) {
+            boolean avail = String.valueOf(organization.getDomain()).equalsIgnoreCase(domainName);
             if (avail) {
                 return false;
             } else {

@@ -7,6 +7,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.util.List;
 
 @Log4j @Setter @Getter
@@ -47,6 +49,8 @@ public class SandboxAction extends FacilioAction {
     private boolean fromAdminTool = false;
     private String search;
     private long fileId = -1L;
+    private File file;
+
     public String list() throws Exception{
         List<SandboxConfigContext> sandboxList = SandboxAPI.getAllSandbox(page, perPage, search);
         setResult(SandboxConstants.SANDBOX_LIST, sandboxList);
@@ -111,7 +115,12 @@ public class SandboxAction extends FacilioAction {
     }
     public String doInstall() throws Exception{
         PackageFileUtil.accountSwitch(sourceOrgId);
-        fileId = SandboxAPI.getRecentPackageId(domainName);
+        if(file != null){
+            FileContext fileContext = PackageFileUtil.addFileToStore(file, null);
+            fileId = fileContext.getFileId();
+        }else{
+            fileId = SandboxAPI.getRecentPackageId(domainName);
+        }
         if(fileId == -1L){
             ServletActionContext.getResponse().setStatus(200);
             setResult(FacilioConstants.ContextNames.MESSAGE, "There is no Recently Created Package, Please Do Rerun Sandbox Instead!!!");

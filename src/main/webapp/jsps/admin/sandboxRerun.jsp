@@ -104,6 +104,12 @@
         <%
             }
         %>
+        <tr id="fileRow">
+           <td class="table-head"><h4>File Upload</h4></td>
+           <td>
+               <input type="file" id="fileInput" />
+           </td>
+        </tr>
     </table>
     <button type="button" class='submitBtn' id="submitBtn" onclick="rerunAction()">Rerun-Sandbox</button>
     <button type="button" class='customBtn' id="customBtn" onclick="installAction()">Do Install From Last Created Package</button>
@@ -174,23 +180,30 @@
         }
 
         const dataObject = {};
-        dataObject.sourceOrgId = $('#sourceOrgId').val();
-        dataObject.domainName = $('#domainName').val();
-        dataObject.fromAdminTool = true;
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('fromAdminTool', true);
+        formData.append('sourceOrgId', $('#sourceOrgId').val());
+        formData.append('domainName', $('#domainName').val());
 
         var selectedComponents = [];
         $("input[name='selectedComponents']:checked").each(function() {
             selectedComponents.push(parseInt($(this).val()));
         });
 
-        dataObject.skipComponents = selectedComponents;
+        formData.append('skipComponents',selectedComponents);
 
         $.ajax({
             url: "/admin/doInstall", // Change this to your custom endpoint URL
             type: "POST",
-            contentType: "application/json",
             dataType: "json",
-            data: JSON.stringify(dataObject),
+            data: formData,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            cache: false,
             success: function (data) {
                 alert("Message : " + data.message);
             },
