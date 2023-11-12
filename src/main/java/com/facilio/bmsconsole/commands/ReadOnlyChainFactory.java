@@ -598,6 +598,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getFormsRelationPickListChain(){
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateRelationshipPickListCommand());
+		c.addCommand(new GetFormsRelationPickListCommand());
+		return c;
+	}
+
 	public static FacilioChain readingPostProcessingChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReadingPostProcessingCommand());

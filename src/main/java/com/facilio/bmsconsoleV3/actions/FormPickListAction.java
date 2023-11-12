@@ -29,6 +29,7 @@ import java.util.List;
 public class FormPickListAction extends RESTAPIHandler {
     private String fieldName;
     private String extendedModuleName;
+    private String relMappingName;
 
     public String getPickListData() throws Exception{
 
@@ -68,6 +69,49 @@ public class FormPickListAction extends RESTAPIHandler {
            }
         }
         return SUCCESS;
+    }
+
+    public String getRelationshipPickListData() throws Exception{
+
+        FacilioChain chain = ReadOnlyChainFactory.getFormsRelationPickListChain();
+        FacilioContext context=new FacilioContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,this.getModuleName());
+        context.put(FacilioConstants.ContextNames.RELATIONSHIP, relMappingName);
+
+        addParamsToContext(context);
+        chain.execute(context);
+
+
+        this.setData(FacilioConstants.ContextNames.PICKLIST,context.get(FacilioConstants.ContextNames.PICKLIST));
+
+        if((boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_SPECIAL_MODULE,false)){
+            this.setMeta(FacilioConstants.ContextNames.MODULE_TYPE,context.get(FacilioConstants.ContextNames.MODULE_TYPE));
+            this.setMeta(FacilioConstants.PickList.LOCAL_SEARCH, context.get(FacilioConstants.PickList.LOCAL_SEARCH));
+        }
+        else{
+            JSONObject meta= (JSONObject) context.getOrDefault(FacilioConstants.ContextNames.META,null);
+            if(meta!=null){
+                this.setMeta(meta);
+            }
+        }
+        return SUCCESS;
+    }
+
+    public void addParamsToContext(FacilioContext context) throws Exception {
+        JSONObject pagination = new JSONObject();
+        pagination.put("page", this.getPage());
+        pagination.put("perPage", this.getPerPage());
+
+        context.put(FacilioConstants.ContextNames.PAGINATION,pagination);
+        context.put(FacilioConstants.ContextNames.SEARCH,this.getSearch());
+        context.put(FacilioConstants.ContextNames.FILTERS,this.getFilters());
+        context.put(FacilioConstants.ContextNames.DEFAULT,this.getDefault());
+        context.put(FacilioConstants.ContextNames.EXCLUDE_PARENT_FILTER,this.getExcludeParentFilter());
+        context.put(FacilioConstants.ContextNames.CLIENT_FILTER_CRITERIA,this.getClientCriteria());
+        context.put(FacilioConstants.ContextNames.ORDER_BY,this.getOrderBy());
+        context.put(FacilioConstants.ContextNames.ORDER_TYPE,this.getOrderType());
+        context.put(FacilioConstants.ContextNames.WITH_COUNT,this.getWithCount());
+        context.put(FacilioConstants.ContextNames.QUERY_PARAMS,this.getQueryParameters());
     }
 
 }

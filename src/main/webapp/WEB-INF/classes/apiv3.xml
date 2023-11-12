@@ -2210,6 +2210,15 @@
         </action>
     </package>
 
+    <package name="relationLookupData" namespace="/api/v3/relationLookupData" extends="v3Api">
+        <action name="/*/relationship/*" class="com.facilio.bmsconsoleV3.actions.LookupModuleDataAction" method="getRelationLookupListData">
+            <param name="moduleName">{1}</param>
+            <param name="relMappingName">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
+        </action>
+    </package>
+
     <package name="getPpmJobs" namespace="/api/v3/workorder/calender" extends="v3Api">
         <action name="getPpmJobs" class="com/facilio/bmsconsoleV3/actions/WorkorderAction" method="getPpmJobs">
 			<param name="deprecated">true</param>
@@ -2226,6 +2235,15 @@
             <param name="fieldName">{2}</param>
             <param name="extendedModuleName">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+
+    <package name="relationPickList" namespace="/api/v3/relationPickList" extends="v3Api">
+        <action name="/forms/*/relationship/*" class="com.facilio.bmsconsoleV3.actions.FormPickListAction" method="getRelationshipPickListData">
+            <param name="moduleName">{1}</param>
+            <param name="relMappingName">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="checkPermission">true</param>
         </action>
     </package>
 

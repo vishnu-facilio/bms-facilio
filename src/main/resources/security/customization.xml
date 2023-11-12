@@ -71,6 +71,19 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/relationLookupData/:moduleName/relationship/:relMappingName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="relMappingName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
+
     <!-- Modules Setup -->
     <request path="/api/v1/setup/modules/add" method="POST">
         <urlparams>

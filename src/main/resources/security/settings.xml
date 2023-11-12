@@ -1427,6 +1427,21 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/relationPickList/forms/:moduleName/relationship/:relMappingName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="relMappingName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/pickList/modules/:moduleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -1900,6 +1915,19 @@
         <requestbody type="object">
             <property name="pageWidgetId" type="number" mandatory="true"/>
         </requestbody>
+    </request>
+
+    <request path="/api/v3/modules/:moduleName/lookupData/:relatedFieldName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="relatedFieldName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
     </request>
 
     <request path="/api/v3/modules/:moduleName/lookupData/:relatedFieldName/:extendedModuleName" method="GET">

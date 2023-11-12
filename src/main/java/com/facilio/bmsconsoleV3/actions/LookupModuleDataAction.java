@@ -13,6 +13,7 @@ public class LookupModuleDataAction extends RelatedDataAction {
     private String moduleName;
     private String relatedFieldName;
     private String extendedModuleName;
+    private String relMappingName;
     
     public String getLookupListData() throws Exception {
         FacilioChain getChain = ReadOnlyChainFactoryV3.getRelatedModuleDataChain();
@@ -23,6 +24,25 @@ public class LookupModuleDataAction extends RelatedDataAction {
         chainContext.put(FacilioConstants.ContextNames.RELATED_MODULE_NAME, moduleName);
         chainContext.put(FacilioConstants.ContextNames.RELATED_FIELD_NAME, relatedFieldName);
         chainContext.put(FacilioConstants.ContextNames.EXTENDED_MODULE_NAME, extendedModuleName);
+
+        getChain.execute();
+
+        setData((JSONObject) chainContext.get(FacilioConstants.ContextNames.RESULT));
+        if (chainContext.containsKey(FacilioConstants.ContextNames.META)) {
+            setMeta((JSONObject) chainContext.get(FacilioConstants.ContextNames.META));
+        }
+
+        return SUCCESS;
+    }
+
+    public String getRelationLookupListData() throws Exception {
+        FacilioChain getChain = ReadOnlyChainFactoryV3.getRelationModuleDataChain();
+
+        FacilioContext chainContext = getChain.getContext();
+        addGetChainContext(chainContext);
+
+        chainContext.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chainContext.put(FacilioConstants.ContextNames.RELATIONSHIP, relMappingName);
 
         getChain.execute();
 
