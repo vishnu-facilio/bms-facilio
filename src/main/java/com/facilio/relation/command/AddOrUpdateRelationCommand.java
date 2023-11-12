@@ -15,6 +15,7 @@ import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.context.RelationRequestContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -225,7 +226,7 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         }
     }
 
-    private void validateRelationRequest(RelationRequestContext relationRequest) {
+    private void validateRelationRequest(RelationRequestContext relationRequest) throws Exception {
         if (relationRequest == null) {
             throw new IllegalArgumentException("Invalid request");
         }
@@ -259,5 +260,12 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Reverse Relation Link Name is required for system relation");
             }
          }
+        if (Objects.equals(relationRequest.getRelationCategoryEnum(), RelationContext.RelationCategory.METER)) {
+            long toModuleId = relationRequest.getToModuleId();
+            FacilioModule module = Constants.getModBean().getModule(toModuleId);
+            if (!Objects.equals(module.getParentModule().getName(), FacilioConstants.ContextNames.METER_MOD_NAME)) {
+                throw new IllegalArgumentException("For Meter Relationship To Module should always Meter");
+            }
+        }
     }
 }

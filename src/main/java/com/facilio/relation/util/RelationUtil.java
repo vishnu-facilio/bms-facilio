@@ -7,10 +7,7 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.RelationshipOperator;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -217,21 +214,28 @@ public class RelationUtil {
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module) throws Exception {
-        return getAllRelations(module, false, null, null, false, null, RelationContext.RelationCategory.NORMAL);
+        return getAllRelations(module, false, null, null, false, null, RelationContext.RelationCategory.NORMAL, false);
     }
 
-    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString) throws Exception {
-        return getAllRelations(module, isSetupPage, pagination, searchString, false, null, RelationContext.RelationCategory.NORMAL);
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, RelationContext.RelationCategory relationCategory, boolean fromBuilder) throws Exception {
+        return getAllRelations(module, isSetupPage, pagination, searchString, false, null, relationCategory, fromBuilder);
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, Criteria criteria) throws Exception {
-        return getAllRelations(module, false, null, null, false, criteria, null);
+        return getAllRelations(module, false, null, null, false, criteria, null, false);
     }
 
     public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, Criteria criteria, RelationContext.RelationCategory relationCategory) throws Exception {
+        return getAllRelations(module, isSetupPage, pagination, searchString, includeHiddenRelations, criteria, relationCategory, false);
+    }
+
+    public static List<RelationRequestContext> getAllRelations(FacilioModule module, boolean isSetupPage, JSONObject pagination, String searchString, boolean includeHiddenRelations, Criteria criteria, RelationContext.RelationCategory relationCategory, boolean fromBuilder) throws Exception {
 
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());
         Map<String, FacilioField> mappingFields = FieldFactory.getAsMap(FieldFactory.getRelationMappingFields());
+
+        long moduleId = module.getModuleId();
+        List<Long> moduleIds = new ArrayList<>(Collections.singleton(moduleId));
 
         StringBuilder joinCondition = new StringBuilder();
         joinCondition = joinCondition.append(relationFields.get("id").getCompleteColumnName() + " = " + mappingFields.get("relationId").getCompleteColumnName());
@@ -243,12 +247,18 @@ public class RelationUtil {
                     .append(")");
         }
 
+        if (FacilioConstants.Relationship.CHILD_MODULE_FETCH_RELATION.contains(module.getName())) {
+            List<FacilioModule> childModules = Constants.getModBean().getChildModules(module, null, null, false);
+            List<Long> childModIds = childModules.stream().map(FacilioModule::getModuleId).collect(Collectors.toList());
+            moduleIds.addAll(childModIds);
+        }
+
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getRelationModule().getTableName())
                 .innerJoin(ModuleFactory.getRelationMappingModule().getTableName())
                 .on(joinCondition.toString())
                 .select(FieldFactory.getRelationFields())
-                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(mappingFields.get("fromModuleId"), StringUtils.join(moduleIds, ','), NumberOperators.EQUALS));
 
         if (StringUtils.isNotEmpty(searchString)) {
             builder.andCondition(CriteriaAPI.getCondition(relationFields.get("name"), searchString, StringOperators.CONTAINS));
@@ -256,6 +266,10 @@ public class RelationUtil {
 
         if (!includeHiddenRelations) {
             builder.andCondition(CriteriaAPI.getCondition(relationFields.get("relationCategory"), String.valueOf(RelationContext.RelationCategory.HIDDEN.getIndex()), NumberOperators.NOT_EQUALS));
+        }
+
+        if (fromBuilder) {
+            builder.andCondition(CriteriaAPI.getCondition(relationFields.get("isVirtual"), String.valueOf(true), NumberOperators.NOT_EQUALS));
         }
 
         addRelationCategoryCriteriaToBuilder(relationCategory, builder, relationFields.get("relationCategory"));
@@ -282,7 +296,7 @@ public class RelationUtil {
 
         List<RelationContext> relationList = FieldUtil.getAsBeanListFromMapList(builder.get(), RelationContext.class);
         RelationUtil.fillRelation(relationList);
-        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, module.getModuleId());
+        List<RelationRequestContext> relationRequests = RelationUtil.convertToRelationRequest(relationList, moduleId);
         return relationRequests;
     }
 
@@ -378,7 +392,25 @@ public class RelationUtil {
             }
         }
     }
+    public static RelationRequestContext viewRelationRequest(RelationContext relation, long moduleId) throws Exception {
+        RelationRequestContext relationRequestContext = new RelationRequestContext();
+        List<Long> sameModuleRelationIds = new ArrayList<>();
 
+        for (RelationMappingContext mapping : relation.getMappings()) {
+            fillRelationMetaInfo(relationRequestContext, relation);
+            if (isSameModule(mapping, moduleId)) {
+                handleSameModuleMapping(relationRequestContext, mapping, sameModuleRelationIds,false);
+            } else {
+                if (mapping.getFromModuleId() == moduleId) {
+                    fillForwardMappingDatainRequest(relationRequestContext, mapping);
+                } else {
+                    fillReverseMappingDataInRequest(relationRequestContext, mapping);
+                }
+            }
+        }
+
+        return relationRequestContext;
+    }
     public static RelationRequestContext convertToRelationRequest(RelationContext relation, long moduleId) throws Exception {
         return convertToRelationRequest(Collections.singletonList(relation), moduleId).get(0);
     }
@@ -386,41 +418,83 @@ public class RelationUtil {
     public static List<RelationRequestContext> convertToRelationRequest(List<RelationContext> relations, long moduleId) throws Exception {
         List<RelationRequestContext> requests = new ArrayList<>();
         List<Long> sameModuleRelationIds = new ArrayList<>();
+
         for (RelationContext relation : relations) {
             RelationRequestContext request = new RelationRequestContext();
             fillRelationMetaInfo(request, relation);
             boolean isSameModule = false;
+
             for (RelationMappingContext mapping : relation.getMappings()) {
-                if (mapping.getFromModuleId() != mapping.getToModuleId()) {
-                    if (mapping.getFromModuleId() == moduleId) { // this will get mapping for current module
-                        fillForwardMappingDatainRequest(request, mapping);
-                    } else { // this will fetch reverse mapping
-                        fillReverseMappingDataInRequest(request, mapping);
-                    }
+                if (isSameModule(mapping, moduleId)) {
+                    boolean isChildModule = isChildModule(moduleId, mapping.getFromModuleId());
+                    isSameModule = handleSameModuleMapping(request, mapping, sameModuleRelationIds, isChildModule);
                 } else {
-                    isSameModule = true;
-                    if (sameModuleRelationIds.contains(relation.getId())) {
-                        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
-                            fillReverseMappingDataInRequest(request, mapping);
-                        } else {
-                            fillForwardMappingDatainRequest(request, mapping);
-                        }
-                    } else {
-                        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
-                            fillForwardMappingDatainRequest(request, mapping);
-                        } else {
-                            fillReverseMappingDataInRequest(request, mapping);
-                        }
-                    }
+                    handleDifferentModuleMapping(request, mapping, moduleId);
                 }
             }
+
             if (isSameModule) {
                 sameModuleRelationIds.add(relation.getId());
             }
+
             requests.add(request);
         }
 
         return requests;
+    }
+
+    private static boolean isSameModule(RelationMappingContext mapping, long moduleId) throws Exception {
+        FacilioModule module = Constants.getModBean().getModule(moduleId);
+        return mapping.getFromModuleId() == mapping.getToModuleId() || (hasSameParentModule(mapping.getFromModuleId(), mapping.getToModuleId()) && FacilioConstants.Relationship.CHILD_MODULE_FETCH_RELATION.contains(module.getName()));
+    }
+
+    private static boolean handleSameModuleMapping(RelationRequestContext request, RelationMappingContext mapping, List<Long> sameModuleRelationIds, boolean isChildModule) throws Exception {
+
+        if (sameModuleRelationIds.contains(mapping.getRelationId()) || isChildModule) {
+            handleMappingForSameModule(request, mapping);
+        } else {
+            handleMappingForDifferentModule(request, mapping);
+        }
+
+        return true;
+    }
+
+    private static void handleDifferentModuleMapping(RelationRequestContext request, RelationMappingContext mapping, long moduleId) throws Exception {
+        if (mapping.getFromModuleId() == moduleId || isChildModule(mapping.getFromModuleId(), moduleId)) {
+            fillForwardMappingDatainRequest(request, mapping);
+        } else {
+            fillReverseMappingDataInRequest(request, mapping);
+        }
+    }
+
+    private static void handleMappingForSameModule(RelationRequestContext request, RelationMappingContext mapping) throws Exception {
+        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
+            fillReverseMappingDataInRequest(request, mapping);
+        } else {
+            fillForwardMappingDatainRequest(request, mapping);
+        }
+    }
+
+    private static void handleMappingForDifferentModule(RelationRequestContext request, RelationMappingContext mapping) throws Exception {
+        if (mapping.getPositionEnum().equals(RelationMappingContext.Position.LEFT)) {
+            fillForwardMappingDatainRequest(request, mapping);
+        } else {
+            fillReverseMappingDataInRequest(request, mapping);
+        }
+    }
+
+    private static boolean isChildModule(long childModuleId, long parentModuleId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule mod = modBean.getModule(childModuleId);
+        FacilioModule parentModule = modBean.getModule(parentModuleId);
+        return (mod.getExtendModule() != null && mod.getExtendModule().getModuleId() == parentModuleId) && FacilioConstants.Relationship.CHILD_MODULE_FETCH_RELATION.contains(parentModule.getName());
+    }
+
+    private static boolean hasSameParentModule(long moduleId1, long moduleId2) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module1 = modBean.getModule(moduleId1).getParentModule();
+        FacilioModule module2 = modBean.getModule(moduleId2).getParentModule();
+        return (module1.getModuleId() == module2.getModuleId());
     }
 
     public static void setVirtualRelationData(RelationContext relation, RelationRequestContext request) throws Exception {

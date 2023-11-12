@@ -30,7 +30,7 @@ public class ViewRelationCommand extends FacilioCommand {
         if (relation == null) {
             throw new IllegalArgumentException("Invalid Relation");
         }
-        RelationRequestContext relationRequestContext = RelationUtil.convertToRelationRequest(relation, module.getModuleId());
+        RelationRequestContext relationRequestContext = RelationUtil.viewRelationRequest(relation, module.getModuleId());
         if (relation.isVirtual()) {
             RelationUtil.setVirtualRelationData(relation, relationRequestContext);
         }

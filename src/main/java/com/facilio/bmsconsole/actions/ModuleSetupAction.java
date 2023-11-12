@@ -23,6 +23,7 @@ public class ModuleSetupAction extends FacilioAction {
     private String moduleName;
     private Boolean defaultModules;
     private List<ModuleSettingContext> settings;
+    private int relationCategory = -1;
 
     private String settingName;
 
@@ -241,6 +242,7 @@ public class ModuleSetupAction extends FacilioAction {
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        context.put(FacilioConstants.Relationship.RELATION_CATEGORY, relationCategory);
         chain.execute();
 
         setResult("count", context.get(FacilioConstants.ContextNames.COUNT));

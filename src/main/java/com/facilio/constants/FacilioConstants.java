@@ -1537,6 +1537,7 @@ public class FacilioConstants {
 
 		public static final String METERID = "meterID";
 		public static final String METER = "METER";
+		public static final String METER_MOD_NAME = "meter";
 		public static final String BUILDINGID = "BUILDINGID";
 		public static final String METERNAME = "METERNAME";
 		public static final String FUELTYPE = "FUELTYPE";
@@ -4787,6 +4788,10 @@ public class FacilioConstants {
 		public static final String RELATION_TYPE = "relationType";
 		public static final String RELATION_IDS = "relationIds";
 		public static final String SKIP_VIRTUAL_RELATIONS = "skipVirtualRelations";
+		public static final List<String> CHILD_MODULE_FETCH_RELATION = new ArrayList<String>() {{
+			add(ContextNames.ASSET);
+			add(ContextNames.METER_MOD_NAME);
+		}};
     }
 	public static class SystemRelationMappingNames {
         public static final String BUILDING_TO_SPACE_MAPPING_NAME = "buildingToSpaceRelation";

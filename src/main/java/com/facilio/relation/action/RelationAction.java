@@ -8,6 +8,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.relation.context.RelationRequestContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -49,6 +51,9 @@ public class RelationAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
+    @Getter @Setter
+    private boolean fromBuilder;
+
     public String viewRelation() throws Exception {
         FacilioChain chain = ReadOnlyChainFactory.getViewRelationChain();
         FacilioContext context = chain.getContext();
@@ -73,6 +78,8 @@ public class RelationAction extends FacilioAction {
         }
         context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
         context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        context.put(FacilioConstants.ContextNames.IS_FROM_BUILDER, fromBuilder);
+        context.put(FacilioConstants.Relationship.RELATION_CATEGORY, relationCategory);
         chain.execute();
 
         setResult(FacilioConstants.ContextNames.RELATION_LIST, context.get(FacilioConstants.ContextNames.RELATION_LIST));
