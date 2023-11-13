@@ -311,16 +311,37 @@ public class PackageUtil {
         List<FacilioField> fields = FieldFactory.getPackageChangesetsFields();
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .select(fields)
-                .table(changeSetModule.getTableName())
-                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("packageId"), String.valueOf(packageId), NumberOperators.EQUALS))
-                .orderBy(ComponentType.ORDER_BY_COMPONENT_TYPE_STR + ", COMPONENT_STATUS");
+        int offset = 0;
+        int limit = 5000;
+        List<Map<String,Object>> allProps = new ArrayList<>();
+        boolean ischangeSetDone = false;
 
-        List<Map<String, Object>> prop = selectRecordBuilder.get();
+        do{
+
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .select(fields)
+                    .table(changeSetModule.getTableName())
+                    .andCondition(CriteriaAPI.getCondition(fieldsMap.get("packageId"), String.valueOf(packageId), NumberOperators.EQUALS))
+                    .limit(limit+1)
+                    .offset(offset)
+                    .orderBy(ComponentType.ORDER_BY_COMPONENT_TYPE_STR + ", COMPONENT_STATUS");
+
+            List<Map<String, Object>> prop = selectRecordBuilder.get();
+
+            if(prop.size() > limit){
+                prop.remove(limit);
+            }else{
+                ischangeSetDone = true;
+            }
+
+            allProps.addAll(prop);
+            offset = offset + prop.size();
+
+        }while (!ischangeSetDone);
+
         Map<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponents = new LinkedHashMap<>();
-        if (CollectionUtils.isNotEmpty(prop)) {
-            List<PackageChangeSetMappingContext> changesets = FieldUtil.getAsBeanListFromMapList(prop, PackageChangeSetMappingContext.class);
+        if (CollectionUtils.isNotEmpty(allProps)) {
+            List<PackageChangeSetMappingContext> changesets = FieldUtil.getAsBeanListFromMapList(allProps, PackageChangeSetMappingContext.class);
             for (PackageChangeSetMappingContext componentMapping : changesets) {
                 List<PackageChangeSetMappingContext> componentList;
                 if(typeVsComponents.containsKey(componentMapping.getComponentTypeEnum())) {
@@ -595,6 +616,7 @@ public class PackageUtil {
         defaultRoles.put(FacilioConstants.ContextNames.STATE_FLOW_ID,ComponentType.STATE_FLOW);
         defaultRoles.put(FacilioConstants.ContextNames.SLA_POLICY_ID,ComponentType.SLA_POLICY);
         defaultRoles.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME,ComponentType.APPROVAL_STATE_FLOW);
+        defaultRoles.put("approvalFlowId",ComponentType.APPROVAL_STATE_FLOW);
         defaultRoles.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME,ComponentType.TICKET_STATUS);
         defaultRoles.put(FacilioConstants.ContextNames.JOB_STATUS,ComponentType.TICKET_STATUS);
         defaultRoles.put(FacilioConstants.ContextNames.MODULE,ComponentType.MODULE);

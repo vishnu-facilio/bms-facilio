@@ -41,14 +41,24 @@
         <td class="table-head"><h4>Allow Notes And Attachments</h4></td>
         <td>
             <label class="radio-text">
-                <input class="radio-label" type="radio" name="action" id="allowNotesAndAttachments" value= "true"> True
+                <input class="radio-label" type="radio" name="attachment" id="allowNotesAndAttachments" > True
             </label>
             <label class="radio-text">
-                <input class="radio-label" type="radio" name="action" id="don't allowNotesAndAttachments" value= "false"> False
+                <input class="radio-label" type="radio" name="attachment" id="don't allowNotesAndAttachments" > False
             </label>
         </td>
     </tr>
-
+    <tr id="allowUpdateDataOnlyIdRow">
+        <td class="table-head"><h4>Allow Data Update Only</h4></td>
+        <td>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="update" id="allowUpdateDataOnly" > True
+            </label>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="update" id="don't allowUpdateData"> False
+            </label>
+        </td>
+    </tr>
     <tr id="dataMigrationLogModulesIdRow">
         <td class="table-head"><h4>Log Module Names</h4></td>
         <td>
@@ -99,7 +109,7 @@
     function hideOrShowFields() {
         const showFileRadioChecked = $("#showFileRadio").is(":checked");
         $("#dataMigrationModulesIdRow").toggle(showFileRadioChecked);
-        $("#allowNotesAndAttachmentsIdRow").toggle(showFileRadioChecked);
+        // $("#allowNotesAndAttachmentsIdRow").toggle(showFileRadioChecked);
         $("#limitRow").toggle(showFileRadioChecked);
         // $("#targetOrgIdRow").toggle(!showFileRadioChecked);
         $("#fileRow").toggle(!showFileRadioChecked);
@@ -119,8 +129,9 @@
                 limit: $("#limit").val(),
                 fromAdminTool: true,
             };
+            dataObject.allowNotesAndAttachments = $("#allowNotesAndAttachments").is(":checked");
+            dataObject.allowUpdateDataOnly = $("#allowUpdateDataOnly").is(":checked");
 
-            dataObject.allowNotesAndAttachments = (document.getElementById("allowNotesAndAttachments").checked) ? true : false;
             $.ajax({
                 url: "/admin/createDataPackage",
                 type: "POST",
@@ -154,6 +165,9 @@
             formData.append('sourceOrgId', $('#sourceOrgId').val());
             formData.append('moduleDataInsertProcess', true);
             formData.append('skipDataMigrationModules',$('#skipDataMigrationModules').val());
+            formData.append('allowNotesAndAttachments',$("#allowNotesAndAttachments").is(":checked"));
+            formData.append('allowUpdateDataOnly',$("#allowUpdateDataOnly").is(":checked"));
+
 
             $.ajax({
                 url: "/admin/installDataPackage",

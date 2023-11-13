@@ -3,6 +3,9 @@ package com.facilio.datamigration.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationConstants;
@@ -25,6 +28,11 @@ public class FillDataMigrationModuleDetailsCommand extends FacilioCommand {
         long sourceOrgId = (long) context.getOrDefault(DataMigrationConstants.SOURCE_ORG_ID, -1l);
         long targetOrgId = (long) context.getOrDefault(DataMigrationConstants.TARGET_ORG_ID, -1l);
         Boolean moduleDataInsertProcess = (Boolean) context.getOrDefault(DataMigrationConstants.DATA_INSERT_PROCESS,false);
+        PackageFolderContext rootFolder = (PackageFolderContext) context.get(PackageConstants.PACKAGE_ROOT_FOLDER);
+        if(moduleDataInsertProcess){
+            List<String> dataConfigModuleNames = PackageFileUtil.getDataConfigModuleNames(rootFolder);
+            dataMigrationModuleNames = new LinkedList<>(dataConfigModuleNames);
+        }
 
         DataMigrationBean connection = null;
         if(moduleDataInsertProcess){

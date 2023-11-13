@@ -31,6 +31,8 @@ public class InstallDataMigrationAction extends FacilioAction {
     private long dataMigrationId;
     private int transactionTimeout;
     private boolean moduleDataInsertProcess;
+    private boolean allowNotesAndAttachments = false;
+    private boolean allowUpdateDataOnly = false;
 
 
     public String execute() throws Exception{
@@ -57,7 +59,8 @@ public class InstallDataMigrationAction extends FacilioAction {
             skipDataMigrationLogModulesList = Arrays.asList(getSkipDataMigrationModules().split(","));
         }
 
-
+        dataMigrationContext.put(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS,isAllowNotesAndAttachments());
+        dataMigrationContext.put(DataMigrationConstants.ALLOW_UPDATE_DATA_ONLY,isAllowUpdateDataOnly());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.FILE, getFile());
         dataMigrationContext.put(DataMigrationConstants.TARGET_ORG_ID, getTargetOrgId());

@@ -72,6 +72,7 @@ public class DataMigrationConstants {
     public static final String MODULES_VS_DETAILS = "ModulesVsInfo";
     public static final String LIMIT = "limit";
     public static final String ALLOW_NOTES_AND__ATTACHMENTS = "allowNotesAndAttachments";
+    public static final String ALLOW_UPDATE_DATA_ONLY = "allowUpdateDataOnly";
     public static final String PACKAGE_ID = "packageId";
     public static final String PACKAGE_CHANGE_SET = "packageChangSets";
     public static final String FILE = "file";

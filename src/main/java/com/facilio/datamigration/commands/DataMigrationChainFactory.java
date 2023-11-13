@@ -39,8 +39,8 @@ public class DataMigrationChainFactory {
 		FacilioChain c = getDefaultChain(transactionTimeout);
 		c.addCommand(new ValidateInsertDataMigrationCommand());
 		c.addCommand(new UnzipPackageFileCommand());
-		c.addCommand(new DataMigrationInsertRecordCommand());
 		c.addCommand(new FillDataMigrationModuleDetailsCommand());
+		c.addCommand(new DataMigrationInsertRecordCommand());
 		c.addCommand(new DataMigrationUpdateInsertDataLookupDetails());
 		c.addCommand(new DataMigrationInsertModuleAttachmentsCommand());
 		c.addCommand(new DataMigrationInsertModuleNotesCommand());

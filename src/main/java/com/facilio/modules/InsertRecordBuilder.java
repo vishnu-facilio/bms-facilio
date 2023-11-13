@@ -437,7 +437,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		prop.put("orgId", orgId);
 		if(!allowSysCreatedFieldsProps || (allowSysCreatedFieldsProps &&
-				(!prop.containsKey("sysCreatedTime") || ((prop.containsKey("sysCreatedTime") && (long)prop.get("sysCreatedTime") <= 0))))) {
+				(!prop.containsKey("sysCreatedTime") || ((prop.containsKey("sysCreatedTime")  && prop.get("sysCreatedTime") != null && (long)prop.get("sysCreatedTime") <= 0))))) {
 			prop.put("sysCreatedTime", currentTime);
 			prop.put("sysModifiedTime", currentTime);
 		}

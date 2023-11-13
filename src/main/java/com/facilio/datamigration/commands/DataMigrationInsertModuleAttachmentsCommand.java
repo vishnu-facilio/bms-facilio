@@ -30,7 +30,10 @@ public class DataMigrationInsertModuleAttachmentsCommand extends FacilioCommand 
         PackageFolderContext rootFolder = (PackageFolderContext) context.get(PackageConstants.PACKAGE_ROOT_FOLDER);
         DataMigrationStatusContext dataMigrationObj = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
         PackageFolderContext dataFileFolder = rootFolder.getFolder(PackageConstants.DATA_ATTACHMENT_FILE_FOLDER_NAME);
-
+        boolean allowNotesAndAttachments = (boolean) context.get(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS);
+        if(!allowNotesAndAttachments){
+            return false;
+        }
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
 
         List<String> allModuleNamesXml =  PackageFileUtil.getDataConfigModuleNames(rootFolder);

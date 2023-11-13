@@ -40,11 +40,15 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
         DataMigrationStatusContext dataMigrationObj = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
         PackageFolderContext rootFolder = (PackageFolderContext) context.get(PackageConstants.PACKAGE_ROOT_FOLDER);
         long transactionTimeout = (long) context.get(DataMigrationConstants.DATA_MIGRATION_ID);
+        boolean allowNotesAndAttachments = (boolean) context.get(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS);
+        List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
 
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         List<String> dataConfigModuleNames = (List<String>) context.get(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES);
         Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (Map<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
+        Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules = DataMigrationUtil.getNonNullableModuleVsFieldVsLookupModules();
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
 
@@ -52,6 +56,11 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
         for (String moduleName : dataConfigModuleNames) {
 
             LOGGER.info("Data Migration - Update Insert Data - Started for moduleName -" + moduleName);
+
+            if(skipDataMigrationModules.contains(moduleName)){
+                LOGGER.info("Data Migration - Update Insert Data - skipped for moduleName -" + moduleName);
+                continue;
+            }
 
             boolean addLogger = (CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
 
@@ -71,12 +80,13 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
 
             Map<String, FacilioField> targetFieldNameVsFields = getLookupTypeFields(moduleName, modBean, numberLookupDetails);
             if(MapUtils.isEmpty(targetFieldNameVsFields)){
+                LOGGER.info("Data Migration - Update Insert Data - field null skipped for moduleName -" + moduleName);
                 continue;
             }
 
             List<SupplementRecord> targetSupplements = DataMigrationUtil.getSupplementFields((Collection<FacilioField>) targetFieldNameVsFields.values());
 
-            List<Map<String,Object>> updatedDataProps = DataMigrationUtil.getUpdateDataProps(moduleCsvFile,targetFieldNameVsFields,targetModule,numberLookupDetails,targetConnection,dataMigrationObj);
+            List<Map<String,Object>> updatedDataProps = DataMigrationUtil.getUpdateDataProps(moduleCsvFile,targetFieldNameVsFields,targetModule,numberLookupDetails,targetConnection,dataMigrationObj,nonNullableModuleVsFieldVsLookupModules);
 
             targetConnection.updateModuleData(targetModule, new ArrayList<>(targetFieldNameVsFields.values()), targetSupplements, updatedDataProps, addLogger);
 

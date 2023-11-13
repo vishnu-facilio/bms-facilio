@@ -150,6 +150,15 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         List<Map<String, Object>> props = selectBuilder.get();
 
         if (CollectionUtils.isNotEmpty(props)) {
+
+            for (Map<String, Object> prop : props) {
+                if (prop.containsKey("createdBy")) {
+                    IAMUser user = new IAMUser();
+                    user.setId((long) prop.get("createdBy"));
+                    prop.put("createdBy", user);
+                }
+            }
+
             systemSubModules = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
             Map<Long, FacilioModule> moduleIdVsObj = systemSubModules.stream().collect(Collectors.toMap(FacilioModule::getModuleId, Function.identity(),(name1, name2) -> { return name1; }));
             int index = 0 ;
@@ -217,7 +226,9 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         Map<Long,Long> childOldIdVsNewIds = new LinkedHashMap<>();
         List<Map<String, Object>> propToInsert = new ArrayList<>();
         for(Map<String,Object> prop : props) {
-
+            if(MapUtils.isEmpty(prop)){
+                continue;
+            }
             if(prop.containsKey("##Insert_Only_ID_Mapping##")) {
                 childOldIdVsNewIds.putAll((Map<Long, Long>) prop.get("##Insert_Only_ID_Mapping##"));
             } else {
@@ -307,8 +318,10 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
             GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                     .table(dataMappingModule.getTableName())
                     .select(fields)
-                    .andCondition(CriteriaAPI.getCondition("moduleId", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("OLDID", "oldId", StringUtils.join(oldIds.subList(offset, (offset+limit > oldIds.size()) ? oldIds.size() : offset+limit), ","), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("moduleId", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
+                    if(CollectionUtils.isNotEmpty(oldIds)){
+                        select.andCondition(CriteriaAPI.getCondition("OLDID", "oldId", StringUtils.join(oldIds.subList(offset, (offset+limit > oldIds.size()) ? oldIds.size() : offset+limit), ","), NumberOperators.EQUALS));
+                    }
             List<Map<String, Object>> props = select.get();
             if (CollectionUtils.isNotEmpty(props)) {
                 for (Map<String, Object> prop : props) {
