@@ -42,14 +42,18 @@ public class FacilioIndexJsp {
         }
     }
 
+    private static final String X_ORG_GROUP_HEADER = "X-Org-Group", X_ORG_ID_HEADER = "X-Org-Id", X_VERSION_HEADER = "X-Version";
     public static String constructRequestHeaders (HttpServletRequest request) {
         Organization org = (Organization) request.getAttribute(RequestUtil.REQUEST_CURRENT_ORG);
         JSONObject headers = new JSONObject();
         if (org != null) {
             if (StringUtils.isNotEmpty(org.getGroupName())) {
-                headers.put("X-Org-Group", org.getGroupName());
+                headers.put(X_ORG_GROUP_HEADER, org.getGroupName());
             }
-            headers.put("X-Org-Id", org.getOrgId());
+            headers.put(X_ORG_ID_HEADER, org.getOrgId());
+        }
+        if (DBConf.getInstance().isNewVersion()) {
+            headers.put(X_VERSION_HEADER, NEW_SERVER_QUERY_PARAM_VAL);
         }
         return headers.toJSONString();
     }
