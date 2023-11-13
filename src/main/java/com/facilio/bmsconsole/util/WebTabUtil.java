@@ -138,9 +138,6 @@ public class WebTabUtil {
             if (actList[0].equals(method)) {
                 action = getActionParam(actList[1]);
                 break;
-            } else if (actList[0].contains("ALL")) {
-                action = getActionParam("ALL");
-                break;
             }
         }
         return action;
@@ -150,10 +147,6 @@ public class WebTabUtil {
     }
 
     public static boolean isAuthorizedAccess(String moduleName, String action, Map<String,String> parameters,Long webTabId) throws Exception {
-
-        if (AccountUtil.getCurrentOrg().getOrgId() == 1516) {
-            return true;
-        }
 
         if (AccountUtil.getCurrentUser() == null) {
             return false;

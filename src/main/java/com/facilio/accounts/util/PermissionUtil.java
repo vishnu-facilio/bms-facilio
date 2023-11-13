@@ -704,9 +704,6 @@ public class PermissionUtil {
 	public static boolean currentUserHasPermission(long tabId, String moduleName, String action, Role role, String tabType) {
 
 		try {
-			if (moduleName.equalsIgnoreCase("planned")) {
-				moduleName = ContextNames.PREVENTIVE_MAINTENANCE;
-			}
 			long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
 			List<String> moduleNames = ApplicationApi.getModulesForTab(tabId);
 			if (!moduleNames.isEmpty()) {

@@ -64,12 +64,23 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.LINK_NAME).text(component.getLinkName());
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.DISPLAY_NAME).text(component.getDisplayName());
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.DESCRIPTION).text(component.getDescription());
-        scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).text(component.getApplicableModuleName());
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.SHOW_SWITCH).text(String.valueOf(component.getShowSwitch()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.STATUS).text(String.valueOf(component.getStatus()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APP_NAME).text(ApplicationApi.getApplicationName(component.getAppId()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.DELETED).text(String.valueOf(component.getDeleted()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.TYPE).text(String.valueOf(component.getType()));
+        Long applicableModuleId = component.getApplicableModuleId();
+        if(applicableModuleId !=null && applicableModuleId > 0){
+            ModuleBean modbean = Constants.getModBean();
+            FacilioModule module = modbean.getModule(applicableModuleId);
+            if(module!=null && StringUtils.isNotEmpty(module.getName())){
+                scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).text(module.getName());
+            }else {
+                throw new IllegalArgumentException("Module cannot be null");
+            }
+        } else {
+            throw new IllegalArgumentException("Module cannot be null");
+        }
         ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
         if(valGenBean != null && component.getValueGeneratorId() != null) {
             ValueGeneratorContext valGen = valGenBean.getValueGenerator(component.getValueGeneratorId());
