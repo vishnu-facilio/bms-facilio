@@ -13,6 +13,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.ConfigParams;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -89,6 +90,9 @@ public class CreateRecordBlock extends CRUDBaseBlock {
         }
         if(!(recordData instanceof JSONObject)){
             throw new FlowException("recordData is not a JSONObject for CreateRecordBlock");
+        }
+        if(MapUtils.isEmpty((JSONObject)recordData)){
+            throw new FlowException("recordData cannot be empty for CreateRecordBlock");
         }
         if(moduleName == null){
             throw new FlowException("moduleName cannot be empty for CreateRecordBlock");

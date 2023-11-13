@@ -4,6 +4,7 @@ import com.facilio.blockfactory.enums.BlockType;
 import com.facilio.flows.blockconfigcommand.*;
 import com.facilio.flows.config.FlowConfig;
 import com.facilio.flows.config.annotations.Block;
+import com.facilio.flows.context.BaseCreateAndUpdateRecordFlowTransitionContext;
 import com.facilio.flows.context.NotificationFlowTransitionContext;
 import com.facilio.flows.context.ScriptFlowTransitionContext;
 
@@ -44,6 +45,40 @@ public class FlowConfiguration {
                 .done()
                 .list()
                 .afterFetchCommand(new LoadPushNotificationBlockCommand(true))
+                .done().build();
+
+    }
+    @Block(BlockType.create_record)
+    public static Supplier<FlowConfig> getCreateRecordBlockConfig(){
+        return ()-> new FlowConfig.FlowConfigBuilder(BaseCreateAndUpdateRecordFlowTransitionContext.class)
+                .create()
+                .afterSaveCommand(new AddOrUpdateCreateRecordBlockConfigCommand(false))
+                .done()
+                .update()
+                .afterUpdateCommand(new AddOrUpdateCreateRecordBlockConfigCommand(true))
+                .done()
+                .summary()
+                .afterFetchCommand(new LoadCreateAndUpdateRecordBlockConfigCommand())
+                .done()
+                .list()
+                .afterFetchCommand(new LoadCreateAndUpdateRecordBlockConfigCommand(true))
+                .done().build();
+
+    }
+    @Block(BlockType.update_record)
+    public static Supplier<FlowConfig> getUpdateRecordBlockConfig(){
+        return ()-> new FlowConfig.FlowConfigBuilder(BaseCreateAndUpdateRecordFlowTransitionContext.class)
+                .create()
+                .afterSaveCommand(new AddOrUpdateCreateRecordBlockConfigCommand(false))
+                .done()
+                .update()
+                .afterUpdateCommand(new AddOrUpdateCreateRecordBlockConfigCommand(true))
+                .done()
+                .summary()
+                .afterFetchCommand(new LoadCreateAndUpdateRecordBlockConfigCommand())
+                .done()
+                .list()
+                .afterFetchCommand(new LoadCreateAndUpdateRecordBlockConfigCommand(true))
                 .done().build();
 
     }

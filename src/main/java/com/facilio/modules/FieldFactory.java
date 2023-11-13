@@ -3716,6 +3716,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("notificationBlockId","NOTIFICATION_BLOCK_ID",module));
         return fields;
     }
+    public static List<FacilioField> getRawRecordDataFields(){
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getRawRecordDataModule();
+
+        fields.add(getIdField(module));
+        fields.add(getNumberField("blockId","BLOCK_ID",module));
+        fields.add(getNumberField("fieldId","FIELDID",module));
+        fields.add(getStringField("fieldName","FIELD_NAME",module));
+        fields.add(getStringField("valueStr","VALUE",module));
+        return fields;
+    }
 
     public static List<FacilioField> getImportDataDetailsFields() {
         FacilioModule module = ModuleFactory.getImportDataDetailsModule();

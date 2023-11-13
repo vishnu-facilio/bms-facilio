@@ -769,6 +769,13 @@ public class ModuleFactory {
 		flowTransitionModule.setExtendModule(getFlowTransitionModule());
 		return flowTransitionModule;
 	}
+	public static FacilioModule getRawRecordDataModule(){
+		FacilioModule flowTransitionModule = new FacilioModule();
+		flowTransitionModule.setName("rawRecordData");
+		flowTransitionModule.setDisplayName("Raw Record Data");
+		flowTransitionModule.setTableName("RawRecordData");
+		return flowTransitionModule;
+	}
 	public static FacilioModule getReadingRuleMetricModule() {
 		FacilioModule readingRuleModule = new FacilioModule();
 		readingRuleModule.setName("readingruleMetrics");
