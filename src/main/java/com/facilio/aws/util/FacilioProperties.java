@@ -107,6 +107,11 @@ public class FacilioProperties {
 
     private static String baseDomain;
     private static String sandboxSubDomain;
+    private static String sandboxTenantAppDomain;
+    private static String sandboxClientAppDomain;
+    private static String sandboxOccupantAppDomain;
+    private static String sandboxVendorAppDomain;
+    private static String sandboxEmployeeAppDomain;
     private static String mainAppDomain;
     private static String tenantAppDomain;
     private static String clientAppDomain;
@@ -362,6 +367,11 @@ public class FacilioProperties {
 
             baseDomain = PROPERTIES.getProperty("base.domain");
             sandboxSubDomain = PROPERTIES.getProperty("sandbox.subdomain");
+            sandboxTenantAppDomain = PROPERTIES.getProperty("sandbox.tenantportal.domain");
+            sandboxClientAppDomain = PROPERTIES.getProperty("sandbox.clientportal.domain");
+            sandboxVendorAppDomain = PROPERTIES.getProperty("sandbox.vendorportal.domain");
+            sandboxOccupantAppDomain = PROPERTIES.getProperty("sandbox.occupantportal.domain");
+            sandboxEmployeeAppDomain = PROPERTIES.getProperty("sandbox.employeeportal.domain");
             mainAppDomain = PROPERTIES.getProperty("mainapp.domain");
             tenantAppDomain = PROPERTIES.getProperty("tenantportal.domain");
             clientAppDomain = PROPERTIES.getProperty("clientportal.domain");
@@ -1092,5 +1102,25 @@ public class FacilioProperties {
 
     public static String getSandboxSubDomain() {
         return StringUtils.isNotEmpty(sandboxSubDomain) ? sandboxSubDomain : "";
+    }
+
+    public static String getSandboxTenantAppDomain() {
+        return StringUtils.isNotEmpty(sandboxTenantAppDomain) ? sandboxTenantAppDomain : "";
+    }
+
+    public static String getSandboxVendorAppDomain() {
+        return StringUtils.isNotEmpty(sandboxVendorAppDomain) ? sandboxVendorAppDomain : "";
+    }
+
+    public static String getSandboxOccupantAppDomain() {
+        return StringUtils.isNotEmpty(sandboxOccupantAppDomain) ? sandboxOccupantAppDomain : "";
+    }
+
+    public static String getSandboxEmployeeAppDomain() {
+        return StringUtils.isNotEmpty(sandboxEmployeeAppDomain) ? sandboxEmployeeAppDomain : "";
+    }
+
+    public static String getSandboxClientAppDomain() {
+        return StringUtils.isNotEmpty(sandboxClientAppDomain) ? sandboxClientAppDomain : "";
     }
 }

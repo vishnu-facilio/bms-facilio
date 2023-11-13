@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.chain.FacilioChain;
@@ -146,15 +147,18 @@ public class LongTasksBeanImpl implements LongTasksBean {
 
 			LOGGER.info("####Sandbox - Initiating Sandbox Domain Creation");
 
-			AppDomain sandboxDomain = new AppDomain(
-					productionDomainName + "." + FacilioProperties.getSandboxSubDomain(),
-					AppDomain.AppDomainType.FACILIO.getIndex(), AppDomain.GroupType.FACILIO.getIndex(), sandboxOrgId,
-					AppDomain.DomainType.DEFAULT.getIndex());
+			// AppDomain entries are added (in Production Org) only when first sandbox for a ORG is configured
+			if (SandboxAPI.getSandboxCount(null) < 0) {
+				AppDomain sandboxDomain = ApplicationApi.getSandboxAppDomain(
+						productionDomainName + "." + FacilioProperties.getSandboxSubDomain(),
+						AppDomain.AppDomainType.FACILIO.getIndex(), AppDomain.GroupType.FACILIO.getIndex(), sandboxOrgId,
+						AppDomain.DomainType.DEFAULT.getIndex());
 
-			List<AppDomain> appDomains = new ArrayList<>();
-			appDomains.add(sandboxDomain);
+				List<AppDomain> appDomains = new ArrayList<>();
+				appDomains.add(sandboxDomain);
 
-			IAMAppUtil.addAppDomains(appDomains);
+				IAMAppUtil.addAppDomains(appDomains);
+			}
 
 			LOGGER.info("####Sandbox - Completed Sandbox Domain Creation");
 
