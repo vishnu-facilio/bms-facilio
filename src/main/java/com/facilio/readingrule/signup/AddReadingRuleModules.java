@@ -11,7 +11,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -89,6 +89,27 @@ public class AddReadingRuleModules extends SignUpData {
         fddToWo.setIdentifier("fddToWO");
         fddToWo.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, fddToWo);
+
+        SystemButtonRuleContext editFddToWo = new SystemButtonRuleContext();
+        editFddToWo.setName("Edit Fault To Workorder Form ");
+        editFddToWo.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        editFddToWo.setIdentifier("editFddToWO");
+        editFddToWo.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, editFddToWo);
+
+        SystemButtonRuleContext disable = new SystemButtonRuleContext();
+        disable.setName("Disable Fault To Workorder Form ");
+        disable.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        disable.setIdentifier("disableFDDToWo");
+        disable.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, disable);
+
+        SystemButtonRuleContext enable = new SystemButtonRuleContext();
+        enable.setName("Enable Fault To Workorder Form ");
+        enable.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        enable.setIdentifier("enableFDDToWo");
+        enable.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, enable);
 
     }
 

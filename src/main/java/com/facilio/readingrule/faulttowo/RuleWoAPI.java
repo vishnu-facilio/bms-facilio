@@ -19,6 +19,7 @@ import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,7 +39,7 @@ public class RuleWoAPI {
         return null;
     }
     public static void updateRuleWoDependencies(ReadingRuleWorkOrderRelContext ruleWo, Long ruleId) throws Exception {
-        if(ruleWo.getWoCriteria()!=null){
+        if(ruleWo.getWoCriteria()!=null && MapUtils.isNotEmpty(ruleWo.getWoCriteria().getConditions())){
             NewReadingRuleAPI.setModuleNameForCriteria(ruleWo.getWoCriteria(), FacilioConstants.ContextNames.WORK_ORDER);
             Long criteriaId=CriteriaAPI.addCriteria(ruleWo.getWoCriteria());
             ruleWo.setWoCriteriaId(criteriaId);

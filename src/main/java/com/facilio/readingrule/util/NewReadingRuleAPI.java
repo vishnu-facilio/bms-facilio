@@ -3,9 +3,9 @@ package com.facilio.readingrule.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ReadingAlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.WorkflowRuleLoggerContext;
 import com.facilio.bmsconsole.enums.RuleJobType;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleLoggerAPI;
 import com.facilio.chain.FacilioContext;
@@ -21,7 +21,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -40,12 +39,9 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.facilio.modules.FieldFactory.getStringField;
 
 @Log4j
 public class NewReadingRuleAPI {
@@ -137,9 +133,9 @@ public class NewReadingRuleAPI {
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
-                CriteriaAPI.getIdCondition(ruleId,modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
+                CriteriaAPI.getIdCondition(ruleId, modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))});
         if (CollectionUtils.isNotEmpty(rules)) {
-             return rules.get(0);
+            return rules.get(0);
         }
         throw new IllegalArgumentException("Invalid Rule Id");
     }
@@ -149,7 +145,7 @@ public class NewReadingRuleAPI {
         String search = null;
         int page = 0, perPage = 50;
         String orderBy = null, orderType = null;
-        if(paramsMap != null){
+        if (paramsMap != null) {
             page = (int) paramsMap.get("page");
             perPage = (int) paramsMap.get("perPage");
             search = (String) paramsMap.get("search");
@@ -158,7 +154,7 @@ public class NewReadingRuleAPI {
                 orderType = (String) paramsMap.get("orderType");
             }
         }
-        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null,null);
+        FacilioContext fetch = V3Util.fetchList(moduleName, true, null, null, false, null, orderBy, orderType, search, page, perPage, true, null, null, null);
         Map<String, Object> newReadingRuleContexts = (Map<String, Object>) fetch.get(Constants.RECORD_MAP);
 
         List<NewReadingRuleContext> rules = (List<NewReadingRuleContext>) newReadingRuleContexts.get(moduleName);
@@ -249,6 +245,7 @@ public class NewReadingRuleAPI {
         for (Map.Entry<String, Condition> entry : conditions.entrySet()) {
             entry.getValue().setModuleName(moduleName);
         }
+
     }
 
     public static Map<Long, Map<String, Object>> getReadingRuleNameAndImpactByIds(List<Long> ruleIds) throws Exception {
@@ -326,14 +323,14 @@ public class NewReadingRuleAPI {
         clearTimeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("createdTime"), String.valueOf(startTime), NumberOperators.LESS_THAN_EQUAL));
 
         Criteria tempCriteria = new Criteria();
-        tempCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), "" , CommonOperators.IS_EMPTY));
+        tempCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), "", CommonOperators.IS_EMPTY));
         tempCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), String.valueOf(endTime), NumberOperators.GREATER_THAN_EQUAL));
         clearTimeCriteria.andCriteria(tempCriteria);
 
 
         Criteria timeCriteria = new Criteria();
-        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("createdTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
-        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), startTime+ "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("createdTime"), startTime + "," + endTime, DateOperators.BETWEEN));
+        timeCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("clearedTime"), startTime + "," + endTime, DateOperators.BETWEEN));
         timeCriteria.orCriteria(clearTimeCriteria);
 
         SelectRecordsBuilder<ReadingAlarmOccurrenceContext> builder = new SelectRecordsBuilder<ReadingAlarmOccurrenceContext>()
@@ -349,7 +346,7 @@ public class NewReadingRuleAPI {
         List<Long[]> data = new ArrayList<>();
         occurrenceContexts.forEach(occ -> {
             Long[] dataArr = new Long[3]; // 0 startTime of occ, 1 end Time, 2 duration
-            dataArr[0] = Math.max(occ.getCreatedTime() , startTime );
+            dataArr[0] = Math.max(occ.getCreatedTime(), startTime);
             Long currentTimeMillis = DateTimeUtil.utcTimeToOrgTime(System.currentTimeMillis());
             Long endLimit = endTime > currentTimeMillis ? currentTimeMillis : endTime;
             dataArr[1] = occ.getClearedTime() == -1L ? endLimit : Math.min(occ.getClearedTime(), endTime);
@@ -362,7 +359,7 @@ public class NewReadingRuleAPI {
     public static void setCategory(NewReadingRuleContext rule) throws Exception {
         ResourceType type = rule.getResourceTypeEnum();
         V3Context category = CommonConnectedUtil.getCategory(type, rule.getCategoryId());
-        if(category != null) {
+        if (category != null) {
             rule.setCategory(new ResourceCategory<>(type, category));
         }
     }

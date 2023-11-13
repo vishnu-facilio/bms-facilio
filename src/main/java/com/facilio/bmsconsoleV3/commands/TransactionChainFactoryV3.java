@@ -2648,7 +2648,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addReadingKpi() {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new PrepareReadingKpiCreationCommand());
-        chain.addCommand(new AddReadingCategoryCommand());
+        chain.addCommand(addConnectedReadingModulesCommand());
         chain.addCommand(new SetFieldAndModuleCommand());
         return chain;
     }
