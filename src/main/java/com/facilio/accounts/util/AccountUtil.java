@@ -623,7 +623,7 @@ public class AccountUtil {
 		FSM(157,getExponentValue(30),LicenseMapping.GROUP3LICENSE),//2^30
 		SFG_20(158,getExponentValue(31),LicenseMapping.GROUP3LICENSE), //2^31
 		CLICKHOUSE(159,getExponentValue(32),LicenseMapping.GROUP3LICENSE),//2^32
-		PRE_COMMIT_WORKFLOW_RULES(160,getExponentValue(33),LicenseMapping.GROUP3LICENSE);//2^33
+		PRE_COMMIT_WORKFLOW_RULES(160,getExponentValue(33),LicenseMapping.GROUP3LICENSE),//2^33
 		DISABLE_DATA_DOG(161,getExponentValue(34),LicenseMapping.GROUP3LICENSE);//2^34
 
 		public int featureId;
