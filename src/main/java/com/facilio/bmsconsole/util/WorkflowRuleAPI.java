@@ -558,6 +558,12 @@ public class WorkflowRuleAPI {
 		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
 	}
 
+	public static StateFlowRuleContext getStateflow(String name,FacilioModule module,RuleType type) throws Exception{
+		WorkflowRuleContext workflowRule = getWorkflowRule(name, module, type, false);
+		List<WorkflowRuleContext> workflowRuleList = workflowRule != null ? getWorkFlowsFromMapList(Collections.singletonList(FieldUtil.getAsProperties(workflowRule)),true,true) : null;
+		StateFlowRuleContext stateflow = CollectionUtils.isNotEmpty(workflowRuleList) ? (StateFlowRuleContext) workflowRuleList.get(0) : null;
+		return stateflow;
+	}
 	public static WorkflowRuleContext getWorkflowRule(String name, FacilioModule module, RuleType type,boolean actionNeeded) throws Exception{
 		if (name == null && module == null && type == null){
 			return null;

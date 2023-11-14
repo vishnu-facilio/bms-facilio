@@ -3,13 +3,17 @@ package com.facilio.componentpackage.utils;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.UserInfo;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -19,13 +23,19 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class PackageUtil {
@@ -89,6 +99,13 @@ public class PackageUtil {
         return COMPONENTS_UID_VS_COMPONENT_ID.get();
     }
 
+    public static Long getComponentId(ComponentType componentType,String uniqueIdentifier){
+        Long componentId = null;
+        if (componentType != null) {
+            componentId = getComponentsUIdVsComponentIdForComponent(componentType).get(uniqueIdentifier);
+        }
+        return componentId != null ? componentId : -1;
+    }
     public static Map<String, Long> getComponentsUIdVsComponentIdForComponent(ComponentType componentType) {
         return getComponentsUIdVsComponentId().computeIfAbsent(componentType, k -> new HashMap<>());
     }
@@ -633,5 +650,94 @@ public class PackageUtil {
 
 
         return defaultRoles;
+    }
+
+    public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
+        if (workflowIds != null && !workflowIds.isEmpty()) {
+            List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRules(workflowIds);
+            List<Long> deleteIds = new ArrayList<Long>();
+            List<Long> updateIds = new ArrayList<Long>();;
+            FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+
+            if (rules != null && !rules.isEmpty()) {
+                for(WorkflowRuleContext rule: rules ) {
+                    if (rule.isLatestVersion() && rule.getRuleTypeEnum().versionSupported()) {
+                        updateIds.add(rule.getId());
+                    }
+                    else {
+                        deleteIds.add(rule.getId());
+                    }
+                    if (EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() != WorkflowRuleContext.RuleType.RECORD_SPECIFIC_RULE.getIntVal() ) {
+                        deleteScheduledRuleJob(rule);
+                    }
+                    else if(EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() == WorkflowRuleContext.RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+                        deleteRecordSpecificRuleJob(rule);
+                    }
+                    else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getActivityType())) {
+                        FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
+                    }
+
+                    // delete triggers for the particular rule
+                    TriggerUtil.deleteTriggersForWorkflowRule(rule);
+                }
+            }
+            if (deleteIds.size() > 0) {
+                ActionAPI.deleteAllActionsFromWorkflowRules(workflowIds);
+                GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+                        .table(module.getTableName())
+                        .andCondition(CriteriaAPI.getIdCondition(workflowIds, module));
+                deleteBuilder.delete();
+
+                for (WorkflowRuleContext rule : rules) {
+                    switch (rule.getRuleTypeEnum()) {
+                        case STATE_RULE:
+                            ApprovalRulesAPI.deleteApproverRuleChildren((ApproverWorkflowRuleContext) rule);
+                            break;
+                        default:
+                            break;
+                    }
+
+                   deleteChildIdsForWorkflow(rule, rule);
+                }
+            }
+            if (updateIds.size() > 0) {
+                Map<String, Object> ruleProps = new HashMap<>();
+                ruleProps.put("latestVersion", false);
+                ruleProps.put("status", false);
+                ruleProps.put("modifiedTime", DateTimeUtil.getCurrenTime());
+                GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                        .table(module.getTableName())
+                        .fields(FieldFactory.getWorkflowRuleFields())
+                        .andCondition(CriteriaAPI.getIdCondition(updateIds, module));
+                updateBuilder.update(ruleProps);
+            }
+        }
+    }
+
+    protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
+        try {
+            if (newRule.getCriteria() != null && oldRule.getCriteriaId() != -1) {
+                CriteriaAPI.deleteCriteria(oldRule.getCriteriaId());
+            }
+        }catch (MySQLIntegrityConstraintViolationException e) {
+            LOGGER.info("Error while deleting existing workflow criteria", e);
+        }
+        if(newRule.getWorkflow() != null && oldRule.getWorkflowId() != -1) {
+            WorkflowUtil.deleteWorkflow(oldRule.getWorkflowId());
+        }
+    }
+
+    protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
+
+        String jobName = rule.getSchedulerJobName();
+        if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
+            jobName = rule.getScheduleRuleJobName();
+        }
+
+        FacilioTimer.deleteJob(rule.getId(), jobName);
+    }
+
+    protected static void deleteRecordSpecificRuleJob(WorkflowRuleContext rule) throws Exception {
+        FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
     }
 }

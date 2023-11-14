@@ -1981,6 +1981,17 @@ public class PackageBeanUtil {
         return null;
     }
 
+    public static void deleteStateTransitions(long stateFlowId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("STATE_FLOW_ID", "stateFlowId", String.valueOf(stateFlowId), NumberOperators.EQUALS));
+        List<WorkflowRuleContext> stateTransitions = StateFlowRulesAPI.getStateTransitions(ModuleFactory.getStateRuleTransitionModule(), FieldFactory.getStateRuleTransitionFields(), criteria);
+        List<Long> transitionIds = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(stateTransitions)) {
+            transitionIds = stateTransitions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList());
+        }
+        PackageUtil.deleteWorkFlowRules(transitionIds);
+    }
+
     public static List<Map<String, Object>> addEMailAttachments(XMLBuilder element) throws Exception {
         XMLBuilder attachmentListElement = element.getElement(PackageConstants.EmailConstants.ATTACHMENT_LIST);
         List<Map<String, Object>> attachmentList = new ArrayList<>();

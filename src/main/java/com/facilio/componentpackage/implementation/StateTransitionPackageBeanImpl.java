@@ -18,6 +18,8 @@ import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
@@ -255,16 +257,6 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
 
     private long addOrUpdateStateTransition(StateflowTransitionContext stateTransition) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlowTransition();
-        ModuleBean moduleBean = Constants.getModBean();
-        FacilioModule module = moduleBean.getModule(stateTransition.getModuleId());
-
-        WorkflowRuleContext existingStateTransition = WorkflowRuleAPI.getWorkflowRule(stateTransition.getName(),module,
-                stateTransition.getRuleTypeEnum(),false);
-
-        if (existingStateTransition != null){
-            stateTransition.setId(existingStateTransition.getId());
-        }
-
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, stateTransition);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, stateTransition.getModuleName());
@@ -391,6 +383,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
             String formName = builder.getElement(PackageConstants.WorkFlowRuleConstants.FORMNAME).getText();
             FacilioForm form = FormsAPI.getFormFromDB(formName,module);
             stateflowTransition.setFormId(form.getId());
+            stateflowTransition.setForm(form);
         }
 
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.FORM_MODULENAME) != null){

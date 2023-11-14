@@ -1,6 +1,5 @@
 package com.facilio.componentpackage.implementation;
 
-import com.facilio.accounts.dto.NewPermission;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
@@ -11,9 +10,11 @@ import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
@@ -93,6 +94,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
                     String transitionName = rule != null ? rule.getName() : null;
                     anchorElement.attribute("positionNo", String.valueOf(i));
                     anchorElement.attribute("transitionName", transitionName);
+                    anchorElement.attribute("transitionId", String.valueOf(transitionId));
                 }
             }
         }
@@ -129,7 +131,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
             XMLBuilder builder = idVsData.getValue();
             stateFlowRule = constructStateflowFromBuilder(builder, moduleBean);
 
-            long stateFlowId = addOrUpdateStateflow(stateFlowRule);
+            long stateFlowId = addOrUpdateStateflow(stateFlowRule,true);
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), stateFlowId);
         }
 
@@ -147,7 +149,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
             Map<String,Long> transitionNameVsId = PackageBeanUtil.getStateTransitionNameVsId(moduleName,stateflowName);
             StateFlowRuleContext stateFlowRule = constructDiagramFromBuilder(stateFlowElement, stateNameVsId, transitionNameVsId);
             stateFlowRule.setId(stateflowId);
-            addOrUpdateStateflow(stateFlowRule);
+            addOrUpdateStateflow(stateFlowRule,false);
         }
     }
 
@@ -167,7 +169,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
             stateFlowRuleContext = constructStateflowFromBuilder(builder, moduleBean);
             stateFlowRuleContext.setId(ruleId);
 
-            addOrUpdateStateflow(stateFlowRuleContext);
+            addOrUpdateStateflow(stateFlowRuleContext,false);
         }
     }
 
@@ -176,18 +178,19 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
 
     }
 
-    private long addOrUpdateStateflow(StateFlowRuleContext stateFlowRuleContext) throws Exception {
+    private long addOrUpdateStateflow(StateFlowRuleContext stateFlowRuleContext,boolean isCreate) throws Exception {
         FacilioChain chain = TransactionChainFactory.getAddOrUpdateStateFlow();
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(stateFlowRuleContext.getModuleId());
 
-
-        if (stateFlowRuleContext.getId() <= 0 && stateFlowRuleContext.isDefaltStateFlow()) {
-            WorkflowRuleContext existingStateflow = WorkflowRuleAPI.getWorkflowRule(stateFlowRuleContext.getName(), module,
-                    stateFlowRuleContext.getRuleTypeEnum(), false);
+        if (isCreate) {
+            StateFlowRuleContext existingStateflow = WorkflowRuleAPI.getStateflow(stateFlowRuleContext.getName(), module,
+                    stateFlowRuleContext.getRuleTypeEnum());
 
             if (existingStateflow != null) {
                 stateFlowRuleContext.setId(existingStateflow.getId());
+                PackageBeanUtil.deleteStateTransitions(existingStateflow.getId());
+                StateFlowRulesAPI.clearStateFlowDiagram(existingStateflow);
             }
         }
 
@@ -271,7 +274,15 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
                 for (XMLBuilder anchor : anchorBuilder) {
                     int positionNo = Integer.parseInt(anchor.getAttribute("positionNo"));
                     String transitionName = anchor.getAttribute("transitionName");
-                    anchorArray.put(positionNo, transitionNameVsId.get(transitionName));
+                    String transitionId = anchor.getAttribute("transitionId");
+                    Long transid = null;
+                    if(transitionId != null) {
+                        transid = PackageUtil.getComponentId(ComponentType.STATE_TRANSITION,transitionId);
+                        transid = (transid <=0) ? null : transid;
+                    } else {
+                        transid = transitionNameVsId.get(transitionName);
+                    }
+                    anchorArray.put(positionNo, transid);
                 }
 
                 statesMap.put("anchors", anchorArray);

@@ -15,9 +15,9 @@ import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
 import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.AbstractStateTransitionRuleContext.TransitionType;
-import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -31,8 +31,6 @@ import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.v3.commands.AddActivityForModuleDataCommand;
-import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -405,7 +403,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return stateFlows;
 	}
 
-	private static List<WorkflowRuleContext> getStateTransitions(FacilioModule stateModule, List<FacilioField> fields, Criteria criteria) throws Exception {
+	public static List<WorkflowRuleContext> getStateTransitions(FacilioModule stateModule, List<FacilioField> fields, Criteria criteria) throws Exception {
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 
@@ -603,6 +601,17 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static void deleteStateTransition(long stateFlowID, long stateTransitionId) throws Exception {
 		WorkflowRuleContext stateTransition = getStateTransition(stateFlowID, stateTransitionId);
 		WorkflowRuleAPI.deleteWorkflowRule(stateTransition.getId());
+	}
+
+	public static void clearStateFlowDiagram(StateFlowRuleContext stateFlowRule) throws Exception{
+		stateFlowRule.setDiagramJson(null);
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getStateFlowModule().getTableName())
+				.fields(FieldFactory.getStateFlowFields())
+				.ignoreSplNullHandling()
+				.andCondition(CriteriaAPI.getIdCondition(stateFlowRule.getId(),ModuleFactory.getStateFlowModule()));
+
+		builder.update(FieldUtil.getAsProperties(stateFlowRule));
 	}
 
 	public static StateFlowRuleContext getDefaultStateFlow(FacilioModule module) throws Exception {
