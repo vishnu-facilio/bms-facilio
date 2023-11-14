@@ -39,15 +39,15 @@ public class ValidateUtilityIntegrationTariffSlabCommandV3 extends FacilioComman
             UtilityIntegrationTariffSlabContext currentSlab = slabs.get(i);
             UtilityIntegrationTariffSlabContext nextSlab = slabs.get(i + 1);
             if (currentSlab.getFrom() < 0 || currentSlab.getTo() <= currentSlab.getFrom()) {
-                return "Invalid range for slab " + currentSlab.getName() + ": 'From' should be less than 'To'.";
+                return "Invalid range for slab " + currentSlab.getName() + ": 'From' should be less than 'To'";
             }
             if (nextSlab.getFrom() <= currentSlab.getTo()) {
-                return "Overlapping or invalid range between slabs " + currentSlab.getName() + " and " + nextSlab.getName() + ".";
+                return "Overlapping or invalid range between slabs " + currentSlab.getName() + " and " + nextSlab.getName() ;
                  }
         }
         UtilityIntegrationTariffSlabContext lastSlab = slabs.get(slabs.size() - 1);
           if (lastSlab.getFrom() < 0 || lastSlab.getTo() <= lastSlab.getFrom()) {
-              return "Invalid range for the last slab " + lastSlab.getName() + ": 'From' should be less than 'To'.";
+              return "Invalid range for the last slab " + lastSlab.getName() + ": 'From' should be less than 'To'";
           }
           return null;
       }

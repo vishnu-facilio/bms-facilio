@@ -8,8 +8,11 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -50,6 +53,7 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 //        addModuleChain1.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules1);
 //        addModuleChain1.getContext().put(FacilioConstants.ContextNames.PARENT_MODULE,utilityIntegrationTariffModule.getName());
 //        addModuleChain1.execute();
+        addSystemButtons();
 
     }
 
@@ -235,7 +239,17 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
 
     }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF, createButton);
 
+    }
 
 }
 

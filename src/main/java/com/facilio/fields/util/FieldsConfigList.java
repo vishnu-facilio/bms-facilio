@@ -276,7 +276,7 @@ public class FieldsConfigList {
             "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid","localId"
     );
     public static final List<String> UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE = Arrays.asList(
-            "fuelSurcharge", "flatRatePerUnit", "unit","localId"
+            "fuelSurcharge", "flatRatePerUnit", "unit","localId","fromDate","toDate"
     );
 
     public static final List<String> UTILITY_DISPUTE_FIELDS_EXCLUDE = Arrays.asList(

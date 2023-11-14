@@ -53,7 +53,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 
-        FacilioModule module = new FacilioModule("utilityIntegrationBills", "Utility Integration Bills", "Utility_Integration_Bills",FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule("utilityIntegrationBills", "Utility Bills", "Utility_Integration_Bills",FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -154,6 +154,7 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
 
         LookupField utilityIntegrationCustomer = FieldFactory.getDefaultField("utilityIntegrationCustomer", "Utility Integration Customer ", "UTILITY_INTEGRATION_CUSTOMER_ID", FieldType.LOOKUP);
         utilityIntegrationCustomer.setLookupModule(moduleBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER));
+        utilityIntegrationCustomer.setRelatedListDisplayName("Utility Bills");
         fields.add(utilityIntegrationCustomer);
 
         LookupField utilityIntegrationMeter = FieldFactory.getDefaultField("utilityIntegrationMeter", "Utility Integration Meter ", "UTILITY_INTEGRATION_METER_ID", FieldType.LOOKUP);

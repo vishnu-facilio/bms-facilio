@@ -37,13 +37,13 @@ public class ValidateUtilityIntegrationTariffCommandV3 extends FacilioCommand {
                     UtilityIntegrationTariffContext existingTariff = getExistingTariffById(tariff.getId());
                     if (existingTariff != null) {
                         if (!tariff.getName().equals(existingTariff.getName())) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Name cannot be changed while editing.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Name cannot be changed while editing");
                         }
                         if (!tariff.getUtilityType().equals(existingTariff.getUtilityType())) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Utility type cannot be changed while editing.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Utility type cannot be changed while editing");
                         }
                         if (!tariff.getUtilityProviders().equals(existingTariff.getUtilityProviders())) {
-                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Utility provider cannot be changed while editing.");
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Utility provider cannot be changed while editing");
                         }
                     }
                 }

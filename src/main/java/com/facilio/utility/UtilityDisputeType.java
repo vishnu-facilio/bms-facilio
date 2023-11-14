@@ -17,7 +17,7 @@ import java.time.Month;
 
 public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
 
-    BILL_MISSING(1,"Bill Missing") {
+    BILL_MISSING(1,"Bill missing") {
         @Override
         public  UtilityDisputeContext execute(FacilioContext context) throws Exception {
                 //long billDate,UtilityIntegrationMeterContext list)
@@ -42,7 +42,7 @@ public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
 
 
     },
-    BILL_FOR_TERMINATED_ACCOUNT (2, "Bill for terminated Account"){
+    BILL_FOR_TERMINATED_ACCOUNT (2, "Bill for terminated account"){
         public UtilityDisputeContext execute(FacilioContext context) throws Exception {
             UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("billList");
 
@@ -55,7 +55,7 @@ public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
         }
 
     },
-    CONSUMPTION_READING_MISMATCH(3,"Consumption Mismatch"){
+    CONSUMPTION_READING_MISMATCH(3,"Consumption mismatch"){
         @Override
         public UtilityDisputeContext execute(FacilioContext context) throws Exception {
                 //UtilityIntegrationBillContext context,Double actualConsumption, Double billMeterConsumption,Double difference) throws Exception {
@@ -87,7 +87,7 @@ public  enum UtilityDisputeType implements RuleInterface, FacilioIntEnum {
             return dispute;
         }
     },
-    COST_MISMATCH(5,"Cost Mismatch") {
+    COST_MISMATCH(5,"Cost mismatch") {
         public UtilityDisputeContext execute(FacilioContext context) throws Exception{
             //UtilityIntegrationBillContext context,Double calculatedBillAmount,Double billAmount,Double difference
             UtilityIntegrationBillContext bill = (UtilityIntegrationBillContext) context.get("bill");

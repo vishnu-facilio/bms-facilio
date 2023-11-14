@@ -7,8 +7,12 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonAppRelContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -50,6 +54,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         addModuleChain.execute();
 
         pollMeterJob();
+        addSystemButtons();
     }
     public void pollMeterJob() throws Exception {
 
@@ -86,7 +91,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         StringField customerName = (StringField) FieldFactory.getDefaultField("name", "Name", "NAME", FieldType.STRING,true);
         fields.add(customerName);
 
-        StringField customerId = (StringField) FieldFactory.getDefaultField("customerId", "Customer Id", "CUSTOMER_UID", FieldType.STRING);
+        StringField customerId = (StringField) FieldFactory.getDefaultField("customerId", "Customer ID", "CUSTOMER_UID", FieldType.STRING);
         fields.add(customerId);
 
         StringField formUid = (StringField) FieldFactory.getDefaultField("formUid","Form UID","FORM_UID",FieldType.STRING);
@@ -178,7 +183,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         List<ViewField> utilityCustomerViewFields = new ArrayList<>();
 
         utilityCustomerViewFields.add(new ViewField("name","Name"));
-        utilityCustomerViewFields.add(new ViewField("customerId","Customer Id"));
+        utilityCustomerViewFields.add(new ViewField("customerId","Customer ID"));
         utilityCustomerViewFields.add(new ViewField("customerEmail","Customer Email"));
         utilityCustomerViewFields.add(new ViewField("noOfConnections","No of Connections"));
         utilityCustomerViewFields.add(new ViewField("utilityID","Utility ID"));
@@ -283,7 +288,6 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        FacilioField nameField = moduleBean.getField("id", moduleName);
         FacilioField phoneField = moduleBean.getField("name", moduleName);
         FacilioField emailField = moduleBean.getField("noOfConnections", moduleName);
         FacilioField createdField = moduleBean.getField("sysCreatedTime", moduleName);
@@ -296,10 +300,9 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 1, 3, 1);
 
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("");
@@ -368,5 +371,15 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, createButton);
 
+    }
 }
