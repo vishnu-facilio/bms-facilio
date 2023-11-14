@@ -233,6 +233,9 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("agent");
         scriptWhiteListedModules.add("points");
         scriptWhiteListedModules.add(RawAlarmModule.MODULE_NAME);
+        scriptWhiteListedModules.add("rawAlarm");
+        scriptWhiteListedModules.add("client");
+        scriptWhiteListedModules.add("clientcontact");
     }
 
     @Override
