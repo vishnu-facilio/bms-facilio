@@ -102,3 +102,14 @@ sources:
       broker: eh-prd-asda-arc01.servicebus.windows.net:9093
       auth: true
       mechanism: PLAIN
+
+  - name: msk-stage-1 # US Region
+    type: kafka
+    configs:
+      broker: b-3.stagekafka.ovkwli.c10.kafka.us-west-2.amazonaws.com:9096,b-1.stagekafka.ovkwli.c10.kafka.us-west-2.amazonaws.com:9096,b-2.stagekafka.ovkwli.c10.kafka.us-west-2.amazonaws.com:9096
+      auth: true
+      iot.rule.arn: arn:aws:iot:us-west-2:668907905219:ruledestination/vpc/91fd102c-e59a-4410-b3ee-84de6d9a2784
+      iot.rule.security.protocol: SASL_SSL
+      iot.rule.sasl.mechanism: SCRAM-SHA-512
+      iot.rule.sasl.scram.username: ${get_secret('AmazonMSK_StageCredential','SecretString','username','arn:aws:iam::668907905219:role/kafkaSASLRole')}
+      iot.rule.sasl.scram.password: ${get_secret('AmazonMSK_StageCredential','SecretString','password','arn:aws:iam::668907905219:role/kafkaSASLRole')}
