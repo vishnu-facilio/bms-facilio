@@ -28,13 +28,16 @@ public class FacilioWeatherDataJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		try {
 			if (!WeatherAPI.allow()) {
+				LOGGER.info("FacilioWeatherDataJob is not allowed to run");
 				return;
 			}
 			V3WeatherServiceContext weatherServiceContext = V3RecordAPI.getRecord(FacilioConstants.ModuleNames.WEATHER_SERVICE, jc.getJobId());
 			if(!weatherServiceContext.isStatus()) {
+				LOGGER.info(weatherServiceContext.getName()+" - weather service is disabled");
 				return;
 			}
 			List<V3WeatherStationContext> stations = WeatherAPI.getAllStations(jc.getJobId());
+			LOGGER.info("No of stations :: "+stations.size());
 			if(CollectionUtils.isEmpty(stations)) {
 				return;
 			}
@@ -60,7 +63,7 @@ public class FacilioWeatherDataJob extends FacilioJob {
 						int end = 120;
 						if(arrSize <= end) {
 							pushToIms(weatherData, station.getId(), orgId);
-							break;
+							continue;
 						}
 						int start = 0 ;
 						while(start < arrSize) {
