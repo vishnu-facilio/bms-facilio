@@ -4341,5 +4341,8 @@
             </property>
         </requestbody>
     </request>
-
+    <request path="/api/v1/setup/readings/utilitytype" method="GET">
+        <property name="id" type="number"/>
+        <property name="excludeEmptyFields" type="boolean"/>
+    </request>
 </config>
