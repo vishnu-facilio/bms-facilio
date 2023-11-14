@@ -1,14 +1,21 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.WebTabBean;
+import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
+import com.facilio.bmsconsole.context.webtab.WebTabHandler;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
@@ -35,6 +42,9 @@ public class PermissionInterceptor extends AbstractInterceptor {
             }
             String method = request.getMethod();
 
+            if(isSetupAPI()){
+                return invocation.invoke();
+            }
             if(throwDeprecatedApiError(deprecated)) {
                 return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
             }
@@ -72,5 +82,22 @@ public class PermissionInterceptor extends AbstractInterceptor {
 
     private Parameter getModuleNameParam(String moduleName) {
         return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+    }
+
+    private static boolean isSetupAPI() throws Exception {
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String currentTabId = request.getHeader("X-Tab-Id");
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+
+        if(StringUtils.isNotEmpty(currentTabId)){
+            long tabId = Long.parseLong(currentTabId);
+            WebTabContext tab = tabBean.getWebTab(tabId);
+            WebTabHandler handler = WebTabUtil.getWebTabHandler(tab);
+
+            if (handler instanceof SetupTypeHandler) {
+                return true;
+            }
+        }
+        return false;
     }
 }

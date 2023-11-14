@@ -45,7 +45,8 @@ public class WebTabUtil {
     }
 
     public static boolean checkPermission(HttpParameters parameters, String action, long tabId,Map<String,String> extraParameters) throws Exception {
-        WebTabContext tab = ApplicationApi.getWebTab(tabId);
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+        WebTabContext tab = tabBean.getWebTab(tabId);
         if (tab == null) {
             return false;
         }
