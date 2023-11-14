@@ -2,6 +2,7 @@ package com.facilio.sandbox.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.fms.message.Message;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
@@ -31,6 +32,7 @@ public class InstallPackageCommand extends FacilioCommand {
         content.put(SandboxConstants.SANDBOX_ID, sandboxId);
         content.put(PackageConstants.FILE_ID, fileId);
         content.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
+        content.put(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_INSTALLATION_STARTED.getIntVal());
         Messenger.getMessenger().sendMessage(new Message()
                 .setKey(LongRunningTaskHandler.KEY + "/" + DateTimeUtil.getCurrenTime())
                 .setOrgId(sandboxOrgId)

@@ -1,7 +1,5 @@
 package com.facilio.componentpackage.bean;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityService;
 import com.facilio.modules.FieldFactory;
@@ -28,8 +26,6 @@ public class OrgSwitchBeanImpl implements OrgSwitchBean{
         }
         return inputStream;
     }
-
-
     @Override
     public boolean sendSandboxProgress(Integer percentage, Long recordId, String message) throws Exception {
         try {
@@ -42,7 +38,6 @@ public class OrgSwitchBeanImpl implements OrgSwitchBean{
             return false;
         }
     }
-
     @Override
     public boolean changeSandboxStatus(SandboxConfigContext sandboxConfigContext) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
@@ -52,14 +47,16 @@ public class OrgSwitchBeanImpl implements OrgSwitchBean{
         SandboxAPI.updateSandboxConfig(sandboxConfigContext, fields);
         return true;
     }
-
     @Override
     public SandboxConfigContext getSandboxById(long id) throws Exception {
         return SandboxAPI.getSandboxById(id);
     }
-
     @Override
-    public long getSuperAdminOuidFromSandbox() throws Exception {
-        return AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
+    public List<SandboxConfigContext> getAllSandbox(int page, int perPage, String search) throws Exception {
+        return SandboxAPI.getAllSandbox(page, perPage, search);
+    }
+    @Override
+    public long getSandboxCount(String search) throws Exception {
+        return SandboxAPI.getSandboxCount(search);
     }
 }

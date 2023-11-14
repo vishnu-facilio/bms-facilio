@@ -37,6 +37,7 @@ import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.sandbox.utils.SandboxAPI;
+import com.facilio.sandbox.utils.SandboxUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.twilio.rest.api.v2010.account.sip.Domain;
@@ -815,15 +816,15 @@ public class ApplicationApi {
         if(org.getOrgType() == Organization.OrgType.SANDBOX.getIndex()){
             Organization productionOrg = AccountUtil.getOrgBean().getOrg(org.getProductionOrgId());
             servicePortalApp = IAMAppUtil
-                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxOccupantAppDomain());
+                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxOccupantAppDomain(), productionOrg.getOrgId());
             tenantPortalApp = IAMAppUtil
-                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxTenantAppDomain());
+                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxTenantAppDomain(), productionOrg.getOrgId());
             vendorPortalApp = IAMAppUtil
-                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxVendorAppDomain());
+                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxVendorAppDomain(), productionOrg.getOrgId());
             clientPortalApp = IAMAppUtil
-                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxClientAppDomain());
+                    .getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxClientAppDomain(), productionOrg.getOrgId());
             employeePortalApp = IAMAppUtil.
-                    getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxEmployeeAppDomain());
+                    getAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxEmployeeAppDomain(), productionOrg.getOrgId());
         }else{
             servicePortalApp = IAMAppUtil
                     .getAppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain());
@@ -2257,24 +2258,24 @@ public class ApplicationApi {
         AppDomain servicePortalAppDomain,vendorPortalAppDomain,tenantPortalAppDomain,clientPortalAppDomain,employeePortalAppDomain;
         if(org.getOrgType()==Organization.OrgType.SANDBOX.getIndex()){
             // AppDomain entries are added (in Production Org) only when first sandbox for a ORG is configured
-            if (SandboxAPI.getSandboxCount(null) > 0) {
+            if (SandboxUtil.getOrgSwitchBean(org.getProductionOrgId()).getSandboxCount(null) > 1) {
                 return;
             }
             Organization productionOrg = AccountUtil.getOrgBean().getOrg(org.getProductionOrgId());
             servicePortalAppDomain = getSandboxAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxOccupantAppDomain(),
-                    AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomainType.SERVICE_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), productionOrg.getOrgId(),
                     AppDomain.DomainType.DEFAULT.getIndex());
             vendorPortalAppDomain = getSandboxAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxVendorAppDomain(),
-                    AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), orgId,
+                    AppDomainType.VENDOR_PORTAL.getIndex(), GroupType.VENDOR_PORTAL.getIndex(), productionOrg.getOrgId(),
                     AppDomain.DomainType.DEFAULT.getIndex());
             tenantPortalAppDomain = getSandboxAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxTenantAppDomain(),
-                    AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), orgId,
+                    AppDomainType.TENANT_PORTAL.getIndex(), GroupType.TENANT_OCCUPANT_PORTAL.getIndex(), productionOrg.getOrgId(),
                     AppDomain.DomainType.DEFAULT.getIndex());
             clientPortalAppDomain = getSandboxAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxClientAppDomain(),
-                    AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), orgId,
+                    AppDomainType.CLIENT_PORTAL.getIndex(), GroupType.CLIENT_PORTAL.getIndex(), productionOrg.getOrgId(),
                     AppDomain.DomainType.DEFAULT.getIndex());
             employeePortalAppDomain = getSandboxAppDomain(productionOrg.getDomain() + "." + FacilioProperties.getSandboxEmployeeAppDomain(),
-                    AppDomainType.EMPLOYEE_PORTAL.getIndex(), GroupType.EMPLOYEE_PORTAL.getIndex(), orgId,
+                    AppDomainType.EMPLOYEE_PORTAL.getIndex(), GroupType.EMPLOYEE_PORTAL.getIndex(), productionOrg.getOrgId(),
                     AppDomain.DomainType.DEFAULT.getIndex());
         } else{
             servicePortalAppDomain = new AppDomain(org.getDomain() + "." + FacilioProperties.getOccupantAppDomain(),

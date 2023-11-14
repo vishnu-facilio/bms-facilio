@@ -3,14 +3,11 @@ package com.facilio.componentpackage.command;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
-import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageUtil;
-import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.fw.BeanFactory;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -32,13 +29,13 @@ public class DeployPackageCommand extends FacilioCommand {
 		Double version = Double.parseDouble(packageConfigXML.getElement(PackageConstants.VERSION).getText());
 		Integer packageType = Integer.parseInt(packageConfigXML.getElement(PackageConstants.TYPE).getText());
 		PackageContext.PackageType type = PackageContext.PackageType.valueOf(packageType);
-		Long targetOrgId = (Long) context.getOrDefault(PackageConstants.TARGET_ORG_ID, -1L);
 
 		PackageContext packageContext = PackageUtil.getPackageByName(packageUniqueName, type);
 		long currentUserId = (long) context.getOrDefault(PackageConstants.CREATED_USER_ID, -1l);
 		if (currentUserId <= 0) {
 			User currentUser = AccountUtil.getCurrentUser();
-			currentUserId = currentUser != null ? currentUser.getOuid() : getSuperAdminOuid(targetOrgId);
+			currentUserId = currentUser != null ? currentUser.getOuid() :
+					AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId()).getOuid();
 		}
 		double existingVersion;
 
@@ -57,16 +54,6 @@ public class DeployPackageCommand extends FacilioCommand {
 		context.put(PackageConstants.PACKAGE_CONFIG_XML, packageConfigXML);
 
 		return false;
-	}
-	private long getSuperAdminOuid(Long orgId) throws Exception {
-		OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", orgId);
-		try{
-			return NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getSuperAdminOuidFromSandbox());
-		}catch (Exception ex){
-			LOGGER.info("####Sandbox --- Exception while getting Current User"+ex);
-			throw new Exception(ex);
-		}
-
 	}
 
 }

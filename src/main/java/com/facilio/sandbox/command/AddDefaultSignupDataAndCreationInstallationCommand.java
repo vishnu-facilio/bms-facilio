@@ -1,12 +1,10 @@
 package com.facilio.sandbox.command;
 
-import com.facilio.backgroundactivity.util.BackgroundActivityAPI;
 import com.facilio.backgroundactivity.util.BackgroundActivityService;
-import com.facilio.backgroundactivity.util.BackgroundActivityUtil;
 import com.facilio.backgroundactivity.util.ChildActivityService;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.fms.message.Message;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
@@ -23,20 +21,24 @@ public class AddDefaultSignupDataAndCreationInstallationCommand extends FacilioC
     BackgroundActivityService backgroundActivityService = null;
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        SandboxConfigContext sandboxConfig = (SandboxConfigContext) context.get(SandboxConstants.SANDBOX);
+        long sandboxId = (long) context.get(SandboxConstants.SANDBOX_ID);
+        long productionOrgId = (long) context.get(PackageConstants.SOURCE_ORG_ID);
+        long fileId = SandboxAPI.getRecentPackageId((String) context.get(PackageConstants.SANDBOX_DOMAIN_NAME));
         JSONObject content = new JSONObject();
-        content.put(SandboxConstants.SANDBOX_ID, sandboxConfig.getId());
-        content.put(PackageConstants.SOURCE_ORG_ID, sandboxConfig.getOrgId());
-        content.put(PackageConstants.TARGET_ORG_ID, sandboxConfig.getSandboxOrgId());
-        content.put(FacilioConstants.ContextNames.SIGNUP_INFO, context.get(FacilioConstants.ContextNames.SIGNUP_INFO));
-        content.put(SandboxConstants.SANDBOX_ORG_USER, context.get(SandboxConstants.SANDBOX_ORG_USER));
-        content.put(SandboxConstants.PRODUCTION_DOMAIN_NAME, context.get(SandboxConstants.PRODUCTION_DOMAIN_NAME));
-        content.put("methodName", "addDefaultSignupDataToSandbox");
+        content.put(SandboxConstants.SANDBOX_ID, sandboxId);
+        content.put(PackageConstants.SOURCE_ORG_ID, productionOrgId);
+        if(fileId != -1L){
+            content.put("methodName", "addDefaultSignupDataToSandbox");
+            content.put(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.ORG_SIGNUP_STARTED.getIntVal());
+        }else {
+            content.put("methodName", "createPackageForSandboxData");
+            content.put(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_CREATION_STARTED_ON_SETUP.getIntVal());
+        }
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
-        backgroundActivityService= new BackgroundActivityService(sandboxConfig.getId(),"sandbox","sandbox Id: #"+sandboxConfig.getId(), "####Call to Ims Started for sandbox--"+ sandboxConfig.getId());
+        backgroundActivityService= new BackgroundActivityService(sandboxId,"sandbox","sandbox Id: #"+sandboxId, "####Call to Ims Started for sandbox--"+ sandboxId);
         Messenger.getMessenger().sendMessage(new Message()
                 .setKey(LongRunningTaskHandler.KEY+"/"+ DateTimeUtil.getCurrenTime())
-                .setOrgId(sandboxConfig.getSandboxOrgId())
+                .setOrgId(productionOrgId)
                 .setContent(content));
         return false;
     }

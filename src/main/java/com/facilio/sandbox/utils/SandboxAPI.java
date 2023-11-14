@@ -23,6 +23,7 @@ import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -217,14 +218,32 @@ public class SandboxAPI {
     }
 
     public static boolean checkSandboxDomainIfExist(String domainName) throws Exception {
-        Organization organization = IAMOrgUtil.getOrg(domainName);
-        if (organization!=null && StringUtils.isNotEmpty(organization.getDomain())) {
-            boolean avail = String.valueOf(organization.getDomain()).equalsIgnoreCase(domainName);
-            if (avail) {
-                return false;
-            } else {
-                return true;
+        if(!domainName.isEmpty()) {
+            Organization sandboxOrg = IAMUtil.getOrgBean().getOrgv2(domainName, Organization.OrgType.SANDBOX);
+            if (sandboxOrg != null && sandboxOrg.getDomain() != null) {
+                boolean avail = sandboxOrg.getDomain().equalsIgnoreCase(domainName);
+                if (avail) {
+                    return false;
+                } else {
+                    return true;
+                }
             }
+            return true;
+        }
+        return true;
+    }
+    public static boolean checkSandboxDomainIfExistForRerun(String domainName) throws Exception {
+        if(!domainName.isEmpty()) {
+            Organization sandboxOrg = IAMUtil.getOrgBean().getOrgv2(domainName, Organization.OrgType.SANDBOX);
+            if (sandboxOrg != null && sandboxOrg.getDomain() != null) {
+                boolean avail = sandboxOrg.getDomain().equalsIgnoreCase(domainName);
+                if (avail) {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+            return true;
         }
         return true;
     }
@@ -232,12 +251,28 @@ public class SandboxAPI {
     public static boolean checkSandboxRestrictionCondition() throws Exception {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         List<Integer> restrictStatuses = new ArrayList<>();
-        restrictStatuses.add(SandboxConfigContext.SandboxStatus.CREATION_IN_PROGRESS.getIndex());
-        restrictStatuses.add(SandboxConfigContext.SandboxStatus.UPGRADE_IN_PROGRESS.getIndex());
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.SANDBOX_ORG_CREATION_IN_PROGRESS.getIndex());
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.META_UPGRADE_IN_PROGRESS.getIndex());
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getFacilioSandboxFields())
                 .table(sandboxModule.getTableName())
                 .andCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(restrictStatuses, ","), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = selectBuilder.get();
+        if (props != null && !props.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    public static boolean checkSandboxRestrictionConditionForRerun(String domainName) throws Exception {
+        FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
+        List<Integer> restrictStatuses = new ArrayList<>();
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.SANDBOX_ORG_CREATION_IN_PROGRESS.getIndex());
+        restrictStatuses.add(SandboxConfigContext.SandboxStatus.SANDBOX_ORG_CREATION_FAILED.getIndex());
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getFacilioSandboxFields())
+                .table(sandboxModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition("STATUS", "status", StringUtils.join(restrictStatuses, ","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("DOMAIN_NAME", "subDomain", String.valueOf(domainName), StringOperators.IS));
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty()) {
             return true;
@@ -251,7 +286,7 @@ public class SandboxAPI {
         }
     }
     public static void sendSandboxProgress(Integer percentage, Long recordId, String message, long sourceOrgId) throws Exception {
-        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        OrgSwitchBean orgSwitchBean = SandboxUtil.getOrgSwitchBean(sourceOrgId);
         try{
             NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.sendSandboxProgress(percentage, recordId, message));
         }catch (Exception ex){
@@ -259,7 +294,7 @@ public class SandboxAPI {
         }
     }
     public static void changeSandboxStatus(SandboxConfigContext sandboxConfigContext, long sourceOrgId) throws Exception {
-        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        OrgSwitchBean orgSwitchBean = SandboxUtil.getOrgSwitchBean(sourceOrgId);
         try {
             NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.changeSandboxStatus(sandboxConfigContext));
         }catch (Exception ex){
@@ -267,7 +302,7 @@ public class SandboxAPI {
         }
     }
     public static SandboxConfigContext getSandboxById(long sandboxId, long sourceOrgId) throws Exception {
-        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        OrgSwitchBean orgSwitchBean = SandboxUtil.getOrgSwitchBean(sourceOrgId);
         return NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getSandboxById(sandboxId));
     }
     public static long getSandboxIdBySourceAndTargetOrgId(Long sourceOrgId, Long targetOrgId) throws Exception {
@@ -281,7 +316,7 @@ public class SandboxAPI {
         return (long) props.get("id");
     }
 
-    public static Long getSandboxTargetOrgId(String domainName) throws Exception {
+    public static long getSandboxTargetOrgId(String domainName) throws Exception {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getFacilioSandboxFields())

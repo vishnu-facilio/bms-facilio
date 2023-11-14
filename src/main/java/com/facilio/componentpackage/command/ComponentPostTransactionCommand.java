@@ -28,21 +28,9 @@ public class ComponentPostTransactionCommand extends FacilioCommand {
         List<XMLBuilder> allComponents = packageConfigXML.getElement(PackageConstants.PackageXMLConstants.COMPONENTS)
                 .getFirstLevelElementListForTagName(PackageConstants.PackageXMLConstants.COMPONENT);
         PackageFolderContext componentsFolder = rootFolder.getFolder(PackageConstants.COMPONENTS_FOLDER_NAME);
-        long sandboxId = (long) context.getOrDefault(SandboxConstants.SANDBOX_ID, -1L);
-        long sourceOrgId = (long) context.getOrDefault(PackageConstants.SOURCE_ORG_ID, -1L);
 
         List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
 
-        float i = 90;
-        int count = 0;
-        for (XMLBuilder component : allComponents) {
-            ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
-            if (componentType.isPostTransactionRequired()) {
-                count++;
-            }
-        }
-        float parts = (float) 10 /count;
-        int progress;
         for(XMLBuilder component : allComponents) {
             ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
             if (componentType.getComponentClass() == null || !componentType.isPostTransactionRequired() || skipComponents.contains(componentType.getIndex())) {
@@ -69,11 +57,6 @@ public class ComponentPostTransactionCommand extends FacilioCommand {
             }
 
             LOGGER.info("####Sandbox - Completed PostTransaction for ComponentType - " + componentType.name());
-            if(sandboxId > -1L) {
-                i = i + parts;
-                progress = (int)i;
-                SandboxAPI.sendSandboxProgress(progress, sandboxId, "Post Transaction done for component name--> "+ componentType.name(), sourceOrgId);
-            }
         }
 
         return false;

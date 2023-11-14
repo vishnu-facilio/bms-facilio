@@ -2,6 +2,7 @@ package com.facilio.sandbox.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.fms.message.Message;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
@@ -30,6 +31,7 @@ public class CreateAndInstallPackageCommand extends FacilioCommand {
         content.put(PackageConstants.SKIP_COMPONENTS, skipComponents);
         content.put(SandboxConstants.SANDBOX_ID, sandboxId);
         content.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
+        content.put(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_CREATION_STARTED_ON_RERUN.getIntVal());
         content.put("methodName", "createPackageForSandboxData");
         content.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata"))+"");
         Messenger.getMessenger().sendMessage(new Message()

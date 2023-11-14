@@ -41,7 +41,7 @@ public class SandboxAction extends FacilioAction {
     private int status = 1;
     private int page = -1;
     private int perPage = -1;
-    private long sourceOrgId;
+    private long sourceOrgId = -1;
     private long targetOrgId;
     private String domainName;
     private String sandboxName;
@@ -70,10 +70,15 @@ public class SandboxAction extends FacilioAction {
     }
 
     public String add() throws Exception{
+        if(sandbox.getSubDomain().isEmpty()){
+            ServletActionContext.getResponse().setStatus(200);
+            setResult(FacilioConstants.ContextNames.MESSAGE, "Sandbox Domain can't be Empty");
+            return SUCCESS;
+        }
         boolean domainAvailability = SandboxAPI.checkSandboxDomainIfExist(sandbox.getSubDomain());
         if(!domainAvailability){
             ServletActionContext.getResponse().setStatus(200);
-            setResult(FacilioConstants.ContextNames.MESSAGE, "This domain is already taken");
+            setResult(FacilioConstants.ContextNames.MESSAGE, "This domain is already taken ");
             return SUCCESS;
         }
         boolean restrictionCondition = SandboxAPI.checkSandboxRestrictionCondition();
@@ -88,8 +93,31 @@ public class SandboxAction extends FacilioAction {
         createSandboxChain.execute();
 
         setResult(SandboxConstants.SANDBOX_ID, sandbox.getId());
-        setResult(PackageConstants.TARGET_ORG_ID, sandbox.getSandboxOrgId());
+        return SUCCESS;
+    }
+    public String sandboxCreation() throws Exception{
+        PackageFileUtil.accountSwitch(sourceOrgId);
+        boolean isNotaSandboxDomain = SandboxAPI.checkSandboxDomainIfExistForRerun(domainName);
+        if (isNotaSandboxDomain) {
+            ServletActionContext.getResponse().setStatus(200);
+            setResult(FacilioConstants.ContextNames.MESSAGE, "This is not the Correct Sandbox Domain, Please Check the Sandbox Domain Name");
+            return SUCCESS;
+        }
+        long targetOrgId = SandboxAPI.getSandboxTargetOrgId(domainName);
+        if (targetOrgId != 0L) {
+            ServletActionContext.getResponse().setStatus(200);
+            setResult(FacilioConstants.ContextNames.MESSAGE, "Already Sandbox Org Created For this Domain Please Do Rerun or Install");
+            return SUCCESS;
+        }
+        SandboxConfigContext sandboxConfigContext = SandboxAPI.getSandboxByDomainName(domainName);
+        FacilioChain createSandboxChain = SandboxTransactionChainFactory.getSandboxOrgCreationChain();
+        FacilioContext sandboxContext = createSandboxChain.getContext();
+        sandboxContext.put(SandboxConstants.SANDBOX_ID, sandboxConfigContext.getId());
+        sandboxContext.put(PackageConstants.SOURCE_ORG_ID, sandboxConfigContext.getOrgId());
+        sandboxContext.put(PackageConstants.SANDBOX_DOMAIN_NAME, sandboxConfigContext.getSubDomain());
+        createSandboxChain.execute();
 
+        setResult(FacilioConstants.ContextNames.MESSAGE, "DATA CREATION AND INSTALLATION STARTED");
         return SUCCESS;
     }
     public String rerun() throws Exception{
@@ -97,7 +125,13 @@ public class SandboxAction extends FacilioAction {
         boolean isNotaSandboxDomain = SandboxAPI.checkSandboxDomainIfExist(domainName);
         if(isNotaSandboxDomain){
             ServletActionContext.getResponse().setStatus(200);
-            setResult(FacilioConstants.ContextNames.MESSAGE, "This is not a Sandbox Org, Please Check the Sandbox Domain Name!!");
+            setResult(FacilioConstants.ContextNames.MESSAGE, "This is not the Correct Sandbox Domain or Sandbox might not be Created at all, Please Check the Sandbox Domain Name or check if Sandbox Org is Created");
+            return SUCCESS;
+        }
+        boolean restrictionCondition = SandboxAPI.checkSandboxRestrictionConditionForRerun(domainName);
+        if(restrictionCondition){
+            ServletActionContext.getResponse().setStatus(200);
+            setResult(FacilioConstants.ContextNames.MESSAGE, "Sandbox Creation is in Pending or Failed State For This Domain");
             return SUCCESS;
         }
         targetOrgId = SandboxAPI.getSandboxTargetOrgId(domainName);
@@ -129,7 +163,13 @@ public class SandboxAction extends FacilioAction {
         boolean isNotaSandboxDomain = SandboxAPI.checkSandboxDomainIfExist(domainName);
         if(isNotaSandboxDomain){
             ServletActionContext.getResponse().setStatus(200);
-            setResult(FacilioConstants.ContextNames.MESSAGE, "This is not a Sandbox Org, Please Check the Sandbox Domain Name!!");
+            setResult(FacilioConstants.ContextNames.MESSAGE, "This is not the Correct Sandbox Domain or Sandbox might not be Created at all, Please Check the Sandbox Domain Name or check if Sandbox Org is Created");
+            return SUCCESS;
+        }
+        boolean restrictionCondition = SandboxAPI.checkSandboxRestrictionConditionForRerun(domainName);
+        if(restrictionCondition){
+            ServletActionContext.getResponse().setStatus(200);
+            setResult(FacilioConstants.ContextNames.MESSAGE, "Sandbox Creation is in Pending or Failed State For This Domain");
             return SUCCESS;
         }
         targetOrgId = SandboxAPI.getSandboxTargetOrgId(domainName);

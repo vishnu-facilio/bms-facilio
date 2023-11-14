@@ -26,6 +26,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.*;
+import com.facilio.sandbox.utils.SandboxUtil;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.xml.builder.XMLBuilder;
@@ -143,7 +144,7 @@ public class PackageFileUtil {
     }
 
     public static File getPackageZipFile(Long fileId, Long sourceOrgId) throws Exception {
-        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", sourceOrgId);
+        OrgSwitchBean orgSwitchBean = SandboxUtil.getOrgSwitchBean(sourceOrgId);
         try (InputStream inputStream = NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getParentOrgFile(sourceOrgId, fileId))){
             String dirPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files";
             String path = dirPath + File.separator +fileId+".zip";

@@ -58,10 +58,11 @@ public class SandboxConfigContext implements Serializable {
     public static enum SandboxStatus implements FacilioIntEnum {
         ACTIVE,
         INACTIVE,
-        CREATION_IN_PROGRESS,
-        UPGRADE_IN_PROGRESS,
-        PACKAGE_FAILED,
-        INSTALL_FAILED;
+        SANDBOX_ORG_CREATION_IN_PROGRESS,
+        META_UPGRADE_IN_PROGRESS,
+        SANDBOX_ORG_CREATION_FAILED,
+        META_PACKAGE_FAILED,
+        META_INSTALL_FAILED;
 
         @Override
         public String getValue() {

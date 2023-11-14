@@ -3,6 +3,7 @@ package com.facilio.componentpackage.utils;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.UserInfo;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.componentpackage.constants.ComponentType;
@@ -17,12 +18,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.*;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.util.TriggerUtil;
@@ -72,6 +75,45 @@ public class PackageUtil {
         return DATA_MIGRATION_ID.get();
     }
 
+    public enum SandboxProcessLoadType {
+        ORG_CREATION_PROCESS(20),
+        CUSTOMIZATION_PACKAGE_PROCESS(30),
+        CUSTOMIZATION_INSTALL_PROCESS(50);
+
+        private int intVal;
+
+        SandboxProcessLoadType(int intVal) {
+            this.intVal = intVal;
+        }
+
+        public Integer getIntVal() {
+            return intVal;
+        }
+    }
+    public enum SandboxProgressCheckPointType {
+        PACKAGE_CREATION_STARTED_ON_SETUP(0),
+        PACKAGE_CREATION_STARTED_ON_RERUN(20),
+        PACKAGE_CREATION_FINISHED_ON_SETUP(30),
+        PACKAGE_CREATION_FINISHED_ON_RERUN(50),
+        PACKAGE_CREATION_FAILED_ON_SETUP(0),
+        PACKAGE_CREATION_FAILED_ON_RERUN(20),
+        ORG_SIGNUP_STARTED(30),
+        ORG_SIGNUP_FAILED(30),
+        ORG_SIGNUP_FINISHED(50),
+        PACKAGE_INSTALLATION_STARTED(50),
+        PACKAGE_INSTALLATION_FAILED(50),
+        PACKAGE_INSTALLATION_FINISHED(100);
+
+        private int intVal;
+
+        SandboxProgressCheckPointType(int intVal) {
+            this.intVal = intVal;
+        }
+
+        public Integer getIntVal() {
+            return intVal;
+        }
+    }
     public static void setInstallThread() throws Exception {
         isInstallThread.set(true);
     }

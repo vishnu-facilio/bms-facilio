@@ -1357,7 +1357,8 @@ public class PackageBeanUtil {
                 .module(module)
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
                 .select(moduleBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getIdCondition(ids, module));
+                .andCondition(CriteriaAPI.getIdCondition(ids, module))
+                .skipModuleCriteria();
 
         if (fetchDeleted) {
             builder.fetchDeleted();
@@ -1372,7 +1373,8 @@ public class PackageBeanUtil {
                 .module(module)
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
                 .select(moduleBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getIdCondition(id, module));
+                .andCondition(CriteriaAPI.getIdCondition(id, module))
+                .skipModuleCriteria();
         return builder.get();
     }
 
@@ -1382,7 +1384,8 @@ public class PackageBeanUtil {
                 .table(module.getTableName())
                 .module(module)
                 .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
-                .select(moduleBean.getAllFields(module.getName()));
+                .select(moduleBean.getAllFields(module.getName()))
+                .skipModuleCriteria();
 
         if (fetchDeleted) {
             selectRecordBuilder.fetchDeleted();

@@ -1,9 +1,13 @@
 package com.facilio.sandbox.utils;
 
+import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.db.util.DBConf;
+import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -11,38 +15,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class SandboxUtil {
-    public static JSONObject getSandboxSignUpDataParser(Map<String, Object> dataMap) {
-        JSONObject signupData = new JSONObject();
-        signupData.put("name", dataMap.get("name"));
-        signupData.put("email", dataMap.get("email"));
-        signupData.put("cognitoId", dataMap.get("cognitoId"));
-        signupData.put("domainname", dataMap.get("domainname"));
-        signupData.put("isFacilioAuth", dataMap.get("isFacilioAuth"));
-        signupData.put("companyname", dataMap.get("companyname"));
-        signupData.put("phone", dataMap.get("phone"));
-        signupData.put("timezone", dataMap.get("timezone"));
-        signupData.put("language", dataMap.get("language"));
-        signupData.put("orgType", Organization.OrgType.SANDBOX);
-        signupData.put("locale", DBConf.getInstance().getCurrentLocale());
-        signupData.put("productionOrgId", ((Number)dataMap.get("productionOrgId")).longValue());
-        return signupData;
-    }
-    public static IAMUser constructSandboxIAMUserFromMap(Map<String, Object> userDataMap) {
-        IAMUser iamUser = new IAMUser();
-        iamUser.setId(((Number)userDataMap.get("id")).longValue());
-        iamUser.setName(String.valueOf(userDataMap.get("name")));
-        iamUser.setUid(((Number)userDataMap.get("uid")).longValue());
-        iamUser.setOrgId(((Number)userDataMap.get("orgId")).longValue());
-        iamUser.setEmail(String.valueOf(userDataMap.get("email")));
-        iamUser.setUserName(String.valueOf(userDataMap.get("userName")));
-        iamUser.setIamOrgUserId(((Number)userDataMap.get("iamOrgUserId")).longValue());
-        iamUser.setUserVerified((Boolean)userDataMap.get("userVerified"));
-        iamUser.setUserStatus((Boolean)userDataMap.get("userStatus"));
-        iamUser.setLanguage(String.valueOf(userDataMap.get("language")));
-        iamUser.setCountry(String.valueOf(userDataMap.get("country")));
-        iamUser.setIdentifier(String.valueOf(userDataMap.get("identifier")));
-        iamUser.setTimezone(String.valueOf(userDataMap.get("timezone")));
-        return iamUser;
+    public static IAMUser constructUserObj(com.facilio.identity.client.dto.User user) throws Exception {
+        return IAMUserUtil.getFacilioUser(user.getOrgId(), user.getUid());
     }
     public static Map<Long, String> getComponentTypeMap()  {
         List<ComponentType> componentTypeList = ComponentType.ORDERED_COMPONENT_TYPE_LIST;
@@ -54,5 +28,13 @@ public class SandboxUtil {
             componentTypeMap.put(order, value);
         }
         return componentTypeMap;
+    }
+    public static OrgSwitchBean getOrgSwitchBean(long orgId) throws Exception {
+        OrgSwitchBean orgBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean", orgId);
+        return orgBean;
+    }
+    public static OrgSwitchBean getOrgSwitchBean() throws Exception {
+        OrgSwitchBean orgSwitchBean = (OrgSwitchBean) BeanFactory.lookup("OrgSwitchBean");
+        return orgSwitchBean;
     }
 }

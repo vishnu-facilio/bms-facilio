@@ -2,7 +2,6 @@ package com.facilio.componentpackage.command;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
-import com.facilio.componentpackage.bean.OrgSwitchBean;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
@@ -10,7 +9,6 @@ import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageUtil;
-import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.sandbox.utils.SandboxConstants;
@@ -56,14 +54,20 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				componentType.getPackageComponentClassInstance().addPickListConf();
 			}
 		}
-
-		float i = 50;
-		int count = allComponents.size();
-		float parts = (float) 40 /count;
-		int progress;
+		//For sending sandbox progress on installation
+		double sandboxProgress =  ((Number) context.getOrDefault(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_INSTALLATION_STARTED.getIntVal())).doubleValue();
+		int process;
+		long count = allComponents.isEmpty() ? 1L : allComponents.size();
+		double originalParts = (double) PackageUtil.SandboxProcessLoadType.CUSTOMIZATION_INSTALL_PROCESS.getIntVal() / count;
+		double parts = Math.floor(originalParts * 100) / 100;
 		for(XMLBuilder component : allComponents) {
 			ComponentType componentType = ComponentType.valueOf(component.getAttribute(PackageConstants.PackageXMLConstants.COMPONENT_TYPE));
 			if(componentType.getComponentClass() == null || skipComponents.contains(componentType.getIndex())) {
+				if(sandboxId > -1L) {
+					sandboxProgress = sandboxProgress + parts;
+					process = (int)sandboxProgress;
+					SandboxAPI.sendSandboxProgress(process, sandboxId, "Installation done for component name--> "+ componentType.name(), sourceOrgId);
+				}
 				continue;
 			}
 			LOGGER.info("####Sandbox - Started Deploying ComponentType - " + componentType.name());
@@ -181,9 +185,9 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 
 			LOGGER.info("####Sandbox - Completed Deploying ComponentType - " + componentType.name());
 			if(sandboxId > -1L) {
-				i = i + parts;
-				progress = (int)i;
-				SandboxAPI.sendSandboxProgress( progress, sandboxId, "Installation done for component name--> "+ componentType.name(), sourceOrgId);
+				sandboxProgress = sandboxProgress + parts;
+				process = (int)sandboxProgress;
+				SandboxAPI.sendSandboxProgress(process, sandboxId, "Installation done for component name--> "+ componentType.name(), sourceOrgId);
 			}
 		}
 

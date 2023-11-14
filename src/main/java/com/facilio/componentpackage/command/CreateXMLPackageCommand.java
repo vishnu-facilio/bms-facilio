@@ -47,12 +47,18 @@ public class CreateXMLPackageCommand extends FacilioCommand implements PostTrans
 		packageConfigXML.element(PackageConstants.TYPE).text(String.valueOf(packageContext.getType()));
 		XMLBuilder componentsConfigXML = packageConfigXML.element(PackageConstants.PackageXMLConstants.COMPONENTS);
 		long sandboxId = (long) context.getOrDefault(SandboxConstants.SANDBOX_ID, -1L);
-
 		Map<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponents = PackageUtil.getAllPackageChangsets(packageContext.getId());
-		float i = 20;
-		int count = typeVsComponents.size();
-		float parts = (float) 30 /count;
-		int progress;
+		boolean fromAdminTool = (Boolean) context.getOrDefault(PackageConstants.FROM_ADMIN_TOOL, false);
+		double sandboxProgress;
+		if(fromAdminTool) {
+			sandboxProgress = ((Number) context.getOrDefault(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_CREATION_STARTED_ON_RERUN.getIntVal())).doubleValue();
+		}else {
+			sandboxProgress = ((Number) context.getOrDefault(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_CREATION_STARTED_ON_SETUP.getIntVal())).doubleValue();
+		}
+		int process;
+		long count = typeVsComponents.isEmpty() ? 1L : typeVsComponents.size();
+		double originalParts = (double) PackageUtil.SandboxProcessLoadType.CUSTOMIZATION_PACKAGE_PROCESS.getIntVal() / count;
+		double parts = Math.floor(originalParts * 100) / 100;
 		for(Map.Entry<ComponentType, List<PackageChangeSetMappingContext>> typeVsComponent : typeVsComponents.entrySet()) {
 			ComponentType componentType = typeVsComponent.getKey();
 			if(componentType.getComponentClass() == null) {
@@ -96,9 +102,9 @@ public class CreateXMLPackageCommand extends FacilioCommand implements PostTrans
 			componentConfigXML.text(componentType.getValue() + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN);
 			LOGGER.info("####Sandbox - Completed Packaging ComponentType - " + componentType.name());
 			if(sandboxId > -1L) {
-				i = i + parts;
-				progress = (int)i;
-				SandboxAPI.sendSandboxProgress(progress, sandboxId, "Packaging done for component name--> "+ componentType.name());
+				sandboxProgress = sandboxProgress + parts;
+				process = (int)sandboxProgress;
+				SandboxAPI.sendSandboxProgress(process, sandboxId, "Packaging done for component name--> "+ componentType.name());
 			}
 		}
 		rootFolder.addFile(PackageConstants.PACKAGE_CONF_FILE_NAME + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN, new PackageFileContext(PackageConstants.PACKAGE_CONF_FILE_NAME, PackageConstants.XML_FILE_EXTN, packageConfigXML));

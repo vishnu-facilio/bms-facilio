@@ -22,7 +22,7 @@ public class PreFillSandboxConfigCommand extends FacilioCommand {
             sandboxConfig.setSysCreatedBy(AccountUtil.getCurrentUser().getOuid());
             sandboxConfig.setSysCreatedTime(DateTimeUtil.getCurrenTime());
             if(sandboxConfig.getStatusEnum() == null) {
-                sandboxConfig.setStatus(SandboxConfigContext.SandboxStatus.CREATION_IN_PROGRESS);
+                sandboxConfig.setStatus(SandboxConfigContext.SandboxStatus.SANDBOX_ORG_CREATION_IN_PROGRESS);
             }
             sandboxConfig.setSubDomain(sandboxConfig.getSubDomain().replaceAll("[^a-zA-Z0-9_]+", "_").replaceAll("_+", "_"));
             if(!SandboxAPI.checkSandboxDomainIfExist(sandboxConfig.getSubDomain())){

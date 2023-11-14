@@ -1,6 +1,7 @@
 package com.facilio.sandbox.command;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -24,6 +25,7 @@ public class AddOrUpdateSandboxCommand extends FacilioCommand {
         FacilioModule sandboxModule = ModuleFactory.getFacilioSandboxModule();
         List<FacilioField> sandboxFields = FieldFactory.getFacilioSandboxFields();
         if(sandboxConfig.getId() <= 0) {
+            sandboxConfig.setSandboxOrgId(0L);
             Map<String, Object> sandboxProps = FieldUtil.getAsProperties(sandboxConfig);
 
             GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
@@ -35,6 +37,8 @@ public class AddOrUpdateSandboxCommand extends FacilioCommand {
             sandboxConfig.setId((long) sandboxProps.get("id"));
             sandboxConfig.setOrgId((long)sandboxProps.get("orgId"));
             context.put(SandboxConstants.SANDBOX_ID, sandboxConfig.getId());
+            context.put(PackageConstants.SOURCE_ORG_ID, sandboxConfig.getOrgId());
+            context.put(PackageConstants.SANDBOX_DOMAIN_NAME, sandboxConfig.getSubDomain());
         } else {
             SandboxAPI.updateSandboxConfig(sandboxConfig, FieldFactory.getFacilioSandboxUpdatableFields());
         }

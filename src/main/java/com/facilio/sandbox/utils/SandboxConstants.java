@@ -7,4 +7,5 @@ public class SandboxConstants {
     public static final String SANDBOX_COUNT = "sandboxCount";
     public static final String SANDBOX_ORG_USER = "sandboxOrgUser";
     public static final String PRODUCTION_DOMAIN_NAME = "productionDomainName";
+    public static final String SANDBOX_PROGRESS = "sandboxProgress";
 }
