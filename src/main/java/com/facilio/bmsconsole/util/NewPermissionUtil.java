@@ -306,7 +306,7 @@ public class NewPermissionUtil {
         alarmModulePermissionType = new HashMap<>();
         alarmModulePermissionType.put("CREATE_WORKORDER", 1);
         alarmModulePermissionType.put("ACKNOWLEDGE_ALARM", 2);
-        alarmModulePermissionType.put("CLEAR_ALARM", 4);
+        alarmModulePermissionType.put("CLEAR_ALARM", 8);
 
         return alarmModulePermissionType;
     }
@@ -795,12 +795,12 @@ public class NewPermissionUtil {
 
     private static void alarmModulePermissions(Map<String, List<Permission>> permissionMap) {
         List<Permission> permissions = new ArrayList<>();
-        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
-        permissions.add(new Permission("ACKNOWLEDGE_ALARM", "Acknowledge Alarm", alarmModulePermissionType.get("ACKNOWLEDGE_ALARM"), null));
-        permissions.add(new Permission("CLEAR_ALARM", "Clear Alarm", alarmModulePermissionType.get("CLEAR_ALARM"), null));
-        permissions.add(new Permission("WORKORDER_FROM_FAULT", "Create WorkOrder", alarmModulePermissionType.get("CREATE_WORKORDER"), null));
-        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
-        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));//2^2
+        permissions.add(new Permission("ACKNOWLEDGE_ALARM", "Acknowledge Alarm", alarmModulePermissionType.get("ACKNOWLEDGE_ALARM"), null));//2L
+        permissions.add(new Permission("CLEAR_ALARM", "Clear Alarm", alarmModulePermissionType.get("CLEAR_ALARM"), null));//8L
+        permissions.add(new Permission("WORKORDER_FROM_FAULT", "Create WorkOrder", alarmModulePermissionType.get("CREATE_WORKORDER"), null));//1L
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));//32L
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));//16L
 
         Arrays.asList(FacilioConstants.ContextNames.NEW_READING_ALARM, FacilioConstants.ContextNames.SENSOR_ROLLUP_ALARM, FacilioConstants.ContextNames.BMS_ALARM).
                 stream().forEach(m -> permissionList.put(Type.MODULE.getIndex(), (Map<String, List<Permission>>) permissionMap.put(m, permissions)));
