@@ -1998,6 +1998,11 @@ public class ModuleFactory {
 		dashboardTabModule.setTableName("Dashboard_Tab");
 		return dashboardTabModule;
 	}
+	public static FacilioModule getDashboardCustomActionModule() {
+		FacilioModule dashboardCustomAction = new FacilioModule();
+		dashboardCustomAction.setTableName("Dashboard_Custom_Action");
+		return dashboardCustomAction;
+	}
 	public static FacilioModule getSpaceFilteredDashboardSettingsModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Space_Filtered_Dashboard_Settings");

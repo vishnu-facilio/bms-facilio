@@ -45,6 +45,9 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                     Long widgetId = updatewidget.getId();
 
                     updatewidget.setOrgId(AccountUtil.getCurrentOrg().getId());
+                    if(updatewidget.getCustomActions() != null && updatewidget.getCustomActions().size() > 0) {
+                        DashboardUtil.addWidgetCustomActions(updatewidget.getCustomActions(), widgetId);
+                    }
                     if (updatewidget.getType() == DashboardWidgetContext.WidgetType.CHART.getValue()) {
                         updateWidgetChart = new GenericUpdateRecordBuilder()
                                 .table(ModuleFactory.getWidgetChartModule().getTableName())

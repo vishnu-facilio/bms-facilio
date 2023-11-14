@@ -1,6 +1,7 @@
 package com.facilio.report.module.v2.chain;
 
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructReportDeleteCommand;
 import com.facilio.chain.FacilioChain;
@@ -33,10 +34,13 @@ public class V2TransactionChainFactory {
         c.addCommand(new V2GetFolderListCommand());
         return c;
     }
-    public static FacilioChain getReportDataChain()throws Exception
+    public static FacilioChain getReportDataChain(String filters)throws Exception
     {
         FacilioChain c = getDefaultChain();
         c.addCommand(new V2GetModuleReportCommand());
+        if (filters != null) {
+            c.addCommand(new GenerateCriteriaFromFilterCommand());
+        }
         c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
         return c;
     }

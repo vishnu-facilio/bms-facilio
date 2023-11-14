@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
@@ -734,7 +735,17 @@ public class DashboardUtil {
 		return widget_list_with_section;
 	}
 
-	
+	public static List<DashboardWidgetContext> getDashboardWidgetsWithCustomActions(List<DashboardWidgetContext> widget_list)throws Exception
+	{
+		for(DashboardWidgetContext widget : widget_list){
+			List<DashboardCustomActionContext> widgetActions = DashboardUtil.getActionsForWidgetId(widget.getId());
+			if(widgetActions != null) {
+				widget.setCustomActions(widgetActions);
+			}
+		}
+		return widget_list;
+	}
+
 	public static DashboardWidgetContext getWidget(Long widgetId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetFields();
@@ -3724,6 +3735,67 @@ public class DashboardUtil {
 				.fields(FieldFactory.getDashboardUserFilterWidgetFieldMappingFields())
 				.addRecords(widgetFieldMappingProps);
 		insertRecordBuilder.save();
+	}
+	public static void addWidgetCustomActions(List<DashboardCustomActionContext> customActions, Long widgetId) throws Exception {
+		List<Long> existingIds = new ArrayList<>();
+		if(customActions != null && !customActions.isEmpty()){
+			for(DashboardCustomActionContext actions: customActions){
+				if(actions.getId() <=0){
+					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+							.table(ModuleFactory.getDashboardCustomActionModule().getTableName())
+							.fields(FieldFactory.getDashboardCustomActionFields());
+					actions.setWidgetId(widgetId);
+					Map<String, Object> props = FieldUtil.getAsProperties(actions);
+					insertBuilder.addRecord(props);
+					insertBuilder.save();
+					existingIds.add((Long) props.get("id"));
+				} else {
+					GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+							.table(ModuleFactory.getDashboardCustomActionModule().getTableName())
+							.fields(FieldFactory.getDashboardCustomActionFields())
+							.andCustomWhere("ID = ?", actions.getId());
+
+					Map<String, Object> props = FieldUtil.getAsProperties(actions);
+					updateRecordBuilder.update(props);
+					existingIds.add(actions.getId());
+				}
+			}
+		}
+
+		List<Long> ids = DashboardUtil.getActionsIdForWidgetId(widgetId).stream().filter(id -> !existingIds.contains(id)).distinct().collect(Collectors.toList());
+		if(!(ids.isEmpty())){
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getDashboardCustomActionModule().getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(ids,ModuleFactory.getDashboardCustomActionModule()));
+			builder.delete();
+		}
+	}
+	public static List<Long> getActionsIdForWidgetId(long id) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getDashboardCustomActionModule().getTableName())
+				.select(FieldFactory.getDashboardCustomActionFields())
+				.andCondition(CriteriaAPI.getCondition("WIDGET_ID","widgetId", String.valueOf(id),NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<Long> actionIds = new ArrayList<>();
+		for(Map<String, Object> prop : props){
+			actionIds.add((Long) prop.get("id"));
+		}
+		return actionIds;
+	}
+	public static List<DashboardCustomActionContext> getActionsForWidgetId(Long id) throws Exception {
+		if(id != null && id > 0) {
+			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+					.table(ModuleFactory.getDashboardCustomActionModule().getTableName())
+					.select(FieldFactory.getDashboardCustomActionFields())
+					.andCondition(CriteriaAPI.getCondition("WIDGET_ID","widgetId", String.valueOf(id),NumberOperators.EQUALS));
+			List<Map<String, Object>> props = builder.get();
+			List<DashboardCustomActionContext> actions = new ArrayList<>();
+			for(Map<String, Object> prop : props){
+				actions.add(FieldUtil.getAsBeanFromMap(prop,DashboardCustomActionContext.class));
+			}
+			return actions;
+		}
+		return null;
 	}
 	public static long generateCriteriaId(Criteria criteria, String moduleName)throws Exception
 	{

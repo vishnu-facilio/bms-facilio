@@ -67,6 +67,9 @@ public class AddWidgetCommandV3 extends FacilioCommand {
             if(widget.getWidgetFieldMapping() != null && widget.getWidgetFieldMapping().size() > 0) {
                 DashboardUtil.addWidgetFieldMapping(widget);
             }
+            if(widget.getCustomActions() != null && widget.getCustomActions().size() > 0) {
+                DashboardUtil.addWidgetCustomActions(widget.getCustomActions(), widget.getId());
+            }
             if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(DashboardWidgetContext.WidgetType.STATIC)) {
                 WidgetStaticContext widgetStaticContext = (WidgetStaticContext) widget;
 

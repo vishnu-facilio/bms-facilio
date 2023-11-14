@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
+import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
@@ -26,6 +27,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private Integer type;
 	private Long dashboardId;
 	private Long dashboardTabId;
+	private List<DashboardCustomActionContext> customActions;
+	public void setCustomActions(List<DashboardCustomActionContext> customActions) {
+		this.customActions = customActions;
+	}
+	public List<DashboardCustomActionContext> getCustomActions(){
+		return this.customActions;
+	}
 
 	public String getLinkName() {
 		return linkName;

@@ -65,8 +65,8 @@ public class WidgetWebContext extends DashboardWidgetContext {
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
 		
 		resultJson.put("dataOptions", dataOptionsJson);
-		
-		
+		resultJson.put("customActions", getCustomActions());
+
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("widget", resultJson);
 		widgetJson.put("label", getWidgetName());

@@ -1,6 +1,6 @@
 package com.facilio.report.module.v2.action;
 
-import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
+import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +28,7 @@ public class V2ModuleReportAction extends V3Action {
     private boolean withCount;
     private String orderType;
     private long folderId = -1;
+    V2ModuleContextForDashboardFilter db_filter;
 
     public String create() throws Exception
     {
@@ -70,9 +71,10 @@ public class V2ModuleReportAction extends V3Action {
     {
         if(reportId != null && reportId > 0)
         {
-            FacilioChain chain = V2TransactionChainFactory.getReportDataChain();
+            FacilioChain chain = V2TransactionChainFactory.getReportDataChain(db_filter != null ? db_filter.getDb_user_filter() : null);
             FacilioContext context = chain.getContext();
             context.put("reportId", reportId);
+            context.put("db_filter",db_filter);
             chain.execute();
             setData("report", context.get(FacilioConstants.ContextNames.REPORT));
             setData("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));

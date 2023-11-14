@@ -248,6 +248,8 @@ public class V3DashboardAction extends V3Action {
             getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
             getDashboardFilterChain.execute();
 
+          dashboard.setDashboardWidgets(DashboardUtil.getDashboardWidgetsWithCustomActions(dashboard.getDashboardWidgets()));
+
             List<DashboardWidgetContext> widget_list = DashboardUtil.getDashboardWidgetsWithSection(dashboard.getDashboardWidgets());
             if (widget_list != null) {
                 dashboard.setDashboardWidgets(widget_list);
@@ -387,6 +389,7 @@ public class V3DashboardAction extends V3Action {
                 getDashboardFilterChain.execute();
 
                 List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
+                dashboardTabContext.setDashboardWidgets(DashboardUtil.getDashboardWidgetsWithCustomActions(widgets));
                 List<DashboardWidgetContext> widgets_with_section = DashboardUtil.getDashboardWidgetsWithSection(widgets);
                 if(widgets_with_section != null && widgets_with_section.size() > 0) {
                     dashboardTabContext.setDashboardWidgets(widgets_with_section);

@@ -287,6 +287,7 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         JSONObject dataOptionsJson = new JSONObject();
         dataOptionsJson.put("name", "dummy");
         resultJson.put("dataOptions", dataOptionsJson);
+        resultJson.put("customActions", getCustomActions());
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("widget", resultJson);

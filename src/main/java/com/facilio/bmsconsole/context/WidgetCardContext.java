@@ -247,8 +247,7 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		dataOptionsJson.put("parentId",getParentId());
 		dataOptionsJson.put("childCards",getChildCards());
 
-		
-		
+		resultJson.put("customActions", getCustomActions());
 		resultJson.put("dataOptions", dataOptionsJson);
 		
 		

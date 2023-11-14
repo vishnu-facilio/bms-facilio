@@ -5762,6 +5762,21 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
+    public static List<FacilioField> getDashboardCustomActionFields()throws Exception
+    {
+        FacilioModule module = ModuleFactory.getDashboardCustomActionModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+
+        fields.add(getField("widgetId", "WIDGET_ID", module, FieldType.NUMBER));
+        fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("title", "TITLE", module, FieldType.STRING));
+        fields.add(getField("url", "URL", module, FieldType.STRING));
+        fields.add(getField("connectedAppId", "CONNECTED_APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("customScriptId", "CUSTOM_SCRIPT_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
 
     public static List<FacilioField> getWidgetFields() {
         List<FacilioField> fields = new ArrayList<>();
