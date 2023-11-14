@@ -309,6 +309,15 @@ public class ToolTypesModule extends BaseModuleConfig{
         editToolTypes.setPermissionRequired(true);
         editToolTypes.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL_TYPES,editToolTypes);
+
+        SystemButtonRuleContext stockButton = new SystemButtonRuleContext();
+        stockButton.setName("Stock Button");
+        stockButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        stockButton.setIdentifier(FacilioConstants.ContextNames.TOOL_STOCK_BUTTON);
+        stockButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        stockButton.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        stockButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL_TYPES,stockButton);
     }
 
 }

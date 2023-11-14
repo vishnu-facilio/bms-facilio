@@ -1,20 +1,24 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.TemplatePages.ToolTemplatePage;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
@@ -87,5 +91,83 @@ public class ToolModule extends BaseModuleConfig{
         stockedToolsForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(stockedToolsForm);
+    }
+    @Override
+    public void addData() throws Exception {
+        addSystemButton();
+    }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        FacilioModule module= Constants.getModBean().getModule(FacilioConstants.ContextNames.TOOL);
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+        Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            PagesContext nonRotatingToolsPage =  ToolTemplatePage.getNonRotatingToolsPage(app,module,false,true);
+            PagesContext rotatingToolsPage = ToolTemplatePage.getRotatingToolsPage(app, module, false, false);
+            List<PagesContext> pagesList = new ArrayList<>();
+            pagesList.add(nonRotatingToolsPage);
+            pagesList.add(rotatingToolsPage);
+            appNameVsPage.put(appName,pagesList);
+        }
+        return appNameVsPage;
+    }
+
+
+    private static void addSystemButton() throws Exception{
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,editButton);
+
+        SystemButtonRuleContext stockButton = new SystemButtonRuleContext();
+        stockButton.setName("Stock Button");
+        stockButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        stockButton.setIdentifier(FacilioConstants.ContextNames.TOOL_STOCK_BUTTON);
+        stockButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        stockButton.setPermission(AccountConstants.ModulePermission.CREATE.name());
+        stockButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,stockButton);
+
+        SystemButtonRuleContext goToToolType = new SystemButtonRuleContext();
+        goToToolType.setName("Go To Tool Type");
+        goToToolType.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        goToToolType.setIdentifier(FacilioConstants.ContextNames.GO_TO_TOOL_TYPE_BUTTON);
+        goToToolType.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,goToToolType);
+
+        SystemButtonRuleContext issueTools = new SystemButtonRuleContext();
+        issueTools.setName("Issue Tools");
+        issueTools.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        issueTools.setIdentifier(FacilioConstants.ContextNames.ISSUE_TOOLS_BUTTON);
+        issueTools.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        issueTools.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        issueTools.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,issueTools);
+
+        SystemButtonRuleContext returnTools = new SystemButtonRuleContext();
+        returnTools.setName("Return Tools");
+        returnTools.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        returnTools.setIdentifier(FacilioConstants.ContextNames.RETURN_TOOLS_BUTTON);
+        returnTools.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        returnTools.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        returnTools.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,returnTools);
+
+        SystemButtonRuleContext adjustToolBalanceButton = new SystemButtonRuleContext();
+        adjustToolBalanceButton.setName("Adjust Balance");
+        adjustToolBalanceButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        adjustToolBalanceButton.setIdentifier(FacilioConstants.ContextNames.ADJUST_TOOL_BALANCE_BUTTON);
+        adjustToolBalanceButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        adjustToolBalanceButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        adjustToolBalanceButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL, adjustToolBalanceButton);
     }
 }

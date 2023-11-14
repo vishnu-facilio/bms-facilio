@@ -1411,6 +1411,43 @@ public class FacilioConstants {
 		public static final String DELIVERY_NOTES = "deliverynotes";
 		public static final String ITEM_TYPES_NOTES = "itemTypesNotes";
 		public static final String ITEM_NOTES = "itemNotes";
+		public static final String ITEM_STOCK_BUTTON = "itemStockButton";
+		public static final String TOOL_STOCK_BUTTON = "toolStockButton";
+
+		public static final String GO_TO_ITEM_TYPE_BUTTON = "goToItemType";
+		public static final String GO_TO_TOOL_TYPE_BUTTON = "goToToolType";
+
+
+		public static final String ISSUE_ITEMS_BUTTON = "issueItems";
+		public static final String ISSUE_TOOLS_BUTTON = "issueTools";
+
+
+		public static final String RETURN_ITEMS_BUTTON = "returnItems";
+		public static final String RETURN_TOOLS_BUTTON = "returnItems";
+
+		public static final String ADJUST_ITEM_BALANCE_BUTTON = "adjustItemBalance";
+		public static final String ADJUST_TOOL_BALANCE_BUTTON = "adjustToolBalance";
+
+		public static final String NOTIFICATION_PREFERENCES = "notificationPreferences";
+		public static final String STOREROOM_BULK_ADD_ITEMS = "storeRoomBulkAddItems";
+		public static final String STOREROOM_BULK_ADD_TOOLS = "storeRoomBulkAddTools";
+		public static final String STOREROOM_BULK_ADJUST_ITEMS = "storeRoomBulkAdjustItems";
+		public static final String STOREROOM_BULK_ADJUST_TOOLS = "storeRoomBulkAdjustTools";
+		public static final String STOREROOM_ADD_ITEMS = "storeRoomAddItems";
+		public static final String STOREROOM_ADD_TOOLS = "storeRoomAddTools";
+		public static final String STOREROOM_ISSUE_ITEMS = "storeRoomIssueItems";
+		public static final String STOREROOM_ISSUE_TOOLS = "storeRoomIssueTools";
+		public static final String STOREROOM_ISSUE_RESERVED_ITEMS = "storeRoomIssueReservedItems";
+		public static final String STOREROOM_ISSUE_RESERVED_TOOLS = "storeRoomIssueReservedTools";
+		public static final String STOREROOM_ISSUE_TOOLS_TO_PERSON = "storeRoomIssueToolsToPerson";
+		public static final String STOREROOM_RETURN_TOOLS_TO_PERSON = "StoreRoomReturnToolsToPerson";
+		public static final String ADD_INVENTORY_REQUEST_ITEMS = "addInventoryRequestItems";
+		public static final String ADD_INVENTORY_REQUEST_TOOLS = "addInventoryRequestTools";
+
+
+
+
+
 		public static final String TOOL_NOTES = "toolNotes";
 		public static final String TOOL_TYPES_NOTES = "toolTypesNotes";
 		public static final String BASE_ALARM_NOTES = "basealarmnotes";
@@ -1972,6 +2009,7 @@ public class FacilioConstants {
 		public static final String WORKORDER_COST_TYPE = "workorderCostType";
 		public static final String IS_WORKORDER_COST_CHAIN = "isWorkOrderCostChain";
 
+		public static final String BIN = "bin";
 		public static final String STORE_ROOM = "storeRoom";
 		public static final String STORE_ROOMS = "storeRooms";
 		public static final String STORE_ROOM_LIST = "storeRoomList";

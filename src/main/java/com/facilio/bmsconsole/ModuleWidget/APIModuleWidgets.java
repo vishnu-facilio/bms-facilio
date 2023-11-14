@@ -971,4 +971,76 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexiblewebpmSchedulerDetails_11", "PM Scheduler Details Widget - 11",11, PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.ContextNames.STORE_ROOM)
+    public static Supplier<ModuleWidgets> getStoreRoomWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("servingSites", "Serving Sites", PageWidget.WidgetType.SERVING_SITES_WIDGET)
+                .addFlexibleWidgetConfig("flexiblewebservingSites_6", "Serving Sites - 6", 6,
+                        PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("items", "Items", PageWidget.WidgetType.STOREROOM_ITEMS)
+                .addFlexibleWidgetConfig("flexiblewebitems_7", "Items - 7", 7,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("tools", "Tools", PageWidget.WidgetType.STOREROOM_TOOLS)
+                .addFlexibleWidgetConfig("flexiblewebtools_7", "Tools - 7", 7,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("storeRoomItemTransactions", "Item Transactions", PageWidget.WidgetType.STOREROOM_ITEM_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebstoreroomitemtransactions_7", "Item Transactions - 7", 7, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("storeRoomToolTransactions", "Tool Transactions", PageWidget.WidgetType.STOREROOM_TOOL_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebstoreroomtooltransactions_7", "Tools Transactions - 7", 7, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+
+    @WidgetsForModule(FacilioConstants.ContextNames.ITEM)
+    public static Supplier<ModuleWidgets> getItemWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("itemDetailsCard","Item Details Card" , PageWidget.WidgetType.ITEM_DETAILS_CARD)
+                .addFlexibleWidgetConfig("flexiblewebitemdetailscard_2", "Item Details Card - 2", 2, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("purchasedItem", "Purchased Item", PageWidget.WidgetType.PURCHASED_ITEMS)
+                .addFlexibleWidgetConfig("flexiblewebpurchaseditem_6", "Purchased Item - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("itemBin", "Bin", PageWidget.WidgetType.BIN)
+                .addFlexibleWidgetConfig("flexiblewebitembin_6", "Item Bin - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("rotatingAsset", "Rotating Asset", PageWidget.WidgetType.ROTATING_ASSET)
+                .addFlexibleWidgetConfig("flexiblewebrotatingasset_6", "Rotating Asset - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("whereUsed", "Where Used", PageWidget.WidgetType.WHERE_USED)
+                .addFlexibleWidgetConfig("flexiblewebwhereused_6", "Purchased Item - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("PurchasedOrder", "Purchased Order", PageWidget.WidgetType.PURCHASE_ORDER)
+                .addFlexibleWidgetConfig("flexiblewebpurchaseorder_6", "Purchase Order - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("itemSummarytransactions", "Transactions", PageWidget.WidgetType.ITEM_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebitemsummarytransactions_7", "Transactions - 7", 7, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+
+    @WidgetsForModule(FacilioConstants.ContextNames.TOOL)
+    public static Supplier<ModuleWidgets> getToolWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("tooldetailscard","Tool Details Card",PageWidget.WidgetType.TOOL_DETAILS_CARD)
+                .addFixedWidgetConfig("webtooldetailscard_3_4","Tool Details Card - 3 - 4",3,4,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("purchasedTool", "Purchased Tool", PageWidget.WidgetType.PURCHASED_TOOLS)
+                .addFlexibleWidgetConfig("flexiblewebpurchasedtool_6", "Purchased Tool - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("toolBin", "Bin", PageWidget.WidgetType.BIN)
+                .addFlexibleWidgetConfig("flexiblewebtoolbin_6", "Tool Bin - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("rotatingAsset", "Rotating Asset", PageWidget.WidgetType.ROTATING_ASSET)
+                .addFlexibleWidgetConfig("flexiblewebrotatingtoolasset_6", "Rotating Asset - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("whereUsed", "Where Used", PageWidget.WidgetType.WHERE_USED)
+                .addFlexibleWidgetConfig("flexiblewebtoolwhereused_6", "Purchased Tool - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("PurchasedOrder", "Purchased Order", PageWidget.WidgetType.PURCHASE_ORDER)
+                .addFlexibleWidgetConfig("flexiblewebpurchaseordertool_6", "Purchase Order - 6", 6,  PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("toolSummarytransactions", "Transactions", PageWidget.WidgetType.TOOL_TRANSACTIONS)
+                .addFlexibleWidgetConfig("flexiblewebtoolsummarytransactions_7", "Transactions - 7", 7, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
 }

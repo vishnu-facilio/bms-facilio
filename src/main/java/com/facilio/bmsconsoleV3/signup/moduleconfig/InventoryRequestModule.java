@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -7,8 +8,11 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -246,6 +250,44 @@ public class InventoryRequestModule extends BaseModuleConfig{
         inventoryRequestModuleForm.setType(FacilioForm.Type.FORM);
         return Collections.singletonList(inventoryRequestModuleForm);
     }
+
+    @Override
+    public void addData() throws Exception {
+        addSystemButton();
+    }
+
+    private static void addSystemButton() throws Exception{
+        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
+        editButton.setName("Edit");
+        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButton.setIdentifier("edit");
+        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        editButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INVENTORY_REQUEST,editButton);
+
+        SystemButtonRuleContext addInventoryRequestItems = new SystemButtonRuleContext();
+        addInventoryRequestItems.setName("Add Inventory Request Items");
+        addInventoryRequestItems.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addInventoryRequestItems.setIdentifier(FacilioConstants.ContextNames.ADD_INVENTORY_REQUEST_ITEMS);
+        addInventoryRequestItems.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addInventoryRequestItems.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addInventoryRequestItems.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INVENTORY_REQUEST,addInventoryRequestItems);
+
+        SystemButtonRuleContext addInventoryRequestTools = new SystemButtonRuleContext();
+        addInventoryRequestTools.setName("Add Inventory Request Tools");
+        addInventoryRequestTools.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        addInventoryRequestTools.setIdentifier(FacilioConstants.ContextNames.ADD_INVENTORY_REQUEST_TOOLS);
+        addInventoryRequestTools.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        addInventoryRequestTools.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+        addInventoryRequestTools.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INVENTORY_REQUEST,addInventoryRequestTools);
+
+
+    }
+
+
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
