@@ -3,8 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONArray;
-
+@Getter@Setter
 public class DashboardTabContext implements Comparable<DashboardTabContext> {
 
 	long id = -1;
@@ -95,5 +97,6 @@ public class DashboardTabContext implements Comparable<DashboardTabContext> {
 		
 		int compareQuantity = that.getSequence(); 
 		return this.sequence - compareQuantity;
-	}	
+	}
+	private String linkName;
 }

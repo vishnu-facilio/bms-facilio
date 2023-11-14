@@ -6,9 +6,10 @@ import java.util.Map;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
+import lombok.Getter;
+import lombok.Setter;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-
+@Getter @Setter
 public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 
 	/**
@@ -34,6 +35,10 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	public void setHideFilterInsideWidgets(boolean hideFilterInsideWidgets) {
 		this.hideFilterInsideWidgets = hideFilterInsideWidgets;
 	}
+	
+	
+	
+
 	public List<Long> getCustomScriptWidgets() {
 		return customScriptWidgets;
 	}
@@ -100,7 +105,6 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	public void setIsTimelineFilterEnabled(Boolean isTimelineFilterEnabled) {
 		this.isTimelineFilterEnabled = isTimelineFilterEnabled;
 	}
-	
-	
+	private String linkName;
 
 }

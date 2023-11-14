@@ -5651,6 +5651,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("displayOrder", "DISPLAY_ORDER", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
         fields.add(getField("newFlow","IS_NEW",module,FieldType.BOOLEAN));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
 
         return fields;
     }
@@ -5759,6 +5760,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("name", "NAME", module, FieldType.STRING));
         fields.add(getField("dashboardTabId", "DASHBOARD_TAB_ID", module, FieldType.LOOKUP));
         fields.add(getField("sequence", "SEQUENCE", module, FieldType.NUMBER));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
 
         return fields;
     }
@@ -5890,7 +5892,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("banner_meta", "BANNER_DETAILS", module, FieldType.STRING));
         fields.add(getField("collapsed", "IS_COLLAPSED", module, FieldType.BOOLEAN));
         fields.add(getField("noResize", "IS_RESIZE_ENABLED", module, FieldType.BOOLEAN));
-
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
         return fields;
     }
 
@@ -7670,6 +7672,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
 
         return fields;
     }
@@ -8739,6 +8742,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.DATE_TIME));
         fields.add(getField("folderType", "FOLDER_TYPE", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
 
         return fields;
     }
@@ -8804,6 +8808,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("appId", "APP_ID", module, FieldType.NUMBER));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
+
         return fields;
     }
 
@@ -11026,6 +11032,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
         fields.add(getField("dateLabel", "DATE_LABEL", module, FieldType.STRING));
         fields.add(getField("hideFilterInsideWidgets", "WIDGET_TIMELINE_FILTER_STATUS", module, FieldType.BOOLEAN));
+         fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
         return fields;
     }
     public static List<FacilioField>  getDashboardFieldMappingsFields()

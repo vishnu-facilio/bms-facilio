@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Getter@Setter
 public class DashboardFolderContext {
 
 	
@@ -85,4 +89,5 @@ public class DashboardFolderContext {
 		this.dashboards = (this.dashboards == null) ? new ArrayList<>() : this.dashboards; 
 		this.dashboards.add(dashboard);
 	}
+	private String linkName;
 }

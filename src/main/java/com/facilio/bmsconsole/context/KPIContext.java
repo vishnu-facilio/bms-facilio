@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.db.criteria.Criteria;
@@ -12,7 +14,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+@Getter@Setter
 public class KPIContext implements Serializable {
 	/**
 	 * 
@@ -304,6 +306,5 @@ public class KPIContext implements Serializable {
 		return builder.toString();
 	}
 
-	
-
+	private String linkName;
 }

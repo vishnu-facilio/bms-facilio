@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.report.V3DashboardRuleDPContext;
@@ -23,9 +24,8 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ims.handler.AuditLogHandler;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.time.DateRange;
@@ -570,6 +570,7 @@ public class V3ReportAction extends V3Action {
 
     public String createFolder() throws Exception
     {
+        getReportFolderLinkName(reportFolder);
         FacilioChain chain = TransactionChainFactoryV3.getCreateReportFolderChain();
         FacilioContext context = chain.getContext();
         context.put("actionType", "ADD");
@@ -929,5 +930,16 @@ public class V3ReportAction extends V3Action {
         setData("customModules", context.get("customModules"));
 
         return SUCCESS;
+    }
+    private void getReportFolderLinkName(ReportFolderContext folder) throws Exception {
+        Map<String, FacilioField> reportFolderFields = FieldFactory.getAsMap(FieldFactory.getReport1FolderFields());
+        FacilioField folderLinkName = reportFolderFields.get(FacilioConstants.ContextNames.LINK_NAME);
+        FacilioModule module = ModuleFactory.getReportFolderModule();
+        List<String> linkNames = DashboardUtil.getExistingLinkNames(module.getTableName(),folderLinkName);
+        if(folder.getLinkName() == null){
+            String name = folder.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            String linkName = DashboardUtil.getLinkName(name,linkNames);
+            folder.setLinkName(linkName);
+        }
     }
 }

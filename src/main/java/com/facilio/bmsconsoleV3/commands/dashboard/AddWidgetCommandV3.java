@@ -360,6 +360,7 @@ public class AddWidgetCommandV3 extends FacilioCommand {
             else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(DashboardWidgetContext.WidgetType.SECTION))
             {
                 WidgetSectionContext section_widget = (WidgetSectionContext) widget;
+                getDashboardSectionLinkName(section_widget);
                 insertBuilder = new GenericInsertRecordBuilder()
                         .table(ModuleFactory.getWidgetSectionModule().getTableName())
                         .fields(FieldFactory.getWidgetSectionFields());
@@ -411,5 +412,16 @@ public class AddWidgetCommandV3 extends FacilioCommand {
         }
         context.put(FacilioConstants.ContextNames.WIDGET, widget);
         return false;
+    }
+    private void getDashboardSectionLinkName(WidgetSectionContext section) throws Exception {
+        Map<String, FacilioField> widgetSectionFields = FieldFactory.getAsMap(FieldFactory.getWidgetSectionFields());
+        FacilioField sectionLinkName = widgetSectionFields.get(FacilioConstants.ContextNames.LINK_NAME);
+        FacilioModule module = ModuleFactory.getWidgetSectionModule();
+        List<String> linkNames = DashboardUtil.getExistingLinkNames(module.getTableName(),sectionLinkName);
+        if(section.getLinkName()!=null){
+            String name = section.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+            String linkName = DashboardUtil.getLinkName(name,linkNames);
+            section.setLinkName(linkName);
+        }
     }
 }

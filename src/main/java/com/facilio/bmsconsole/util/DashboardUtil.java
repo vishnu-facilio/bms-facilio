@@ -3813,6 +3813,35 @@ public class DashboardUtil {
 		}
 		return -1l;
 	}
+
+	public static List<String> getExistingLinkNames(String tableName, FacilioField field) throws Exception {
+		List<String> linkNames = new ArrayList<>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(field))
+				.table(tableName);
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			for(Map<String,Object> prop: props){
+				if(prop.get("linkName")!=null){
+					linkNames.add((String) prop.get("linkName"));
+				}
+			}
+		}
+		return linkNames;
+	}
+	public static String getLinkName(String name,List<String> linkNames) {
+		int i=1;
+		String temp = name;
+		while(true) {
+			if(linkNames.contains(temp)) {
+				temp = name + i++;
+			}
+			else {
+				return temp;
+			}
+		}
+	}
+
 }
 class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
 { 

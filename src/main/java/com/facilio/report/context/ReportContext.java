@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
@@ -25,7 +27,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-
+@Getter@Setter
 public class ReportContext {
 	
 	
@@ -918,5 +920,6 @@ public class ReportContext {
 	public void setDrilldownParams(ReportDrilldownParamsContext drilldownParams) {
 		this.drilldownParams = drilldownParams;
 	}
+	private String linkName;
 
 }

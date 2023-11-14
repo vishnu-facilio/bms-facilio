@@ -1,9 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -29,6 +34,7 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		
 		if(report.getId() <= 0 || context.containsKey("dashboard_clone")) {
 			addWorkflow(report);
+			getReportLinkName(report);
 			ReportUtil.addReport(report,context);
 		}
 		else {
@@ -42,6 +48,7 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 			}
 			report.setCreatedBy(oldReport.getCreatedBy() != null ?  oldReport.getCreatedBy() : null);
 			report.setCreatedTime(oldReport.getCreatedTime() != null ?  oldReport.getCreatedTime() : null);
+			report.setLinkName(oldReport.getLinkName());
 			ReportUtil.updateReport(report);
 			if (oldWorkflowId != -1) {
 				WorkflowUtil.deleteWorkflow(oldWorkflowId);
@@ -100,6 +107,17 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		if (report.getTransformWorkflow() != null) {
 			long workflowId = WorkflowUtil.addWorkflow(report.getTransformWorkflow());
 			report.setWorkflowId(workflowId);
+		}
+	}
+	private void getReportLinkName(ReportContext report) throws Exception {
+		Map<String, FacilioField> reportFields = FieldFactory.getAsMap(FieldFactory.getReport1Fields());
+		FacilioField reportLinkName = reportFields.get(FacilioConstants.ContextNames.LINK_NAME);
+		FacilioModule module = ModuleFactory.getReportModule();
+		List<String> linkNames = DashboardUtil.getExistingLinkNames(module.getTableName(),reportLinkName);
+		if(report.getLinkName() == null){
+			String name = report.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+			String linkName = DashboardUtil.getLinkName(name,linkNames);
+			report.setLinkName(linkName);
 		}
 	}
 

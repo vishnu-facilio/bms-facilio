@@ -5,7 +5,10 @@ import java.util.List;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ReportFolderContext extends ModuleBaseWithCustomFields {
 
 	/**
@@ -144,6 +147,5 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 	}
 
 	public Long appId;
-
-
+	private String linkName;
 }

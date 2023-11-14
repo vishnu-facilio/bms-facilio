@@ -19,6 +19,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import java.util.Map;
+import com.facilio.bmsconsole.util.DashboardUtil;
 
 public class AddOrUpdateKPICommand extends FacilioCommand {
 
@@ -59,7 +61,7 @@ public class AddOrUpdateKPICommand extends FacilioCommand {
 			validateAddKPI(kpi);
 			KPIUtil.updateChildIds(kpi);
 			kpi.setCreatedTime(System.currentTimeMillis());
-			
+			getModuleKPILinkName(kpi);
 			if (kpi.getModuleId() == -1) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				kpi.setModuleId(modBean.getModule(kpi.getModuleName()).getModuleId());
@@ -98,4 +100,16 @@ public class AddOrUpdateKPICommand extends FacilioCommand {
 			throw new IllegalArgumentException("Aggregation is mandatory for this metric");
 		}
 	}
+	private void getModuleKPILinkName(KPIContext kpi) throws Exception {
+		Map<String, FacilioField> moduleKpiFields = FieldFactory.getAsMap(FieldFactory.getKPIFields());
+		FacilioField kpiLinkName = moduleKpiFields.get(FacilioConstants.ContextNames.LINK_NAME);
+		FacilioModule module = ModuleFactory.getKpiModule();
+		List<String> linkNames = DashboardUtil.getExistingLinkNames(module.getTableName(),kpiLinkName);
+		if(kpi.getLinkName() == null){
+			String name = kpi.getName().replaceAll("[^a-zA-Z0-9]", "").toLowerCase();
+			String linkName = DashboardUtil.getLinkName(name,linkNames);
+			kpi.setLinkName(linkName);
+		}
+	}
+
 }
