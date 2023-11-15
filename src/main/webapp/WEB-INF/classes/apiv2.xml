@@ -9102,7 +9102,7 @@
 	<package name="meterReadingsApiv2" namespace="/api/v2/readings/meter" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
 			<param name="moduleName">meter</param>
-			<param name="permission">ADD_READING</param>
+			<param name="permission">POST:UPDATE</param>
 		</action>
 	</package>
 	<package name="ruleCriteria" namespace="/api/v2/criteria" extends="v2Api">

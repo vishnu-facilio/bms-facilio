@@ -38,7 +38,9 @@ public class GetMeterMonthlyConsumptionCommand extends FacilioCommand {
 		if(utilityTypeModuleName.equals(FacilioConstants.Meter.GAS_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.GAS_DATA_READING);
 			double thisMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentMonthStartTime, currentMonthEndTime,"gasVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisMonthTotal = Double.parseDouble(String.format("%.2f", thisMonthTotal));
 			double lastMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastMonthStartTime, lastMonthEndTime,"gasVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastMonthTotal = Double.parseDouble(String.format("%.2f", lastMonthTotal));
 			context.put("thisMonthConsumption", thisMonthTotal);
 			context.put("lastMonthConsumption", lastMonthTotal);
 
@@ -48,7 +50,9 @@ public class GetMeterMonthlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.WATER_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.WATER_DATA_READING);
 			double thisMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentMonthStartTime, currentMonthEndTime,"waterVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisMonthTotal = Double.parseDouble(String.format("%.2f", thisMonthTotal));
 			double lastMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastMonthStartTime, lastMonthEndTime,"waterVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastMonthTotal = Double.parseDouble(String.format("%.2f", lastMonthTotal));
 			context.put("thisMonthConsumption", thisMonthTotal);
 			context.put("lastMonthConsumption", lastMonthTotal);
 
@@ -58,7 +62,9 @@ public class GetMeterMonthlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.ELECTRICITY_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.ELECTRICITY_DATA_READING);
 			double thisMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentMonthStartTime, currentMonthEndTime,"totalEnergyConsumptionDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisMonthTotal = Double.parseDouble(String.format("%.2f", thisMonthTotal));
 			double lastMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastMonthStartTime, lastMonthEndTime,"totalEnergyConsumptionDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastMonthTotal = Double.parseDouble(String.format("%.2f", lastMonthTotal));
 			context.put("thisMonthConsumption", thisMonthTotal);
 			context.put("lastMonthConsumption", lastMonthTotal);
 
@@ -68,7 +74,9 @@ public class GetMeterMonthlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.HEAT_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.HEAT_DATA_READING);
 			double thisMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentMonthStartTime, currentMonthEndTime,"thermalEnergyAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisMonthTotal = Double.parseDouble(String.format("%.2f", thisMonthTotal));
 			double lastMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastMonthStartTime, lastMonthEndTime,"thermalEnergyAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastMonthTotal = Double.parseDouble(String.format("%.2f", lastMonthTotal));
 			context.put("thisMonthConsumption", thisMonthTotal);
 			context.put("lastMonthConsumption", lastMonthTotal);
 
@@ -78,7 +86,9 @@ public class GetMeterMonthlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.BTU_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.BTU_DATA_READING);
 			double thisMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentMonthStartTime, currentMonthEndTime,"CHWConsumptionAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisMonthTotal = Double.parseDouble(String.format("%.2f", thisMonthTotal));
 			double lastMonthTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastMonthStartTime, lastMonthEndTime,"CHWConsumptionAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastMonthTotal = Double.parseDouble(String.format("%.2f", lastMonthTotal));
 			context.put("thisMonthConsumption", thisMonthTotal);
 			context.put("lastMonthConsumption", lastMonthTotal);
 

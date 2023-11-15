@@ -298,8 +298,17 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         editVMTemplate.setName("Edit");
         editVMTemplate.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         editVMTemplate.setIdentifier("edit");
+        editVMTemplate.setPermissionRequired(true);
+        editVMTemplate.setPermission("UPDATE");
         editVMTemplate.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,editVMTemplate);
+
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE , "New Template");
+        SystemButtonApi.addListEditButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
 
     }
 

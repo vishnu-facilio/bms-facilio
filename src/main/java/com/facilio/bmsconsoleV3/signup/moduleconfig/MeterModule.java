@@ -399,6 +399,8 @@ public class MeterModule extends BaseModuleConfig{
         editMeter.setName("Edit");
         editMeter.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         editMeter.setIdentifier("edit");
+        editMeter.setPermissionRequired(true);
+        editMeter.setPermission("UPDATE");
         editMeter.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.METER,editMeter);
 
@@ -414,6 +416,14 @@ public class MeterModule extends BaseModuleConfig{
         systemButtonAppRels.add(energyAppRelationshipButton);
         addMeterRelationShip.setSystemButtonAppRels(systemButtonAppRels);
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.METER,addMeterRelationShip);
+
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.Meter.METER , "Add Meter");
+        SystemButtonApi.addListEditButton(FacilioConstants.Meter.METER);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Meter.METER);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Meter.METER);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Meter.METER);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Meter.METER);
+
     }
 
     private static List<ViewField> getAllViewColumns() {

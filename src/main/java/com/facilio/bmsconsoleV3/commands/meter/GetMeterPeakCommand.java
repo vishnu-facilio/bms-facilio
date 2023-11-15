@@ -131,6 +131,7 @@ public class GetMeterPeakCommand extends FacilioCommand {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 		if(thisYearPeakResult != null && thisYearPeakResult.get("reading") != null) {
 			double thisYearPeak = (double) thisYearPeakResult.get("reading");
+			thisYearPeak = Double.parseDouble(String.format("%.2f", thisYearPeak));
 			context.put("peakDemand", thisYearPeak);
 			if(thisYearPeak > 0 && thisYearPeakResult.get("ttime") != null) {
 				long thisYearPeakTime = (long) thisYearPeakResult.get("ttime");
@@ -144,6 +145,7 @@ public class GetMeterPeakCommand extends FacilioCommand {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
 		if(lastYearPeakResult != null && lastYearPeakResult.get("reading") != null) {
 			double lastYearPeak = (double) lastYearPeakResult.get("reading");
+			lastYearPeak = Double.parseDouble(String.format("%.2f", lastYearPeak));
 			context.put("lastYearPeakDemand", lastYearPeak);
 			if(lastYearPeak > 0 && lastYearPeakResult.get("ttime") != null) {
 				long lastYearPeakTime = (long) lastYearPeakResult.get("ttime");

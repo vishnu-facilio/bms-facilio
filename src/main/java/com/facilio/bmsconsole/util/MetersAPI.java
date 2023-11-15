@@ -332,10 +332,10 @@ public class MetersAPI {
 		fields.add(ttimeField);
 
 		builder.select(fields);
-		builder.aggregate(aggr, fieldMap.get(aggrFieldName));
-		builder.groupBy(readingModule.getTableName()+".ID");
 		builder.andCondition(CriteriaAPI.getCondition("PARENT_METER_ID", "parentMeterId", String.valueOf(meterId), NumberOperators.EQUALS));
 		builder.andCondition(CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN));
+		builder.orderBy(readingField.getCompleteColumnName() + " DESC");
+		builder.limit(1);
 
 		List<Map<String, Object>> rs = builder.get();
 

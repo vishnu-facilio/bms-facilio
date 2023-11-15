@@ -38,7 +38,9 @@ public class GetMeterYearlyConsumptionCommand extends FacilioCommand {
 		if(utilityTypeModuleName.equals(FacilioConstants.Meter.GAS_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.GAS_DATA_READING);
 			double thisYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentYearStartTime, currentYearEndTime,"gasVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisYearTotal = Double.parseDouble(String.format("%.2f", thisYearTotal));
 			double lastYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastYearStartTime, lastYearEndTime,"gasVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastYearTotal = Double.parseDouble(String.format("%.2f", lastYearTotal));
 			context.put("totalConsumption", thisYearTotal);
 			context.put("lastYearConsumption", lastYearTotal);
 
@@ -48,7 +50,9 @@ public class GetMeterYearlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.WATER_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.WATER_DATA_READING);
 			double thisYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentYearStartTime, currentYearEndTime,"waterVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisYearTotal = Double.parseDouble(String.format("%.2f", thisYearTotal));
 			double lastYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastYearStartTime, lastYearEndTime,"waterVolumeAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastYearTotal = Double.parseDouble(String.format("%.2f", lastYearTotal));
 			context.put("totalConsumption", thisYearTotal);
 			context.put("lastYearConsumption", lastYearTotal);
 
@@ -58,7 +62,9 @@ public class GetMeterYearlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.ELECTRICITY_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.ELECTRICITY_DATA_READING);
 			double thisYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentYearStartTime, currentYearEndTime,"totalEnergyConsumptionDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisYearTotal = Double.parseDouble(String.format("%.2f", thisYearTotal));
 			double lastYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastYearStartTime, lastYearEndTime,"totalEnergyConsumptionDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastYearTotal = Double.parseDouble(String.format("%.2f", lastYearTotal));
 			context.put("totalConsumption", thisYearTotal);
 			context.put("lastYearConsumption", lastYearTotal);
 
@@ -68,7 +74,9 @@ public class GetMeterYearlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.HEAT_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.HEAT_DATA_READING);
 			double thisYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentYearStartTime, currentYearEndTime,"thermalEnergyAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisYearTotal = Double.parseDouble(String.format("%.2f", thisYearTotal));
 			double lastYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastYearStartTime, lastYearEndTime,"thermalEnergyAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastYearTotal = Double.parseDouble(String.format("%.2f", lastYearTotal));
 			context.put("totalConsumption", thisYearTotal);
 			context.put("lastYearConsumption", lastYearTotal);
 
@@ -78,7 +86,9 @@ public class GetMeterYearlyConsumptionCommand extends FacilioCommand {
 		else if(utilityTypeModuleName.equals(FacilioConstants.Meter.BTU_METER)) {
 			FacilioModule readingModule = modBean.getModule(FacilioConstants.Meter.BTU_DATA_READING);
 			double thisYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, currentYearStartTime, currentYearEndTime,"CHWConsumptionAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			thisYearTotal = Double.parseDouble(String.format("%.2f", thisYearTotal));
 			double lastYearTotal = MetersAPI.fetchMeterAggregatedReading(meterId, lastYearStartTime, lastYearEndTime,"CHWConsumptionAccumulatorDelta", readingModule, BmsAggregateOperators.NumberAggregateOperator.SUM);
+			lastYearTotal = Double.parseDouble(String.format("%.2f", lastYearTotal));
 			context.put("totalConsumption", thisYearTotal);
 			context.put("lastYearConsumption", lastYearTotal);
 
