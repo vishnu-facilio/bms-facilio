@@ -15,9 +15,6 @@ topics:
       - { key: __agent__/point/alarm/org/#, handler: com.facilio.ims.handler.agent.ClearPointAlarmHandler }
       - { key: __one_time_job_for_scheduled_rule__/#/#, handler: com.facilio.ims.handler.AddOneTimeJobForScheduledRuleHandler, recordTimeout: 60 }
       - { key: task_deviation_createWorkOrder/#, handler: com.facilio.ims.handler.workorder.TaskDeviationWorkOrderHandler, recordTimeout: 60 }
-      - { key: calendar/+, handler: com.facilio.wmsv2.handler.CalendarHandler, recordTimeout: 600 }
-      - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 1800 }
-      - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
       - { key: __flow_logs__/#, handler: com.facilio.ims.handler.FlowLogHandler, recordTimeout: 60 }
       - { key: __flaggedEvent__/#, handler: com.facilio.remotemonitoring.wms.FlaggedEventHandler, recordTimeout: 120 }
       - { key: __fsm_silent_notification_logs__/#, handler: com.facilio.ims.handler.SilentNotificationForFsmHandler }
@@ -35,6 +32,9 @@ topics:
     keys:
       - { key: __longrunning_tasks__, handler: com.facilio.ims.handler.LongRunningTaskHandler, recordTimeout: 900 }
       - { key: __dashboard_update__, handler: com.facilio.ims.handler.DashboardUpdateHandler, recordTimeout: 900 }
+      - { key: calendar/+, handler: com.facilio.wmsv2.handler.CalendarHandler, recordTimeout: 600 }
+      - { key: controlAction/+, handler: com.facilio.wmsv2.handler.CommandGenerationHandler, recordTimeout: 1800 }
+      - { key: controlActionTemplate/+, handler: com.facilio.wmsv2.handler.ControlActionGenerationHandler, recordTimeout: 600 }
 
   - topic: pre-send-mail
     keys:

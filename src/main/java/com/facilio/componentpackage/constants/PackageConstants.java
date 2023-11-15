@@ -720,7 +720,8 @@ public class PackageConstants {
                 "default_tenant_user",
                 "default_vendor_user",
                 "default_client_user",
-                "default_remotemonitor_client"
+                "default_remotemonitor_client",
+                "default_energy_site"
         );
     }
     public static class UserScopingConstants{
