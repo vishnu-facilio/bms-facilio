@@ -15,7 +15,7 @@ public class FetchNameListCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-        KpiAnalyticsDataFetcher fetcher = ReadingKpiAPI.getKpiAnalyticsDataFetcher(moduleName, context, new ArrayList<>());
+        KpiAnalyticsDataFetcher fetcher = ReadingKpiAPI.getKpiAnalyticsDataFetcher(moduleName, context);
         List<Map<String, Object>> kpis = new ArrayList<>();
 
         List<Map<String, Object>> props = fetcher.fetchBuilder(context, false).get();

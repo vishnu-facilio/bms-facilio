@@ -938,15 +938,15 @@ public class ReadingKpiAPI {
         }
     }
 
-    public static KpiAnalyticsDataFetcher getKpiAnalyticsDataFetcher(String moduleName, Context context, List<FacilioField> additionalSelectFields) throws Exception {
+    public static KpiAnalyticsDataFetcher getKpiAnalyticsDataFetcher(String moduleName, Context context) throws Exception {
         FacilioModule module = Constants.getModBean().getModule(moduleName);
         switch (moduleName) {
             case FacilioConstants.ReadingKpi.READING_KPI:
-                return new ReadingKPIDataFetcher(module, context, additionalSelectFields);
+                return new ReadingKPIDataFetcher(module, context, Collections.singletonList(FieldFactory.getNumberField("kpiType", "KPI_TYPE", module)));
             case FacilioConstants.ContextNames.ASSET:
-                return new AssetDataFetcher(module, context, additionalSelectFields);
+                return new AssetDataFetcher(module, context, new ArrayList<>());
             case FacilioConstants.Meter.METER:
-                return new MeterDataFetcher(module, context, additionalSelectFields);
+                return new MeterDataFetcher(module, context, new ArrayList<>());
             default:
                 throw new IllegalArgumentException("Unsupported Module");
         }
