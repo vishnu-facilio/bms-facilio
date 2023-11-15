@@ -284,6 +284,85 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
 
     private static void addSystemButtons(ModuleBean modBean, FacilioModule plannedMaintenanceModule, Map<String, FacilioField> fieldsMap) throws Exception {
 
+        /** LIST PAGE SYSTEM BUTTONS **/
+        // Table Top Bar buttons
+        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
+        createButtonListTop.setName("Create");
+        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButtonListTop.setIdentifier("create");
+        createButtonListTop.setPermissionRequired(true);
+        createButtonListTop.setPermission("CREATE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, createButtonListTop);
+
+        // Export buttons
+        SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();
+        exportAsExcelButtonListTop.setName("Export as excel");
+        exportAsExcelButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsExcelButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButtonListTop.setIdentifier("export_as_excel");
+        exportAsExcelButtonListTop.setPermissionRequired(true);
+        exportAsExcelButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, exportAsExcelButtonListTop);
+
+        SystemButtonRuleContext exportAsCsvButtonListTop = new SystemButtonRuleContext();
+        exportAsCsvButtonListTop.setName("Export as CSV");
+        exportAsCsvButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsCsvButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCsvButtonListTop.setIdentifier("export_as_csv");
+        exportAsCsvButtonListTop.setPermissionRequired(true);
+        exportAsCsvButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, exportAsCsvButtonListTop);
+
+        // Table bar - Bulk action buttons
+        SystemButtonRuleContext publishButtonListTop = new SystemButtonRuleContext();
+        publishButtonListTop.setName("Publish");
+        publishButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        publishButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        publishButtonListTop.setIdentifier("publishPM");
+        publishButtonListTop.setPermissionRequired(true);
+        publishButtonListTop.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, publishButtonListTop);
+
+        SystemButtonRuleContext unPublishButtonListTop = new SystemButtonRuleContext();
+        unPublishButtonListTop.setName("Unpublish");
+        unPublishButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        unPublishButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        unPublishButtonListTop.setIdentifier("unpublishPM");
+        unPublishButtonListTop.setPermissionRequired(true);
+        unPublishButtonListTop.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, unPublishButtonListTop);
+
+        SystemButtonRuleContext deleteButtonListTop = new SystemButtonRuleContext();
+        deleteButtonListTop.setName("Delete");
+        deleteButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        deleteButtonListTop.setIdentifier("delete_bulk");
+        deleteButtonListTop.setPermissionRequired(true);
+        deleteButtonListTop.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, deleteButtonListTop);
+
+        // Each Record wise
+        SystemButtonRuleContext editButtonList = new SystemButtonRuleContext();
+        editButtonList.setName("Edit");
+        editButtonList.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        editButtonList.setIdentifier("edit_list");
+        editButtonList.setPermissionRequired(true);
+        editButtonList.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, editButtonList);
+
+        SystemButtonRuleContext deleteButtonList = new SystemButtonRuleContext();
+        deleteButtonList.setName("Delete");
+        deleteButtonList.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        deleteButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        deleteButtonList.setIdentifier("delete_list");
+        deleteButtonList.setPermissionRequired(true);
+        deleteButtonList.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, deleteButtonList);
+
+
+        /** SUMMARY PAGE SYSTEM BUTTONS **/
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
