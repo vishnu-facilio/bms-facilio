@@ -944,7 +944,7 @@
 			<result name="success" type="json">
 				<param name="root">assetCategoriesWithReadings</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
 		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -3726,7 +3726,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:VIEW,READ</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<param name="permission">POST:EDIT</param>
