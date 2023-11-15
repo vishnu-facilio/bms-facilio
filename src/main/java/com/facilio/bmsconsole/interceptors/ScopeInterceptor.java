@@ -13,7 +13,6 @@ import com.facilio.audit.FacilioAudit;
 import com.facilio.audit.FacilioAuditOrgList;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -22,19 +21,12 @@ import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.WebTabUtil;
-import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
-import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.filters.AccessLogFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.server.ServerInfo;
 import com.opensymphony.xwork2.Action;
@@ -48,7 +40,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.Parameter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -368,12 +359,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         AccountUtil.setTimeZone(timezoneVar);
 
-                        if (AccountUtil.getCurrentOrg() != null) {
-                            if (V3PermissionUtil.isAllowedEnvironment() && APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !checkSubModulePermission()) {
-                                return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
-                            }
-                        }
-
                         String lang = currentAccount.getUser().getLanguage();
                         Locale localeObj = null;
                         if (lang == null || lang.trim().isEmpty()) {
@@ -494,59 +479,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
         String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
         if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
             return true;
-        }
-        return false;
-    }
-
-    private boolean checkSubModulePermission() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Parameter action = ActionContext.getContext().getParameters().get("permission");
-        Parameter parentModuleParam = ActionContext.getContext().getParameters().get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
-        Parameter recordId = ActionContext.getContext().getParameters().get(FacilioConstants.ContextNames.RECORD_ID);
-        Parameter module = ActionContext.getContext().getParameters().get("moduleName");
-
-        if(parentModuleParam!=null && parentModuleParam.getValue()!=null) {
-            FacilioModule subModule = null;
-            if(module != null && module.getValue() != null) {
-                String subModuleName = module.getValue();
-                subModule = modBean.getModule(subModuleName);
-            }
-            String parentModuleName = null;
-            if(subModule != null && subModule.getModuleId() > 0) {
-                FacilioModule parentModule = modBean.getParentModule(subModule.getModuleId());
-                if (parentModule != null) {
-                    parentModuleName = WebTabUtil.getSpecialModule(parentModule.getName());
-                }
-            }else {
-                parentModuleName = parentModuleParam.getValue();
-            }
-            if (StringUtils.isNotEmpty(parentModuleName)) {
-                Map<String, String> parameters = new HashMap<>();
-                parameters.put(FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME, parentModuleName);
-                if(action != null && action.getValue() != null) {
-                    String method = ServletActionContext.getRequest().getMethod();
-                    action = WebTabUtil.getActions(action,method);
-                }
-                boolean havingPermission = false;
-                if(action!=null && action.getValue()!=null) {
-                    havingPermission = WebTabUtil.isAuthorizedAccess(parentModuleName, action.getValue(), parameters, null);
-                }
-                if(recordId != null && recordId.getValue() != null) {
-                    boolean parentRecordAccessible = isParentRecordAccessible(parentModuleName, Long.parseLong(recordId.getValue()));
-                    return havingPermission && parentRecordAccessible;
-                }
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private static boolean isParentRecordAccessible(String moduleName,Long recordId) throws Exception {
-        if(StringUtils.isNotEmpty(moduleName) && recordId != null) {
-            ModuleBaseWithCustomFields record = V3RecordAPI.getRecord(moduleName,recordId);
-            if(record != null) {
-                return true;
-            }
         }
         return false;
     }

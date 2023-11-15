@@ -6,7 +6,7 @@ import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 
 import java.util.Map;
 
-public class DashboardHandler implements WebTabHandler{
+public class NewDashboardTypeHandler implements WebTabHandler{
     @Override
     public boolean hasPermission(WebTabContext webtab, Map<String, String> parameters, String action) {
         try {

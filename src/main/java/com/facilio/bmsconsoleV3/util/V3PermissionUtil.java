@@ -7,6 +7,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
+import com.facilio.bmsconsole.context.TabIdAppIdMappingCacheContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
@@ -18,9 +19,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.ServletActionContext;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -180,5 +184,29 @@ public class V3PermissionUtil {
 
     public static boolean isAllowedEnvironment(){
         return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) && FacilioProperties.isCheckPrivilegeAccess();
+    }
+
+    public static boolean isModuleAccessible(String moduleName, Long tabId) throws Exception {
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
+
+        if(module!=null && tabId > 0) {
+            List<TabIdAppIdMappingCacheContext> tabIdModules = tabBean.getTabIdModules(tabId);
+            if(CollectionUtils.isNotEmpty(tabIdModules)){
+                for (TabIdAppIdMappingCacheContext tabVsModuleId : tabIdModules) {
+                    if(tabVsModuleId != null && tabVsModuleId.getModuleId() == module.getModuleId()){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static long getCurrentTabId(){
+        HttpServletRequest request = ServletActionContext.getRequest();
+        String currentTab = request.getHeader("X-Tab-Id");
+
+        return StringUtils.isNotEmpty(currentTab)? Long.parseLong(currentTab) : -1L;
     }
 }

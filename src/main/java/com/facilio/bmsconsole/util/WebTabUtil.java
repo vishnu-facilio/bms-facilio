@@ -172,15 +172,13 @@ public class WebTabUtil {
             return true;
         }
         try {
-            String currentTab = request.getHeader("X-Tab-Id");
-            long tabId = -1L;
+            long tabId = V3PermissionUtil.getCurrentTabId();
 
-            if(webTabId != null) {
-                currentTab = String.valueOf(webTabId);
+            if(webTabId != null &&  webTabId > 0) {
+                tabId = webTabId;
             }
 
-            if (currentTab != null && !currentTab.isEmpty()) {
-                tabId = Long.parseLong(currentTab);
+            if (tabId > 0) {
                 return WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters);
             } else {
                 permissionLogsForTabs(tabId, moduleName, action);
@@ -278,7 +276,7 @@ public class WebTabUtil {
 
     public static boolean isAttachmentAPIAccessible() throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
-        long currentTabId = Long.parseLong(request.getHeader("X-Tab-Id"));
+        long currentTabId = V3PermissionUtil.getCurrentTabId();
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
 
         if(currentTabId > 0 && currentApp != null){

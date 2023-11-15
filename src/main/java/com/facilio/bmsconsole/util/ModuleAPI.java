@@ -1,22 +1,16 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -80,5 +74,36 @@ public class ModuleAPI {
             joiner.add(String.valueOf(type.getValue()));
         }
         return joiner.toString();
+    }
+
+    public static boolean hasSubModuleRelation(long parentModuleId, long subModuleId) throws Exception {
+        FacilioModule subModulesRelModule = ModuleFactory.getSubModulesRelModule();
+        FacilioField parentModuleIdField = Constants.getModBean().getField("parentModuleId", subModulesRelModule.getName());
+        FacilioField childModuleIdField = Constants.getModBean().getField("childModuleId", subModulesRelModule.getName());
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(FieldFactory.getSubModuleRelFields())
+                .table(subModulesRelModule.getTableName())
+                .andCondition(CriteriaAPI.getCondition(parentModuleIdField,String.valueOf(parentModuleId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(childModuleIdField,String.valueOf(subModuleId),NumberOperators.EQUALS));
+
+        List<Map<String, Object>> prop = selectBuilder.get();
+
+        return CollectionUtils.isNotEmpty(prop);
+    }
+
+    public static boolean hasSubModuleRelation(String parentModuleName, String subModuleName) throws Exception {
+        if(StringUtils.isNotEmpty(parentModuleName) && StringUtils.isNotEmpty(subModuleName)) {
+            FacilioModule parentModule = Constants.getModBean().getModule(parentModuleName);
+            FacilioModule subModule = Constants.getModBean().getModule(subModuleName);
+
+            long parentModuleId = parentModule != null ? parentModule.getModuleId() : -1L;
+            long subModuleId = subModule != null ? subModule.getModuleId() : -1L;
+
+            if(parentModuleId > 0 && subModuleId > 0) {
+                return hasSubModuleRelation(parentModuleId, subModuleId);
+            }
+        }
+        return false;
     }
 }
