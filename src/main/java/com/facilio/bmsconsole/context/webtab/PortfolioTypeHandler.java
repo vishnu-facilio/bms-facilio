@@ -4,16 +4,18 @@ import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
 public class PortfolioTypeHandler implements WebTabHandler {
     @Override
     public boolean hasPermission(WebTabContext webtab, Map<String, String> parameters, String action) {
-        if(webtab != null && WebTabUtil.isNewPortfolioTab(webtab)) {
+        String tabType = parameters.get("tabType");
+        if(webtab != null && WebTabUtil.isNewPortfolioTab(webtab) && StringUtils.isNotEmpty(tabType) && webtab.getTypeEnum().getName().equalsIgnoreCase(tabType)) {
             return V3PermissionUtil.currentUserHasPermission(webtab.getId(), action);
         }
-        return true;
+        return false;
     }
 
     @Override
