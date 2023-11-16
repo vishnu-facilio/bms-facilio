@@ -8,6 +8,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.FileJWTUtil;
 import com.facilio.bmsconsole.util.ImageScaleUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -659,7 +660,7 @@ public abstract class FileStore {
 	}
 
 	public String getDownloadUrl(long fileId) throws Exception {
-		if(AccountUtil.getCurrentOrg() != null) {
+		if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 			return getUrl (-1, -1, fileId, true, -1, -1,false);
 		}
 		return getUrl(fileId, true, -1, -1);
@@ -1094,7 +1095,7 @@ public abstract class FileStore {
 
 	public String getUrl (String specialTabType, long fileId, boolean isDownload) throws Exception {
 		StringBuilder url = new StringBuilder();
-		if(AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.THROW_403_WEBTAB)) {
+		if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 			if(FacilioProperties.isDevelopment()) {
 				url.append(FacilioProperties.getClientAppUrl());
 			}

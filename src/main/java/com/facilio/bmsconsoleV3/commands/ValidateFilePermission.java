@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WebTabUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -18,7 +19,7 @@ public class ValidateFilePermission extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean validRequest = true;
-        if(AccountUtil.getCurrentOrg() != null) {
+        if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Boolean isModuleFile = (Boolean) context.getOrDefault("isModuleFile", false);
             Long fileId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FILE_ID, -1l);

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WebTabUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -16,7 +17,7 @@ public class ValidateModuleAttachments extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         boolean isValidRequest = true;
-        if(AccountUtil.getCurrentOrg() != null) {
+        if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             isValidRequest = false;
             Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);

@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -99,7 +100,7 @@ public class WidgetAction extends ActionSupport {
 		FileStore fs = FacilioFactory.getFileStore();
 		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
 		String url = null;
-		if(AccountUtil.getCurrentOrg() != null) {
+		if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 			url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD,fileId,false);
 		} else {
 			url = fs.getPrivateUrl(fileId);

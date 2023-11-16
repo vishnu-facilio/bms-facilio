@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -40,7 +41,7 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 //			url = fs.getPrivateUrl(this.parentId);
 //		}
 		if (this.photoId > 0) {
-			if(AccountUtil.getCurrentOrg() != null) {
+			if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 				if(getModuleId() > 0) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = modBean.getModule(getModuleId());

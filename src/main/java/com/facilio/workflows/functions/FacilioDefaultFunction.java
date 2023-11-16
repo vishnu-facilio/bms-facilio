@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.context.InviteVisitorContextV3;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.util.CommunityFeaturesAPI;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
@@ -162,7 +163,7 @@ public class FacilioDefaultFunction  {
 				fileId = (long) Double.parseDouble(objects[0].toString());
 			}
 			String url = null;
-			if (AccountUtil.getCurrentOrg() != null) {
+			if (AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 
 				url = fs.getUrl(FacilioConstants.ContextNames.DASHBOARD, fileId,false);
 			} else {

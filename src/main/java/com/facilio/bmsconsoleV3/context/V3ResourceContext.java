@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.enums.SourceType;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
@@ -85,7 +86,7 @@ public class V3ResourceContext extends V3Context {
 			FileStore fs = FacilioFactory.getFileStore();
 			avatarUrl = fs.getPrivateUrl(this.photoId);
 		}
-		if(AccountUtil.getCurrentOrg() != null) {
+		if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 			FileStore fs = FacilioFactory.getFileStore();
 			if(this.photoId != null) {
 				avatarUrl = fs.getPrivateUrl(-1, -1, this.photoId, false);

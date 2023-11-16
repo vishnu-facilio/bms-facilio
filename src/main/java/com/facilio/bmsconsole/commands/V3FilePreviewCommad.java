@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FileJWTUtil;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -36,7 +37,7 @@ public class V3FilePreviewCommad extends FacilioCommand {
 			Map<String, String> decodedjwtClaims = FileJWTUtil.validateJWT(token);
 			if (decodedjwtClaims != null && !decodedjwtClaims.isEmpty()) {
 				long expiresAt = Long.valueOf(decodedjwtClaims.get("expiresAt"));
-				if(AccountUtil.getCurrentOrg() != null) {
+				if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 					Boolean isModuleFile = Boolean.valueOf(decodedjwtClaims.get("moduleFile"));
 					String specialTabType = String.valueOf(decodedjwtClaims.get(FacilioConstants.ContextNames.WEB_TAB_TYPE));
 					if(isModuleFile != null && isModuleFile) {

@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -888,7 +889,7 @@ public class ViewAction extends FacilioAction {
 	}
 
 	private static boolean isAllowed() throws Exception {
-		if(!AccountUtil.isPrivilegedRole()) {
+		if(V3PermissionUtil.isAllowedEnvironment() && !AccountUtil.isPrivilegedRole()) {
 			return false;
 		}
 		return true;

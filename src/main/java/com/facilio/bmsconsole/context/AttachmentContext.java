@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -109,7 +110,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 				return builder.toString();
 			}
 			FileStore fs = FacilioFactory.getFileStore();
-			if(AccountUtil.getCurrentOrg() != null) {
+			if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 				previewUrl = getFileUrl(false);
 			} else {
 				previewUrl = fs.getPrivateUrl(this.fileId);
@@ -122,7 +123,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 	public String getDownloadUrl() throws Exception {
 		if (this.downloadUrl == null && this.fileId > 0) {
 			FileStore fs = FacilioFactory.getFileStore();
-			if(AccountUtil.getCurrentOrg() != null) {
+			if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 				downloadUrl = getFileUrl(true);
 			} else {
 				downloadUrl = fs.getDownloadUrl(this.fileId);
@@ -160,7 +161,7 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 			FileStore fs = FacilioFactory.getFileStore();
 			originalUrl = fs.orginalFileUrl(this.fileId);
 		}
-		if(AccountUtil.getCurrentOrg() != null) {
+		if(AccountUtil.getCurrentOrg() != null && V3PermissionUtil.isAllowedEnvironment()) {
 			originalUrl = null;
 		}
 		return originalUrl;

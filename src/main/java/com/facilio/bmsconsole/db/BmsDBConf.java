@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.db;
 
+import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import lombok.SneakyThrows;
 
 import com.facilio.accounts.dto.*;
@@ -309,7 +310,7 @@ public class BmsDBConf extends DBConf {
                         Long id = (Long) record.get(field.getName() + "Id");
                         FileInfo info = files.get(id);
                         String url = null,downloadUrl = null;
-                        if( record != null && record.containsKey("id") && record.containsKey("moduleId")) {
+                        if(V3PermissionUtil.isAllowedEnvironment() && record != null && record.containsKey("id") && record.containsKey("moduleId")) {
                             Long recordId = (Long) record.get("id");
                             Long moduleId = (Long) record.get("moduleId");
                             url = fs.getPrivateUrl(moduleId,recordId,id,true);
