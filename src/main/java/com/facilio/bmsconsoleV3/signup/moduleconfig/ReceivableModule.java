@@ -46,6 +46,8 @@ public class ReceivableModule extends BaseModuleConfig{
         returnReceiptButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.RECEIVABLE,returnReceiptButton);
 
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.RECEIVABLE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.RECEIVABLE);
     }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

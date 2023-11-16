@@ -20,6 +20,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -161,8 +162,19 @@ public class SystemButtonApi {
     }
 
     public static void addCreateButton(String moduleName) throws Exception{
+        addCreateButtonWithCustomName(moduleName,"Create");
+    }
+
+    public static void addCreateButtonWithModuleDisplayName(String moduleName) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        FacilioUtil.throwIllegalArgumentException(module == null,"Module cannot be null");
+        addCreateButtonWithCustomName(moduleName, "New " + module.getDisplayName());
+    }
+
+    public static void addCreateButtonWithCustomName(String moduleName , String btnDisPlayName) throws Exception{
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName(btnDisPlayName);
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

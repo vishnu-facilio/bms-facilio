@@ -40,14 +40,13 @@ public class SafetyPlanModule extends BaseModuleConfig{
         addHazard.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SAFETY_PLAN,addHazard);
 
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SAFETY_PLAN,edit);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.SAFETY_PLAN);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.SAFETY_PLAN);
     }
 
     @Override

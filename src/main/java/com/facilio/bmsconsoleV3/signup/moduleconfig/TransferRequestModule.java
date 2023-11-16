@@ -89,7 +89,7 @@ public class TransferRequestModule extends BaseModuleConfig{
         SystemButtonRuleContext edit = new SystemButtonRuleContext();
         edit.setName("Edit");
         edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
+        edit.setIdentifier("edit_summary");
         edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         edit.setPermissionRequired(true);
@@ -98,6 +98,11 @@ public class TransferRequestModule extends BaseModuleConfig{
         edit.setCriteria(editBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,edit);
 
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.TRANSFER_REQUEST);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.TRANSFER_REQUEST);
     }
 
     @Override

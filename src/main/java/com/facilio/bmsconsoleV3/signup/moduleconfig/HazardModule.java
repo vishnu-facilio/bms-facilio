@@ -29,14 +29,13 @@ public class HazardModule extends BaseModuleConfig{
         addSystemButtons();
     }
     public static void addSystemButtons() throws Exception {
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.HAZARD,edit);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.HAZARD);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.HAZARD);
     }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

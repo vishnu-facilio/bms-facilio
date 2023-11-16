@@ -29,14 +29,13 @@ public class PrecautionModule extends BaseModuleConfig{
         addSystemButtons();
     }
     public static void addSystemButtons() throws Exception {
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PRECAUTION,edit);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.PRECAUTION);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.PRECAUTION);
     }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

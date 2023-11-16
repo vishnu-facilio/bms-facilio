@@ -1,11 +1,8 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
-import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseFieldContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
-import com.facilio.bmsconsole.TemplatePages.PurchaseOrderTemplatePage;
 import com.facilio.bmsconsole.TemplatePages.PurchaseRequestTemplatePage;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -20,9 +17,6 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -43,6 +37,10 @@ public class PurchaseRequestModule extends BaseModuleConfig{
     }
 
     public static void addSystemButtons() throws Exception {
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
         SystemButtonRuleContext convertToRfq = new SystemButtonRuleContext();
         convertToRfq.setName("Convert to RFQ");
@@ -72,14 +70,27 @@ public class PurchaseRequestModule extends BaseModuleConfig{
         associateTerms.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_REQUEST,associateTerms);
 
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_REQUEST,edit);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.PURCHASE_REQUEST);
+
+        SystemButtonRuleContext convertPrToPoBulkAction = new SystemButtonRuleContext();
+        convertPrToPoBulkAction.setName("CONVERT PR(S) TO PO");
+        convertPrToPoBulkAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        convertPrToPoBulkAction.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        convertPrToPoBulkAction.setIdentifier("convert_prs_po");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_REQUEST, convertPrToPoBulkAction);
+
+        SystemButtonRuleContext convertPrsToRfqBulkAction = new SystemButtonRuleContext();
+        convertPrsToRfqBulkAction.setName("CONVERT PR(S) TO RFQ");
+        convertPrsToRfqBulkAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        convertPrsToRfqBulkAction.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        convertPrsToRfqBulkAction.setIdentifier("convert_prs_rfq");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_REQUEST, convertPrsToRfqBulkAction);
 
     }
 

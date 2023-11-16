@@ -428,7 +428,7 @@
 
                 <property name="password" type="string"/>
 
-                <property name="port" type="string"/>
+                <property name="port" type="number"/>
 
                 <property name="replyName" type="string"/>
 
@@ -460,7 +460,7 @@
 
                 <property name="id" type="number"/>
 
-                <property name="isCustomMail" type="string"/>
+                <property name="isCustomMail" type="boolean"/>
 
                 <property name="latestMessageUID" type="number"/>
 
@@ -468,7 +468,7 @@
 
                 <property name="orgId" type="number"/>
 
-                <property name="port" type="string"/>
+                <property name="port" type="number"/>
 
                 <property name="primarySupportMail" type="boolean"/>
 

@@ -291,14 +291,13 @@ public class AddControlActionModule extends SignUpData {
         publishControlAction.setCriteria(publishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,publishControlAction);
 
-        SystemButtonRuleContext editRecord = new SystemButtonRuleContext();
-        editRecord.setName("Edit");
-        editRecord.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editRecord.setIdentifier("edit");
-        editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//        editRecord.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-//        editRecord.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,editRecord);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addListEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
 
     }
 

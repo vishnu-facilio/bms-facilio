@@ -120,9 +120,9 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,discardRfqBtn);
 
         SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
+        edit.setName("Edit Rfq");
         edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
+        edit.setIdentifier("edit_summary");
         edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         edit.setPermissionRequired(true);
@@ -131,6 +131,11 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         edit.setCriteria(editBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,edit);
 
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION );
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
 
     }
 

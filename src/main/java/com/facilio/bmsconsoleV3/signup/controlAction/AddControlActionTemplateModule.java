@@ -116,12 +116,14 @@ public class AddControlActionTemplateModule extends SignUpData {
         inactivateControlActionTemplate.setCriteria(unPublishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,inactivateControlActionTemplate);
 
-        SystemButtonRuleContext editRecord = new SystemButtonRuleContext();
-        editRecord.setName("Edit");
-        editRecord.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editRecord.setIdentifier("edit");
-        editRecord.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,editRecord);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , "New Template");
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        SystemButtonApi.addListEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+
     }
     public void addNightlyJob() throws Exception {
 

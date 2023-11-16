@@ -5,8 +5,11 @@ import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -18,6 +21,10 @@ import java.util.*;
 public class CalendarEventModule extends BaseModuleConfig{
     public CalendarEventModule() throws Exception{
         setModuleName(FacilioConstants.Calendar.EVENT_MODULE_NAME);
+    }
+    @Override
+    public void addData() throws Exception {
+         addSystemButtons();
     }
     public List<FacilioForm> getModuleForms() throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -42,6 +49,12 @@ public class CalendarEventModule extends BaseModuleConfig{
         defaultEventForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(defaultEventForm);
+    }
+    public static void addSystemButtons() throws Exception {
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.Calendar.EVENT_MODULE_NAME);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Calendar.EVENT_MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Calendar.EVENT_MODULE_NAME);
+        SystemButtonApi.addListEditButton(FacilioConstants.Calendar.EVENT_MODULE_NAME);
     }
     public List<Map<String, Object>> getViewsAndGroups() throws Exception{
         List<Map<String, Object>> groupVsViews = new ArrayList<>();

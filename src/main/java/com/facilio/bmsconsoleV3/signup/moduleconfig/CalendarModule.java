@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -21,6 +22,9 @@ import java.util.*;
 public class CalendarModule extends BaseModuleConfig{
     public CalendarModule() throws Exception{
         setModuleName(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+    }
+    public void addData() throws Exception {
+        addSystemButtons();
     }
     public List<FacilioForm> getModuleForms() throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -51,7 +55,14 @@ public class CalendarModule extends BaseModuleConfig{
         defaultCalendarForm.setType(FacilioForm.Type.FORM);
         return Collections.singletonList(defaultCalendarForm);
     }
-
+    public static void addSystemButtons() throws Exception {
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        SystemButtonApi.addListEditButton(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+    }
     public List<Map<String, Object>> getViewsAndGroups() throws Exception{
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
         Map<String, Object> groupDetails;
