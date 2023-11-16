@@ -255,7 +255,7 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
         if (diagramBuilder != null) {
             JSONObject diagramJson = new JSONObject();
             String version = diagramBuilder.getElement("Version").getText();
-            String zoom = diagramBuilder.getElement("Zoom").getText();
+            String zoomStr = diagramBuilder.getElement("Zoom").getText();
             XMLBuilder statesBuilder = diagramBuilder.getElement("States");
             List<XMLBuilder> stateBuilder = statesBuilder.getElementList("State");
             List<Map<String,Object>> stateArray = new ArrayList<>();
@@ -292,6 +292,8 @@ public class StateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext
 
             diagramJson.put("states", stateArray);
             diagramJson.put("version", version);
+
+            Double zoom = StringUtils.isNotEmpty(zoomStr) ? Double.parseDouble(zoomStr) : 1;
             diagramJson.put("zoom", zoom);
 
             diagramString = diagramJson.toString();

@@ -3,6 +3,7 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.bmsconsole.calendarview.CalendarViewContext;
 import com.facilio.componentpackage.interfaces.PackageBean;
@@ -510,7 +511,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
 
         // View Sharing
         if (sharingElement != null) {
-            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement);
+            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement, SingleSharingContext.class);
             view.setViewSharing(sharingContexts);
         }
 

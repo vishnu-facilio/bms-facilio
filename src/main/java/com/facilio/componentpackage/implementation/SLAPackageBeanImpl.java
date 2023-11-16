@@ -700,6 +700,12 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
             escalations.add(escalation);
         }
 
+        XMLBuilder criteriaElement = builder.getElement(PackageConstants.CriteriaConstants.CRITERIA);
+        if (criteriaElement != null){
+            Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
+            slapolicy.setCriteria(criteria);
+        }
+
         slapolicy.setName(name);
         slapolicy.setModuleName(moduleName);
         slapolicy.setModule(module);

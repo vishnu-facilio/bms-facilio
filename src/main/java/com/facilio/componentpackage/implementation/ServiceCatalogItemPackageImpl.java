@@ -283,7 +283,7 @@ public class ServiceCatalogItemPackageImpl implements PackageBean<ServiceCatalog
         XMLBuilder sharingElement = element.getElement(PackageConstants.ServiceCatalogConstants.SHARING);
 
         if (sharingElement != null) {
-            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement);
+            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement, SingleSharingContext.class);
             catalogContext.setSharing(sharingContexts);
         }
 

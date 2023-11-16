@@ -442,7 +442,7 @@ public class FormPackageBeanImpl implements PackageBean<FacilioForm> {
         // Form Sharing
         XMLBuilder sharingElement = formElement.getElement(PackageConstants.FormXMLComponents.FORM_SHARING);
         if (sharingElement != null) {
-            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement);
+            SharingContext<SingleSharingContext> sharingContexts = PackageBeanUtil.constructSharingContextFromBuilder(sharingElement, SingleSharingContext.class);
             form.setFormSharing(sharingContexts);
         }
 

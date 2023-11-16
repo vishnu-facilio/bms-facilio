@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.utils;
 
+import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -819,7 +820,7 @@ public class PackageBeanUtil {
         return FieldUtil.getAsBeanListFromMapList(props, Role.class);
     }
 
-    public static void constructBuilderFromSharingContext(SharingContext<SingleSharingContext> sharingContext, XMLBuilder sharingElement) throws Exception {
+    public static <T extends SingleSharingContext> void constructBuilderFromSharingContext(SharingContext<T> sharingContext, XMLBuilder sharingElement) throws Exception {
         if (CollectionUtils.isEmpty(sharingContext)) {
             return;
         }
@@ -830,6 +831,8 @@ public class PackageBeanUtil {
         if (CollectionUtils.isNotEmpty(allRoles)) {
             roleIdVsRoleName = allRoles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
         }
+
+        ModuleBean modBean = Constants.getModBean();
 
         XMLBuilder sharingContextElement = sharingElement.element(PackageConstants.SharingContextConstants.SHARING_CONTEXT);
         for (SingleSharingContext singleSharingContext : sharingContext) {
@@ -845,7 +848,27 @@ public class PackageBeanUtil {
                     break;
 
                 case GROUP:
+                    long groupId = singleSharingContext.getGroupId();
+                     Group group = AccountUtil.getGroupBean().getGroup(groupId);
+                     if (group != null) {
+                         singleSharingElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
+                     }
+                    break;
 
+                case FIELD:
+                case TENANT:
+                case VENDOR:
+                    long fieldId = singleSharingContext.getFieldId();
+                    FacilioField field = modBean.getField(fieldId);
+                    if (field != null) {
+                        singleSharingElement.element(PackageConstants.FIELDNAME).text(field.getName());
+                        singleSharingElement.element(PackageConstants.FIELD_MODULE_NAME).text(field.getModule().getName());
+                    }
+                    break;
+
+                case APP:
+                    int appType = singleSharingContext.getAppType();
+                    singleSharingElement.element(PackageConstants.AppXMLConstants.APP_TYPE).text(String.valueOf(appType));
                     break;
 
                 default:
@@ -854,7 +877,7 @@ public class PackageBeanUtil {
         }
     }
 
-    public static SharingContext<SingleSharingContext> constructSharingContextFromBuilder(XMLBuilder sharingElement) throws Exception {
+    public static <T extends SingleSharingContext> SharingContext<T> constructSharingContextFromBuilder(XMLBuilder sharingElement, Class<? extends T> clazz) throws Exception {
         XMLBuilder sharingContextElement = sharingElement.getElement(PackageConstants.SharingContextConstants.SHARING_CONTEXT);
         if (sharingContextElement == null) {
             return null;
@@ -867,14 +890,15 @@ public class PackageBeanUtil {
             roleNameVsRoleId = allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId, (a, b) -> b));
         }
 
-        SharingContext<SingleSharingContext> sharingContexts = new SharingContext<>();
+        ModuleBean modBean = Constants.getModBean();
+        SharingContext<T> sharingContexts = new SharingContext<>();
 
         List<XMLBuilder> singleSharingElementsList = sharingContextElement.getElementList(PackageConstants.SharingContextConstants.SINGLE_SHARING_CONTEXT);
         for (XMLBuilder singleSharingElement : singleSharingElementsList) {
             String sharingTypeStr = singleSharingElement.getElement(PackageConstants.SharingContextConstants.SHARING_TYPE).text();
             SingleSharingContext.SharingType sharingType = SingleSharingContext.SharingType.valueOf(sharingTypeStr);
 
-            SingleSharingContext singleSharingContext = new SingleSharingContext();
+            T singleSharingContext = clazz.getDeclaredConstructor().newInstance();
             singleSharingContext.setType(sharingType);
 
             switch (sharingType) {
@@ -891,7 +915,25 @@ public class PackageBeanUtil {
                     break;
 
                 case GROUP:
+                    String groupName = singleSharingElement.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
 
+                    Group group = AccountUtil.getGroupBean().getGroup(groupName);
+                    singleSharingContext.setGroupId(group != null ? group.getId() : -1);
+                    break;
+
+                case FIELD:
+                case TENANT:
+                case VENDOR:
+                    String fieldName = singleSharingElement.getElement(PackageConstants.FIELDNAME).getText();
+                    String moduleName = singleSharingElement.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
+
+                    FacilioField field = modBean.getField(fieldName, moduleName);
+                    singleSharingContext.setFieldId(field != null ? field.getFieldId() : -1);
+                    break;
+
+                case APP:
+                    int appType = Integer.parseInt(singleSharingElement.getElement(PackageConstants.AppXMLConstants.APP_TYPE).getText());
+                    singleSharingContext.setAppType(appType);
                     break;
 
                 default:
