@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.modules.FacilioIntEnum;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -83,6 +84,16 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	}
 	public void setSpace(SpaceContext space) {
 		this.space = space;
+	}
+
+	private V3MeterContext meter;
+
+	public V3MeterContext getMeter() {
+		return meter;
+	}
+
+	public void setMeter(V3MeterContext meter) {
+		this.meter = meter;
 	}
 
 	public enum TaskStatus {

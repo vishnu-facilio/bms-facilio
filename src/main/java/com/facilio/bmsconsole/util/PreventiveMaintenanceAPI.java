@@ -237,7 +237,13 @@ public class PreventiveMaintenanceAPI {
 			reading.setId(oldTask.getReadingDataId());
 			reading.addReading(field.getName(), newTask.getInputValue());
 			reading.setTtime(newTask.getInputTime());
-			long resourceId = oldTask.getResource().getId();
+			long resourceId;
+			if(oldTask.getMeter() != null){
+				resourceId = oldTask.getMeter().getId();
+			}
+			else{
+				resourceId = oldTask.getResource().getId();
+			}
 			reading.setParentId(resourceId);
 			if (oldTask.getLastReading() == null) {
 				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, field);
