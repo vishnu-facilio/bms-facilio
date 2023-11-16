@@ -46,7 +46,7 @@ public class UpdateNamespaceCommand extends FacilioCommand {
 
     private void updateNamespace() throws Exception {
         if (ns != null) {
-            Constants.getNsBean().updateNamespace(ns, resourceType);
+            Constants.getNsBean().updateNamespace(ns);
         }
     }
 }

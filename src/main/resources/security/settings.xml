@@ -2465,7 +2465,11 @@
     </request>
 
     <request path="/api/v1/setup/faultImpact">
-        <requestbody type="object"/>
+        <property name="page" type="number"/>
+        <property name="perPage" type="number"/>
+        <property name="moduleName" type="string"/>
+        <property name="viewName" type="string"/>
+        <property name="force" type="false"/>
     </request>
     <request path="/api/v1/setup/commentPreferences/update" method="POST">
         <requestbody type="object">
