@@ -868,9 +868,9 @@
 				class="com.facilio.relation.action.RelationAction" method="fetchRelations" >
 			<param name="deprecated">true</param>
 		</action>
-		<action name="fetchMeterRelations"
+		<action name="fetchMeterRelations/*"
 				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" >
-			<param name="moduleName">meter</param>
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ</param>
 		</action>
 	</package>

@@ -4236,7 +4236,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/relation/fetchMeterRelations" method="GET">
+    <request path="/api/v2/relation/fetchMeterRelations/:moduleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
         </urlparams>
