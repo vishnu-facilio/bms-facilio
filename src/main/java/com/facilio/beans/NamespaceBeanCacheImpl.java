@@ -61,8 +61,8 @@ public class NamespaceBeanCacheImpl extends NamespaceBeanImpl implements Namespa
     }
 
     @Override
-    public void updateNamespace(NameSpaceContext ns,ResourceType resourceType) throws Exception {
-        super.updateNamespace(ns,resourceType);
+    public void updateNamespace(NameSpaceContext ns) throws Exception {
+        super.updateNamespace(ns);
 
         FacilioCache<String, NameSpaceCacheContext> nameSpaceCache = LRUCache.getNameSpaceCache();
         nameSpaceCache.remove(CacheUtil.NAMESPACE_KEY(AccountUtil.getCurrentOrg().getId(), ns.getId()));

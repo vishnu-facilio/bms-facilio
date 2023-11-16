@@ -117,7 +117,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
     }
 
     @Override
-    public void updateNamespace(NameSpaceContext ns, ResourceType resourceType) throws Exception {
+    public void updateNamespace(NameSpaceContext ns) throws Exception {
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .fields(NamespaceModuleAndFieldFactory.getNamespaceFields())
                 .table(NamespaceModuleAndFieldFactory.getNamespaceModule().getTableName())
@@ -125,7 +125,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
         updateBuilder.update(FieldUtil.getAsProperties(ns));
 
         addNamespaceFields(ns.getId(), ns.getFields());
-        updateNamespaceInclusions(ns,resourceType);
+        updateNamespaceInclusions(ns);
     }
 
 
@@ -215,7 +215,7 @@ public class NamespaceBeanImpl implements NamespaceBean {
     }
 
 
-    private void updateNamespaceInclusions(NameSpaceContext ns,ResourceType resourceType) throws Exception {
+    private void updateNamespaceInclusions(NameSpaceContext ns) throws Exception {
         List<Long> includedAssetIds = ns.getIncludedAssetIds();
         if (CollectionUtils.isEmpty(includedAssetIds)) {
             NamespaceAPI.deleteExistingInclusionRecords(ns);

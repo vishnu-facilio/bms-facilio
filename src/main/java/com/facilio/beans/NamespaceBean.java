@@ -16,7 +16,7 @@ public interface NamespaceBean {
 
     Long addNamespace(NameSpaceContext ns,ResourceType resourceType) throws Exception;
 
-    void updateNamespace(NameSpaceContext ns, ResourceType resourceType) throws Exception;
+    void updateNamespace(NameSpaceContext ns) throws Exception;
 
     void updateNsStatus(Long ruleId, boolean status, List<NSType> nsList) throws Exception;
 
