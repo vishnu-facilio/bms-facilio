@@ -8,6 +8,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -86,45 +87,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
             element.element(PackageConstants.WorkFlowRuleConstants.ALL_APPROVAL_REQUIRED).text(String.valueOf(((ApproverWorkflowRuleContext) stateflowTransition).getAllApprovalRequired()));
         }
         if (((ApproverWorkflowRuleContext) stateflowTransition).getApprovers() != null){
-            XMLBuilder approverList = element.element(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST);
-            XMLBuilder approverElement = approverList.element(PackageConstants.WorkFlowRuleConstants.APPROVERS);
-            SharingContext<ApproverContext> approvers = ((StateflowTransitionContext) stateflowTransition).getApprovers();
-            for (ApproverContext approverContext : approvers) {
-                approverElement.element(PackageConstants.WorkFlowRuleConstants.TYPE).text(String.valueOf(approverContext.getType()));
-                switch (approverContext.getTypeEnum()) {
-                    case USER:
-                        long userId = approverContext.getUserId();
-                        User user = AccountUtil.getUserBean().getUser(userId, true);
-                        if (user != null) {
-                            approverElement.element(PackageConstants.WorkFlowRuleConstants.USERNAME).text(user.getName());
-                        }
-                        break;
-                    case ROLE:
-                        long roleId = approverContext.getRoleId();
-                        Role role = AccountUtil.getRoleBean().getRole(roleId);
-                        if (role != null) {
-                            approverElement.element(PackageConstants.WorkFlowRuleConstants.ROLENAME).text(role.getName());
-                        }
-                        break;
-                    case GROUP:
-                        long groupId = approverContext.getGroupId();
-                        Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                        if (group != null) {
-                            approverElement.element(PackageConstants.WorkFlowRuleConstants.GROUP_NAME).text(group.getName());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        long fieldId = approverContext.getFieldId();
-                        FacilioField field = moduleBean.getField(fieldId);
-                        if (field != null) {
-                            approverElement.element(PackageConstants.CriteriaConstants.FIELD_NAME).text(field.getName());
-                            approverElement.element(PackageConstants.WorkFlowRuleConstants.FIELD_MODULENAME).text(field.getModule().getName());
-                        }
-                        break;
-                }
-            }
+            PackageBeanUtil.constructBuilderFromSharingContext(((AbstractStateTransitionRuleContext) stateflowTransition).getApprovers(),element.element(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST));
         }
         if (((AbstractStateTransitionRuleContext) stateflowTransition).getButtonType() > 0){
             element.element(PackageConstants.WorkFlowRuleConstants.BUTTON_TYPE).text(String.valueOf(((AbstractStateTransitionRuleContext) stateflowTransition).getButtonType()));
@@ -323,53 +286,9 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
 
         XMLBuilder approverList = builder.getElement(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST);
         if (approverList != null) {
-            List<XMLBuilder> approverElement = approverList.getElementList(PackageConstants.WorkFlowRuleConstants.APPROVERS);
-            SharingContext<ApproverContext> approverContextList = new SharingContext<>();
-            for (XMLBuilder approver : approverElement) {
-                ApproverContext approverContext = new ApproverContext();
-                int approverType = Integer.parseInt(approver.getElement(PackageConstants.WorkFlowRuleConstants.TYPE).getText());
-                approverContext.setType(approverType);
-                switch (approverContext.getTypeEnum()) {
-                    case USER:
-                        if (approver.getElement(PackageConstants.WorkFlowRuleConstants.USERNAME) != null) {
-                            String userName = approver.getElement(PackageConstants.WorkFlowRuleConstants.USERNAME).getText();
-                            long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-                            User user = AccountUtil.getUserBean().getAppUserForUserName(userName, appId, AccountUtil.getCurrentOrg().getOrgId());
-                            if (user != null) approverContext.setUserId(user.getOuid());
-                        }
-                        break;
-                    case GROUP:
-                        if (approver.getElement(PackageConstants.WorkFlowRuleConstants.GROUP_NAME) != null) {
-                            String groupName = approver.getElement(PackageConstants.WorkFlowRuleConstants.GROUP_NAME).getText();
-                            Group group = AccountUtil.getGroupBean().getGroup(groupName);
-                            if (group != null) approverContext.setGroupId(group.getGroupId());
-                        }
-                        break;
-                    case ROLE:
-                        if (approver.getElement(PackageConstants.WorkFlowRuleConstants.ROLENAME) != null) {
-                            String roleName = approver.getElement(PackageConstants.WorkFlowRuleConstants.ROLENAME).getText();
-                            Role role = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), roleName);
-                            if (role != null) approverContext.setRoleId(role.getRoleId());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        if (approver.getElement(PackageConstants.CriteriaConstants.FIELD_NAME) != null) {
-                            String fieldName = approver.getElement(PackageConstants.CriteriaConstants.FIELD_NAME).getText();
-                            String fieldModuleName = approver.getElement(PackageConstants.WorkFlowRuleConstants.FIELD_MODULENAME).getText();
-                            FacilioField field = moduleBean.getField(fieldName, fieldModuleName);
-                            if (field != null) {
-                                approverContext.setFieldId(field.getFieldId());
-                            }
-                        }
-                        break;
-                }
-                approverContextList.add(approverContext);
-            }
-            stateflowTransition.setApprovers(approverContextList);
+            SharingContext<ApproverContext> approverContexts = PackageBeanUtil.constructSharingContextFromBuilder(approverList, ApproverContext.class);
+            stateflowTransition.setApprovers(approverContexts);
         }
-
 
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.BUTTON_TYPE) != null){
             int buttonType = Integer.parseInt(builder.getElement(PackageConstants.WorkFlowRuleConstants.BUTTON_TYPE).getText());

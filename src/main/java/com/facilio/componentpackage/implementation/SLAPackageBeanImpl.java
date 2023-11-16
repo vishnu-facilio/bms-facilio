@@ -13,7 +13,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -21,8 +23,10 @@ import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
@@ -179,6 +183,20 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                             }
                             Criteria expresionCriteria = FieldUtil.getAsBeanFromJson(expressionSimple, Criteria.class);
                             expressionElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(expresionCriteria, actionElements.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
+                            Map<String, Condition> conditions = expresionCriteria.getConditions();
+                            XMLBuilder ouidListElement = expressionElement.element("OuidList");
+                            for (String key : conditions.keySet()) {
+                                Condition condition = conditions.get(key);
+                                if (condition.getFieldName().equals("ouid")){
+                                    String[] ouids = condition.getValue().trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
+                                    for (String str : ouids) {
+                                        XMLBuilder ouid = ouidListElement.element("Ouid");
+                                        Long ouidLong = Long.parseLong(str);
+                                        PackageBeanUtil.userXMLBuilder(ouid, ouidLong);
+                                    }
+                                }
+                            }
+
                         }
                         if (StringUtils.isNotEmpty(aggregateString)){
                             expressionElement.element("AggregateString").text(aggregateString);
@@ -304,7 +322,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                         }
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
                         String moduleName = (String) ((JSONObject) obj.get("notification")).get("module_name");
-                        long parentModuleId = moduleBean.getModule(moduleName).getModuleId();
+                        long parentModuleId = StringUtils.isNotEmpty(moduleName) ? moduleBean.getModule(moduleName).getModuleId() : moduleBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION).getModuleId();
                         userNotification.setParentModule(parentModuleId);
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
@@ -378,6 +396,19 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                                 XMLBuilder criteriaElement = expression.getElement(PackageConstants.CriteriaConstants.CRITERIA);
                                 if (criteriaElement != null){
                                     Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
+                                    XMLBuilder ouidList = expression.getElement("OuidList");
+                                    List<XMLBuilder> ouids = ouidList.getElementList("Ouid");
+                                    List<Long> ouIds = new ArrayList<>();
+                                    for (XMLBuilder ouid : ouids){
+                                        ouIds.add(PackageBeanUtil.userValueBuilder(ouid));
+                                    }
+                                    String ouidString = StringUtils.join(ouIds,',');
+                                    for (String key : criteria.getConditions().keySet()) {
+                                        Condition condition = criteria.getConditions().get(key);
+                                        if (condition.getFieldName().equals("ouid")){
+                                            condition.setValue(ouidString);
+                                        }
+                                    }
                                     expressionProps.put("criteria",criteria);
                                 }
                                 expressionArray.add(expressionProps);

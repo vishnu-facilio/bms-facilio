@@ -1171,7 +1171,7 @@ public class PackageBeanUtil {
                         JSONObject obj = ((PushNotificationTemplate) templateContext).getOriginalTemplate();
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
                         String moduleName = (String) ((JSONObject)obj.get("notification")).get("module_name");
-                        long parentModuleId = moduleBean.getModule(moduleName).getModuleId();
+                        long parentModuleId = StringUtils.isNotEmpty(moduleName) ? moduleBean.getModule(moduleName).getModuleId() : moduleBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION).getModuleId();
                         userNotification.setParentModule(parentModuleId);
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
