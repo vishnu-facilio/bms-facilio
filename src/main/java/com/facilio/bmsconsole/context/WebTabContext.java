@@ -316,7 +316,8 @@ public class WebTabContext implements Serializable {
         FSM_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),//107
         SKILLS("Skills",false,TabType.SETUP,new SetupTypeHandler()),//108
         FSM_GENERAL_SETTINGS("General Settings",false,TabType.SETUP,new SetupTypeHandler()),//109
-        SFG_20("SFG 20",false,TabType.SETUP,new SetupTypeHandler()); //110
+        SFG_20("SFG 20",false,TabType.SETUP,new SetupTypeHandler()), //110
+        WEAVE("Weave",false,TabType.SETUP,new SetupTypeHandler()); //111
         public void setName(String name) {
             this.name = name;
         }

@@ -3252,6 +3252,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
+            webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
             groupNameVsWebTabsMap.put("automation", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Automation Plus", "automationplus", layout.getId(), 206, groupOrder++));
@@ -3426,6 +3427,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
             webTabs.add(new WebTabContext("SLA Policies", "slapolicies", WebTabContext.Type.SLA_POLICIES, null, appId, null));
+            webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
 
 
             groupNameVsWebTabsMap.put("automation", webTabs);
@@ -3559,6 +3561,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
+            webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
 
             groupNameVsWebTabsMap.put("automation", webTabs);
 
@@ -3680,6 +3683,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
+            webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
 
             groupNameVsWebTabsMap.put("automations", webTabs);
 
@@ -4129,6 +4133,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Notifications", "notifications", WebTabContext.Type.NOTIFICATIONS, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
+            webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
             groupNameVsWebTabsMap.put("automation", webTabs);
 
 
