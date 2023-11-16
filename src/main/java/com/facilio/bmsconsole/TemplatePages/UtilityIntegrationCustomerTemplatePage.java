@@ -97,7 +97,7 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        FacilioField nameField = moduleBean.getField("id", moduleName);
+
         FacilioField phoneField = moduleBean.getField("name", moduleName);
         FacilioField emailField = moduleBean.getField("noOfConnections", moduleName);
         FacilioField createdField = moduleBean.getField("sysCreatedTime", moduleName);
@@ -110,10 +110,10 @@ public class UtilityIntegrationCustomerTemplatePage implements TemplatePageFacto
 
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
 
-        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 1, 4, 1);
+
+        addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, supplier, 1, 3, 1);
 
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");

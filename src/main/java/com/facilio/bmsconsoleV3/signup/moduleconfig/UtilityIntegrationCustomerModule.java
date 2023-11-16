@@ -78,7 +78,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
 
-        FacilioModule module = new FacilioModule("utilityIntegrationCustomer", "Utility Integration Customer", "Utility_Integration_Customer",FacilioModule.ModuleType.BASE_ENTITY);
+        FacilioModule module = new FacilioModule("utilityIntegrationCustomer", "Utility Account", "Utility_Integration_Customer",FacilioModule.ModuleType.BASE_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
 
