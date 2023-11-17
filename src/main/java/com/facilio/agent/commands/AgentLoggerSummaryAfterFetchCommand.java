@@ -39,14 +39,15 @@ public class AgentLoggerSummaryAfterFetchCommand extends FacilioCommand {
             scopeVsParentIds.computeIfAbsent(scopeIntVal, k -> new HashSet<>()).add(resourceId);
         }
 
-        scopeVsParentIds.forEach((scope, parentIds) -> {
+        scopeVsParentIds.forEach((scopeIntval, parentIds) -> {
             Map<Long, String> pickList = null;
+            ResourceType scope = ResourceType.valueOf(scopeIntval);
             try {
-                pickList = CommissioningApi.getParent(parentIds, ResourceType.valueOf(scope).getModuleName());
+                  pickList = scope.getScopeHandler().getParent(parentIds);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-            resourceMap.put(scope, pickList);
+            resourceMap.put(scopeIntval, pickList);
         });
 
 

@@ -146,18 +146,8 @@ public class ExportPointsCommandV2 extends FacilioCommand {
 
     }
     private void addCommissionedDetails(Set<Long> resourceIds ,Set<Long> categoryIds , List<ModuleBaseWithCustomFields>records , ResourceType resourceType) throws Exception{
-        Map<Long, String> categoryMap = new HashMap<>();
-        Map<Long,String> resourceMap = new HashMap<>();
-        switch (resourceType){
-            case ASSET_CATEGORY:
-                categoryMap = CommissioningApi.getParent(categoryIds,"assetCategory");
-                resourceMap = CommissioningApi.getParent(resourceIds,resourceType.getModuleName());
-                break;
-            case METER_CATEGORY:
-                categoryMap = CommissioningApi.getParent(categoryIds,"utilitytype");
-                resourceMap = CommissioningApi.getParent(resourceIds,resourceType.getModuleName());
-                break;
-        }
+        Map<Long, String> categoryMap = resourceType.getScopeHandler().getChildTypes(categoryIds);
+        Map<Long,String> resourceMap = resourceType.getScopeHandler().getParent(resourceIds);
         for (ModuleBaseWithCustomFields record : records){
             Map<String,Object> point = record.getData();
             Long resourceId = (Long) point.get(AgentConstants.RESOURCE_ID);

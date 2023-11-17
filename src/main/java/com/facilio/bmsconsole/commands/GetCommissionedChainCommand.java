@@ -45,11 +45,9 @@ public class GetCommissionedChainCommand extends FacilioCommand {
 
             scopeVsParentIds.forEach((scopeIntVal, parentIds) -> {
                 Map<Long, String> pickList = null;
+                ResourceType scope = ResourceType.valueOf(scopeIntVal);
                 try {
-                    pickList = CommissioningApi.getParent(
-                            parentIds,
-                            ResourceType.valueOf(scopeIntVal).getModuleName()
-                    );
+                    pickList = scope.getScopeHandler().getParent(parentIds);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

@@ -380,13 +380,9 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 	}
 	
 	private void handleConnectionStatus(Set<Long> connectedIds, Set<Long> unmappedIds,ResourceType scope) throws Exception {
-		
+
 		if (!connectedIds.isEmpty()) {
-			if (scope == null || scope.equals(ResourceType.ASSET_CATEGORY)){
-				AssetsAPI.updateAssetConnectionStatus(connectedIds, true);
-			} else if (scope.equals(ResourceType.METER_CATEGORY)) {
-				MetersAPI.updateMeterConnectionStatus(connectedIds,true);
-			}
+			scope.getScopeHandler().updateConnectionStatus(connectedIds,true);
 		}
 		
 		unmappedIds.removeAll(connectedIds);
@@ -410,11 +406,7 @@ public class PublishCommissioningCommand extends FacilioCommand implements PostT
 				unmappedIds.removeAll(mappedAssetIds);
 			}
 			if (!unmappedIds.isEmpty()) {
-				if (scope == null || scope.equals(ResourceType.ASSET_CATEGORY)){
-					AssetsAPI.updateAssetConnectionStatus(unmappedIds, false);
-				} else if (scope.equals(ResourceType.METER_CATEGORY)) {
-					MetersAPI.updateMeterConnectionStatus(unmappedIds,false);
-				}
+				scope.getScopeHandler().updateConnectionStatus(unmappedIds,false);
 			}
 		}
 	}

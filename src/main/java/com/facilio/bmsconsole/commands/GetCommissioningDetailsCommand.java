@@ -157,10 +157,9 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		return point;
 	}
 
-	private void setResources(Set<Long> resourceIds, Context context,ResourceType scope) throws Exception {
-		if (!resourceIds.isEmpty()) {
-			String moduleName = scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? ContextNames.RESOURCE : FacilioConstants.Meter.METER;
-			Map<Long, String> resources = CommissioningApi.getParent(resourceIds,moduleName);
+	private void setResources(Set<Long> ids, Context context,ResourceType scope) throws Exception {
+		if (!ids.isEmpty()) {
+			Map<Long, String> resources = scope.getScopeHandler().getParent(ids);
 			context.put(ContextNames.RESOURCE_LIST, resources);
 		}
 	}
@@ -174,7 +173,8 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 
 	private void setHeaders(CommissioningLogContext log) {
 		List<Map<String, Object>> headers = new ArrayList<>();
-		ResourceType scope = ResourceType.valueOf(log.getReadingScope());;
+
+		ResourceType scope = ResourceType.valueOf(log.getReadingScope());
 
 		Map<String, Object> header = new HashMap<>();
 		header.put("name", AgentConstants.NAME);
@@ -194,13 +194,13 @@ public class GetCommissioningDetailsCommand extends FacilioCommand {
 		header = new HashMap<>();
 		header.put("name", AgentConstants.ASSET_CATEGORY_ID);
 		header.put("editable", true);
-		header.put("header",scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? "Category":"Utility");
+		header.put("header",scope.getScopeHandler().getTypeDisplayName());
 		headers.add(header);
 
 		header = new HashMap<>();
 		header.put("name", AgentConstants.RESOURCE_ID);
 		header.put("editable", true);
-		header.put("header",scope == null || scope.equals(ResourceType.ASSET_CATEGORY) ? "Asset":"Meter");
+		header.put("header",scope.getScopeHandler().getDisplayName());
 		headers.add(header);
 
 		header = new HashMap<>();

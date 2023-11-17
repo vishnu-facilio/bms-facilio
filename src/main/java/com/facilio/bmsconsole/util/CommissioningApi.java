@@ -196,7 +196,7 @@ public class CommissioningApi {
 		updateBuilder.updateViaMap(map);
 	}
 
-	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs,ResourceType resourceType) throws Exception {
+	public static Map<String, ReadingDataMeta> checkRDMType(List<Pair<Long, FacilioField>> rdmPairs,ResourceType scope) throws Exception {
 		List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(rdmPairs);
 		String message = null; 
 		for(ReadingDataMeta rdm: rdmList) {
@@ -212,14 +212,7 @@ public class CommissioningApi {
 					break;
 			}
 			if (message != null) {
-				String resourceName = null;
-				if (resourceType.equals(ResourceType.ASSET_CATEGORY)){
-					ResourceContext resource = ResourceAPI.getResource(rdm.getResourceId());
-					resourceName = resource.getName();
-				} else if (resourceType.equals(ResourceType.METER_CATEGORY)) {
-					V3MeterContext meter = MetersAPI.getMeter(rdm.getResourceId());
-					resourceName = meter.getName();
-				}
+				String resourceName = scope.getScopeHandler().getResourceName(rdm.getResourceId());
 				StringBuilder builder = new StringBuilder(rdm.getField().getDisplayName())
 						.append(" reading of ").append(resourceName).append(message);
 				throw new IllegalArgumentException(builder.toString());
@@ -330,14 +323,7 @@ public class CommissioningApi {
 			if(resourceId != null && fieldId != null) {
 				String key = resourceId+"_"+ fieldId;
 				if (mappedDetials.contains(key)) {
-					String resourceName = null;
-					if (oldLog.getReadingScopeEnum() == ResourceType.ASSET_CATEGORY){
-						ResourceContext resource = ResourceAPI.getResource(resourceId);
-						resourceName = resource.getName();
-					} else if (oldLog.getReadingScopeEnum() == ResourceType.METER_CATEGORY) {
-						V3MeterContext meter = MetersAPI.getMeter(resourceId);
-						resourceName = meter.getName();
-					}
+					String resourceName = oldLog.getReadingScopeEnum().getScopeHandler().getResourceName(resourceId);
 					StringBuilder builder = new StringBuilder(modBean.getField(fieldId).getDisplayName())
 							.append(" reading of ").append(resourceName).append(" is mapped more than once.");
 					throw new IllegalArgumentException(builder.toString());
@@ -386,20 +372,16 @@ public class CommissioningApi {
 	}
 
 	public static Map<Long, String> getParent(Set<Long> ids,String moduleName) throws Exception {
-		if (moduleName.equals("asset")){
-			moduleName = ContextNames.RESOURCE;
-		}
-		if (!ids.isEmpty()) {
-			FacilioChain chain = FacilioChainFactory.getPickListChain();
-			Context picklistContext = chain.getContext();
-			picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, null));
-			picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
-			chain.execute();
-			return (Map<Long, String>) picklistContext.get(ContextNames.PICKLIST);
-		}
-		return null;
+
+		FacilioChain chain = FacilioChainFactory.getPickListChain();
+		Context picklistContext = chain.getContext();
+		picklistContext.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getIdCondition(ids, null));
+		picklistContext.put(ContextNames.FILTER_CRITERIA, criteria);
+		chain.execute();
+		return (Map<Long, String>) picklistContext.get(ContextNames.PICKLIST);
+
 	}
 
 	public static Map<Long, Map<String, Object>> getFields(Set<Long> fieldIds) throws Exception {
