@@ -48,20 +48,19 @@ public class MultiImportConfigurations {
     @ImportModule("workorder")
     public static Supplier<ImportConfig> getWorkOrderImportConfig() {
         return () -> new ImportConfig.ImportConfigBuilder(V3WorkOrderContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.WORKORDER_ACTIVITY)
                 .importHandler()
                 .loadLookUpExtraSelectFields("workorder", Arrays.asList("status"))
                 .done()
                 .createHandler()
                 .beforeSaveCommand(TransactionChainFactoryV3.getWorkOrderBeforeCreateImportChain())
                 .done()
-                .updateHandler()
-                .beforeUpdateCommand()
-                .done()
                 .build();
     }
     @ImportModule("site")
     public static Supplier<ImportConfig> getSiteImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3SiteContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.SITE_ACTIVITY)
                 .importHandler()
                 .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.SITE.getIntVal());
@@ -76,6 +75,7 @@ public class MultiImportConfigurations {
     @ImportModule("building")
     public static Supplier<ImportConfig> getBuildingImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3BuildingContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.BUILDING_ACTIVITY)
                 .importHandler()
                 .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.BUILDING.getIntVal());
@@ -90,6 +90,7 @@ public class MultiImportConfigurations {
     @ImportModule("floor")
     public static Supplier<ImportConfig> getFloorImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3FloorContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.FLOOR_ACTIVITY)
                 .importHandler()
                 .afterProcessRowFunction((rowContext, rowValue, prop, context) -> {
                     prop.put("spaceType", V3BaseSpaceContext.SpaceType.FLOOR.getIntVal());
@@ -104,6 +105,7 @@ public class MultiImportConfigurations {
     @ImportModule("space")
     public static Supplier<ImportConfig> getSpaceImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3SpaceContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.SPACE_ACTIVITY)
                 .importHandler()
                 .lookupUniqueFieldsMap("floor",Arrays.asList("name","building","site"))
                 .lookupUniqueFieldsMap("building",Arrays.asList("name","site"))
@@ -125,6 +127,7 @@ public class MultiImportConfigurations {
     @ImportModule("asset")
     public static Supplier<ImportConfig> getAssetImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3AssetContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.ASSET_ACTIVITY)
                 .importHandler()
                 .lookupUniqueFieldsMap("space",Arrays.asList("name","site","*building","*floor","*space1","*space2","*space3","*space4","*space5"))
                 .loadLookUpExtraSelectFields(FacilioConstants.ContextNames.ASSET_CATEGORY,Arrays.asList("assetModuleID"))
@@ -169,6 +172,7 @@ public class MultiImportConfigurations {
     @ImportModule("tenant")
     public static Supplier<ImportConfig> getTenantImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3TenantContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.TENANT_ACTIVITY)
                 .importHandler()
                 .setBatchCollectFieldNames(Arrays.asList("primaryContactEmail"))
                 .beforeImportCommand(new BeforeTenantImportProcessCommand())
@@ -186,6 +190,7 @@ public class MultiImportConfigurations {
     @ImportModule("vendors")
     public static Supplier<ImportConfig> getVendorImportConfig(){
         return () -> new ImportConfig.ImportConfigBuilder(V3VendorContext.class)
+                .setActivityModuleName(FacilioConstants.ContextNames.VENDOR_ACTIVITY)
                 .importHandler()
                 .setBatchCollectFieldNames(Arrays.asList("primaryContactEmail"))
                 .beforeImportCommand(new BeforeVendorImportProcessCommand())

@@ -8,23 +8,24 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.multiImport.constants.ImportConstants;
 import com.facilio.multiImport.context.ImportDataDetails;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
 import com.facilio.multiImport.context.ImportRowContext;
+import com.facilio.multiImport.enums.FieldTypeImportRowProcessor;
 import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
+import com.facilio.multiImport.util.LoadLookupHelper;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.PredicateUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -46,8 +47,8 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
     Context context;
     Map<String, FacilioField> fieldNameVsFacilioFieldMap = null;
     Map<Long, FacilioField> fieldIdVsFacilioFieldMap = null;
-    List<FacilioField> mappedFields ;
-
+    List<FacilioField> mappedFields;
+    List<FacilioField> extraSelectableFields;
     @Override
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info("V4FilterMultiImportDataCommand started time:"+System.currentTimeMillis());
@@ -68,6 +69,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
         mappedFields = MultiImportApi.getMappedFields(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL),
                 fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);
+        extraSelectableFields = FieldTypeImportRowProcessor.getExtraSelectableFieldsForHistory(mappedFields);
 
         moduleName = importSheet.getModuleName();
         MultiImportSetting setting = importSheet.getImportSettingEnum();
@@ -149,6 +151,8 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
             }
 
+            loadLookupPrimaryFieldData(oldRecords);
+
             context.put(Constants.PATCH_FIELDS,mappedFields);
             ImportConstants.setUpdateRecords(context,newRawInputs);
             ImportConstants.setOldRecordsMap(context,oldRecords);
@@ -191,6 +195,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 }
             }
 
+            loadLookupPrimaryFieldData(oldRecords);
 
             context.put(Constants.PATCH_FIELDS,getPatchFields());
 
@@ -303,11 +308,16 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
         switch (setting){
             case INSERT_SKIP:
+                dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
+                break;
             case UPDATE:
             case UPDATE_NOT_NULL:
             case BOTH:
             case BOTH_NOT_NULL:
                 dbSelectableFields.add(FieldFactory.getIdField(importSheet.getModule()));
+                if(CollectionUtils.isNotEmpty(extraSelectableFields)){
+                    dbSelectableFields.addAll(extraSelectableFields);
+                }
                 break;
         }
         addOneLevelLookupFieldsIfExists(dbSelectableFields);
@@ -328,5 +338,66 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         patchFields.addAll(mappedFields);
         addOneLevelLookupFieldsIfExists(patchFields);
         return patchFields;
+    }
+    private void loadLookupPrimaryFieldData(Map<Long, ModuleBaseWithCustomFields> oldRecords) throws Exception {
+        if(CollectionUtils.isEmpty(extraSelectableFields) || MapUtils.isEmpty(oldRecords)){
+            return;
+        }
+
+        Map<FacilioField,Map<Long,Object>> fieldVsLookupDataMap = new HashMap<>();
+
+        for(FacilioField field:extraSelectableFields){
+            if(field.getDataTypeEnum()==FieldType.LOOKUP){
+                fieldVsLookupDataMap.put(field,new HashMap<>());
+            }
+        }
+
+        if(MapUtils.isEmpty(fieldVsLookupDataMap)){
+            return;
+        }
+
+
+        for(FacilioField field:fieldVsLookupDataMap.keySet()){
+            Map<Long,Object> lookupRecordIdVsRecord = fieldVsLookupDataMap.get(field);
+
+            for(Map.Entry<Long,ModuleBaseWithCustomFields> entry:oldRecords.entrySet()){
+                ModuleBaseWithCustomFields record = entry.getValue();
+
+
+                Object lookupRecord = FieldUtil.getValue(record,field);
+                if(lookupRecord!=null){
+                    Long lookupRecordId = (Long) FieldUtil.getProperty(lookupRecord,"id");
+                    lookupRecordIdVsRecord.putIfAbsent(lookupRecordId,null);
+                }
+            }
+
+            Map<Long,? extends Object> dbLookupRecordIdVsRecord = LoadLookupHelper.getLookupProps((LookupField) field, lookupRecordIdVsRecord.keySet());
+
+            if(MapUtils.isNotEmpty(dbLookupRecordIdVsRecord)){
+               for(Long lookupRecordId : dbLookupRecordIdVsRecord.keySet()){
+                   lookupRecordIdVsRecord.put(lookupRecordId,dbLookupRecordIdVsRecord.get(lookupRecordId));
+               }
+            }
+
+        }
+
+        for(FacilioField field:fieldVsLookupDataMap.keySet()){
+            Map<Long,Object> lookupRecordIdVsRecord = fieldVsLookupDataMap.get(field);
+
+            for(Map.Entry<Long,ModuleBaseWithCustomFields> entry:oldRecords.entrySet()){
+                ModuleBaseWithCustomFields record = entry.getValue();
+
+                Object lookupRecord =  FieldUtil.getValue(record,field);
+                if(lookupRecord!=null){
+                    Long lookupRecordId = (Long) FieldUtil.getProperty(lookupRecord,"id");
+                    Object lookupRecordWithPrimaryValue = lookupRecordIdVsRecord.get(lookupRecordId);
+                    if(lookupRecordWithPrimaryValue!=null){
+                        FieldUtil.setValue(record,field,lookupRecordWithPrimaryValue);
+                    }
+                }
+            }
+
+        }
+
     }
 }

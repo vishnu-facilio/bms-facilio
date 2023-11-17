@@ -187,7 +187,7 @@ public abstract class BaseMultiImportProcessCommand extends FacilioCommand {
                     continue;
                 }
 
-                FieldTypeImportRowProcessor importRowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(facilioField.getDataTypeEnum().name());
+                FieldTypeImportRowProcessor importRowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(facilioField.getDataTypeEnum());
 
                 importRowProcessor.process(mappingContext,rowContext,facilioField,cellValue,props,lookupHelper);
 

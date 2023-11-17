@@ -3,6 +3,7 @@ package com.facilio.multiImport.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.modules.FacilioModule;
@@ -15,10 +16,12 @@ import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.commands.AddMultiSelectFieldsCommand;
 import com.facilio.v3.context.AttachmentV3Context;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.CustomModuleDataV3;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
@@ -240,6 +243,7 @@ public class MultiImportChainUtil {
         Command beforeSaveCommand = null;
         Command afterSaveCommand = null;
         Command afterTransactionCommand = null;
+        String activityModuleName = null;
 
         if (importConfig != null) {
             CreateHandler createHandler = importConfig.getCreateHandler();
@@ -251,6 +255,7 @@ public class MultiImportChainUtil {
                 afterSaveCommand = createHandler.getAfterSaveCommand();
                 afterTransactionCommand = createHandler.getAfterTransactionCommand();
             }
+            activityModuleName = importConfig.getActivityModuleName();
         }
 
         FacilioChain transactionChain = getDefaultChain();
@@ -263,6 +268,8 @@ public class MultiImportChainUtil {
             transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(false));
         }
         transactionChain.addCommand(new ImportSaveCommand(module));
+        transactionChain.addCommand(new SetActivityMessageForImportRecordsCommand(false,activityModuleName));
+        transactionChain.addCommand(new AddActivitiesCommandV3(activityModuleName));
         if(!isOneLevelImport){
             transactionChain.addCommand(new AssociateRelationshipCommand(false));
         }
@@ -280,6 +287,8 @@ public class MultiImportChainUtil {
         Command beforeUpdateCommand = null;
         Command afterUpdateCommand = null;
         Command afterTransactionCommand = null;
+        String activityModuleName = null;
+
 
         if (importConfig != null) {
             UpdateHandler updateHandler = importConfig.getUpdateHandler();
@@ -291,6 +300,7 @@ public class MultiImportChainUtil {
                 afterUpdateCommand = updateHandler.getAfterUpdateCommand();
                 afterTransactionCommand = updateHandler.getAfterTransactionCommand();
             }
+            activityModuleName = importConfig.getActivityModuleName();
         }
 
         FacilioChain transactionChain = getDefaultChain();
@@ -303,6 +313,8 @@ public class MultiImportChainUtil {
             transactionChain.addCommand(new AddOrUpdateOneLevelImportRecordsCommand(true));
         }
         transactionChain.addCommand(new ImportUpdateCommand(module));
+        transactionChain.addCommand(new SetActivityMessageForImportRecordsCommand(true,activityModuleName));
+        transactionChain.addCommand(new AddActivitiesCommandV3(activityModuleName));
         if(!isOneLevelImport){
             transactionChain.addCommand(new AssociateRelationshipCommand(true));
         }

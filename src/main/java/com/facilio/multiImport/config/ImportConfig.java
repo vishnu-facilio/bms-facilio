@@ -5,6 +5,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ImportConfig {
     private Class beanClass;
+    private String activityModuleName;
     public Class getBeanClass() {
         return beanClass;
     }
@@ -18,6 +19,7 @@ public class ImportConfig {
         this.parseHandler = builder.parseHandler;
         this.createHandler = builder.createHandler;
         this.updateHandler = builder.updateHandler;
+        this.activityModuleName = builder.activityModuleName;
     }
 
     private UploadHandler uploadHandler;
@@ -48,9 +50,12 @@ public class ImportConfig {
     public ParseHandler getParseHandler() {
         return parseHandler;
     }
+    public String getActivityModuleName() { return activityModuleName; }
 
     public static class ImportConfigBuilder {
         private Class beanClass;
+        private String activityModuleName;
+
         private ImportConfigBuilder(){}
         public ImportConfigBuilder(Class<? extends ModuleBaseWithCustomFields> beanClass){
             this.beanClass=beanClass;
@@ -74,6 +79,10 @@ public class ImportConfig {
         }
         public UpdateHandler.UpdateHandlerBuilder updateHandler() {
             return new UpdateHandler.UpdateHandlerBuilder(this);
+        }
+        public ImportConfigBuilder setActivityModuleName(String activityModuleName) {
+            this.activityModuleName = activityModuleName;
+            return this;
         }
         public ImportConfig build() {
             return new ImportConfig(this);

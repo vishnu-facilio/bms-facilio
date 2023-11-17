@@ -1317,6 +1317,7 @@ public class MultiImportApi {
         }
         return false;
     }
+
     public static class ImportProcessConstants {
         public static final String UNIQUE_FUNCTION = "uniqueFunction";
         public static final String ROW_FUNCTION = "rowFunction";

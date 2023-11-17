@@ -17,6 +17,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportRowContext;
@@ -633,4 +634,42 @@ public class LoadLookupHelper {
             removeRecordFromSameModuleRecordCache(rowContext);
         }
     }
+    public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids) throws Exception {
+        if(CollectionUtils.isNotEmpty(ids)) {
+            if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
+                return LookupSpecialTypeUtil.getRecordsAsMap(field.getSpecialType(), ids);
+            }
+            else {
+                Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(field.getLookupModule(), false);
+                if(moduleClass != null) {
+                    FacilioModule module = field.getLookupModule();
+                    SelectRecordsBuilder<ModuleBaseWithCustomFields> lookupBeanBuilder = new SelectRecordsBuilder<>()
+                            .module(module)
+                            .beanClass(moduleClass)
+                            .andCondition(CriteriaAPI.getIdCondition(ids, module))
+                            .fetchDeleted()
+                            .skipModuleCriteria()
+                            .skipScopeCriteria()
+                            .skipPermission();
+
+
+                    List<FacilioField> selectFields = new ArrayList<>();
+                    FacilioField primaryField = Constants.getModBean().getPrimaryField(field.getLookupModule().getName());
+                    FacilioField idField = FieldFactory.getIdField(field.getLookupModule());
+                    selectFields.add(primaryField);
+                    selectFields.add(idField);
+
+                    lookupBeanBuilder.select(selectFields);
+
+                    return lookupBeanBuilder.getAsMap();
+
+                }
+                else {
+                    throw new IllegalArgumentException("Unknown Module Name while fetching look props "+field.getLookupModule().getName());
+                }
+            }
+        }
+        return null;
+    }
+
 }

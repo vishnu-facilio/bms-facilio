@@ -1,7 +1,8 @@
 package com.facilio.multiImport.enums;
 
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.*;
 import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportRowContext;
@@ -16,6 +17,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.facilio.multiImport.util.LoadLookupHelper.VALUES_SEPARATOR;
 
@@ -28,6 +30,11 @@ public enum FieldTypeImportRowProcessor {
 
            FieldTypeImportRowProcessor.processDateTypeData(importFieldMappingContext,field,cellValue,props);
         }
+
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
     },
     DATE_TIME {
         @Override
@@ -36,6 +43,10 @@ public enum FieldTypeImportRowProcessor {
                             HashMap<String, Object> props,LoadLookupHelper lookupHelper) throws Exception {
 
             FieldTypeImportRowProcessor.processDateTypeData(importFieldMappingContext,field,cellValue,props);
+        }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
         }
     },
     SYSTEM_ENUM {
@@ -52,6 +63,10 @@ public enum FieldTypeImportRowProcessor {
                 props.put(field.getName(), enumIndex);
             }
         }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
     },
     ENUM {
         @Override
@@ -66,6 +81,10 @@ public enum FieldTypeImportRowProcessor {
             if (!props.containsKey(field.getName())) {
                 props.put(field.getName(), enumIndex);
             }
+        }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
         }
     },
     MULTI_ENUM {
@@ -147,6 +166,10 @@ public enum FieldTypeImportRowProcessor {
 
             props.put(field.getName(), value);
         }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
     },
     NUMBER {
         @Override
@@ -167,6 +190,10 @@ public enum FieldTypeImportRowProcessor {
             if(numberField.getMetric()!=-1 && numberField.getMetricEnum()!=null && importFieldMappingContext.getUnitId()!=-1){
                 props.put(field.getName()+"Unit",importFieldMappingContext.getUnitId());
             }
+        }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
         }
 
     },
@@ -191,6 +218,10 @@ public enum FieldTypeImportRowProcessor {
             }
 
         }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
     },
     BOOLEAN {
         @Override
@@ -201,6 +232,10 @@ public enum FieldTypeImportRowProcessor {
             String cellValueString = cellValue.toString();
             boolean booleanValue = FacilioUtil.parseBoolean(cellValueString);
             props.put(field.getName(), booleanValue);
+        }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
         }
 
     },
@@ -236,6 +271,10 @@ public enum FieldTypeImportRowProcessor {
                 props.put(field.getName(), cellValue);
             }
         }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
     },
     DEFAULT;
 
@@ -250,7 +289,6 @@ public enum FieldTypeImportRowProcessor {
         }
 
     }
-
 
     private static void processDateTypeData(ImportFieldMappingContext importFieldMappingContext,
                                             FacilioField field,
@@ -278,9 +316,9 @@ public enum FieldTypeImportRowProcessor {
 
     private static final Map<String,FieldTypeImportRowProcessor> FIELD_TYPE_IMPORT_ROW_PROCESSOR_MAP = Collections.unmodifiableMap(init());
 
-    public static FieldTypeImportRowProcessor getFieldTypeImportRowProcessor(String name){
-        if(FIELD_TYPE_IMPORT_ROW_PROCESSOR_MAP.containsKey(name)){
-            return FIELD_TYPE_IMPORT_ROW_PROCESSOR_MAP.get(name);
+    public static FieldTypeImportRowProcessor getFieldTypeImportRowProcessor(FieldType fieldType){
+        if(FIELD_TYPE_IMPORT_ROW_PROCESSOR_MAP.containsKey(fieldType.name())){
+            return FIELD_TYPE_IMPORT_ROW_PROCESSOR_MAP.get(fieldType.name());
         }
         return DEFAULT;
     }
@@ -290,6 +328,35 @@ public enum FieldTypeImportRowProcessor {
             map.put(fieldTypeImportRowProcessor.name(),fieldTypeImportRowProcessor);
         }
         return map;
+    }
+
+    public boolean isSupportedFieldTypeForHistory(){
+        return false;
+    }
+    public List<UpdateChangeSet> constructChangeSet(long recordId,FacilioField field,Object oldValue,Object newValue){
+        if(!isSupportedFieldTypeForHistory() || isUnsupportedFieldName(field.getName())){
+            return null;
+        }
+        UpdateChangeSet currentChange = new UpdateChangeSet();
+        currentChange.setFieldId(field.getFieldId());
+        currentChange.setOldValue(oldValue);
+        currentChange.setNewValue(newValue);
+        currentChange.setRecordId(recordId);
+        return Collections.singletonList(currentChange);
+    }
+
+    private static final List<String> UN_SUPPORTED_FIELD_NAMES = Collections.unmodifiableList(Arrays.asList(new String[]{"currencyCode","exchangeRate"}));
+    private static boolean isUnsupportedFieldName(String fieldName){
+        if(UN_SUPPORTED_FIELD_NAMES.contains(fieldName) || fieldName.endsWith("##baseCurrencyValue")){
+            return true;
+        }
+        return false;
+    }
+
+    public static List<FacilioField> getExtraSelectableFieldsForHistory(List<FacilioField> patchFields){
+        return patchFields.stream()
+                .filter(field->getFieldTypeImportRowProcessor(field.getDataTypeEnum()).isSupportedFieldTypeForHistory())
+                .collect(Collectors.toList());
     }
 
 }
