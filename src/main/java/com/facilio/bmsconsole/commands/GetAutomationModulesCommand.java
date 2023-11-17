@@ -139,6 +139,7 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));
             modules.add(modBean.getModule(FacilioConstants.Trip.TRIP));
         }
+        modules.add(modBean.getModule(FacilioConstants.Meter.METER));
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
