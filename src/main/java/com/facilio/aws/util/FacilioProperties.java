@@ -250,6 +250,8 @@ public class FacilioProperties {
     private static String sfgSecretKey;
     @Getter
     private static List<String> adminUsers;
+    @Getter
+    private static boolean checkPrivilegeAccess;
 
     static {
         try {
@@ -519,6 +521,7 @@ public class FacilioProperties {
                 rateLimiterAllowedRequest = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.allowedRequest", "100"));
                 rateLimiterInterval = Long.parseLong(PROPERTIES.getProperty("apiRateLimiter.intervalInSeconds", "60"));
             }
+            checkPrivilegeAccess = Boolean.parseBoolean(PROPERTIES.getProperty("api.checkPrivilegeAccess", "false"));
             String adminUsersCsv = PROPERTIES.getProperty("admin.users");
             if(StringUtils.isNotEmpty(adminUsersCsv)) {
                 adminUsers = Arrays.asList(adminUsersCsv.split(","));

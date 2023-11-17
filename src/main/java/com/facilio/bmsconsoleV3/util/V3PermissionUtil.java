@@ -179,6 +179,6 @@ public class V3PermissionUtil {
     }
 
     public static boolean isAllowedEnvironment(){
-        return !(FacilioProperties.isProduction() || FacilioProperties.isOnpremise());
+        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) && FacilioProperties.isCheckPrivilegeAccess();
     }
 }

@@ -172,7 +172,7 @@ public class BeforeAuthInputFilter implements Filter {
     }
 
     private boolean isAllowed() {
-        return !(FacilioProperties.isProduction() || FacilioProperties.isOnpremise());
+        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) && FacilioProperties.isCheckPrivilegeAccess();
     }
     @Override
     public void destroy() {

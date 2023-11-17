@@ -5,7 +5,6 @@ import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
 import com.facilio.bmsconsole.context.webtab.WebTabHandler;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
