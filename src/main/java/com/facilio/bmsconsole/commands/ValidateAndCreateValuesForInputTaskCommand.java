@@ -47,7 +47,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 									throw new IllegalArgumentException("At least one file has to be attached since attachment is required to close the task");
 								}
 								if (checkIfRemarksRequired(completeRecord, task)) {
-									throw new IllegalArgumentException("Remarks has to be entered for the selected input to close the task");
+									throw new IllegalArgumentException("Enter remarks to complete the task!");
 								}
 							}
 						}

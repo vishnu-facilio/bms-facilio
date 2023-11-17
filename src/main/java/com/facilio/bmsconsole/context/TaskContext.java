@@ -736,7 +736,7 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public static enum TaskCriticality implements FacilioIntEnum {
 
 		STATUTORY("Statutory","red","L1"),
-		MANDATORY("Mandatory", "pink","L2,"),
+		MANDATORY("Mandatory", "pink","L2"),
 		OPTIMAL("Optimal", "orange","L3"),
 		DISCRETIONARY("Discretionary", "green","L3")
 		;
