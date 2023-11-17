@@ -480,6 +480,7 @@
                 class="com.facilio.trigger.action.TriggerAction"
                 method="listTriggers">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCHEDULER</param>
         </action>
 
@@ -670,7 +671,8 @@
 
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
-            <param name="permission">ALL;GET:READ</param>
+            <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">TABS_AND_LAYOUTS</param>
         </action>
     </package>
@@ -891,18 +893,21 @@
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="listGroup">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
         <action name="addOrUpdateGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdateGroup">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
         <action name="deleteGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="deleteGroup">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
 
@@ -910,18 +915,21 @@
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="list">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdate">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="delete">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">VARIABLES</param>
         </action>
     </package>
@@ -1048,12 +1056,14 @@
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="list">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">USERS</param>
         </action>
         <action name="add"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="add">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">USERS</param>
         </action>
         <action name="delete"
@@ -1486,11 +1496,13 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="list">
             <param name="permission">GET:CREATE,VIEW,EDIT,DELETE,SHARE</param>
+            <param name="tabType">DASHBOARD</param>
 		</action>
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="clone_dashboard">
             <param name="permission">POST:EDIT</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="moveto"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
@@ -1527,6 +1539,7 @@
                 method="get">
             <param name="linkName">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
     </package>
     <package name="v3MobileDashboard" namespace="/api/v3/dashboard/mobile" extends="v3Api">
@@ -1534,12 +1547,14 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="mobileList">
             <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="getMobileDashboard">
             <param name="linkName">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
     </package>
     <package name="v3DashboardTab" namespace="/api/v3/dashboard/tab" extends="v3Api">
@@ -1547,6 +1562,7 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="updateTab">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
+            <param name="tabType">DASHBOARD</param>
 		</action>
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
@@ -1601,6 +1617,7 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="execute">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="newDashboardFilterRuleExecute"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
@@ -1802,6 +1819,7 @@
         <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction"
                 method="setDefaultAppUser">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">USERS</param>
         </action>
     </package>
@@ -1814,6 +1832,7 @@
         <action name="listMyAppsForUser" class="com.facilio.bmsconsoleV3.actions.MyAppsAction"
                 method="listMyAppsForUser">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">USERS</param>
         </action>
     </package>
@@ -1862,41 +1881,50 @@
     <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="detail" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="detail">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="setStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setStatus">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="setSwitchStatus">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="meta" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getScopeMetaData">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getApplicableFieldsMap">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
         <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getApplicationValueGenerators">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
     </package>
@@ -1905,6 +1933,7 @@
         <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getSwitchVariable">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">TABS_AND_LAYOUTS</param>
         </action>
     </package>
@@ -2413,23 +2442,29 @@
     <package name="v2ModuleReport" namespace="/api/v3/module/report" extends="v3Api">
         <action name="folder/list" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="folders">
             <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="create" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="create">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="update" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="update">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="fetch" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="fetch">
             <param name="permission">PUT:CREATE_EDIT</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="delete/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="delete">
             <param name="reportId">{1}</param>
             <param name="permission">DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ;PUT:READ</param>
+            <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
         </action>
     </package>
     <package name="v2ModuleKpi" namespace="/api/v3/module/kpi" extends="v3Api">

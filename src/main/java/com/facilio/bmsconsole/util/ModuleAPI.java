@@ -7,6 +7,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -78,8 +79,15 @@ public class ModuleAPI {
 
     public static boolean hasSubModuleRelation(long parentModuleId, long subModuleId) throws Exception {
         FacilioModule subModulesRelModule = ModuleFactory.getSubModulesRelModule();
-        FacilioField parentModuleIdField = Constants.getModBean().getField("parentModuleId", subModulesRelModule.getName());
-        FacilioField childModuleIdField = Constants.getModBean().getField("childModuleId", subModulesRelModule.getName());
+        FacilioField parentModuleIdField = new FacilioField();
+        parentModuleIdField.setName("parentModuleId");
+        parentModuleIdField.setDataType(FieldType.NUMBER);
+        parentModuleIdField.setColumnName("PARENT_MODULE_ID");
+
+        FacilioField childModuleIdField = new FacilioField();
+        childModuleIdField.setName("childModuleId");
+        childModuleIdField.setDataType(FieldType.NUMBER);
+        childModuleIdField.setColumnName("CHILD_MODULE_ID");
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getSubModuleRelFields())

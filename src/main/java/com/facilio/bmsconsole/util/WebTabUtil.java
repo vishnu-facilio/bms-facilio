@@ -7,6 +7,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.webtab.ModuleTypeHandler;
 import com.facilio.bmsconsole.context.webtab.WebTabHandler;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
@@ -47,7 +48,7 @@ public class WebTabUtil {
     public static boolean checkPermission(HttpParameters parameters, String action, long tabId,Map<String,String> extraParameters) throws Exception {
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
         WebTabContext tab = tabBean.getWebTab(tabId);
-        if (tab == null) {
+        if (tab == null || StringUtils.isEmpty(action)) {
             return false;
         }
         WebTabHandler handler = getWebTabHandler(tab);
@@ -63,11 +64,23 @@ public class WebTabUtil {
         if(MapUtils.isNotEmpty(extraParameters)) {
             params.putAll(extraParameters);
         }
-        if (handler != null) {
-            return handler.hasPermission(tab, params, action);
-        }else {
-            LOGGER.info("WebTabHandler is missing for this TabType of TabId - " + tab.getId());
+
+        boolean isMatchedTabType = true;
+        if(params.containsKey("skipPermission") && Boolean.parseBoolean(params.get("skipPermission"))){
+            return true;
+        }else if(params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))){
+            String tabType = params.get("tabType");
+            if(!(handler instanceof ModuleTypeHandler)){
+                isMatchedTabType = tab.getTypeEnum().getName().equalsIgnoreCase(tabType);
+            }else {
+                isMatchedTabType = true;
+            }
         }
+
+        if (handler != null && isMatchedTabType) {
+            return handler.hasPermission(tab, params, action);
+        }
+        LOGGER.info("WebTabHandler is missing for this TabType of TabId - " + tab.getId());
         return false;
     }
 
