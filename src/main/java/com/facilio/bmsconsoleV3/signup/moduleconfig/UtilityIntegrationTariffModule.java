@@ -240,42 +240,12 @@ public class UtilityIntegrationTariffModule extends BaseModuleConfig {
 
     }
     public static void addSystemButtons() throws Exception {
-        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
-        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
-        createButton.setIdentifier("create");
-        createButton.setPermissionRequired(true);
-        createButton.setPermission("CREATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF, createButton);
 
-        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
-        listEditButton.setName("Edit");
-        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        listEditButton.setIdentifier("edit_list");
-        listEditButton.setPermissionRequired(true);
-        listEditButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF,listEditButton);
-
-        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
-        listDeleteButton.setName("Delete");
-        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
-        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        listDeleteButton.setIdentifier("delete_list");
-        listDeleteButton.setPermissionRequired(true);
-        listDeleteButton.setPermission("DELETE");
-        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF,listDeleteButton);
-
-        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
-        bulkDeleteButton.setName("Delete");
-        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
-        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
-        bulkDeleteButton.setIdentifier("delete_bulk");
-        bulkDeleteButton.setPermissionRequired(true);
-        bulkDeleteButton.setPermission("DELETE");
-        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF,bulkDeleteButton);
-
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
+        SystemButtonApi.addListEditButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.UTILITY_INTEGRATION_TARIFF);
+            
     }
 
 }

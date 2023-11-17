@@ -372,14 +372,8 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
         return FieldUtil.getAsJSON(widgetGroup);
     }
     public static void addSystemButtons() throws Exception {
-        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
-        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
-        createButton.setIdentifier("create");
-        createButton.setPermissionRequired(true);
-        createButton.setPermission("CREATE");
-        SystemButtonApi.addSystemButton(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, createButton);
 
+        String btnDisPlayName = "New Account";
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,btnDisPlayName);
     }
 }
