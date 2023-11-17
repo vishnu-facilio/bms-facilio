@@ -173,7 +173,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines())
             {
-                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules));
+                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, xValues, addedModules));
                 data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
             }
         }
