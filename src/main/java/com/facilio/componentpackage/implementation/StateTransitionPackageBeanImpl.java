@@ -89,7 +89,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         if (((ApproverWorkflowRuleContext) stateflowTransition).getApprovers() != null){
             PackageBeanUtil.constructBuilderFromSharingContext(((AbstractStateTransitionRuleContext) stateflowTransition).getApprovers(),element.element(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST));
         }
-        if (((AbstractStateTransitionRuleContext) stateflowTransition).getButtonType() > 0){
+        if (((AbstractStateTransitionRuleContext) stateflowTransition).getButtonType() > -1){
             element.element(PackageConstants.WorkFlowRuleConstants.BUTTON_TYPE).text(String.valueOf(((AbstractStateTransitionRuleContext) stateflowTransition).getButtonType()));
         }
         if (((AbstractStateTransitionRuleContext) stateflowTransition).getDialogType() > 0){
