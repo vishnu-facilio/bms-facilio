@@ -1,11 +1,17 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -20,6 +26,15 @@ import java.util.*;
 public class ShiftModule extends BaseModuleConfig{
     public ShiftModule(){
         setModuleName(FacilioConstants.ContextNames.SHIFT);
+    }
+
+    @Override
+    public void addData() throws Exception {
+        try {
+            addSystemButtons();
+        }catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -130,6 +145,27 @@ public class ShiftModule extends BaseModuleConfig{
         shiftModuleForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(shiftModuleForm);
+    }
+    private void addSystemButtons() throws Exception {
+
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Add Shift");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SHIFT,create);
+
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.SHIFT);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.SHIFT);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.SHIFT);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.SHIFT);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.SHIFT);
+
+
+
     }
 
 }

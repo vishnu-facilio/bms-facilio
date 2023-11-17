@@ -68,7 +68,7 @@ public class ClientContactModule extends BaseModuleConfig{
         allView.setDisplayName("All Client Contacts");
         allView.setModuleName(clientContactModule.getName());
         allView.setSortFields(sortFields);
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         allView.setHidden(true);
 
         return allView;
@@ -144,7 +144,7 @@ public class ClientContactModule extends BaseModuleConfig{
         allView.setName("all-contacts");
         allView.setDisplayName("All Client Contacts");
         allView.setModuleName(clientContactModule.getName());
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         allView.setSortFields(sortFields);
 
         return allView;
@@ -160,7 +160,7 @@ public class ClientContactModule extends BaseModuleConfig{
         clientContactForm.setName("default_clientcontact_web");
         clientContactForm.setModule(clientContactModule);
         clientContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        clientContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        clientContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         List<FormField> clientContactFormFields = new ArrayList<>();
         clientContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         clientContactFormFields.add(new FormField("email", FacilioField.FieldDisplayType.TEXTBOX, "Email", FormField.Required.OPTIONAL, 2, 1));

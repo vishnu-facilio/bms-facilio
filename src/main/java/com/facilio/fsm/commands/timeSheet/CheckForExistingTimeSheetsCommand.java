@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,7 +26,11 @@ public class CheckForExistingTimeSheetsCommand extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(timeSheets)){
             for(TimeSheetContext timeSheet : timeSheets){
                 if(timeSheet.getFieldAgent() != null && timeSheet.getStartTime() != null && timeSheet.getServiceTasks() != null){
-                    List<TimeSheetContext> records = ServiceAppointmentUtil.getTimeSheetsForTimeRange(timeSheet.getFieldAgent().getId(), timeSheet.getStartTime(), timeSheet.getEndTime());
+                    List<Long> recordIds = new ArrayList<>();
+                    if(timeSheet.getId() > 0){
+                        recordIds.add(timeSheet.getId());
+                    }
+                    List<TimeSheetContext> records = ServiceAppointmentUtil.getTimeSheetsForTimeRange(timeSheet.getFieldAgent().getId(), timeSheet.getStartTime(), timeSheet.getEndTime(),recordIds);
                     if(CollectionUtils.isNotEmpty(records)){
                         JSONObject errorData = new JSONObject();
                         errorData.put(FacilioConstants.TimeSheet.TIME_SHEET,records);

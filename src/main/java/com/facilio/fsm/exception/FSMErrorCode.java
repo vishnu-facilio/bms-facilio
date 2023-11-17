@@ -46,7 +46,7 @@ public enum FSMErrorCode {
     SA_RECORD_LOCKED(Severity.ERROR, "Cannot Edit/Delete Appointment", "Cannot edit or delete the Appointment as it has already been completed or cancelled"),
     SA_FIELD_UPDATE_PREVENT(Severity.ERROR,"Not Permitted","You are not permitted to edit these details."),
     INVALID_SA(Severity.ERROR, "Invalid Appointment", "Please provide valid Appointment id"),
-    SA_CANNOT_BE_STARTED(Severity.ERROR,"Appointment cannot be started","Please associate service task to start work"),
+    SA_CANNOT_BE_STARTED(Severity.ERROR,"Appointment cannot be started","Please associate task to start work"),
     SA_CANNOT_DISPATCH(Severity.ERROR,"Appointment cannot be dispatched","Dispatching an appointment that is already in progress, completed, or canceled is not permitted."),
 
     // Time Sheet error codes
@@ -63,7 +63,7 @@ public enum FSMErrorCode {
     TRIP_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Trip","Cannot edit or delete an ongoing trip"),
     TRIP_CANNOT_BE_CREATED(Severity.ERROR,"Trip cannot be created","Please make sure that trip created for a past or current moment."),
     //Service Task error codes
-    TASK_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Task","Cannot edit or delete Service Task after start work"),
+    TASK_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Task","Cannot edit or delete task after starting work"),
     UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
     NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Appointment"),
     SO_ASSET_SPACE_DOESNT_MATCH_SPACE_FIELD(Severity.ERROR, "Space not matched","Asset Space doesn't match the selected Space"),

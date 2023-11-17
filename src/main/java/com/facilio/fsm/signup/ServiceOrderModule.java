@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
@@ -21,7 +22,9 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
@@ -65,8 +68,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemTransactions = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 
-        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder", "Service Order", "SERVICE_ORDER", FieldType.LOOKUP);
-        serviceOrder.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER), "Service Order module doesn't exist."));
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder", "Work Order", "SERVICE_ORDER", FieldType.LOOKUP);
+        serviceOrder.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER), "Work Order module doesn't exist."));
         serviceOrder.setModule(itemTransactions);
 
         modBean.addField(serviceOrder);
@@ -81,7 +84,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         FacilioModule employee = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
 
         FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY,
-                "Service Order Activity",
+                "Work Order Activity",
                 "Service_Order_Activity",
                 FacilioModule.ModuleType.ACTIVITY
         );
@@ -169,7 +172,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private FacilioModule addServiceOrderAttachmentsModule(ModuleBean modBean, long orgId, FacilioModule serviceOrderModule) throws Exception {
-        FacilioModule serviceOrderAttachmentsModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS, "Service Order Attachments",
+        FacilioModule serviceOrderAttachmentsModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS, "Work Order Attachments",
                 "ServiceOrder_Attachments", FacilioModule.ModuleType.ATTACHMENTS, null,
                 null);
 
@@ -213,7 +216,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean", AccountUtil.getCurrentOrg().getOrgId());
         long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId();
 
-        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Service Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
+        FacilioModule serviceOrderModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, "Work Order", "ServiceOrders", FacilioModule.ModuleType.BASE_ENTITY, true);
 
         List<FacilioField> serviceOrderFieldsList = new ArrayList<>();
 
@@ -266,7 +269,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         vendor.setLookupModule(bean.getModule(FacilioConstants.ContextNames.VENDORS));
         serviceOrderFieldsList.add(vendor);
 
-        FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa", "AutoCreate SA", "AUTO_CREATE_SA", FieldType.BOOLEAN);
+        FacilioField autocreatesa = FieldFactory.getDefaultField("autoCreateSa", "Auto Create Appointment", "AUTO_CREATE_SA", FieldType.BOOLEAN);
         serviceOrderFieldsList.add(autocreatesa);
 
         SystemEnumField sourceType = FieldFactory.getDefaultField("sourceType", "Source Type", "SOURCE_TYPE", FieldType.SYSTEM_ENUM);
@@ -364,10 +367,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
         List<FormField> generalInformationFields = new ArrayList<>();
         generalInformationFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         generalInformationFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 3, 1));
-        generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.REQUIRED, 3, 2));
+        generalInformationFields.add(new FormField("category", FacilioField.FieldDisplayType.SELECTBOX, "Category", FormField.Required.OPTIONAL, 3, 2));
         generalInformationFields.add(new FormField("maintenanceType", FacilioField.FieldDisplayType.SELECTBOX, "Maintenance Type", FormField.Required.OPTIONAL, 4, 2));
         generalInformationFields.add(new FormField("priority", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Priority", FormField.Required.REQUIRED, 5, 2));
-        generalInformationFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create SA", FormField.Required.OPTIONAL, 6, 2));
+        generalInformationFields.add(new FormField("autoCreateSa", FacilioField.FieldDisplayType.DECISION_BOX, "Auto Create Appointment", FormField.Required.OPTIONAL, 6, 2));
 
         FormSection generalInfoSection = new FormSection("General Information", 1, generalInformationFields, true);
         generalInfoSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -383,8 +386,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         siteClientSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormField> assignmentDetailFields = new ArrayList<>();
-        assignmentDetailFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.PEOPLE, 2, 2));
         assignmentDetailFields.add(new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.VENDORS, 1, 2));
+        assignmentDetailFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.OPTIONAL, FacilioConstants.ContextNames.PEOPLE, 2, 2));
+
 
         FormSection assignmentDetailsSection = new FormSection("Assignment Details", 3, assignmentDetailFields, true);
         assignmentDetailsSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -398,7 +402,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         List<FormField> scheduleAppointmentFields = new ArrayList<>();
         scheduleAppointmentFields.add(new FormField("preferredStartTime", FacilioField.FieldDisplayType.DATETIME, "Preferred Start Time", FormField.Required.REQUIRED, 10, 2));
         scheduleAppointmentFields.add(new FormField("preferredEndTime", FacilioField.FieldDisplayType.DATETIME, "Preferred End Time", FormField.Required.REQUIRED, 11, 2));
-        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 12, 2));
+//        scheduleAppointmentFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 12, 2));
 
         FormSection scheduleAppointmentSection = new FormSection("Schedule and Appointment", 5, scheduleAppointmentFields, true);
         scheduleAppointmentSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -480,11 +484,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getAllServiceOrdersView(FacilioModule module, Map<String, FacilioField> fieldMap, List<Role> roles) {
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id", "ID", FieldType.NUMBER), false));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("all_service_orders_view");
-        allView.setDisplayName("All Service Orders");
+        allView.setDisplayName("All Work Orders");
         allView.setModuleName(FacilioConstants.ContextNames.SERVICE_ORDER);
         allView.setSortFields(sortFields);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
@@ -521,6 +525,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getOverdueServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
+
         Criteria criteria = getOverdueServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -528,7 +534,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("over_service_orders_view");
-        allView.setDisplayName("Overdue Service Orders");
+        allView.setDisplayName("Overdue Work Orders");
+        allView.setSortFields(sortFields);
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -564,6 +571,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
 
     private static FacilioView getOpenServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
         Criteria criteria = getOpenServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -571,7 +579,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("open_service_orders_view");
-        allView.setDisplayName("Open Service Orders");
+        allView.setDisplayName("Open Work Orders");
+        allView.setSortFields(sortFields);
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -606,6 +615,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getNewServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
         Criteria criteria = getNewServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -613,7 +623,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("new_service_orders_view");
-        allView.setDisplayName("New Service Orders");
+        allView.setDisplayName("New Work Orders");
+        allView.setSortFields(sortFields);
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -648,6 +659,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getCompletedServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
         Criteria criteria = getCompletedServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -655,7 +667,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("completed_service_orders");
-        allView.setDisplayName("Completed Service Orders");
+        allView.setDisplayName("Completed Work Orders");
+        allView.setSortFields(sortFields);
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -690,6 +703,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getClosedServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
         Criteria criteria = getAllClosedServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -697,7 +711,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("closed_service_orders_view");
-        allView.setDisplayName("Closed Service Orders");
+        allView.setDisplayName("Closed Work Orders");
+        allView.setSortFields(sortFields);
         allView.setCriteria(criteria);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
@@ -732,6 +747,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
     }
 
     private static FacilioView getCancelledServiceOrdersView(FacilioModule serviceOrderModule, Map<String, FacilioField> serviceOrderFieldsMap, List<Role> roles) throws Exception {
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
         Criteria criteria = getCancelledServiceOrdersViewCriteria(serviceOrderModule, serviceOrderFieldsMap);
 
         FacilioField idField = FieldFactory.getIdField();
@@ -739,8 +755,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         FacilioView allView = new FacilioView();
         allView.setName("cancelled_service_orders_view");
-        allView.setDisplayName("Cancelled Service Orders");
+        allView.setDisplayName("Cancelled Work Orders");
         allView.setCriteria(criteria);
+        allView.setSortFields(sortFields);
         allView.setAppLinkNames(ServiceOrderModule.serviceOrderSupportedApps);
 
         SharingContext<SingleSharingContext> viewSharing = new SharingContext<>();
@@ -836,26 +853,6 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         /* PRIMARY BUTTON DECLARATIONS GOES HERE */
 
-//
-//        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-//        edit.setName("Edit");
-//        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-//        edit.setIdentifier(FacilioConstants.ContextNames.UPDATE);
-//        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//        edit.setPermission("UPDATE");
-//        edit.setPermissionRequired(true);
-//
-//        addSystemButton(FacilioConstants.ServiceOrder.SERVICE_ORDER,edit);
-//
-//        SystemButtonRuleContext delete = new SystemButtonRuleContext();
-//        delete.setName("Delete");
-//        delete.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
-//        delete.setIdentifier(FacilioConstants.ContextNames.DELETE);
-//        delete.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-//        delete.setPermission("DELETE");
-//        delete.setPermissionRequired(true);
-//
-//        addSystemButton(FacilioConstants.ServiceOrder.SERVICE_ORDER,delete);
 
         Criteria inprogressCriteria = new Criteria();
         inprogressCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Collections.singletonList(inprogressState.getId()), PickListOperators.IS));
@@ -901,21 +898,80 @@ public class ServiceOrderModule extends BaseModuleConfig {
         cancelWork.setCriteria(cancelButtonCriteria);
         addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER, cancelWork);
 
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Create Work Order");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,create);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit_list");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        edit.setPermission("UPDATE");
+        edit.setPermissionRequired(true);
+        edit.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,edit);
+
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        summaryEditButton.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,summaryEditButton);
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        listDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,listDeleteButton);
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        bulkDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,bulkDeleteButton);
+
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+
+
+
         return false;
     }
 
     private static List<PagesContext> getSystemPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_NOTES);
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS);
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY);
         return new ModulePages()
-                .addPage("serviceOrder", "Default Service Order Page", "", null, isTemplate, isDefault, false)
+                .addPage("serviceOrder", "Default Work Order Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryFields", null, null)
-                .addWidget("summaryFieldsWidget", "Service Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
+                .addWidget("summaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -924,7 +980,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("serviceTask", "Service Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                .addTab("serviceTask", "Task", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("task", null, null)
                 .addWidget("taskList", "Tasks", PageWidget.WidgetType.SERVICE_TASK_WIDGET, "webTaskList_10_12", 0, 0, null, null)
@@ -932,7 +988,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("appointment", "Service Appointment", PageTabContext.TabType.SIMPLE, true, null)
+                .addTab("appointment", "Appointment", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("appointments", null, null)
                 .addWidget("appointments", "Appointments", PageWidget.WidgetType.SERVICE_ORDER_APPOINTMENTS, "webAppointments_10_12", 0, 0, null, null)
@@ -965,7 +1021,120 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,serviceOrderModule.getName()))
+                .widgetDone()
+                .addWidget("serviceOrderResourceWidget", null, PageWidget.WidgetType.RESOURCE_WIDGET, "mobileFlexibleResourceWidget_6", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("serviceOrderLocationWidget", null, PageWidget.WidgetType.LOCATION_WIDGET, "mobileFlexibleLocationWidget_9", 0, 21, null, null)
+                .widgetDone()
+                .addWidget("serviceOrderUserWidget", null, PageWidget.WidgetType.USER_WIDGET, "mobileFlexibleUserWidget_7", 0, 30, null, null)
+                .widgetDone()
+                .addWidget("attachment", null, PageWidget.WidgetType.ATTACHMENT, "flexiblemobileattachment_8", 0, 37, attachmentWidgetParam, null)
+                .widgetDone()
+                .addWidget("comment", null, PageWidget.WidgetType.COMMENT, "flexiblemobilecomment_8", 0, 45, commentWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("serviceTask", "Service Task", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("serviceTask", null, null)
+                .addWidget("serviceOrderServiceTaskListWidget", null, PageWidget.WidgetType.SERVICE_TASK_LIST_WIDGET, "mobileServiceTaskListWidget_16", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("serviceAppointment", "Service Appointment", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("serviceAppointment", null, null)
+                .addWidget("serviceOrderServiceAppointmentListWidget", null, PageWidget.WidgetType.SERVICE_APPOINTMENT_LIST, "mobileServiceAppointmentListWidget_16", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("plans", "Plans",PageTabContext.TabType.SIMPLE,  true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("plans", null, null)
+                .addWidget("serviceOrderPlansCostWidget", "Plans Cost", PageWidget.WidgetType.PLANS_COST_WIDGET, "mobilePlansCostWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("plansWidgetGroup", "Plans Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_16", 0, 2, null, getMobilePlansWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("actuals", "Actuals",PageTabContext.TabType.SIMPLE,  true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("actuals", null, null)
+                .addWidget("serviceOrderActualsCostWidget", "Actuals Cost", PageWidget.WidgetType.ACTUALS_COST, "mobileActualsCostWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("actualsWidgetGroup", "Actuals Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_16", 0, 2, null, getMobileActualsWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
                 .pageDone().getCustomPages();
+    }
+
+    private static JSONObject getMobilePlansWidgetGroup() throws Exception {
+
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("plannedItems", "Items", "")
+                .addWidget("serviceOrderPlannedItemsListWidget", "Items", PageWidget.WidgetType.PLANNED_ITEMS_LIST,"flexiblemobileplanneditems_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("plannedTools", "Tools", "")
+                .addWidget("serviceOrderPlannedToolsListWidget", "Tools", PageWidget.WidgetType.PLANNED_TOOLS_LIST,"flexiblemobileplannedtools_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("plannedServices", "Services", "")
+                .addWidget("serviceOrderPlannedServicesListWidget", "Services", PageWidget.WidgetType.PLANNED_SERVICES_LIST,"flexiblemobileplannedservices_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+
+        return FieldUtil.getAsJSON(widgetGroup);
+    }
+
+    private static JSONObject getMobileActualsWidgetGroup() throws Exception {
+
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("actualItems", "Items", "")
+                .addWidget("serviceOrderActualItemsListWidget", "Items", PageWidget.WidgetType.ACTUAL_ITEMS_LIST,"flexiblemobileactualitems_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("actualTools", "Tools", "")
+                .addWidget("serviceOrderActualToolsListWidget", "Tools", PageWidget.WidgetType.ACTUAL_TOOLS_LIST,"flexiblemobileactualtools_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("actualServices", "Services", "")
+                .addWidget("serviceOrderActualServicesListWidget", "Services", PageWidget.WidgetType.ACTUAL_SERVICES_LIST,"flexiblemobileactualservices_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+
+        return FieldUtil.getAsJSON(widgetGroup);
     }
 
     private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
@@ -1027,7 +1196,9 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(siteWidgetGroup, spaceField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(siteWidgetGroup, assetField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(siteWidgetGroup, locationField, 1, 4, 1);
-//        addSummaryFieldInWidgetGroup(siteWidgetGroup, territoryField, 1, 5,1);
+
+        // Row 2
+        addSummaryFieldInWidgetGroup(siteWidgetGroup, territoryField, 2, 1,1);
 
 
         // Group 3
@@ -1094,7 +1265,7 @@ public class ServiceOrderModule extends BaseModuleConfig {
         widgetGroupList.add(systemWidgetGroup);
 
         pageWidget.setName("serviceOrderDetails");
-        pageWidget.setDisplayName("Service Order Details");
+        pageWidget.setDisplayName("Work Order Details");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
@@ -1123,10 +1294,10 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
     private static JSONObject getWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_NOTES);
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ATTACHMENTS);
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
@@ -1172,5 +1343,65 @@ public class ServiceOrderModule extends BaseModuleConfig {
                     .fields(FieldFactory.getSLAEntityFields());
             builder.insert(slaEntityMap);
         }
+    }
+    public static Criteria getEditCriteria() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        LookupField status = new LookupField();
+        status.setName("status");
+        status.setColumnName("STATUS");
+        status.setDataType(FieldType.LOOKUP);
+        status.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER));
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
+
+        LookupField recordLocked = new LookupField();
+        recordLocked.setName("recordLocked");
+        recordLocked.setColumnName("RECORD_LOCKED");
+        recordLocked.setDataType(FieldType.BOOLEAN);
+        recordLocked.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
+
+        Criteria oneLevelCriteria=new Criteria();
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false), BooleanOperators.IS));
+
+        Condition statusCondition=new Condition();
+        statusCondition.setOperator(LookupOperator.LOOKUP);
+        statusCondition.setField(status);
+        statusCondition.setCriteriaValue(oneLevelCriteria);
+
+        Criteria statusCriteria = new Criteria();
+        statusCriteria.addAndCondition(statusCondition);
+
+        return statusCriteria;
+    }
+
+    public static Criteria getDeleteCriteria() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        LookupField status = new LookupField();
+        status.setName("status");
+        status.setColumnName("STATUS");
+        status.setDataType(FieldType.LOOKUP);
+        status.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER));
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
+
+        LookupField recordLocked = new LookupField();
+        recordLocked.setName("deleteLocked");
+        recordLocked.setColumnName("DELETE_LOCKED");
+        recordLocked.setDataType(FieldType.BOOLEAN);
+        recordLocked.setModule(moduleBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS));
+
+        Criteria oneLevelCriteria=new Criteria();
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false),BooleanOperators.IS));
+
+        Condition statusCondition=new Condition();
+        statusCondition.setOperator(LookupOperator.LOOKUP);
+        statusCondition.setField(status);
+        statusCondition.setCriteriaValue(oneLevelCriteria);
+
+        Criteria statusCriteria = new Criteria();
+        statusCriteria.addAndCondition(statusCondition);
+
+        return statusCriteria;
+
     }
 }

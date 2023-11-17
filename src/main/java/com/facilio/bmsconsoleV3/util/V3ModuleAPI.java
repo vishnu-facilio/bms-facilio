@@ -134,12 +134,7 @@ public class V3ModuleAPI {
 //        FILTERED_ALARM_RULES(AlarmFilterRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
 //        FLAGGED_EVENTS(FlaggedEventModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
 //        FLAGGED_EVENT_RULES(FlaggedEventRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
-        SERVICE_SKILL(ContextNames.FieldServiceManagement.SERVICE_SKILL,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        WORK_TYPE(ContextNames.FieldServiceManagement.WORK_TYPE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        WORK_TYPE_LINE_ITEMS(ContextNames.FieldServiceManagement.WORK_TYPE_LINE_ITEMS,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SERVICE_TASK(ContextNames.FieldServiceManagement.SERVICE_TASK,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        SERVICE_ORDER(ContextNames.SERVICE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        LOCATION_HISTORY(FacilioConstants.LocationHistory.LOCATION_HISTORY,Arrays.asList()),
+        SERVICE_ORDER(ContextNames.SERVICE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TERRITORY(FacilioConstants.Territory.TERRITORY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TIME_OFF(FacilioConstants.TimeOff.TIME_OFF,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         SERVICE_APPOINTMENT(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),

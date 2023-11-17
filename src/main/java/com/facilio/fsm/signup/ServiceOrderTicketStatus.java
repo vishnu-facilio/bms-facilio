@@ -32,7 +32,7 @@ public class ServiceOrderTicketStatus extends BaseModuleConfig {
 
     private void addServiceOrderTicketStatus() throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
-        FacilioModule serviceOrderTicketStatus = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS,"Service Order Ticket Status","ServiceOrder_TicketStatus", FacilioModule.ModuleType.PICK_LIST,false);
+        FacilioModule serviceOrderTicketStatus = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TICKET_STATUS,"Work Order Ticket Status","ServiceOrder_TicketStatus", FacilioModule.ModuleType.PICK_LIST,false);
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(new StringField(serviceOrderTicketStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,false));

@@ -51,7 +51,7 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
 
     }
     private FacilioModule constructServiceOrderServicesModule(FacilioModule serviceMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "Service Order Services", "Service_Order_Services", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES, "Work Order Services", "Service_Order_Services", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -73,18 +73,18 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
     private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceAppointmentMod,FacilioModule serviceOrderServicesModule)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER", FieldType.LOOKUP);
         parent.setRequired(true);
         parent.setLookupModule(serviceOrderMod);
         parent.setModule(serviceOrderServicesModule);
         bean.addField(parent);
 
-        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
+        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Task","SERVICE_TASK",FieldType.LOOKUP);
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderServicesModule);
         bean.addField(serviceTask);
 
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
         serviceAppointment.setLookupModule(serviceAppointmentMod);
         serviceAppointment.setModule(serviceOrderServicesModule);
         bean.addField(serviceAppointment);
@@ -96,7 +96,7 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
         FacilioModule serviceOrderServiceModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_SERVICES);
 
         FacilioForm serviceOrderServiceModuleForm = new FacilioForm();
-        serviceOrderServiceModuleForm.setDisplayName("New Service Order Service");
+        serviceOrderServiceModuleForm.setDisplayName("New Work Order Service");
         serviceOrderServiceModuleForm.setName("default_serviceOrderService_web");
         serviceOrderServiceModuleForm.setModule(serviceOrderServiceModule);
         serviceOrderServiceModuleForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
@@ -109,7 +109,7 @@ public class ServiceOrderServicesModule  extends BaseModuleConfig {
         serviceOrderServiceModuleFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME,"Start Time", FormField.Required.OPTIONAL, ++seqNum,1));
         serviceOrderServiceModuleFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME,"End Time", FormField.Required.OPTIONAL, ++seqNum,1));
         serviceOrderServiceModuleFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION,"Duration", FormField.Required.OPTIONAL,"duration", ++seqNum,1));
-        serviceOrderServiceModuleFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
+        serviceOrderServiceModuleFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
 
         FormSection serviceOrderServiceModuleFormSection = new FormSection("Default", 1, serviceOrderServiceModuleFormFields, false);
         serviceOrderServiceModuleFormSection.setSectionType(FormSection.SectionType.FIELDS);

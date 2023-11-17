@@ -9,8 +9,11 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
@@ -32,6 +35,7 @@ public class EmployeeModule extends BaseModuleConfig{
     public void addData() throws Exception {
         addActivityModuleForEmployee();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.EMPLOYEE));
+        addSystemButtons();
     }
 
     @Override
@@ -113,7 +117,7 @@ public class EmployeeModule extends BaseModuleConfig{
 
         FacilioForm employeeForm = new FacilioForm();
         employeeForm.setDisplayName("NEW EMPLOYEE");
-        employeeForm.setName("default_employee_fsm_web");
+        employeeForm.setName("default_employee_web");
         employeeForm.setModule(employeeModule);
         employeeForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         employeeForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
@@ -362,5 +366,36 @@ public class EmployeeModule extends BaseModuleConfig{
 
         return FieldUtil.getAsJSON(widgetGroup);
     }
+
+    private static void addSystemButtons() throws Exception {
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Create Employee");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.EMPLOYEE, create);
+
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.EMPLOYEE);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.ContextNames.EMPLOYEE);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.EMPLOYEE);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.EMPLOYEE);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.EMPLOYEE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.EMPLOYEE);
+
+        SystemButtonRuleContext portalAccessButton = new SystemButtonRuleContext();
+        portalAccessButton.setName("PortalAccess");
+        portalAccessButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        portalAccessButton.setIdentifier(FacilioConstants.ContextNames.EMPLOYEE_MODULE_PORTAL_BUTTON);
+        portalAccessButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        portalAccessButton.setPermission("MANAGE_ACCESS");
+        portalAccessButton.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.EMPLOYEE, portalAccessButton);
+
+
+    }
+
 }
 

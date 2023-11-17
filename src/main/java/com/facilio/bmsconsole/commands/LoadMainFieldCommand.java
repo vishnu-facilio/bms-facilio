@@ -54,6 +54,10 @@
 		if(colorField != null){
 			selectFields.add(colorField);
 		}
+		FacilioField accentField = (FacilioField) context.get(FacilioConstants.PickList.ACCENT_FIELD);
+		if(accentField != null){
+			selectFields.add(accentField);
+		}
 		FacilioField subModuleTypeField = (FacilioField) context.get(FacilioConstants.PickList.SUB_MODULE_TYPE_FIELD);
 		if(subModuleTypeField != null){
 			selectFields.add(subModuleTypeField);

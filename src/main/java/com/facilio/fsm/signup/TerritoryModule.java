@@ -1,5 +1,6 @@
 package com.facilio.fsm.signup;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -9,12 +10,18 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -36,6 +43,7 @@ public class TerritoryModule extends BaseModuleConfig {
         addPeopleTerritoryModule();
         addTerritoriesField();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.Territory.TERRITORY));
+        addSystemButtons();
     }
 
     private void addTerritoryModule() throws Exception {
@@ -348,8 +356,7 @@ public class TerritoryModule extends BaseModuleConfig {
         return groupVsViews;
     }
     private static FacilioView getAllTerritories() {
-        FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY,"Territory","TERRITORY", FacilioModule.ModuleType.BASE_ENTITY,true);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("id","ID",territoryModule,FieldType.NUMBER), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("all");
@@ -404,6 +411,29 @@ public class TerritoryModule extends BaseModuleConfig {
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         addModuleChain.getContext().put(FacilioConstants.Module.SYS_FIELDS_NEEDED, true);
         addModuleChain.execute();
+    }
+
+    private void addSystemButtons() throws Exception {
+
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Create Territory");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.Territory.TERRITORY,create);
+
+        SystemButtonApi.addListEditButton(FacilioConstants.Territory.TERRITORY);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.Territory.TERRITORY);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.Territory.TERRITORY);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.Territory.TERRITORY);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Territory.TERRITORY);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Territory.TERRITORY);
+
+
+
     }
 
 }

@@ -1,6 +1,7 @@
 package com.facilio.fsm.signup;
 
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -11,8 +12,11 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
@@ -39,6 +43,7 @@ public class TimeOffModule extends BaseModuleConfig {
         addTimeOffModule();
         addActivityModuleForTimeOff();
         SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.TimeOff.TIME_OFF));
+        addSystemButtons();
     }
 
     public void addTimeOffTypeModule() throws Exception {
@@ -282,6 +287,12 @@ public class TimeOffModule extends BaseModuleConfig {
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.TimeOff.TIME_OFF_ACTIVITY);
 
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("notesModuleName", FacilioConstants.TimeOff.TIME_OFF_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.TimeOff.TIME_OFF_ATTACHMENTS);
+
         return new ModulePages()
                 .addPage("timeOff", "Time Off", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
@@ -303,6 +314,31 @@ public class TimeOffModule extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
+                .layoutDone()
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
+                .widgetDone()
+                .addWidget("attachment", null, PageWidget.WidgetType.ATTACHMENT, "flexiblemobileattachment_8", 0, 15, attachmentWidgetParam, null)
+                .widgetDone()
+                .addWidget("comment", null, PageWidget.WidgetType.COMMENT, "flexiblemobilecomment_8", 0, 23, commentWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
                 .layoutDone()
                 .pageDone().getCustomPages();
 
@@ -421,10 +457,9 @@ public class TimeOffModule extends BaseModuleConfig {
         return groupVsViews;
     }
 
-    private FacilioView getAllTimeOffViews() throws Exception {
+    private FacilioView getAllTimeOffViews() {
 
-        FacilioModule timeOffModule = Constants.getModBean().getModule(FacilioConstants.TimeOff.TIME_OFF);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeOffModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("alltimeoff");
@@ -445,6 +480,29 @@ public class TimeOffModule extends BaseModuleConfig {
         allView.setFields(timeOffViewFields);
 
         return allView;
+    }
+
+    private void addSystemButtons() throws Exception {
+
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Add Time Off");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeOff.TIME_OFF,create);
+
+
+        SystemButtonApi.addListEditButton(FacilioConstants.TimeOff.TIME_OFF);
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.TimeOff.TIME_OFF);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.TimeOff.TIME_OFF);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.TimeOff.TIME_OFF);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.TimeOff.TIME_OFF);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.TimeOff.TIME_OFF);
+
+
     }
 
 }

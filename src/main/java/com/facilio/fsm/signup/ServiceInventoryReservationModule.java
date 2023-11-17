@@ -69,8 +69,8 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
         fields.add(reservationStatus);
 
 
-        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER",FieldType.LOOKUP);
-        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Service Order module doesn't exist."));
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER",FieldType.LOOKUP);
+        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Work Order module doesn't exist."));
         fields.add(serviceOrder);
 
         LookupField storeRoom = FieldFactory.getDefaultField("storeRoom","Storeroom","STOREROOM",FieldType.LOOKUP);
@@ -105,8 +105,8 @@ public class ServiceInventoryReservationModule extends BaseModuleConfig {
     private void createPlannedItemField(FacilioModule serviceInventoryReservation)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
-        LookupField serviceOrderPlannedItem = FieldFactory.getDefaultField("serviceOrderPlannedItem","Service Order Planned Item","SO_PLANNED_ITEM_ID",FieldType.LOOKUP);
-        serviceOrderPlannedItem.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS),"Service Order Planned Item module doesn't exist."));
+        LookupField serviceOrderPlannedItem = FieldFactory.getDefaultField("serviceOrderPlannedItem","Work Order Planned Item","SO_PLANNED_ITEM_ID",FieldType.LOOKUP);
+        serviceOrderPlannedItem.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS),"Work Order Planned Item module doesn't exist."));
         serviceOrderPlannedItem.setModule(serviceInventoryReservation);
         bean.addField(serviceOrderPlannedItem);
     }

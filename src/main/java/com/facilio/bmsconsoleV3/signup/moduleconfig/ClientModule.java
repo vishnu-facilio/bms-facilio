@@ -213,7 +213,7 @@ public class ClientModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("Clients");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.FSM_APP));
         return allView;
     }
 
@@ -237,7 +237,7 @@ public class ClientModule extends BaseModuleConfig{
         clientForm.setName("default_client_web");
         clientForm.setModule(clientModule);
         clientForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
-        clientForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        clientForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> clientFormFields = new ArrayList<>();
         clientFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));

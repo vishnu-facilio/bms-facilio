@@ -51,7 +51,7 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
 
     }
     private FacilioModule constructServiceOrderPlannedItemsModule(FacilioModule itemTypeMod, FacilioModule storeRoomMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "Service Order Planned Items", "Service_Order_Planned_Items", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS, "Work Order Planned Items", "Service_Order_Planned_Items", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -89,18 +89,18 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
     private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceAppointmentMod,FacilioModule serviceOrderPlannedItemsModule)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER", FieldType.LOOKUP);
         parent.setRequired(true);
         parent.setLookupModule(serviceOrderMod);
         parent.setModule(serviceOrderPlannedItemsModule);
         bean.addField(parent);
 
-        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
+        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Task","SERVICE_TASK",FieldType.LOOKUP);
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderPlannedItemsModule);
         bean.addField(serviceTask);
 
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
         serviceAppointment.setLookupModule(serviceAppointmentMod);
         serviceAppointment.setModule(serviceOrderPlannedItemsModule);
         bean.addField(serviceAppointment);
@@ -111,7 +111,7 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         FacilioModule plannedItemsModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_ITEMS);
 
         FacilioForm plannedItemsForm = new FacilioForm();
-        plannedItemsForm.setDisplayName("SERVICE ORDER PLANNED ITEMS");
+        plannedItemsForm.setDisplayName("WORK ORDER PLANNED ITEMS");
         plannedItemsForm.setName("default_serviceOrderPlannedItems_web");
         plannedItemsForm.setModule(plannedItemsModule);
         plannedItemsForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
@@ -122,7 +122,7 @@ public class ServiceOrderPlannedItemsModule extends BaseModuleConfig {
         plannedItemsFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedItemsFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", 3, 1));
         plannedItemsFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.DECIMAL, "Unit Price", FormField.Required.OPTIONAL, 5, 1));
-        plannedItemsFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", 6, 1,false));
+        plannedItemsFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Task", FormField.Required.OPTIONAL,"serviceTask", 6, 1,false));
 
         plannedItemsForm.setFields(plannedItemsFormFields);
         FormSection section = new FormSection("Default", 1, plannedItemsFormFields, false);

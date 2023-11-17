@@ -55,14 +55,14 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule itemTransactions = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 
-        LookupField serviceOrderItem = FieldFactory.getDefaultField("serviceOrderItem","Service Order Items","SERVICE_ORDER_ITEM",FieldType.LOOKUP);
-        serviceOrderItem.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS),"Service Order Items module doesn't exist."));
+        LookupField serviceOrderItem = FieldFactory.getDefaultField("serviceOrderItem","Work Order Items","SERVICE_ORDER_ITEM",FieldType.LOOKUP);
+        serviceOrderItem.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS),"Work Order Items module doesn't exist."));
         serviceOrderItem.setModule(itemTransactions);
 
         modBean.addField(serviceOrderItem);
     }
     private FacilioModule constructServiceOrderItemsModule(FacilioModule itemTypeMod, FacilioModule storeRoomMod,FacilioModule itemMod, FacilioModule assetMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "Service Order Items", "Service_Order_Items", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS, "Work Order Items", "Service_Order_Items", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -94,18 +94,18 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
     private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceAppointmentMod,FacilioModule serviceOrderItemsModule)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER", FieldType.LOOKUP);
         parent.setRequired(true);
         parent.setLookupModule(serviceOrderMod);
         parent.setModule(serviceOrderItemsModule);
         bean.addField(parent);
 
-        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
+        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Task","SERVICE_TASK",FieldType.LOOKUP);
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderItemsModule);
         bean.addField(serviceTask);
 
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
         serviceAppointment.setLookupModule(serviceAppointmentMod);
         serviceAppointment.setModule(serviceOrderItemsModule);
         bean.addField(serviceAppointment);
@@ -116,7 +116,7 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
         FacilioModule serviceOrderItemsModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ITEMS);
 
         FacilioForm serviceOrderItemForm = new FacilioForm();
-        serviceOrderItemForm.setDisplayName("New Service Order Item");
+        serviceOrderItemForm.setDisplayName("New Work Order Item");
         serviceOrderItemForm.setName("default_serviceOrderItem_web");
         serviceOrderItemForm.setModule(serviceOrderItemsModule);
         serviceOrderItemForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
@@ -127,7 +127,7 @@ public class ServiceOrderItemsModule extends BaseModuleConfig {
         serviceOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1,true));
         serviceOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.REQUIRED, "storeRoom", ++seqNum, 1,true));
         serviceOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
-        serviceOrderItemFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
+        serviceOrderItemFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Task", FormField.Required.OPTIONAL,"serviceTask", ++seqNum, 1,false));
 
         FormSection section = new FormSection("Default", 1, serviceOrderItemFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

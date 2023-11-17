@@ -4,6 +4,8 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsoleV3.context.SilentPushNotificationContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +33,10 @@ public class EndTripForAppointmentCommand extends FacilioCommand {
                 info.put("trip",trip.getCode());
                 CommonCommandUtil.addActivityToContext(recordId, -1, ServiceAppointmentActivityType.END_TRIP, info, (FacilioContext) context);
                 if(trip.getPeople() != null) {
-                    SilentNotificationUtilForFsm.sendNotificationForFsm(trip.getId(), Collections.singletonList(trip.getPeople().getId()) , SilentPushNotificationContext.ActionType.END_TRIP, 300000L, 120000L);
+                    V3PeopleContext peopleRecord = V3PeopleAPI.getPeopleById(trip.getPeople().getId());
+                    if(peopleRecord != null && peopleRecord.isTrackGeoLocation()) {
+                        SilentNotificationUtilForFsm.sendNotificationForFsm(trip.getId(), Collections.singletonList(trip.getPeople().getId()), SilentPushNotificationContext.ActionType.END_TRIP, 300000L, 120000L);
+                    }
                 }
             }
         }

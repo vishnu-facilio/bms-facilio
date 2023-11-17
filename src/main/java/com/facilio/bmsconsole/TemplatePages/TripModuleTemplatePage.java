@@ -50,6 +50,31 @@ public class TripModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Trip.TRIP))
+                .widgetDone()
+                .addWidget("tripLocationWidget", null, PageWidget.WidgetType.LOCATION_WIDGET, "mobileFlexibleLocationWidget_9", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("tripMapWidget", null, PageWidget.WidgetType.TRIP_MAP_WIDGET, "mobileFlexibleTripMapWidget_9", 0, 24, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
                 ;
 
 

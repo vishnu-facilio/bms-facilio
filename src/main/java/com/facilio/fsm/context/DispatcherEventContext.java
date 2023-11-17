@@ -35,7 +35,7 @@ public class DispatcherEventContext {
     }
     public enum EventType implements FacilioIntEnum {
         TIME_OFF("Time Off"),
-        SERVICE_APPOINTMENT("Service Appointment");
+        SERVICE_APPOINTMENT("Appointment");
         private final String value;
         EventType(String value) {
             this.value = value;

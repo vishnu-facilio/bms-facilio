@@ -35,7 +35,7 @@ public class CheckRecordLockForTripCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(trips)) {
             for (TripContext trip: trips) {
-                TripStatusContext status = V3RecordAPI.getRecord(FacilioConstants.Trip.TRIP_STATUS, trip.getStatus().getId(),TripStatusContext.class);
+                TripStatusContext status = V3RecordAPI.getRecord(FacilioConstants.Trip.TRIP_TICKET_STATUS, trip.getStatus().getId(),TripStatusContext.class);
                 if (eventType == EventType.EDIT) {
                     if (status.isRecordLocked()) {
                         throw new FSMException(FSMErrorCode.TRIP_RECORD_LOCKED);

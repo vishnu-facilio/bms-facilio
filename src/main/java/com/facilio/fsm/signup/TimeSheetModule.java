@@ -14,11 +14,10 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -62,10 +61,10 @@ public class TimeSheetModule extends BaseModuleConfig {
         LookupField fieldAgent = new LookupField(timeSheetModule,"fieldAgent","Field Agent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"PEOPLE_ID",FieldType.LOOKUP,true,false,true,false,"Field Agent", Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         timeSheetFields.add(fieldAgent);
 
-        LookupField serviceAppointment = new LookupField(timeSheetModule,"serviceAppointment","Service Appointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID",FieldType.LOOKUP,true,false,true,false,"Service Appointment", Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+        LookupField serviceAppointment = new LookupField(timeSheetModule,"serviceAppointment","Appointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID",FieldType.LOOKUP,true,false,true,false,"Appointments", Constants.getModBean().getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         timeSheetFields.add(serviceAppointment);
 
-        LookupField serviceOrder = new LookupField(timeSheetModule,"serviceOrder","Service Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,false,"Service Order", Constants.getModBean().getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
+        LookupField serviceOrder = new LookupField(timeSheetModule,"serviceOrder","Work Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,false,"Work Orders", Constants.getModBean().getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
         timeSheetFields.add(serviceOrder);
 
         LookupField moduleStateField = FieldFactory.getDefaultField("moduleState", "Status", "MODULE_STATE", FieldType.LOOKUP);
@@ -116,7 +115,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         FacilioModule timeSheetModule = modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
         FacilioModule timeSheetTaskModule = new FacilioModule(FacilioConstants.TimeSheet.TIME_SHEET_TASK,"Time Sheet Tasks","TIME_SHEET_TASK_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
         List<FacilioField> fields = new ArrayList<>();
-        LookupField serviceTaskField = new LookupField(timeSheetTaskModule,"right","Service Tasks",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_TASK_ID",FieldType.LOOKUP,true,false,true,false,"Service Tasks",serviceTaskModule);
+        LookupField serviceTaskField = new LookupField(timeSheetTaskModule,"right","Task",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_TASK_ID",FieldType.LOOKUP,true,false,true,false,"Service Tasks",serviceTaskModule);
         fields.add(serviceTaskField);
         LookupField timeSheetField = new LookupField(timeSheetTaskModule,"left","Time Sheet", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"TIME_SHEET_ID",FieldType.LOOKUP,true,false,true,true,"Time Sheet",timeSheetModule);
         fields.add(timeSheetField);
@@ -235,6 +234,31 @@ public class TimeSheetModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeSheet.TIME_SHEET))
+                .widgetDone()
+                .addWidget("timeSheetServiceAppointmentCard", null, PageWidget.WidgetType.SERVICE_APPOINTMENT_CARD, "mobileFlexibleTimeSheetServiceAppointmentCard_2", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("timeSheetTasks", null, PageWidget.WidgetType.SERVICE_TASK_LIST_WIDGET, "mobileFlexibleTimeSheetServiceTaskList_16", 0, 17, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
                 .pageDone().getCustomPages();
 
 
@@ -345,7 +369,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         List<FormField> generalInformationFields = new ArrayList<>();
 
         generalInformationFields.add(new FormField("fieldAgent", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.REQUIRED,1,2));
-        generalInformationFields.add(new FormField("serviceAppointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Appointment",FormField.Required.REQUIRED,2,2));
+        generalInformationFields.add(new FormField("serviceAppointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Appointment",FormField.Required.REQUIRED,2,2));
         generalInformationFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED, 3, 2));
         generalInformationFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED, 4, 2));
 
@@ -354,7 +378,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
         List<FormField> serviceTasksFields = new ArrayList<>();
         serviceTasksFields.add(new FormField("serviceTasks", FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE, "Tasks", FormField.Required.REQUIRED, 1, 1));
-        FormSection serviceTaskSection = new FormSection("Service Task Details", 2, serviceTasksFields, true);
+        FormSection serviceTaskSection = new FormSection("Task Details", 2, serviceTasksFields, true);
 
         serviceTaskSection.setSectionType(FormSection.SectionType.FIELDS);
 
@@ -366,24 +390,61 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetForm.setIsSystemForm(true);
         timeSheetForm.setType(FacilioForm.Type.FORM);
 
-        FormRuleContext singleRule = addTasksFilterRule();
-        timeSheetForm.setDefaultFormRules(Arrays.asList(singleRule));
+        List<FormRuleContext> formRules = new ArrayList<>();
+        formRules.add(addTasksFilterRule());
+        formRules.add(addEditFieldDisableRule());
+        timeSheetForm.setDefaultFormRules(formRules);
 
         List<FacilioForm> timeSheetModuleForms = new ArrayList<>();
         timeSheetModuleForms.add(timeSheetForm);
         return timeSheetModuleForms;
     }
 
+    private FormRuleContext addEditFieldDisableRule() {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Disabling field edit");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FORM_ON_LOAD.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+        singleRule.setExecuteType(FormRuleContext.ExecuteType.EDIT.getIntVal());
+        singleRule.setTriggerFields(new ArrayList<>());
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.DISABLE_FIELD.getVal());
+
+        List<FormRuleActionFieldsContext> actionFields = new ArrayList<>();
+        FormRuleActionFieldsContext workOrderField = new FormRuleActionFieldsContext();
+        workOrderField.setFormFieldName("Appointment");
+        actionFields.add(workOrderField);
+        FormRuleActionFieldsContext fieldAgentField = new FormRuleActionFieldsContext();
+        fieldAgentField.setFormFieldName("Field Agent");
+        actionFields.add(fieldAgentField);
+        FormRuleActionFieldsContext tasksField = new FormRuleActionFieldsContext();
+        tasksField.setFormFieldName("Tasks");
+        actionFields.add(tasksField);
+
+        filterAction.setFormRuleActionFieldsContext(actionFields);
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        return singleRule;
+    }
+
     private FormRuleContext addTasksFilterRule() {
 
         FormRuleContext singleRule = new FormRuleContext();
-        singleRule.setName("Service Tasks Filter Rule");
+        singleRule.setName("Tasks Filter Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
         singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
         singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
 
         FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
-        triggerField.setFieldName("Service Appointment");
+        triggerField.setFieldName("Appointment");
         singleRule.setTriggerFields(Collections.singletonList(triggerField));
 
         List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
@@ -396,7 +457,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         actionField.setFormFieldName("Tasks");
 
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_TASK.SERVICE_APPOINTMENT","serviceAppointment", "${timesheet.serviceAppointment.id}", NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("SERVICE_TASK.SERVICE_APPOINTMENT","serviceAppointment", "${timeSheet.serviceAppointment.id}", NumberOperators.EQUALS));
 
         actionField.setCriteria(criteria);
 
@@ -405,7 +466,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         actions.add(filterAction);
 
         singleRule.setActions(actions);
-        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         return singleRule;
     }
 
@@ -431,7 +492,7 @@ public class TimeSheetModule extends BaseModuleConfig {
 
     private FacilioView getHiddenAllTimeSheetViews() throws Exception {
         FacilioModule timeSheetModule = Constants.getModBean().getModule(FacilioConstants.TimeSheet.TIME_SHEET);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeSheetModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("hidden-all");
@@ -455,10 +516,9 @@ public class TimeSheetModule extends BaseModuleConfig {
         return allView;
     }
 
-    private FacilioView getAllTimeSheetViews() throws Exception {
+    private FacilioView getAllTimeSheetViews() {
 
-        FacilioModule timeSheetModule = Constants.getModBean().getModule(FacilioConstants.TimeSheet.TIME_SHEET);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(timeSheetModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("alltimesheets");
@@ -473,7 +533,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeSheetViewFields.add(new ViewField("fieldAgent","Field Agent"));
         timeSheetViewFields.add(new ViewField("startTime","Start Time"));
         timeSheetViewFields.add(new ViewField("endTime","End Time"));
-        timeSheetViewFields.add(new ViewField("serviceAppointment","Service Appointment"));
+        timeSheetViewFields.add(new ViewField("serviceAppointment","Appointment"));
         timeSheetViewFields.add(new ViewField("serviceTasks","Tasks"));
 
         allView.setFields(timeSheetViewFields);
@@ -510,6 +570,123 @@ public class TimeSheetModule extends BaseModuleConfig {
         timeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.ENDTIME),CommonOperators.IS_EMPTY));
         stopTimeSheetButton.setCriteria(timeCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,stopTimeSheetButton);
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Create Time Sheet");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,create);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit_list");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        edit.setPermission("UPDATE");
+        edit.setPermissionRequired(true);
+        edit.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,edit);
+
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        summaryEditButton.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,summaryEditButton);
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        listDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,listDeleteButton);
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        bulkDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.TimeSheet.TIME_SHEET,bulkDeleteButton);
+
+        SystemButtonApi.addExportAsCSV(FacilioConstants.TimeSheet.TIME_SHEET);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.TimeSheet.TIME_SHEET);
+
+
+
+    }
+
+    public static Criteria getEditCriteria() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        LookupField status = new LookupField();
+        status.setName("status");
+        status.setColumnName("STATUS");
+        status.setDataType(FieldType.LOOKUP);
+        status.setModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+
+        LookupField recordLocked = new LookupField();
+        recordLocked.setName("recordLocked");
+        recordLocked.setColumnName("RECORD_LOCKED");
+        recordLocked.setDataType(FieldType.BOOLEAN);
+        recordLocked.setModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+
+        Criteria oneLevelCriteria=new Criteria();
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false), BooleanOperators.IS));
+
+        Condition statusCondition=new Condition();
+        statusCondition.setOperator(LookupOperator.LOOKUP);
+        statusCondition.setField(status);
+        statusCondition.setCriteriaValue(oneLevelCriteria);
+
+        Criteria statusCriteria = new Criteria();
+        statusCriteria.addAndCondition(statusCondition);
+
+        return statusCriteria;
+    }
+
+    public static Criteria getDeleteCriteria() throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+
+        LookupField status = new LookupField();
+        status.setName("status");
+        status.setColumnName("STATUS");
+        status.setDataType(FieldType.LOOKUP);
+        status.setModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));
+        status.setLookupModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+
+        LookupField recordLocked = new LookupField();
+        recordLocked.setName("deleteLocked");
+        recordLocked.setColumnName("DELETE_LOCKED");
+        recordLocked.setDataType(FieldType.BOOLEAN);
+        recordLocked.setModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
+
+        Criteria oneLevelCriteria=new Criteria();
+        oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false),BooleanOperators.IS));
+
+        Condition statusCondition=new Condition();
+        statusCondition.setOperator(LookupOperator.LOOKUP);
+        statusCondition.setField(status);
+        statusCondition.setCriteriaValue(oneLevelCriteria);
+
+        Criteria statusCriteria = new Criteria();
+        statusCriteria.addAndCondition(statusCondition);
+
+        return statusCriteria;
+
 
     }
 

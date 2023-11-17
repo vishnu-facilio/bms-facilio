@@ -4474,7 +4474,7 @@ public class APIv3Config {
                 .build();
     }
 
-    @Module(FacilioConstants.Trip.TRIP_STATUS)
+    @Module(FacilioConstants.Trip.TRIP_TICKET_STATUS)
     public static Supplier<V3Config> getTripStatus(){
         return () -> new V3Config(TripStatusContext.class,null)
                 .create()
@@ -4483,7 +4483,7 @@ public class APIv3Config {
                 .summary()
                 .delete()
                 .pickList()
-                .setColorField(FacilioConstants.Trip.TRIP_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .setColorField(FacilioConstants.Trip.TRIP_TICKET_STATUS,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
                 .build();
     }
     @Module(FacilioConstants.TimeSheet.TIME_SHEET_STATUS)
@@ -4523,7 +4523,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getTimeOffType(){
         return () -> new V3Config(TimeOffTypeContext.class,null)
                 .pickList()
-                .setAccentField(FacilioConstants.ContextNames.FieldServiceManagement.COLOR,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
+                .setAccentField(FacilioConstants.TimeOff.TIME_OFF_TYPE,FacilioConstants.ContextNames.FieldServiceManagement.COLOR)
                 .setSeverityLevel("L2")
                 .build();
     }

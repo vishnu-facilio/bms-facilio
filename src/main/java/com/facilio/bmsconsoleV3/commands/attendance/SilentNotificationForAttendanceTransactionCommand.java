@@ -1,7 +1,9 @@
 package com.facilio.bmsconsoleV3.commands.attendance;
 
 import com.facilio.bmsconsoleV3.context.SilentPushNotificationContext;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
+import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.util.SilentNotificationUtilForFsm;
@@ -23,10 +25,16 @@ public class SilentNotificationForAttendanceTransactionCommand extends FacilioCo
 
 
             if (transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN)) {
-                SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(),Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_IN, 300000L, 120000L);
+                V3PeopleContext peopleRecord = V3PeopleAPI.getPeopleById(peopleID);
+                if(peopleRecord != null && peopleRecord.isTrackGeoLocation()) {
+                    SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(), Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_IN, 300000L, 120000L);
+                }
 
             } else if (transaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_OUT)) {
-                SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(),Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_OUT, 300000L, 120000L);
+                V3PeopleContext peopleRecord = V3PeopleAPI.getPeopleById(peopleID);
+                if(peopleRecord != null && peopleRecord.isTrackGeoLocation()) {
+                    SilentNotificationUtilForFsm.sendNotificationForFsm(transaction.getId(), Collections.singletonList(peopleID), SilentPushNotificationContext.ActionType.CHECK_OUT, 300000L, 120000L);
+                }
             }
         }
        return false;

@@ -33,12 +33,12 @@ public class ServiceOrderCostModule extends BaseModuleConfig {
     }
     private FacilioModule constructServiceOrderCostModule() throws Exception{
         ModuleBean bean = Constants.getModBean();
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_COST, "Service Order Cost", "Service_Order_Cost", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_COST, "Work Order Cost", "Service_Order_Cost", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
-        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
-        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Service Order module doesn't exist."));
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER", FieldType.LOOKUP);
+        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Work Order module doesn't exist."));
         fields.add(serviceOrder);
         fields.add(FieldFactory.getDefaultField("quantity","Quantity","QUANTITY",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));
         fields.add(FieldFactory.getDefaultField("cost","Cost","COST",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL));

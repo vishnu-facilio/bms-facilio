@@ -53,7 +53,7 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
 
     }
     private FacilioModule constructServiceOrderPlannedServicesModule(FacilioModule serviceMod){
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "Service Order Planned Services", "Service_Order_Planned_Services", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES, "Work Order Planned Services", "Service_Order_Planned_Services", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -83,18 +83,18 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
     private void createParentFields(FacilioModule serviceOrderMod,FacilioModule serviceTaskMod,FacilioModule serviceAppointmentMod,FacilioModule serviceOrderPlannedServicesModule)throws Exception{
         ModuleBean bean = Constants.getModBean();
 
-        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER", FieldType.LOOKUP);
+        LookupField parent = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER", FieldType.LOOKUP);
         parent.setRequired(true);
         parent.setLookupModule(serviceOrderMod);
         parent.setModule(serviceOrderPlannedServicesModule);
         bean.addField(parent);
 
-        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Service Task","SERVICE_TASK",FieldType.LOOKUP);
+        LookupField serviceTask = FieldFactory.getDefaultField("serviceTask","Task","SERVICE_TASK",FieldType.LOOKUP);
         serviceTask.setLookupModule(serviceTaskMod);
         serviceTask.setModule(serviceOrderPlannedServicesModule);
         bean.addField(serviceTask);
 
-        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Service Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
+        LookupField serviceAppointment = FieldFactory.getDefaultField("serviceAppointment","Appointment","SERVICE_APPOINTMENT",FieldType.LOOKUP);
         serviceAppointment.setLookupModule(serviceAppointmentMod);
         serviceAppointment.setModule(serviceOrderPlannedServicesModule);
         bean.addField(serviceAppointment);
@@ -105,7 +105,7 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         FacilioModule plannedServicesModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_PLANNED_SERVICES);
 
         FacilioForm plannedServicesForm = new FacilioForm();
-        plannedServicesForm.setDisplayName("SERVICE ORDER PLANNED SERVICES");
+        plannedServicesForm.setDisplayName("WORK ORDER PLANNED SERVICES");
         plannedServicesForm.setName("default_serviceOrderPlannedServices_web");
         plannedServicesForm.setModule(plannedServicesModule);
         plannedServicesForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
@@ -117,7 +117,7 @@ public class ServiceOrderPlannedServicesModule extends BaseModuleConfig {
         plannedServicesFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, 2, 1));
         plannedServicesFormFields.add(new FormField("unitPrice", FacilioField.FieldDisplayType.DECIMAL, "Unit Price", FormField.Required.OPTIONAL, 3, 1));
         plannedServicesFormFields.add(new FormField("duration", FacilioField.FieldDisplayType.DURATION, "Duration", FormField.Required.OPTIONAL, 4, 1));
-        plannedServicesFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Service Task", FormField.Required.OPTIONAL,"serviceTask", 5, 1,false));
+        plannedServicesFormFields.add(new FormField("serviceTask", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Task", FormField.Required.OPTIONAL,"serviceTask", 5, 1,false));
 
         plannedServicesForm.setFields(plannedServicesFormFields);
 

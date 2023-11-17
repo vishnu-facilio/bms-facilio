@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.TemplatePages;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -26,12 +26,18 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
         JSONObject historyWidgetParam = new JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ACTIVITY);
 
+        JSONObject commentWidgetParam = new JSONObject();
+        commentWidgetParam.put("notesModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_NOTES);
+
+        JSONObject attachmentWidgetParam = new JSONObject();
+        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT_ATTACHMENTS);
+
         return new PagesContext(null, null, "", null, true, false, false)
                 .addWebLayout()
                 .addTab("serviceAppointmentSummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentSummaryFields", null, null)
-                .addWidget("serviceAppointmentSummaryFieldsWidget", "Service Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
+                .addWidget("serviceAppointmentSummaryFieldsWidget", "Appointment Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -42,7 +48,7 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .tabDone()
 
 
-                .addTab("serviceAppointmentServiceTasks", "Service Task",  PageTabContext.TabType.SIMPLE,true, null)
+                .addTab("serviceAppointmentServiceTasks", "Tasks",  PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("serviceAppointmentServiceTasks", null, null)
                 .addWidget("serviceAppointmentServiceTasksWidget", "Tasks", PageWidget.WidgetType.SERVICE_APPOINTMENT_SERVICE_TASKS, "webServiceAppointmentServiceTasks_10_12", 0, 0, null, null)
@@ -96,9 +102,132 @@ public class ServiceAppointmentModuleTemplatePage implements TemplatePageFactory
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT))
+                .widgetDone()
+                .addWidget("serviceAppointmentResourceWidget", null, PageWidget.WidgetType.RESOURCE_WIDGET, "mobileFlexibleResourceWidget_6", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentLocationWidget", null, PageWidget.WidgetType.LOCATION_WIDGET, "mobileFlexibleLocationWidget_9", 0, 21, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentUserWidget", null, PageWidget.WidgetType.USER_WIDGET, "mobileFlexibleUserWidget_7", 0, 30, null, null)
+                .widgetDone()
+                .addWidget("attachment", null, PageWidget.WidgetType.ATTACHMENT, "flexiblemobileattachment_8", 0, 37, attachmentWidgetParam, null)
+                .widgetDone()
+                .addWidget("comment", null, PageWidget.WidgetType.COMMENT, "flexiblemobilecomment_8", 0, 45, commentWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("serviceTask", "Service Task", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("serviceTask", null, null)
+                .addWidget("serviceAppointmentServiceTaskListWidget", null, PageWidget.WidgetType.SERVICE_TASK_LIST_WIDGET, "mobileServiceTaskListWidget_16", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("plans", "Plans",PageTabContext.TabType.SIMPLE,  true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("plans", null, null)
+                .addWidget("serviceAppointmentPlansCostWidget", "Plans Cost", PageWidget.WidgetType.PLANS_COST_WIDGET, "mobilePlansCostWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentplansWidgetGroup", "Plans Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_16", 0, 2, null, getMobilePlansWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("actuals", "Actuals",PageTabContext.TabType.SIMPLE,  true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("actuals", null, null)
+                .addWidget("serviceAppointmentActualsCostWidget", "Actuals Cost", PageWidget.WidgetType.ACTUALS_COST, "mobileActualsCostWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentActualsWidgetGroup", "Actuals Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblemobilewidgetgroup_16", 0, 2, null, getMobileActualsWidgetGroup())
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("timeSheet", "Time Sheet",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("timeSheet", null, null)
+                .addWidget("serviceAppointmentTimeSheetOverviewWidget", "Time Sheet Overview", PageWidget.WidgetType.TIME_SHEET_OVERVIEW, "mobileTimeSheetOverviewWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentTimeSheetListWidget", "Time Sheet List", PageWidget.WidgetType.TIME_SHEET_LIST, "mobileTimeSheetListWidget_16", 0, 2, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("trip", "Trip",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("trip", null, null)
+                .addWidget("serviceAppointmentTripOverviewWidget", "Trip Overview", PageWidget.WidgetType.TRIP_OVERVIEW, "mobileTripOverviewWidget_2", 0, 0, null, null)
+                .widgetDone()
+                .addWidget("serviceAppointmentTripListWidget", "Trips", PageWidget.WidgetType.TRIP_LIST, "mobileTripListWidget_16", 0, 2, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
                 ;
 
 
+    }
+    private static JSONObject getMobilePlansWidgetGroup() throws Exception {
+
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("plannedItems", "Items", "")
+                .addWidget("plannedItemsListWidget", "Items", PageWidget.WidgetType.PLANNED_ITEMS_LIST,"flexiblemobileplanneditems_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("plannedTools", "Tools", "")
+                .addWidget("plannedTollsListWidget", "Tools", PageWidget.WidgetType.PLANNED_TOOLS_LIST,"flexiblemobileplannedtools_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("plannedServices", "Services", "")
+                .addWidget("plannedServicesListWidget", "Services", PageWidget.WidgetType.PLANNED_SERVICES_LIST,"flexiblemobileplannedservices_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+
+        return FieldUtil.getAsJSON(widgetGroup);
+    }
+
+    private static JSONObject getMobileActualsWidgetGroup() throws Exception {
+
+        WidgetGroupContext widgetGroup = new WidgetGroupContext()
+                .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
+                .addSection("actualItems", "Items", "")
+                .addWidget("actualItemsListWidget", "Items", PageWidget.WidgetType.ACTUAL_ITEMS_LIST,"flexiblemobileactualitems_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("actualTools", "Tools", "")
+                .addWidget("actualTollsListWidget", "Tools", PageWidget.WidgetType.ACTUAL_TOOLS_LIST,"flexiblemobileactualtools_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone()
+                .addSection("actualServices", "Services", "")
+                .addWidget("actualServicesListWidget", "Services", PageWidget.WidgetType.ACTUAL_SERVICES_LIST,"flexiblemobileactualservices_16", 0, 0, null, null)
+                .widgetGroupWidgetDone()
+                .widgetGroupSectionDone();
+
+        return FieldUtil.getAsJSON(widgetGroup);
     }
 
     private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {

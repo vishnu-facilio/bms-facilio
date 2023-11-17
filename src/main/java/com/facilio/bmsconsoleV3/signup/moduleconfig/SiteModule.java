@@ -553,7 +553,7 @@ public class SiteModule extends BaseModuleConfig {
         siteForms.add(defaultSiteForm);
 
         FacilioForm fsmSiteForm = new FacilioForm();
-        fsmSiteForm.setName("default_site_fsm");
+        fsmSiteForm.setName("default_site_web");
         fsmSiteForm.setModule(siteModule);
         fsmSiteForm.setDisplayName("Site");
         fsmSiteForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));

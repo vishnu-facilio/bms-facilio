@@ -35,8 +35,8 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
                 new WebTabContext("Territory","territory",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Territory.TERRITORY)), null, null,null,appId),
                 new WebTabContext("Assets", "assets", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, 4,null,appId),
-                new WebTabContext("Service Order","serviceOrder",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SERVICE_ORDER)), null, null,null,appId),
-                new WebTabContext("Service Appointment","serviceAppointment",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)), null, null,null,appId),
+                new WebTabContext("Work Order","serviceOrder",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SERVICE_ORDER)), null, null,null,appId),
+                new WebTabContext("Appointment","serviceAppointment",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)), null, null,null,appId),
                 new WebTabContext("Quote", "quote", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.QUOTE)), null, 42,null,appId),
                 new WebTabContext("Employees","employees",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.EMPLOYEE)), null, null,null,appId),
                 new WebTabContext("Trip","trip",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.Trip.TRIP)), null, null,null,appId),
@@ -58,8 +58,8 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Tool Type","tooltypes",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TOOL_TYPES)), null, 14,null,appId),
                 new WebTabContext("Inventory Requests","inventoryrequest",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.INVENTORY_REQUEST)), null, 14,null,appId),
                 new WebTabContext("Transfer Requests","transferrequest",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TRANSFER_REQUEST)), null, 63,null,appId),
-                new WebTabContext("Dashboard","homepage",WebTabContext.Type.HOMEPAGE,null,null,null,null,appId),
-                new WebTabContext("Reports","reports",WebTabContext.Type.REPORT,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.TimeSheet.TIME_SHEET,FacilioConstants.Trip.TRIP,FacilioConstants.ContextNames.EMPLOYEE,FacilioConstants.ContextNames.ATTENDANCE)),"{\"type\": \"module_reports\"}",null,null,appId)
+                new WebTabContext("Home","homepage",WebTabContext.Type.HOMEPAGE,null,null,null,null,appId),
+                new WebTabContext("Analytics","analytics",WebTabContext.Type.ANALYTICS,null,null,null,null,appId)
 
         );
         for(WebTabContext webTab : tabs){
@@ -72,7 +72,7 @@ public class FSMDefaultTabsAndTabGroups {
     public List<WebTabGroupContext> getWebTabGroups(long appId, long layoutId) throws Exception {
         Map<String,WebTabContext> tabsMap = getWebTabs(appId);
         List<WebTabGroupContext> webTabGroups = Arrays.asList(
-                new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"), tabsMap.get("dispatch"),tabsMap.get("approval")), "Home", "home", 1, 1, null, layoutId, IconType.home),
+                new WebTabGroupContext(Arrays.asList(tabsMap.get("dispatch"),tabsMap.get("dashboard"),tabsMap.get("approval"),tabsMap.get("analytics")), "Home", "home", 1, 1, null, layoutId, IconType.home),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("portfolio"), tabsMap.get("assets")), "Portfolio", "portfolio", 1, 1, null, layoutId, IconType.portfolio),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("serviceOrder"),tabsMap.get("serviceAppointment")), "Services", "service", 6, 3, null,layoutId,IconType.service_order),
                 new WebTabGroupContext(Arrays.asList(tabsMap.get("quote")), "Financials", "financials", 6, 5, null,layoutId,IconType.invoice),

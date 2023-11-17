@@ -40,7 +40,7 @@ public class ServiceTaskAttachmentsModule extends BaseModuleConfig {
     }
     private FacilioModule constructServiceTaskAttachmentsModule() throws Exception {
         ModuleBean bean = Constants.getModBean();
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_ATTACHMENTS, "Service Task Attachments", "Service_Task_Attachments", FacilioModule.ModuleType.ATTACHMENTS);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_ATTACHMENTS, "Task Attachments", "Service_Task_Attachments", FacilioModule.ModuleType.ATTACHMENTS);
 
         List<FacilioField> fields = new ArrayList<>();
 

@@ -374,6 +374,7 @@ public class FacilioConstants {
 		public static final String TENANTCONTACT_MODULE_PORTAL_BUTTON="tenantConatctModulePortalButton";
 		public static final String VENDORCONTACT_MODULE_PORTAL_BUTTON="vendorConatctModulePortalButton";
 		public static final String CLIENTCONTACT_MODULE_EDIT_BUTTON="clientContactModuleEditButton";
+		public static final String EMPLOYEE_MODULE_PORTAL_BUTTON="employeeModulePortalButton";
 		public static final String WORKFLOW_RULE_LOGS="workflowRuleLogs";
 		public static final String ONE_LEVEL_LOOKUP="oneLevelLookup";
 		public static final String IS_ONE_LEVEL_FIELDS="isOneLevelFields";
@@ -4804,6 +4805,7 @@ public class FacilioConstants {
 		public static final String EVENTS = "events";
 		public static final String EVENT = "event";
 		public static final String RESOURCES = "resources";
+		public static final String MY_DISPATCHER_CONSOLE = "My Dispatch Console";
 
 	}
 	public static class TimeOff{
@@ -4905,6 +4907,7 @@ public class FacilioConstants {
 		public static final String START_LOCATION="startLocation";
 		public static final String END_LOCATION="endLocation";
 		public static final String TRIP_STATUS = "tripStatus";
+		public static final String TRIP_TICKET_STATUS= "tripTicketStatus";
 		public static final String IN_PROGRESS = "inProgress";
 		public static final String COMPLETED = "completed";
 		public static final String START_TIME = "startTime";

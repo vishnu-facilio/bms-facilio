@@ -49,6 +49,31 @@ public class TimeSheetModuleTemplatePage implements TemplatePageFactory {
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeSheet.TIME_SHEET))
+                .widgetDone()
+                .addWidget("timeSheetServiceAppointmentCard", null, PageWidget.WidgetType.SERVICE_APPOINTMENT_CARD, "mobileFlexibleTimeSheetServiceAppointmentCard_2", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("timeSheetTasks", null, PageWidget.WidgetType.SERVICE_TASK_LIST_WIDGET, "mobileFlexibleTimeSheetServiceTaskList_16", 0, 17, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
                 ;
 
 

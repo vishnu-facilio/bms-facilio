@@ -1374,9 +1374,15 @@ public class V3PeopleAPI {
             Long startTime = (Long) map.get("startTime");
             Long endTime = (Long) map.get("endTime");
             if (startTime >= fromRange && startTime <= toRange) {
-                peopleIdsForShiftStart.add(peopleId);
+                V3PeopleContext peopleRecord = V3PeopleAPI.getPeopleById(peopleId);
+                if(peopleRecord != null && peopleRecord.isTrackGeoLocation()){
+                    peopleIdsForShiftStart.add(peopleId);
+                }
             } else if (endTime >= fromRange && endTime <= toRange) {
-                peopleIdsForShiftEnd.add(peopleId);
+                V3PeopleContext peopleRecord = V3PeopleAPI.getPeopleById(peopleId);
+                if(peopleRecord != null && peopleRecord.isTrackGeoLocation()) {
+                    peopleIdsForShiftEnd.add(peopleId);
+                }
             }
                     if(CollectionUtils.isNotEmpty(peopleIdsForShiftStart)){
                         SilentNotificationUtilForFsm.sendNotificationForFsm( null,peopleIdsForShiftStart, SilentPushNotificationContext.ActionType.SHIFT_START,300000L,120000L);

@@ -55,7 +55,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
     private FacilioModule constructServiceTaskModule() throws Exception {
         ModuleBean bean = Constants.getModBean();
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, "Service Task", "Service_Task", FacilioModule.ModuleType.BASE_ENTITY,true);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, "Task", "Service_Task", FacilioModule.ModuleType.BASE_ENTITY,true);
 
         List<FacilioField> fields = new ArrayList<>();
 
@@ -70,8 +70,8 @@ public class ServiceTaskModule extends BaseModuleConfig {
         parent.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.WORK_TYPE),"Work Type module doesn't exist."));
         fields.add(parent);
 
-        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER",FieldType.LOOKUP);
-        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Service Order module doesn't exist."));
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER",FieldType.LOOKUP);
+        serviceOrder.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER),"Work Order module doesn't exist."));
         fields.add(serviceOrder);
 
         fields.add(FieldFactory.getDefaultField("sequence","Sequence","SEQUENCE",FieldType.NUMBER));
@@ -83,7 +83,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
         fields.add(FieldFactory.getDefaultField("actualEndTime","Actual End Time","ACTUAL_END_TIME",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
 
         LookupField status = FieldFactory.getDefaultField("status","Status","STATUS",FieldType.LOOKUP);
-        status.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS),"Service Task Status module doesn't exist."));
+        status.setLookupModule(Objects.requireNonNull(bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS),"Task Status module doesn't exist."));
         fields.add(status);
 
         module.setFields(fields);
@@ -93,7 +93,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
     private void addTaskSkillsField() throws Exception {
         ModuleBean bean = Constants.getModBean();
         FacilioModule serviceTask = bean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
-        FacilioModule serviceTaskSkillsRelMod = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS, "Service Task Skills", "Service_Task_Skills", FacilioModule.ModuleType.SUB_ENTITY);
+        FacilioModule serviceTaskSkillsRelMod = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_SKILLS, "Task Skills", "Service_Task_Skills", FacilioModule.ModuleType.SUB_ENTITY);
         FacilioModule skillsMod = Constants.getModBean().getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_SKILL);
 
         MultiLookupField skillsMultiLookup = FieldFactory.getDefaultField("skills","Skills","SKILLS", FieldType.MULTI_LOOKUP);
@@ -133,7 +133,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         FacilioView taskView = new FacilioView();
         taskView.setName("all");
-        taskView.setDisplayName("All Service Tasks");
+        taskView.setDisplayName("All Tasks");
 
         taskView.setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         taskView.setSortFields(sortFields);
@@ -154,7 +154,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
 
         FacilioView taskView = new FacilioView();
         taskView.setName("hidden-all");
-        taskView.setDisplayName("All Service Tasks");
+        taskView.setDisplayName("All Tasks");
 
         taskView.setModuleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         taskView.setSortFields(sortFields);
@@ -176,11 +176,11 @@ public class ServiceTaskModule extends BaseModuleConfig {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule serviceTaskModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
         FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
-        FacilioModule serviceOrderTaskModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TASK,"Service Order Tasks","SERVICE_ORDER_TASK_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
+        FacilioModule serviceOrderTaskModule = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_TASK,"Work Order Tasks","SERVICE_ORDER_TASK_REL",FacilioModule.ModuleType.SUB_ENTITY,true);
         List<FacilioField> fields = new ArrayList<>();
-        LookupField serviceTaskField = new LookupField(serviceOrderTaskModule,"right","Service Tasks",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_TASK_ID",FieldType.LOOKUP,true,false,true,false,"Service Tasks",serviceTaskModule);
+        LookupField serviceTaskField = new LookupField(serviceOrderTaskModule,"right","Task",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_TASK_ID",FieldType.LOOKUP,true,false,true,false,"Tasks",serviceTaskModule);
         fields.add(serviceTaskField);
-        LookupField serviceAppointmentField = new LookupField(serviceOrderTaskModule,"left","Service Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,true,"Service Orders",serviceOrderModule);
+        LookupField serviceAppointmentField = new LookupField(serviceOrderTaskModule,"left","Work Order", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_ORDER_ID",FieldType.LOOKUP,true,false,true,true,"Work Orders",serviceOrderModule);
         fields.add(serviceAppointmentField);
         serviceOrderTaskModule.setFields(fields);
         modules.add(serviceOrderTaskModule);
@@ -192,7 +192,7 @@ public class ServiceTaskModule extends BaseModuleConfig {
     private void addServiceTasksField() throws Exception{
         ModuleBean modBean = Constants.getModBean();
         List<FacilioField>fields = new ArrayList<>();
-        MultiLookupField multiLookupTasksField = FieldFactory.getDefaultField("serviceTasks", "Service Tasks", null, FieldType.MULTI_LOOKUP);
+        MultiLookupField multiLookupTasksField = FieldFactory.getDefaultField("serviceTasks", "Tasks", null, FieldType.MULTI_LOOKUP);
         multiLookupTasksField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         multiLookupTasksField.setParentFieldPositionEnum(MultiLookupField.ParentFieldPosition.LEFT);
         multiLookupTasksField.setLookupModule( modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK));

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TripStatus extends BaseModuleConfig {
-    public TripStatus(){setModuleName(FacilioConstants.Trip.TRIP_STATUS);}
+    public TripStatus(){setModuleName(FacilioConstants.Trip.TRIP_TICKET_STATUS);}
 
     @Override
     public void addData() throws Exception {
@@ -30,7 +30,7 @@ public class TripStatus extends BaseModuleConfig {
     }
     private void addTripStatus() throws Exception {
         List<FacilioModule> modules = new ArrayList<>();
-        FacilioModule tripStatus = new FacilioModule(FacilioConstants.Trip.TRIP_STATUS,"Trip Status","Trip_Status", FacilioModule.ModuleType.PICK_LIST,false);
+        FacilioModule tripStatus = new FacilioModule(FacilioConstants.Trip.TRIP_TICKET_STATUS,"Trip Status","Trip_Status", FacilioModule.ModuleType.PICK_LIST,false);
         List<FacilioField> fields = new ArrayList<>();
 
         fields.add(new StringField(tripStatus,"status","Status",FacilioField.FieldDisplayType.TEXTBOX,"STATUS", FieldType.STRING,true,false,true,false));
@@ -68,8 +68,8 @@ public class TripStatus extends BaseModuleConfig {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         InsertRecordBuilder<TripStatusContext> insertRecordBuilder = new InsertRecordBuilder<TripStatusContext>()
-                .moduleName(FacilioConstants.Trip.TRIP_STATUS)
-                .fields(modBean.getAllFields(FacilioConstants.Trip.TRIP_STATUS));
+                .moduleName(FacilioConstants.Trip.TRIP_TICKET_STATUS)
+                .fields(modBean.getAllFields(FacilioConstants.Trip.TRIP_TICKET_STATUS));
 
         List<TripStatusContext> ticketStatusContextList = new ArrayList<>();
 

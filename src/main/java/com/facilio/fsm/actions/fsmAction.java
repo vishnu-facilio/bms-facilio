@@ -191,6 +191,8 @@ public class fsmAction extends V3Action {
                 if(getRecordId() > 0 && (getFieldAgentId() != null && getFieldAgentId() >0)) {
                     context.put(FacilioConstants.ServiceAppointment.FIELD_AGENT_ID,getFieldAgentId());
                     context.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,isSkipValidation());
+                    context.put(FacilioConstants.ServiceAppointment.SCHEDULED_START_TIME,getScheduledStartTime());
+                    context.put(FacilioConstants.ServiceAppointment.SCHEDULED_END_TIME,getScheduledEndTime());
                     FacilioChain dispatchChain = FsmTransactionChainFactoryV3.dispatchChain();
                     dispatchChain.execute(context);
                     successMsg.put("message","Appointment Redispatched Successfully");
@@ -348,27 +350,27 @@ public class fsmAction extends V3Action {
             case FacilioConstants.ServiceAppointment.START_WORK:
                 FacilioChain startTaskChain = FsmTransactionChainFactoryV3.startTaskChain();
                 startTaskChain.execute(context);
-                successMsg.put("message","Service Task Started Successfully");
+                successMsg.put("message","Task Started Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.PAUSE:
                 FacilioChain pauseTaskChain = FsmTransactionChainFactoryV3.pauseTaskChain();
                 pauseTaskChain.execute(context);
-                successMsg.put("message","Service Task Paused Successfully");
+                successMsg.put("message","Task Paused Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.RESUME:
                 FacilioChain resumeTaskChain = FsmTransactionChainFactoryV3.resumeTaskChain();
                 resumeTaskChain.execute(context);
-                successMsg.put("message","Service Task Resumed Successfully");
+                successMsg.put("message","Task Resumed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.COMPLETE:
                 FacilioChain completeTaskChain = FsmTransactionChainFactoryV3.completeTaskChain();
                 completeTaskChain.execute(context);
-                successMsg.put("message","Service Task Completed Successfully");
+                successMsg.put("message","Task Completed Successfully");
                 break;
             case FacilioConstants.ServiceAppointment.CANCEL:
                 FacilioChain cancelTaskChain = FsmTransactionChainFactoryV3.cancelTaskChain();
                 cancelTaskChain.execute(context);
-                successMsg.put("message","Service Task Cancelled Successfully");
+                successMsg.put("message","Task Cancelled Successfully");
 
                 break;
         }

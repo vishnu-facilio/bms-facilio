@@ -45,9 +45,9 @@ public class TripUtil {
     public static TripStatusContext getTripStatus(String status) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<TripStatusContext> builder = new SelectRecordsBuilder<TripStatusContext>()
-                .moduleName(FacilioConstants.Trip.TRIP_STATUS)
+                .moduleName(FacilioConstants.Trip.TRIP_TICKET_STATUS)
                 .beanClass(TripStatusContext.class)
-                .select(modBean.getAllFields(FacilioConstants.Trip.TRIP_STATUS))
+                .select(modBean.getAllFields(FacilioConstants.Trip.TRIP_TICKET_STATUS))
                 .andCondition(CriteriaAPI.getCondition("STATUS","status",status, StringOperators.IS));
 
         TripStatusContext tripStatus = builder.fetchFirst();

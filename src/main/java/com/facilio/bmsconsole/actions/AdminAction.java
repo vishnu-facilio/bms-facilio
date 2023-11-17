@@ -177,7 +177,25 @@ public class AdminAction extends ActionSupport {
 			}
 
 			try {
+				if (AccountUtil.FeatureLicense.FSM.isEnabled(licenseMap)
+				) {
+					List<AccountUtil.FeatureLicense> FSMRelatedLicenceList = new ArrayList<>();
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.INVENTORY);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.SHIFT);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.QUOTATION);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.CLIENT);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.VENDOR);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.PAGE_BUILDER);
+					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.TENANTS);
 
+					for(AccountUtil.FeatureLicense featureLicense : FSMRelatedLicenceList){
+						if(!featureLicense.isEnabled(licenseMap)) {
+							Long sumOfLicense = licenseMap.getOrDefault(featureLicense.getGroup(), 0l);
+							sumOfLicense += featureLicense.getLicense();
+							licenseMap.put(featureLicense.getGroup(), sumOfLicense);
+						}
+					}
+				}
 				if (AccountUtil.FeatureLicense.INVENTORY.isEnabled(licenseMap)
 						|| AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
 						|| AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)

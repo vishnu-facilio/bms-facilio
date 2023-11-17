@@ -16,18 +16,24 @@ import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fsm.context.TripStatusContext;
 import com.facilio.fsm.util.ServiceAppointmentUtil;
+import com.facilio.fsm.util.TripUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -73,7 +79,7 @@ public class TripModule extends BaseModuleConfig {
         peopleId.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         fields.add(peopleId);
 
-        LookupField serviceAppointmentId = new LookupField(module,"serviceAppointment","Service Appointment",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID", FieldType.LOOKUP,true,false,true,false,null,modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
+        LookupField serviceAppointmentId = new LookupField(module,"serviceAppointment","Appointment",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"SERVICE_APPOINTMENT_ID", FieldType.LOOKUP,true,false,true,false,null,modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
         fields.add(serviceAppointmentId);
 
         LookupField startLocation = FieldFactory.getDefaultField("startLocation","Start Location","START_LOCATION",FieldType.LOOKUP);
@@ -110,7 +116,7 @@ public class TripModule extends BaseModuleConfig {
         FileField journey = FieldFactory.getDefaultField("journey","Journey","JOURNEY_ID",FieldType.FILE);
         fields.add(journey);
 
-        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Service Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
+        LookupField serviceOrder = FieldFactory.getDefaultField("serviceOrder","Work Order","SERVICE_ORDER_ID",FieldType.LOOKUP);
         serviceOrder.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER));
         fields.add(serviceOrder);
 
@@ -136,7 +142,7 @@ public class TripModule extends BaseModuleConfig {
         LookupField status = FieldFactory.getDefaultField("status","Trip Status","STATUS",FieldType.LOOKUP);
         status.setRequired(true);
         status.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
-        status.setLookupModule(modBean.getModule(FacilioConstants.Trip.TRIP_STATUS));
+        status.setLookupModule(modBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
         fields.add(status);
 
 
@@ -237,6 +243,33 @@ public class TripModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
                 .layoutDone()
+
+                .addMobileLayout()
+
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("summary", null, null)
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.Trip.TRIP))
+                .widgetDone()
+                .addWidget("tripLocationWidget", null, PageWidget.WidgetType.LOCATION_WIDGET, "mobileFlexibleLocationWidget_9", 0, 15, null, null)
+                .widgetDone()
+                .addWidget("tripMapWidget", null, PageWidget.WidgetType.TRIP_MAP_WIDGET, "mobileFlexibleTripMapWidget_9", 0, 24, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("history", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblemobileactivity_16", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+
                 .pageDone().getCustomPages();
 
 
@@ -348,7 +381,7 @@ public class TripModule extends BaseModuleConfig {
         List<FormField> generalInformationFields = new ArrayList<>();
 
         generalInformationFields.add(new FormField("people", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Field Agent", FormField.Required.REQUIRED,1,2));
-        generalInformationFields.add(new FormField("serviceAppointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Service Appointment",FormField.Required.REQUIRED,2,2));
+        generalInformationFields.add(new FormField("serviceAppointment", FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Appointment",FormField.Required.REQUIRED,2,2));
         generalInformationFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED, 3, 2));
         generalInformationFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED, 4, 2));
         generalInformationFields.add(new FormField("tripDistance", FacilioField.FieldDisplayType.NUMBER,"Distance",FormField.Required.OPTIONAL,5,2));
@@ -376,6 +409,7 @@ public class TripModule extends BaseModuleConfig {
         ArrayList<FacilioView> tripViews = new ArrayList<FacilioView>();
         tripViews.add(getAllTripViews().setOrder(order++));
         tripViews.add(getHiddenAllTripViews().setOrder(order++));
+        tripViews.add(getHiddenOngoingTripViews().setOrder(order++));
 
         groupDetails = new HashMap<>();
         groupDetails.put("name", "default");
@@ -387,10 +421,9 @@ public class TripModule extends BaseModuleConfig {
         return groupVsViews;
     }
 
-    private FacilioView getHiddenAllTripViews() throws Exception {
+    private FacilioView getHiddenAllTripViews() {
 
-        FacilioModule tripModule = Constants.getModBean().getModule(FacilioConstants.Trip.TRIP);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(tripModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("hidden-all");
@@ -414,10 +447,48 @@ public class TripModule extends BaseModuleConfig {
         return allView;
     }
 
+    private FacilioView getHiddenOngoingTripViews() throws Exception {
+
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField> tripFields = modBean.getAllFields(FacilioConstants.Trip.TRIP);
+        Map<String,FacilioField> tripFieldMap = FieldFactory.getAsMap(tripFields);
+
+        TripStatusContext inProgressStatus = TripUtil.getTripStatus(FacilioConstants.Trip.IN_PROGRESS);
+
+        if(inProgressStatus != null) {
+
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(tripFieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(inProgressStatus.getId()), PickListOperators.IS));
+
+            List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
+
+            List<ViewField> tripViewFields = new ArrayList<>();
+            tripViewFields.add(new ViewField("code", "Code"));
+            tripViewFields.add(new ViewField("people", "Field Agent"));
+            tripViewFields.add(new ViewField("startTime", "Start Time"));
+            tripViewFields.add(new ViewField("endTime", "End Time"));
+            tripViewFields.add(new ViewField("tripDuration", "Duration"));
+            tripViewFields.add(new ViewField("tripDistance", "Distance"));
+
+            FacilioView ongoingTripView = new FacilioView();
+            ongoingTripView.setName("hidden-ongoing");
+            ongoingTripView.setDisplayName("All Ongoing Trips");
+            ongoingTripView.setModuleName(FacilioConstants.Trip.TRIP);
+            ongoingTripView.setSortFields(sortFields);
+            ongoingTripView.setCriteria(criteria);
+            ongoingTripView.setAppLinkNames(TripModule.tripSupportedApps);
+            ongoingTripView.setHidden(true);
+            ongoingTripView.setFields(tripViewFields);
+
+            return ongoingTripView;
+        } else {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"Missing trip states");
+        }
+    }
+
     private FacilioView getAllTripViews() throws Exception {
 
-        FacilioModule tripModule = Constants.getModBean().getModule(FacilioConstants.Trip.TRIP);
-        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getIdField(tripModule), true));
+        List<SortField> sortFields = Arrays.asList(new SortField(FieldFactory.getField("sysCreatedTime", "SYS_CREATED_TIME", FieldType.DATE_TIME), false));
 
         FacilioView allView = new FacilioView();
         allView.setName("alltrips");
@@ -445,9 +516,9 @@ public class TripModule extends BaseModuleConfig {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Trip.TRIP);
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-        if(status != null) {
+        if (status != null) {
             SystemButtonRuleContext endTrip = new SystemButtonRuleContext();
             endTrip.setName("End Trip");
             endTrip.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -456,12 +527,12 @@ public class TripModule extends BaseModuleConfig {
             endTrip.setPermission(AccountConstants.ModulePermission.UPDATE.name());
 
             Criteria endTripCriteria = new Criteria();
-            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.STATUS),Collections.singletonList(status.getId()), PickListOperators.IS));
-            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Criteria.LOGGED_IN_PEOPLE,PickListOperators.IS));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.STATUS), Collections.singletonList(status.getId()), PickListOperators.IS));
+            endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ContextNames.PEOPLE), FacilioConstants.Criteria.LOGGED_IN_PEOPLE, PickListOperators.IS));
             endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.Trip.START_TIME), CommonOperators.IS_NOT_EMPTY));
             endTripCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT), CommonOperators.IS_NOT_EMPTY));
             endTrip.setCriteria(endTripCriteria);
-            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,endTrip);
+            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP, endTrip);
 
             SystemButtonRuleContext endTripButton = new SystemButtonRuleContext();
             endTripButton.setName("End Trip");
@@ -470,8 +541,126 @@ public class TripModule extends BaseModuleConfig {
             endTripButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
             endTripButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
             endTripButton.setCriteria(endTripCriteria);
-            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,endTripButton);
+            SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP, endTripButton);
         }
+
+        SystemButtonRuleContext create = new SystemButtonRuleContext();
+        create.setName("Add Trip");
+        create.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        create.setIdentifier(FacilioConstants.ContextNames.CREATE);
+        create.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        create.setPermission("CREATE");
+        create.setPermissionRequired(true);
+        SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,create);
+
+        SystemButtonRuleContext edit = new SystemButtonRuleContext();
+        edit.setName("Edit");
+        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        edit.setIdentifier("edit_list");
+        edit.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        edit.setPermission("UPDATE");
+        edit.setPermissionRequired(true);
+        edit.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,edit);
+
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        summaryEditButton.setCriteria(getEditCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,summaryEditButton);
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        listDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,listDeleteButton);
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        bulkDeleteButton.setCriteria(getDeleteCriteria());
+        SystemButtonApi.addSystemButton(FacilioConstants.Trip.TRIP,bulkDeleteButton);
+
+        SystemButtonApi.addExportAsCSV(FacilioConstants.Trip.TRIP);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.Trip.TRIP);
+
+
+
+
+    }
+        public static Criteria getEditCriteria() throws Exception {
+            ModuleBean moduleBean = Constants.getModBean();
+
+            LookupField status = new LookupField();
+            status.setName("status");
+            status.setColumnName("STATUS");
+            status.setDataType(FieldType.LOOKUP);
+            status.setModule(moduleBean.getModule(FacilioConstants.Trip.TRIP));
+            status.setLookupModule(moduleBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
+
+            LookupField recordLocked = new LookupField();
+            recordLocked.setName("recordLocked");
+            recordLocked.setColumnName("RECORD_LOCKED");
+            recordLocked.setDataType(FieldType.BOOLEAN);
+            recordLocked.setModule(moduleBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
+
+            Criteria oneLevelCriteria=new Criteria();
+            oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false), BooleanOperators.IS));
+
+            Condition statusCondition=new Condition();
+            statusCondition.setOperator(LookupOperator.LOOKUP);
+            statusCondition.setField(status);
+            statusCondition.setCriteriaValue(oneLevelCriteria);
+
+            Criteria statusCriteria = new Criteria();
+            statusCriteria.addAndCondition(statusCondition);
+
+            return statusCriteria;
+        }
+
+        public static Criteria getDeleteCriteria() throws Exception {
+            ModuleBean moduleBean = Constants.getModBean();
+
+            LookupField status = new LookupField();
+            status.setName("status");
+            status.setColumnName("STATUS");
+            status.setDataType(FieldType.LOOKUP);
+            status.setModule(moduleBean.getModule(FacilioConstants.Trip.TRIP));
+            status.setLookupModule(moduleBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
+
+            LookupField recordLocked = new LookupField();
+            recordLocked.setName("deleteLocked");
+            recordLocked.setColumnName("DELETE_LOCKED");
+            recordLocked.setDataType(FieldType.BOOLEAN);
+            recordLocked.setModule(moduleBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
+
+            Criteria oneLevelCriteria=new Criteria();
+            oneLevelCriteria.addAndCondition(CriteriaAPI.getCondition(recordLocked,String.valueOf(false),BooleanOperators.IS));
+
+            Condition statusCondition=new Condition();
+            statusCondition.setOperator(LookupOperator.LOOKUP);
+            statusCondition.setField(status);
+            statusCondition.setCriteriaValue(oneLevelCriteria);
+
+            Criteria statusCriteria = new Criteria();
+            statusCriteria.addAndCondition(statusCondition);
+
+            return statusCriteria;
+
+
     }
 
 }

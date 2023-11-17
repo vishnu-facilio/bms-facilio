@@ -113,7 +113,7 @@ public class VendorContactModule extends BaseModuleConfig{
         newVendorContactForm.setName("default_vendorcontact_web");
         newVendorContactForm.setModule(vendorContactModule);
         newVendorContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        newVendorContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        newVendorContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
 
         List<FormField> newVendorContactFormFields = new ArrayList<>();
         newVendorContactFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
@@ -131,7 +131,7 @@ public class VendorContactModule extends BaseModuleConfig{
 
         FacilioForm vendorContactForm = new FacilioForm();
         vendorContactForm.setDisplayName("NEW VENDOR CONTACT");
-        vendorContactForm.setName("default_vendorcontact_fsm_web");
+        vendorContactForm.setName("default_vendorcontact_web");
         vendorContactForm.setModule(vendorContactModule);
         vendorContactForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         vendorContactForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP));
@@ -149,6 +149,8 @@ public class VendorContactModule extends BaseModuleConfig{
         vendorContactFormFields.add(new FormField("isPrimaryContact", FacilioField.FieldDisplayType.DECISION_BOX, "Primary Contact", FormField.Required.OPTIONAL, 7, 1));
         vendorContactFormFields.add(new FormField("dispatchable", FacilioField.FieldDisplayType.DECISION_BOX, "Dispatchable", FormField.Required.OPTIONAL, 8, 2));
         vendorContactFormFields.add(new FormField("trackGeoLocation", FacilioField.FieldDisplayType.DECISION_BOX, "Track Geolocation", FormField.Required.OPTIONAL, 9, 2));
+        vendorContactFormFields.add(new FormField("territories",FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE,"Territories",FormField.Required.OPTIONAL,10,1));
+
 
 
         FormSection formSection = new FormSection("Vendor Contact Details", 1, vendorContactFormFields, true);

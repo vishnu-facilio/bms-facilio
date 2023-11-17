@@ -26,7 +26,7 @@ public class ServiceTaskStatusModule extends BaseModuleConfig {
         addStatusValues();
     }
     private void addServiceTaskStatus()throws Exception{
-        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS, "Service Task Status", "Service_Task_Status", FacilioModule.ModuleType.BASE_ENTITY);
+        FacilioModule module = new FacilioModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS, "Task Status", "Service_Task_Status", FacilioModule.ModuleType.BASE_ENTITY);
         List<FacilioField> fields = new ArrayList<>();
 
         FacilioField status = FieldFactory.getDefaultField("name","Name","NAME", FieldType.STRING,true);

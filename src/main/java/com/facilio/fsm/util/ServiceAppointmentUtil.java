@@ -430,7 +430,7 @@ public class ServiceAppointmentUtil {
                             }
 
                     } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tasks cannot be empty");
                     }
                 }
             }
@@ -534,7 +534,7 @@ public class ServiceAppointmentUtil {
                         }
 
                     } else {
-                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Service tasks cannot be empty");
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tasks cannot be empty");
                     }
             }
         }
@@ -784,6 +784,10 @@ public class ServiceAppointmentUtil {
     }
 
     public static List<TimeSheetContext> getTimeSheetsForTimeRange(long peopleId, long startTime, Long endTime) throws Exception {
+        return getTimeSheetsForTimeRange(peopleId,startTime,endTime,null);
+    }
+
+    public static List<TimeSheetContext> getTimeSheetsForTimeRange(long peopleId, long startTime, Long endTime, List<Long> excludeIds) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule timeSheetModule = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
         List<FacilioField> timeSheetFields = moduleBean.getAllFields(FacilioConstants.TimeSheet.TIME_SHEET);
@@ -807,6 +811,9 @@ public class ServiceAppointmentUtil {
                 .andCriteria(timeCriteria)
                 .fetchSupplement((SupplementRecord) timeSheetFieldMap.get("serviceAppointment"))
                 ;
+        if(CollectionUtils.isNotEmpty(excludeIds)){
+            timeSheetBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(timeSheetModule),excludeIds,PickListOperators.ISN_T));
+        }
         List<TimeSheetContext> timeSheets = timeSheetBuilder.get();
         if(CollectionUtils.isNotEmpty(timeSheets)){
             return timeSheets;
@@ -910,7 +917,7 @@ public class ServiceAppointmentUtil {
         long localId = getModuleLocalId(moduleName);
         switch (moduleName){
             case FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT:
-                code = "SA-" +(localId+ 1);
+                code = "AP-" +(localId+ 1);
                 break;
             case FacilioConstants.TimeSheet.TIME_SHEET:
                 code = "TS-" +(localId+ 1);
@@ -975,9 +982,9 @@ public class ServiceAppointmentUtil {
     public static TripStatusContext getTripStatus(String status) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<TripStatusContext> builder = new SelectRecordsBuilder<TripStatusContext>()
-                .moduleName(FacilioConstants.Trip.TRIP_STATUS)
+                .moduleName(FacilioConstants.Trip.TRIP_TICKET_STATUS)
                 .beanClass(TripStatusContext.class)
-                .select(modBean.getAllFields(FacilioConstants.Trip.TRIP_STATUS))
+                .select(modBean.getAllFields(FacilioConstants.Trip.TRIP_TICKET_STATUS))
                 .andCondition(CriteriaAPI.getCondition("STATUS","status",status,StringOperators.IS));
 
         TripStatusContext tripStatus = builder.fetchFirst();

@@ -41,10 +41,12 @@ public class AddDefaultFormRuleSignupCommand extends FacilioCommand {
                             }
                         }
                     }
-                    for(FormRuleTriggerFieldContext triggerFieldContext : formRuleContext.getTriggerFields()){
-                        if(triggerFieldContext.getFieldId() <0){
-                            String formFieldName = triggerFieldContext.getFieldName();
-                            triggerFieldContext.setFieldId(formFieldMap.get(formFieldName).getId());
+                    if(formRuleContext.getTriggerTypeEnum() != FormRuleContext.TriggerType.FORM_ON_LOAD) {
+                        for (FormRuleTriggerFieldContext triggerFieldContext : formRuleContext.getTriggerFields()) {
+                            if (triggerFieldContext.getFieldId() < 0) {
+                                String formFieldName = triggerFieldContext.getFieldName();
+                                triggerFieldContext.setFieldId(formFieldMap.get(formFieldName).getId());
+                            }
                         }
                     }
 

@@ -77,7 +77,8 @@ public class HomePageUtil {
             if (CollectionUtils.isNotEmpty(ongoingTimeSheet)) {
                 JSONObject workWidgetParams = new JSONObject();
                 workWidgetParams.put(FacilioConstants.TimeSheet.TIME_SHEET, FieldUtil.getAsMapList(ongoingTimeSheet,TimeSheetContext.class));
-                PageSectionWidgetContext ongoingWorkWidget = new PageSectionWidgetContext("ongoingTimeSheetWidget","Ongoing Work", PageWidget.WidgetType.ONGOING_TIMESHEET_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,workWidgetParams);
+                workWidgetParams.put("tabName","timesheet");
+                PageSectionWidgetContext ongoingWorkWidget = new PageSectionWidgetContext("ongoingTimeSheetWidget","Ongoing Work", PageWidget.WidgetType.ONGOING_WORK_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,workWidgetParams);
                 ongoingWorkWidget.setId(42L);
                 ongoingWorkWidget.setHeight(6L);
                 ongoingWorkWidget.setWidth(12L);
@@ -90,6 +91,7 @@ public class HomePageUtil {
             if (CollectionUtils.isNotEmpty(ongoingTrips)) {
                 JSONObject tripWidgetParams = new JSONObject();
                 tripWidgetParams.put(FacilioConstants.Trip.TRIP, FieldUtil.getAsMapList(ongoingTrips,TripContext.class));
+                tripWidgetParams.put("tabName","trip");
                 PageSectionWidgetContext ongoingTripWidget = new PageSectionWidgetContext("ongoingTripWidget","Ongoing Trip", PageWidget.WidgetType.ONGOING_TRIP_WIDGET,CollectionUtils.isNotEmpty(Ongoing.getWidgets()) ? ((Ongoing.getWidgets().size()+1) * 10D ) : 10,0,0,null,tripWidgetParams);
                 ongoingTripWidget.setId(43L);
                 ongoingTripWidget.setHeight(6L);
@@ -153,7 +155,7 @@ public class HomePageUtil {
             upcomingWidgetParams.put("viewName", "myOpenAppointments");
             upcomingWidgetParams.put("clientCriteria", FieldUtil.getAsJSON(upcomingCriteria));
 
-            PageSectionWidgetContext upcomingWidget = new PageSectionWidgetContext("upcomingServiceAppointmentsWidget","Upcoming Appointments", PageWidget.WidgetType.OPEN_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,upcomingWidgetParams);
+            PageSectionWidgetContext upcomingWidget = new PageSectionWidgetContext("upcomingServiceAppointmentsWidget","Upcoming Appointments", PageWidget.WidgetType.UPCOMING_SERVICE_APPOINTMENTS_WIDGET,CollectionUtils.isNotEmpty(appointments.getWidgets()) ? ((appointments.getWidgets().size()+1) * 10D ) : 10,0,0,null,upcomingWidgetParams);
             upcomingWidget.setId(46L);
             upcomingWidget.setHeight(21L);
             upcomingWidget.setWidth(12L);
