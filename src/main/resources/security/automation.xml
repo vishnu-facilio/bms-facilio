@@ -85,12 +85,12 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/systemButton/:moduleName/getAvailableButtons">
-        <requestbody type="object">
+    <request path="/api/v2/systemButton/:moduleName/getAvailableButtons" method="GET">
+        <urlparams>
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="positionType" type="number"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v2/modules/rules/getCount">
@@ -142,12 +142,12 @@
             <property name="positionType" type="number"/>
         </requestbody>
     </request>
-    <request path="/api/v2/custombutton/:moduleName/getAvailableButtons">
-        <requestbody type="object">
+    <request path="/api/v2/custombutton/:moduleName/getAvailableButtons" method="GET">
+        <urlparams>
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="positionType" type="number"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v2/statetransition/getAvailableState">
         <urlparams>
@@ -155,7 +155,7 @@
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
-    <request path="/api/v2/statetransition/:moduleName/getAvailableState/:id">
+    <request path="/api/v2/statetransition/:moduleName/getAvailableState/:id" method="GET">
         <urlparams>
             <property name="moduleName" type="string" pattern="^[a-zA-Z_]*$" mandatory="true"/>
             <property name="id" type="number" mandatory="true"/>
