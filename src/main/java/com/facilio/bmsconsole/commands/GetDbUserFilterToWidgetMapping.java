@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldType;
+import com.facilio.report.context.ReportYAxisContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -26,6 +27,7 @@ import com.facilio.report.util.ReportUtil;
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
+	private List<String> supportedModules = Arrays.asList("asset","building","site","assetcategory");
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -151,7 +153,6 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 						   }
 					   }
-					   List<String> supportedModules = Arrays.asList("asset","building","site","assetcategory");
 					   if(supportedModules.contains(filter.getModule().getName())){
 						   FacilioModule energyModule = modBean.getModule(report.getModuleId());
 						   if(energyModule != null && energyModule.getName().equals("energydata")) {
@@ -169,7 +170,28 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 					   }
 				   }
 			   }
-
+			   else if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.CARD) {
+				   WidgetCardContext cardWidget = (WidgetCardContext) widget;
+				   if(cardWidget.getCardLayout().equals("v2_reading_card")) {
+					   for (DashboardUserFilterContext filter : userFilters) {
+						   if(supportedModules.contains(filter.getModule().getName())){
+								   List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
+							       JSONObject cardParams = cardWidget.getCardParams();
+								   if(mappings != null && mappings.size() > 0) {
+									   ReportDataPointContext dataPoint = new ReportDataPointContext();
+									   ReportYAxisContext yAxis = new ReportYAxisContext();
+									   FacilioField measureField = modBean.getField((Long) cardParams.get("fieldId"));
+									   yAxis.setField(measureField.getModule(), measureField);
+									   dataPoint.setModuleName((String) cardParams.get("type"));
+									   dataPoint.setyAxis(yAxis);
+									   dataPoint.setName(dataPoint.getyAxis().getField().getDisplayName());
+									   dataPoint.setParentReadingModule(modBean.getModule((String) cardParams.get("parentModuleName")));
+									   filter.getReadingWidgetFieldMap().put(widgetId, Collections.singletonList(dataPoint));
+								   }
+						   }
+					   }
+				   }
+			   }
 
 		   }
 		   catch(Exception e)

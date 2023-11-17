@@ -196,11 +196,14 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 						}
 
 					}
+					else if (cardLayout.equals("v2_reading_card")) {
+						dateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
+					}
 					else if (cardLayout.equals(CardLayout.COMBO_CARD.getName())) {
 						for(WidgetCardContext childCard : newCardWidget.getChildCards()){
 							Map<String, String> newDateField = null;
 							String childCardLayout = childCard.getCardLayout();
-							if (DashboardFilterUtil.T_TIME_ONLY_CARD_LAYOUTS.contains(childCardLayout)) {
+							if (childCardLayout.equals("v2_reading_card")) {
 								newDateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
 							}
 							else if (childCardLayout.equals(CardLayout.KPICARD_LAYOUT_1.getName()) || childCardLayout.equals(CardLayout.KPICARD_LAYOUT_2.getName())) {

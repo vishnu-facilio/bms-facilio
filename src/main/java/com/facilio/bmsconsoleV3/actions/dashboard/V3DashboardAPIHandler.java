@@ -938,7 +938,7 @@ public class V3DashboardAPIHandler {
                     if(mappingIds.stream().anyMatch(mappings -> mappings.getTargetWidgetId().equals(widget_id))){
                         JSONObject check = new JSONObject();
                         for(ReportDataPointContext dataPointContext: widget_and_field.getValue()){
-                            if(mappingIds.stream().anyMatch(maps -> maps.getDataPointAlias().equals(dataPointContext.getAliases().get("actual")))){
+//                            if(mappingIds.stream().anyMatch(maps -> maps.getDataPointAlias().equals(dataPointContext.getAliases().get("actual")))){
                                 ReportYAxisContext yAxis = dataPointContext.getyAxis();
                                 FacilioField yField = modBean.getField(dataPointContext.getyAxis().getFieldId());
                                 yAxis.setField(yField.getModule(), yField);
@@ -966,9 +966,22 @@ public class V3DashboardAPIHandler {
                                     condition.setValue(filter_value);
                                 }
                                 JSONObject criteria_obj = new JSONObject();
+                            String aliasName = dataPointContext.getAliases() != null ? dataPointContext.getAliases().get("actual") : dataPointContext.getName();
+                            if (dashboard_executed_data.getReading_filter_widget_map().containsKey(widget_id)) {
+                                    JSONObject presentMap = new JSONObject();
+                                    presentMap = (JSONObject) dashboard_executed_data.getReading_filter_widget_map().get(widget_id);
+                                    if(presentMap.containsKey(aliasName)){
+                                        criteria_obj = (JSONObject) presentMap.get(aliasName);
+                                    }else {
+                                        criteria_obj = new JSONObject();
+                                        check = presentMap;
+                                    }
+                                } else {
+                                    criteria_obj = new JSONObject();
+                                }
                                 criteria_obj.put(user_filter.getId(), condition);
-                                check.put(dataPointContext.getAliases().get("actual"),criteria_obj);
-                            }
+                                check.put(aliasName,criteria_obj);
+//                            }
                         }
                         dashboard_executed_data.getReading_filter_widget_map().put(widget_id,check);
                     }

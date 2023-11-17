@@ -2491,6 +2491,9 @@
             <param name="categoryId">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
         </action>
+        <action name="module/list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getModuleList">
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
 
     </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">

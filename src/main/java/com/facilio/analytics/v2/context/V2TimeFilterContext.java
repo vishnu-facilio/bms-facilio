@@ -13,7 +13,7 @@ public class V2TimeFilterContext {
     public Integer offset;
     public DateOperators dateOperator;
     private DateRange dateRange;
-    public String label;
+    public String dateLabel;
     private long startTime = -1;
     private long endTime = -1;
     public String baselinePeriod;

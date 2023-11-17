@@ -5,6 +5,7 @@ import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -38,6 +39,8 @@ public class V2AnalyticsReportAction extends V3Action {
     private boolean withCount;
     private String orderType;
     private long folderId = -1;
+    private int moduleType;
+    private Boolean defaultModules;
 
     V2AnalyticsContextForDashboardFilter db_filter;
     public String create()throws Exception
@@ -193,5 +196,16 @@ public class V2AnalyticsReportAction extends V3Action {
                     return array.toJSONString();
                 }).apply(null));
         sendAuditLogs(auditLog);
+    }
+    public String getModuleList() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getModuleList();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+        context.put(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, defaultModules);
+
+        chain.execute();
+
+        setData("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        return V3Action.SUCCESS;
     }
 }

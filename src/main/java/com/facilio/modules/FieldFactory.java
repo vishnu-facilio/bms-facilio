@@ -8825,6 +8825,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("groupByJson", "GROUP_BY", module, FieldType.STRING));
         fields.add(getField("criteriaId", "GLOBAL_CRITERIA_ID", module, FieldType.NUMBER));
         fields.add(getField("kpi", "IS_KPI", module, FieldType.BOOLEAN));
+        fields.add(getField("parentModule", "PARENT_MODULE", module, FieldType.STRING));
 
         return fields;
     }

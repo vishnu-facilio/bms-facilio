@@ -2,14 +2,12 @@ package com.facilio.analytics.v2.command;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
-import com.facilio.analytics.v2.context.V2AnalyticsCardWidgetContext;
-import com.facilio.analytics.v2.context.V2CardContext;
-import com.facilio.analytics.v2.context.V2MeasuresContext;
-import com.facilio.analytics.v2.context.V2TimeFilterContext;
+import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -26,6 +24,7 @@ import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -38,13 +37,14 @@ public class V2ConstructCardCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception
     {
         V2CardContext cardContext = (V2CardContext) context.get("cardContext");
+        V2AnalyticsContextForDashboardFilter db_filter = (V2AnalyticsContextForDashboardFilter) context.get("db_filter");
         if(cardContext != null)
         {
-            this.getReadingCardValue(cardContext.getCardParams());
+            this.getReadingCardValue(cardContext.getCardParams(),db_filter);
         }
         return false;
     }
-    private void getReadingCardValue(V2AnalyticsCardWidgetContext cardContext)throws Exception
+    private void getReadingCardValue(V2AnalyticsCardWidgetContext cardContext, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
     {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Long fieldId = cardContext.getFieldId();
@@ -62,7 +62,11 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 if(timeFilter != null)
                 {
                     DateRange range = null;
-                    if(timeFilter.getDateOperator() > 0){
+                    if(db_filter != null && db_filter.getTimeFilter() != null) {
+                        range =  new DateRange(db_filter.getTimeFilter().getStartTime(), db_filter.getTimeFilter().getEndTime());
+                        timeFilter.setDateLabel(db_filter.getTimeFilter().getDateLabel());
+                    }
+                    else if(timeFilter.getDateOperator() > 0){
                         range = timeFilter.getOffset() != null &&  timeFilter.getOffset() > 0 ? ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(timeFilter.getOffset().toString()) : ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(String.valueOf(timeFilter.getStartTime()));
                     }else{
                         range = new DateRange(timeFilter.getStartTime(), timeFilter.getEndTime());
@@ -73,8 +77,8 @@ public class V2ConstructCardCommand extends FacilioCommand {
                      * Select Builder construction to fetch card data starts here
                      */
 
-                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
-                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getLabel(), result, field, null));
+                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
+                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
                     {
@@ -83,7 +87,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         DateRange baseline_range = baseline.calculateBaseLineRange(range, baseline.getAdjustTypeEnum());
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
                         cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
-                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
+                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
                         cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend()));
                     }
                     /**
@@ -142,7 +146,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         return result_json;
     }
-    private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria)throws Exception
+    private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
     {
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation(baseModule);
         selectBuilder.select(fields);
@@ -155,13 +159,16 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 selectBuilder.andCriteria(parent_criteria);
             }
         }
+        if(db_filter != null && db_filter.getDb_user_filter() != null) {
+            applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder );
+        }
         selectBuilder.limit(50);
         return selectBuilder;
     }
-    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria)throws Exception
+    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
     {
         List<Map<String, Object>> props = null;
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
         {
             try {
@@ -170,7 +177,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             catch (Exception e)
             {
                 LOGGER.debug("CLICKHOUSE SELECT BUILDER Object for getting card data ---" + selectBuilder);
-                SelectRecordsBuilder<ModuleBaseWithCustomFields> mysql_selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria);
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> mysql_selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
                 props = mysql_selectBuilder.getAsProps();
             }
         }
@@ -198,6 +205,65 @@ public class V2ConstructCardCommand extends FacilioCommand {
             selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
         }
         return selectBuilder;
+    }
+    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    {
+        if(dbUserFilter != null)
+        {
+            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(cardContext.getDisplayName());
+            Set<FacilioModule> addedModules = new HashSet<>();
+            addedModules.add(baseModule);
+            if(filterMappings != null && filterMappings.size() > 0) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
+                FacilioField appliedField = new FacilioField();
+                FacilioField yField = modBean.getField(cardContext.getFieldId());
+                Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(cardContext.parentModuleName));
+                Criteria criteria = new Criteria();
+                for(Map<String, JSONObject> filterMap : filterMappings) {
+                    for (String alias : filterMap.keySet()) {
+                        Condition condition = new Condition();
+                        HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
+                        condition.setOperatorId(36);
+                        List<String> value = (List<String>) selected_dp_map.get("value");
+                        StringJoiner joiner = new StringJoiner(",");
+                        value.forEach(val -> joiner.add(val));
+                        condition.setValue(String.valueOf(joiner));
+                        if (alias.equals("space")) {
+                            appliedField = fieldMap.get("space");
+                        } else if(alias.equals("category")){
+                            appliedField = fieldMap.get("category");
+                        } else {
+                            appliedField = fieldsMap.get("parentId");
+                        }
+                        condition.setField(appliedField);
+                        criteria.addAndCondition(condition);
+                        applyFilterCriteria(baseModule,cardContext.parentModuleName,selectBuilder,addedModules,criteria,yField);
+                    }
+                }
+            }
+        }
+    }
+    public static void applyFilterCriteria(FacilioModule baseModule, String parentReadingModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, FacilioField yField)throws Exception
+    {
+        LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule parentModule = modBean.getModule(parentReadingModule);
+            if(parentReadingModule != null)
+            {
+                FacilioField parent_field = FieldFactory.getIdField(modBean.getModule(parentReadingModule));
+                if(yField != null)
+                {
+                    Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
+                    FacilioField child_field = fieldsMap.get("parentId");
+                    V2AnalyticsOldUtil.applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), parentModule, selectBuilder, addedModules);
+                    Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, parentModule);
+                    if(parent_criteria != null)
+                    {
+                        selectBuilder.andCriteria(parent_criteria);
+                    }
+                }
+            }
     }
 
 }

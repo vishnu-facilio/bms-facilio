@@ -1,7 +1,9 @@
 package com.facilio.analytics.v2.action;
 
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
+import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2CardContext;
+import com.facilio.analytics.v2.context.V2CardContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2CardResponseContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.cards.util.CardUtil;
@@ -24,6 +26,7 @@ public class V2DashboardCardAction extends V3Action {
 
     public Long cardId;
     public V2CardContext cardContext;
+    public V2CardContextForDashboardFilter db_filter;
     public String fetch()throws Exception
     {
         FacilioChain chain = V2AnalyticsTransactionChain.getCHCardAnalyticsCardData();
@@ -78,9 +81,19 @@ public class V2DashboardCardAction extends V3Action {
         return response;
     }
     private V2CardResponseContext executeCardFlow(long cardId) throws Exception {
+        V2AnalyticsContextForDashboardFilter dbFilterContext = new V2AnalyticsContextForDashboardFilter();
+        if(db_filter != null) {
+            if(db_filter.getTimeFilter() != null){
+                dbFilterContext.setTimeFilter(db_filter.getTimeFilter().get(String.valueOf(cardId)));
+            }
+            if(db_filter.getDb_user_filter() != null) {
+                dbFilterContext.setDb_user_filter((db_filter.getDb_user_filter().get(String.valueOf(cardId))));
+            }
+        }
         FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticCardDataChain();
         chain.getContext().put("cardId", cardId);
         chain.getContext().put("v2", true);
+        chain.getContext().put("db_filter",dbFilterContext);
         chain.execute();
         cardContext = (V2CardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT);
         V2CardResponseContext result =  setCardResponse(chain.getContext());

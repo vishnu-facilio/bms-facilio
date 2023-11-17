@@ -31,6 +31,7 @@ public class V2ModuleReportContext
     private String description;
     private long  folderId;
     private String  moduleName;
+    private  String parentModule;
     private String chartState;
     private V2ModuleDimensionContext dimensions;
     private List<V2ModuleMeasureContext> measures;
