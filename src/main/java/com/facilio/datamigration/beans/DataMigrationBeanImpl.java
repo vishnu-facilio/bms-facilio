@@ -188,7 +188,8 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(moduleModule.getTableName())
-                .select(moduleFields);
+                .select(moduleFields)
+                .orderBy("MODULEID ASC");
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isEmpty(props)) {
@@ -312,6 +313,12 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
         int offset = 0;
         int limit = 2500;
+        int oldIdSize ;
+        if(CollectionUtils.isEmpty(oldIds)){
+            oldIdSize = 0;
+        }else{
+            oldIdSize = oldIds.size();
+        }
         do {
             FacilioModule dataMappingModule = ModuleFactory.getDataMigrationMappingModule();
             List<FacilioField> fields = FieldFactory.getDataMigrationMappingFields();
@@ -329,7 +336,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                 }
             }
             offset = offset + limit;
-        } while(offset < oldIds.size());
+        } while(offset < oldIdSize);
         return oldVsNew;
     }
 
@@ -365,7 +372,9 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition("SOURCE_ORGID", "sourceOrgId", String.valueOf(sourceOrgId), NumberOperators.EQUALS));
+        if(sourceOrgId>0) {
+            criteria.addAndCondition(CriteriaAPI.getCondition("SOURCE_ORGID", "sourceOrgId", String.valueOf(sourceOrgId), NumberOperators.EQUALS));
+        }
 //        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(DataMigrationStatusContext.DataMigrationStatus.COMPLETED.getIndex()), NumberOperators.NOT_EQUALS));
         if(dataMigrationId != null) {
             criteria.addAndCondition(CriteriaAPI.getIdCondition(dataMigrationId, dataMigrationModule));

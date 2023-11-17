@@ -536,6 +536,12 @@ public class DataMigrationUtil {
             lookupModuleNameVsId = lookupModules.stream().collect(Collectors.toMap(FacilioModule::getName, FacilioModule::getModuleId));
         }
 
+        if(MapUtils.isEmpty(siteIdMappings)) {
+            FacilioModule siteModule = moduleBean.getModule(FacilioConstants.ContextNames.SITE);
+            Map<Long, Long> siteMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), siteModule.getModuleId(), null);
+            siteIdMappings = new HashMap<>(siteMappings);
+        }
+
         List<String> skipFields = new ArrayList<String>(){
             {
                 add("photoId");
@@ -581,15 +587,29 @@ public class DataMigrationUtil {
                         case NUMBER:
                             oldFieldValue = Long.parseLong(fieldValues[i]);
                             lookupModuleName = fieldNameVsLookupModuleName.get(field.getName());
-                            idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName), Arrays.asList(oldFieldValue));
-                            dataProp.put(fieldNames[i],idMappings.getOrDefault(oldFieldValue,-1l));
+                            // TODO - To be remove conditional class after proper component type for vendor and client
+                            if(nameVsComponentType.containsKey(lookupModuleName) && nameVsComponentType.get(lookupModuleName) != null){
+                                Object newFieldValue = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleName, fieldValues[i]);
+                                dataProp.put(fieldNames[i],Long.parseLong(newFieldValue.toString()));
+                            }else{
+                                idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName), Arrays.asList(oldFieldValue));
+                                dataProp.put(fieldNames[i],idMappings.getOrDefault(oldFieldValue,-1l));
+                            }
                             break;
                         case LOOKUP:
                             Map<String, Object> lookupValue = new HashMap<>();
                             oldFieldValue = Long.parseLong(fieldValues[i]);
                             lookupModuleName = ((LookupField) field).getLookupModule().getName();
-                            idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName), Arrays.asList(oldFieldValue));
-                            lookupValue.put("id",idMappings.getOrDefault(oldFieldValue,-1l));
+                            long newLookupFieldValue;
+                            if(nameVsComponentType.containsKey(lookupModuleName) && nameVsComponentType.get(lookupModuleName) != null) {
+                                Object newFieldValueObj = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleName, oldFieldValue);
+                                newLookupFieldValue = Long.parseLong(newFieldValueObj.toString());
+                            }else{
+                                idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName), Arrays.asList(oldFieldValue));
+                                newLookupFieldValue = idMappings.getOrDefault(oldFieldValue,-1l);
+                            }
+
+                            lookupValue.put("id",newLookupFieldValue);
                             dataProp.put(fieldNames[i], lookupValue);
                             break;
                         case MULTI_LOOKUP:
@@ -600,10 +620,18 @@ public class DataMigrationUtil {
                                 oldIds.add(Long.parseLong(multiLookupValue));
                             }
                             lookupModuleName = fieldNameVsLookupModuleName.get(field.getName());
+                            long newFieldValue;
                             idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName),oldIds);
                             for(Long oldId : oldIds){
                                 Map<String, Object> multiLookupValueMap = new HashMap<>();
-                                multiLookupValueMap.put("id", idMappings.getOrDefault(oldId,-1l));
+                                if(nameVsComponentType.containsKey(lookupModuleName) && nameVsComponentType.get(lookupModuleName) != null) {
+                                    Object newFieldValueObj = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleName, oldId);
+                                    newFieldValue = Long.parseLong(newFieldValueObj.toString());
+                                }else{
+                                    idMappings = targetConnection.getOldVsNewId(dataMigrationObj.getId(), lookupModuleNameVsId.get(lookupModuleName), Arrays.asList(oldFieldValue));
+                                    newFieldValue = idMappings.getOrDefault(oldFieldValue,-1l);
+                                }
+                                multiLookupValueMap.put("id", newFieldValue);
                                 multiLookupValuesMap.add(multiLookupValueMap);
                             }
                             dataProp.put(fieldNames[i], multiLookupValuesMap);
@@ -662,25 +690,10 @@ public class DataMigrationUtil {
                         break;
                     case LOOKUP:
                         Map<String, Object> lookupValue = new HashMap<>();
-                        String typeName =  ((LookupField) field).getLookupModule().getName();
-                        if (nameVsComponentType.get(typeName) !=null) {
-                            Object lookupValueId = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, typeName, fieldValues[i]);
-                            lookupValue.put("id", Long.parseLong(lookupValueId.toString()));
-                        }
                         dataProp.put(fieldNames[i], lookupValue);
                         break;
                     case MULTI_LOOKUP:
                         List<Map<String, Object>> multiLookupValuesMap = new ArrayList<>();
-                        String[] multiLookupValues = fieldValues[i].split(",");
-                        String lookupTypeName = ((BaseLookupField) field).getLookupModule().getName();
-                        if (nameVsComponentType.get(lookupTypeName)!=null) {
-                            for (String multiLookupValue : multiLookupValues) {
-                                Map<String, Object> multiLookupValueMap = new HashMap<>();
-                                Object lookupValueId = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupTypeName, multiLookupValue);
-                                multiLookupValueMap.put("id", Long.parseLong(String.valueOf(lookupValueId)));
-                                multiLookupValuesMap.add(multiLookupValueMap);
-                            }
-                        }
                         dataProp.put(fieldNames[i], multiLookupValuesMap);
                         break;
                     case MULTI_ENUM:
@@ -792,7 +805,7 @@ public class DataMigrationUtil {
     }
 
 
-    public static List<Map<String,Object>> getUpdateDataProps(File moduleCsvFile, Map<String, FacilioField> targetFieldNameVsFields, FacilioModule targetModule, Map<String, Map<String, Object>> numberLookupDetails, DataMigrationBean targetConnection, DataMigrationStatusContext dataMigrationObj,Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules ) throws Exception{
+    public static List<Map<String,Object>> getUpdateDataProps(File moduleCsvFile, Map<String, FacilioField> targetFieldNameVsFields, FacilioModule targetModule, Map<String, Map<String, Object>> numberLookupDetails, DataMigrationBean targetConnection, DataMigrationStatusContext dataMigrationObj,Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules,Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets) throws Exception{
 
         List<Map<String,Object>> updatedDataProps = new ArrayList<>();
 
@@ -800,6 +813,7 @@ public class DataMigrationUtil {
             return updatedDataProps;
         }
 
+        Map<String, ComponentType> nameVsComponentType = PackageUtil.nameVsComponentType;
         List<Map<String,Object>> updateDataProps = new ArrayList<>();
         Map<Long,List<Long>> moduleIdVsOldIds = new HashMap<>();
         Map<Long,Map<Long,Long>> moduleIdVsOldIdVsNewId = new HashMap<>();
@@ -824,13 +838,13 @@ public class DataMigrationUtil {
             moduleIdVsOldIdVsNewId.put(moduleId,idMappings);
         }
 
-        updatedDataProps = modifyUpdateProps(updateDataProps,moduleIdVsOldIdVsNewId,targetFieldNameVsFields,targetModule,numberLookupDetails);
+        updatedDataProps = modifyUpdateProps(updateDataProps,moduleIdVsOldIdVsNewId,targetFieldNameVsFields,targetModule,numberLookupDetails,packageChangSets);
 
         return updatedDataProps;
 
     }
 
-    private static List<Map<String,Object>> modifyUpdateProps(List<Map<String,Object>> updateDataProps,Map<Long,Map<Long,Long>> moduleIdVsOldIdVsNewId,Map<String, FacilioField> targetFieldNameVsFields,FacilioModule targetModule,Map<String, Map<String, Object>> numberLookupDetails) throws Exception{
+    private static List<Map<String,Object>> modifyUpdateProps(List<Map<String,Object>> updateDataProps,Map<Long,Map<Long,Long>> moduleIdVsOldIdVsNewId,Map<String, FacilioField> targetFieldNameVsFields,FacilioModule targetModule,Map<String, Map<String, Object>> numberLookupDetails,Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets) throws Exception{
 
         if(CollectionUtils.isEmpty(updateDataProps)){
             return new ArrayList<>();
@@ -862,27 +876,36 @@ public class DataMigrationUtil {
                 } else if (field instanceof LookupField || field instanceof MultiLookupField) {
                     long lookupModuleId = ((BaseLookupField)field).getLookupModule().getModuleId();
                     String lookupModuleTypeName = ((BaseLookupField) field).getLookupModule().getName();
-                    if(nameVsComponentType.containsKey(lookupModuleTypeName)){
-                        LOGGER.info("Data Migration Update Props skipped for field :" +fieldName + " and lookupComponentType : " + lookupModuleTypeName);
-                        continue;
-                    }
-                    if(field instanceof LookupField && lookupModuleId >0 ){
+                    if(field instanceof LookupField){
                         Map<String, Object> lookupValue = (Map<String, Object>) fieldValue;
                         Map<String, Object> newLookupValue = new HashMap<>();
-                        Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModuleId);
                         long lookupValueId = (long) lookupValue.get("id");
-                        long newLookupId = idMapping.getOrDefault(lookupValueId,-1l);
+                        long newLookupId;
+                        if(nameVsComponentType.containsKey(lookupModuleTypeName) && nameVsComponentType.get(lookupModuleTypeName) != null){
+                            Object newFieldValueObj = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleTypeName, lookupValueId);
+                            newLookupId = Long.parseLong(newFieldValueObj.toString());
+                        }else{
+                            Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModuleId);
+                            newLookupId = idMapping.getOrDefault(lookupValueId,-1l);
+                        }
                         newLookupValue.put("id",newLookupId);
                         updatedProp.put(fieldName,newLookupValue);
-                    }else if (lookupModuleId >0){
-                        Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModuleId);
+                    }else{
                         List<Map<String, Object>> multiLookupValuesList = (List<Map<String, Object>>) fieldValue;
-                        if(MapUtils.isNotEmpty(idMapping)) {
-                            List<Map<String, Object>> newMultiLookupValuesList = new ArrayList<>();
+                        List<Map<String, Object>> newMultiLookupValuesList = new ArrayList<>();
+                        if(CollectionUtils.isNotEmpty(multiLookupValuesList)){
                             for (Map<String, Object> multiLookupValue : multiLookupValuesList) {
                                 Map<String, Object> newMultiLookupValue = new HashMap<>();
                                 long multiLookupId = (long) multiLookupValue.get("id");
-                                newMultiLookupValue.put("id", idMapping.getOrDefault(multiLookupId, -1l));
+                                long newLookupId;
+                                if(nameVsComponentType.containsKey(lookupModuleTypeName) && nameVsComponentType.get(lookupModuleTypeName) != null){
+                                    Object newFieldValueObj = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleTypeName, multiLookupId);
+                                    newLookupId = Long.parseLong(newFieldValueObj.toString());
+                                }else{
+                                    Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModuleId);
+                                    newLookupId = idMapping.getOrDefault(multiLookupId,-1l);
+                                }
+                                newMultiLookupValue.put("id", newLookupId);
                                 newMultiLookupValuesList.add(newMultiLookupValue);
                             }
                             updatedProp.put(fieldName, newMultiLookupValuesList);
@@ -891,9 +914,16 @@ public class DataMigrationUtil {
                 }else{
                     Map<String, Object> lookupDetails = (Map<String, Object>) numberLookupDetails.get(fieldName);
                     FacilioModule lookupModule = (FacilioModule) lookupDetails.get("lookupModule");
+                    String lookupModuleTypeName = lookupModule.getName();
                     long oldId = Long.parseLong(fieldValue.toString());
-                    Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModule.getModuleId());
-                    long newId = idMapping.getOrDefault(oldId,-1l);
+                    long newId;
+                    if(nameVsComponentType.containsKey(lookupModuleTypeName) && nameVsComponentType.get(lookupModuleTypeName) != null){
+                        Object newFieldValueObj = getComponentIdFromChaneSet(nameVsComponentType, packageChangSets, lookupModuleTypeName, oldId);
+                        newId = Long.parseLong(newFieldValueObj.toString());
+                    }else{
+                        Map<Long,Long> idMapping = moduleIdVsOldIdVsNewId.get(lookupModule.getModuleId());
+                        newId = idMapping.getOrDefault(oldId,-1l);
+                    }
                     updatedProp.put(fieldName,newId);
                 }
 

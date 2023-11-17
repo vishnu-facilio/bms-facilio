@@ -28,7 +28,9 @@ public class FillDataMigrationModuleDetailsCommand extends FacilioCommand {
         long sourceOrgId = (long) context.getOrDefault(DataMigrationConstants.SOURCE_ORG_ID, -1l);
         long targetOrgId = (long) context.getOrDefault(DataMigrationConstants.TARGET_ORG_ID, -1l);
         Boolean moduleDataInsertProcess = (Boolean) context.getOrDefault(DataMigrationConstants.DATA_INSERT_PROCESS,false);
+        List<String> runDataMigrationOnlyForModulesNames = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         PackageFolderContext rootFolder = (PackageFolderContext) context.get(PackageConstants.PACKAGE_ROOT_FOLDER);
+
         if(moduleDataInsertProcess){
             List<String> dataConfigModuleNames = PackageFileUtil.getDataConfigModuleNames(rootFolder);
             dataMigrationModuleNames = new LinkedList<>(dataConfigModuleNames);
@@ -43,9 +45,29 @@ public class FillDataMigrationModuleDetailsCommand extends FacilioCommand {
             connection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
         }
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioModule> allSystemModules = connection.getAllModules();
         Map<String,FacilioModule> allSystemModulesMap = allSystemModules.stream().collect(Collectors.toMap(FacilioModule::getName, Function.identity(), (a, b) -> b));
 
+        if(CollectionUtils.isNotEmpty(runDataMigrationOnlyForModulesNames)){
+            List<FacilioModule> runDataMigrationOnlyForModules = DataMigrationUtil.getModuleDetails(runDataMigrationOnlyForModulesNames,allSystemModulesMap);
+            Map<String, Map<String, Object>> allSubModuleNameVsDetailsForSelectedModules = new LinkedHashMap<>();
+            Map<String,Criteria> selectedModuleVsCriteria = (Map<String,Criteria>) context.getOrDefault("moduleVsCriteria", new HashMap());
+
+            HashMap<String,FacilioModule> runDataMigrationOnlyForModuleNameVsObj = new HashMap<>();
+            for(FacilioModule runDataMigrationOnlyForModule : runDataMigrationOnlyForModules){
+                runDataMigrationOnlyForModuleNameVsObj.put(runDataMigrationOnlyForModule.getName(),runDataMigrationOnlyForModule);
+            }
+
+            getModuleDetails(runDataMigrationOnlyForModules,modBean,allSubModuleNameVsDetailsForSelectedModules,selectedModuleVsCriteria,runDataMigrationOnlyForModuleNameVsObj);
+            HashMap<String, Map<String, Object>> runDataMigrationOnlyForModuleNameVsDetails = getModuleSequence(allSubModuleNameVsDetailsForSelectedModules,new ArrayList<>());
+
+            context.put(DataMigrationConstants.MODULES_VS_DETAILS, runDataMigrationOnlyForModuleNameVsDetails);
+            context.put(DataMigrationConstants.DATA_MIGRATION_MODULES, runDataMigrationOnlyForModules);
+            context.put(DataMigrationConstants.ALL_SYSTEM_MODULES,allSystemModulesMap);
+
+            return false;
+        }
         dataMigrationModuleNames.add(0,FacilioConstants.ContextNames.SITE);
         Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules = DataMigrationUtil.getNonNullableModuleVsFieldVsLookupModules();
         Set<String> nonNullableFieldModuleName = nonNullableModuleVsFieldVsLookupModules.keySet();
@@ -59,7 +81,6 @@ public class FillDataMigrationModuleDetailsCommand extends FacilioCommand {
             allDataMigrationModules.addAll(selectedModulesExtendedModules);
             selectedModulesExtendedModules = DataMigrationUtil.getSelectedModulesExtendedModules(selectedModulesExtendedModules,allSystemModulesMap);
         }
-
 
         Set<Long> allDataMigrationModuleIds = allDataMigrationModules.stream().map(facilioModule -> facilioModule.getModuleId()).collect(Collectors.toSet());
         List<FacilioModule> allSubModuleList  = new ArrayList<>();
@@ -97,7 +118,6 @@ public class FillDataMigrationModuleDetailsCommand extends FacilioCommand {
             allSubModuleNameVsObj.put(subModule.getName(),subModule);
         }
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, Map<String, Object>> allModuleNameVsDetails = new LinkedHashMap<>();
         Map<String,Criteria> allModuleVsCriteria = (Map<String,Criteria>) context.getOrDefault("moduleVsCriteria", new HashMap());
         Map<String, Map<String, Object>> allSubModuleNameVsDetails = new LinkedHashMap<>();

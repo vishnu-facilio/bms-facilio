@@ -65,6 +65,7 @@ public class DataMigrationConstants {
     public static final String LOG_MODULES_LIST = "logModules";
     public static final String SKIP_DATA_MIGRATION_MODULE_NAMES = "skipDataMigrationModuleNames";
     public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
+    public static final String RESTRICT_DEPENDANT_MODULES = "restrictDependantModules";
     public static final String DATA_MIGRATION_MODULE_NAMES = "dataMigrationModuleNames";
     public static final String DATA_MIGRATION_MODULES = "dataMigrationModules";
     public static final String ALL_SYSTEM_MODULES = "allSystemModules";

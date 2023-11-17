@@ -24,6 +24,8 @@ public class CopyDataMigrationAction extends FacilioAction {
 
     private long sourceOrgId;
     private long targetOrgId;
+    private String dataMigrationForOnlyMentionedModules;
+    private boolean restrictDependantModules = false;
     private String dataMigrationModules;
     private int limit;
     private boolean fromAdminTool = false;
@@ -45,9 +47,14 @@ public class CopyDataMigrationAction extends FacilioAction {
         this.setFetchStackTrace(true);
 
         List<String> dataMigrationModulesList = new ArrayList<>();
+        List<String> dataMigrationForOnlyMentionedModulesList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(dataMigrationModules)) {
             dataMigrationModulesList = Arrays.asList(dataMigrationModules.split(","));
+        }
+
+        if (StringUtils.isNotEmpty(dataMigrationForOnlyMentionedModules)){
+            dataMigrationForOnlyMentionedModulesList = Arrays.asList(dataMigrationForOnlyMentionedModules.split(","));
         }
 
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
@@ -55,6 +62,8 @@ public class CopyDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.TARGET_ORG_ID, getTargetOrgId());
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES, new ArrayList<String>(dataMigrationModulesList));
+        dataMigrationContext.put(DataMigrationConstants.RESTRICT_DEPENDANT_MODULES,isRestrictDependantModules());
+        dataMigrationContext.put(DataMigrationConstants.RUN_ONLY_FOR_MODULES, new ArrayList<String>(dataMigrationForOnlyMentionedModulesList));
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL,isFromAdminTool());
         dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
 

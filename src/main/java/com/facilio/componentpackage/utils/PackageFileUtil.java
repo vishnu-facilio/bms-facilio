@@ -263,7 +263,7 @@ public class PackageFileUtil {
         return value;
     }
 
-    public static void updateCsvFile(FacilioModule module, File moduleCsvFile, List<Map<String, Object>> props, List<FacilioField> targetFields, Map<String, List<Long>> fetchedRecords, Map<String, Map<String, Object>> numberLookupDetails, Map<String, List<Long>> toBeFetchRecords,List<String> allMigrationModuleNames) throws Exception {
+    public static void updateCsvFile(FacilioModule module, File moduleCsvFile, List<Map<String, Object>> props, List<FacilioField> targetFields, Map<String, List<Long>> fetchedRecords, Map<String, Map<String, Object>> numberLookupDetails, Map<String, List<Long>> toBeFetchRecords,List<String> allMigrationModuleNames,boolean isRestrictDependantModules) throws Exception {
 
         if (CollectionUtils.isEmpty(targetFields) || CollectionUtils.isEmpty(props)) {
             return;
@@ -271,7 +271,7 @@ public class PackageFileUtil {
         String filePath = moduleCsvFile.getPath();
         try (FileWriter writer = new FileWriter(filePath, true)) {
             StringBuilder str = new StringBuilder();
-            addRowData(props, str, targetFields, fetchedRecords, toBeFetchRecords, numberLookupDetails, writer,allMigrationModuleNames);
+            addRowData(props, str, targetFields, fetchedRecords, toBeFetchRecords, numberLookupDetails, writer,allMigrationModuleNames,isRestrictDependantModules);
         }
     }
 
@@ -290,7 +290,7 @@ public class PackageFileUtil {
         return csvFile;
     }
 
-    public static File exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> records, PackageFolderContext rootFolder, Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails, Map<String, List<Long>> fetchedRecords,List<String> allMigrationModuleNames) throws Exception {
+    public static File exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> records, PackageFolderContext rootFolder, Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails, Map<String, List<Long>> fetchedRecords,List<String> allMigrationModuleNames,boolean isRestrictDependantModules) throws Exception {
 
         if (CollectionUtils.isEmpty(fields) || CollectionUtils.isEmpty(records)) {
             return null;
@@ -324,7 +324,7 @@ public class PackageFileUtil {
             }
             writer.append(StringUtils.stripEnd(str.toString(), ","));
             writer.append('\n');
-            addRowData(records, str, fields, fetchedRecords, toBeFetchRecords, numberLookupDetails, writer,allMigrationModuleNames);
+            addRowData(records, str, fields, fetchedRecords, toBeFetchRecords, numberLookupDetails, writer,allMigrationModuleNames,isRestrictDependantModules);
 
             return csvFile;
         }
@@ -363,7 +363,7 @@ public class PackageFileUtil {
 
     }
 
-    private static void addRowData(List<Map<String, Object>> records, StringBuilder str, List<FacilioField> fields, Map<String, List<Long>> fetchedRecords, Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails, FileWriter writer,List<String> allMigrationModuleNames) throws IOException {
+    private static void addRowData(List<Map<String, Object>> records, StringBuilder str, List<FacilioField> fields, Map<String, List<Long>> fetchedRecords, Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails, FileWriter writer,List<String> allMigrationModuleNames,boolean isRestrictDependantModules) throws IOException {
 
         for (Map<String, Object> record : records) {
             str = new StringBuilder();
@@ -393,8 +393,9 @@ public class PackageFileUtil {
 
                             long longValue = ((Number) value).longValue();
 
-                            handleTobeAndFetchedRecords(lookupModuleName,moduleType,fetchedRecords,longValue,toBeFetchRecords,values,allMigrationModuleNames);
-
+                            if(!isRestrictDependantModules) {
+                                handleTobeAndFetchedRecords(lookupModuleName, moduleType, fetchedRecords, longValue, toBeFetchRecords, values, allMigrationModuleNames);
+                            }
                         }
                         value = sj;
                     } else if (field instanceof LookupField) {
@@ -414,8 +415,9 @@ public class PackageFileUtil {
 
                         long longValue = ((Number) value).longValue();
 
-                        handleTobeAndFetchedRecords(lookupModuleName,moduleType,fetchedRecords,longValue,toBeFetchRecords,values,allMigrationModuleNames);
-
+                        if(!isRestrictDependantModules) {
+                            handleTobeAndFetchedRecords(lookupModuleName, moduleType, fetchedRecords, longValue, toBeFetchRecords, values, allMigrationModuleNames);
+                        }
                     } else if (field instanceof MultiEnumField) {
                         StringJoiner sj = new StringJoiner(",");
                         List<Integer> multiEnumValues = (List<Integer>) value;
@@ -428,7 +430,9 @@ public class PackageFileUtil {
                         lookupModuleName = FacilioConstants.ContextNames.SITE;
                         long longValue = ((Number) value).longValue();
                         List<Long> values = new ArrayList<>();
-                        handleTobeAndFetchedRecords(lookupModuleName,FacilioModule.ModuleType.BASE_ENTITY,fetchedRecords,longValue,toBeFetchRecords,values,allMigrationModuleNames);
+                        if(!isRestrictDependantModules) {
+                            handleTobeAndFetchedRecords(lookupModuleName, FacilioModule.ModuleType.BASE_ENTITY, fetchedRecords, longValue, toBeFetchRecords, values, allMigrationModuleNames);
+                        }
 
                     } else if (field instanceof UrlField) {
                         StringJoiner sj = new StringJoiner(",");
@@ -447,8 +451,9 @@ public class PackageFileUtil {
                         value = record.get(fieldName);
                         long longValue = ((Number) value).longValue();
                         List<Long> values = new ArrayList<>();
-                        handleTobeAndFetchedRecords(lookupModuleName,moduleType,fetchedRecords,longValue,toBeFetchRecords,values,allMigrationModuleNames);
-
+                        if(!isRestrictDependantModules) {
+                            handleTobeAndFetchedRecords(lookupModuleName, moduleType, fetchedRecords, longValue, toBeFetchRecords, values, allMigrationModuleNames);
+                        }
                     }
                     str.append(PackageFileUtil.escapeCsv(value.toString()));
                 } else {

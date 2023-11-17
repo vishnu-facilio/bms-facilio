@@ -2,7 +2,9 @@ package com.facilio.datamigration.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.datamigration.beans.DataMigrationBean;
@@ -42,6 +44,7 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
         long transactionTimeout = (long) context.get(DataMigrationConstants.DATA_MIGRATION_ID);
         boolean allowNotesAndAttachments = (boolean) context.get(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS);
         List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
+        Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets = (Map<ComponentType, List<PackageChangeSetMappingContext>>) context.get(DataMigrationConstants.PACKAGE_CHANGE_SET);
 
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         List<String> dataConfigModuleNames = (List<String>) context.get(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES);
@@ -86,7 +89,7 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
 
             List<SupplementRecord> targetSupplements = DataMigrationUtil.getSupplementFields((Collection<FacilioField>) targetFieldNameVsFields.values());
 
-            List<Map<String,Object>> updatedDataProps = DataMigrationUtil.getUpdateDataProps(moduleCsvFile,targetFieldNameVsFields,targetModule,numberLookupDetails,targetConnection,dataMigrationObj,nonNullableModuleVsFieldVsLookupModules);
+            List<Map<String,Object>> updatedDataProps = DataMigrationUtil.getUpdateDataProps(moduleCsvFile,targetFieldNameVsFields,targetModule,numberLookupDetails,targetConnection,dataMigrationObj,nonNullableModuleVsFieldVsLookupModules,packageChangSets);
 
             targetConnection.updateModuleData(targetModule, new ArrayList<>(targetFieldNameVsFields.values()), targetSupplements, updatedDataProps, addLogger);
 

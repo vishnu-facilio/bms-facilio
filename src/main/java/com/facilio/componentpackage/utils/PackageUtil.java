@@ -666,32 +666,38 @@ public class PackageUtil {
     public static final Map<String,ComponentType> nameVsComponentType  = Collections.unmodifiableMap(initComponentTypes());
 
     private static Map<String,ComponentType> initComponentTypes(){
-        Map<String, ComponentType> defaultRoles = new HashMap<>();
-        defaultRoles.put(FacilioConstants.ContextNames.FORM_ID,ComponentType.FORM);
-        defaultRoles.put(FacilioConstants.ContextNames.TICKET_CATEGORY,ComponentType.TICKET_CATEGORY);
-        defaultRoles.put(FacilioConstants.ContextNames.TICKET_STATUS,ComponentType.TICKET_STATUS);
-        defaultRoles.put(FacilioConstants.ContextNames.TICKET_PRIORITY,ComponentType.TICKET_PRIORITY);
-        defaultRoles.put(FacilioConstants.ContextNames.TICKET_TYPE,ComponentType.TICKET_TYPE);
-        defaultRoles.put(FacilioConstants.ContextNames.STATE_FLOW_ID,ComponentType.STATE_FLOW);
-        defaultRoles.put(FacilioConstants.ContextNames.SLA_POLICY_ID,ComponentType.SLA_POLICY);
-        defaultRoles.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME,ComponentType.APPROVAL_STATE_FLOW);
-        defaultRoles.put("approvalFlowId",ComponentType.APPROVAL_STATE_FLOW);
-        defaultRoles.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME,ComponentType.TICKET_STATUS);
-        defaultRoles.put(FacilioConstants.ContextNames.JOB_STATUS,ComponentType.TICKET_STATUS);
-        defaultRoles.put(FacilioConstants.ContextNames.MODULE,ComponentType.MODULE);
-        defaultRoles.put(FacilioConstants.ContextNames.USERS,ComponentType.USER);
-        defaultRoles.put(FacilioConstants.ContextNames.APP_ID,ComponentType.APP);
-        defaultRoles.put(FacilioConstants.ContextNames.ASSET_CATEGORY,ComponentType.ASSET_CATEGORY);
-        defaultRoles.put(FacilioConstants.ContextNames.ASSET_TYPE,ComponentType.ASSET_TYPE);
-        defaultRoles.put(FacilioConstants.ContextNames.ASSET_DEPARTMENT,ComponentType.ASSET_DEPARTMENT);
-        defaultRoles.put(FacilioConstants.ContextNames.ROLE,ComponentType.ROLE);
-        defaultRoles.put(FacilioConstants.ContextNames.SPACE_CATEGORY,ComponentType.SPACE_CATEGORY);
-        defaultRoles.put(FacilioConstants.ContextNames.PEOPLE,ComponentType.PEOPLE);
-        defaultRoles.put(FacilioConstants.ContextNames.ASSIGNMENT,ComponentType.TEAM);
-        defaultRoles.put(FacilioConstants.ContextNames.CUSTOM_BUTTON_ID,ComponentType.CUSTOM_BUTTON);
+        Map<String, ComponentType> componentNameVsTypes = new HashMap<>();
+        componentNameVsTypes.put(FacilioConstants.ContextNames.FORM_ID,ComponentType.FORM);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TICKET_CATEGORY,ComponentType.TICKET_CATEGORY);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TICKET_STATUS,ComponentType.TICKET_STATUS);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TICKET_PRIORITY,ComponentType.TICKET_PRIORITY);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TICKET_TYPE,ComponentType.TICKET_TYPE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.STATE_FLOW_ID,ComponentType.STATE_FLOW);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.SLA_POLICY_ID,ComponentType.SLA_POLICY);
+        componentNameVsTypes.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME,ComponentType.APPROVAL_STATE_FLOW);
+        componentNameVsTypes.put("approvalFlowId",ComponentType.APPROVAL_STATE_FLOW);
+        componentNameVsTypes.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME,ComponentType.TICKET_STATUS);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.JOB_STATUS,ComponentType.TICKET_STATUS);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.MODULE,ComponentType.MODULE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.USERS,ComponentType.USER);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.APP_ID,ComponentType.APP);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.ASSET_CATEGORY,ComponentType.ASSET_CATEGORY);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.ASSET_TYPE,ComponentType.ASSET_TYPE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.ASSET_DEPARTMENT,ComponentType.ASSET_DEPARTMENT);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.ROLE,ComponentType.ROLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.SPACE_CATEGORY,ComponentType.SPACE_CATEGORY);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.PEOPLE,ComponentType.PEOPLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.ASSIGNMENT,ComponentType.TEAM);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.CUSTOM_BUTTON_ID,ComponentType.CUSTOM_BUTTON);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.EMPLOYEE,ComponentType.PEOPLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT_CONTACT,ComponentType.PEOPLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.VENDOR_CONTACT,ComponentType.PEOPLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT_CONTACT,ComponentType.PEOPLE);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.VENDORS,null);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT,null);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,null);
 
-
-        return defaultRoles;
+        return componentNameVsTypes;
     }
 
     public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {

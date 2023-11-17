@@ -38,6 +38,7 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
         Map<String,FacilioModule> allSystemModules = (Map<String,FacilioModule>) context.get(DataMigrationConstants.ALL_SYSTEM_MODULES);
         int limit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 0);
         boolean allowNotesAndAttachments = (boolean) context.get(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS);
+        boolean isRestrictDependantModules = (boolean) context.get(DataMigrationConstants.RESTRICT_DEPENDANT_MODULES);
 
         int actualLimit = 0;
         boolean getLimitedRecords = true;
@@ -134,7 +135,7 @@ public class DataMigrationCreateDataFileCommand extends FacilioCommand {
             }
 
             // module data csv creation
-            moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords, allMigrationModuleNames);
+            moduleCsvFile = PackageFileUtil.exportDataAsCSVFile(sourceModule, sourceFields, propsForCsv, dataFolder, toBeFetchRecords, numberLookupDetails, fetchedRecords, allMigrationModuleNames,isRestrictDependantModules);
 
             if (moduleCsvFile != null) {
 

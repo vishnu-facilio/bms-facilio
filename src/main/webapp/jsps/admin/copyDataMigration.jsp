@@ -26,9 +26,15 @@
         <td><input type="text" id="sourceOrgId" required class="input-field"></td>
     </tr>
     <tr id="dataMigrationModulesIdRow">
-        <td class="table-head"><h4>Run migration for modules</h4></td>
+        <td class="table-head"><h4>Run migration for modules with dependency modules</h4></td>
         <td>
             <textarea id="dataMigrationModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
+        </td>
+    </tr>
+    <tr id="dataMigrationForOnlyModulesIdRow">
+        <td class="table-head"><h4>Run migration for mentioned modules Only</h4></td>
+        <td>
+            <textarea id="dataMigrationForOnlyMentionedModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
         </td>
     </tr>
     <tr id="skipDataMigrationModulesIdRow">
@@ -45,6 +51,17 @@
             </label>
             <label class="radio-text">
                 <input class="radio-label" type="radio" name="attachment" id="don't allowNotesAndAttachments" > False
+            </label>
+        </td>
+    </tr>
+    <tr id="restrictDependantModulesRow">
+        <td class="table-head"><h4>Restrict Dependant Modules</h4></td>
+        <td>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="restrict" id="restrictDependantModules" > True
+            </label>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="restrict" id="don't restrictDependantModules" > False
             </label>
         </td>
     </tr>
@@ -109,14 +126,18 @@
     function hideOrShowFields() {
         const showFileRadioChecked = $("#showFileRadio").is(":checked");
         $("#dataMigrationModulesIdRow").toggle(showFileRadioChecked);
-        // $("#allowNotesAndAttachmentsIdRow").toggle(showFileRadioChecked);
+        $("#skipDataMigrationModulesIdRow").toggle(!showFileRadioChecked);
+        $("#allowUpdateDataOnlyIdRow").toggle(!showFileRadioChecked);
         $("#limitRow").toggle(showFileRadioChecked);
-        // $("#targetOrgIdRow").toggle(!showFileRadioChecked);
+        $("#sourceOrgIdRow").toggle(showFileRadioChecked);
+        $("#targetOrgIdRow").toggle(!showFileRadioChecked);
         $("#fileRow").toggle(!showFileRadioChecked);
         $("#packageIdRow").toggle(!showFileRadioChecked);
         $("#dataMigrationLogModulesIdRow").toggle(!showFileRadioChecked);
         $("#dataMigrationIdRow").toggle(!showFileRadioChecked);
-        // $("#transactionTimeoutIdRow").toggle(!showFileRadioChecked);
+        $("#dataMigrationForOnlyModulesIdRow").toggle(showFileRadioChecked);
+        $("#restrictDependantModulesRow").toggle(showFileRadioChecked);
+
     }
 
     function sendAjax() {
@@ -126,11 +147,13 @@
             const dataObject = {
                 sourceOrgId: $("#sourceOrgId").val(),
                 dataMigrationModules: $("#dataMigrationModules").val(),
+                dataMigrationForOnlyMentionedModules : $('#dataMigrationForOnlyMentionedModules').val(),
+                transactionTimeout: $('#transactionTimeout').val(),
                 limit: $("#limit").val(),
                 fromAdminTool: true,
             };
             dataObject.allowNotesAndAttachments = $("#allowNotesAndAttachments").is(":checked");
-            dataObject.allowUpdateDataOnly = $("#allowUpdateDataOnly").is(":checked");
+            dataObject.restrictDependantModules = $("#restrictDependantModules").is(":checked");
 
             $.ajax({
                 url: "/admin/createDataPackage",
