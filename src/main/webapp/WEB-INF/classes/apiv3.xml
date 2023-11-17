@@ -670,7 +670,7 @@
 
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
-            <param name="permission">ALL</param>
+            <param name="permission">ALL;GET:READ</param>
             <param name="setupTab">TABS_AND_LAYOUTS</param>
         </action>
     </package>
@@ -2429,7 +2429,7 @@
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:VIEW,READ;PUT:READ</param>
         </action>
     </package>
     <package name="v2ModuleKpi" namespace="/api/v3/module/kpi" extends="v3Api">
@@ -2457,7 +2457,7 @@
         </action>
         <action name="data/*" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetchData">
             <param name="cardId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:VIEW,READ;PUT:READ</param>
         </action>
     </package>
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
@@ -2482,7 +2482,7 @@
         </action>
         <action name="edit/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:VIEW,READ;PUT:READ</param>
         </action>
         <action name="dimension/modes" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getAllReportModes">
             <param name="permission">GET:VIEW,READ</param>

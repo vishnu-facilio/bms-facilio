@@ -2257,7 +2257,7 @@
 		<action name="all" class="com.facilio.bmsconsole.actions.BaseLineAction"
 			method="getAllBaseLineList">
 			<param name="moduleName">setup</param>
-			<param name="permission">ENERGY_ANALYTICS,BASELINE</param>
+			<param name="permission">ENERGY_ANALYTICS,BASELINE;GET:READ</param>
 			<result name="success" type="json">
 				<param name="root">baseLines</param>
 			</result>
@@ -3708,7 +3708,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permisson">POST:READ</param>
 		</action>
 		<action name="addDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardTab">
 			<param name="permission">POST:EDIT</param>
@@ -3763,7 +3763,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">modules,modules\[\d+\],modules\[\d+\].*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:CREATE,READ</param>
 		</action>
 		<action name="addWidget" class="com.facilio.bmsconsole.actions.DashboardAction" method="addWidget">
 			<result name="success" type="json">

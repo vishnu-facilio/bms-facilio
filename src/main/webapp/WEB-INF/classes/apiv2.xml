@@ -4102,7 +4102,7 @@
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ</param>
             <param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING</param>
 		</action>
 	</package>
@@ -4111,7 +4111,7 @@
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ</param>
 			<param name="setupTab">DATA_SHARING</param>
 		</action>
 	</package>
@@ -4147,7 +4147,7 @@
 	<package name="lookupFields" namespace="/api/v2/lookupFields" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.LookupFieldAction" method="lookupFieldList">
 			<param name="setupTab">DATA_SHARING</param>
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ</param>
 		</action>
 	</package>
 	<package name="dashboardCardApiv2" namespace="/api/v2/dashboard/cards"
@@ -6205,7 +6205,7 @@
 			method="v2metadata">
 			<param name="translationImpl">FieldTranslationV2</param>
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
 		</action>
 	</package>
 
@@ -8687,8 +8687,8 @@
 	<package name="dashboardFilter" namespace="/api/v2/dashboardFilter" extends="v2Api">
 		<action name="getModules"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
-				method="getDashboardModules">			
-			<param name="deprecated">true</param>
+				method="getDashboardModules">
+			<param name="permission">GET:READ</param>
 		</action>
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
@@ -8698,7 +8698,7 @@
 		<action name="addOrUpdateReadingFilter"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="addOrUpdateReadingFilter">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:READ</param>
 		</action>
 		<action name="updateWidgetSettings"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
