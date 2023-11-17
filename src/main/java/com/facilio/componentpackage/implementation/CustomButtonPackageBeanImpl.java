@@ -121,48 +121,8 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
             if(((CustomButtonRuleContext) customButtonRule).getFormModuleName()!=null){
                 element.element(PackageConstants.CustomButtonConstants.FORM_MODULE_NAME).text(((CustomButtonRuleContext) customButtonRule).getFormModuleName());
             }
-
-
-            if (((CustomButtonRuleContext) customButtonRule).getApprovers() != null) {
-                XMLBuilder approverList = element.element(PackageConstants.APPROVER_LIST);
-                XMLBuilder approverElement = approverList.element(PackageConstants.APPROVERS);
-                SharingContext<ApproverContext> approvers = ((CustomButtonRuleContext) customButtonRule).getApprovers();
-                for (ApproverContext approverContext : approvers) {
-                    approverElement.element(PackageConstants.TYPE).text(approverContext.getType()>0? String.valueOf(approverContext.getTypeEnum()) :null);
-                    switch (approverContext.getTypeEnum()) {
-                        case USER:
-                            long userId = approverContext.getUserId();
-                            User user = AccountUtil.getUserBean().getUser(userId, true);
-                            if (user != null) {
-                                approverElement.element(PackageConstants.USER_NAME).text(user.getName());
-                            }
-                            break;
-                        case ROLE:
-                            long roleId = approverContext.getRoleId();
-                            Role role = AccountUtil.getRoleBean().getRole(roleId);
-                            if (role != null) {
-                                approverElement.element(PackageConstants.RoleConstants.ROLE_NAME).text(role.getName());
-                            }
-                            break;
-                        case GROUP:
-                            long groupId = approverContext.getGroupId();
-                            Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                            if (group != null) {
-                                approverElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
-                            }
-                            break;
-                        case APP:
-                            break;
-                        default:
-                            long fieldId = approverContext.getFieldId();
-                            FacilioField field = modBean.getField(fieldId);
-                            if (field != null) {
-                                approverElement.element(PackageConstants.FIELDNAME).text(field.getName());
-                                approverElement.element(PackageConstants.FIELD_MODULE_NAME).text(field.getModule().getName());
-                            }
-                            break;
-                    }
-                }
+            if (((CustomButtonRuleContext) customButtonRule).getApprovers() != null){
+                PackageBeanUtil.constructBuilderFromSharingContext(((CustomButtonRuleContext) customButtonRule).getApprovers(),element.element(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST));
             }
 
             if (CollectionUtils.isNotEmpty(customButtonRule.getActions())) {
@@ -347,59 +307,10 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
             customButtonRule.setConfig(json);
         }
 
-
-        XMLBuilder approverList = builder.getElement(PackageConstants.APPROVER_LIST);
+        XMLBuilder approverList = builder.getElement(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST);
         if (approverList != null){
-            List<XMLBuilder> approverElement = approverList.getElementList(PackageConstants.APPROVERS);
-            SharingContext<ApproverContext> approverContextList = new SharingContext<>();
-            for (XMLBuilder approver : approverElement){
-                ApproverContext approverContext = new ApproverContext();
-
-                String approverType = approver.getElement(PackageConstants.TYPE).getText();
-                SingleSharingContext.SharingType type=StringUtils.isNotEmpty(approverType) ? SingleSharingContext.SharingType.valueOf(approverType) : null;
-                if(type!=null) approverContext.setType(type.getValue());
-
-                switch (approverContext.getTypeEnum()){
-                    case USER:
-                        if(approver.getElement(PackageConstants.USER_NAME)!=null)
-                        {
-                            String userName = approver.getElement(PackageConstants.USER_NAME).getText();
-                            long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-                            User user = AccountUtil.getUserBean().getAppUserForUserName(userName, appId, AccountUtil.getCurrentOrg().getOrgId());
-                            if (user != null) approverContext.setUserId(user.getOuid());
-                        }
-                        break;
-                    case GROUP:
-                        if(approver.getElement(PackageConstants.GroupConstants.GROUP_NAME)!=null){
-                            String groupName=approver.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
-                            Group group=AccountUtil.getGroupBean().getGroup(groupName);
-                            if(group!=null) approverContext.setGroupId(group.getGroupId());
-                        }
-                        break;
-                    case ROLE:
-                        if(approver.getElement(PackageConstants.RoleConstants.ROLE_NAME)!=null){
-                            String roleName=approver.getElement(PackageConstants.RoleConstants.ROLE_NAME).getText();
-                            Role role=AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),roleName);
-                            if(role!=null) approverContext.setRoleId(role.getRoleId());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        if(approver.getElement(PackageConstants.FIELDNAME)!=null){
-                            String fieldName=approver.getElement(PackageConstants.FIELDNAME).getText();
-                            String fieldModuleName=approver.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
-                            FacilioField field=modBean.getField(fieldName,fieldModuleName);
-                            if(field!=null){
-                                approverContext.setFieldId(field.getFieldId());
-                            }
-                        }
-                        break;
-
-                }
-                approverContextList.add(approverContext);
-            }
-            customButtonRule.setApprovers(approverContextList);
+            SharingContext<ApproverContext> approverContexts = PackageBeanUtil.constructSharingContextFromBuilder(approverList, ApproverContext.class);
+            customButtonRule.setApprovers(approverContexts);
         }
 
 

@@ -88,45 +88,7 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
         if((approvals).getActivityTypeEnum()!=null) element.element(PackageConstants.Approvals.EVENT_TYPE).text(String.valueOf(approvals.getActivityTypeEnum()));
 
         if (((ApprovalStateTransitionRuleContext)approveRule).getApprovers() != null) {
-            XMLBuilder approverList = element.element(PackageConstants.APPROVER_LIST);
-            XMLBuilder approverElement = approverList.element(PackageConstants.APPROVERS);
-            List<ApproverContext> approvers = ((ApprovalStateTransitionRuleContext)approveRule).getApprovers();
-            for (ApproverContext approverContext : approvers) {
-                approverElement.element(PackageConstants.TYPE).text(approverContext.getType()>0? String.valueOf(approverContext.getTypeEnum()) :null);
-                switch (approverContext.getTypeEnum()) {
-                    case USER:
-                        long userId = approverContext.getUserId();
-                        User user = AccountUtil.getUserBean().getUser(userId, true);
-                        if (user != null) {
-                            approverElement.element(PackageConstants.USER_NAME).text(user.getName());
-                        }
-                        break;
-                    case ROLE:
-                        long roleId = approverContext.getRoleId();
-                        Role role = AccountUtil.getRoleBean().getRole(roleId);
-                        if (role != null) {
-                            approverElement.element(PackageConstants.RoleConstants.ROLE_NAME).text(role.getName());
-                        }
-                        break;
-                    case GROUP:
-                        long groupId = approverContext.getGroupId();
-                        Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                        if (group != null) {
-                            approverElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        long fieldId = approverContext.getFieldId();
-                        FacilioField field = modBean.getField(fieldId);
-                        if (field != null) {
-                            approverElement.element(PackageConstants.FIELDNAME).text(field.getName());
-                            approverElement.element(PackageConstants.FIELD_MODULE_NAME).text(field.getModule().getName());
-                        }
-                        break;
-                }
-            }
+            PackageBeanUtil.constructBuilderFromSharingContext(((ApprovalStateTransitionRuleContext)approveRule).getApprovers(),element.element(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST));
         }
 
         if (CollectionUtils.isNotEmpty(approvals.getActions())) {
@@ -148,47 +110,11 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
             if(CollectionUtils.isNotEmpty(actions)) {
                 PackageBeanUtil.constructBuilderFromActionsList(actions, element.element(PackageConstants.Approvals.RESEND_ACTIONS_LIST));
             }
+
             if (((ApprovalStateTransitionRuleContext)reSendRule).getApprovers() != null) {
-                XMLBuilder approverList = element.element(PackageConstants.RESEND_APPROVER_LIST);
-                XMLBuilder approverElement = approverList.element(PackageConstants.APPROVERS);
-                List<ApproverContext> approvers = ((ApprovalStateTransitionRuleContext)reSendRule).getApprovers();
-                for (ApproverContext approverContext : approvers) {
-                    approverElement.element(PackageConstants.TYPE).text(approverContext.getType()>0? String.valueOf(approverContext.getTypeEnum()) :null);
-                    switch (approverContext.getTypeEnum()) {
-                        case USER:
-                            long userId = approverContext.getUserId();
-                            User user = AccountUtil.getUserBean().getUser(userId, true);
-                            if (user != null) {
-                                approverElement.element(PackageConstants.USER_NAME).text(user.getName());
-                            }
-                            break;
-                        case ROLE:
-                            long roleId = approverContext.getRoleId();
-                            Role role = AccountUtil.getRoleBean().getRole(roleId);
-                            if (role != null) {
-                                approverElement.element(PackageConstants.RoleConstants.ROLE_NAME).text(role.getName());
-                            }
-                            break;
-                        case GROUP:
-                            long groupId = approverContext.getGroupId();
-                            Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                            if (group != null) {
-                                approverElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
-                            }
-                            break;
-                        case APP:
-                            break;
-                        default:
-                            long fieldId = approverContext.getFieldId();
-                            FacilioField field = modBean.getField(fieldId);
-                            if (field != null) {
-                                approverElement.element(PackageConstants.FIELDNAME).text(field.getName());
-                                approverElement.element(PackageConstants.FIELD_MODULE_NAME).text(field.getModule().getName());
-                            }
-                            break;
-                    }
-                }
+                PackageBeanUtil.constructBuilderFromSharingContext(((ApprovalStateTransitionRuleContext)reSendRule).getApprovers(),element.element((PackageConstants.RESEND_APPROVER_LIST)));
             }
+
             if(((ApprovalStateTransitionRuleContext)reSendRule).getForm()!=null) {
                 FacilioForm form = ((ApprovalStateTransitionRuleContext)reSendRule).getForm();
                 element.element(PackageConstants.Approvals.RESEND_FORM).text(form.getName());
@@ -313,55 +239,10 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
         EventType eventType = StringUtils.isNotEmpty(type) ? EventType.valueOf(type) : null;
         if (eventType !=null) approvalMeta.setEventType(eventType);
     }
-        XMLBuilder approverList = builder.getElement(PackageConstants.APPROVER_LIST);
+        XMLBuilder approverList = builder.getElement(PackageConstants.WorkFlowRuleConstants.APPROVER_LIST);
         if (approverList != null){
-            List<XMLBuilder> approverElement = approverList.getElementList(PackageConstants.APPROVERS);
-            SharingContext<ApproverContext> approverContextList = new SharingContext<>();
-            for (XMLBuilder approver : approverElement){
-                ApproverContext approverContext = new ApproverContext();
-                String approverType = approver.getElement(PackageConstants.TYPE).getText();
-                SingleSharingContext.SharingType type=StringUtils.isNotEmpty(approverType) ? SingleSharingContext.SharingType.valueOf(approverType) : null;
-                if(type!=null) approverContext.setType(type.getValue());
-                switch (approverContext.getTypeEnum()){
-                    case USER:
-                        if(approver.getElement(PackageConstants.USER_NAME)!=null)
-                        {
-                            String userName = approver.getElement(PackageConstants.USER_NAME).getText();
-                            long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-                            User user = AccountUtil.getUserBean().getAppUserForUserName(userName, appId, AccountUtil.getCurrentOrg().getOrgId());
-                            if (user != null) approverContext.setUserId(user.getOuid());
-                        }
-                        break;
-                    case GROUP:
-                        if(approver.getElement(PackageConstants.GroupConstants.GROUP_NAME)!=null){
-                            String groupName=approver.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
-                            Group group=AccountUtil.getGroupBean().getGroup(groupName);
-                            if(group!=null) approverContext.setGroupId(group.getGroupId());
-                        }
-                        break;
-                    case ROLE:
-                        if(approver.getElement(PackageConstants.RoleConstants.ROLE_NAME)!=null){
-                            String roleName=approver.getElement(PackageConstants.RoleConstants.ROLE_NAME).getText();
-                            Role role=AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),roleName);
-                            if(role!=null) approverContext.setRoleId(role.getRoleId());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        if(approver.getElement(PackageConstants.FIELDNAME)!=null){
-                            String fieldName=approver.getElement(PackageConstants.FIELDNAME).getText();
-                            String fieldModuleName=approver.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
-                            FacilioField field=modBean.getField(fieldName,fieldModuleName);
-                            if(field!=null){
-                                approverContext.setFieldId(field.getFieldId());
-                            }
-                        }
-                        break;
-                }
-                approverContextList.add(approverContext);
-            }
-            approvalMeta.setApprovers(approverContextList);
+            SharingContext<ApproverContext> approverContexts = PackageBeanUtil.constructSharingContextFromBuilder(approverList, ApproverContext.class);
+            approvalMeta.setApprovers(approverContexts);
         }
 
         XMLBuilder entryActionsList = builder.getElement(PackageConstants.Approvals.APPROVAL_ENTRY_ACTIONS_LIST);
@@ -387,53 +268,8 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
 
         XMLBuilder resendApproverList = builder.getElement(PackageConstants.RESEND_APPROVER_LIST);
         if (resendApproverList != null){
-            List<XMLBuilder> approverElement = resendApproverList.getElementList(PackageConstants.APPROVERS);
-            SharingContext<ApproverContext> approverContextList = new SharingContext<>();
-            for (XMLBuilder approver : approverElement){
-                ApproverContext approverContext = new ApproverContext();
-                String approverType = approver.getElement(PackageConstants.TYPE).getText();
-                SingleSharingContext.SharingType type=StringUtils.isNotEmpty(approverType) ? SingleSharingContext.SharingType.valueOf(approverType) : null;
-                if(type!=null) approverContext.setType(type.getValue());
-                switch (approverContext.getTypeEnum()){
-                    case USER:
-                        if(approver.getElement(PackageConstants.USER_NAME)!=null)
-                        {
-                            String userName = approver.getElement(PackageConstants.USER_NAME).getText();
-                            long appId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
-                            User user = AccountUtil.getUserBean().getAppUserForUserName(userName, appId, AccountUtil.getCurrentOrg().getOrgId());
-                            if (user != null) approverContext.setUserId(user.getOuid());
-                        }
-                        break;
-                    case GROUP:
-                        if(approver.getElement(PackageConstants.GroupConstants.GROUP_NAME)!=null){
-                            String groupName=approver.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
-                            Group group=AccountUtil.getGroupBean().getGroup(groupName);
-                            if(group!=null) approverContext.setGroupId(group.getGroupId());
-                        }
-                        break;
-                    case ROLE:
-                        if(approver.getElement(PackageConstants.RoleConstants.ROLE_NAME)!=null){
-                            String roleName=approver.getElement(PackageConstants.RoleConstants.ROLE_NAME).getText();
-                            Role role=AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(),roleName);
-                            if(role!=null) approverContext.setRoleId(role.getRoleId());
-                        }
-                        break;
-                    case APP:
-                        break;
-                    default:
-                        if(approver.getElement(PackageConstants.FIELDNAME)!=null){
-                            String fieldName=approver.getElement(PackageConstants.FIELDNAME).getText();
-                            String fieldModuleName=approver.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
-                            FacilioField field=modBean.getField(fieldName,fieldModuleName);
-                            if(field!=null){
-                                approverContext.setFieldId(field.getFieldId());
-                            }
-                        }
-                        break;
-                }
-                approverContextList.add(approverContext);
-            }
-            approvalMeta.setResendApprovers(approverContextList);
+            SharingContext<ApproverContext> approverContexts = PackageBeanUtil.constructSharingContextFromBuilder(resendApproverList, ApproverContext.class);
+            approvalMeta.setResendApprovers(approverContexts);
         }
 
         if(builder.getElement(PackageConstants.Approvals.APPROVAL_FORM)!=null){
