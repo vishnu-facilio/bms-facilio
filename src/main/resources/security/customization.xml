@@ -397,6 +397,9 @@
             <property name="filters" type="string"/>
             <property name="withCount" type="boolean"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="orderType" type="string"/>
+            <property name="orderBy" type="string"/>
+            <property name="force" type="boolean"/>
         </urlparams>
     </request>
 

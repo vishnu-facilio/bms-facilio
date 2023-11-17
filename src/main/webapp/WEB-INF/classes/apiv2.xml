@@ -150,6 +150,7 @@
 			class="com.facilio.bmsconsole.actions.UnitAction"
 			method="getReadingFieldUnits">
 			<result name="success" type="json">
+				<param name="skipPermission">true</param>
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
@@ -1720,7 +1721,30 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
-	
+
+	<package name="readingRuleHistorical" namespace="/api/v2/historical/newreadingrules" extends="v2Api">
+		<action name="getWorkflowRuleLoggers"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="getWorkflowRuleLoggers">
+			<param name="permission">GET:READ</param>
+			<param name="moduleName">newreadingrules</param>
+		</action>
+		<action name="getWorkflowRuleResourceLoggers"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="getWorkflowRuleResourceLoggers">
+			<param name="permission">GET:READ</param>
+			<param name="moduleName">newreadingrules</param>
+		</action>
+	</package>
+
+	<package name="v2newreadingrules" namespace="/api/v2/newreadingrules" extends="v2Api">
+		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
+				method="assetCount">
+			<param name="permissionModuleName">newreadingrules</param>
+			<param name="permission">GET:READ</param>
+		</action>
+	</package>
+
 	<package name="KPIViewerModule" namespace="/api/v2/kpi/viewer" extends="v2Api">
 		<action name="violations" class="com.facilio.bmsconsole.actions.KPIAction" method="kpiViolations">
 			<param name="deprecated">true</param>
@@ -2447,7 +2471,7 @@
 		<action name="insights"
 			class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchAlarmInsightsForResource">
-			<param name="moduleName">alarm</param>
+			<param name="moduleName">newreadingalarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 
@@ -2540,6 +2564,17 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
 			<param name="viewName">{1}</param>
+		</action>
+	</package>
+
+	<package name="v2newreadingalarm" namespace="/api/v2/newreadingalarm" extends="v2Api">
+		<action name="fetchHierarchy/*"
+				class="com.facilio.bmsconsole.actions.AssetAction"
+				method="assetDetails">
+			<param name="permissionModuleName">newreadingalarm</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">GET:READ</param>
+			<param name="assetId">{1}</param>
 		</action>
 	</package>
 
@@ -3576,11 +3611,6 @@
 		<action name="formulaFieldChildLoggers"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getHistoricalFormulaFieldChildLoggers">
-			<param name="deprecated">true</param>
-		</action>
-		<action name="getWorkflowRuleLoggers"
-			class="com.facilio.bmsconsole.actions.ReadingAction"
-			method="getWorkflowRuleLoggers">
 			<param name="deprecated">true</param>
 		</action>
 		<action name="getWorkflowRuleResourceLoggers"

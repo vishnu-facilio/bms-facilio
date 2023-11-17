@@ -899,7 +899,7 @@
 		</action>
 		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetCount">
-<!-- 			<param name="moduleName">asset</param> -->		
+<!-- 			<param name="moduleName">asset</param> -->
 	<param name="permission">ALL;READ,READ_TEAM,READ_OWN</param>
 	<param name="setupTab">SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">

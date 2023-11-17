@@ -1920,6 +1920,7 @@
             <property name="excludeColumns" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
+            <property name="layoutType" type="string"/>
         </urlparams>
     </request>
 
@@ -2226,13 +2227,32 @@
         </urlparams>
     </request>
     <request path="/api/v3/readingKpi/fetchReadings">
-        <requestbody type="object"/>
+        <urlparams type="object">
+        <property name="groupBy" type="string"/>
+        <property name="recordId" type="number"/>
+        <property name="page" type="number"/>
+        <property name="perPage" type="number"/>
+        <property name="filters" type="string"/>
+        <property name="searchModuleName" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v3/readingKpi/fetchDynamicKpiReadings">
-        <requestbody type="object"/>
+        <urlparams type="object">
+            <property name="groupBy" type="string"/>
+            <property name="recordId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="searchModuleName" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v3/readingKpi/fetchNamesForAnalytics">
-        <requestbody type="object"/>
+        <urlparams type="object">
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="resourceType" type="number"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v1/setup/kpiLogger">
         <requestbody type="object"/>
@@ -2715,35 +2735,49 @@
             <property name="lookupId" type="number"/>
         </requestbody>
     </request>
-    <request path="/api/v3/readingrule/fetchRules">
-        <requestbody type="object">
+    <request path="/api/v3/newreadingrules/fetchRules">
+        <urlparams type="object">
             <property name="moduleName" type="string" mandatory="true" />
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/readingrule/fetchRcaReadings">
-        <requestbody type="object">
+    <request path="/api/v3/newreadingalarm/fetchRcaReadings">
+        <urlparams type="object">
             <property name="page" type="number" mandatory="false" />
             <property name="perPage" type="number" mandatory="false" />
             <property name="alarmId" type="number" mandatory="true" />
             <property name="filters" type="object" mandatory="false" />
             <property name="dateOperator" type="number" mandatory="false" />
-            <property name="dateOperatorValue" type="array" mandatory="false" />
-        </requestbody>
+            <property name="dateOperatorValue" type="number" mandatory="false" />
+        </urlparams>
     </request>
-    <request path="/api/v3/readingrule/fetchImpact">
-        <requestbody type="object">
+    <request path="/api/v3/newreadingalarm/fetchImpact">
+        <urlparams type="object">
             <property name="ruleId" type="number" mandatory="true" />
             <property name="parentId" type="number" mandatory="true" />
             <property name="isCostImpact" type="boolean" mandatory="true" />
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/readingrule/fetchRootCause">
-        <requestbody type="object">
+    <request path="/api/v3/newreadingrules/fetchRootCause" method="GET">
+        <urlparams type="object">
             <property name="ruleId" type="number" mandatory="true" />
             <property name="page" type="number" mandatory="false" />
             <property name="perPage" type="number" mandatory="false" />
-        </requestbody>
+        </urlparams>
     </request>
+    <request path="/api/v3/fddDefaultWorkflow/getAlarmInsightWorkflow/:moduleName" method="GET">
+        <urlparams>
+            <property name="paramList" type="number" mandatory="true" />
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/fddDefaultWorkflow/getAlarmInsightWorkflow/newreadingrules/:widgetName" method="GET">
+        <urlparams>
+            <property name="paramList" type="number" mandatory="true" />
+            <property name="widgetName" type="string"/>
+        </urlparams>
+    </request>
+
+
     <request path="/api/v3/requestForQuotation/convertVendorQuoteToPo">
         <urlparams>
             <property name="vendorQuote" type="number" mandatory="true"/>
@@ -3633,7 +3667,7 @@
     </request>
 
 
-    <request path="/api/v3/readingrule/historical/run" method="POST">
+    <request path="/api/v3/historical/newreadingrules/run" method="POST">
         <requestbody type="object">
             <property name="assetIds" type="array" mandatory="true">
                 <items type="number"/>
@@ -4066,7 +4100,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/readingrule/getRuleInsights" method="POST">
+    <request path="/api/v3/newreadingrules/getRuleInsights" method="POST">
         <requestbody type="object">
             <property name="ruleId" type="number"/>
             <property name="startTime" type="number"/>
@@ -4636,6 +4670,7 @@
         </urlparams>
     </request>
 
+
     <request path="/api/v3/virtualMeterTemplate/history" method="POST">
         <property name="vmTemplateId" type="number"/>
         <property name="startTime" type="number"/>
@@ -4649,6 +4684,92 @@
         <requestbody type="object">
             <property name="controlActionId" type="number"></property>
         </requestbody>
+    </request>
+    <request path="/api/v3/newreadingrules/addRuleWo">
+        <requestbody>
+            <property name="faultToWorkorder" type="object">
+                <property name="closeWo" type="object"/>
+                <property name="woCreation" type="object"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/newreadingrules/fetchRuleWo" method="GET">
+        <urlparams>
+            <property name="ruleId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/newreadingrules/updateRuleWo" method="POST">
+        <requestbody>
+            <property name="faultToWorkorder" type="object">
+                <property name="closeWo" type="object"/>
+                <property name="woCreation" type="object"/>
+            </property>
+            <property name="ruleId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/newreadingrules/updatewfStatus" method="GET">
+        <urlparams>
+            <property name="ruleId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/alarms/insights" method="GET">
+        <urlparams>
+            <property name="alarmId" type="number"/>
+            <property name="ruleId" type="number"/>
+            <property name="dateOperator" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/historical/newreadingrules/getWorkflowRuleLoggers" method="GET">
+        <urlparams>
+            <property name="ruleId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/historical/newreadingrules/getWorkflowRuleResourceLoggers" method="GET">
+        <urlparams>
+            <property name="parentRuleLoggerId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/unrelated/:parentModuleName/fetchAll/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" />
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="parentModuleName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/alarmWorkorder/:moduleName" method="POST">
+        <requestbody>
+            <property name="id" type="number"/>
+            <property name="workorder" type="object">
+                <property name="siteId" type="number"/>
+                <property name="category" type="object">
+                    <property name="id" type="number"/>
+                    <property name="name" type="string"/>
+                </property>
+                <property name="isWoCreated" type="boolean"/>
+                <property name="priority" type="object">
+                    <property name="id" type="number"/>
+                    <property name="name" type="string"/>
+                </property>
+                <property name="assignedTo" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="assignmentGroup" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/newreadingrules/assetCount" method="GET">
+        <urlparams>
+            <property name="viewName" type="string"/>
+            <property name="count" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
     </request>
 
 <!--    TemplateType declaration test-->
@@ -4886,6 +5007,20 @@
     <request path="/api/v3/trip/getTripLocationDetails" method="GET">
         <urlparams>
             <property name="tripId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/newreadingalarm/fetchHierarchy/:resourceId" method="GET">
+        <urlparams type="object">
+            <property name="fetchHierarchy" type="boolean"/>
+            <property name="resourceId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/analytics/newreadingalarm" method="GET">
+        <urlparams type="object">
+            <property name="resourceId" type="number"/>
+            <property name="readingRuleId" type="number"/>
         </urlparams>
     </request>
 </config>

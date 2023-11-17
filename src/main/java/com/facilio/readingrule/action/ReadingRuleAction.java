@@ -21,6 +21,7 @@ import com.facilio.readingrule.rca.context.RCAScoreReadingContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
 import com.facilio.v3.V3Action;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -46,6 +47,8 @@ public class ReadingRuleAction extends V3Action {
     private String dateOperatorValue;
     private String filters;
     private Integer resourceType;
+    List<Object> paramList;
+    String widgetName;
 
     public String rcaRuleList() throws Exception {
         resourceType = resourceType == null ? ResourceType.ASSET_CATEGORY.getIndex() : resourceType;
@@ -145,6 +148,20 @@ public class ReadingRuleAction extends V3Action {
         return SUCCESS;
     }
 
+    public String getFddDefaultWorkflow() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getFDDDefaultWorkFlowChain();
+
+        FacilioContext context = chain.getContext();
+        context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.WIDGET_NAME,widgetName);
+
+        chain.execute();
+
+        setData(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
+        setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+        return SUCCESS;
+    }
 
     public String getRuleInsights() throws Exception {
 

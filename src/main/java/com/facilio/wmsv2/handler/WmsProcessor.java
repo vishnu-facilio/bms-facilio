@@ -10,7 +10,11 @@ import com.facilio.wmsv2.message.WebMessage;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
+import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 import java.util.*;
 
@@ -57,7 +61,12 @@ public class WmsProcessor {
 //
             handlers.sort(Comparator.comparingInt(WmsHandler::getPriority));
 
-            Reflections reflections = new Reflections(ClasspathHelper.forPackage("com.facilio.wmsv2.filters"));
+            Reflections reflections = new Reflections(new ConfigurationBuilder()
+                    .forPackages("com.facilio.wmsv2.filters")
+                    .filterInputsBy(new FilterBuilder().includePackage("com.facilio.wmsv2.filters"))
+                    .setScanners(new TypeAnnotationsScanner()));
+
+//            Reflections reflections = new Reflections(ClasspathHelper.forPackage("com.facilio.wmsv2.filters"));
             Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(WMSFilter.class);
             if (CollectionUtils.isNotEmpty(typesAnnotatedWith)) {
                 for (Class clazz : typesAnnotatedWith) {

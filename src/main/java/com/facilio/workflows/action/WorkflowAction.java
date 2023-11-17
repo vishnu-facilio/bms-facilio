@@ -1,23 +1,14 @@
 package com.facilio.workflows.action;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-
-import com.facilio.bmsconsoleV3.util.LicensingInfoUtil;
-import com.facilio.ims.handler.AuditLogHandler;
-import com.facilio.constants.FacilioConstants;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Priority;
-
-import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.ims.handler.AuditLogHandler;
 import com.facilio.scriptengine.context.WorkflowNamespaceContext;
 import com.facilio.scriptengine.systemfunctions.FacilioSystemFunctionNameSpace;
 import com.facilio.scriptengine.systemfunctions.FacilioWorkflowFunctionInterface;
+import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -25,10 +16,16 @@ import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class WorkflowAction extends FacilioAction {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
+public class WorkflowAction extends V3Action {
 
 	/**
 	 * 
@@ -185,7 +182,7 @@ public class WorkflowAction extends FacilioAction {
 	}
 
 	public String getWorkflowXmlFromObject() throws Exception {
-		setResult("workflowString", WorkflowUtil.getXmlStringFromWorkflow(workflow));
+		setData("workflowString", WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		return SUCCESS;
 	}
 
@@ -210,8 +207,8 @@ public class WorkflowAction extends FacilioAction {
 	    catch(Exception e) {
 	    	log.log(Priority.ERROR, e);
 	    }
-	    setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-	    setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+	    setData(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+	    setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
@@ -222,8 +219,8 @@ public class WorkflowAction extends FacilioAction {
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain();
 			addWorkflowChain.execute(context);
-		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+		setData(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String updateWorkflow() throws Exception {
@@ -232,33 +229,33 @@ public class WorkflowAction extends FacilioAction {
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain();
 		addWorkflowChain.execute(context);
-		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+		setData(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteWorkflow() throws Exception {
 		
 		workflow = Constants.getScriptBean().deleteFunction(workflow);
 		
-		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		setData(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		return SUCCESS;
 		
 	}
 	
 	public String addNameSpace() throws Exception {
 		namespace = Constants.getScriptBean().addNameSpace(namespace);
-		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		setData(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	public String updateNameSpace() throws Exception {
 		namespace = Constants.getScriptBean().updateNameSpace(namespace);
-		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		setData(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	
 	public String deleteNameSpace() throws Exception {
 		namespace = Constants.getScriptBean().deleteNameSpace(namespace);
-		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		setData(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
 		return SUCCESS;
 	}
 	
@@ -270,8 +267,8 @@ public class WorkflowAction extends FacilioAction {
 		
 		FacilioContext context = Constants.getScriptBean().addFunction(userFunction);
 		
-		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+		setData(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
@@ -283,15 +280,15 @@ public class WorkflowAction extends FacilioAction {
 		
 		FacilioContext context = Constants.getScriptBean().updateFunction(userFunction);
 		
-		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
-		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+		setData(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteUserFunction() throws Exception {
 		
 		userFunction = Constants.getScriptBean().deleteFunction(userFunction);
 		
-		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		setData(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
 		return SUCCESS;
 	}
 	
@@ -300,13 +297,13 @@ public class WorkflowAction extends FacilioAction {
 		
 		FacilioChain getNameSpaceChain =  ReadOnlyChainFactory.getAllWorkflowNameSpaceChain();
 		getNameSpaceChain.execute(context);
-		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST));
+		setData(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST));
 		return SUCCESS;
 	}
 	
 	public String getFunctionMeta() throws Exception {
 		
-		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXTS, UserFunctionAPI.getWorkflowFunction(ids));
+		setData(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXTS, UserFunctionAPI.getWorkflowFunction(ids));
 		return SUCCESS;
 	}
 
@@ -314,7 +311,7 @@ public class WorkflowAction extends FacilioAction {
 		if(workflowId > -1) {
 			workflow = WorkflowUtil.getWorkflowContext(workflowId);
 
-			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+			setData(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		}
 		return SUCCESS;
 	}
@@ -328,8 +325,8 @@ public class WorkflowAction extends FacilioAction {
 			
 			chain.execute(context);
 			
-			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
-			setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+			setData(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
+			setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		}
 		return SUCCESS;
 	}
@@ -342,9 +339,9 @@ public class WorkflowAction extends FacilioAction {
 //		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getAddOrUpdateScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
-		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		setData(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		addAuditLogs(scheduledWorkflow);
-//		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
+//		setData(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 
@@ -374,7 +371,7 @@ public class WorkflowAction extends FacilioAction {
 //		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
 		FacilioChain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain();
 		addWorkflowChain.execute(context);
-		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		setData(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext) context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
 		sendAuditLogs(new AuditLogHandler.AuditLogContext(String.format("Scheduler %s has been deleted.",scheduledWorkflowContext.getName()),
@@ -392,7 +389,7 @@ public class WorkflowAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		FacilioChain getNameSpaceChain =  ReadOnlyChainFactory.getAllScheduledWorkflowChain();
 		getNameSpaceChain.execute(context);
-		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST));
+		setData(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST));
 		return SUCCESS;
 	}
 
@@ -403,7 +400,7 @@ public class WorkflowAction extends FacilioAction {
 		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,scheduledWorkflow);
 
 		chain.execute();
-		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT));
+		setData(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT,context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT));
 
 		return SUCCESS;
 	}

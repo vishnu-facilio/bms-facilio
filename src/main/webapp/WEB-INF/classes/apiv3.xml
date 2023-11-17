@@ -1417,69 +1417,87 @@
 		</action>
     </package>
 
-    <package name="readingRuleActions" namespace="/api/v3/readingrule/actions" extends="v3Api">
-
-        <action name="add"
-                class="com.facilio.readingrule.action.NewRuleAction"
-                method="addRuleAction">
-			<param name="deprecated">true</param>
-		</action>
-
-        <action name="fetch"
-                class="com.facilio.readingrule.action.NewRuleAction"
-                method="fetchRuleActions">
-			<param name="deprecated">true</param>
-		</action>
-
-        <action name="delete"
-                class="com.facilio.readingrule.action.NewRuleAction"
-                method="deleteRuleAction">
-			<param name="deprecated">true</param>
-		</action>
-
-        <action name="update"
-				class="com.facilio.readingrule.action.NewRuleAction"
-				method="updateRuleAction" >
-			<param name="deprecated">true</param>
-		</action>
+    <package name="newreadingrulesActions" namespace="/api/v3/newreadingrules" extends="v3Api">
+        <action name="fetchRules" class="com.facilio.readingrule.action.ReadingRuleAction" method="rcaRuleList">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingrules</param>
+        </action>
+        <action name="fetchRootCause" class="com.facilio.readingrule.action.ReadingRuleAction" method="rootCauseFetch">
+            <param name="moduleName">newreadingrules</param>
+            <param name="permission">GET:READ</param>
+        </action>
+        <action name="getRuleInsights" class="com.facilio.readingrule.action.ReadingRuleAction"
+                method="getRuleInsights">
+            <param name="permission">POST:READ</param>
+            <param name="moduleName">newreadingrules</param>
+        </action>
         <action name="addRuleWo"
                 class="com.facilio.readingrule.action.NewRuleAction"
-                method="addRuleWorkOrderAction" >
-			<param name="deprecated">true</param>
-		</action>
+                method="addRuleWorkOrderAction">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingrules</param>
+        </action>
 
         <action name="fetchRuleWo"
                 class="com.facilio.readingrule.action.NewRuleAction"
-                method="fetchRuleWorkOrderAction" >
-			<param name="deprecated">true</param>
-		</action>
+                method="fetchRuleWorkOrderAction">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingrules</param>
+        </action>
         <action name="updateRuleWo"
                 class="com.facilio.readingrule.action.NewRuleAction"
-                method="updateRuleWorkOrderAction" >
-			<param name="deprecated">true</param>
-		</action>
+                method="updateRuleWorkOrderAction">
+            <param name="permissions">POST:READ</param>
+            <param name="moduleName">newreadingrules</param>
+        </action>
         <action name="updatewfStatus"
                 class="com.facilio.readingrule.action.NewRuleAction"
-                method="updateRuleWfStatus" >
-			<param name="deprecated">true</param>
-		</action>
-	</package>
-
-
-    <package name="newRulesListApiv3" namespace="/api/v3/readingrules" extends="v3Api">
-        <action name="*" class="com.facilio.readingrule.action.ReadingRuleAction" method="v3RulesList">
-            <param name="permission">READ,READ_OWN,READ_TEAM</param>
-            <param name="moduleName">alarmrules</param>
-            <param name="viewName">{1}</param>
-            <param name="ruleType">1</param>
-            <param name="deprecated">true</param>
+                method="updateRuleWfStatus">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingrules</param>
         </action>
     </package>
 
-    <package name="ReadingRuleHistorical" namespace="/api/v3/readingrule/historical" extends="v3Api">
+    <package name="newReadingRuleHistorical" namespace="/api/v3/historical/newreadingrules" extends="v3Api">
         <action name="run" class="com.facilio.readingrule.action.ReadingRuleAction" method="runHistorical">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="moduleName">newreadingrules</param>
+            <param name="permission">POST:READ</param>
+        </action>
+    </package>
+
+    <package name="newreadingAlarms" namespace="/api/v3/newreadingalarm" extends="v3Api">
+        <action name="fetchImpact" class="com.facilio.readingrule.action.ReadingRuleAction" method="impactFetch">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingalarm</param>
+        </action>
+        <action name="fetchRcaReadings" class="com.facilio.readingrule.action.ReadingRuleAction"
+                method="rcaReadingsFetch">
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">newreadingalarm</param>
+        </action>
+
+    </package>
+
+    <package name="fddDefaultWorkflow" namespace="/api/v3/fddDefaultWorkflow"  extends="v3Api">
+        <action name="getAlarmInsightWorkflow/*/*" class="com.facilio.readingrule.action.ReadingRuleAction"
+                method="getFddDefaultWorkflow">
+            <param name="moduleName">{1}</param>
+            <param name="widgetName">{2}</param>
+            <param name="permission">GET:READ</param>
+        </action>
+        <action name="getAlarmInsightWorkflow/*" class="com.facilio.readingrule.action.ReadingRuleAction"
+                method="getFddDefaultWorkflow">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ</param>
+        </action>
+    </package>
+
+    <package name="alarmWorkorder" namespace="/api/v3/alarmWorkorder" extends="v3Api">
+        <action name="*" class="com.facilio.events.actions.V3AlarmAction"
+                method="createWO">
+            <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE_WORKORDER</param>
+        </action>
     </package>
 
     <package name="KpiReadingsList" namespace="/api/v3/readingKpi" extends="v3Api">
@@ -1492,13 +1510,6 @@
             <param name="moduleName">readingkpi</param>
         </action>
         <action name="fetchNamesForAnalytics" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchNamesForAnalytics">
-            <param name="deprecated">true</param>
-        </action>
-        <action name="fetchAssetNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchAssetNames">
-            <param name="permission">GET:VIEW</param>
-            <param name="moduleName">readingkpi</param>
-        </action>
-        <action name="fetchKpiNames" class="com.facilio.readingkpi.readingslist.ReadingKpiListAction" method="fetchKpiNames">
             <param name="permission">GET:VIEW</param>
             <param name="moduleName">readingkpi</param>
         </action>
@@ -1506,16 +1517,20 @@
 
     <package name="ReadingKpiAnalytics" namespace="/api/v3/readingKpi/analytics" extends="v3Api">
         <action name="fetchAssetCategoriesContainingKpis" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetCategoriesContainingKpis">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="moduleName">readingkpi</param>
 		</action>
         <action name="getReadingsForSpecificAssetCategory" class="com.facilio.readingkpi.ReadingKpiAction" method="getReadingsForSpecificAssetCategory">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="moduleName">readingkpi</param>
 		</action>
         <action name="fetchReadingsData" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchReadingsData">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="moduleName">readingkpi</param>
 		</action>
         <action name="getDynamicKpisForAsset" class="com.facilio.readingkpi.ReadingKpiAction" method="getDynamicKpisForAsset">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="moduleName">readingkpi</param>
 		</action>
     </package>
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
@@ -2674,8 +2689,9 @@
         <action name="weather/readings" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="weatherReadings">
             <param name="permission">GET:VIEW,READ</param>
         </action>
-        <action name="faults" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getFieldsFromAlarm">
+        <action name="newreadingalarm" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getFieldsFromAlarm">
             <param name="permission">GET:VIEW,READ</param>
+            <param name="moduleName">newreadingalarm</param>
         </action>
     </package>
     <package name="v2DashboardCommonApis" namespace="/api/v3/dashboard/common" extends="v3Api">

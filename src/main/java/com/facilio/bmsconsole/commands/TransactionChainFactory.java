@@ -3812,40 +3812,46 @@ public class TransactionChainFactory {
 		return c;
 	}
 
-		public static FacilioChain getAddWorkflowUserFunctionChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(getAddWorkflowChain());
-			c.addCommand(new AddUserFunctionCommand());
-			return c;
-		}
-		public static FacilioChain getUpdateWorkflowUserFunctionChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(getUpdateWorkflowChain());
-			c.addCommand(new UpdateUserFunctionCommand());
-			return c;
-		}
+	public static FacilioChain getAddWorkflowUserFunctionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(getAddWorkflowChain());
+		c.addCommand(new AddUserFunctionCommand());
+		return c;
+	}
 
-		public static FacilioChain getDefaultWorkflowChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new GetDefaultWorkflowContext());
-			return c;
-		}
-		public static FacilioChain getExecuteDefaultWorkflowChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new GetDefaultWorkflowContext());
-			c.addCommand(getExecuteWorkflowChain());
-			return c;
-		}
+	public static FacilioChain getUpdateWorkflowUserFunctionChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(getUpdateWorkflowChain());
+		c.addCommand(new UpdateUserFunctionCommand());
+		return c;
+	}
 
-		public static FacilioChain getExecuteWorkflowChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ValidateWorkflowCommand());
-			c.addCommand(new ExecuteWorkflowCommand());
-			return c;
-		}
+	public static FacilioChain getDefaultWorkflowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetDefaultWorkflowContext());
+		return c;
+	}
 
+	public static FacilioChain getExecuteDefaultWorkflowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetDefaultWorkflowContext());
+		c.addCommand(getExecuteWorkflowChain());
+		return c;
+	}
 
+	public static FacilioChain getExecuteWorkflowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ValidateWorkflowCommand());
+		c.addCommand(new ExecuteWorkflowCommand());
+		return c;
+	}
 
+	public static FacilioChain getFDDDefaultWorkFlowChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ConnectedDefaultWorkflowCommand());
+		c.addCommand(getExecuteDefaultWorkflowChain());
+		return c;
+	}
 		public static FacilioChain getExecuteFloorPlanWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ExecuteFloorPlanWorkflowCommand());
