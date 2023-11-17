@@ -395,15 +395,7 @@ public class MeterModule extends BaseModuleConfig{
     }
 
     public static void addSystemButtons() throws Exception {
-        SystemButtonRuleContext editMeter = new SystemButtonRuleContext();
-        editMeter.setName("Edit");
-        editMeter.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editMeter.setIdentifier("edit");
-        editMeter.setPermissionRequired(true);
-        editMeter.setPermission("UPDATE");
-        editMeter.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.Meter.METER,editMeter);
-
+        SystemButtonApi.addSummaryEditButton(FacilioConstants.Meter.METER);
 
         SystemButtonRuleContext addMeterRelationShip = new SystemButtonRuleContext();
         addMeterRelationShip.setName("Add Meter Relationship");
