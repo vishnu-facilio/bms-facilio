@@ -668,7 +668,12 @@
 			<param name="translationImpl">ButtonTranslation</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
-
+		<action name="*/getAvailableButtons"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
+			<param name="moduleName">{1}</param>
+			<param name="translationImpl">ButtonTranslation</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
 		<action name="getAvailableButtonsForRecords" class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtonsForRecords">
 			<param name="deprecated">true</param>
 		</action>
@@ -689,6 +694,11 @@
 		</action>
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getAvailableButtons"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getAvailableButtonsForList"
@@ -893,7 +903,15 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getAvailableState" >
 			<param name="translationImpl">StateFlowTranslation</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getAvailableState/*"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getAvailableState" >
+			<param name="moduleName">{1}</param>
+			<param name="id">{2}</param>
+			<param name="translationImpl">StateFlowTranslation</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="confirmationDialogs"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
@@ -4027,8 +4045,20 @@
 		<action name="getRelationshipForRecord"
             class="com.facilio.bmsconsole.actions.RelationshipAction"
             method="getRelationshipsWithDataAssociated">
-            <param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
+		<action name="*/getRelationshipForRecord"
+				class="com.facilio.bmsconsole.actions.RelationshipAction"
+				method="getRelationshipsWithDataAssociated">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getUnUsedRelationships"
+				class="com.facilio.bmsconsole.actions.RelationshipAction"
+				method="getUnUsedRelationshipsForRecord">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 
 	<package name="classification" namespace="/api/v2/classification" extends="v2Api">

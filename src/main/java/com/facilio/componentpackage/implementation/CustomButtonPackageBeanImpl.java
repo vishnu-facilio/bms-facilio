@@ -312,7 +312,11 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
             SharingContext<ApproverContext> approverContexts = PackageBeanUtil.constructSharingContextFromBuilder(approverList, ApproverContext.class);
             customButtonRule.setApprovers(approverContexts);
         }
-
+        XMLBuilder actionsList = builder.getElement(PackageConstants.WorkFlowRuleConstants.ACTIONS_LIST);
+        if (actionsList != null) {
+            List<ActionContext> actionContextList = PackageBeanUtil.constructActionContextsFromBuilder(actionsList);
+            customButtonRule.setActions(actionContextList);
+        }
 
        return customButtonRule;
     }

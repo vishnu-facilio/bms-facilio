@@ -294,6 +294,11 @@ public class TransactionChainFactory {
 			c.addCommand(new GetRelationShipsWithDataAssociatedCommand());
 			return c;
 		}
+		public static FacilioChain getUnUsedRelationshipsForRecord(){
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new GetUnUsedRelationShipsForRecord());
+			return c;
+		}
 
 		public static FacilioChain historicalFormulaCalculationChain() {
 			FacilioChain c = getDefaultChain();

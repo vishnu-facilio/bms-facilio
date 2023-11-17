@@ -46,6 +46,7 @@
 <!--        </requestbody>-->
     </request>
 
+
     <request path="/api/v2/relationship/getRelationshipForRecord" method="GET">
         <urlparams>
             <property name="fromModuleName" type="string" mandatory="true"/>
@@ -55,6 +56,27 @@
             <property name="perPage" type="number"/>
         </urlparams>
     </request>
+
+    <request path="/api/v2/relationship/:moduleName/getRelationshipForRecord" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="relationCategory" type="number" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/relationship/:moduleName/getUnUsedRelationships" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="relationCategory" type="number" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
     <!-- RelatedList -->
     <request path="/api/v3/modules/:moduleName/:id/relatedList/:relatedModuleName/:relatedFieldName" method="GET">
         <urlparams>
