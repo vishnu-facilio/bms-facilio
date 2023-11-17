@@ -27,7 +27,6 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         modules.add(modBean.getModule(FacilioConstants.ContextNames.BUILDING));
         modules.add(modBean.getModule(FacilioConstants.ContextNames.SPACE));
         modules.add(modBean.getModule(FacilioConstants.PeopleGroup.PEOPLE_GROUP));
-        modules.add(modBean.getModule(FacilioConstants.Meter.METER));
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.VISITOR)) {
      //   	modules.add(modBean.getModule(FacilioConstants.ContextNames.VISITOR_LOGGING));
