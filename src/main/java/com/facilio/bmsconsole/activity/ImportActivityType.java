@@ -5,14 +5,14 @@ import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
 public enum ImportActivityType implements ActivityType {
-    ADD_RECORD(123){
+    ADD_RECORD(153){
         @Override
         public String constructMessage(JSONObject json) {
             Long importId = (Long) json.get(FacilioConstants.ContextNames.IMPORT_ID);
             return "added the record via import #"+importId;
         }
     },
-    UPDATE_RECORD(124){
+    UPDATE_RECORD(154){
         @Override
         public String constructMessage(JSONObject json) {
             Long importId = (Long) json.get(FacilioConstants.ContextNames.IMPORT_ID);
