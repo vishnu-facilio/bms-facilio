@@ -197,6 +197,8 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("tenantunit");
         scriptWhiteListedModules.add("watchlist");
         scriptWhiteListedModules.add("inventoryrequest");
+        scriptWhiteListedModules.add("inventoryrequestlineitems");
+        scriptWhiteListedModules.add("inventoryReservation");
         scriptWhiteListedModules.add("vendorcontact");
         scriptWhiteListedModules.add("assetcategory");
         scriptWhiteListedModules.add("servicerequestpriority");
