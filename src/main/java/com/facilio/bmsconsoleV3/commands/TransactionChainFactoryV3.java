@@ -3596,7 +3596,7 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ConstructNsFieldsForSensorCommand());
         c.addCommand(new SetParentIdForNamespaceCommand());
-        c.addCommand(addNsAndNsFieldsChain());
+        c.addCommand(addNamespaceAndFieldsChain());
         return c;
     }
 

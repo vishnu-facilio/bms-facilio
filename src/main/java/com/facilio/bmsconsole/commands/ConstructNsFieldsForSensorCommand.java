@@ -30,6 +30,7 @@ public class ConstructNsFieldsForSensorCommand extends FacilioCommand {
         ns.setWorkflowContext(null);
         ns.setType(NSType.SENSOR_RULE.getIndex());
         ns.setStatus(Boolean.TRUE);
+        ns.setExecModeEnum(NSExecMode.CODE_EXEC);
         //ns.setExecInterval() - intentionally avoid this attribute
         sensorRule.setNs(ns);
         constructNameSpaceFields(sensorRule);
