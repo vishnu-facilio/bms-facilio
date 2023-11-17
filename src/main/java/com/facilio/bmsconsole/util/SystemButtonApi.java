@@ -195,14 +195,18 @@ public class SystemButtonApi {
     }
 
     public static void addSummaryEditButton(String moduleName) throws Exception{
+        SystemButtonRuleContext summaryEditButton = getSummaryEditButton("Edit");
+        addSystemButton(moduleName, summaryEditButton);
+    }
+    public static SystemButtonRuleContext  getSummaryEditButton(String editButtonDisplayName) throws Exception{
         SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
-        summaryEditButton.setName("Edit");
+        summaryEditButton.setName(editButtonDisplayName);
         summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
         summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         summaryEditButton.setIdentifier("edit_summary");
         summaryEditButton.setPermissionRequired(true);
         summaryEditButton.setPermission("UPDATE");
-        addSystemButton(moduleName, summaryEditButton);
+        return  summaryEditButton;
     }
 
     public static void addListDeleteButton(String moduleName) throws Exception{

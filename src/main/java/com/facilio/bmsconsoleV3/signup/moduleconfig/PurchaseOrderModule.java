@@ -90,13 +90,7 @@ public class PurchaseOrderModule extends BaseModuleConfig{
         completePo.setCriteria(poBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,completePo);
 
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit_summary");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
+        SystemButtonRuleContext edit = SystemButtonApi.getSummaryEditButton("Edit");
         Criteria poEditBtnCriteria = new Criteria();
         poEditBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("receivableStatus"),String.valueOf(ReceivableContext.Status.YET_TO_RECEIVE.getValue()), EnumOperators.IS));
         poEditBtnCriteria.addAndCondition(CriteriaAPI.getCondition(poFieldMap.get("completedTime"),CommonOperators.IS_EMPTY));

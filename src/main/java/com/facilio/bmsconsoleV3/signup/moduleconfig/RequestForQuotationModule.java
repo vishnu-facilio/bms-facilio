@@ -119,13 +119,7 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         discardRfqBtn.setCriteria(discardRfqBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,discardRfqBtn);
 
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit Rfq");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit_summary");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
+        SystemButtonRuleContext edit = SystemButtonApi.getSummaryEditButton("Edit Rfq");
         Criteria editBtnCriteria = new Criteria();
         editBtnCriteria.addAndCondition(CriteriaAPI.getCondition(rfqFieldMap.get("isRfqFinalized"),"false", BooleanOperators.IS));
         edit.setCriteria(editBtnCriteria);

@@ -86,13 +86,7 @@ public class TransferRequestModule extends BaseModuleConfig{
         goToShipment.setCriteria(goToShipmentBtnCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TRANSFER_REQUEST,goToShipment);
 
-        SystemButtonRuleContext edit = new SystemButtonRuleContext();
-        edit.setName("Edit");
-        edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit_summary");
-        edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        edit.setPermissionRequired(true);
+        SystemButtonRuleContext edit = SystemButtonApi.getSummaryEditButton("Edit");
         Criteria editBtnCriteria = new Criteria();
         editBtnCriteria.addAndCondition(CriteriaAPI.getCondition(trFieldMap.get("isStaged"),"false", BooleanOperators.IS));
         edit.setCriteria(editBtnCriteria);
