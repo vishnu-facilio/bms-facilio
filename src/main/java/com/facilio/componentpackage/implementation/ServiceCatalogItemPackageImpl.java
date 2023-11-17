@@ -113,7 +113,11 @@ public class ServiceCatalogItemPackageImpl implements PackageBean<ServiceCatalog
         element.element(PackageConstants.ServiceCatalogConstants.GROUP_LINK_NAME).text(groupDetails.getLinkName());
         element.element(PackageConstants.ServiceCatalogConstants.TYPE).text(String.valueOf(component.getType()));
         element.element(PackageConstants.ServiceCatalogConstants.MODULE_NAME).text(moduleDetails.getName());
-        element.element(PackageConstants.ServiceCatalogConstants.FORM_NAME).text(formDetails.getName());
+
+        if(formDetails != null) {
+            element.element(PackageConstants.ServiceCatalogConstants.FORM_NAME).text(formDetails.getName());
+        }
+
         element.element(PackageConstants.ServiceCatalogConstants.EXTERNAL_URL).text(component.getExternalURL());
         element.element(PackageConstants.ServiceCatalogConstants.APP_NAME).text(appDetails.getLinkName());
 
