@@ -420,6 +420,15 @@ public class ModuleBeanImpl implements ModuleBean {
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
 		if(fields != null && !fields.isEmpty()) {
+			Map<Long,FacilioField> moduleFieldMap = new HashMap<>();
+			for(FacilioField field : fields){
+				if(field.getModule()!=null && field.getModule().getModuleId()>0){
+					moduleFieldMap.put(field.getModule().getModuleId(),field);
+				}
+			}
+			if(CollectionUtils.isNotEmpty(extendedModuleIds) && moduleFieldMap.containsKey(extendedModuleIds.get(0))){
+			     return moduleFieldMap.get(extendedModuleIds.get(0));
+			}
 			return fields.get(0);
 		}
 		return null;
