@@ -8,6 +8,7 @@ import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.sandbox.utils.SandboxAPI;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class DeployPackageComponentCommand extends FacilioCommand implements PostTransactionCommand {
-	
+
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 
@@ -54,6 +55,10 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				componentType.getPackageComponentClassInstance().addPickListConf();
 			}
 		}
+
+        // Adding AllPackageChangesets to ThreadLocal
+        PackageBeanUtil.addAllPackageChangesetsToThread(packageContext.getId());
+
 		//For sending sandbox progress on installation
 		double sandboxProgress =  ((Number) context.getOrDefault(SandboxConstants.SANDBOX_PROGRESS, PackageUtil.SandboxProgressCheckPointType.PACKAGE_INSTALLATION_STARTED.getIntVal())).doubleValue();
 		int process;

@@ -23,6 +23,7 @@ import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -92,6 +93,17 @@ public class PackageBeanUtil {
 //    public static final Map<String, FacilioField> getFieldsForFieldName(String moduleName, List<String> fieldNames) throws Exception {
 //
 //    }
+
+    public static void addAllPackageChangesetsToThread(long packageId) throws Exception {
+        Map<ComponentType, List<PackageChangeSetMappingContext>> allPackageChangesets = PackageUtil.getAllPackageChangsets(packageId);
+        for (ComponentType componentType : allPackageChangesets.keySet()) {
+            List<PackageChangeSetMappingContext> packageChangeSetMappingContexts = allPackageChangesets.get(componentType);
+            if (CollectionUtils.isNotEmpty(packageChangeSetMappingContexts)) {
+                Map<String, Long> uIDVsCompId = packageChangeSetMappingContexts.stream().collect(Collectors.toMap(PackageChangeSetMappingContext::getUniqueIdentifier, PackageChangeSetMappingContext::getComponentId));
+                PackageUtil.addComponentsUIdVsComponentId(componentType, uIDVsCompId);
+            }
+        }
+    }
 
     public static Map<String, Long> getAppNameVsAppId() throws Exception {
         List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
@@ -559,6 +571,9 @@ public class PackageBeanUtil {
                 }
             }
         }
+        if (StringUtils.isNotEmpty(moduleName)) {
+            xmlBuilder.element(PackageConstants.CriteriaConstants.CRITERIA_MODULENAME).text(moduleName);
+        }
         return xmlBuilder;
     }
 
@@ -568,6 +583,11 @@ public class PackageBeanUtil {
         }
         String pattern = xmlBuilder.getElement(PackageConstants.CriteriaConstants.PATTERN).getText();
         XMLBuilder conditionsListElement = xmlBuilder.getElement(PackageConstants.CriteriaConstants.CONDITIONS_LIST);
+
+        String criteriaModuleName = null;
+        if (xmlBuilder.getElement(PackageConstants.CriteriaConstants.CRITERIA_MODULENAME) != null) {
+            criteriaModuleName = xmlBuilder.getElement(PackageConstants.CriteriaConstants.CRITERIA_MODULENAME).getText();
+        }
 
         Criteria newCriteria = new Criteria();
         newCriteria.setPattern(pattern);
@@ -651,6 +671,7 @@ public class PackageBeanUtil {
                 condition.setColumnName(columnName);
                 condition.setOperatorId(operatorId);
                 condition.setJsonValueStr(jsonValue);
+                condition.setModuleName(criteriaModuleName);
                 condition.setIsExpressionValue(isExpressionValue);
                 condition.setSequence(Integer.parseInt(sequence));
 
@@ -915,6 +936,9 @@ public class PackageBeanUtil {
                     break;
 
                 case GROUP:
+                    if (singleSharingElement.getElement(PackageConstants.GroupConstants.GROUP_NAME) == null) {
+                        continue;
+                    }
                     String groupName = singleSharingElement.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
 
                     Group group = AccountUtil.getGroupBean().getGroup(groupName);
@@ -924,6 +948,9 @@ public class PackageBeanUtil {
                 case FIELD:
                 case TENANT:
                 case VENDOR:
+                    if (singleSharingElement.getElement(PackageConstants.FIELDNAME) == null || singleSharingElement.getElement(PackageConstants.FIELD_MODULE_NAME) == null) {
+                         continue;
+                    }
                     String fieldName = singleSharingElement.getElement(PackageConstants.FIELDNAME).getText();
                     String moduleName = singleSharingElement.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
 

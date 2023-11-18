@@ -19,12 +19,14 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class FormRulePackageUtil {
 
 
@@ -516,11 +518,13 @@ public class FormRulePackageUtil {
 
         //Form Criteria
         if (formRuleContext.getCriteria() != null) {
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " FormName - " + formName + "RuleName - " + formRuleContext.getName());
             formRuleContextElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(formRuleContext.getCriteria(), formRuleContextElement.element(PackageConstants.FormRuleConstants.FORM_RULE_CRITERIA), moduleName));
         }
 
         //Sub Form Criteria :
         if (formRuleContext.getSubFormCriteria() != null) {
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " FormName - " + formName + "RuleName - " + formRuleContext.getName());
             formRuleContextElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(formRuleContext.getSubFormCriteria(), formRuleContextElement.element(PackageConstants.FormRuleConstants.SUB_FORM_RULE_CRITERIA), subFormModuleName));
         }
 

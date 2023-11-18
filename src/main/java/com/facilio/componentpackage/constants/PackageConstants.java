@@ -241,7 +241,7 @@ public class PackageConstants {
         public static final String VALUE = "Value";
         public static final String JSON_VALUE = "Json_Value";
         public static final String CRITERIA_VALUE = "Criteria_Value";
-        public static final String PARENT_CRITERIA = "Parent_Criteria";
+        public static final String CRITERIA_MODULENAME = "Criteria_ModuleName";
         public static final String CONDITIONS_LIST = "Conditions_List";
         public static final String IS_EXPRESSION_VALUE = "Is_Expression_Value";
         public static final String PICKLIST_VALUE = "PickList_Value";
@@ -268,7 +268,7 @@ public class PackageConstants {
     }
 
     public static class SharingContextConstants {
-        public static final String SINGLE_SHARING_CONTEXT = "Single_haring_Context";
+        public static final String SINGLE_SHARING_CONTEXT = "Single_Sharing_Context";
         public static final String SHARING_CONTEXT = "Sharing_Context";
         public static final String SHARING_TYPE = "Sharing_Type";
         public static final String ROLE_NAME = "Role_Name";
