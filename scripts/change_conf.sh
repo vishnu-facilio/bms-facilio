@@ -12,7 +12,7 @@ echo "======" >> /home/facilio/deployment.log
 
 unzip -o $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "stage" ] || [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-stage.properties $CONF_DIR/awsprops.properties
@@ -51,7 +51,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "testing-stage" ] || [ "$DEPLOYMENT_GROUP_NAME" 
     echo "===============================" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production2" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "stage2" ] || [ "$DEPLOYMENT_GROUP_NAME" = "pre_production2" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-stage2.properties $CONF_DIR/awsprops.properties
@@ -64,7 +64,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production2" ]; then
     echo "===============================" >> /home/facilio/deployment.log
 fi
 
-if [ "$DEPLOYMENT_GROUP_NAME" = "stage2-preprod" ]; then
+if [ "$DEPLOYMENT_GROUP_NAME" = "v2-stage2" ] || [ "$DEPLOYMENT_GROUP_NAME" = "stage2-preprod" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/facilio/deployment.log
     cp $FACILIO_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $FACILIO_HOME/deployment-files/awsprops-preprod-stage2.properties $CONF_DIR/awsprops.properties
