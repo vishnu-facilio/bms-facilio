@@ -534,6 +534,13 @@ public class DataMigrationUtil {
             List<String> lookupModuleNames = new ArrayList<>(fieldNameVsLookupModuleName.values());
             List<FacilioModule> lookupModules = moduleBean.getModuleList(lookupModuleNames);
             lookupModuleNameVsId = lookupModules.stream().collect(Collectors.toMap(FacilioModule::getName, FacilioModule::getModuleId));
+        } else if (targetModule.getTypeEnum()== FacilioModule.ModuleType.ACTIVITY) {
+            long activityModuleId = targetModule.getModuleId();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule parentModule = modBean.getParentModule(activityModuleId);
+            fieldNameVsLookupModuleName.put("parentId",parentModule.getName());
+            fieldNameVsLookupModuleName.put("doneBy",FacilioConstants.ContextNames.USERS);
+            lookupModuleNameVsId.put(parentModule.getName(), parentModule.getModuleId());
         }
 
         if(MapUtils.isEmpty(siteIdMappings)) {
@@ -577,6 +584,10 @@ public class DataMigrationUtil {
 
                 if (field == null) {
                     continue;
+                }
+
+                if(field instanceof BaseLookupField && Objects.equals(((BaseLookupField) field).getLookupModule().getName(), FacilioConstants.ContextNames.ASSET_CATEGORY)){
+                    fieldNameVsLookupModuleName.put("category",FacilioConstants.ContextNames.ASSET_CATEGORY);
                 }
 
                 if (MapUtils.isNotEmpty(fieldNameVsLookupModuleName) && fieldNameVsLookupModuleName.containsKey(field.getName())) {

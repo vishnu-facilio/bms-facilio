@@ -55,7 +55,8 @@ public class DataMigrationInsertRecordCommand extends FacilioCommand {
         }
 
         Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets = PackageUtil.getAllPackageChangsets(packageId);
-        Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules = DataMigrationUtil.getNonNullableModuleVsFieldVsLookupModules();
+        Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules = new HashMap<>(DataMigrationUtil.getNonNullableModuleVsFieldVsLookupModules());
+
 
         List<String> allDataConfigModuleNames = new ArrayList<>();
 
