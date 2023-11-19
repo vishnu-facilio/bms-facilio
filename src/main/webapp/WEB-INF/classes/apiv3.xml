@@ -541,7 +541,10 @@
         <action name="reSendVerificationEmail"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
                 method="reSendVerificationEmail">
-			<param name="deprecated">true</param>
+            <param name="moduleName">setup</param>
+            <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
+            <param name="setupTab">EMAIL_SETTINGS</param>
 		</action>
 
         <action name="getfromEmailForEmailThreadingReply"

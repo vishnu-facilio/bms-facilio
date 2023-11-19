@@ -4413,13 +4413,17 @@
 		<action name="deleteNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="deleteNameSpace">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
 		<action name="addUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="addUserFunction">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
 		<action name="updateUserFunction"
@@ -4447,7 +4451,7 @@
 		<action name="addOrUpdateScheduledWorkflow"
 				class="com.facilio.workflows.action.WorkflowAction"
 				method="addOrUpdateScheduledWorkflow" >
-			<param name="permission">SCHEDULER,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 		</action>
@@ -4468,7 +4472,7 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteScheduledWorkflow">
 			<param name="moduleName">setup</param>
-			<param name="permission">SCHEDULER,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
@@ -4478,7 +4482,7 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getScheduledWorkflowList">
 			<param name="moduleName">setup</param>
-			<param name="permission">SCHEDULER,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
@@ -4488,7 +4492,7 @@
 		<action name="runWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="runWorkflow">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="getDefaultWorkflowResult"
@@ -6234,7 +6238,7 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addConnection">
 			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTORS,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
 			<param name="isNewPermission">true</param>
@@ -6243,7 +6247,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
 			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTORS,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
 			<param name="isNewPermission">true</param>
@@ -6252,14 +6256,16 @@
 		<action name="invalidateConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="invalidateConnection">
 			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTORS</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
 			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTORS,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
@@ -6268,7 +6274,7 @@
 		<action name="getAllConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="getAllConnection">
 			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTORS,ALL</param>
+			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
@@ -6278,7 +6284,10 @@
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
 			<result name="success">/jsps/connection.jsp</result>
-			<param name="deprecated">true</param>
+			<param name="moduleName">setup</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">CONNECTORS</param>
 		</action>
 	</package>
 	
