@@ -1,8 +1,8 @@
 package com.facilio.bmsconsoleV3.context.meter.util;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -74,6 +74,30 @@ public class MeterUtil {
 		List<V3MeterContext> meters = selectBuilder.get();
 		return meters;
 		
+	}
+
+	public static List<V3MeterContext> getMeters(List<Long> meterIds, boolean fetchDeleted) throws  Exception{
+		List<V3MeterContext> meters = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(meterIds)){
+			for(Long meterId: meterIds){
+				V3MeterContext meter = getMeter(meterId,fetchDeleted);
+				if(meter != null){
+					meters.add(meter);
+				}
+			}
+		}
+		return meters;
+	}
+
+	public static Map<Long,V3MeterContext> getMetersFromIds(List<Long> meterIds, boolean fetchDeleted) throws  Exception{
+		Map<Long, V3MeterContext> meterMap = new HashMap<>();
+		List <V3MeterContext> meters = getMeters(meterIds,fetchDeleted);
+		if(CollectionUtils.isNotEmpty(meters)){
+			for(V3MeterContext meter: meters){
+				meterMap.put(meter.getId(), meter);
+			}
+		}
+		return meterMap;
 	}
 
 }

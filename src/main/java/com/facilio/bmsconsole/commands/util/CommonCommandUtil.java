@@ -17,6 +17,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.bmsconsoleV3.context.meter.util.MeterUtil;
 import com.facilio.delegate.context.DelegationType;
 import com.facilio.delegate.util.DelegationUtil;
 import com.facilio.modules.*;
@@ -791,6 +793,10 @@ public class CommonCommandUtil {
                     .filter(task -> task.getResource() != null)
                     .map(task -> task.getResource().getId())
                     .collect(Collectors.toList());
+            List<Long> meterIds = tasks.stream()
+                    .filter(task -> task.getMeter() != null)
+                    .map(task -> task.getMeter().getId())
+                    .collect(Collectors.toList());
             Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true, true);
             if (resources != null && !resources.isEmpty()) {
                 for (TaskContext task : tasks) {
@@ -798,6 +804,19 @@ public class CommonCommandUtil {
                     if (resource != null) {
                         ResourceContext resourceDetail = resources.get(resource.getId());
                         task.setResource(resourceDetail);
+                    }
+                }
+            }
+
+            if(CollectionUtils.isNotEmpty(meterIds)){
+                Map<Long, V3MeterContext> meters = MeterUtil.getMetersFromIds(meterIds, true);
+                if (meters != null && !meters.isEmpty()) {
+                    for (TaskContext task : tasks) {
+                        V3MeterContext meter = task.getMeter();
+                        if (meter != null) {
+                            V3MeterContext meterInfo = meters.get(meter.getId());
+                            task.setMeter(meterInfo);
+                        }
                     }
                 }
             }
