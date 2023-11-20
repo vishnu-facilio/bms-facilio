@@ -121,4 +121,7 @@
         response.getWriter().println(ExceptionUtils.getStackTrace(e));
         LogManager.getLogger(OrgLevelMigrationCommand.class.getName()).error("Error occurred while running migration.", e);
     }
+    finally {
+        LRUCache.purgeAllCache();
+    }
 %>
