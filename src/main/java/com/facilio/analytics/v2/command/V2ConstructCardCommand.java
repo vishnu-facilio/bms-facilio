@@ -218,7 +218,6 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
                 FacilioField appliedField = new FacilioField();
                 FacilioField yField = modBean.getField(cardContext.getFieldId());
-                Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(cardContext.parentModuleName));
                 Criteria criteria = new Criteria();
                 for(Map<String, JSONObject> filterMap : filterMappings) {
                     for (String alias : filterMap.keySet()) {
@@ -229,13 +228,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         StringJoiner joiner = new StringJoiner(",");
                         value.forEach(val -> joiner.add(val));
                         condition.setValue(String.valueOf(joiner));
-                        if (alias.equals("space")) {
-                            appliedField = fieldMap.get("space");
-                        } else if(alias.equals("category")){
-                            appliedField = fieldMap.get("category");
-                        } else {
-                            appliedField = fieldsMap.get("parentId");
-                        }
+                        appliedField = getFieldFromModule(alias, cardContext, fieldsMap);
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);
                         applyFilterCriteria(baseModule,cardContext.parentModuleName,selectBuilder,addedModules,criteria,yField);
@@ -243,6 +236,41 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 }
             }
         }
+    }
+    public static FacilioField getFieldFromModule(String alias, V2AnalyticsCardWidgetContext cardContext, Map<String,FacilioField> fieldsMap) throws Exception {
+        FacilioField appliedField = new FacilioField();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(cardContext.parentModuleName));
+        if(!cardContext.getType().equals("meter")) {
+            switch (alias) {
+                case "space":
+                    appliedField = fieldMap.get("space");
+                    break;
+                case "category":
+                    appliedField = fieldMap.get("category");
+                    break;
+                default:
+                    appliedField = fieldsMap.get("parentId");
+                    break;
+            }
+        }else {
+            switch (alias) {
+                case "siteId":
+                    FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
+                    appliedField = modBean.getField("siteId", meterModule.getName());
+                    break;
+                case "meterLocation":
+                    appliedField = fieldMap.get("meterLocation");
+                    break;
+                case "utilitytype":
+                    appliedField = fieldMap.get("utilitytype");
+                    break;
+                default:
+                    appliedField = fieldsMap.get("parentId");
+                    break;
+            }
+        }
+        return appliedField;
     }
     public static void applyFilterCriteria(FacilioModule baseModule, String parentReadingModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, FacilioField yField)throws Exception
     {

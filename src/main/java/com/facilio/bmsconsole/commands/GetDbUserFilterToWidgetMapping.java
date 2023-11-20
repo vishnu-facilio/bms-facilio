@@ -28,6 +28,7 @@ import com.facilio.report.util.ReportUtil;
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
 	private List<String> supportedModules = Arrays.asList("asset","building","site","assetcategory");
+	private List<String> supportedMeterModules = Arrays.asList("meter","building","site","utilitytype");
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -153,14 +154,17 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 						   }
 					   }
-					   if(supportedModules.contains(filter.getModule().getName())){
+					   if(supportedModules.contains(filter.getModule().getName()) || supportedMeterModules.contains(filter.getModule().getName())){
 						   FacilioModule energyModule = modBean.getModule(report.getModuleId());
 						   if(energyModule != null && energyModule.getName().equals("energydata")) {
 							   List<ReportDataPointContext> dpContexts = new ArrayList<>();
 							   List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
 							   for(ReportDataPointContext dp: report.getDataPoints()){
-								   if(mappings.stream().anyMatch(mapping -> mapping.getDataPointAlias().equals(dp.getAliases().get("actual")))){
-									   dpContexts.add(dp);
+								   if((supportedModules.contains(filter.getModule().getName()) && !dp.getModuleName().equals("meter")) || supportedMeterModules.contains(filter.getModule().getName()) && dp.getModuleName().equals("meter")) {
+									   if (mappings.stream().anyMatch(mapping -> mapping.getDataPointAlias().equals(dp.getAliases().get("actual")))) {
+										   dp.setFetchMetersWithResource(dp.getModuleName().equals(FacilioConstants.Meter.METER)  ? true : false);
+										   dpContexts.add(dp);
+									   }
 								   }
 							   }
 							   if(dpContexts != null && dpContexts.size() > 0){
@@ -174,15 +178,17 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 				   WidgetCardContext cardWidget = (WidgetCardContext) widget;
 				   if(cardWidget.getCardLayout().equals("v2_reading_card")) {
 					   for (DashboardUserFilterContext filter : userFilters) {
-						   if(supportedModules.contains(filter.getModule().getName())){
+						   JSONObject cardParams = cardWidget.getCardParams();
+						   String moduleName = (String) cardParams.get("type");
+						   if((supportedModules.contains(filter.getModule().getName()) && !moduleName.equals("meter")) || supportedMeterModules.contains(filter.getModule().getName()) && moduleName.equals("meter")){
 								   List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
-							       JSONObject cardParams = cardWidget.getCardParams();
 								   if(mappings != null && mappings.size() > 0) {
 									   ReportDataPointContext dataPoint = new ReportDataPointContext();
 									   ReportYAxisContext yAxis = new ReportYAxisContext();
 									   FacilioField measureField = modBean.getField((Long) cardParams.get("fieldId"));
 									   yAxis.setField(measureField.getModule(), measureField);
 									   dataPoint.setModuleName((String) cardParams.get("type"));
+									   dataPoint.setFetchMetersWithResource(moduleName.equals(FacilioConstants.Meter.METER)  ? true : false);
 									   dataPoint.setyAxis(yAxis);
 									   dataPoint.setName(dataPoint.getyAxis().getField().getDisplayName());
 									   dataPoint.setParentReadingModule(modBean.getModule((String) cardParams.get("parentModuleName")));

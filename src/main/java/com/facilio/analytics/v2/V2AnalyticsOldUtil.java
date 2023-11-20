@@ -809,7 +809,6 @@ public class V2AnalyticsOldUtil {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
                 FacilioField appliedField = new FacilioField();
-                Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getParentReadingModule().getName()));
                 Criteria criteria = new Criteria();
                 for(Map<String, JSONObject> filterMap : filterMappings) {
                     for (String alias : filterMap.keySet()) {
@@ -820,12 +819,28 @@ public class V2AnalyticsOldUtil {
                         StringJoiner joiner = new StringJoiner(",");
                         value.forEach(val -> joiner.add(val));
                         condition.setValue(String.valueOf(joiner));
-                        if (alias.equals("space")) {
-                            appliedField = fieldMap.get("space");
-                        } else if(alias.equals("category")){
-                            appliedField = fieldMap.get("category");
-                        } else {
-                            appliedField = fieldsMap.get("parentId");
+                        if(dataPoint.getModuleName().equals(FacilioConstants.Meter.METER)){
+                            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getModuleName()));
+                            if(alias.equals("siteId")){
+                                FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
+                                appliedField = modBean.getField("siteId", meterModule.getName());
+                            } else if(alias.equals("meterLocation")){
+                                appliedField = fieldMap.get("meterLocation");
+                            } else if(alias.equals("utilitytype")){
+                                appliedField = fieldMap.get("utilitytype");
+                            } else {
+                                appliedField = fieldsMap.get("parentId");
+                            }
+                        }
+                        else {
+                            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getParentReadingModule().getName()));
+                            if (alias.equals("space")) {
+                                appliedField = fieldMap.get("space");
+                            } else if(alias.equals("category")){
+                                appliedField = fieldMap.get("category");
+                            } else {
+                                appliedField = fieldsMap.get("parentId");
+                            }
                         }
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);

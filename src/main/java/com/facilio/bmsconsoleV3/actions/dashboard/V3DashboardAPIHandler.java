@@ -946,12 +946,26 @@ public class V3DashboardAPIHandler {
                                 Integer operatorId = 36;
                                 Condition condition = new Condition();
                                 FacilioField appliedField = new FacilioField();
-                                if(module.getName().equals("assetcategory")){
-                                    appliedField = modBean.getField("category",dataPointContext.getParentReadingModule().getName());
-                                } else if(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)){
-                                    appliedField = modBean.getField("space",dataPointContext.getParentReadingModule().getName());
-                                }else{
-                                    appliedField = modBean.getField("parentId",yAxis.getModuleName());
+                                if(dataPointContext.isFetchMetersWithResource()){
+                                    if(module.getName().equals("utilitytype")) {
+                                        appliedField = modBean.getField("utilityType",dataPointContext.getParentReadingModule().getName());
+                                    } else if(module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)){
+                                        if(module.getName().equals("site")) {
+                                            appliedField = modBean.getField("siteId",dataPointContext.getParentReadingModule().getName());
+                                        }else{
+                                            appliedField = modBean.getField("meterLocation",dataPointContext.getParentReadingModule().getName());
+                                        }
+                                    }else{
+                                        appliedField = modBean.getField("parentId",yAxis.getModuleName());
+                                    }
+                                } else {
+                                    if(module.getName().equals("assetcategory")){
+                                        appliedField = modBean.getField("category",dataPointContext.getParentReadingModule().getName());
+                                    } else if(module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)){
+                                        appliedField = modBean.getField("space",dataPointContext.getParentReadingModule().getName());
+                                    }else{
+                                        appliedField = modBean.getField("parentId",yAxis.getModuleName());
+                                    }
                                 }
                                 condition.setField(appliedField);
                                 condition.setOperatorId(operatorId);
@@ -966,8 +980,8 @@ public class V3DashboardAPIHandler {
                                     condition.setValue(filter_value);
                                 }
                                 JSONObject criteria_obj = new JSONObject();
-                            String aliasName = dataPointContext.getAliases() != null ? dataPointContext.getAliases().get("actual") : dataPointContext.getName();
-                            if (dashboard_executed_data.getReading_filter_widget_map().containsKey(widget_id)) {
+                                String aliasName = dataPointContext.getAliases() != null ? dataPointContext.getAliases().get("actual") : dataPointContext.getName();
+                                if (dashboard_executed_data.getReading_filter_widget_map().containsKey(widget_id)) {
                                     JSONObject presentMap = new JSONObject();
                                     presentMap = (JSONObject) dashboard_executed_data.getReading_filter_widget_map().get(widget_id);
                                     if(presentMap.containsKey(aliasName)){
