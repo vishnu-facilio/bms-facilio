@@ -12,6 +12,7 @@ public class V2ReportFiltersContext {
     /**
      *  params for global filter criteria starts here
      */
+    private V2MeasuresContext.Criteria_Type criteria_type;
     private Long criteriaId;
     private Criteria criteria;
     private String moduleName;

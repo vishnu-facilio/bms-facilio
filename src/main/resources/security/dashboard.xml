@@ -584,4 +584,9 @@
     <request path="/api/v3/analytics/module/list" method="GET">
         <requestbody type="object"></requestbody>
     </request>
+    <request path="/api/v3/analytics/kpis/:categoryId" method="GET">
+        <urlparams>
+            <property name="categoryId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

@@ -139,6 +139,14 @@ public class WebTabGroupContext implements Serializable {
         this.iconType = iconType;
         this.order = order;
     }
+    public WebTabGroupContext(String name, String route, long layout, int iconType, int order, IconType iconTypeEnum) {
+        this.name = name;
+        this.route = route;
+        this.layoutId = layout;
+        this.iconType = iconType;
+        this.order = order;
+        this.iconTypeEnum = iconTypeEnum;
+    }
 
     public WebTabGroupContext(String name, String route, long layout, int iconType, int order, long license) {
         this.name = name;

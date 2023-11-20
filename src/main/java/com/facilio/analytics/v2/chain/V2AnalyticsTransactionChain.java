@@ -25,7 +25,6 @@ public class V2AnalyticsTransactionChain
         c.addCommand(new FetchReportAdditionalInfoCommand());
         c.addCommand(new FetchResourcesCommand());
         c.addCommand(new HandleGroupByDataCommand());
-        c.addCommand(new AddRegressionPointsCommand());
         c.addCommand(new FormatHeatMapDataCommand());
         c.addCommand(new GetTrendLineCommand());
         c.addCommand(new FormatForTimeDuration());
@@ -109,6 +108,12 @@ public class V2AnalyticsTransactionChain
     {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new V2ConstructCardCommand());
+        return chain;
+    }
+    public static FacilioChain getAnalyticsKPIChain()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2AnalyticsGetKPIListCommand());
         return chain;
     }
 

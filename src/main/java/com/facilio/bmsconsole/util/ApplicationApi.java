@@ -1273,7 +1273,7 @@ public class ApplicationApi {
             List<WebTabContext> webTabs = new ArrayList<>();
             JSONObject configJSON;
 
-            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++, IconType.home));
             webTabs = new ArrayList<>();
             configJSON = new JSONObject();
             configJSON.put("type", "portalOverview");
@@ -1282,14 +1282,14 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("home", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Requests", "requests", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Requests", "requests", layout.getId(), 201, groupOrder++, IconType.service_request));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Work Request", "workorder", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
 
             groupNameVsWebTabsMap.put("requests", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Vendors", "vendor", layout.getId(), 202, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Vendors", "vendor", layout.getId(), 202, groupOrder++, IconType.vendor));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Vendor", "vendors", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("vendors").getModuleId()), appId, null));
@@ -1298,7 +1298,7 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("vendor", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Visits", "visits", layout.getId(), 203, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Visits", "visits", layout.getId(), 203, groupOrder++, IconType.visitor));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,
@@ -1309,7 +1309,7 @@ public class ApplicationApi {
 
             groupNameVsWebTabsMap.put("visits", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Community", "community", layout.getId(), 204, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Community", "community", layout.getId(), 204, groupOrder++, IconType.community));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Announcements", "announcement", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("peopleannouncement").getModuleId()), appId, null,
@@ -1327,7 +1327,7 @@ public class ApplicationApi {
             groupNameVsWebTabsMap.put("community", webTabs);
 
             webTabGroups.add(
-                    new WebTabGroupContext("Service Catalogue", "servicecatalog", layout.getId(), 205, groupOrder++));
+                    new WebTabGroupContext("Service Catalogue", "servicecatalog", layout.getId(), 205, groupOrder++, IconType.dashboard));
             webTabs = new ArrayList<>();
             configJSON = new JSONObject();
             configJSON.put("type", "serviceCatalog");
@@ -1767,26 +1767,26 @@ public class ApplicationApi {
             List<WebTabContext> webTabs = new ArrayList<>();
             JSONObject configJSON;
 
-            webTabGroups.add(new WebTabGroupContext("WorkOrders", "workorder", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("WorkOrders", "workorder", layout.getId(), 201, groupOrder++, IconType.workorder));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("WorkOrders", "workorders", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));
             groupNameVsWebTabsMap.put("workorder", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Work Permits", "workpermit", layout.getId(), 202, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Work Permits", "workpermit", layout.getId(), 202, groupOrder++, IconType.induction));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Work Permits", "workpermits", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("workpermit").getModuleId()), appId, null));
             groupNameVsWebTabsMap.put("workpermit", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Invites", "visits", layout.getId(), 203, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Invites", "visits", layout.getId(), 203, groupOrder++, IconType.visitor));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Invites", "visitorinvites", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("invitevisitor").getModuleId()), appId, null,
                     AccountUtil.FeatureLicense.VISITOR.getFeatureId()));
             groupNameVsWebTabsMap.put("visits", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Insurance", "insurance", layout.getId(), 205, groupOrder++, IconType.contract));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Insurance", "insurances", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("insurance").getModuleId()), appId, null));
@@ -1890,12 +1890,12 @@ public class ApplicationApi {
             List<WebTabContext> webTabs = new ArrayList<>();
             JSONObject configJSON;
 
-            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("Home", "home", layout.getId(), 200, groupOrder++, IconType.home));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, appId, null));
             groupNameVsWebTabsMap.put("home", webTabs);
 
-            webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++));
+            webTabGroups.add(new WebTabGroupContext("My Requests", "workorder", layout.getId(), 201, groupOrder++, IconType.service_request));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Requests", "workorders", WebTabContext.Type.MODULE,
                     Arrays.asList(modBean.getModule("workorder").getModuleId()), appId, null));

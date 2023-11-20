@@ -24,12 +24,7 @@ public class V2AnalyticsAPIAction extends V3Action {
     public String searchText;
     public String getModuleFromCategory()throws Exception
     {
-        if(categoryId == null || categoryId < 0){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid CategoryId");
-        }
-        if(type == null){
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Category Type");
-        }
+        validateInput();
         FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
         FacilioContext context = chain.getContext();
         context.put("categoryId", categoryId);
@@ -59,4 +54,28 @@ public class V2AnalyticsAPIAction extends V3Action {
         setData("fields", context.get("fields"));
         return V3Action.SUCCESS;
     }
+
+    public String kpis()throws Exception
+    {
+        validateInput();
+        FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticsKPIChain();
+        chain.getContext().put("categoryId", categoryId);
+        chain.getContext().put("type", type);
+        chain.execute();
+        if(chain.getContext().containsKey("kpis")) {
+            setData("kpis", chain.getContext().get("kpis"));
+        }
+        return V3Action.SUCCESS;
+    }
+
+    public void validateInput()throws Exception
+    {
+        if(categoryId == null || categoryId < 0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid CategoryId");
+        }
+        if(type == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Category Type");
+        }
+    }
+
 }

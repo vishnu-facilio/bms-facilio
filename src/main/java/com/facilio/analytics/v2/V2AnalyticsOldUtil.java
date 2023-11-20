@@ -876,7 +876,7 @@ public class V2AnalyticsOldUtil {
         {
             selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
         }
-        if(dataPoint.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex() && dataPoint.getV2Criteria() != null && !dataPoint.getV2Criteria().isEmpty())
+        if((dataPoint.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex() || dataPoint.getCriteriaType() == V2MeasuresContext.Criteria_Type.SPECIFIC.getIndex()) && dataPoint.getV2Criteria() != null && !dataPoint.getV2Criteria().isEmpty())
         {
             if(dataPoint.getParentReadingModule() != null)
             {

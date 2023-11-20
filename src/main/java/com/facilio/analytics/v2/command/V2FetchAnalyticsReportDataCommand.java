@@ -303,8 +303,16 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             kpiData.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
         }
 
-        if(dynamicKpi.getParentId() != null && dynamicKpi.getParentId().get(0) != null)
+        FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
+        FacilioContext kpi_context = chain.getContext();
+        kpi_context.put("categoryId", dynamicKpi.getCategory());
+        kpi_context.put("type", dynKpi.getResourceTypeEnum().getName().toLowerCase());
+        chain.execute();
+        List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria((String)kpi_context.get("moduleName"), dataPointList.get(0).getV2Criteria());
+
+        if(parentIds != null && parentIds.size() > 0)
         {
+            dynamicKpi.setParentId(parentIds);
             resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs());
             props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(dynamicKpi.getParentId().get(0)));
             if (reportBaseLine!=null) {
@@ -314,13 +322,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
         else
         {
-            FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
-            FacilioContext kpi_context = chain.getContext();
-            kpi_context.put("categoryId", dynamicKpi.getCategory());
-            kpi_context.put("type", "asset");
-            chain.execute();
-            List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria((String)kpi_context.get("moduleName"), dataPointList.get(0).getV2Criteria());
-            parentIds = parentIds.stream().limit(10).collect(Collectors.toList());
             resultForDynamicKpi = getResultForDynamicKpi(parentIds, dateRange, report.getxAggrEnum(), dynKpi.getNs());
             if (reportBaseLine!=null) {
                 resultForBaseLine = getResultForDynamicKpi(parentIds, dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());

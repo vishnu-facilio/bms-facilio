@@ -93,7 +93,7 @@ public class V2MeasuresContext {
 
     public static enum Criteria_Type implements FacilioIntEnum
     {
-        ALL("all"), CRITERIA("Criteria"), RELATIONSHIP("Relationship");
+        ALL("all"), CRITERIA("Criteria"), RELATIONSHIP("Relationship"), SPECIFIC("Specific");
 
         public static Criteria_Type valueOf(int value) {
             if (value > 0 && value <= values().length) {
