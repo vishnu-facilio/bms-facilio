@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.ResourceType;
 import com.facilio.ns.NamespaceConstants;
 import com.facilio.ns.context.NSType;
 import com.facilio.v3.context.Constants;
@@ -42,6 +43,7 @@ public class PopulateNameSpaceAndFieldForVMReadingsCommand extends FacilioComman
         		newContext.put(NamespaceConstants.NAMESPACE,vmTemplateReading.getNs());
         		newContext.put(NamespaceConstants.PARENT_RULE_ID,vmTemplateReading.getId());
         		newContext.put(NamespaceConstants.NAMESPACE_FIELDS,vmTemplateReading.getNs().getFields());
+        		newContext.put(FacilioConstants.ContextNames.RESOURCE_TYPE,ResourceType.METER_CATEGORY);
         		
         		chain.execute();
         	}
