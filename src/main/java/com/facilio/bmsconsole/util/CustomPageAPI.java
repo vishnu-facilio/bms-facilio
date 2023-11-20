@@ -1158,10 +1158,10 @@ public class CustomPageAPI {
         PAGE(ModuleFactory.getPagesModule(), FieldFactory.getPagesFields()),
         TAB(ModuleFactory.getPageTabsModule(), FieldFactory.getPageTabsFields()),
         COLUMN(ModuleFactory.getPageColumnsModule(), FieldFactory.getPageColumnsFields()),
-        SECTION(ModuleFactory.getPageSectionsModule(), FieldFactory.getPageSectionsFields());
-        //        WIDGET(ModuleFactory.getPageSectionWidgetsModule(), FieldFactory.getPageSectionWidgetsFields()),
-//        WIDGETGROUP_SECTION(ModuleFactory.getWidgetGroupSectionsModule(), FieldFactory.getWidgetGroupSectionsFields()),
-//        WIDGETGROUP_WIDGETS(ModuleFactory.getWidgetGroupSectionWidgetsModule(), FieldFactory.getWidgetGroupSectionWidgetsFields());
+        SECTION(ModuleFactory.getPageSectionsModule(), FieldFactory.getPageSectionsFields()),
+        WIDGET(ModuleFactory.getPageSectionWidgetsModule(), FieldFactory.getPageSectionWidgetsFields()),
+        WIDGETGROUP_SECTION(ModuleFactory.getWidgetGroupSectionsModule(), FieldFactory.getWidgetGroupSectionsFields()),
+        WIDGETGROUP_WIDGETS(ModuleFactory.getWidgetGroupWidgetsModule(), FieldFactory.getWidgetGroupWidgetsFields());
         FacilioModule module;
         List<FacilioField> fields;
 

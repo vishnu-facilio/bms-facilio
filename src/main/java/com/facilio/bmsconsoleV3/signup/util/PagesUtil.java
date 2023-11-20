@@ -16,13 +16,16 @@ import com.facilio.bmsconsole.widgetConfig.WidgetWrapperType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -346,5 +349,41 @@ public class PagesUtil {
             return tabs;
         }
         return null;
+    }
+
+    public static List<Map<String, Object>> getPageComponent(CustomPageAPI.PageComponent fetchPageComponent, List<FacilioField> selectFields, Criteria criteria) throws Exception {
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+        buildPageComponentQueryBuilder(builder, fetchPageComponent);
+        builder.table(fetchPageComponent.getModule().getTableName())
+                .select(selectFields)
+                .andCriteria(criteria);
+        return builder.get();
+    }
+
+    private static void buildPageComponentQueryBuilder(@NonNull GenericSelectRecordBuilder builder, CustomPageAPI.PageComponent pageComponent) {
+        switch (pageComponent) {
+            case WIDGET:
+                builder.innerJoin(ModuleFactory.getPageSectionsModule().getTableName())
+                        .on("Page_Sections.ID = Page_Section_Widgets.SECTION_ID");
+                buildPageComponentQueryBuilder(builder, CustomPageAPI.PageComponent.SECTION);
+                break;
+            case SECTION:
+                builder.innerJoin(ModuleFactory.getPageColumnsModule().getTableName())
+                        .on("Page_Columns.ID = Page_Sections.COLUMN_ID");
+                buildPageComponentQueryBuilder(builder, CustomPageAPI.PageComponent.COLUMN);
+                break;
+            case COLUMN:
+                builder.innerJoin(ModuleFactory.getPageTabsModule().getTableName())
+                        .on("Page_Tabs.ID = Page_Columns.TAB_ID");
+                buildPageComponentQueryBuilder(builder, CustomPageAPI.PageComponent.TAB);
+                break;
+            case TAB:
+                builder.innerJoin(ModuleFactory.getPageLayoutsModule().getTableName())
+                        .on("Page_Layouts.ID = Page_Tabs.LAYOUT_ID")
+                        .innerJoin(ModuleFactory.getPagesModule().getTableName())
+                        .on("Pages.ID = Page_Layouts.PAGE_ID");
+                buildPageComponentQueryBuilder(builder, CustomPageAPI.PageComponent.PAGE);
+                break;
+        }
     }
 }

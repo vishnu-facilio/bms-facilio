@@ -13,6 +13,13 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/customPage/pdfTemplate/:moduleName/:appId/:recordId" method="GET">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="appId" type="number" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 
     <request path="/api/v2/basespace/tree/fetchParentNodes" method="GET">
         <urlparams type="object">

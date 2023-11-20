@@ -2722,6 +2722,13 @@
             <param name="permission">ALL</param>
             <param name="deprecated">true</param>
         </action>
+        <action name="customPage/*/*/*"
+                    class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="getTemplatesForDownloadFromPage">
+            <param name="moduleName">{1}</param>
+            <param name="appId">{2}</param>
+            <param name="recordId">{3}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
     </package>
     <package name="alarmFilterRule" namespace="/api/v3/alarmFilterRule" extends="v3Api">
         <action name="assetRelation/*" class="com.facilio.remotemonitoring.action.AlarmFilterRuleAction" method="getSelectedCategoryAssetRelationsships">

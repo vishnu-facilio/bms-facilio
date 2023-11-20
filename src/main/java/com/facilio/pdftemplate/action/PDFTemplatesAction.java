@@ -20,6 +20,7 @@ public class PDFTemplatesAction extends V3Action {
     private Boolean fetchAll;
     private long templateId = -1;
     private long recordId = -1;
+    private long appId = -1;
     private PDFTemplate pdfTemplate;
 
     public String addOrUpdate() throws Exception {
@@ -96,6 +97,18 @@ public class PDFTemplatesAction extends V3Action {
         chain.execute();
 
         setData(FacilioConstants.ContextNames.FILE_ID, context.get(FacilioConstants.ContextNames.FILE_ID));
+        return SUCCESS;
+    }
+
+    public String getTemplatesForDownloadFromPage() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactory.getTemplatesForDownloadFromPage();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.APP_ID, getAppId());
+        chain.execute();
+
+        setData(FacilioConstants.ContextNames.PDF_TEMPLATES, context.get(FacilioConstants.ContextNames.PDF_TEMPLATES));
         return SUCCESS;
     }
 

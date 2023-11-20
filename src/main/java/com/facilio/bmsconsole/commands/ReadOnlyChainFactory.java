@@ -48,10 +48,7 @@ import com.facilio.fields.commands.FilterFieldsByPermissionCommand;
 import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherBoardListCommand;
 import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherConfigCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
-import com.facilio.pdftemplate.command.DownloadPDFTemplateCommand;
-import com.facilio.pdftemplate.command.GetPDFTemplatesListCommand;
-import com.facilio.pdftemplate.command.GetPDFTemplateCommand;
-import com.facilio.pdftemplate.command.PreviewPDFTemplateCommand;
+import com.facilio.pdftemplate.command.*;
 import com.facilio.pdftemplate.command.DownloadPDFTemplateCommand;
 import com.facilio.permission.commands.FetchPermissionSetsForUserCommand;
 import com.facilio.readingkpi.commands.list.FetchResourceNamesForKpiLogger;
@@ -3602,6 +3599,12 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetPDFTemplateCommand());
 		chain.addCommand(new PreviewPDFTemplateCommand());
 		chain.addCommand(new DownloadPDFTemplateCommand());
+		return chain;
+	}
+
+	public static FacilioChain getTemplatesForDownloadFromPage() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetTemplatesForDownloadFromPageCommand());
 		return chain;
 	}
 
