@@ -317,18 +317,18 @@ public class FieldsConfigList {
             "decommissionedBy", "sysCreatedBy", "sysCreatedTime", "sysModifiedBy","sysModifiedTime"
     );
 
+    public static final List<String> SERVICE_REQUEST_FIELDS = Arrays.asList(
+            "subject","description","moduleState","assignmentGroup","assignedTo","requester","dueDate","classificationType","urgency","resource","requestType","ratingVal","sysCreatedTime","sysCreatedBy","sysModifiedTime","sysModifiedBy","approvalStatus","mode","responseDueDate","affectedPerson","reportedDate","affectedDate","actualStartDate","actualFinishDate","sourceType"
+    );
 
-    public static final List<String> SERVICE_REQUEST_FIELDS_EXCLUDE = Arrays.asList(
-        "appId","approvalFlowId","localId","slaPolicyId","stateFlowId"
+    public static final List<String> INVENTORY_REQUEST_FIELDS = Arrays.asList(
+            "name","description","status","requestedTime","requiredTime","requestedBy","localId","storeRoom","requestedFor","isIssued","moduleState","approvalStatus","sysCreatedTime","sysCreatedBy","sysModifiedTime","sysModifiedBy","transactionType","inventoryRequestReservationStatus","workorder"
     );
-    public static final List<String> INVENTORY_REQUEST_FIELDS_EXCLUDE = Arrays.asList(
-            "parentId","approvalFlowId","stateFlowId"
+    public static final List<String> FACILITY_FIELDS = Arrays.asList(
+            "localId","name","manager","description","userGuidance","facilityType","slotGeneratedUpto","bookingAdvancePeriodInDays","allowCancellationBefore","location","category","usageCapacity","slotDuration","maxSlotBookingAllowed","maxAttendeeCountPerBooking","isChargeable","securityDeposit","pricePerSlot","isAttendeeListNeeded","approvalStatus","moduleState","isMultiBookingPerSlotAllowed","amenities","sysCreatedTime","sysCreatedBy","sysModifiedTime","sysModifiedBy","isbookable"
     );
-    public static final List<String> FACILITY_FIELDS_EXCLUDE = Arrays.asList(
-            "parentId","approvalFlowId","stateFlowId","parentModuleId"
-    );
-    public static final List<String> BOOKING_FIELDS_EXCLUDE = Arrays.asList(
-            "approvalFlowId","stateFlowId"
+    public static final List<String> BOOKING_FIELDS = Arrays.asList(
+            "description","localId","bookingDate","reservedFor","noOfAttendees","facility","isCancelled","canEdit","bookingAmount","moduleState","tenant","bookingRequestedBy","approvalStatus","internalAttendees","sysCreatedTime","sysCreatedBy","sysModifiedTime","sysModifiedBy","bookingtype"
     );
 
     public static final List<String> METER_FIELDS_EXCLUDE = Arrays.asList(

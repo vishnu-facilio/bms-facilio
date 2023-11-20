@@ -147,6 +147,7 @@ public class FacilityModule extends BaseModuleConfig{
         appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
@@ -155,7 +156,7 @@ public class FacilityModule extends BaseModuleConfig{
         return appNameVsPage;
     }
 
-    private List<PagesContext> facilityModuleTemplatePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+    public static List<PagesContext> facilityModuleTemplatePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         String pageName, pageDisplayName;
         pageName = module.getName() + "defaultpage";
         pageDisplayName = "Default " + module.getDisplayName() + " Page ";
@@ -315,7 +316,7 @@ public class FacilityModule extends BaseModuleConfig{
         SystemButtonRuleContext edit = new SystemButtonRuleContext();
         edit.setName("Edit");
         edit.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        edit.setIdentifier("edit");
+        edit.setIdentifier("edit_summary");
         edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         edit.setPermissionRequired(true);
         edit.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
@@ -328,6 +329,49 @@ public class FacilityModule extends BaseModuleConfig{
 
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,edit);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,bookNow);
+
+        //List Page System Buttons
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,createButton);
+
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,listEditButton);
+
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,listDeleteButton);
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY,bulkDeleteButton);
+
+
     }
 
 }

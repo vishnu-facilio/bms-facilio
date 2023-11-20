@@ -997,15 +997,15 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.SERVICE_REQUEST_FIELDS)
                 .done()
 
                 .advancedFields()
-                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.SERVICE_REQUEST_FIELDS)
                 .done()
 
                 .viewFields()
-                .skip(FieldsConfigList.SERVICE_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.SERVICE_REQUEST_FIELDS)
                 .done();
     }
     @Module(FacilioConstants.ContextNames.INVENTORY_REQUEST)
@@ -1013,15 +1013,15 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.INVENTORY_REQUEST_FIELDS)
                 .done()
 
                 .advancedFields()
-                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.INVENTORY_REQUEST_FIELDS)
                 .done()
 
                 .viewFields()
-                .skip(FieldsConfigList.INVENTORY_REQUEST_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.INVENTORY_REQUEST_FIELDS)
                 .done();
     }
     @Module(FacilioConstants.ContextNames.FacilityBooking.FACILITY)
@@ -1029,15 +1029,15 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.FACILITY_FIELDS)
                 .done()
 
                 .advancedFields()
-                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.FACILITY_FIELDS)
                 .done()
 
                 .viewFields()
-                .skip(FieldsConfigList.FACILITY_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.FACILITY_FIELDS)
                 .done();
     }
     @Module(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING)
@@ -1045,15 +1045,15 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.BOOKING_FIELDS)
                 .done()
 
                 .advancedFields()
-                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.BOOKING_FIELDS)
                 .done()
 
                 .viewFields()
-                .skip(FieldsConfigList.BOOKING_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.BOOKING_FIELDS)
                 .done();
     }
     @Module(FacilioConstants.Meter.METER)

@@ -40,6 +40,7 @@ public class ServiceModule extends BaseModuleConfig{
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
@@ -250,6 +251,55 @@ public class ServiceModule extends BaseModuleConfig{
         deleteService.setPermissionRequired(true);
         deleteService.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,deleteService);
+
+        //List Page System Buttons
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,createButton);
+
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,listEditButton);
+
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,exportAsCSVButton);
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,exportAsExcelButton);
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SERVICE,listDeleteButton);
     }
 
 }

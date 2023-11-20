@@ -410,6 +410,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
@@ -417,7 +418,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         }
         return appNameVsPage;
     }
-    private List<PagesContext> buildFacilityBookingPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+    public static List<PagesContext> buildFacilityBookingPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         String pageName, pageDisplayName;
         pageName = module.getName() + "defaultpage";
         pageDisplayName = "Default " + module.getDisplayName() + " Page ";
@@ -456,5 +457,17 @@ public class FacilityBookingModule extends BaseModuleConfig{
         cancelBooking.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
 
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,cancelBooking);
+
+        //List Page System Buttons
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,createButton);
+        
     }
 }

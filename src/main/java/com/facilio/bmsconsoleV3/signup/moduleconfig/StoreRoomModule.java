@@ -137,7 +137,7 @@ public class StoreRoomModule extends BaseModuleConfig{
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editButton.setIdentifier("edit");
+        editButton.setIdentifier("edit_summary");
         editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         editButton.setPermissionRequired(true);
@@ -236,5 +236,41 @@ public class StoreRoomModule extends BaseModuleConfig{
         returnToolsToPerson.setIdentifier(FacilioConstants.ContextNames.STOREROOM_RETURN_TOOLS_TO_PERSON);
         returnToolsToPerson.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,returnToolsToPerson);
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,createButton);
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,listEditButton);
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,exportAsCSVButton);
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,exportAsExcelButton);
     }
 }
