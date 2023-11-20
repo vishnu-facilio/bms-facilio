@@ -238,6 +238,12 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("rawAlarm");
         scriptWhiteListedModules.add("client");
         scriptWhiteListedModules.add("clientcontact");
+        scriptWhiteListedModules.add("meter");
+        scriptWhiteListedModules.add("virtualMeterTemplate");
+        scriptWhiteListedModules.add("calendar");
+        scriptWhiteListedModules.add("calendarEvent");
+        scriptWhiteListedModules.add("controlAction");
+        scriptWhiteListedModules.add("controlActionTemplate");
     }
 
     @Override
