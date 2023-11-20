@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.connected.ResourceType;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -20,12 +20,10 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.facilio.bmsconsole.util.BmsJobUtil.scheduleOneTimeJobWithProps;
 import static com.facilio.connected.CommonConnectedUtil.fetchConRuleFamilyNodesAndEdges;
 import static com.facilio.readingkpi.ReadingKpiAPI.*;
 
@@ -94,7 +92,7 @@ public class ReadingKpiAction extends V3Action {
     public String getReadingsForSpecificAssetCategory() throws Exception {
         String ASSETS = "assets";
         String FIELDS = "fields";
-        List<ReadingKPIContext> kpisOfCategory = ReadingKpiAPI.getKpisOfCategory(categoryId);
+        List<ReadingKPIContext> kpisOfCategory = ReadingKpiAPI.getKpisOfCategory(categoryId, ResourceType.ASSET_CATEGORY);
         Map<String, Object> data = new HashMap<>();
 
         Set<Long> assets = new HashSet<>();

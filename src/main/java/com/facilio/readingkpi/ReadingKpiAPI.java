@@ -137,10 +137,11 @@ public class ReadingKpiAPI {
         return props;
     }
 
-    public static List<ReadingKPIContext> getKpisOfCategory(Long categoryId) throws Exception {
+    public static List<ReadingKPIContext> getKpisOfCategory(Long categoryId, ResourceType resourceType) throws Exception {
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ReadingKpi.READING_KPI));
         Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("assetCategory"), Collections.singleton(categoryId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("categoryId"), Collections.singleton(categoryId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("resourceType"), String.valueOf(resourceType.getIndex()), NumberOperators.EQUALS));
         return getAllActiveKpis(null, criteria);
     }
 
@@ -919,9 +920,11 @@ public class ReadingKpiAPI {
     }
 
     public static long getStartTimeForHistoricalCalculation(NamespaceFrequency freq) {
-        long currentTime = DateTimeUtil.getCurrenTime() - 10 * 1000; // trigger happens at 00:00, we need prev interval, so 10 mins behind
+        long currentTime = DateTimeUtil.getCurrenTime() - 10 * 60 * 1000; // trigger happens at 00:00, we need prev interval, so 10 mins behind
+        LOGGER.info("adjusted Time from getStartTimeForHistoricalCalculation" + currentTime);
         switch (freq) {
             case ONE_DAY:
+                LOGGER.info("day start time from getStartTimeForHistoricalCalculation" + DateTimeUtil.getDayStartTimeOf(currentTime));
                 return DateTimeUtil.getDayStartTimeOf(currentTime);
             case WEEKLY:
                 return DateTimeUtil.getWeekStartTimeOf(currentTime);
