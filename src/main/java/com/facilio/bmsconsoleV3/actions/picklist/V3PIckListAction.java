@@ -1,7 +1,11 @@
 package com.facilio.bmsconsoleV3.actions.picklist;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.interceptors.ErrorUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
+import com.facilio.bmsconsoleV3.util.GlobalScopeUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -10,6 +14,7 @@ import com.facilio.v3.V3Action;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.xpath.operations.Bool;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +22,18 @@ import java.util.List;
 @Getter @Setter
 public class V3PIckListAction extends V3Action {
     Boolean isToFetchDecommissionedResource;
+    public String scopeVariableOptions() throws Exception {
+        FacilioChain chain = ReadOnlyChainFactoryV3.getGlobalSwitchAccessiblityChain();
+
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        chain.execute();
+        Boolean isAccessible = (Boolean) context.get(FacilioConstants.ContextNames.IS_ACCESSIBLE);
+        if(isAccessible != null && isAccessible) {
+            return pickList();
+        }
+        throw new IllegalArgumentException("Module is not accessible");
+    }
     public String pickList() throws Exception {
         if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
             List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);

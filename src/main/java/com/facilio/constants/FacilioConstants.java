@@ -126,6 +126,7 @@ public class FacilioConstants {
 		}
 	}
 
+	public static List<String> ALLOWED_GLOBAL_SWITCH_MODULES = Collections.unmodifiableList(Arrays.asList("site","building","territory","vendors","tenant","client","storeRoom"));
 	public static class VisitorManagementSystemButton{
 		public static final String GROUP_INVITE_EDIT_BUTTON="groupInviteEditButton";
 		public static final String GROUP_INVITE_DELETE_BUTTON="groupInviteDeleteButton";
@@ -726,6 +727,8 @@ public class FacilioConstants {
 		public static final String PASSWORD = "password";
 		public static final String USER_IDS ="userIds";
 		public static final String PEOPLE_IDS ="peopleIds";
+
+		public static final String IS_ACCESSIBLE = "isAccessible";
 
 
 		public static final String GROUP_ID = "groupId";

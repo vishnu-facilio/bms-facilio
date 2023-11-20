@@ -222,11 +222,13 @@ public class ScopingUtil {
     }
 
     //As user is special module it cannot be scoped in select record builder
-    public static void checkUserSwitchAndThrowError(GlobalScopeVariableContext scopeVariableContext){
+    public static void checkUserSwitchAndThrowError(GlobalScopeVariableContext scopeVariableContext) {
         if(scopeVariableContext != null) {
             String applicableModuleName = scopeVariableContext.getApplicableModuleName();
-            if (applicableModuleName != null && applicableModuleName.equals(FacilioConstants.ContextNames.USERS) && scopeVariableContext.isSwitch()) {
-                throw new IllegalArgumentException("User module cannot be enabled as switch");
+            if (applicableModuleName != null && scopeVariableContext.isSwitch()) {
+                if(!FacilioConstants.ALLOWED_GLOBAL_SWITCH_MODULES.contains(applicableModuleName)) {
+                    throw new IllegalArgumentException("Selected module cannot be enabled as switch");
+                }
             }
         }
     }

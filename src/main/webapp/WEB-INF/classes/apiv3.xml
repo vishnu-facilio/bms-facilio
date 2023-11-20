@@ -1927,14 +1927,18 @@
             <param name="tabType">SETUP</param>
             <param name="setupTab">SCOPE</param>
         </action>
+        <action name="options/*" class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction" method="scopeVariableOptions">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="skipPermission">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
     </package>
 
     <package name="switchVariable" namespace="/api/v3/switchVariable" extends="v3Api">
         <action name="getSwitchVariable" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getSwitchVariable">
-            <param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-            <param name="setupTab">TABS_AND_LAYOUTS</param>
+            <param name="skipPermission">true</param>
         </action>
     </package>
     <package name="assetSpareParts" namespace="/api/v3/assetSpareParts"

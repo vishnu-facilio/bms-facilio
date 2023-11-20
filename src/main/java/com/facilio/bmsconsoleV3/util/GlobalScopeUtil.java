@@ -527,4 +527,19 @@ public class GlobalScopeUtil {
         }
         return new ArrayList<>();
     }
+
+    public static boolean moduleIsSwitchAccessible(String moduleName) throws Exception {
+        if(AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getId() > 0) {
+            GlobalScopeBean scopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
+            List<GlobalScopeVariableContext> switchVariables = scopeBean.getSwitchVariable();
+            if(CollectionUtils.isNotEmpty(switchVariables)) {
+                for(GlobalScopeVariableContext switchVariable : switchVariables) {
+                    if(switchVariable != null && switchVariable.getApplicableModuleName() != null && switchVariable.getApplicableModuleName().equals(moduleName)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }

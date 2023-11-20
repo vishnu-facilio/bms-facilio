@@ -33,7 +33,7 @@ public class ErrorUtil {
 
     @AllArgsConstructor
     @Getter
-    enum Error {
+    public enum Error {
         USER_NOT_IN_APP(HttpURLConnection.HTTP_FORBIDDEN,1,"Sorry, you do not have access to this application. Please contact your admin",UNAUTHORIZED),
         NO_PERMISSION(HttpURLConnection.HTTP_FORBIDDEN,2,"Sorry, you do not have access to this page. Please contact your admin",UNAUTHORIZED),
         PAGE_NOT_FOUND(HttpURLConnection.HTTP_NOT_FOUND,3,"Sorry, the page you have been looking for does not exist. The link you followed maybe broken, or the page may have been moved",RESOURCE_NOT_FOUND),

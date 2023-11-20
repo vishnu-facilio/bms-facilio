@@ -699,4 +699,10 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new SetFlaggedAlarmStatusDisplayNameCommand());
         return c;
     }
+
+    public static FacilioChain getGlobalSwitchAccessiblityChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GlobalSwitchAccessiblityCommandV3());
+        return c;
+    }
 }
