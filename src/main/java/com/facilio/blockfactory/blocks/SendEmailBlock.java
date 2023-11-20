@@ -11,6 +11,7 @@ import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowengine.context.Constants;
 import com.facilio.flowengine.exception.FlowException;
+import com.facilio.flowengine.executor.FlowEngineUtil;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.context.MailSourceType;
 import com.facilio.modules.FieldUtil;
@@ -60,10 +61,13 @@ public class SendEmailBlock extends BaseBlock{
 
            JSONObject emailJson=new JSONObject();
 
-           emailJson.put("sender", fromAddress.getEmail());
            emailJson.put("to", to);
            emailJson.put("cc", cc);
            emailJson.put("bcc", bcc);
+
+           emailJson = (JSONObject) FlowEngineUtil.replacePlaceHolder(emailJson,memory);
+
+           emailJson.put("sender", fromAddress.getEmail());
            emailJson.put("subject", emailReplacedJSON.get("subject"));
            emailJson.put("message", emailReplacedJSON.get("message"));
            emailJson.put("html", emailStructure.isHtml());
