@@ -14,6 +14,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -50,8 +51,12 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
     public Map<Long, Role> fetchComponents(List<Long> ids) throws Exception {
         List<Role> roles = getRolesForIds(ids);
         Map<Long, Role> roleIdVsRole = new HashMap<>();
+        Map<Long, String> roleIdVsRoleName = new HashMap<>();
         if (CollectionUtils.isNotEmpty(roles)) {
-            roles.forEach(role -> roleIdVsRole.put(role.getRoleId(), role));
+            for (Role role : roles) {
+                roleIdVsRole.put(role.getRoleId(), role);
+                roleIdVsRoleName.put(role.getRoleId(), role.getName());
+            }
             List<NewPermission> newPermissions = getNewPermissionForIds(ids);
             if(newPermissions!=null) {
                 for (NewPermission newPermission : newPermissions) {
@@ -64,6 +69,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
                 }
             }
         }
+        PackageUtil.addRoleConfigForXML(roleIdVsRoleName);
         return roleIdVsRole;
     }
     @Override
@@ -201,6 +207,18 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
             List<NewPermission> permissions = constructNewPermissionsFromBuilder(roleElement, appIdVsRouteNameVsTabId, appNameVsAppId);
             updateNewPermission(roleId, permissions);
         }
+    }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        List<Role> allRoles = PackageBeanUtil.getAllRoles();
+        Map<String, Long> roleNameVsRoleId = new HashMap<>();
+
+        if (CollectionUtils.isNotEmpty(allRoles)) {
+            roleNameVsRoleId = allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId, (a, b) -> b));
+        }
+
+        PackageUtil.addRoleConfigForContext(roleNameVsRoleId);
     }
 
     @Override

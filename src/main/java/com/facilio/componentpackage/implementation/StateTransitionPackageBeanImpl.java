@@ -26,6 +26,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -156,6 +158,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         }
 
         if (stateflowTransition.getCriteria() != null) {
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + stateflowTransition.getModuleName() + " Stateflow - " + stateflow.getName() + " StateflowTransition " + stateflowTransition.getName());
             element.addElement(PackageBeanUtil.constructBuilderFromCriteria(stateflowTransition.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), stateflowTransition.getModuleName()));
         }
 

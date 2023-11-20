@@ -57,6 +57,7 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 		}
 
         // Adding AllPackageChangesets to ThreadLocal
+		PackageUtil.setPackageId(packageId);
         PackageBeanUtil.addAllPackageChangesetsToThread(packageContext.getId());
 
 		//For sending sandbox progress on installation
@@ -171,9 +172,9 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 				createdComponentIds.putAll(systemComponentIds);
 			}
 			PackageUtil.addComponentsUIdVsComponentId(componentType, createdComponentIds);
-			checkForDuplicateUIds(componentType, mappingToAdd);
+			PackageUtil.checkForDuplicateUIds(componentType, mappingToAdd);
 
-			computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
+			PackageUtil.computeAndAddPackageChangeset(mappingToAdd, createdComponentIds);
 
 			//Update
 			componentType.getPackageComponentClassInstance().updateComponentFromXML(updateComponentList);
@@ -197,43 +198,6 @@ public class DeployPackageComponentCommand extends FacilioCommand implements Pos
 		}
 
 		return false;
-	}
-
-	private void computeAndAddPackageChangeset(Map<String, PackageChangeSetMappingContext> uniqueIdVsMapping, Map<String, Long> uniqueIdVsComponentId) throws Exception {
-		List<PackageChangeSetMappingContext> mappings = uniqueIdVsMapping.entrySet().stream()
-				.filter(entry -> uniqueIdVsComponentId.containsKey(entry.getKey()))
-				.peek(entry -> entry.getValue().setComponentId(uniqueIdVsComponentId.get(entry.getKey())))
-				.map(Map.Entry::getValue)
-				.collect(Collectors.toList())
-				;
-		PackageUtil.addPackageMappingChangesets(mappings);
-	}
-
-	private void checkForDuplicateUIds(ComponentType componentType, Map<String, PackageChangeSetMappingContext> mappingToAdd) {
-		Map<String, Long> uidVsCompId = PackageUtil.getComponentsUIdVsComponentIdForComponent(componentType);
-
-		Map<Long, String> compIdVsUid = new HashMap<>();
-		Map<Long, Set<String>> compIdVsDuplicateUid = new HashMap<>();
-		for (Map.Entry<String, Long> entry : uidVsCompId.entrySet()) {
-			String currUId = entry.getKey();
-			long currCompId = entry.getValue();
-
-			if (compIdVsUid.containsKey(currCompId)) {
-				String oldUId = compIdVsUid.get(currCompId);
-				mappingToAdd.remove(currUId);
-
-				Set<String> duplicateUIdSet;
-				if (!compIdVsDuplicateUid.containsKey(currCompId)) {
-					compIdVsDuplicateUid.put(currCompId, new HashSet<>());
-				}
-				duplicateUIdSet = compIdVsDuplicateUid.get(currCompId);
-				duplicateUIdSet.add(oldUId);
-				duplicateUIdSet.add(currUId);
-			}
-			compIdVsUid.put(currCompId, currUId);
-		}
-
-		LOGGER.info("####Sandbox - Duplicate ComponentIdVsUIds - " + componentType.name() + " - " + compIdVsDuplicateUid);
 	}
 
 	@Override

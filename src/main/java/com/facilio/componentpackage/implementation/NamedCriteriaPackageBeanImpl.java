@@ -7,6 +7,7 @@ import com.facilio.db.criteria.manager.NamedCriteriaAPI;
 import com.facilio.db.criteria.manager.NamedCondition;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.db.criteria.manager.NamedCriteria;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.xml.builder.XMLBuilder;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 
 import java.util.*;
 
+@Log4j
 public class NamedCriteriaPackageBeanImpl implements PackageBean<NamedCriteria> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -67,6 +69,7 @@ public class NamedCriteriaPackageBeanImpl implements PackageBean<NamedCriteria> 
 
                 switch (namedCondition.getTypeEnum()) {
                     case CRITERIA:
+                        LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " ButtonName - " + namedCriteria.getName());
                         namedConditionElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(namedCondition.getCriteria(),
                                 namedConditionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
                         break;

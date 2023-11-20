@@ -253,6 +253,11 @@ public class PackageConstants {
         public static final String PARENT_MODULE_NAME = "Parent_Module_Name";
         public static final String DYNAMIC_VALUE = "Dynamic_Value";
         public static final String IS_DYNAMIC_VALUE = "Is_Dynamic_Value";
+        public static final String ROLE_NAME = "Role_Name";
+        public static final String ROLES_LIST = "Roles_List";
+        public static final String GROUP_NAME = "Group_Name";
+        public static final String PEOPLE_GROUP_LIST = "People_Group_List";
+
     }
 
     public static class RoleConstants {
@@ -655,6 +660,7 @@ public class PackageConstants {
         public static final String APP_LINK_NAME = "App_Link_Name";
         public static final String IDENTIFIER = "Identifier";
         public static final String DELETED_TIME = "Deleted_Time";
+        public static final String PARENT_UID = "Parent_UId";
         public static final String IS_SUPER_USER = "Is_Super_User";
         public static final String OCCUPANT_PORTAL_ACCESS = "Occupant_Portal_Access";
         public static final String EMPLOYEE_PORTAL_ACCESS = "Employee_Portal_Access";

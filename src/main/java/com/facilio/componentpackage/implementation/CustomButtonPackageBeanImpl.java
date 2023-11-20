@@ -22,6 +22,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import com.google.gson.JsonObject;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
 
     @Override
@@ -104,6 +106,7 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
             //criteria
             if (customButtonRule.getCriteria() != null) {
+                LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + customButtonRule.getModuleName() + " ButtonName - " + customButtonRule.getName());
                 element.addElement(PackageBeanUtil.constructBuilderFromCriteria(customButtonRule.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
             }
 

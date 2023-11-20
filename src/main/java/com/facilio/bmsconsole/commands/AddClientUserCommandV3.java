@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,7 +26,7 @@ public class AddClientUserCommandV3 extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
+		boolean skipPeopleContact = FacilioUtil.parseBoolean(Constants.getQueryParam(context, FacilioConstants.ContextNames.SKIP_PEOPLE_CONTACTS));
 		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         String moduleName = Constants.getModuleName(context);
 		
@@ -43,7 +44,7 @@ public class AddClientUserCommandV3 extends FacilioCommand {
 						FacilioModule ccModule = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
 						List<FacilioField> ccFields = modBean.getAllFields(ccModule.getName());
 
-						if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+						if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && !skipPeopleContact) {
 							V3ClientContactContext cc = getDefaultClientContact(client);
 							List<V3ClientContactContext> primarycontatsIfAny = V3PeopleAPI.getClientContacts(cc.getClient().getId(), true);
 							V3ClientContactContext clientPrimaryContact = null;

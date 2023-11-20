@@ -31,6 +31,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.xml.builder.XMLBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -40,6 +41,7 @@ import org.json.simple.parser.ParseException;
 
 import java.util.*;
 
+@Log4j
 public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -72,6 +74,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
 
         Criteria slaCriteria = slaRule.getCriteria();
         if (slaCriteria != null){
+                LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + slaRule.getModuleName() + " SLA Rule - " + slaRule.getName());
                 element.addElement(PackageBeanUtil.constructBuilderFromCriteria(slaCriteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), slaRule.getModuleName()));
         }
 
@@ -88,6 +91,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.PARENT_RULE).text(slaRule.getName());
                 commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.RULE_TYPE).text(commitment.getRuleTypeEnum().name());
                 if (criteria != null) {
+                    LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + commitment.getModuleName() + " SLA Rule - " + slaRule.getName() + " Commitment - " + commitment.getName());
                     commitmentBuilder.addElement(PackageBeanUtil.constructBuilderFromCriteria(criteria, element.element(PackageConstants.CriteriaConstants.CRITERIA), commitment.getModuleName()));
                 }
                 XMLBuilder entitiesBuilder = commitmentBuilder.element(PackageConstants.WorkFlowRuleConstants.ENTITIES);
@@ -128,7 +132,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                     levelBuilder.element("type").text(String.valueOf(level.getType()));
                     levelBuilder.element("typeEnum").text(String.valueOf(level.getTypeEnum()));
                     if (CollectionUtils.isNotEmpty(level.getActions())) {
-                        constructBuilderFromSLAActionsList(level.getActions(), levelBuilder.element(PackageConstants.WorkFlowRuleConstants.ACTIONS_LIST));
+                        constructBuilderFromSLAActionsList(slaRule.getName(), slaEntity.getName(), level.getActions(), levelBuilder.element(PackageConstants.WorkFlowRuleConstants.ACTIONS_LIST));
                     }
                 }
             }
@@ -137,7 +141,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
 
     }
 
-    public static void constructBuilderFromSLAActionsList(List<ActionContext> actionContextList, XMLBuilder actionElements) throws Exception {
+    public static void constructBuilderFromSLAActionsList(String slaRuleName, String slaEntityName, List<ActionContext> actionContextList, XMLBuilder actionElements) throws Exception {
 
         ModuleBean moduleBean = Constants.getModBean();
 
@@ -182,6 +186,7 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                                 expressionSimple.put(key, criteria.get(key));
                             }
                             Criteria expresionCriteria = FieldUtil.getAsBeanFromJson(expressionSimple, Criteria.class);
+                            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " SLA Rule - " + slaRuleName + " SlaEntityName - " + slaEntityName);
                             expressionElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(expresionCriteria, actionElements.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
                             Map<String, Condition> conditions = expresionCriteria.getConditions();
                             XMLBuilder ouidListElement = expressionElement.element("OuidList");

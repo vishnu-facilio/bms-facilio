@@ -152,6 +152,9 @@ public class PackageBeanUtil {
     }
 
     public static void bulkDeleteV3Records(String moduleName, List<Long> ids) throws Exception {
+        if (CollectionUtils.isEmpty(ids)) {
+            return;
+        }
         Map<String, Object> data = new HashMap<>();
         data.put(moduleName, ids);
 
@@ -537,11 +540,12 @@ public class PackageBeanUtil {
 
                     if (field instanceof LookupField) {
                         FacilioModule lookupModule = ((LookupField) field).getLookupModule();
-                        if (lookupModule.getName().equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
+                        String lookupModuleName = lookupModule.getName();
+                        if (lookupModuleName.equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
                             conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), facilioModule.getName(), valueArr, true));
-                        } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModule.getName())) {
-                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModule.getName(), valueArr, false));
-                        } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())) {
+                        } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModuleName)) {
+                            conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModuleName, valueArr, false));
+                        } else if (FacilioConstants.ContextNames.USERS.equals(lookupModuleName)) {
                             XMLBuilder userElementList = conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
                             for (String val : valueArr) {
                                 if (DYNAMIC_CONDITION_VALUES.contains(val)) {
@@ -554,7 +558,7 @@ public class PackageBeanUtil {
                                     userElementList.addElement(userElement);
                                 }
                             }
-                        } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModule.getName())) {
+                        } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModuleName)) {
                             XMLBuilder peopleElementList = conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
                             for (String val : valueArr) {
                                 if (DYNAMIC_CONDITION_VALUES.contains(val)) {
@@ -567,8 +571,18 @@ public class PackageBeanUtil {
                                     peopleElementList.addElement(peopleElement);
                                 }
                             }
+                        } else if (AccountConstants.getRoleModule().getName().equals(lookupModuleName)) {
+                            XMLBuilder rolesListElement = conditionElement.element(PackageConstants.CriteriaConstants.ROLES_LIST);
+                            for (String val : valueArr) {
+                                rolesListElement.element(PackageConstants.CriteriaConstants.ROLE_NAME).text(PackageUtil.getRoleName(Long.parseLong(val)));
+                            }
+                        } else if (FacilioConstants.PeopleGroup.PEOPLE_GROUP.equals(lookupModuleName)) {
+                            XMLBuilder groupsListElement = conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_GROUP_LIST);
+                            for (String val : valueArr) {
+                                groupsListElement.element(PackageConstants.CriteriaConstants.GROUP_NAME).text(PackageUtil.getTeamName(Long.parseLong(val)));
+                            }
                         } else {
-                            LOGGER.info("####Sandbox Tracking - Condition contains Module Record - " + moduleName + " FieldName - " + fieldName + " ConditionId - " + condition.getConditionId());
+                            LOGGER.info("####Sandbox Tracking - Condition contains Module Record - Curr ModuleName - " + moduleName + " FieldName - " + fieldName + " Related Module - " + lookupModuleName + " ConditionId - " + condition.getConditionId());
                         }
                     }
                 }
@@ -612,6 +626,8 @@ public class PackageBeanUtil {
                     XMLBuilder userElement = conditionElement.getElement(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
                     XMLBuilder peopleElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
                     XMLBuilder pickListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT);
+                    XMLBuilder rolesListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.ROLES_LIST);
+                    XMLBuilder groupsListElement = conditionElement.getElement(PackageConstants.CriteriaConstants.PEOPLE_GROUP_LIST);
 
                     if (pickListElement != null) {
                         String moduleName = pickListElement.getElement(PackageConstants.MODULENAME).getText();
@@ -649,6 +665,34 @@ public class PackageBeanUtil {
                             } else {
                                 long peopleId = peopleValueBuilder(valueElement);
                                 currValue = peopleId > 0 ? String.valueOf(peopleId) : null;
+                            }
+                            if (StringUtils.isNotEmpty(currValue)) {
+                                valueArr.add(currValue);
+                            }
+                        }
+                        value = StringUtils.join(valueArr, ",");
+                    } else if (rolesListElement != null) {
+                        List<XMLBuilder> valueElementList = rolesListElement.getElementList(PackageConstants.CriteriaConstants.ROLE_NAME);
+                        Set<String> valueArr = new HashSet<>();
+                        for (XMLBuilder valueElement : valueElementList) {
+                            String currValue = null;
+                            if (StringUtils.isNotEmpty(valueElement.getText())) {
+                                long roleId = PackageUtil.getRoleId(valueElement.getText());
+                                currValue = roleId > 0 ? String.valueOf(roleId) : null;
+                            }
+                            if (StringUtils.isNotEmpty(currValue)) {
+                                valueArr.add(currValue);
+                            }
+                        }
+                        value = StringUtils.join(valueArr, ",");
+                    } else if (groupsListElement != null) {
+                        List<XMLBuilder> valueElementList = groupsListElement.getElementList(PackageConstants.CriteriaConstants.GROUP_NAME);
+                        Set<String> valueArr = new HashSet<>();
+                        for (XMLBuilder valueElement : valueElementList) {
+                            String currValue = null;
+                            if (StringUtils.isNotEmpty(valueElement.getText())) {
+                                long groupId = PackageUtil.getTeamId(valueElement.getText());
+                                currValue = groupId > 0 ? String.valueOf(groupId) : null;
                             }
                             if (StringUtils.isNotEmpty(currValue)) {
                                 valueArr.add(currValue);
@@ -849,13 +893,6 @@ public class PackageBeanUtil {
             return;
         }
 
-        List<Role> allRoles = getAllRoles();
-        Map<Long, String> roleIdVsRoleName = new HashMap<>();
-
-        if (CollectionUtils.isNotEmpty(allRoles)) {
-            roleIdVsRoleName = allRoles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
-        }
-
         ModuleBean modBean = Constants.getModBean();
 
         XMLBuilder sharingContextElement = sharingElement.element(PackageConstants.SharingContextConstants.SHARING_CONTEXT);
@@ -868,14 +905,14 @@ public class PackageBeanUtil {
                     break;
 
                 case ROLE:
-                    singleSharingElement.element(PackageConstants.SharingContextConstants.ROLE_NAME).text(roleIdVsRoleName.get(singleSharingContext.getRoleId()));
+                    singleSharingElement.element(PackageConstants.SharingContextConstants.ROLE_NAME).text(PackageUtil.getRoleName(singleSharingContext.getRoleId()));
                     break;
 
                 case GROUP:
                     long groupId = singleSharingContext.getGroupId();
-                    Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                    if (group != null) {
-                        singleSharingElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
+                    String teamName = PackageUtil.getTeamName(groupId);
+                    if (StringUtils.isNotEmpty(teamName)) {
+                        singleSharingElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(teamName);
                     }
                     break;
 
@@ -907,13 +944,6 @@ public class PackageBeanUtil {
             return null;
         }
 
-        List<Role> allRoles = getAllRoles();
-        Map<String, Long> roleNameVsRoleId = new HashMap<>();
-
-        if (CollectionUtils.isNotEmpty(allRoles)) {
-            roleNameVsRoleId = allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId, (a, b) -> b));
-        }
-
         ModuleBean modBean = Constants.getModBean();
         SharingContext<T> sharingContexts = new SharingContext<>();
 
@@ -934,7 +964,7 @@ public class PackageBeanUtil {
 
                 case ROLE:
                     String roleName = singleSharingElement.getElement(PackageConstants.SharingContextConstants.ROLE_NAME).text();
-                    long roleId = roleNameVsRoleId.containsKey(roleName) ? roleNameVsRoleId.get(roleName) : -1;
+                    long roleId = PackageUtil.getRoleId(roleName);
                     singleSharingContext.setRoleId(roleId);
                     break;
 
@@ -943,9 +973,7 @@ public class PackageBeanUtil {
                         continue;
                     }
                     String groupName = singleSharingElement.getElement(PackageConstants.GroupConstants.GROUP_NAME).getText();
-
-                    Group group = AccountUtil.getGroupBean().getGroup(groupName);
-                    singleSharingContext.setGroupId(group != null ? group.getId() : -1);
+                    singleSharingContext.setGroupId(PackageUtil.getTeamId(groupName));
                     break;
 
                 case FIELD:

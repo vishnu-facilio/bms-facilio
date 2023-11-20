@@ -23,6 +23,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -30,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+@Log4j
 public class SLAEntityPackageBeanImpl implements PackageBean<SLAEntityContext> {
 
     @Override
@@ -100,6 +101,7 @@ public class SLAEntityPackageBeanImpl implements PackageBean<SLAEntityContext> {
             element.element(PackageConstants.WorkFlowRuleConstants.VERBNAME).text(slaEntity.getVerbName());
         }
         if (slaEntity.getCriteria() != null){
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + module.getName() + " EntityName - " + slaEntity.getName());
             element.addElement(PackageBeanUtil.constructBuilderFromCriteria(slaEntity.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), module.getName()));
         }
 

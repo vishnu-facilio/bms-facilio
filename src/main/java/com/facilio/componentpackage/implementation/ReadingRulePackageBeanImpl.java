@@ -28,6 +28,7 @@ import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
@@ -35,6 +36,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Log4j
 public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -227,6 +229,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
                         group.e(PackageConstants.STATUS).text(value(rcagroup.getStatus()));
 
                         if (rcagroup.getCriteria() != null) {
+                            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + FacilioConstants.ContextNames.NEW_READING_ALARM + " RCA GroupName - " + rcagroup.getName());
                             group.addElement(PackageBeanUtil.constructBuilderFromCriteria(rcagroup.getCriteria(), group.e(PackageConstants.CriteriaConstants.CRITERIA), FacilioConstants.ContextNames.NEW_READING_ALARM));
                         }
 

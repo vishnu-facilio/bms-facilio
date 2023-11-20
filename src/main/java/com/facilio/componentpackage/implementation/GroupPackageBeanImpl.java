@@ -21,6 +21,7 @@ import com.facilio.v3.util.ChainUtil;
 import com.facilio.v3.util.V3Util;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
+import org.bouncycastle.crypto.util.Pack;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -44,10 +45,16 @@ public class GroupPackageBeanImpl implements PackageBean<V3PeopleGroupContext> {
     @Override
     public Map<Long, V3PeopleGroupContext> fetchComponents(List<Long> ids) throws Exception {
         List<V3PeopleGroupContext> peopleGroups  = getPeopleGroupForIds(ids);
+
+        Map<Long, String> peopleGroupIdVsTeamName = new HashMap<>();
         Map<Long, V3PeopleGroupContext> peopleGroupIdVsPeopleGroupMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(peopleGroups)) {
-            peopleGroups.forEach(peopleGroupContext -> peopleGroupIdVsPeopleGroupMap.put(peopleGroupContext.getId(), peopleGroupContext));
+            for (V3PeopleGroupContext peopleGroupContext : peopleGroups) {
+                peopleGroupIdVsPeopleGroupMap.put(peopleGroupContext.getId(), peopleGroupContext);
+                peopleGroupIdVsTeamName.put(peopleGroupContext.getGroupId(), peopleGroupContext.getName());
+            }
         }
+        PackageUtil.addTeamConfigForXML(peopleGroupIdVsTeamName);
         return peopleGroupIdVsPeopleGroupMap;
     }
     @Override
@@ -125,6 +132,19 @@ public class GroupPackageBeanImpl implements PackageBean<V3PeopleGroupContext> {
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
 
+    }
+
+    @Override
+    public void addPickListConf() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule peopleGroupModule = modBean.getModule("peopleGroup");
+        List<V3PeopleGroupContext> props = (List<V3PeopleGroupContext>) PackageBeanUtil.getModuleData(null, peopleGroupModule, V3PeopleGroupContext.class,false);
+
+        Map<String, Long> groupNameVsGroupId = new HashMap<>();
+        if (CollectionUtils.isNotEmpty(props)) {
+            props.forEach(group -> groupNameVsGroupId.put(group.getName(), group.getGroupId()));
+        }
+        PackageUtil.addTeamConfigForContext(groupNameVsGroupId);
     }
 
     @Override

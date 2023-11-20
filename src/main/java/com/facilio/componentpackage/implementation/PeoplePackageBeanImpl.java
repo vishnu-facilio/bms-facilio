@@ -5,27 +5,30 @@ import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
+import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.xml.builder.XMLBuilder;
-import com.facilio.modules.FacilioModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.FieldUtil;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
+import com.facilio.modules.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,29 +43,18 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        // TODO - Add Deleted People also with sysDeleted = true
         Map<Long, Long> peopleIdMap = new HashMap<>();
         Map<Long, String> peopleIdVsPeopleMail = new HashMap<>();
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
-        if (CollectionUtils.isNotEmpty(props)) {
-            for (V3PeopleContext peopleContext : props) {
-                if (StringUtils.isNotEmpty(peopleContext.getEmail()) && !V3PeopleAPI.VALID_EMAIL_ADDRESS_REGEX.matcher(peopleContext.getEmail()).find()) {
-                    continue;
-                }
-                peopleIdMap.put(peopleContext.getId(), -1L);
-                // PeopleMail & PeopleName are nullable columns
-                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
-                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getEmail());
-                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
-                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getName());
-                }
-            }
-            PackageUtil.addPeopleConfigForXML(peopleIdVsPeopleMail);
-        }
+
+        List<V3PeopleContext> activePeople = (List<V3PeopleContext>) getActivePeople(peopleModule, V3PeopleContext.class);
+        List<V3PeopleContext> inActivePeople = (List<V3PeopleContext>) getDeletedPeople(peopleModule, V3PeopleContext.class);
+
+        addPeopleConfigForXML(peopleIdMap, peopleIdVsPeopleMail, activePeople);
+        addPeopleConfigForXML(peopleIdMap, peopleIdVsPeopleMail, inActivePeople);
+
         return peopleIdMap;
     }
 
@@ -70,7 +62,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
     public Map<Long, V3PeopleContextExtendedProps> fetchComponents(List<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<V3PeopleContext> peopleContexts = (List<V3PeopleContext>) PackageBeanUtil.getModuleDataListsForIds(ids, peopleModule, V3PeopleContext.class);
+        List<V3PeopleContext> peopleContexts = (List<V3PeopleContext>) PackageBeanUtil.getModuleDataListsForIds(ids, peopleModule, V3PeopleContext.class, true);
 
         Map<Long, V3TenantContext> tenantContexts = getRecordProps(FacilioConstants.ContextNames.TENANT, V3TenantContext.class);
         Map<Long, V3VendorContext> vendorContexts = getRecordProps(FacilioConstants.ContextNames.VENDORS, V3VendorContext.class);
@@ -144,6 +136,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
     public void convertToXMLComponent(V3PeopleContextExtendedProps people, XMLBuilder element) throws Exception {
         V3PeopleContext.PeopleType peopleTypeEnum = people.getPeopleTypeEnum();
         peopleTypeEnum = peopleTypeEnum != null ? peopleTypeEnum : V3PeopleContext.PeopleType.OTHERS;
+        peopleTypeEnum = (people.getSysDeletedTime() < 0) ? peopleTypeEnum : V3PeopleContext.PeopleType.OTHERS;
 
         element.element(PackageConstants.UserConstants.USER_NAME).text(people.getName());
         element.element(PackageConstants.UserConstants.EMAIL).text(people.getEmail());
@@ -170,6 +163,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             ModuleBaseWithCustomFields baseProp = people.getBaseProp();
             V3PeopleContext subProp = people.getSubProp();
             boolean primaryContact = false;
+            long parentId = baseProp.getId();
 
             switch (peopleTypeEnum) {
                 case TENANT_CONTACT:
@@ -209,6 +203,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                 additionalProp.element(PackageConstants.NAME).text(name);
                 additionalProp.element(PackageConstants.DESCRIPTION).text(description);
             }
+            additionalProp.element(PackageConstants.UserConstants.PARENT_UID).text(String.valueOf(parentId));
             additionalProp.element(PackageConstants.UserConstants.PRIMARY_CONTACT_NAME).text(primaryContactName);
             additionalProp.element(PackageConstants.UserConstants.PRIMARY_CONTACT_PHONE).text(primaryContactPhone);
             additionalProp.element(PackageConstants.UserConstants.PRIMARY_CONTACT_EMAIL).text(primaryContactEmail);
@@ -254,53 +249,48 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
     @Override
     public Map<String, Long> createComponentFromXML(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
+        // PeopleMail & PeopleName are nullable columns - So handled everything using UniqueId
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         com.facilio.accounts.dto.User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(orgId);
 
         Map<String, Long> roleNameVsRoleId = getRoleNameVsId();
+        String PEOPLE = "people", TENANTS = "tenants", VENDORS = "vendors";
+        String CLIENTS = "clients", DELETED = "deleted", OTHERS = "others";
+        String EMPLOYEES = "employees", OCCUPANTS = "occupants";
 
-        List<V3PeopleContext> others = new ArrayList<>();
-        List<String> employeeMails = new ArrayList<>();
-        List<String> occupantMails = new ArrayList<>();
-        List<Map<String, Object>> tenants = new ArrayList<>();
-        List<Map<String, Object>> vendors = new ArrayList<>();
-        List<Map<String, Object>> clients = new ArrayList<>();
-        Map<String, List<String>> tenantMailVsContactMails = new HashMap<>();
-        Map<String, List<String>> vendorMailVsContactMails = new HashMap<>();
-        Map<String, List<String>> clientMailVsContactMails = new HashMap<>();
-
-        Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
-        Map<String, String> peopleMailVsUniqueIdentifier = new HashMap<>();
+        // peopleTypeVsUIDVsRecordMap - contains records of OTHERS, DELETED, TENANTS, VENDORS, CLIENTS, EMPLOYEE, OCCUPANTS types
+        Map<String, Map<String, Map<String, Object>>> peopleTypeVsUIDVsRecordMap = new HashMap<>();
+        // peopleTypeVsPrimaryUIDVsContactUID - contains conf for TENANTS, VENDORS, CLIENTS ({"tenant" : {"tenantUId" : ["contact1UId", "contact2UId"]}})
+        Map<String, Map<String, List<String>>> peopleTypeVsPrimaryUIDVsContactUID = new HashMap<>();
+        // for PackageChangeSet Mapping - contains UniqueIdentifierVsComponentId for components PEOPLE, TENANTS, VENDORS, CLIENTS
+        Map<String, Map<String, Long>> peopleTypeVsUniqueIdentifierVsComponentId = new HashMap<>();
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder element = idVsData.getValue();
             V3PeopleContext peopleContext = constructPeopleContextFromBuilder(element, roleNameVsRoleId);
 
-            String keyForPeopleMailVsUniqueIdentifier = StringUtils.isNotEmpty(peopleContext.getEmail()) ? peopleContext.getEmail() : (StringUtils.isNotEmpty(peopleContext.getName()) ? peopleContext.getName() : null);
-            if (StringUtils.isNotEmpty(keyForPeopleMailVsUniqueIdentifier)) {
-                peopleMailVsUniqueIdentifier.put(keyForPeopleMailVsUniqueIdentifier, idVsData.getKey());
-            }
             V3PeopleContext.PeopleType peopleTypeEnum = peopleContext.getPeopleTypeEnum();
             peopleTypeEnum = peopleTypeEnum != null ? peopleTypeEnum : V3PeopleContext.PeopleType.OTHERS;
 
             if (superAdminUser.getEmail().equals(peopleContext.getEmail())) {
                 V3PeopleContext people = V3PeopleAPI.getPeople(peopleContext.getEmail());
-                uniqueIdentifierVsComponentId.put(idVsData.getKey(), people != null ? people.getId() : -1);
+                getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, PEOPLE).put(idVsData.getKey(), people != null ? people.getId() : -1);
+            } else if (peopleContext.getSysDeletedTime() > 0){
+                addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, DELETED, idVsData.getKey(), FieldUtil.getAsProperties(peopleContext));
             } else if (peopleTypeEnum.equals(V3PeopleContext.PeopleType.OTHERS)) {
-                others.add(peopleContext);
+                addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, OTHERS, idVsData.getKey(), FieldUtil.getAsProperties(peopleContext));
             } else if (peopleTypeEnum.equals(V3PeopleContext.PeopleType.EMPLOYEE)){
                 peopleContext.setPeopleType(V3PeopleContext.PeopleType.OTHERS.getIndex());
-                employeeMails.add(peopleContext.getEmail());
-                others.add(peopleContext);
+                addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, EMPLOYEES, idVsData.getKey(), FieldUtil.getAsProperties(peopleContext));
             } else if (peopleTypeEnum.equals(V3PeopleContext.PeopleType.OCCUPANT)) {
                 peopleContext.setPeopleType(V3PeopleContext.PeopleType.OTHERS.getIndex());
-                occupantMails.add(peopleContext.getEmail());
-                others.add(peopleContext);
+                addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, OCCUPANTS, idVsData.getKey(), FieldUtil.getAsProperties(peopleContext));
             } else if (PEOPLE_TYPE_LIST.contains(peopleTypeEnum)){
                 XMLBuilder additionalProp = element.getElement(PackageConstants.UserConstants.ADDITIONAL_PROPS);
                 String primaryContactName = additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_NAME).getText();
                 String primaryContactEmail = additionalProp.getElement(PackageConstants.UserConstants.PRIMARY_CONTACT_EMAIL).getText();
                 boolean primaryContact = Boolean.parseBoolean(additionalProp.getElement(PackageConstants.UserConstants.IS_PRIMARY_CONTACT).getText());
+                String parentUid = additionalProp.getElement(PackageConstants.UserConstants.PARENT_UID).getText();
 
                 Map<String, Object> dataProp = new HashMap<>();
                 dataProp.put("primaryContactEmail", primaryContactEmail);
@@ -312,32 +302,29 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                     dataProp.put("description", additionalProp.getElement(PackageConstants.DESCRIPTION).getText());
                 } else {
                     peopleContext.setPeopleType(V3PeopleContext.PeopleType.OTHERS.getIndex());
-                    others.add(peopleContext);
                 }
+                addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, OTHERS, idVsData.getKey(), FieldUtil.getAsProperties(peopleContext));
 
                 switch (peopleTypeEnum) {
                     case TENANT_CONTACT:
                         if (primaryContact) {
-                            tenants.add(dataProp);
-                        } else {
-                            constructParentMailVsContactMails(tenantMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
+                            addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, TENANTS, parentUid, dataProp);
                         }
+                        addPrimaryUIDVSContactUID(peopleTypeVsPrimaryUIDVsContactUID, TENANTS, parentUid, idVsData.getKey());
                         break;
 
                     case VENDOR_CONTACT:
                         if (primaryContact) {
-                            vendors.add(dataProp);
-                        } else {
-                            constructParentMailVsContactMails(vendorMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
+                            addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, VENDORS, parentUid, dataProp);
                         }
+                        addPrimaryUIDVSContactUID(peopleTypeVsPrimaryUIDVsContactUID, VENDORS, parentUid, idVsData.getKey());
                         break;
 
                     case CLIENT_CONTACT:
                         if (primaryContact) {
-                            clients.add(dataProp);
-                        } else {
-                            constructParentMailVsContactMails(clientMailVsContactMails, primaryContactEmail, primaryContactName, peopleContext);
+                            addUIDVsDataProp(peopleTypeVsUIDVsRecordMap, CLIENTS, parentUid, dataProp);
                         }
+                        addPrimaryUIDVSContactUID(peopleTypeVsPrimaryUIDVsContactUID, CLIENTS, parentUid, idVsData.getKey());
                         break;
 
                     default:
@@ -346,36 +333,33 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
             }
         }
 
-        // PeopleMail & PeopleName are nullable columns - So Storing Mail/Name in peopleMailVsPeopleId
-        // And handled similarly in all cases which involves PeopleMail
+        // Add People in OTHERS type & Mark as deleted
+        List<Map<String, Object>> deletedList = bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, peopleTypeVsUIDVsRecordMap.get(DELETED), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, PEOPLE));
+        List<Long> deletedPeopleIds = CollectionUtils.isNotEmpty(deletedList) ? deletedList.stream().map(map -> (long) map.get("id")).collect(Collectors.toList()) : null;
+        PackageBeanUtil.bulkDeleteV3Records(FacilioConstants.ContextNames.PEOPLE, deletedPeopleIds);
 
-        // Add all people with OTHERS type
-        List<Map<String, Object>> othersMapList = FieldUtil.getAsMapList(others, V3PeopleContext.class);
-        Map<String, Long> peopleMailVsPeopleId = bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, othersMapList, V3PeopleContext.class, "email", "name");
+        // Add all people with OTHERS type & later convert PEOPLE_TYPE
+        bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, peopleTypeVsUIDVsRecordMap.get(OTHERS), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, PEOPLE));
+        bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, peopleTypeVsUIDVsRecordMap.get(EMPLOYEES), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, PEOPLE));
+        bulkAddModuleRecords(FacilioConstants.ContextNames.PEOPLE, peopleTypeVsUIDVsRecordMap.get(OCCUPANTS), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, PEOPLE));
 
         // Add Tenants, Vendors, Clients
-        Map<String, Long> tenantsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.TENANT, tenants, V3TenantContext.class, "primaryContactEmail", "primaryContactName");
-        Map<String, Long> vendorsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.VENDORS, vendors, V3VendorContext.class, "primaryContactEmail", "primaryContactName");
-        Map<String, Long> clientsMap = bulkAddModuleRecords(FacilioConstants.ContextNames.CLIENT, clients, V3ClientContext.class, "primaryContactEmail", "primaryContactName");
+        bulkAddModuleRecords(FacilioConstants.ContextNames.TENANT, peopleTypeVsUIDVsRecordMap.get(TENANTS), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, TENANTS));
+        bulkAddModuleRecords(FacilioConstants.ContextNames.VENDORS, peopleTypeVsUIDVsRecordMap.get(VENDORS), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, VENDORS));
+        bulkAddModuleRecords(FacilioConstants.ContextNames.CLIENT, peopleTypeVsUIDVsRecordMap.get(CLIENTS), getUIDVsCompId(peopleTypeVsUniqueIdentifierVsComponentId, CLIENTS));
 
         // Convert People to respective types
-        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.EMPLOYEE, peopleMailVsPeopleId, employeeMails);
-        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.OCCUPANT, peopleMailVsPeopleId, occupantMails);
-        convertPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT, peopleMailVsPeopleId, tenantsMap, tenantMailVsContactMails);
-        convertPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT, peopleMailVsPeopleId, vendorsMap, vendorMailVsContactMails);
-        convertPeopleType(V3PeopleContext.PeopleType.CLIENT_CONTACT, peopleMailVsPeopleId, clientsMap, clientMailVsContactMails);
+        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.EMPLOYEE, peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE), peopleTypeVsUIDVsRecordMap.get(EMPLOYEES));
+        convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType.OCCUPANT, peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE), peopleTypeVsUIDVsRecordMap.get(OCCUPANTS));
+        convertPeopleType(V3PeopleContext.PeopleType.TENANT_CONTACT, peopleTypeVsPrimaryUIDVsContactUID.get(TENANTS), peopleTypeVsUniqueIdentifierVsComponentId.get(TENANTS), peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE));
+        convertPeopleType(V3PeopleContext.PeopleType.VENDOR_CONTACT, peopleTypeVsPrimaryUIDVsContactUID.get(VENDORS), peopleTypeVsUniqueIdentifierVsComponentId.get(VENDORS), peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE));
+        convertPeopleType(V3PeopleContext.PeopleType.CLIENT_CONTACT, peopleTypeVsPrimaryUIDVsContactUID.get(CLIENTS), peopleTypeVsUniqueIdentifierVsComponentId.get(CLIENTS), peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE));
 
-        peopleMailVsPeopleId.putAll(tenantsMap);
-        peopleMailVsPeopleId.putAll(vendorsMap);
-        peopleMailVsPeopleId.putAll(clientsMap);
+        PackageUtil.addPackageChangeset(ComponentType.TENANT, peopleTypeVsUniqueIdentifierVsComponentId.get(TENANTS));
+        PackageUtil.addPackageChangeset(ComponentType.VENDOR, peopleTypeVsUniqueIdentifierVsComponentId.get(VENDORS));
+        PackageUtil.addPackageChangeset(ComponentType.CLIENT, peopleTypeVsUniqueIdentifierVsComponentId.get(CLIENTS));
 
-        // Construct UniqueIdentifier Vs ComponentId
-        for (String peopleMail : peopleMailVsPeopleId.keySet()) {
-            String uniqueId = peopleMailVsUniqueIdentifier.get(peopleMail);
-            uniqueIdentifierVsComponentId.put(uniqueId, peopleMailVsPeopleId.get(peopleMail));
-        }
-
-        return uniqueIdentifierVsComponentId;
+        return peopleTypeVsUniqueIdentifierVsComponentId.get(PEOPLE);
     }
 
     @Override
@@ -416,17 +400,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
     @Override
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
-        List<Long> deletedPeopleIds = new ArrayList<>();
-        for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
-            Long peopleId = idVsData.getKey();
-            XMLBuilder element = idVsData.getValue();
-            long deletedTime = Long.parseLong(element.getElement(PackageConstants.UserConstants.DELETED_TIME).getText());
-            if (deletedTime > 0) {
-                deletedPeopleIds.add(peopleId);
-            }
-        }
 
-        PackageBeanUtil.bulkDeleteV3Records(FacilioConstants.ContextNames.PEOPLE, deletedPeopleIds);
     }
 
     @Override
@@ -440,22 +414,14 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule peopleModule = moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<V3PeopleContext> props = (List<V3PeopleContext>) PackageBeanUtil.getModuleData(null, peopleModule, V3PeopleContext.class, false);
+        List<V3PeopleContext> activePeople = (List<V3PeopleContext>) getActivePeople(peopleModule, V3PeopleContext.class);
+        List<V3PeopleContext> inActivePeople = (List<V3PeopleContext>) getDeletedPeople(peopleModule, V3PeopleContext.class);
 
-        if (CollectionUtils.isNotEmpty(props)) {
-            for (V3PeopleContext peopleContext : props) {
-                // PeopleMail & PeopleName are nullable columns
-                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
-                    peopleMailVsPeopleId.put(peopleContext.getEmail(), peopleContext.getId());
-                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
-                    peopleMailVsPeopleId.put(peopleContext.getName(), peopleContext.getId());
-                }
-            }
-            PackageUtil.addPeopleConfigForContext(peopleMailVsPeopleId);
-        }
+        addPeopleConfigForContext(activePeople, peopleMailVsPeopleId);
+        addPeopleConfigForContext(inActivePeople, peopleMailVsPeopleId);
     }
 
-    public static final List<V3PeopleContext.PeopleType> PEOPLE_TYPE_LIST = new ArrayList<V3PeopleContext.PeopleType>() {{
+    private static final List<V3PeopleContext.PeopleType> PEOPLE_TYPE_LIST = new ArrayList<V3PeopleContext.PeopleType>() {{
         add(V3PeopleContext.PeopleType.TENANT_CONTACT);
         add(V3PeopleContext.PeopleType.VENDOR_CONTACT);
         add(V3PeopleContext.PeopleType.CLIENT_CONTACT);
@@ -470,6 +436,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         String mobile = element.getElement(PackageConstants.UserConstants.MOBILE).getText();
         String peopleTypeStr = element.getElement(PackageConstants.UserConstants.PEOPLE_TYPE).getText();
         boolean isUser = Boolean.parseBoolean(element.getElement(PackageConstants.UserConstants.IS_USER).getText());
+        long deletedTime = Long.parseLong(element.getElement(PackageConstants.UserConstants.DELETED_TIME).getText());
         boolean hasOccupantAccess = Boolean.parseBoolean(element.getElement(PackageConstants.UserConstants.OCCUPANT_PORTAL_ACCESS).getText());
         boolean hasEmployeePortalAccess = Boolean.parseBoolean(element.getElement(PackageConstants.UserConstants.EMPLOYEE_PORTAL_ACCESS).getText());
 
@@ -492,28 +459,18 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         peopleContext.setLanguage(language);
         peopleContext.setTimezone(timeZone);
         peopleContext.setPeopleType(peopleTypeInt);
+        peopleContext.setSysDeletedTime(deletedTime);
         peopleContext.setIsOccupantPortalAccess(hasOccupantAccess);
         peopleContext.setEmployeePortalAccess(hasEmployeePortalAccess);
 
         return peopleContext;
     }
 
-    private static void constructParentMailVsContactMails(Map<String, List<String>> parentMailVsContactMails, String email, String name, V3PeopleContext peopleContext) {
-        String key = StringUtils.isNotEmpty(email) ? email : (StringUtils.isNotEmpty(name) ? name : null);
-        String value  = StringUtils.isNotEmpty(peopleContext.getEmail()) ? peopleContext.getEmail() : (StringUtils.isNotEmpty(peopleContext.getName()) ? peopleContext.getName() : null);
-
-        if (StringUtils.isEmpty(key) || StringUtils.isEmpty(value)) {
-            return;
-        }
-
-        parentMailVsContactMails.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-    }
-
     private static <T extends ModuleBaseWithCustomFields> Map<Long, T> getRecordProps(String moduleName, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, false);
+        List<T> moduleRecords = (List<T>) PackageBeanUtil.getModuleData(null, module, clazz, true);
 
         Map<Long, T> recordMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(moduleRecords)) {
@@ -524,31 +481,60 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         return recordMap;
     }
 
-    private static Map<String, Long> bulkAddModuleRecords(String moduleName, List<Map<String, Object>> props, Class<?> clazz, String mailFieldName, String secondaryFieldName) throws Exception {
-        if (CollectionUtils.isEmpty(props)) {
-            return new HashMap<>();
+    private static List<Map<String, Object>> bulkAddModuleRecords(String moduleName, Map<String, Map<String, Object>> uIDVsRecordMap, Map<String, Long> uniqueIdentifierVsComponentId) throws Exception {
+        if (MapUtils.isEmpty(uIDVsRecordMap)) {
+            return new ArrayList<>();
         }
 
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
+        Class beanClass = ChainUtil.getV3Config(module).getBeanClass();
 
-        FacilioContext context = V3Util.createRecordList(module, props, null, null);
+        Map<String, List<Object>> queryParams = new HashMap<>();
+        queryParams.put(FacilioConstants.ContextNames.SKIP_PEOPLE_CONTACTS, new ArrayList<Object>(){{
+            add(Boolean.TRUE);
+        }});
+
+        FacilioContext context = V3Util.createRecordList(module, new ArrayList<>(uIDVsRecordMap.values()), null, queryParams);
         List<ModuleBaseWithCustomFields> addedRecords = Constants.getRecordList(context);
-
-        Map<String, Long> recordMap = new HashMap<>();
         if (CollectionUtils.isNotEmpty(addedRecords)) {
-            List<Map<String, Object>> addedRecordsMap = FieldUtil.getAsMapList(addedRecords, clazz);
-            for (Map<String, Object> record : addedRecordsMap) {
-                Long id = (Long) record.get("id");
-                String primaryContactEmail = record.containsKey(mailFieldName) ? String.valueOf(record.get(mailFieldName)) : null;
-                primaryContactEmail = (StringUtils.isEmpty(primaryContactEmail) && record.containsKey(secondaryFieldName)) ? String.valueOf(record.get(secondaryFieldName)) : primaryContactEmail;
+            List<Map<String, Object>> addedRecordsList = FieldUtil.getAsMapList(addedRecords, beanClass);
+            addUIDVsCompId(uniqueIdentifierVsComponentId, new ArrayList<>(uIDVsRecordMap.keySet()), addedRecordsList);
 
-                if (id != null && id > 0 && StringUtils.isNotEmpty(primaryContactEmail)) {
-                    recordMap.put(primaryContactEmail, id);
-                }
-            }
+            return addedRecordsList;
         }
-        return recordMap;
+
+        return new ArrayList<>();
+    }
+
+    private static void addUIDVsDataProp(Map<String, Map<String, Map<String, Object>>> peopleTypeVsUIDVsRecordMap, String peopleType, String uid, Map<String, Object> dataProp) {
+        getUIDVsDataProp(peopleTypeVsUIDVsRecordMap, peopleType).put(uid, dataProp);
+    }
+
+    private static Map<String, Map<String, Object>> getUIDVsDataProp(Map<String, Map<String, Map<String, Object>>> peopleTypeVsUIDVsRecordMap, String peopleType) {
+        return peopleTypeVsUIDVsRecordMap.computeIfAbsent(peopleType, k -> new LinkedHashMap<>());
+    }
+
+    private static void addPrimaryUIDVSContactUID(Map<String, Map<String, List<String>>> peopleTypeVsPrimaryUIDVsContactUID, String peopleType, String primaryUID, String contactUID) {
+        getPrimaryUIDVSContactUID(peopleTypeVsPrimaryUIDVsContactUID, peopleType).computeIfAbsent(primaryUID, k -> new ArrayList<>());
+        peopleTypeVsPrimaryUIDVsContactUID.get(peopleType).get(primaryUID).add(contactUID);
+    }
+
+    private static Map<String, List<String>> getPrimaryUIDVSContactUID(Map<String, Map<String, List<String>>> peopleTypeVsPrimaryUIDVsContactUID, String peopleType) {
+        return peopleTypeVsPrimaryUIDVsContactUID.computeIfAbsent(peopleType, k -> new LinkedHashMap<>());
+    }
+
+    private static Map<String, Long> getUIDVsCompId(Map<String, Map<String, Long>> peopleTypeVsUniqueIdentifierVsComponentId, String peopleType) {
+        return peopleTypeVsUniqueIdentifierVsComponentId.computeIfAbsent(peopleType, k -> new HashMap<>());
+    }
+
+    private static void addUIDVsCompId(Map<String, Long> uniqueIdentifierVsComponentId, List<String> othersUID, List<Map<String, Object>> othersMapList) {
+        // Construct UniqueIdentifier Vs ComponentId
+        for (int i = 0; i < othersMapList.size() ; i++) {
+            String uId = othersUID.get(i);
+            long id = (long) othersMapList.get(i).get("id");
+            uniqueIdentifierVsComponentId.put(uId, id);
+        }
     }
 
     private static void bulkUpdatePeople(String moduleName, List<Long> ids, List<V3PeopleContext> peopleContextList) throws Exception {
@@ -565,46 +551,33 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         V3Util.processAndUpdateBulkRecords(module, moduleBaseWithCustomFields, peopleContextMap, null, null, null, null, null, null, null, null, true,false, null);
     }
 
-    private static void convertPeopleType(V3PeopleContext.PeopleType peopleType, Map<String, Long> peopleMailVsPeopleId, Map<String, Long> parentMailVsId, Map<String, List<String>> parentMailVsContactMails) throws Exception {
-        if (MapUtils.isEmpty(parentMailVsId) || MapUtils.isEmpty(parentMailVsContactMails) || MapUtils.isEmpty(peopleMailVsPeopleId)) {
+    private static void convertPeopleType(V3PeopleContext.PeopleType peopleType, Map<String, List<String>> primaryUIDVSContactUID, Map<String, Long> primaryUIDVsCompId, Map<String, Long> contactUIDVsCompId) throws Exception {
+        if (MapUtils.isEmpty(primaryUIDVSContactUID) || MapUtils.isEmpty(primaryUIDVsCompId) || MapUtils.isEmpty(contactUIDVsCompId)) {
             return;
         }
 
-        for (Map.Entry<String, List<String>> parentMailVsContactMail : parentMailVsContactMails.entrySet()) {
-            String parentMail = parentMailVsContactMail.getKey();
-            List<String> contactMails = parentMailVsContactMail.getValue();
-            long lookupId = parentMailVsId.getOrDefault(parentMail, -1L);
+        for (Map.Entry<String, List<String>> entry : primaryUIDVSContactUID.entrySet()) {
+            String primaryUId = entry.getKey();
+            List<String> contactUIds = entry.getValue();
 
+            long lookupId = primaryUIDVsCompId.getOrDefault(primaryUId, -1L);
             // tenant (or) vendor (or) client not added
             if (lookupId < 0) {
                 continue;
             }
 
-            List<Long> contactPeopleIds = new ArrayList<>();
-            for (String mail : contactMails) {
-                long peopleId = peopleMailVsPeopleId.getOrDefault(mail, -1L);
-                if (peopleId > 0) {
-                    contactPeopleIds.add(peopleId);
-                }
-            }
-
+            List<Long> contactPeopleIds = contactUIds.stream().filter(contactUIDVsCompId::containsKey).map(contactUIDVsCompId::get).collect(Collectors.toList());
             convertPeopleTypeChain(peopleType, contactPeopleIds, lookupId);
         }
+
     }
 
-    private static void convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType peopleType, Map<String, Long> peopleMailVsPeopleId, List<String> peopleMails) throws Exception {
-        if (MapUtils.isEmpty(peopleMailVsPeopleId) || CollectionUtils.isEmpty(peopleMails)) {
+      private static void convertPeopleToEmployeeOrOccupant(V3PeopleContext.PeopleType peopleType, Map<String, Long> uIDVsCompId, Map<String, Map<String, Object>> uIDVsRecordMap) throws Exception {
+        if (MapUtils.isEmpty(uIDVsCompId) || MapUtils.isEmpty(uIDVsRecordMap)) {
             return;
         }
 
-        List<Long> employeePeopleIds = new ArrayList<>();
-        for (String mail : peopleMails) {
-            long peopleId = peopleMailVsPeopleId.getOrDefault(mail, -1L);
-            if (peopleId > 0) {
-                employeePeopleIds.add(peopleId);
-            }
-        }
-
+        List<Long> employeePeopleIds = uIDVsRecordMap.keySet().stream().filter(uIDVsCompId::containsKey).map(uIDVsCompId::get).collect(Collectors.toList());
         convertPeopleTypeChain(peopleType, employeePeopleIds, -1);
     }
 
@@ -627,5 +600,79 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
                 : allRoles.stream().collect(Collectors.toMap(Role::getName, Role::getRoleId, (a, b) -> b));
 
         return roleNameVsRoleId;
+    }
+
+    private void addPeopleConfigForContext(List<V3PeopleContext> props, Map<String, Long> peopleMailVsPeopleId) {
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (V3PeopleContext peopleContext : props) {
+                // PeopleMail & PeopleName are nullable columns
+                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
+                    peopleMailVsPeopleId.put(peopleContext.getEmail(), peopleContext.getId());
+                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
+                    peopleMailVsPeopleId.put(peopleContext.getName(), peopleContext.getId());
+                }
+            }
+            PackageUtil.addPeopleConfigForContext(peopleMailVsPeopleId);
+        }
+    }
+
+    private void addPeopleConfigForXML(Map<Long, Long> peopleIdMap, Map<Long, String> peopleIdVsPeopleMail, List<V3PeopleContext> props) {
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (V3PeopleContext peopleContext : props) {
+                if (StringUtils.isNotEmpty(peopleContext.getEmail()) && !V3PeopleAPI.VALID_EMAIL_ADDRESS_REGEX.matcher(peopleContext.getEmail()).find()) {
+                    continue;
+                }
+                peopleIdMap.put(peopleContext.getId(), -1L);
+                // PeopleMail & PeopleName are nullable columns
+                if (StringUtils.isNotEmpty(peopleContext.getEmail())) {
+                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getEmail());
+                } else if (StringUtils.isNotEmpty(peopleContext.getName())) {
+                    peopleIdVsPeopleMail.put(peopleContext.getId(), peopleContext.getName());
+                }
+            }
+            PackageUtil.addPeopleConfigForXML(peopleIdVsPeopleMail);
+        }
+    }
+
+    private static List<?> getActivePeople(FacilioModule module, Class<?> clazz) throws Exception {
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+            add(FieldFactory.getField("id", "MAX(People.ID)", null, FieldType.NUMBER));
+            add(FieldFactory.getField("name", "NAME", module, FieldType.STRING));
+            add(FieldFactory.getField("email", "EMAIL", module, FieldType.STRING));
+        }};
+
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = getGenericSelectRecordBuilder(module, clazz);
+        selectRecordBuilder.select(selectableFields)
+                .groupBy("People.EMAIL")
+                .andCondition(CriteriaAPI.getCondition("EMAIL", "email", "", CommonOperators.IS_NOT_EMPTY));
+
+        List<ModuleBaseWithCustomFields> propsList = selectRecordBuilder.get();
+        return propsList;
+    }
+
+    private static List<?> getDeletedPeople(FacilioModule module, Class<?> clazz) throws Exception {
+        List<FacilioField> selectableFields = new ArrayList<FacilioField>() {{
+            add(FieldFactory.getIdField(module));
+            add(FieldFactory.getField("name", "NAME", module, FieldType.STRING));
+            add(FieldFactory.getField("email", "EMAIL", module, FieldType.STRING));
+        }};
+
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = getGenericSelectRecordBuilder(module, clazz);
+        selectRecordBuilder.select(selectableFields)
+                .andCondition(CriteriaAPI.getCondition("EMAIL", "email", "", CommonOperators.IS_EMPTY));
+
+        List<ModuleBaseWithCustomFields> propsList = selectRecordBuilder.get();
+        return propsList;
+    }
+
+    private static SelectRecordsBuilder<ModuleBaseWithCustomFields> getGenericSelectRecordBuilder(FacilioModule module, Class<?> clazz) throws Exception {
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
+                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                .table(module.getTableName())
+                .module(module)
+                .fetchDeleted()
+                ;
+
+        return selectRecordBuilder;
     }
 }

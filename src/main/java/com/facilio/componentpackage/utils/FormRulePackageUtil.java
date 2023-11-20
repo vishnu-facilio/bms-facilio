@@ -152,6 +152,7 @@ public class FormRulePackageUtil {
                                         if (actionFieldCriteria == null && actionFieldContext.getCriteriaId() > 0) {
                                             actionFieldCriteria = CriteriaAPI.getCriteria(actionFieldContext.getCriteriaId());
                                         }
+                                        LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " Form - " + form.getName() + " FormRule - " + formRule.getName());
                                         filterAndValueActionFieldElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(actionFieldCriteria, filterAndValueActionFieldElement.element(PackageConstants.FormRuleConstants.FILTER_CRITERIA), moduleName));
                                     }
 

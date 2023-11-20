@@ -95,6 +95,7 @@ public class NotificationPackageBeanImpl implements PackageBean<WorkflowRuleCont
 
         // criteria
         if (workflowRule.getCriteria() != null) {
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + workflowRule.getModuleName() + " Notification - " + workflowRule.getName());
             element.addElement(PackageBeanUtil.constructBuilderFromCriteria(workflowRule.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), workflowRule.getModuleName()));
         }
 

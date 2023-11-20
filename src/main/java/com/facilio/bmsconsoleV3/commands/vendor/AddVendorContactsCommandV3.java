@@ -12,6 +12,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,7 +25,7 @@ import java.util.Map;
 public class AddVendorContactsCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
+        boolean skipPeopleContact = FacilioUtil.parseBoolean(Constants.getQueryParam(context, FacilioConstants.ContextNames.SKIP_PEOPLE_CONTACTS));
         String moduleName = Constants.getModuleName(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3VendorContext> vendors = recordMap.get(moduleName);
@@ -56,7 +57,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
                     }
                 }
 
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && !skipPeopleContact) {
                     V3VendorContactContext vc = getDefaultVendorContact(vendor);
                     List<V3VendorContactContext> primarycontatsIfAny = V3PeopleAPI.getVendorContacts(vc.getVendor().getId(), true);
                     V3VendorContactContext vendorPrimaryContact = null;

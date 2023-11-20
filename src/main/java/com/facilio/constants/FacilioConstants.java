@@ -369,6 +369,7 @@ public class FacilioConstants {
 
 
 	public static class ContextNames {
+		public static final String SKIP_PEOPLE_CONTACTS = "skipPeopleContacts";
 		public static final String RELATION_CATEGORY_NAME="relationCategoryName";
 		public static final String CONDITIONS="conditions";
 		public static final String CLIENT_MODULE_EDIT_BUTTON="clientModuleEditButton";

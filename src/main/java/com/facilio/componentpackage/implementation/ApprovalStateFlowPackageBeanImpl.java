@@ -23,6 +23,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
 
     @Override
@@ -84,6 +86,7 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
         if(approvals.getModuleName()!=null) element.element(PackageConstants.MODULENAME).text(approvals.getModuleName());
         element.element(PackageConstants.Approvals.IS_ALL_APPROVAL_NEEDED).text(String.valueOf(((ApprovalStateTransitionRuleContext) approveRule).isAllApprovalRequired()));
         if (approvals.getCriteria() != null) {
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + approvals.getModuleName() + " RuleName - " + approvals.getName());
             element.addElement(PackageBeanUtil.constructBuilderFromCriteria(approvals.getCriteria(), element.element(PackageConstants.CriteriaConstants.CRITERIA), approvals.getModuleName()));
         }
         if((approvals).getActivityTypeEnum()!=null) element.element(PackageConstants.Approvals.EVENT_TYPE).text(String.valueOf(approvals.getActivityTypeEnum()));

@@ -39,6 +39,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class PackageUtil {
@@ -54,6 +55,10 @@ public class PackageUtil {
     private static ThreadLocal<Map<Long, UserInfo>> USER_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // OrgUserId vs UserInfo (UserName & Identifier)
     private static ThreadLocal<Map<String, Long>> PEOPLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                // PeopleEmail/Name vs PeopleId
     private static ThreadLocal<Map<Long, String>> PEOPLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                    // PeopleId vs PeopleEmail/Name
+    private static ThreadLocal<Map<String, Long>> ROLE_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                  // RoleName vs RoleId
+    private static ThreadLocal<Map<Long, String>> ROLE_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                      // RoleId vs RoleName
+    private static ThreadLocal<Map<String, Long>> TEAMS_CONFIG_FOR_CONTEXT = ThreadLocal.withInitial(HashMap::new);                 // TeamName vs TeamId
+    private static ThreadLocal<Map<Long, String>> TEAMS_CONFIG_FOR_XML = ThreadLocal.withInitial(HashMap::new);                     // TeamId vs TeamName
     private static ThreadLocal<Map<String, String>> PEOPLE_OLD_VS_NEW_MAIL = ThreadLocal.withInitial(HashMap::new);                 // People oldMail vs newMail from AdminTool
     private static ThreadLocal<Map<String, Map<Long, List<FacilioField>>>> ASSET_CATEGORY_ID_VS_READING_FIELDS = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
@@ -267,6 +272,47 @@ public class PackageUtil {
         Map<String, String> oldVsNewPeopleMail = PEOPLE_OLD_VS_NEW_MAIL.get();
         oldVsNewPeopleMail.putAll(oldVsNewPeopleMailToAdd);
     }
+
+    public static long getRoleId(String roleName) {
+        Map<String, Long> roleNameVsRoleId = ROLE_CONFIG_FOR_CONTEXT.get();
+        return roleNameVsRoleId.getOrDefault(roleName, -1L);
+    }
+
+    public static void addRoleConfigForContext(Map<String, Long> roleNameVsRoleIdToAdd) {
+        Map<String, Long> roleNameVsRoleId = ROLE_CONFIG_FOR_CONTEXT.get();
+        roleNameVsRoleId.putAll(roleNameVsRoleIdToAdd);
+    }
+
+    public static String getRoleName(long roleId) {
+        Map<Long, String> roleIdVsRoleName = ROLE_CONFIG_FOR_XML.get();
+        return roleIdVsRoleName.get(roleId);
+    }
+
+    public static void addRoleConfigForXML(Map<Long, String> roleIdVsRoleNameToAdd) {
+        Map<Long, String> roleIdVsRoleName = ROLE_CONFIG_FOR_XML.get();
+        roleIdVsRoleName.putAll(roleIdVsRoleNameToAdd);
+    }
+
+    public static long getTeamId(String teamName) {
+        Map<String, Long> teamNameVsTeamId = TEAMS_CONFIG_FOR_CONTEXT.get();
+        return teamNameVsTeamId.getOrDefault(teamName, -1L);
+    }
+
+    public static void addTeamConfigForContext(Map<String, Long> teamNameVsTeamIdToAdd) {
+        Map<String, Long> teamNameVsTeamId = TEAMS_CONFIG_FOR_CONTEXT.get();
+        teamNameVsTeamId.putAll(teamNameVsTeamIdToAdd);
+    }
+
+    public static String getTeamName(long teamId) {
+        Map<Long, String> teamIdVsTeamName = TEAMS_CONFIG_FOR_XML.get();
+        return teamIdVsTeamName.get(teamId);
+    }
+
+    public static void addTeamConfigForXML(Map<Long, String> teamIdVsNameToAdd) {
+        Map<Long, String> teamIdVsTeamName = TEAMS_CONFIG_FOR_XML.get();
+        teamIdVsTeamName.putAll(teamIdVsNameToAdd);
+    }
+
     public static void addComponentFileForContext(String componentName, String uniqueFileIdentifier, FileInfo fileInfo) {
         Map<String, Map<String, FileInfo>> metaFilesMap = META_FILES_FOR_COMPONENTS.get();
         metaFilesMap.computeIfAbsent(componentName, k -> new HashMap<>());;
@@ -603,6 +649,25 @@ public class PackageUtil {
         return newVersion;
     }
 
+    public static PackageContext getPackageById(long packageId) throws Exception{
+        PackageContext packageContext = null;
+
+        List<FacilioField> fields = FieldFactory.getPackageFields();
+        FacilioModule packageModule = ModuleFactory.getPackageModule();
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(fields)
+                .table(packageModule.getTableName())
+                .andCondition(CriteriaAPI.getIdCondition(packageId, packageModule));
+
+        Map<String, Object> prop = selectRecordBuilder.fetchFirst();
+        if (MapUtils.isNotEmpty(prop)) {
+            packageContext = FieldUtil.getAsBeanFromMap(prop, PackageContext.class);
+        }
+
+        return packageContext;
+    }
+
     public static PackageContext getPackageByName(String uniqueName, PackageContext.PackageType packageType) throws Exception{
         PackageContext packageContext = null;
 
@@ -661,6 +726,73 @@ public class PackageUtil {
                 .addRecords(changeSetProps);
 
         insertRecordBuilder.save();
+    }
+
+    public static void checkForDuplicateUIds(ComponentType componentType, Map<String, PackageChangeSetMappingContext> mappingToAdd) {
+        Map<String, Long> uidVsCompId = PackageUtil.getComponentsUIdVsComponentIdForComponent(componentType);
+
+        Map<Long, String> compIdVsUid = new HashMap<>();
+        Map<Long, Set<String>> compIdVsDuplicateUid = new HashMap<>();
+        for (Map.Entry<String, Long> entry : uidVsCompId.entrySet()) {
+            String currUId = entry.getKey();
+            long currCompId = entry.getValue();
+
+            if (compIdVsUid.containsKey(currCompId)) {
+                String oldUId = compIdVsUid.get(currCompId);
+                mappingToAdd.remove(currUId);
+
+                Set<String> duplicateUIdSet;
+                if (!compIdVsDuplicateUid.containsKey(currCompId)) {
+                    compIdVsDuplicateUid.put(currCompId, new HashSet<>());
+                }
+                duplicateUIdSet = compIdVsDuplicateUid.get(currCompId);
+                duplicateUIdSet.add(oldUId);
+                duplicateUIdSet.add(currUId);
+            }
+            compIdVsUid.put(currCompId, currUId);
+        }
+
+        LOGGER.info("####Sandbox - Duplicate ComponentIdVsUIds - " + componentType.name() + " - " + compIdVsDuplicateUid);
+    }
+
+    public static void computeAndAddPackageChangeset(Map<String, PackageChangeSetMappingContext> uniqueIdVsMapping, Map<String, Long> uniqueIdVsComponentId) throws Exception {
+        List<PackageChangeSetMappingContext> mappings = uniqueIdVsMapping.entrySet().stream()
+                .filter(entry -> uniqueIdVsComponentId.containsKey(entry.getKey()))
+                .peek(entry -> entry.getValue().setComponentId(uniqueIdVsComponentId.get(entry.getKey())))
+                .map(Map.Entry::getValue)
+                .collect(Collectors.toList())
+                ;
+        PackageUtil.addPackageMappingChangesets(mappings);
+    }
+
+    public static void addPackageChangeset(ComponentType componentType, Map<String, Long> uIdVsComponentId) throws Exception {
+        if (MapUtils.isEmpty(uIdVsComponentId)) {
+            return;
+        }
+
+        Long packageId = PackageUtil.getPackageId();
+        if (packageId == null || packageId < 0) {
+            return;
+        }
+
+        PackageContext packageContext = PackageUtil.getPackageById(packageId);
+        Map<String, PackageChangeSetMappingContext> uIDVsPackageChangeSet = new HashMap<>();
+        for (Map.Entry<String, Long> entry : uIdVsComponentId.entrySet()) {
+            PackageChangeSetMappingContext mapping = new PackageChangeSetMappingContext();
+            mapping.setPackageId(packageId);
+            mapping.setComponentType(componentType);
+            mapping.setComponentId(entry.getValue());
+            mapping.setOrgId(packageContext.getOrgId());
+            mapping.setUniqueIdentifier(entry.getKey());
+            mapping.setCreatedVersion(packageContext.getVersion());
+            mapping.setStatus(PackageChangeSetMappingContext.ComponentStatus.ADDED);
+
+            uIDVsPackageChangeSet.put(entry.getKey(), mapping);
+        }
+
+        PackageUtil.checkForDuplicateUIds(componentType, uIDVsPackageChangeSet);
+        PackageUtil.computeAndAddPackageChangeset(uIDVsPackageChangeSet, uIdVsComponentId);
+        PackageUtil.addComponentsUIdVsComponentId(componentType, uIdVsComponentId);
     }
 
     public static final Map<String,ComponentType> nameVsComponentType  = Collections.unmodifiableMap(initComponentTypes());

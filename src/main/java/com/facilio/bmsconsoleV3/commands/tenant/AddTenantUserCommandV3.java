@@ -20,6 +20,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,6 +42,8 @@ public class AddTenantUserCommandV3 extends FacilioCommand {
         if(MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("spacesUpdate")) {
             spaceUpdate = true;
         }
+        boolean skipPeopleContact = FacilioUtil.parseBoolean(Constants.getQueryParam(context, FacilioConstants.ContextNames.SKIP_PEOPLE_CONTACTS));
+
         if(CollectionUtils.isNotEmpty(tenants)) {
             for(V3TenantContext tenant : tenants) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -66,7 +69,7 @@ public class AddTenantUserCommandV3 extends FacilioCommand {
                         }
                     }
                 }
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && !spaceUpdate) {
+                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && !spaceUpdate & !skipPeopleContact) {
                     V3TenantContactContext tc = getDefaultTenantContact(tenant);
                     List<V3TenantContactContext> primarycontatsIfAny = V3PeopleAPI.getTenantContacts(tc.getTenant().getId(), true, false);
                     V3TenantContactContext tenantPrimaryContact = null;

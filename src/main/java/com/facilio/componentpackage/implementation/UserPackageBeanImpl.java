@@ -1,5 +1,7 @@
 package com.facilio.componentpackage.implementation;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.identity.client.dto.AppDomain;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
@@ -237,15 +239,8 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
             }
         }
 
+        Set<Long> peopleWithUserAccess = new HashSet<>();
         Map<Long, com.facilio.identity.client.dto.AppDomain> appIdVsAppDomain = getAppIdVsAppDomain(new ArrayList<>(appIdVsApp.keySet()));
-        FacilioModule facilioModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE);
-        List<PeopleContext> peopleModuleData = (List<PeopleContext>) PackageBeanUtil.getModuleData(null, facilioModule, PeopleContext.class, false);
-        Map<String, PeopleContext> peopleMailVsPeople = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(peopleModuleData)) {
-            peopleMailVsPeople = peopleModuleData.stream()
-                    .filter(peopleContext -> StringUtils.isNotBlank(peopleContext.getEmail()))
-                    .collect(Collectors.toMap(PeopleContext::getEmail, Function.identity(), (mail1, mail2) ->  mail1 ));
-        }
 
         com.facilio.accounts.dto.User superAdminUser = AccountUtil.getOrgBean().getSuperAdmin(orgId);
         Map<Long, Long> superAdminAppIdVsOrgUserId = getSuperAdminOrgUserId(orgId, superAdminUser.getUid());
@@ -257,7 +252,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder element = idVsData.getValue();
-            List<PeopleUserContext> peopleUserContextList = constructPeopleUserFromBuilder(element, appNameVsAppId, roleNameVsRoleId, peopleMailVsPeople);
+            List<PeopleUserContext> peopleUserContextList = constructPeopleUserFromBuilder(element, appNameVsAppId, roleNameVsRoleId);
 
             for (PeopleUserContext peopleUserContext : peopleUserContextList) {
                 ApplicationContext appContext = appIdVsApp.getOrDefault(peopleUserContext.getApplicationId(), null);
@@ -306,8 +301,13 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
                     userNameVsIdentifierVsOrgUserId.computeIfAbsent(user.getUsername(), k -> new HashMap<>());
                     userNameVsIdentifierVsOrgUserId.get(user.getUsername()).put(user.getIdentifier(), orgUserId);
                 }
+
+                if (peopleUserContext.getPeopleId() > 0) {
+                    peopleWithUserAccess.add(peopleUserContext.getPeopleId());
+                }
             }
         }
+        updateUserAccess(new ArrayList<>(peopleWithUserAccess));
 
         return uniqueIdentifierVsComponentId;
     }
@@ -436,7 +436,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
         return appIdVsOrgUserId;
     }
 
-    private List<PeopleUserContext> constructPeopleUserFromBuilder(XMLBuilder element, Map<String, Long> appNameVsAppId, Map<String, Long> roleNameVsRoleId, Map<String, PeopleContext> peopleMailVsPeople) throws Exception {
+    private List<PeopleUserContext> constructPeopleUserFromBuilder(XMLBuilder element, Map<String, Long> appNameVsAppId, Map<String, Long> roleNameVsRoleId) throws Exception {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         List<PeopleUserContext> peopleUserContextExtendedProps = new ArrayList<>();
 
@@ -455,7 +455,7 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
                 String userName = element.getElement(PackageConstants.UserConstants.USER_NAME).getText();
                 String identifier = element.getElement(PackageConstants.UserConstants.IDENTIFIER).getText();
                 long userId = Long.parseLong(element.getElement(PackageConstants.UserConstants.USERID).getText());
-                long peopleId = peopleMailVsPeople.containsKey(email) ? peopleMailVsPeople.get(email).getId() : -1;
+                long peopleId = PackageUtil.getPeopleId(email);
                 long deletedTime = Long.parseLong(element.getElement(PackageConstants.UserConstants.DELETED_TIME).getText());
                 boolean isSuperUser = Boolean.parseBoolean(element.getElement(PackageConstants.UserConstants.IS_SUPER_USER).getText());
 
@@ -604,5 +604,32 @@ public class UserPackageBeanImpl implements PackageBean<PeopleUserContextExtende
             }
         }
         return appIdVsAppDomain;
+    }
+
+    private void updateUserAccess(List<Long> recordIds) throws Exception {
+        if (CollectionUtils.isEmpty(recordIds)) {
+            return;
+        }
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PEOPLE);
+
+        FacilioField idField = FieldFactory.getIdField(module);
+        List<FacilioField> whereFields = new ArrayList<>(Collections.singleton(idField));
+        FacilioField isUserField = FieldFactory.getBooleanField("user", "IS_USER", module);
+
+        List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = new ArrayList<>();
+
+        for (Long recordId : recordIds) {
+            GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+            updateVal.addUpdateValue("user", true);
+            updateVal.addWhereValue(idField.getName(), recordId);
+            batchUpdateList.add(updateVal);
+        }
+
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(Collections.singletonList(isUserField));
+
+        updateRecordBuilder.batchUpdate(whereFields, batchUpdateList);
     }
 }

@@ -97,6 +97,7 @@ public class UserScopingConfigPackageBeanImpl implements PackageBean<ScopingConf
             String moduleName = module != null ? StringUtils.isNotEmpty(module.getName()) ? module.getName() : null : null;
             scopingConfigElement.element(PackageConstants.UserScopingConfigConstants.MODULE_NAME).text(moduleName);
             //Criteria
+            LOGGER.info("####Sandbox Tracking - Parsing Criteria - ModuleName - " + moduleName + " Scoping - " + scopeLinkName);
             scopingConfigElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(component.getCriteria(), scopingConfigElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
 
         }

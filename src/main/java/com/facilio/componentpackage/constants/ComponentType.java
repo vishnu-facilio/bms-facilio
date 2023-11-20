@@ -75,8 +75,10 @@ public enum ComponentType implements FacilioIntEnum {
     PERMISSION_SET_CONFIG(PermissionSetConfigPackageImpl.class,MODULE,false),
     PEOPLE_PERMISSION_SET_CONFIG(PeoplePermissionSetConfigPackageImpl.class,MODULE,false),
     SERVICE_CATALOG_GROUP(ServiceCatalogGroupPackageBeanImpl.class,null,false),
-    SERVICE_CATALOG_ITEM(ServiceCatalogItemPackageImpl.class,null,false)
-    ;
+    SERVICE_CATALOG_ITEM(ServiceCatalogItemPackageImpl.class,null,false),
+    VENDOR(null, null, false),
+    TENANT(null, null, false),
+    CLIENT(null, null, false);
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
     public static List<ComponentType> initOrderedList() {
@@ -85,6 +87,9 @@ public enum ComponentType implements FacilioIntEnum {
             add(APP);
             add(ROLE);
             add(PEOPLE);
+            add(VENDOR);
+            add(TENANT);
+            add(CLIENT);
             add(USER);
             add(TEAM);
             add(MODULE);
@@ -178,6 +183,8 @@ public enum ComponentType implements FacilioIntEnum {
     public static final List<ComponentType> PICKLIST_COMPONENTS = new ArrayList<ComponentType>(){{
         add(PEOPLE);
         add(USER);
+        add(TEAM);
+        add(ROLE);
         add(TICKET_STATUS);
         add(ASSET_CATEGORY);
         add(ASSET_DEPARTMENT);
