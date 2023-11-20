@@ -37,7 +37,7 @@ public class ComputeTimeRemainingForFlaggedEventCommand extends FacilioCommand {
                     FlaggedEventBureauActionsContext actionsContext = (FlaggedEventBureauActionsContext) Constants.getRecordListFromContext(actionContext, FlaggedEventBureauActionModule.MODULE_NAME).get(0);
                     FacilioContext flaggedAlarmProcessContext = V3Util.getSummary(FlaggedEventRuleModule.MODULE_NAME, Collections.singletonList(flaggedEvent.getFlaggedAlarmProcess().getId()));
                     FlaggedEventRuleContext flaggedAlarmProcess = (FlaggedEventRuleContext) Constants.getRecordListFromContext(flaggedAlarmProcessContext, FlaggedEventRuleModule.MODULE_NAME).get(0);
-                    if(actionsContext.getEventStatus() != null && flaggedAlarmProcess.getCreateWorkorder()) {
+                    if(actionsContext.getEventStatus() != null && flaggedAlarmProcess.shouldCreateWorkorder()) {
                         FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus eventStatus = actionsContext.getEventStatus();
                         if(eventStatus != null) {
                             TeamActionHandler handler = eventStatus.getTeamActionHandler();
