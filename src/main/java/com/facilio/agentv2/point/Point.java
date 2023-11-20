@@ -41,7 +41,10 @@ public abstract class Point extends FacilioPoint implements Serializable {
     }
 
     public Integer getMappedType() {
-        return mappedType.getIndex();
+        if(mappedType!=null){
+            return mappedType.getIndex();
+        }
+        return null;
     }
 
     public PointEnum.MappedType getMappedTypeEnum() {
