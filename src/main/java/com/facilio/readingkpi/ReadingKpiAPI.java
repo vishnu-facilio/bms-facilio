@@ -598,7 +598,7 @@ public class ReadingKpiAPI {
         fieldMap.put("id", FieldFactory.getIdField(module));
 
         List<FacilioField> selectFields = getSelectFields(aggr, nsField, field, fieldMap);
-        String groupBy = getGroupByString(aggr, fieldMap);
+        String groupBy = getGroupByString(aggr, nsField.getAggregationType(), module, fieldMap);
         selectRecordBuilder
                 .table(module.getTableName())
                 .select(selectFields)
@@ -619,9 +619,9 @@ public class ReadingKpiAPI {
     private static List<FacilioField> getSelectFields(AggregateOperator aggr, NameSpaceField nsField, FacilioField field, Map<String, FacilioField> fieldMap) throws Exception {
         List<FacilioField> selectFields = new ArrayList<>();
 
-        FacilioField aggrField = aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL
+        FacilioField aggrField = aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && nsField.getAggregationType() != AggregationType.COUNT
                 ? field  // high res
-                : getAggregatedField(nsField.getAggregationType(), field); // normal and dashbaord
+                : getAggregatedField(nsField.getAggregationType(), field); // normal and dashboard
 
         FacilioField ttimeField = aggr instanceof BmsAggregateOperators.DateAggregateOperator
                 ? ((BmsAggregateOperators.DateAggregateOperator) aggr).getTimestampField(fieldMap.get("ttime"))  // normal
@@ -638,7 +638,7 @@ public class ReadingKpiAPI {
         return aggrField;
     }
 
-    private static BmsAggregateOperators.NumberAggregateOperator getAggrOperatorForAggrType(AggregationType aggregationType) {
+    private static AggregateOperator getAggrOperatorForAggrType(AggregationType aggregationType) {
         switch (aggregationType) {
             case SUM:
                 return BmsAggregateOperators.NumberAggregateOperator.SUM;
@@ -646,18 +646,22 @@ public class ReadingKpiAPI {
                 return BmsAggregateOperators.NumberAggregateOperator.MAX;
             case MIN:
                 return BmsAggregateOperators.NumberAggregateOperator.MIN;
+            case COUNT:
+                return BmsAggregateOperators.CommonAggregateOperator.COUNT;
             default:
                 return BmsAggregateOperators.NumberAggregateOperator.AVERAGE;
         }
     }
 
-    private static String getGroupByString(AggregateOperator aggr, Map<String, FacilioField> fieldMap) throws Exception {
+    private static String getGroupByString(AggregateOperator aggr, AggregationType nsAggrType, FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
         if (aggr instanceof BmsAggregateOperators.DateAggregateOperator) { // normal
             FacilioField groupBy = aggr.getSelectField(fieldMap.get("ttime"));
             adjustGroupByOptionBasedOnDayOfWeek(aggr, groupBy);
             return groupBy.getCompleteColumnName();
         } else if (aggr == null) { // dashboard
             return fieldMap.get("parentId").getCompleteColumnName();
+        } else if (nsAggrType == AggregationType.COUNT) {
+            return FieldFactory.getIdField(module).getCompleteColumnName();
         }
         return null; // high res
     }
@@ -695,7 +699,7 @@ public class ReadingKpiAPI {
             varNameVsValue.putIfAbsent(varName, new ArrayList<>());
             List<Double> values = varNameVsValue.get(varName);
 
-            Double readingValue = (Double) prop.get(field.getName());
+            Double readingValue = Double.parseDouble(String.valueOf(prop.get(field.getName())));
             values.add(readingValue);
 
             readingsMap.put(adjustedTtime, varNameVsValue);
