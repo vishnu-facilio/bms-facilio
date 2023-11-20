@@ -48,6 +48,7 @@ import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaul
 import com.facilio.bmsconsoleV3.signup.employeePortalApp.AddEmployeePortalDefaultViews;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppDefaultUserAndRoles;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppLayout;
+import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppRelatedApplication;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppTabsAndLayout;
 import com.facilio.bmsconsoleV3.signup.fsmApp.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
@@ -173,7 +174,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddEnergyAppLayout());
 		c.addCommand(new AddEnergyAppTabsAndLayout());
 		c.addCommand(new AddEnergyAppDefaultUserAndRoles());
-		//c.addCommand(new AddEnergyAppRelatedApplication());
+		c.addCommand(new AddEnergyAppRelatedApplication());
 		return c;
 	}
 

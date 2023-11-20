@@ -4165,6 +4165,11 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Fault Impact","faultimpact", WebTabContext.Type.FAULT_IMPACT_TEMPLATE,null,appId,null));
             groupNameVsWebTabsMap.put("energyanalytics", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext( "Data Administration","dataadministration", layout.getId(),101, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Import Data","importdata", WebTabContext.Type.IMPORT_DATA,null,appId,null,AccountUtil.FeatureLicense.IMPORT_DATA.getFeatureId()));
+            groupNameVsWebTabsMap.put("dataadministration", webTabs);
+
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
                 System.out.println("we: " + webTabGroupContext.getRoute());

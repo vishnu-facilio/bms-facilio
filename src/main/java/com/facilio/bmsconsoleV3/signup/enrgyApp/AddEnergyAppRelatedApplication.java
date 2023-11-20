@@ -13,7 +13,7 @@ import java.util.List;
 public class AddEnergyAppRelatedApplication extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        List<String> energyAppRelatedApplications = Arrays.asList(FacilioConstants.ApplicationLinkNames.DATA_LOADER_APP,FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP,FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP,FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        List<String> energyAppRelatedApplications = Arrays.asList(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
 
         long energyAppId = ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         List<ApplicationRelatedAppsContext> relatedApps = new ArrayList<>();
