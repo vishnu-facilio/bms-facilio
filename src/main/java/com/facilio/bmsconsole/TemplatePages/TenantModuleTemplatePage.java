@@ -131,7 +131,7 @@ public class TenantModuleTemplatePage implements TemplatePageFactory{
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, siteField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, categoryField, 1, 2, 1,null,"Category");
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysCreatedTimeField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1,null,"Category");
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1,null);
 
 
         SummaryWidgetGroup addressWidgetGroup = new SummaryWidgetGroup();

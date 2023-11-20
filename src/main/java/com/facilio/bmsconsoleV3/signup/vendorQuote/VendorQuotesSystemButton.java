@@ -120,6 +120,28 @@ public class VendorQuotesSystemButton extends SignUpData {
         btnList.add(downloadRFQButton);
         btnList.add(goToRFQButton);
 
+
+        //LIST BUTTONS
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        btnList.add(exportAsCSVButton);
+
+
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        btnList.add(exportAsExcelButton);
+
         return btnList;
     }
     private static Criteria checkRfqAndApprovalPermission(Map<String,FacilioField> fieldMap) throws Exception{

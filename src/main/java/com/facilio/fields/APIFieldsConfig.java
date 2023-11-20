@@ -217,12 +217,25 @@ public class APIFieldsConfig {
     }
 
     @Module(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
-    public static Supplier<FieldConfig> getTenantFieldConfig(){
+    public static Supplier<FieldConfig> getTenantUnitSpaceFieldConfig(){
         return () -> new FieldConfig()
 
                 .viewFields()
                 .addFixedFields(Arrays.asList("name"))
                 .addFixedSelectableFields(Arrays.asList("photo"))
+                .done();
+    }
+    @Module(FacilioConstants.ContextNames.TENANT)
+    public static Supplier<FieldConfig> getTenantFieldConfig(){
+        return () -> new FieldConfig()
+                .viewFields()
+                .add(FieldsConfigList.TENANT_MODULE_VIEW_FIELDS_INCLUDE)
+                .done()
+                .summaryWidgetFields()
+                .add(FieldsConfigList.TENANT_MODULE_SUMMARY_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.TENANT_MODULE_ADVANCED_FIELDS_INCLUDE)
                 .done();
     }
 

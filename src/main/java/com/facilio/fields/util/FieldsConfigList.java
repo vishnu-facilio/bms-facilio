@@ -365,6 +365,12 @@ public class FieldsConfigList {
             "name","eventType","eventFrequency","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
     );
 
+    public static final List<String> TENANT_MODULE_VIEW_FIELDS_INCLUDE= Arrays.asList("name","inTime","outTime","primaryContactEmail","primaryContactName",
+            "primaryContactPhone","status","sysCreatedTime","sysModifiedTime","tenantType","siteId");
+
+    public static final List<String> TENANT_MODULE_SUMMARY_FIELDS_INCLUDE= Arrays.asList("siteId","tenantType","sysCreatedTime","sysModifiedTime","address");
+    public static final List<String> TENANT_MODULE_ADVANCED_FIELDS_INCLUDE= Arrays.asList("name","localId","inTime","outTime","primaryContactEmail","primaryContactName",
+            "primaryContactPhone","status","sysCreatedTime","sysModifiedTime","tenantType","siteId","address");
 
     public static List<String> getNameField() {
         return Arrays.asList("name");

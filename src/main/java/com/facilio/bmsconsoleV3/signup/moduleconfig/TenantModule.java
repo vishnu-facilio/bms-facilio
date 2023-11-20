@@ -235,7 +235,8 @@ public class TenantModule extends BaseModuleConfig{
         String[] appNames=new String[]{
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
-                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP};
+                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP};
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());
@@ -356,7 +357,7 @@ public class TenantModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, siteField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, categoryField, 1, 2, 1,null,"Category");
         addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysCreatedTimeField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1,null,"Category");
+        addSummaryFieldInWidgetGroup(generalInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1,null);
 
 
         SummaryWidgetGroup addressWidgetGroup = new SummaryWidgetGroup();
@@ -482,6 +483,68 @@ public class TenantModule extends BaseModuleConfig{
         createWorkorderButton.setIdentifier("createWorkorder");
         createWorkorderButton.setPermissionRequired(true);
         createWorkorderButton.setPermission("CREATE");
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        btnList.add(createButton);
+
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        btnList.add(listEditButton);
+
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        btnList.add(listDeleteButton);
+
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        btnList.add(bulkDeleteButton);
+
+
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        btnList.add(exportAsCSVButton);
+
+
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        btnList.add(exportAsExcelButton);
 
         btnList.add(editButton);
         btnList.add(createWorkorderButton);

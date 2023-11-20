@@ -381,6 +381,70 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         createWorkorderButton.setPermissionRequired(true);
         createWorkorderButton.setPermission("CREATE");
 
+
+        //LIST BUTTONS
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        btnList.add(createButton);
+
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        btnList.add(listEditButton);
+
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        btnList.add(listDeleteButton);
+
+
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        btnList.add(bulkDeleteButton);
+
+
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        btnList.add(exportAsCSVButton);
+
+
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        btnList.add(exportAsExcelButton);
+
         btnList.add(editButton);
         btnList.add(createWorkorderButton);
 
