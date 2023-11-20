@@ -176,7 +176,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
             catch (Exception e)
             {
-                LOGGER.debug("CLICKHOUSE SELECT BUILDER Object for getting card data ---" + selectBuilder);
+                LOGGER.error("CLICKHOUSE SELECT BUILDER Object for getting card data ---" + selectBuilder, e);
                 SelectRecordsBuilder<ModuleBaseWithCustomFields> mysql_selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
                 props = mysql_selectBuilder.getAsProps();
             }
