@@ -36,16 +36,13 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.sandbox.utils.SandboxUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.twilio.rest.api.v2010.account.sip.Domain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.apache.xpath.operations.Bool;
 import org.json.simple.JSONObject;
 import org.reflections.Reflections;
 
@@ -871,7 +868,7 @@ public class ApplicationApi {
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Maintenance App",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         maintenanceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
         maintenanceApplication.setIsDefault(true);
         maintenanceApplication.setStatus(true);
@@ -879,7 +876,7 @@ public class ApplicationApi {
         ApplicationContext fsmApplication = new ApplicationContext(orgId, "Field Service Management", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FSM_APP,
                 ApplicationContext.AppLayoutType.DUAL.getIndex(), "Efficiently manage and optimize field operations with our intuitive Field Service Management solution.",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         fsmApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
         ApplicationContext dataLoaderApplication = new ApplicationContext(orgId, "Data Loader", false,
@@ -894,13 +891,13 @@ public class ApplicationApi {
         ApplicationContext workplaceApplication = new ApplicationContext(orgId, "IWMS App", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.IWMS_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Improve space utilization and streamline workplace administration",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         workplaceApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
         ApplicationContext energyApplication = new ApplicationContext(orgId, "Energy", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.ENERGY_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Energy App",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         energyApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
         List<ApplicationContext> applicationsDefault = new ArrayList<ApplicationContext>();

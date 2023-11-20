@@ -2,26 +2,24 @@ package com.facilio.remotemonitoring.commands;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ApplicationLayoutContext;
+import com.facilio.bmsconsole.context.ApplicationRelatedAppsContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 public class AddRemoteMonitoringApp extends FacilioCommand {
     @Override
@@ -29,7 +27,7 @@ public class AddRemoteMonitoringApp extends FacilioCommand {
         ApplicationContext application = new ApplicationContext(AccountUtil.getCurrentOrg().getOrgId(), "Remote Monitoring", false,
                 AppDomain.AppDomainType.FACILIO.getIndex(), FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Remote Monitoring",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         application.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
         Map<String, Object> prop = FieldUtil.getAsProperties(application);
         List<FacilioField> fields = FieldFactory.getApplicationFields();
