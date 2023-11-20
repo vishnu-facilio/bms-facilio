@@ -95,7 +95,7 @@ public class CommonConnectedSummaryAPI {
         FacilioField description = moduleBean.getField("description", moduleName);
         FacilioField assetCategory = moduleBean.getField("assetCategory", moduleName);
 
-        FacilioField messageField = getStringField("message", "MESSAGE", module);
+        FacilioField messageField = getStringField("Message", "MESSAGE", module);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
