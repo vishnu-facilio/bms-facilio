@@ -184,7 +184,7 @@ public class BuildingsTemplatePageFactory implements TemplatePageFactory{
                     .addSection("buildingInsights","",null)
                     .addWidget("buildingLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
                     .widgetDone()
-                    .addWidget("buildingInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                    .addWidget("buildingInsights","Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS,"webEnergySpaceInsights_4_6",3,0,spaceParam,null)
                     .widgetDone()
                     .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                     .widgetDone()

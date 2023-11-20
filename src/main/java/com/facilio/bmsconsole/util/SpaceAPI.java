@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3FloorContext;
 import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -1871,6 +1872,43 @@ public static long getSitesCount() throws Exception {
 			}
 			return 0;
 		}
+	}
+
+	public static long getMetersCount(long spaceId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule MeterModule = modBean.getModule(FacilioConstants.Meter.METER);
+		List<FacilioField> meterFields = modBean.getAllFields(FacilioConstants.Meter.METER);
+		Map<String, FacilioField> meterFieldsMap = FieldFactory.getAsMap(meterFields);
+
+		FacilioField spaceIdFld = meterFieldsMap.get("meterLocation");
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(spaceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+
+		List<FacilioField> fields = new ArrayList<>(FieldFactory.getCountField());
+
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<>()
+				.select(fields)
+				.module(MeterModule)
+				.beanClass(ModuleBaseWithCustomFields.class)
+				.andCondition(spaceCond)
+				.groupBy("Meters.SITE_ID");
+
+		ModuleBaseWithCustomFields rs  = select.fetchFirst();
+		if (rs == null) {
+			return 0;
+		}
+		else {
+			Map<String, Object> MeterCount = rs.getData();
+			if(MapUtils.isNotEmpty(MeterCount) && MeterCount.containsKey("count")){
+				return ((Number) MeterCount.get("count")).longValue();
+			}
+			return 0;
+		}
+
 	}
 	
 	public static List<Long> getSpaceCategoryIds(long baseSpaceID, Long buildingId) throws Exception {
