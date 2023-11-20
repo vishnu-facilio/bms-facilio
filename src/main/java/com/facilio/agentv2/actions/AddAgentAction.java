@@ -116,11 +116,11 @@ public class AddAgentAction extends AgentActionV2 {
     }
 
     private void setAgentName(FacilioAgent agent, Organization currentOrg) {
-        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(agent.getName())) {
-            agent.setName(agent.getDisplayName());
+        String name = getAgentName();
+        if (agent.getAgentTypeEnum() == AgentType.NIAGARA && validateNiagaraHostId(name)) {
+            agent.setName(name);
             return;
         }
-        String name = getAgentName();
         agent.setName(currentOrg.getDomain() + "-" + getRegexAgentName((name == null || name.isEmpty()) ? agent.getDisplayName() : name));
     }
 
