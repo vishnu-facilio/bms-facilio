@@ -623,10 +623,10 @@ public class IoTMessageAPI {
 		}
 
 		for(Map.Entry<Long, List<Point>> entry: pointControllerMap.entrySet()) {
-			ControllerMessenger.setValue(entry.getValue());
+			ControllerMessenger.setValue(entry.getValue(), false);
 		}
-
 	}
+
 	public static void setReadingValueForV3CommandContext(List<V3CommandsContext> commandsContextList) throws Exception{
 		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Set<Pair<Long, Long>> pairs = new HashSet<>();
@@ -644,14 +644,14 @@ public class IoTMessageAPI {
 				pointControllerMap.put(point.getControllerId(), pointList);
 			}
 			V3CommandsContext command = commandMap.get(ReadingsAPI.getRDMKey(point.getResourceId(), point.getFieldId()));
-			point.setActionName(AgentConstants.EMERGENCY_OVERRIDE);
+			//point.setActionName(AgentConstants.EMERGENCY_OVERRIDE);
 			point.setValue(command.getSetValue());
 			point.setControlActionId(command.getId());
 			pointList.add(point);
 		}
 
 		for(Map.Entry<Long, List<Point>> entry: pointControllerMap.entrySet()) {
-			ControllerMessenger.setValue(entry.getValue());
+			ControllerMessenger.setValue(entry.getValue(), true);
 		}
 	}
 

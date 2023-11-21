@@ -1,12 +1,12 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.activity.ActivityContext;
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.activity.CommandActivityType;
 import com.facilio.bmsconsole.activity.ControlActionActivityType;
 import com.facilio.bmsconsole.activity.ControlActionTemplateActivityType;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsoleV3.commands.AddActivitiesCommandV3;
@@ -18,10 +18,10 @@ import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateCo
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
 import org.apache.commons.collections4.CollectionUtils;
-import org.bouncycastle.jcajce.provider.asymmetric.ec.KeyFactorySpi;
 import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -194,6 +194,40 @@ public class ControlActionAPI {
         return builder.update(commandsContext);
 
     }
+
+    public static void updateCommandsStatus(List<V3CommandsContext> commands) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldList);
+
+        List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = getBatchUpdateContexts(commands);
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(fieldMap.get("errorMsg"));
+        fields.add(fieldMap.get("controlActionCommandStatus"));
+
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                .table(module.getTableName())
+                .fields(fields);
+
+        updateBuilder.batchUpdateById(batchUpdateList);
+    }
+
+    private static List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> getBatchUpdateContexts(List<V3CommandsContext> commands) {
+        List<GenericUpdateRecordBuilder.BatchUpdateByIdContext> batchUpdateList = new ArrayList<>();
+        for (V3CommandsContext command : commands) {
+            GenericUpdateRecordBuilder.BatchUpdateByIdContext batchValue = new GenericUpdateRecordBuilder.BatchUpdateByIdContext();
+            batchValue.setWhereId(command.getId());
+            batchValue.addUpdateValue("controlActionCommandStatus", command.getControlActionCommandStatus());
+            if(command.getErrorMsg() != null && !command.getErrorMsg().trim().isEmpty()){
+                batchValue.addUpdateValue("errorMsg", command.getErrorMsg());
+            }
+            batchUpdateList.add(batchValue);
+        }
+        return batchUpdateList;
+    }
+
     public static void generateControlActionFromTemplateWms(Long controlActionTemplateId,Long startTime, Long endTime){
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         JSONObject message = new JSONObject();

@@ -78,6 +78,10 @@ public class ProcessDataCommandV3 extends FacilioCommand {
         if (controlIds != null) {
             context.put(FacilioConstants.ContextNames.DataProcessor.CONTROL_IDS, controlIds);
         }
+        JSONObject state = (JSONObject) payload.get("state");
+        if (state != null && !state.isEmpty()) {
+            context.put("state", state);
+        }
         context.put(AgentConstants.PAYLOAD_STR, payload.toJSONString()); // For adding in logs
 
         return false;

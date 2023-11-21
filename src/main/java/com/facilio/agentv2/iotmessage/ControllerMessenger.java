@@ -146,6 +146,9 @@ public class ControllerMessenger {
                                 pointdatum.remove(AgentConstants.DEVICE_ID);
                             }
                         }
+                        if(context.containsKey("isV3")){
+                            object.put("isV3", context.get("isV3"));
+                        }
                         object.put(AgentConstants.POINTS, pointsData);
                         break;
                     case SUBSCRIBE:
@@ -301,11 +304,14 @@ public class ControllerMessenger {
     }
 
     public static void setValue(Point point) throws Exception {
-        setValue(Collections.singletonList(point));
+        setValue(Collections.singletonList(point), false);
     }
 
-    public static void setValue(List<Point> points) throws Exception {
-        IotData iotData = constructNewIotMessage(points, FacilioCommand.SET);
+    public static void setValue(List<Point> points, boolean isV3) throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put("isV3", isV3);
+        long controllerId = points.get(0).getControllerId();
+        IotData iotData = constructNewIotMessage(AgentConstants.getControllerBean().getControllerFromDb(controllerId), FacilioCommand.SET, points, context);
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
