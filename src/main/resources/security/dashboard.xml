@@ -589,4 +589,9 @@
             <property name="categoryId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/analytics/faults/:alarmId" method="GET">
+        <urlparams>
+            <property name="alarmId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

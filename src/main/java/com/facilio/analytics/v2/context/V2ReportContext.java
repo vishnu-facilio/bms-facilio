@@ -42,7 +42,7 @@ public class V2ReportContext {
     private long folderId;
     private Long criteriaId;
     public ReadingAnalysisContext.ReportMode reportModeEnum;
-
+    private boolean showAlarms;
     public void setReportMode(int reportMode){
         this.reportMode = reportMode;
         this.setReportModeEnum(ReadingAnalysisContext.ReportMode.valueOf(reportMode));

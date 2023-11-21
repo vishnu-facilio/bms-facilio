@@ -2,12 +2,19 @@ package com.facilio.analytics.v2;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
+import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ModuleSettingContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -22,15 +29,27 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.ns.context.NameSpaceField;
+import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.util.FilterUtil;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -38,6 +57,8 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.facilio.ns.context.NsFieldType.RELATED_READING;
 
 public class V2AnalyticsOldUtil {
     private static final List<String> MEASURE_KEYS = Arrays.asList("relationship_id" ,"fieldId","parent_lookup_fieldId", "criteriaId");
@@ -77,6 +98,7 @@ public class V2AnalyticsOldUtil {
             report_context.setgroupByTimeAggr(report.getGroupBy().getTime_aggrEnum());
             report_context.addToReportState(FacilioConstants.ContextNames.REPORT_GROUP_BY_TIME_AGGR, report.getGroupBy().getTime_aggr());
         }
+        report_context.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS, report.isShowAlarms());
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         report_context.setModuleId(modBean.getModule("energydata").getModuleId());
 
@@ -1192,4 +1214,288 @@ public class V2AnalyticsOldUtil {
         return null;
     }
 
+    public static JSONArray getDataPointFromNewAlarm(Long alarmId , boolean isWithPrerequisite, Long readingRuleId ) throws Exception
+    {
+        AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
+        ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
+        boolean isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? ((ReadingAlarmOccurrenceContext) alarmOccurrence).getIsNewReadingRule() : false;
+        List<ReadingRuleInterface> readingRules = new ArrayList<>();
+        if (isWithPrerequisite) { // new 1st
+            if (isNewReadingRule) {
+                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingAlarmContext.getRule().getId())).get(0);
+                readingRules.add(newRuleCtx);
+            } else {
+                AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
+                readingRules.add(alarmRuleContext.getAlarmTriggerRule());
+                readingRules.add(alarmRuleContext.getPreRequsite());
+            }
+        }
+        else if (readingRuleId != null && readingRuleId > 0) { // new 2nd
+            if (isNewReadingRule) {
+                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingRuleId);
+                readingRules.add(newRuleCtx);
+            } else {
+                ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
+                readingRules.add(readingruleContext);
+            }
+        }
+        else
+        { // old
+            long ruleId = -1;
+
+            if (alarmOccurrence.getAlarm() instanceof ReadingAlarm) {
+                ruleId = ((ReadingAlarm) alarmOccurrence.getAlarm()).getRule().getId();
+            }
+            if (ruleId > 0) {
+                ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
+                readingRules.add(readingruleContext);
+            }
+        }
+
+        ResourceContext resource = ResourceAPI.getResource(alarmOccurrence.getResource().getId());
+        JSONArray dataPoints = new JSONArray();
+        if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
+            Set readingMap = new HashSet();
+            for (ReadingRuleInterface readingRule : readingRules) {
+                if (readingRule != null) {
+                    if (readingRule instanceof ReadingRuleContext) {
+                        dataPoints.addAll(getDataPointsJSONFromRule((ReadingRuleContext) readingRule, resource, alarmOccurrence, readingMap));
+                    } else {//For NewReadingRuleContext
+                        dataPoints.addAll(getDataPointsJSONFromNewRule((NewReadingRuleContext) readingRule, resource));
+                    }
+                }
+            }
+        }
+
+        long baselineId = -1l;
+        if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
+            if(readingRules.get(0) instanceof ReadingRuleContext) {
+                baselineId = ((ReadingRuleContext) readingRules.get(0)).getBaselineId();
+            }
+        }
+        ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
+
+        List<String> resourseNdParentList = new ArrayList<>();
+        // removing duplicate field Id in alarm report
+        for (int i = 0; i < dataPoints.size(); i++)
+        {
+            JSONObject json = (JSONObject) dataPoints.get(i);
+            JSONArray parentIds = (JSONArray) json.get("parentId");
+            String parentFldKey = json.get("fieldId") + "_" + parentIds.get(0);
+            if (resourseNdParentList.contains(parentFldKey)) {
+                dataPoints.remove(i);
+            } else {
+                resourseNdParentList.add(parentFldKey);
+            }
+        }
+        return dataPoints;
+    }
+
+    public static Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception
+    {
+        JSONArray measureArray = new JSONArray();
+        ModuleBean moduleBean = Constants.getModBean();
+        String parentModuleName =null;
+        if(readingRule.getResourceTypeEnum() == ResourceType.ASSET_CATEGORY)
+        {
+            parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
+        }
+        List<NameSpaceField> fields = readingRule.getNs().getFields();
+        for (NameSpaceField nsField : fields)
+        {
+            Long readingFieldId = nsField.getFieldId();
+            if (readingFieldId > 0)
+            {
+                JSONObject measureJson = new JSONObject();
+                List<Long> parentId = new ArrayList<>();
+                parentId.add(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
+
+                if (nsField.getNsFieldType().equals(RELATED_READING)) {
+                    parentId = RelationUtil.getAllCustomRelationsForRecId(nsField.getRelatedInfo().getRelMapContext(), resource.getId());
+                }
+                measureJson.putAll(constructFieldObject(moduleBean.getField(readingFieldId), readingRule.getCategoryId()));
+                measureJson.put("aggr", 0);
+                measureJson.put("type", 1);
+
+                JSONArray parentIds = FieldUtil.getAsJSONArray(parentId,Long.class);
+                JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
+                JSONObject operatorJson = new JSONObject();
+                operatorJson.put("operatorId", 9);
+                operatorJson.put("value", parentIds);
+                filterJson.put("fieldName", "id");
+
+                measureJson.put("criteriaType", 2);
+                measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
+                measureJson.put("parentModuleName", parentModuleName);
+                measureArray.add(measureJson);
+            }
+        }
+        return measureArray;
+    }
+    public static JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
+                                                AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
+        JSONArray dataPoints = new JSONArray();
+        ResourceContext currentResource = resource;
+        ModuleBean moduleBean = Constants.getModBean();
+        String parentModuleName = V2AnalyticsOldUtil.getModuleNameFromCategory(readingruleContext.getAssetCategoryId(), "asset");
+        if (readingruleContext.getRuleMetrics() != null && !readingruleContext.getRuleMetrics().isEmpty()) {
+
+            for (ReadingRuleMetricContext ruleMetric : readingruleContext.getRuleMetrics()) {
+                long resourceId = resource.getId();
+                if (ruleMetric.getResourceId() > 0) {
+                    resourceId = ruleMetric.getResourceId();
+                }
+                JSONObject measureJson = new JSONObject();
+                measureJson.putAll(constructFieldObject(moduleBean.getField(ruleMetric.getFieldId()), readingruleContext.getAssetCategoryId()));
+                measureJson.put("aggr", 0);
+
+                JSONArray parentIds = FacilioUtil.getSingleTonJsonArray(resourceId);
+                JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
+                JSONObject operatorJson = new JSONObject();
+                operatorJson.put("operatorId", 9);
+                operatorJson.put("value", parentIds);
+                filterJson.put("fieldName", "id");
+
+                measureJson.put("criteriaType", 2);
+                measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
+                measureJson.put("parentModuleName", parentModuleName);
+                dataPoints.add(measureJson);
+            }
+            return dataPoints;
+        }
+
+        if (readingruleContext.getThresholdType() == ReadingRuleContext.ThresholdType.ADVANCED.getValue()) {
+
+            if (readingruleContext.getWorkflowId() > 0) {
+
+                WorkflowContext workflow = new WorkflowContext();
+                FacilioModule module = ModuleFactory.getWorkflowModule();
+                GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                        .select(FieldFactory.getWorkflowFields())
+                        .table(module.getTableName())
+                        .andCondition(CriteriaAPI.getIdCondition(readingruleContext.getWorkflowId(), module));
+
+                List<Map<String, Object>> props = selectBuilder.get();
+
+                WorkflowContext workflowContext = null;
+                if (props != null && !props.isEmpty() && props.get(0) != null) {
+                    Map<String, Object> prop = props.get(0);
+                    boolean isWithExpParsed = true;
+
+                    workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
+                    if (workflowContext.isV2Script()) {
+                        if (workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.XML.getValue()) {
+                            workflowContext = WorkflowUtil
+                                    .getWorkflowContextFromString(workflowContext.getWorkflowString(), workflowContext);
+                            if (isWithExpParsed) {
+                                WorkflowUtil.parseExpression(workflowContext);
+                            }
+                        } else if (workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.GUI
+                                .getValue()) {
+                            workflowContext.parseScript();
+                        }
+                        workflow = workflowContext;
+                    } else {
+                        workflow = WorkflowUtil.getWorkflowContext(readingruleContext.getWorkflowId(), true);
+                    }
+                }
+
+                for (WorkflowExpression workflowExp : workflow.getExpressions()) {
+
+                    if (!(workflowExp instanceof com.facilio.workflows.context.ExpressionContext)) {
+                        continue;
+                    }
+                    com.facilio.workflows.context.ExpressionContext exp = (ExpressionContext) workflowExp;
+                    if (exp.getModuleName() != null) {
+
+                        JSONObject dataPoint = new JSONObject();
+
+                        FacilioField readingField = null;
+                        if (exp.getFieldName() != null) {
+                            readingField = DashboardUtil.getField(exp.getModuleName(), exp.getFieldName());
+
+//                            updateTimeRangeAsPerFieldType(readingField.getFieldId());
+
+                            JSONObject yAxisJson = new JSONObject();
+                            yAxisJson.put("fieldId", readingField.getFieldId());
+                            yAxisJson.put("aggr", 0);
+
+                            dataPoint.put("yAxis", yAxisJson);
+
+                        }
+                        if (exp.getCriteria() != null) {
+                            Map<String, Condition> conditions = exp.getCriteria().getConditions();
+
+                            for (String key : conditions.keySet()) {
+
+                                Condition condition = conditions.get(key);
+
+                                if (condition.getFieldName().equals("parentId")) {
+                                    resource = condition.getValue().equals("${resourceId}") ? currentResource
+                                            : ResourceAPI.getResource(Long.parseLong(condition.getValue()));
+
+                                    dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+
+                                    break;
+                                }
+                            }
+                        }
+                        dataPoint.put("type", 1);
+                        if (!readingMap.contains(resource.getId() + "_" + readingField.getFieldId())) {
+                            readingMap.add(resource.getId() + "_" + readingField.getFieldId());
+                            dataPoints.add(dataPoint);
+                        }
+                    }
+                }
+            }
+        } else if (readingruleContext.getReadingFieldId() > 0
+                && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null)) {
+
+
+            JSONObject measureJson = new JSONObject();
+            measureJson.putAll(constructFieldObject(moduleBean.getField(readingruleContext.getReadingFieldId()), readingruleContext.getAssetCategoryId()));
+            measureJson.put("aggr", 0);
+
+            JSONArray parentIds = FacilioUtil.getSingleTonJsonArray(resource.getId());
+            JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
+            JSONObject operatorJson = new JSONObject();
+            operatorJson.put("operatorId", 9);
+            operatorJson.put("value", parentIds);
+            filterJson.put("fieldName", "id");
+
+            measureJson.put("criteriaType", 2);
+            measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
+            measureJson.put("parentModuleName", parentModuleName);
+            measureJson.put("type", 1);
+            dataPoints.add(measureJson);
+        }
+        return dataPoints;
+    }
+    public static Map<String, Object> constructFieldObject(FacilioField field, Long category)
+    {
+        Map<String, Object> details =new HashMap<>();
+        details.put("name", field.getName());
+        details.put("displayName", field.getDisplayName());
+        details.put("categoryId", category);
+        details.put("fieldId", field.getFieldId());
+        details.put("id", field.getFieldId());
+        details.put("dataType", field.getDataType());
+        details.put("default", field.getDefault());
+        details.put("module", Collections.singletonMap("type", field.getModule().getType()));
+        if (field instanceof NumberField) {
+            NumberField numberField = (NumberField)field;
+            details.put("unit", numberField.getUnit());
+        }
+        return details;
+    }
+
+    public static String getModuleNameFromCategory(Long categoryId, String type)throws Exception
+    {
+        FacilioChain chain = V2AnalyticsTransactionChain.getCategoryModuleChain();
+        FacilioContext kpi_context = chain.getContext();
+        kpi_context.put("categoryId", categoryId);
+        kpi_context.put("type", type);
+        chain.execute();
+        return (String) kpi_context.get("moduleName");
+    }
 }

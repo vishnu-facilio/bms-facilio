@@ -117,6 +117,12 @@ public class V2AnalyticsTransactionChain
         return chain;
     }
 
+    public static FacilioChain getReadingsForAlarmChain()throws Exception
+    {
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new V2FetchReadingFromAlarmCommand());
+        return chain;
+    }
     public static FacilioChain getAnalyticCardDataChain()throws Exception
     {
         FacilioChain chain = getDefaultChain();

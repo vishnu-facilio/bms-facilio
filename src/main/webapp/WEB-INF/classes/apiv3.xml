@@ -2555,7 +2555,10 @@
             <param name="categoryId">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
         </action>
-
+        <action name="faults/*" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getFieldsFromAlarm">
+            <param name="alarmId">{1}</param>
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
     </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
         <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms">
