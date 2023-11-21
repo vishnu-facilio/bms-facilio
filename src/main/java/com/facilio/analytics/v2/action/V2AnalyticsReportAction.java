@@ -140,6 +140,14 @@ public class V2AnalyticsReportAction extends V3Action {
         }
         setData("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
         // from new format
+        if(context.get(FacilioConstants.ContextNames.REPORT_DATA) != null)
+        {
+            JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+            if(data != null && data.containsKey("heatMapData")){
+                data.put("data", data.get("heatMapData"));
+                data.remove("heatMapData");
+            }
+        }
         setData("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
         setData("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
 

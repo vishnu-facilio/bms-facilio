@@ -151,6 +151,13 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
             }
 
             dataPoints.add(dataPoint);
+            /**
+             * below conditions to check for heatmap case
+             */
+            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
+            {
+                reportContext.setAnalyticsType(ReadingAnalysisContext.AnalyticsType.HEAT_MAP);
+            }
         }
         reportContext.setDataPoints(dataPoints);
     }

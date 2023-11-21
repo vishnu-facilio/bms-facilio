@@ -64,6 +64,16 @@ public class V2MeasuresContext {
      *  params for data filter criteria ends here
      */
 
+
+    /**
+     * hmAggr key used to identify the chart is heatmap or not
+     */
+
+    private String hmAggr;
+    private String chartType;
+    /**
+     *  hmAggr key used to identify the chart is heatmap or not
+     */
     private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){

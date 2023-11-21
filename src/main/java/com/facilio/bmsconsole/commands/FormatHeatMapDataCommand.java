@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -65,8 +66,9 @@ public class FormatHeatMapDataCommand extends FacilioCommand {
 			Long startTime=range.getStartTime();
 			Long endTime=range.getEndTime();
 			List<Map<String, Object>>  violatedReadings = new ArrayList<>();
-			if(reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4)) {
-			violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
+			V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
+			if(report_v2 == null && (reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4))) {
+				violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
 			}
 			List<Map<String, Object>> heatMapData = new ArrayList<>();
 			long timeStep = endTime-startTime;
