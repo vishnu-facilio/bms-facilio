@@ -102,6 +102,7 @@ public class PermissionSetPackageImpl implements PackageBean<PermissionSetContex
                 permissionSetContext.setDisplayName(permissionSetComponentElement.getElement(PackageConstants.PermissionSetConstants.DISPLAY_NAME).getText());
                 permissionSetContext.setDescription(permissionSetComponentElement.getElement(PackageConstants.PermissionSetConstants.DESCRIPTION).getText());
                 permissionSetContext.setStatus(Boolean.valueOf(permissionSetComponentElement.getElement(PackageConstants.PermissionSetConstants.STATUS).getText()));
+                permissionSetContext.setLinkName(permissionSetComponentElement.getElement(PackageConstants.PermissionSetConstants.LINK_NAME).getText());
                 permissionSetContext.setSysCreatedBy(Objects.requireNonNull(AccountUtil.getCurrentUser()).getId());
                 permissionSetContext.setIsPrivileged(isPriviliged);
 

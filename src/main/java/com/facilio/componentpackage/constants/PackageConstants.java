@@ -711,7 +711,7 @@ public class PackageConstants {
         public static final String FIELD_NAME = "Field_Name";
         public static final String SHOW_SWITCH = "Show_Switch";
         public static final String STATUS = "Status";
-        public static final String APP_NAME = "App_Name";
+        public static final String APP_LINK_NAME = "App_Link_Name";
         public static final String DELETED = "Deleted";
         public static final String TYPE = "Type";
 

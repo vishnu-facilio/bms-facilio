@@ -3,6 +3,7 @@ package com.facilio.componentpackage.implementation;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.commands.AddOrUpdateScopeVariable;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
@@ -66,9 +67,16 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.DESCRIPTION).text(component.getDescription());
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.SHOW_SWITCH).text(String.valueOf(component.getShowSwitch()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.STATUS).text(String.valueOf(component.getStatus()));
-        scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APP_NAME).text(ApplicationApi.getApplicationName(component.getAppId()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.DELETED).text(String.valueOf(component.getDeleted()));
         scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.TYPE).text(String.valueOf(component.getType()));
+
+        ApplicationContext applicationContext = ApplicationApi.getApplicationForId(component.getAppId());
+        if(applicationContext!= null && StringUtils.isNotEmpty(applicationContext.getLinkName())){
+            scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APP_LINK_NAME).text(applicationContext.getLinkName());
+        }else {
+            throw new IllegalArgumentException("ApplicationLinkName can't be Empty");
+        }
+
         Long applicableModuleId = component.getApplicableModuleId();
         if(applicableModuleId !=null && applicableModuleId > 0){
             ModuleBean modbean = Constants.getModBean();
@@ -81,6 +89,7 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
         } else {
             throw new IllegalArgumentException("Module cannot be null");
         }
+
         ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
         if(valGenBean != null && component.getValueGeneratorId() != null) {
             ValueGeneratorContext valGen = valGenBean.getValueGenerator(component.getValueGeneratorId());
@@ -155,7 +164,7 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
                 globalScopeVariableContext.setApplicableModuleId(applicableModuleId);
                 globalScopeVariableContext.setStatus(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.STATUS).getText()));
                 globalScopeVariableContext.setShowSwitch(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.SHOW_SWITCH).getText()));
-                globalScopeVariableContext.setAppId(ApplicationApi.getApplicationIdForLinkName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APP_NAME).getText()));
+                globalScopeVariableContext.setAppId(ApplicationApi.getApplicationIdForLinkName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APP_LINK_NAME).getText()));
                 globalScopeVariableContext.setDescription(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.DESCRIPTION).getText());
                 globalScopeVariableContext.setDisplayName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.DISPLAY_NAME).getText());
                 globalScopeVariableContext.setType(Integer.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.TYPE).getText()));
@@ -167,7 +176,12 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
                 }
                 XMLBuilder scopeVariableModulesFieldsBuilderList = globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.SCOPE_VARIABLE_MODULES_FIELDS_LIST);
                 if(scopeVariableModulesFieldsBuilderList != null) {
-                    globalScopeVariableContext.setScopeVariableModulesFieldsList(getScopeVariableModulesFieldsList(scopeVariableModulesFieldsBuilderList));
+                    List<ScopeVariableModulesFields> scopeVariableModulesFieldsList = getScopeVariableModulesFieldsList(scopeVariableModulesFieldsBuilderList);
+                    if(CollectionUtils.isNotEmpty(scopeVariableModulesFieldsList)) {
+                        globalScopeVariableContext.setScopeVariableModulesFieldsList(scopeVariableModulesFieldsList);
+                    }else {
+                        continue;
+                    }
                 }
 
                 Long newGlobalScopeVariableId = addOrUpdateGlobalScopeVariable(globalScopeVariableContext);
@@ -196,7 +210,7 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
             globalScopeVariableContext.setApplicableModuleId(applicableModuleId);
             globalScopeVariableContext.setStatus(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.STATUS).getText()));
             globalScopeVariableContext.setShowSwitch(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.SHOW_SWITCH).getText()));
-            globalScopeVariableContext.setAppId(ApplicationApi.getApplicationIdForLinkName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APP_NAME).getText()));
+            globalScopeVariableContext.setAppId(ApplicationApi.getApplicationIdForLinkName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APP_LINK_NAME).getText()));
             globalScopeVariableContext.setDescription(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.DESCRIPTION).getText());
             globalScopeVariableContext.setDisplayName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.DISPLAY_NAME).getText());
             globalScopeVariableContext.setType(Integer.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.TYPE).getText()));
@@ -274,6 +288,15 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
 
                     String fieldName = moduleFieldXMLBuilder.getElement(PackageConstants.GlobalScopeVariableConstants.FIELD_NAME).getText();
                     fieldName = StringUtils.isNotEmpty(fieldName) ? fieldName : "";
+
+                    if (StringUtils.isEmpty(moduleName) || module == null) {
+                        LOGGER.info("####Sandbox - Skipping add GlobalScopeVariable since module is null for - "+moduleName);
+                        return null;
+                    }
+                    if (StringUtils.isEmpty(fieldName) || Constants.getModBean().getField(fieldName, module.getName()) == null) {
+                        LOGGER.info("####Sandbox - Skipping add GlobalScopeVariable since field is null for - "+fieldName);
+                        return null;
+                    }
 
                     String linkName = moduleFieldXMLBuilder.getElement(PackageConstants.GlobalScopeVariableConstants.LINK_NAME).getText();
                     GlobalScopeBean globalScopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
