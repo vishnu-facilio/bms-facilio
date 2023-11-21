@@ -1086,6 +1086,10 @@ public class MultiImportApi {
 
         if (!moduleName.equals("asset") &&
                 !moduleName.equals("tenant") &&
+                !moduleName.equals("site") &&
+                !moduleName.equals("building") &&
+                !moduleName.equals("space") &&
+                !moduleName.equals("floor") &&
                 !moduleName.equals("serviceRequest") &&  // Asset,tenant and serviceRequest module has local Id but we export record id
                 fieldsMap.containsKey("localId")) {
             return false;

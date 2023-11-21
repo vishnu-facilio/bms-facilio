@@ -865,6 +865,10 @@ public class ExportUtil {
 			viewFields.add(serialNumber);
 		} else if (!moduleName.equals("asset") &&
 				   !moduleName.equals("tenant") &&
+					!moduleName.equals("site") &&
+					!moduleName.equals("building") &&
+					!moduleName.equals("space") &&
+					!moduleName.equals("floor") &&
 					!moduleName.equals(ContextNames.ITEM) &&
 					!moduleName.equals(ContextNames.ITEM_TYPES) &&
 					!moduleName.equals(ContextNames.TOOL) &&
