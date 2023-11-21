@@ -4220,7 +4220,10 @@ public class ApplicationApi {
             return false;
         }
         List<String> adminUsers = FacilioProperties.getAdminUsers();
-        if(CollectionUtils.isNotEmpty(adminUsers)) {
+        if(CollectionUtils.isEmpty(adminUsers)) {
+            return true;
+        }
+        else {
             if(adminUsers.contains(user.getEmail())) {
                 return true;
             }
