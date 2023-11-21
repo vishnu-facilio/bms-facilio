@@ -11,6 +11,7 @@ import com.facilio.multiImport.util.LoadLookupHelper;
 import com.facilio.multiImport.util.MultiImportApi;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Instant;
@@ -276,7 +277,70 @@ public enum FieldTypeImportRowProcessor {
             return true;
         }
     },
+    URL_FIELD(true){
+        @Override
+        public void process(ImportFieldMappingContext importFieldMappingContext,ImportRowContext rowContext,
+                            FacilioField field, Object cellValue,
+                            HashMap<String, Object> props,LoadLookupHelper lookupHelper) throws Exception {
+
+            Map urlProps = (Map) props.get(field.getName());
+
+            if(urlProps == null){
+                urlProps = new HashMap();
+                props.put(field.getName(), urlProps);
+            }
+            String urlPropFieldName = importFieldMappingContext.getFieldName();
+            String fieldName = urlPropFieldName.split("\\.")[1];
+            urlProps.put(fieldName,cellValue);
+        }
+        @Override
+        public boolean isSupportedFieldTypeForHistory() {
+            return true;
+        }
+
+        @Override
+        public void validateMandatoryProps(Map<String,Object> datum) throws Exception{
+            String href = (String) (datum).get("href");
+            if(StringUtils.isEmpty(href)){
+                throw new Exception("HREF cannot be empty for Url Field");
+            }
+        }
+        @Override
+        public List<FacilioField> getGroupedFields(FacilioField field){
+            FacilioField hrefField = new FacilioField();
+            hrefField.setName("href");
+            hrefField.setFieldId(field.getFieldId());
+            hrefField.setDataType(FieldType.STRING);
+
+            FacilioField nameField = new FacilioField();
+            nameField.setName("name");
+            nameField.setFieldId(field.getFieldId());
+            nameField.setDataType(FieldType.STRING);
+
+            FacilioField altField = new FacilioField();
+            altField.setName("alt");
+            altField.setFieldId(field.getFieldId());
+            altField.setDataType(FieldType.STRING);
+
+            List<FacilioField> groupedFields = new ArrayList<>();
+            groupedFields.add(hrefField);
+            groupedFields.add(nameField);
+            groupedFields.add(altField);
+
+            return groupedFields;
+        }
+
+    },
     DEFAULT;
+
+    @Getter
+    private boolean isGroupedFieldType;
+
+    FieldTypeImportRowProcessor(boolean isGroupedFieldType) {
+        this.isGroupedFieldType = isGroupedFieldType;
+    }
+    FieldTypeImportRowProcessor() {
+    }
 
     public void process(ImportFieldMappingContext importFieldMappingContext,
                         ImportRowContext rowContext,
@@ -357,6 +421,12 @@ public enum FieldTypeImportRowProcessor {
         return patchFields.stream()
                 .filter(field->getFieldTypeImportRowProcessor(field.getDataTypeEnum()).isSupportedFieldTypeForHistory())
                 .collect(Collectors.toList());
+    }
+    public void validateMandatoryProps(Map<String,Object> datum) throws Exception{
+
+    }
+    public List<FacilioField> getGroupedFields(FacilioField field){
+        return null;
     }
 
 }

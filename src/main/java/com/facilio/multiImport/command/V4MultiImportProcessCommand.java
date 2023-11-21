@@ -66,7 +66,10 @@ public  class V4MultiImportProcessCommand extends BaseMultiImportProcessCommand 
 
     @Override
     protected List<ImportFieldMappingContext> getCurrentModuleFieldMappings() {
-        return typeVsFieldMappings.get(ImportFieldMappingType.NORMAL);
+        List<ImportFieldMappingContext> fieldMappings = new ArrayList<>();
+        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL));
+        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.GROUPED_FIELD));
+        return fieldMappings;
     }
 
     @Override
@@ -74,14 +77,14 @@ public  class V4MultiImportProcessCommand extends BaseMultiImportProcessCommand 
         return importSheet.getModuleName();
     }
     @Override
-    protected void processRelationshipData(String sheetColumnName,Map<String,Object> rowVal,
+    protected void processRelationshipData(Map<String,Object> rowVal,
                                            HashMap<String,Object> props) throws Exception{
         //Relationship Mapped record ids validation (mapped record id should present in DB)
         if (MapUtils.isNotEmpty(fieldMapVsRelationMapping)) {
             for (Map.Entry<ImportFieldMappingContext, RelationMappingContext> entry : fieldMapVsRelationMapping.entrySet()) {
                 ImportFieldMappingContext fieldMappingContext = entry.getKey();
                 RelationMappingContext relationMappingContext = entry.getValue();
-                sheetColumnName = fieldMappingContext.getSheetColumnName();
+                String sheetColumnName = fieldMappingContext.getSheetColumnName();
                 Object cellValue = rowVal.get(sheetColumnName);
                 if (MultiImportApi.isEmpty(cellValue)) {
                     continue;
@@ -111,8 +114,6 @@ public  class V4MultiImportProcessCommand extends BaseMultiImportProcessCommand 
         int curIndex = 0;
         for (ImportRowContext rowContext : rows) {
             checkAndRefreshRelationshipData(curIndex++, rows);
-
-            validateRow(rowContext);
 
             if(rowContext.isErrorOccurredRow()){ //skip if is row is not valid
                 sendImportProgressToClient();
@@ -196,15 +197,6 @@ public  class V4MultiImportProcessCommand extends BaseMultiImportProcessCommand 
         recordsToBeAdded.clear();
     }
 
-    private void validateRow(ImportRowContext rowContext) throws Exception {
-        if (MultiImportApi.isInsertImportSheet(importSheet)) {
-            MultiImportApi.checkMandatoryFieldsValueExistsOrNot(requiredFields, importSheet, rowContext);
-        }
-
-        if (importSheet.getImportSetting() != MultiImportSetting.INSERT.getValue()) {
-            MultiImportApi.checkImportSettingFieldValueExistOrNot(importSheet,rowContext);
-        }
-    }
     private void fillImportResults(){
         ImportConstants.setRowContextList(context, batchRows);
         context.put(ImportConstants.INSERT_RECORDS_COUNT,insertRecordsCount);

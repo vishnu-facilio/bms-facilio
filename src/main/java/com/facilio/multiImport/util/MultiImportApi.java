@@ -19,6 +19,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.context.*;
+import com.facilio.multiImport.enums.FieldTypeImportRowProcessor;
 import com.facilio.multiImport.enums.ImportFieldMappingType;
 import com.facilio.multiImport.enums.MultiImportSetting;
 import com.facilio.multiImport.importFileReader.AbstractImportFileReader;
@@ -32,7 +33,6 @@ import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
-import com.facilio.wmsv2.constants.Topics;
 import com.facilio.wmsv2.endpoint.Broadcaster;
 import com.facilio.wmsv2.endpoint.LiveSession;
 import com.facilio.wmsv2.message.WebMessage;
@@ -953,7 +953,7 @@ public class MultiImportApi {
         }
 
     }
-    public static void checkImportSettingFieldValueExistOrNot(ImportFileSheetsContext importSheet, ImportRowContext rowContext) throws Exception {
+    public static void checkImportSettingFieldValueExistOrNot(ImportFileSheetsContext importSheet, ImportRowContext rowContext)  {
         List<String> sheetColumnNames = null;
         if (importSheet.getImportSetting() == MultiImportSetting.INSERT_SKIP.getValue()) {
             sheetColumnNames = importSheet.getInsertByFieldsList();
@@ -1015,7 +1015,10 @@ public class MultiImportApi {
                                                      Map<String, FacilioField> fieldNameVsFacilioFieldMap){
         List<FacilioField> mappedFields = new ArrayList<>();
         for(ImportFieldMappingContext fieldMappingContext : fieldMappings){
-            mappedFields.add(getFacilioField(fieldMappingContext,fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap));
+            FacilioField field = getFacilioField(fieldMappingContext,fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);
+            if(!mappedFields.contains(field)){
+                mappedFields.add(field);
+            }
         }
         return mappedFields;
     }
@@ -1163,6 +1166,11 @@ public class MultiImportApi {
                    importField.setOneLevelSupportedField(true);
                    importField.setLookupModuleFields(modBean.getAllFields(lookupModule.getName()));
                }
+            }
+            FieldTypeImportRowProcessor rowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(facilioField.getDataTypeEnum());
+            if(rowProcessor.isGroupedFieldType()){
+                importField.setGroupedFieldType(true);
+                importField.setGroupedFields(rowProcessor.getGroupedFields(facilioField));
             }
             multiImportFields.add(importField);
         }

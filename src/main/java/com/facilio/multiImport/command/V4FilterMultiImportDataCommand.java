@@ -49,6 +49,8 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
     Map<Long, FacilioField> fieldIdVsFacilioFieldMap = null;
     List<FacilioField> mappedFields;
     List<FacilioField> extraSelectableFields;
+    Set<FacilioField> groupedFields;
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info("V4FilterMultiImportDataCommand started time:"+System.currentTimeMillis());
@@ -67,9 +69,16 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         List<FacilioField> fields = MultiImportApi.getImportFields(context, importSheet.getModuleName());
         fieldNameVsFacilioFieldMap = FieldFactory.getAsMap(fields);
         fieldIdVsFacilioFieldMap = FieldFactory.getAsIdMap(fields);
-        mappedFields = MultiImportApi.getMappedFields(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL),
+
+        List<ImportFieldMappingContext> fieldMappings = new ArrayList<>();
+        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL));
+        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.GROUPED_FIELD));
+
+        mappedFields = MultiImportApi.getMappedFields(fieldMappings,
                 fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);
+
         extraSelectableFields = FieldTypeImportRowProcessor.getExtraSelectableFieldsForHistory(mappedFields);
+        groupedFields = groupedFields();
 
         moduleName = importSheet.getModuleName();
         MultiImportSetting setting = importSheet.getImportSettingEnum();
@@ -81,13 +90,15 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
         Map<Long, ImportRowContext> logIdVsRowContext = allRows.stream().collect(Collectors.toMap(ImportRowContext::getId, Function.identity()));
         ImportConstants.setLogIdVsRowContextMap(context, logIdVsRowContext);
+
+        validateRecords(setting,allRows);
+
         List<Pair<Long, Map<String, Object>>> rawInputs = MultiImportApi.getErrorLessRecords(allRows);
 
         if (setting == MultiImportSetting.INSERT) {
             markTheRowStatus(logIdVsRowContext, rawInputs, ImportRowContext.RowStatus.ADDED);
             ImportConstants.setInsertRecords(context, rawInputs);
         }
-
         else if (setting == MultiImportSetting.INSERT_SKIP) {
             List<Pair<Long, Map<String, Object>>> newRawInputs = new ArrayList<>();
 
@@ -118,7 +129,6 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         else if (setting == MultiImportSetting.UPDATE ||
                 setting == MultiImportSetting.UPDATE_NOT_NULL) {
             // get data and update
-
             List<String> updateBySheetColumNames = importSheet.getUpdateByFieldsList();
 
             List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(updateBySheetColumNames);
@@ -162,7 +172,6 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 setting == MultiImportSetting.BOTH_NOT_NULL) {
             // get data and check whether it is already there. if found, update otherwise insert
             // get data and update
-
             List<String> updateBySheetColumNames = importSheet.getUpdateByFieldsList();
 
             List<FacilioField> criteriaFields = getFieldsBySheetColumnNames(updateBySheetColumNames);
@@ -179,7 +188,7 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
                 ImportRowContext importRowContext = logIdVsRowContext.get(logId);
                 ModuleBaseWithCustomFields dbRecord = getDBRecord(module, dbSelectableFields, criteriaFields,record);
                 if (dbRecord == null) { // if not found in dp, add the record
-                    if(validateRow(importRowContext)){ // check mandatory fields value
+                    if(validateMandatoryFieldsData(importRowContext)){ // check mandatory fields value
                         newCreateInputs.add(datum);
                         importRowContext.setRowStatus(ImportRowContext.RowStatus.ADDED);
                     }
@@ -208,6 +217,24 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         LOGGER.info("V4FilterMultiImportDataCommand completed time:"+System.currentTimeMillis());
 
         return false;
+    }
+    private void validateRecords(MultiImportSetting setting,List<ImportRowContext> allRows){
+        switch (setting){
+            case INSERT:
+                allRows.stream().forEach(row->{validateMandatoryFieldsData(row);});
+                break;
+            case INSERT_SKIP:
+            case UPDATE:
+            case UPDATE_NOT_NULL:
+            case BOTH:
+            case BOTH_NOT_NULL:
+                allRows.stream().forEach(row->{
+                    validateMandatoryFieldsData(row);
+                    MultiImportApi.checkImportSettingFieldValueExistOrNot(importSheet,row);
+                });
+                break;
+        }
+
     }
 
     private  List<FacilioField> getFieldsBySheetColumnNames(List<String> sheetColumnNames) throws Exception {
@@ -296,10 +323,38 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
             rowContext.setRowStatus(status);
         }
     }
-    private  boolean validateRow(ImportRowContext rowContext){
+    private  boolean validateMandatoryFieldsData(ImportRowContext rowContext){
         MultiImportApi.checkMandatoryFieldsValueExistsOrNot(requiredFields,importSheet,rowContext);
         if(rowContext.isErrorOccurredRow()){
             return false;
+        }
+
+        List<String> exceptionMessages = new ArrayList<>();
+        for(FacilioField groupedField:groupedFields){
+            FieldTypeImportRowProcessor importRowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(groupedField.getDataTypeEnum());
+            Map<String,Object> rowVal = rowContext.getProcessedRawRecordMap();
+            Map datum = (Map) rowVal.get(groupedField.getName());
+            if(datum == null){
+                continue;
+            }
+            try{
+                importRowProcessor.validateMandatoryProps(datum);
+            }catch (Exception e){
+                exceptionMessages.add(e.getMessage() +":"+groupedField.getDisplayName());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(exceptionMessages)){
+            StringBuilder builder = new StringBuilder();
+            for (String errorMessage : exceptionMessages) {
+                if (exceptionMessages.indexOf(errorMessage) == exceptionMessages.size() - 1) {
+                    builder.append(" " + errorMessage + ".");
+                } else {
+                    builder.append(" " + errorMessage + ",");
+                }
+
+            }
+            rowContext.setErrorOccurredRow(true);
+            rowContext.setErrorMessage(builder.toString());
         }
         return true;
     }
@@ -399,5 +454,16 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
         }
 
+    }
+
+    private Set<FacilioField> groupedFields(){
+        Set<FacilioField> baseSystemLookupFields = new HashSet<>();
+        for(FacilioField field : mappedFields){
+            FieldTypeImportRowProcessor rowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(field.getDataTypeEnum());
+            if(rowProcessor.isGroupedFieldType()) {
+                baseSystemLookupFields.add(field);
+            }
+        }
+        return baseSystemLookupFields;
     }
 }

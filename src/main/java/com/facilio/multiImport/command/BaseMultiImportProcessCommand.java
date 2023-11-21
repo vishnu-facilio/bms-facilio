@@ -197,7 +197,7 @@ public abstract class BaseMultiImportProcessCommand extends FacilioCommand {
                 afterProcessRowFunction.apply(rowContext, rowVal, props, context);
             }
 
-            processRelationshipData(sheetColumnName,rowVal,props);
+            processRelationshipData(rowVal,props);
 
         } catch (Exception e) {
             LOGGER.severe("Process Import Exception -- Row No --" + rowNo + " Fields Mapping --" + sheetColumnName);
@@ -308,7 +308,7 @@ public abstract class BaseMultiImportProcessCommand extends FacilioCommand {
     }
 
     // To handle relationship
-    protected void processRelationshipData(String sheetColumnName,Map<String,Object> rowVal,
+    protected void processRelationshipData(Map<String,Object> rowVal,
                                            HashMap<String,Object> props) throws Exception{
 
     }

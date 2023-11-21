@@ -13,5 +13,7 @@ public class MultiImportField implements Serializable {
     private ImportRelationshipRequestContext relation;
     private boolean mandatory;
     private boolean isOneLevelSupportedField;
+    private boolean isGroupedFieldType;
     private List<FacilioField> lookupModuleFields;
+    private List<FacilioField> groupedFields;
 }

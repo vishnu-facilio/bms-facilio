@@ -15,6 +15,10 @@ public class ImportParseException extends FacilioException {
 		this.e = e;
 		this.columnName = columnName;
 	}
+	public ImportParseException(Exception e){
+		super(e);
+		this.e = e;
+	}
 	
 	public String getClientMessage() {
 		StringBuilder exceptionString=new StringBuilder();
@@ -29,7 +33,10 @@ public class ImportParseException extends FacilioException {
 			exceptionString.append(((ImportLookupModuleValueNotFoundException)e).getClientMessage());
 		}
 		else if (e instanceof IllegalArgumentException){
-			exceptionString.append(e.getMessage()+" under column "+this.columnName);
+			exceptionString.append(e.getMessage());
+			if(this.columnName!=null){
+				exceptionString.append(" under column "+this.columnName);
+			}
 		}
 		else if (e instanceof ImportTimeColumnParseException){
 			exceptionString.append(((ImportTimeColumnParseException)e).getClientMessage());

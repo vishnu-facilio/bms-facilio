@@ -97,17 +97,26 @@ public class ImportFileSheetsContext implements Serializable {
         this.secondRow = secondRow;
     }
 
-    public List<String> getInsertByFieldsList() throws Exception{
+    public List<String> getInsertByFieldsList(){
         if(StringUtils.isNotEmpty(insertBy)){
             JSONParser parser = new JSONParser();
-            return (List<String>) parser.parse(insertBy);
+            try{
+                return (List<String>) parser.parse(insertBy);
+            }catch (Exception e){
+                return null;
+            }
+
         }
         return null;
     }
-    public List<String> getUpdateByFieldsList() throws Exception{
+    public List<String> getUpdateByFieldsList(){
         if(StringUtils.isNotEmpty(updateBy)){
             JSONParser parser = new JSONParser();
-            return (List<String>) parser.parse(updateBy);
+            try {
+                return (List<String>) parser.parse(updateBy);
+            }catch (Exception e){
+                return null;
+            }
         }
         return null;
     }
