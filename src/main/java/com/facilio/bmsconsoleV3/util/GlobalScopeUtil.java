@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.beans.GlobalScopeBean;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ValueGeneratorBean;
@@ -37,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.util.Strings;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -383,8 +385,12 @@ public class GlobalScopeUtil {
         if (ActionContext.getContext() == null) {
             return null;
         }
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String switchVariable = request.getHeader("X-Switch-Value");
+
+        Parameter skipSwitchCriteria = ActionContext.getContext().getParameters().get("skipSwitchCriteria");
+        if(skipSwitchCriteria != null && skipSwitchCriteria.getValue() != null && skipSwitchCriteria.getValue().equals("true")) {
+            return null;
+        }
+        String switchVariable = appLinkNameResolvedSwitch();
         if (StringUtils.isNotEmpty(switchVariable)) {
             byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
             if (decodedBytes != null) {
@@ -394,6 +400,28 @@ public class GlobalScopeUtil {
                     JSONObject json = (JSONObject) parser.parse(decodedString);
                     if (json != null) {
                         return json;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+
+    private static String appLinkNameResolvedSwitch() throws Exception {
+        String switchValueFromCookie = FacilioCookie.getUserCookie(ServletActionContext.getRequest(),"fc.switchValue");
+        if(AccountUtil.getCurrentApp() != null) {
+            String linkName = AccountUtil.getCurrentApp().getLinkName();
+            if (StringUtils.isNotEmpty(switchValueFromCookie) && StringUtils.isNotEmpty(linkName)) {
+                byte[] decodedBytes = Base64.getDecoder().decode(switchValueFromCookie);
+                if (decodedBytes != null) {
+                    String decodedString = new String(decodedBytes);
+                    if (StringUtils.isNotEmpty(decodedString)) {
+                        JSONParser parser = new JSONParser();
+                        JSONObject json = (JSONObject) parser.parse(decodedString);
+                        if (json != null && json.containsKey(linkName)) {
+                            return (String) json.get(linkName);
+                        }
                     }
                 }
             }
