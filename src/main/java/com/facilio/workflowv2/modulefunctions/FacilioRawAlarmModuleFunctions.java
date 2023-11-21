@@ -18,6 +18,7 @@ import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.scriptengine.annotation.ScriptModule;
 
 import com.facilio.scriptengine.context.ScriptContext;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -45,5 +46,25 @@ public class FacilioRawAlarmModuleFunctions extends FacilioModuleFunctionImpl {
             }
         }
         return null;
+    }
+
+    @Override
+    public void add(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
+        FacilioUtil.throwRunTimeException(true,"Action not allowed");
+    }
+    @Override
+    public void update(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
+        FacilioUtil.throwRunTimeException(true,"Action not allowed");
+    }
+    @Override
+    public void delete(Map<String,Object> globalParams,List<Object> objects, ScriptContext scriptContext) throws Exception {
+        FacilioUtil.throwRunTimeException(true,"Action not allowed");
+    }
+    @Override
+    public void addNote(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+        FacilioUtil.throwRunTimeException(true,"Action not allowed");
+    }
+    public void addAttachments(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+        FacilioUtil.throwRunTimeException(true,"Action not allowed");
     }
 }

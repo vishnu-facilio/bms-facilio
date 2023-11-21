@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.scriptengine.autogens.WorkflowV2Parser;
 import com.facilio.scriptengine.context.*;
@@ -244,6 +245,7 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("calendarEvent");
         scriptWhiteListedModules.add("controlAction");
         scriptWhiteListedModules.add("controlActionTemplate");
+        scriptWhiteListedModules.add(FlaggedEventRuleModule.MODULE_NAME);
     }
 
     @Override
