@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 
@@ -12,12 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -71,6 +67,15 @@ public class BulkResourceAllocationUtil {
 			switch(pmAssignmentType) {
 				case ALL_SITES:
 					selectedResourceContexts.add(ResourceAPI.getResource(resourceId));
+//					if(resourceId == null) {
+//						List<SiteContext> sites = SpaceAPI.getAllSites();
+//						for (SiteContext site: sites) {
+//							selectedResourceContexts.add(site);
+//						}
+//					}
+//					else {
+//						selectedResourceContexts.add(ResourceAPI.getResource(resourceId));
+//					}
 					break;
 				case ALL_BUILDINGS:
 					List<BaseSpaceContext> siteBuildingsWithFloors = SpaceAPI.getSiteBuildingsWithFloors(resourceId);
@@ -137,8 +142,13 @@ public class BulkResourceAllocationUtil {
  	}
 	
 	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID) throws Exception{
-		
-		return getMultipleResourceCriteriaFromConfig(pmAssignmentType, Collections.singletonList(siteId), Collections.singletonList(baseSpaceId), spaceCategoryID, assetCategoryID);
+
+		List<Long> resIds= null;
+		if(siteId != null) {
+			resIds = Collections.singletonList(siteId);
+		}
+
+		return getMultipleResourceCriteriaFromConfig(pmAssignmentType, resIds, Collections.singletonList(baseSpaceId), spaceCategoryID, assetCategoryID);
 	}
 	
 	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,List<Long> siteIds,List<Long> baseSpaceIds,Long spaceCategoryID,Long assetCategoryID) throws Exception{
@@ -149,8 +159,11 @@ public class BulkResourceAllocationUtil {
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.SITE);
 				if (!CollectionUtils.isEmpty(siteIds)) {
 					criteria.addAndCondition(CriteriaAPI.getIdCondition(siteIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.SITE)));
+					returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 				}
-				returnObject.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+				else {
+					returnObject.put(FacilioConstants.ContextNames.CRITERIA, null);
+				}
 				break;
 			case ALL_BUILDINGS:
 				returnObject.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.BUILDING);
