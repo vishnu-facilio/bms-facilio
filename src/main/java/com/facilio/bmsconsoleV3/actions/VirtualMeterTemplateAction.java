@@ -11,7 +11,32 @@ import java.util.List;
 
 public class VirtualMeterTemplateAction extends V3Action {
 
-    private long vmTemplateId;
+	
+	private List<Long> meterIds;
+	
+	Long startTime;
+	Long endTime;
+	
+	public Long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
+	}
+	public Long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Long endTime) {
+		this.endTime = endTime;
+	}
+	public List<Long> getMeterIds() {
+		return meterIds;
+	}
+	public void setMeterIds(List<Long> meterIds) {
+		this.meterIds = meterIds;
+	}
+
+	private long vmTemplateId;
     public long getVmTemplateId() {
         return vmTemplateId;
     }
@@ -30,6 +55,20 @@ public class VirtualMeterTemplateAction extends V3Action {
     private List<Long> resourceIds;
     public List<Long> getResourceIds() { return resourceIds; }
     public void setResourceIds(List<Long> resourceIds) { this.resourceIds = resourceIds; }
+    
+    
+    public String runHistoryForVMTemplate() throws Exception {
+        
+    	FacilioChain runHistoryirtualMeterTemplate = TransactionChainFactoryV3.getRunHistoryVirtualMeterTemplateChain();
+        FacilioContext context = runHistoryirtualMeterTemplate.getContext();
+        context.put("vmTemplateId", vmTemplateId);
+        context.put("meterIds", meterIds);
+        context.put("startTime", startTime);
+        context.put("endTime", endTime);
+        runHistoryirtualMeterTemplate.execute();
+    	
+        return SUCCESS;
+    }
 
     public String publishVMTemplate() throws Exception {
         FacilioChain publishVirtualMeterTemplate = TransactionChainFactoryV3.getPublishVirtualMeterTemplateChain();

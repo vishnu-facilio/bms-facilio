@@ -2427,6 +2427,10 @@
             <param name="moduleName">virtualMeterTemplate</param>
             <param name="permission">GET:READ</param>
         </action>
+         <action name="history" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="runHistoryForVMTemplate">
+            <param name="moduleName">virtualMeterTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+        </action>
     </package>
 
 
