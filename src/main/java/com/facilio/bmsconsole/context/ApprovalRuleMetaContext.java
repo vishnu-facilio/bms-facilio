@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.Criteria;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,6 +15,8 @@ import java.util.List;
 public class ApprovalRuleMetaContext implements Serializable {
 
     private long id = -1;
+    @Getter@Setter
+    private Boolean status;
     public long getId() {
         return id;
     }

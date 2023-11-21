@@ -79,6 +79,7 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
             }
         }
         element.element(PackageConstants.NAME).text(approvals.getName());
+        element.element(PackageConstants.WorkFlowRuleConstants.STATUS).text(String.valueOf(approvals.isActive()));
         element.element(PackageConstants.DESCRIPTION).text(approvals.getDescription());
         if(approvals.getModuleName()!=null) element.element(PackageConstants.MODULENAME).text(approvals.getModuleName());
         element.element(PackageConstants.Approvals.IS_ALL_APPROVAL_NEEDED).text(String.valueOf(((ApprovalStateTransitionRuleContext) approveRule).isAllApprovalRequired()));
@@ -226,6 +227,8 @@ public class ApprovalStateFlowPackageBeanImpl implements PackageBean<WorkflowRul
     String moduleName= builder.getElement(PackageConstants.MODULENAME).getText();
     approvalMeta.setName(name);
     approvalMeta.setDescription(descprition);
+    boolean status = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.STATUS).getText());
+    approvalMeta.setStatus(status);
 
     if(builder.getElement(PackageConstants.Approvals.IS_ALL_APPROVAL_NEEDED)!=null) approvalMeta.setAllApprovalRequired(Boolean.valueOf(builder.getElement(PackageConstants.Approvals.IS_ALL_APPROVAL_NEEDED).getText()));
 

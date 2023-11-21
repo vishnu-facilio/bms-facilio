@@ -60,6 +60,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             // Creating state-flow
             ApprovalStateFlowRuleContext approvalStateFlow = new ApprovalStateFlowRuleContext();
             approvalStateFlow.setName(approvalMeta.getName());
+            approvalStateFlow.setStatus(approvalMeta.getStatus()!=null?approvalMeta.getStatus():true);
             approvalStateFlow.setDescription(approvalMeta.getDescription());
             approvalStateFlow.setRuleType(WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW);
             if (approvalMeta.getEventTypeEnum() == null) {
@@ -124,7 +125,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
                     getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
                             approvalMeta.isAllApprovalRequired(), approvalMeta.getApprovalForm(), approvalMeta.getApprovalFormId(), approvalMeta.isShouldFormInterfaceApply(),
                             approvalMeta.getApprovalDialogTypeEnum(),
-                            "Approve", module, approvalMeta.getApproveActions(), approvalStateFlowId);
+                            "Approve", module, approvalMeta.getApproveActions(), approvalStateFlowId,approvalMeta.getStatus());
             transitionRuleContext.setFromStateId(requested.getId());
             transitionRuleContext.setToStateId(exitStatus.getId());
             transitionRuleContext.setButtonType(1);
@@ -139,7 +140,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
                     getApprovalTransition(approvalMeta.getApprovers(), approvalMeta.getApprovalOrder(),
                             false, approvalMeta.getRejectForm(), approvalMeta.getRejectFormId(), approvalMeta.isShouldFormInterfaceApply(),
                             approvalMeta.getRejectDialogTypeEnum(),
-                            "Reject", module, approvalMeta.getRejectActions(), approvalStateFlowId);
+                            "Reject", module, approvalMeta.getRejectActions(), approvalStateFlowId,approvalMeta.getStatus());
             transitionRuleContext.setFromStateId(requested.getId());
             transitionRuleContext.setToStateId(rejected.getId());
             transitionRuleContext.setButtonType(2);
@@ -151,7 +152,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
             transitionRuleContext =
                     getApprovalTransition(approvalMeta.getResendApprovers(), ApprovalRuleContext.ApprovalOrder.PARALLEL.getValue(),
                             false, null, approvalMeta.getResendFormId(), true, null, "Re-Send", module,
-                            approvalMeta.getResendActions(), approvalStateFlowId);
+                            approvalMeta.getResendActions(), approvalStateFlowId,approvalMeta.getStatus());
             transitionRuleContext.setFromStateId(rejected.getId());
             transitionRuleContext.setToStateId(requested.getId());
             ruleContext.put(FacilioConstants.ContextNames.WORKFLOW_RULE, transitionRuleContext);
@@ -162,7 +163,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
 
     private ApprovalStateTransitionRuleContext getApprovalTransition(List<ApproverContext> approvers, int approvalOrder,
                                                                      boolean allApprovalRequired, FacilioForm form, long formId, boolean shouldFormInterfaceApply,
-                                                                     AbstractStateTransitionRuleContext.DialogType dialogType, String name, FacilioModule module, List<ActionContext> actions, long stateFlowId) {
+                                                                     AbstractStateTransitionRuleContext.DialogType dialogType, String name, FacilioModule module, List<ActionContext> actions, long stateFlowId,Boolean ruleStatus) {
         ApprovalStateTransitionRuleContext transitionRuleContext = new ApprovalStateTransitionRuleContext();
         transitionRuleContext.setRuleType(WorkflowRuleContext.RuleType.APPROVAL_STATE_TRANSITION);
         transitionRuleContext.setApprovers((SharingContext<ApproverContext>) approvers);
@@ -170,6 +171,7 @@ public class AddOrUpdateApprovalRuleCommand extends FacilioCommand {
         transitionRuleContext.setAllApprovalRequired(allApprovalRequired);
         transitionRuleContext.setForm(form);
         transitionRuleContext.setFormId(formId);
+        transitionRuleContext.setStatus(ruleStatus!=null?ruleStatus:true);
         transitionRuleContext.setShouldFormInterfaceApply(shouldFormInterfaceApply);
         transitionRuleContext.setDialogType(dialogType);
         transitionRuleContext.setName(name);
