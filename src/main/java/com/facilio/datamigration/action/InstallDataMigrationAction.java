@@ -6,6 +6,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.datamigration.commands.DataMigrationChainFactory;
 import com.facilio.datamigration.util.DataMigrationConstants;
+import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -52,11 +53,11 @@ public class InstallDataMigrationAction extends FacilioAction {
         List<String> skipDataMigrationLogModulesList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(getDataMigrationLogModules())) {
-            dataMigrationLogModulesList = Arrays.asList(getDataMigrationLogModules().split(","));
+            dataMigrationLogModulesList = Arrays.asList(FacilioUtil.splitByComma(getDataMigrationLogModules()));
         }
 
         if (StringUtils.isNotEmpty(getSkipDataMigrationModules())) {
-            skipDataMigrationLogModulesList = Arrays.asList(getSkipDataMigrationModules().split(","));
+            skipDataMigrationLogModulesList = Arrays.asList(FacilioUtil.splitByComma(getSkipDataMigrationModules()));
         }
 
         dataMigrationContext.put(DataMigrationConstants.ALLOW_NOTES_AND__ATTACHMENTS,isAllowNotesAndAttachments());

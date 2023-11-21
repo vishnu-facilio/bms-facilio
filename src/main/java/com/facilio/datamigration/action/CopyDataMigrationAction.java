@@ -7,6 +7,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.datamigration.commands.DataMigrationChainFactory;
 import com.facilio.datamigration.util.DataMigrationConstants;
+import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -50,11 +51,11 @@ public class CopyDataMigrationAction extends FacilioAction {
         List<String> dataMigrationForOnlyMentionedModulesList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(dataMigrationModules)) {
-            dataMigrationModulesList = Arrays.asList(dataMigrationModules.split(","));
+            dataMigrationModulesList = Arrays.asList(FacilioUtil.splitByComma(getDataMigrationModules()));
         }
 
         if (StringUtils.isNotEmpty(dataMigrationForOnlyMentionedModules)){
-            dataMigrationForOnlyMentionedModulesList = Arrays.asList(dataMigrationForOnlyMentionedModules.split(","));
+            dataMigrationForOnlyMentionedModulesList = Arrays.asList(FacilioUtil.splitByComma(getDataMigrationForOnlyMentionedModules()));
         }
 
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
