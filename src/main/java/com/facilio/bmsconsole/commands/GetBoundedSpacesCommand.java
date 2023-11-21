@@ -5,6 +5,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
@@ -55,7 +56,8 @@ public class GetBoundedSpacesCommand extends FacilioCommand {
                 .innerJoin(spaceMoodule.getTableName())
                 .on(spaceFieldMap.get("location").getCompleteColumnName()+"= "+locationModule.getTableName()+".id")
                 .innerJoin("Resources")
-                .on(spaceFieldMap.get("id").getCompleteColumnName()+"= Resources.id");
+                .on(spaceFieldMap.get("id").getCompleteColumnName()+"= Resources.id")
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY));
 
 
         Criteria filterCriteria = (Criteria) context.get(Constants.FILTER_CRITERIA);

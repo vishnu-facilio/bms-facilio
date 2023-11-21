@@ -74,6 +74,7 @@ public class SiteModule extends BaseModuleConfig {
             activeToInactive.setStateFlowId(stateFlowRuleContext.getId());
             WorkflowRuleAPI.addWorkflowRule(activeToInactive);
             addSystemButtons();
+            addListSystemButtons();
             addDefaultSiteModuleConfig(siteModule.getModuleId());
 
         } catch (Exception ex) {
@@ -81,6 +82,13 @@ public class SiteModule extends BaseModuleConfig {
         }
     }
 
+    private void addListSystemButtons() throws Exception{
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.SITE);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.SITE);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.SITE);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.SITE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.SITE);
+    }
     private void addSystemButtons() throws Exception {
         SystemButtonRuleContext editSite = new SystemButtonRuleContext();
         editSite.setName("Edit");

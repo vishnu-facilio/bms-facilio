@@ -583,6 +583,14 @@ public class FloorModule extends BaseModuleConfig {
     }
 
     private void addSystemButtons() throws Exception {
+        //List buttons
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.FLOOR);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.FLOOR);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.FLOOR);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.FLOOR);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.FLOOR);
+
+        //summary buttons
         SystemButtonRuleContext editFloor = new SystemButtonRuleContext();
         editFloor.setName("Edit");
         editFloor.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());

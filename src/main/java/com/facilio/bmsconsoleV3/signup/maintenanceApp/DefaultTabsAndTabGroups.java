@@ -36,7 +36,7 @@ public class DefaultTabsAndTabGroups {
 
         List<WebTabContext> tabs = Arrays.asList(
             new WebTabContext("Dashboard", "dashboard", WebTabContext.Type.DASHBOARD, null, null, null,null,appId),
-            new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.CUSTOM, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
+            new WebTabContext("Portfolio", "portfolio", WebTabContext.Type.PORTFOLIO, null, "{ \"type\": \"portfolio\" }", 1,null,appId),
             new WebTabContext("Assets", "assets", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), null, 4,null,appId),
             new WebTabContext("Reports", "assetreport", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.ASSET)), "{\"type\": \"module_reports\"}", 4,null,appId),
             new WebTabContext("Tenants", "tenants", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT)), null, 16,null,appId),

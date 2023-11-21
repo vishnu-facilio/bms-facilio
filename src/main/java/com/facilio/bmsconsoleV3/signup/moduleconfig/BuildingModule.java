@@ -78,6 +78,11 @@ public class BuildingModule extends BaseModuleConfig {
     }
 
     private void addSystemButtons() throws Exception{
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.BUILDING);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.BUILDING);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.BUILDING);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.BUILDING);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.BUILDING);
         SystemButtonRuleContext editBuilding = new SystemButtonRuleContext();
         editBuilding.setName("Edit");
         editBuilding.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());

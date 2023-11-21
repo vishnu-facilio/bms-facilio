@@ -22,12 +22,19 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getAssetFieldConfig(){
         return () -> new FieldConfig()
 
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.INVENTORY,Arrays.asList("rotatingItemType","storeRoom"))
+
                 .sortFields()
                 .add(FieldsConfigList.ASSET_FIELDS_INCLUDE)
                 .done()
 
                 .advancedFields()
                 .add(FieldsConfigList.ASSET_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.ASSET_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.ASSET_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
@@ -208,6 +215,11 @@ public class APIFieldsConfig {
 
                 .advancedFields()
                 .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.SPACE_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.SPACE_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
@@ -735,6 +747,11 @@ public class APIFieldsConfig {
 
                 .advancedFields()
                 .add(FieldsConfigList.SITE_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.SITE_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.SITE_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
@@ -786,6 +803,11 @@ public class APIFieldsConfig {
 
                 .advancedFields()
                 .add(FieldsConfigList.FLOOR_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.FLOOR_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.FLOOR_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
@@ -802,8 +824,13 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
                 .done()
 
+                .summaryWidgetFields()
+                .add(FieldsConfigList.BUILDING_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
                 .advancedFields()
                 .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.BUILDING_FILTER_FIELDS_EXCLUDE)
                 .done()
 
                 .viewFields()

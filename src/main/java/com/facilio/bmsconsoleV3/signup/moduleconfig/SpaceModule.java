@@ -113,6 +113,14 @@ public class SpaceModule extends BaseModuleConfig {
         }
     }
     private void addSystemButtons() throws Exception{
+        //List buttons
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.SPACE);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.SPACE);
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.SPACE);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.SPACE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.SPACE);
+
+        //summary buttons
         SystemButtonRuleContext editSpace = new SystemButtonRuleContext();
         editSpace.setName("Edit");
         editSpace.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
