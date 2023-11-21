@@ -44,6 +44,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -413,6 +415,7 @@ public class GlobalScopeUtil {
         if(AccountUtil.getCurrentApp() != null) {
             String linkName = AccountUtil.getCurrentApp().getLinkName();
             if (StringUtils.isNotEmpty(switchValueFromCookie) && StringUtils.isNotEmpty(linkName)) {
+                switchValueFromCookie = URLDecoder.decode(switchValueFromCookie, StandardCharsets.UTF_8.toString());
                 byte[] decodedBytes = Base64.getDecoder().decode(switchValueFromCookie);
                 if (decodedBytes != null) {
                     String decodedString = new String(decodedBytes);
