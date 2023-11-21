@@ -1353,10 +1353,20 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				if(task.getReadingFieldUnit() == -1 && task.getReadingField() != null && task.getReadingField() instanceof NumberField)
 				{
 					NumberField readingNumberField = (NumberField) task.getReadingField();
+
+
 						
-					if(readingNumberField.getMetricEnum() != null && task.getResource() != null) {
+					if(readingNumberField.getMetricEnum() != null && (task.getResource() != null || task.getMeter() != null)) {
+
+						long resourceId;
+						if(task.getResource()!= null){
+							resourceId = task.getResource().getId();
+						}
+						else{
+							resourceId = task.getMeter().getId();
+						}
 						
-						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), task.getReadingField());
+						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, task.getReadingField());
 						if(rdm != null && rdm.getUnitEnum() != null)
 						{
 							readingFieldUnit = rdm.getUnitEnum();
