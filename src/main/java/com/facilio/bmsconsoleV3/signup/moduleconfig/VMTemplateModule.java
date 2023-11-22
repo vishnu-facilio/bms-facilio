@@ -102,7 +102,7 @@ public class VMTemplateModule extends BaseModuleConfig{
                 .addTab("virtualmetertemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vmTemplateSection", null, null)
-                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
+                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("vmTemplateReadingsSection", null, null)
@@ -125,7 +125,7 @@ public class VMTemplateModule extends BaseModuleConfig{
                 .addTab("virtualmetertemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("vmTemplateSection", null, null)
-                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
+                .addWidget("vmTemplateWidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(vmTemplateModule.getName()))
                 .widgetDone()
                 .sectionDone()
                 .addSection("relatedVMSection", null, null)
@@ -179,18 +179,38 @@ public class VMTemplateModule extends BaseModuleConfig{
         FacilioField name = moduleBean.getField("name", moduleName);
         FacilioField utilityType = moduleBean.getField("utilityType", moduleName);
         FacilioField scope = moduleBean.getField("scope",moduleName);
+        FacilioField relationShipId = moduleBean.getField("relationShipId", moduleName);
         FacilioField description = moduleBean.getField("description", moduleName);
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         addSummaryFieldInWidgetGroup(widgetGroup, name, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, utilityType, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, scope, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, relationShipId, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, description, 2, 1, 4);
         widgetGroup.setName("moduleDetails");
         //widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
+
+        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedByPeople", moduleName);
+        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedByPeople", moduleName);
+        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
+
+        SummaryWidgetGroup systemInformationGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedTime, 1, 4, 1);
+
+        systemInformationGroup.setName("systemDetails");
+        systemInformationGroup.setDisplayName("System Information");
+        systemInformationGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(systemInformationGroup);
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP).getId());

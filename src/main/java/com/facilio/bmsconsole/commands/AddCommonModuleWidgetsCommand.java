@@ -86,6 +86,7 @@ public class AddCommonModuleWidgetsCommand extends FacilioCommand {
                     .done()
                     .addModuleWidget("meterRelationshipWidget", "Meter Relationship Widget", PageWidget.WidgetType.METER_RELATIONSHIPS)
                     .addFlexibleWidgetConfig("flexiblewebmeterrelationshipwidget_10","Meter Relationship Widget - 10",10, PagesContext.PageLayoutType.WEB)
+                    .addFlexibleWidgetConfig("flexiblewebmeterrelationshipwidget_6","Meter Relationship Widget - 6",6, PagesContext.PageLayoutType.WEB)
                     .addFlexibleWidgetConfig("flexiblemobilemeterrelationshipwidget_8","Meter Relationship Widget - 8",8, PagesContext.PageLayoutType.MOBILE)
                     .done()
                 .getWidgets();

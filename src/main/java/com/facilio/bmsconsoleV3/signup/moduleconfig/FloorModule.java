@@ -416,7 +416,7 @@ public class FloorModule extends BaseModuleConfig {
                 .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterRelations", "", "")
-                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

@@ -565,7 +565,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
                 .addSection("meterDetailsSection", null, null)
-                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("commentsAndAttachmentsSection", null, null)
@@ -622,7 +622,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterDetailsSection", null, null)
-                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("commentsAndAttachmentsSection", null, null)
@@ -725,7 +725,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterRelations", "", "")
-                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -777,7 +777,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterRelations", "", "")
-                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -796,7 +796,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
                 .addSection("meterDetailsSection", null, null)
-                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("commentsAndAttachmentsSection", null, null)
@@ -842,7 +842,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterRelations", "", "")
-                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -861,7 +861,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("metersummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterDetailsSection", null, null)
-                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_4", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
+                .addWidget("meterDetailsWidget", "Meter Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getVirtualMeterSummaryWidgetDetails(meterModule.getName(), app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("commentsAndAttachmentsSection", null, null)
@@ -893,7 +893,7 @@ public class MeterModule extends BaseModuleConfig{
                 .addTab("meters", "Meters", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("meterRelations", "", "")
-                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_10", 0, 0, null, null)
+                .addWidget("meterRelationsWidget", "Relationships", PageWidget.WidgetType.METER_RELATIONSHIPS,"flexiblewebmeterrelationshipwidget_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1095,8 +1095,26 @@ public class MeterModule extends BaseModuleConfig{
         widgetGroup.setName("moduleDetails");
         //widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
+
+        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedByPeople", moduleName);
+        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedByPeople", moduleName);
+        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
+
+        SummaryWidgetGroup systemInformationGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemInformationGroup, sysModifiedTime, 1, 4, 1);
+
+        systemInformationGroup.setName("systemDetails");
+        systemInformationGroup.setDisplayName("System Information");
+        systemInformationGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(systemInformationGroup);
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(app.getId());
