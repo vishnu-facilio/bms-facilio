@@ -128,6 +128,9 @@ public class BulkResourceAllocationUtil {
 		}
 		
 		List<ResourceContext> selectedResourceContexts = new ArrayList<>();
+		List<V3MeterContext> selectedMeterContexts = new ArrayList<>();
+
+		if(resourceIds != null) {
 		for (Long resourceId: resourceIds) {
 			switch(pmAssignmentType) {
 				case ALL_SITES:
@@ -226,14 +229,14 @@ public class BulkResourceAllocationUtil {
 		return returnValue;
  	}
 	
-	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID) throws Exception{
+	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,Long siteId,Long baseSpaceId,Long spaceCategoryID,Long assetCategoryID,Long meterTypeId) throws Exception{
 
 		List<Long> resIds= null;
 		if(siteId != null) {
 			resIds = Collections.singletonList(siteId);
 		}
 
-		return getMultipleResourceCriteriaFromConfig(pmAssignmentType, resIds, Collections.singletonList(baseSpaceId), spaceCategoryID, assetCategoryID);
+		return getMultipleResourceCriteriaFromConfig(pmAssignmentType, resIds, Collections.singletonList(baseSpaceId), spaceCategoryID, assetCategoryID,meterTypeId);
 	}
 	
 	public static JSONObject getMultipleResourceCriteriaFromConfig(PMAssignmentType pmAssignmentType,List<Long> siteIds,List<Long> baseSpaceIds,Long spaceCategoryID,Long assetCategoryID,Long meterTypeId) throws Exception{
