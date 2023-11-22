@@ -1229,6 +1229,8 @@ public class MultiImportApi {
                 return Arrays.asList("name","site","primaryContactName","primaryContactPhone");
             case FacilioConstants.ContextNames.TENANT_CONTACT:
                 return Arrays.asList("name","tenant");
+            case FacilioConstants.ContextNames.CLIENT_CONTACT:
+                return Arrays.asList("name","client");
             default:
                 return null;
         }
