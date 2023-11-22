@@ -4355,4 +4355,16 @@
         <property name="id" type="number"/>
         <property name="excludeEmptyFields" type="boolean"/>
     </request>
+    <request path="/api/v3/module/servicePlannedMaintenance/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/module/servicePMTemplate/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

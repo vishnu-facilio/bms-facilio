@@ -281,12 +281,14 @@
             <param name="recordId">{1}</param>
             <param name="buttonAction">systemButton</param>
             <param name="identifier">{2}</param>
+            <param name="permission">GET:READ</param>
         </action>
         <action name="servicePMTemplate/*/systemButton/*" class="com.facilio.fsm.actions.ServicePMTemplateAction" method="createServicePM">
             <param name="moduleName">servicePMTemplate</param>
             <param name="recordId">{1}</param>
             <param name="buttonAction">systemButton</param>
             <param name="identifier">{2}</param>
+            <param name="permission">GET:READ</param>
         </action>
         <action name="serviceOrder/*/systemButton/*" class="com.facilio.fsm.actions.ServiceOrderAction" method="updateServiceOrders">
             <param name="moduleName">serviceOrder</param>
