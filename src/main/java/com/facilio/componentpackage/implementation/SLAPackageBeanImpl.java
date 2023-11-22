@@ -321,9 +321,27 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                             }
                         }
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
+                        XMLBuilder bodyBuilder = pushNotificationElement.element("data");
+                        if (userNotification.getExtraParams() != null) {
+                            String clickAction = userNotification.getExtraParams().get("click_action") != null ? userNotification.getExtraParams().get("click_action").toString() : null;
+                            bodyBuilder.element("click_action").text(clickAction);
+                            String contentAvailable = userNotification.getExtraParams().get("content_available") != null ? userNotification.getExtraParams().get("content_available").toString() : null;
+                            bodyBuilder.element("content_available").text(contentAvailable);
+                            String priority = userNotification.getExtraParams().get("priority") != null ? userNotification.getExtraParams().get("priority").toString() : null;
+                            bodyBuilder.element("priority").text(priority);
+                            String sound = userNotification.getExtraParams().get("sound") != null ? userNotification.getExtraParams().get("sound").toString() : null;
+                            bodyBuilder.element("sound").text(sound);
+                            String summaryId = userNotification.getExtraParams().get("summary_id") != null ? userNotification.getExtraParams().get("summary_id").toString() : null;
+                            bodyBuilder.element("summary_id").text(summaryId);
+                        }
+
+                        bodyBuilder.element("text").text(userNotification.getSubject());
+                        bodyBuilder.element("title").text(userNotification.getTitle());
                         String moduleName = (String) ((JSONObject) obj.get("notification")).get("module_name");
                         long parentModuleId = StringUtils.isNotEmpty(moduleName) ? moduleBean.getModule(moduleName).getModuleId() : moduleBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION).getModuleId();
                         userNotification.setParentModule(parentModuleId);
+                        FacilioModule parentModule = moduleBean.getModule(parentModuleId);
+                        bodyBuilder.element("module_name").text(parentModule.getName());
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
                         pushNotificationElement.element("id").text((String) templateJson.get("to"));
@@ -530,16 +548,27 @@ public class SLAPackageBeanImpl implements PackageBean<WorkflowRuleContext> {
                                     String templateName = valueElement.getElement("name").getText();
                                     String appLinkName = valueElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
                                     long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
-                                    String data = valueElement.getElement("data").getText();
-                                    JSONParser parser = new JSONParser();
-                                    JSONObject dataObj = (JSONObject) parser.parse(data);
+                                    JSONObject dataObj = new JSONObject();
+                                    XMLBuilder dataBuilder = valueElement.getElement("data");
+                                    dataObj.put("click_action", dataBuilder.getElement("click_action").getText());
+                                    dataObj.put("content_available", dataBuilder.getElement("content_available").getText());
+                                    dataObj.put("module_name", dataBuilder.getElement("module_name").getText());
+                                    dataObj.put("priority", dataBuilder.getElement("priority").getText());
+                                    dataObj.put("sound", dataBuilder.getElement("sound").getText());
+                                    dataObj.put("summary_id", dataBuilder.getElement("summary_id").getText());
+                                    dataObj.put("text", dataBuilder.getElement("text").getText());
+                                    dataObj.put("title", dataBuilder.getElement("title").getText());
+                                    JSONObject body = new JSONObject();
+                                    body.put("name", templateName);
+                                    body.put("data", dataObj);
+                                    body.put("notification", dataObj);
                                     templateJson.put(PackageConstants.AppXMLConstants.APPLICATION, appId);
                                     templateJson.put("id", valueElement.getElement("id").getText());
-                                    templateJson.put("body", valueElement.getElement("body").getText());
+                                    templateJson.put("body", body.toJSONString());
                                     templateJson.put("isPushNotification", Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
                                     templateJson.put("isSendNotification", Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
-                                    templateJson.put("message", dataObj.get("text"));
-                                    templateJson.put("subject", dataObj.get("title"));
+                                    templateJson.put("message", dataBuilder.getElement("text").getText());
+                                    templateJson.put("subject", dataBuilder.getElement("title").getText());
                                     templateJson.put("name", templateName);
                                     templateJson.put("to", valueElement.getElement("id").getText());
                                     templateJson.put("type", Template.Type.PUSH_NOTIFICATION);

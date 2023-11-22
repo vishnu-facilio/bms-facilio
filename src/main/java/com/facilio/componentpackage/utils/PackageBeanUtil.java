@@ -49,8 +49,11 @@ import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.xml.builder.XMLBuilder;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -75,7 +78,7 @@ public class PackageBeanUtil {
         add(FacilioModule.ModuleType.Q_AND_A_RESPONSE.getValue());
     }};
 
-    public static final List<String> SUPPORTED_PICKLIST_MODULES = new ArrayList<String>(){{
+    public static final List<String> SUPPORTED_PICKLIST_MODULES = new ArrayList<String>() {{
         add(FacilioConstants.ContextNames.ASSET_TYPE);
         add(FacilioConstants.ContextNames.TICKET_TYPE);
         add(FacilioConstants.ContextNames.SPACE_CATEGORY);
@@ -120,25 +123,25 @@ public class PackageBeanUtil {
         return appNameVsAppId;
     }
 
-    public static Map<String,Long> getStateNameVsId(String moduleName) throws Exception{
+    public static Map<String, Long> getStateNameVsId(String moduleName) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
-        Map<String,Long> stateNameVsId = new HashMap<>();
-        List<FacilioStatus> ticketStatusesForModule = TicketAPI.getAllStatus(module,true);
-        if (CollectionUtils.isNotEmpty(ticketStatusesForModule)){
-            for (FacilioStatus status : ticketStatusesForModule){
-                stateNameVsId.put(status.getStatus(),status.getId());
+        Map<String, Long> stateNameVsId = new HashMap<>();
+        List<FacilioStatus> ticketStatusesForModule = TicketAPI.getAllStatus(module, true);
+        if (CollectionUtils.isNotEmpty(ticketStatusesForModule)) {
+            for (FacilioStatus status : ticketStatusesForModule) {
+                stateNameVsId.put(status.getStatus(), status.getId());
             }
         }
         return stateNameVsId;
     }
 
-    public static Map<String,Long> getStateTransitionNameVsId(String moduleName,String stateflowName) throws Exception{
+    public static Map<String, Long> getStateTransitionNameVsId(String moduleName, String stateflowName) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule(moduleName);
-        WorkflowRuleContext stateflow = WorkflowRuleAPI.getWorkflowRule(stateflowName,module, WorkflowRuleContext.RuleType.STATE_FLOW,false);
+        WorkflowRuleContext stateflow = WorkflowRuleAPI.getWorkflowRule(stateflowName, module, WorkflowRuleContext.RuleType.STATE_FLOW, false);
         long stateflowId = stateflow != null ? stateflow.getId() : -1l;
-        Map<String,Long> stateTransitionNameVsId = new HashMap<>();
+        Map<String, Long> stateTransitionNameVsId = new HashMap<>();
         List<WorkflowRuleContext> stateTransitionsForStateFlow = StateFlowRulesAPI.getAllStateTransitionList(stateflowId);
         if (CollectionUtils.isNotEmpty(stateTransitionsForStateFlow)) {
             for (WorkflowRuleContext workflowRuleContext : stateTransitionsForStateFlow) {
@@ -152,7 +155,7 @@ public class PackageBeanUtil {
         Map<String, Object> data = new HashMap<>();
         data.put(moduleName, ids);
 
-        V3Util.deleteRecords(moduleName, data,null,null,false);
+        V3Util.deleteRecords(moduleName, data, null, null, false);
     }
 
     public static void addPickListConfForXML(String moduleName, String nameFieldName, List<? extends ModuleBaseWithCustomFields> records, Class<?> clazz, boolean isTicketStatus) throws Exception {
@@ -536,9 +539,9 @@ public class PackageBeanUtil {
                         FacilioModule lookupModule = ((LookupField) field).getLookupModule();
                         if (lookupModule.getName().equals(FacilioConstants.ContextNames.TICKET_STATUS)) {
                             conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), facilioModule.getName(), valueArr, true));
-                        } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModule.getName())){
+                        } else if (SUPPORTED_PICKLIST_MODULES.contains(lookupModule.getName())) {
                             conditionElement.addElement(pickListXMLBuilder(conditionElement.element(PackageConstants.CriteriaConstants.PICKLIST_ELEMENT), lookupModule.getName(), valueArr, false));
-                        } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())){
+                        } else if (FacilioConstants.ContextNames.USERS.equals(lookupModule.getName())) {
                             XMLBuilder userElementList = conditionElement.element(PackageConstants.CriteriaConstants.USER_ELEMENT_LIST);
                             for (String val : valueArr) {
                                 if (DYNAMIC_CONDITION_VALUES.contains(val)) {
@@ -551,7 +554,7 @@ public class PackageBeanUtil {
                                     userElementList.addElement(userElement);
                                 }
                             }
-                        } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModule.getName())){
+                        } else if (FacilioConstants.ContextNames.PEOPLE.equals(lookupModule.getName())) {
                             XMLBuilder peopleElementList = conditionElement.element(PackageConstants.CriteriaConstants.PEOPLE_ELEMENT_LIST);
                             for (String val : valueArr) {
                                 if (DYNAMIC_CONDITION_VALUES.contains(val)) {
@@ -769,7 +772,7 @@ public class PackageBeanUtil {
         String identifier = userElement.getElement(PackageConstants.UserConstants.IDENTIFIER).getText();
 
         long orgUserId = (StringUtils.isNotEmpty(userName) && StringUtils.isNotEmpty(identifier))
-                            ? PackageUtil.getOrgUserId(userName, identifier) : -1;
+                ? PackageUtil.getOrgUserId(userName, identifier) : -1;
 
         return orgUserId;
     }
@@ -820,7 +823,7 @@ public class PackageBeanUtil {
 
         String v2WorkFlowStr = workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).getCData();
         boolean isV2Script = Boolean.parseBoolean(workFlowBuilder.getElement(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).getText());
-        int wfUIMode=Integer.parseInt(workFlowBuilder.getElement(PackageConstants.FunctionConstants.UI_MODE).getText());
+        int wfUIMode = Integer.parseInt(workFlowBuilder.getElement(PackageConstants.FunctionConstants.UI_MODE).getText());
 
         WorkflowContext workflowContext = new WorkflowContext();
         workflowContext.setWorkflowV2String(v2WorkFlowStr);
@@ -870,10 +873,10 @@ public class PackageBeanUtil {
 
                 case GROUP:
                     long groupId = singleSharingContext.getGroupId();
-                     Group group = AccountUtil.getGroupBean().getGroup(groupId);
-                     if (group != null) {
-                         singleSharingElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
-                     }
+                    Group group = AccountUtil.getGroupBean().getGroup(groupId);
+                    if (group != null) {
+                        singleSharingElement.element(PackageConstants.GroupConstants.GROUP_NAME).text(group.getName());
+                    }
                     break;
 
                 case FIELD:
@@ -949,7 +952,7 @@ public class PackageBeanUtil {
                 case TENANT:
                 case VENDOR:
                     if (singleSharingElement.getElement(PackageConstants.FIELDNAME) == null || singleSharingElement.getElement(PackageConstants.FIELD_MODULE_NAME) == null) {
-                         continue;
+                        continue;
                     }
                     String fieldName = singleSharingElement.getElement(PackageConstants.FIELDNAME).getText();
                     String moduleName = singleSharingElement.getElement(PackageConstants.FIELD_MODULE_NAME).getText();
@@ -1094,26 +1097,76 @@ public class PackageBeanUtil {
                 XMLBuilder templateElement = actionElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE);
                 templateElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE_NAME).text(templateContext.getName());
                 templateElement.element(PackageConstants.WorkFlowRuleConstants.TEMPLATE_TYPE).text(templateContext.getTypeEnum().name());
-                if (StringUtils.isNotEmpty(templateContext.getPlaceholderStr()) && !(templateContext.getPlaceholderStr().equals("[]"))){
+                if (StringUtils.isNotEmpty(templateContext.getPlaceholderStr()) && !(templateContext.getPlaceholderStr().equals("[]"))) {
                     templateElement.element(PackageConstants.WorkFlowRuleConstants.PLACEHOLDER).cData(templateContext.getPlaceholderStr());
                 }
                 templateElement.element(PackageConstants.WorkFlowRuleConstants.IS_FTL).text(String.valueOf(templateContext.isFtl()));
                 templateElement.element(PackageConstants.WorkFlowRuleConstants.IS_ATTACHMENT_ADDED).text(String.valueOf(templateContext.getIsAttachmentAdded()));
                 if (templateContext.getWorkflow() != null) {
-                XMLBuilder workflow = templateElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW);
-                workflow.element(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS).text(String.valueOf(templateContext.getWorkflow().getExpressions()));
-                XMLBuilder parameterBuilder = workflow.element(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
-                List<ParameterContext> parameterList = templateContext.getWorkflow().getParameters();
-                for (ParameterContext parameter : parameterList) {
-                   XMLBuilder parameters = parameterBuilder.element("parameter");
-                   parameters.element("name").text(parameter.getName());
-                   parameters.element("typeString").text(parameter.getTypeString());
-                   if (parameter.getValue() != null) {
-                       parameters.element("value").text(String.valueOf(parameter.getValue()));
-                   }
-                   parameters.element("workflowFieldType").text(String.valueOf(parameter.getWorkflowFieldType()));
-                }
-                workflow.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(templateContext.getWorkflow().getWorkflowString());
+                    XMLBuilder workflow = templateElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW);
+
+                    XMLBuilder expressionsElement = workflow.element(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS);
+                    WorkflowContext workflowObj = templateContext.getWorkflow();
+                    List<WorkflowExpression> expressionArray = workflowObj.getExpressions();
+                    WorkflowExpression workflowExpression = expressionArray.get(0);
+                    if (workflowExpression instanceof ExpressionContext) {
+                        for (WorkflowExpression obj : expressionArray) {
+                            ExpressionContext exp = (ExpressionContext) obj;
+                            XMLBuilder expressionElement = expressionsElement.element("Expression");
+                            String constant = exp.getConstant() != null ? exp.getConstant().toString() : null;
+                            String name = exp.getName() != null ? exp.getName() : null;
+                            if (StringUtils.isNotEmpty(constant)) {
+                                expressionElement.element("Constant").text(constant);
+                            }
+                            if (StringUtils.isNotEmpty(name)) {
+                                expressionElement.element("Name").text(name);
+                            }
+
+                            String aggregateString = exp.getAggregateString() != null ? exp.getAggregateString().toString() : null;
+                            String fieldName = exp.getFieldName() != null ? exp.getFieldName() : null;
+                            String moduleName = exp.getModuleName() != null ? exp.getModuleName() : null;
+                            Criteria expressionCriteria = exp.getCriteria() != null ? exp.getCriteria() : null;
+                           expressionElement.addElement(PackageBeanUtil.constructBuilderFromCriteria(expressionCriteria, expressionElement.element(PackageConstants.CriteriaConstants.CRITERIA), moduleName));
+                            if (expressionCriteria != null && !expressionCriteria.isEmpty()) {
+                                Map<String, Condition> conditions = expressionCriteria.getConditions();
+                                XMLBuilder ouidListElement = expressionElement.element("OuidList");
+                                for (String key : conditions.keySet()) {
+                                    Condition condition = conditions.get(key);
+                                    if (condition.getFieldName().equals("ouid")) {
+                                        String[] ouids = condition.getValue().trim().split(FacilioUtil.COMMA_SPLIT_REGEX);
+                                        for (String str : ouids) {
+                                            XMLBuilder ouid = ouidListElement.element("Ouid");
+                                            Long ouidLong = Long.parseLong(str);
+                                            PackageBeanUtil.userXMLBuilder(ouid, ouidLong);
+                                        }
+                                    }
+                                }
+                            }
+                            if (StringUtils.isNotEmpty(aggregateString)) {
+                                expressionElement.element("AggregateString").text(aggregateString);
+                            }
+                            if (StringUtils.isNotEmpty(fieldName)) {
+                                expressionElement.element("FieldName").text(fieldName);
+                            }
+                            if (StringUtils.isNotEmpty(moduleName)) {
+                                expressionElement.element("ModuleName").text(moduleName);
+                            }
+                        }
+
+                    }
+
+                    XMLBuilder parameterBuilder = workflow.element(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
+                    List<ParameterContext> parameterList = templateContext.getWorkflow().getParameters();
+                    for (ParameterContext parameter : parameterList) {
+                        XMLBuilder parameters = parameterBuilder.element("parameter");
+                        parameters.element("name").text(parameter.getName());
+                        parameters.element("typeString").text(parameter.getTypeString());
+                        if (parameter.getValue() != null) {
+                            parameters.element("value").text(String.valueOf(parameter.getValue()));
+                        }
+                        parameters.element("workflowFieldType").text(String.valueOf(parameter.getWorkflowFieldType()));
+                    }
+                    workflow.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(templateContext.getWorkflow().getWorkflowString());
                 }
                 if (templateContext.getUserWorkflow() != null) {
                     XMLBuilder workFlowElement = templateElement.element(PackageConstants.WorkFlowRuleConstants.USER_WORKFLOW);
@@ -1197,15 +1250,31 @@ public class PackageBeanUtil {
                         String appLinkName = application != null ? application.getLinkName() : FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP;
                         JSONObject obj = ((PushNotificationTemplate) templateContext).getOriginalTemplate();
                         UserNotificationContext userNotification = UserNotificationContext.instance(obj);
-                        String moduleName = (String) ((JSONObject)obj.get("notification")).get("module_name");
-                        long parentModuleId = StringUtils.isNotEmpty(moduleName) ? moduleBean.getModule(moduleName).getModuleId() : moduleBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION).getModuleId();
+                        String moduleName = (String) ((JSONObject) obj.get("notification")).get("module_name");
+                        FacilioModule parentModule = moduleBean.getModule(moduleName);
+                        long parentModuleId = StringUtils.isNotEmpty(moduleName) ? parentModule.getModuleId() : moduleBean.getModule(FacilioConstants.ContextNames.USER_NOTIFICATION).getModuleId();
                         userNotification.setParentModule(parentModuleId);
                         JSONObject structureObj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
                         pushNotificationElement.element(PackageConstants.AppXMLConstants.APP_LINK_NAME).text(appLinkName);
                         pushNotificationElement.element("id").text(((PushNotificationTemplate) templateContext).getTo());
                         pushNotificationElement.element("isSendNotification").text(String.valueOf(((PushNotificationTemplate) templateContext).getIsSendNotification()));
                         pushNotificationElement.element("name").text(templateContext.getName());
-                        pushNotificationElement.element("data").text(structureObj.get("data").toString());
+                        XMLBuilder bodyBuilder = pushNotificationElement.element("data");
+                        if (userNotification.getExtraParams() != null) {
+                            String clickAction = userNotification.getExtraParams().get("click_action") != null ? userNotification.getExtraParams().get("click_action").toString() : null;
+                            bodyBuilder.element("click_action").text(clickAction);
+                            String contentAvailable = userNotification.getExtraParams().get("content_available") != null ? userNotification.getExtraParams().get("content_available").toString() : null;
+                            bodyBuilder.element("content_available").text(contentAvailable);
+                            String priority = userNotification.getExtraParams().get("priority") != null ? userNotification.getExtraParams().get("priority").toString() : null;
+                            bodyBuilder.element("priority").text(priority);
+                            String sound = userNotification.getExtraParams().get("sound") != null ? userNotification.getExtraParams().get("sound").toString() : null;
+                            bodyBuilder.element("sound").text(sound);
+                            String summaryId = userNotification.getExtraParams().get("summary_id") != null ? userNotification.getExtraParams().get("summary_id").toString() : null;
+                            bodyBuilder.element("summary_id").text(summaryId);
+                        }
+                        bodyBuilder.element("module_name").text(parentModule.getName());
+                        bodyBuilder.element("text").text(userNotification.getSubject());
+                        bodyBuilder.element("title").text(userNotification.getTitle());
                         pushNotificationElement.element("notification").text(structureObj.get("notification").toString());
                         pushNotificationElement.element("body").text(structureObj.toJSONString());
                         break;
@@ -1250,14 +1319,52 @@ public class PackageBeanUtil {
                     XMLBuilder emailWorkflowElement = templateElement.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW);
                     WorkflowContext workflowParamExp = new WorkflowContext();
                     if (emailWorkflowElement != null) {
-                        try {
-                            JSONParser parser = new JSONParser();
-                            String expString = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS).getText();
-                            JSONArray expArray = (JSONArray) parser.parse(expString);
-                            workflowParamExp.setExpressions(expArray);
-                        } catch (Exception e) {
+                        XMLBuilder expressionsBuilder = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.EXPRESSIONS);
+                        List<XMLBuilder> expressionBuilder = expressionsBuilder.getElementList("Expression");
+                        JSONArray expressionArray = new JSONArray();
 
+                        for (XMLBuilder expression : expressionBuilder) {
+                            Map<String, Object> expressionProps = new HashMap<>();
+                            if (expression.getElement("Constant") != null) {
+                                expressionProps.put("constant", expression.getElement("Constant").getText());
+                            }
+                            if (expression.getElement("Name") != null) {
+                                expressionProps.put("name", expression.getElement("Name").getText());
+                            }
+                            if (expression.getElement("AggregateString") != null) {
+                                expressionProps.put("aggregateString", expression.getElement("AggregateString").getText());
+                            }
+                            if (expression.getElement("FieldName") != null) {
+                                expressionProps.put("fieldName", expression.getElement("FieldName").getText());
+                            }
+                            if (expression.getElement("ModuleName") != null) {
+                                expressionProps.put("moduleName", expression.getElement("ModuleName").getText());
+                            }
+                            XMLBuilder criteriaElement = expression.getElement(PackageConstants.CriteriaConstants.CRITERIA);
+                            if (criteriaElement != null) {
+                                Criteria criteria = PackageBeanUtil.constructCriteriaFromBuilder(criteriaElement);
+                                XMLBuilder ouidList = expression.getElement("OuidList");
+                                if (ouidList != null) {
+                                    List<XMLBuilder> ouids = ouidList.getElementList("Ouid");
+                                    List<Long> ouIds = new ArrayList<>();
+                                    for (XMLBuilder ouid : ouids) {
+                                        ouIds.add(PackageBeanUtil.userValueBuilder(ouid));
+                                    }
+                                    String ouidString = StringUtils.join(ouIds, ',');
+                                    for (String key : criteria.getConditions().keySet()) {
+                                        Condition condition = criteria.getConditions().get(key);
+                                        if (condition.getFieldName().equals("ouid")) {
+                                            condition.setValue(ouidString);
+                                        }
+                                    }
+                                }
+                                expressionProps.put("criteria", criteria);
+                            }
+                            expressionArray.add(expressionProps);
                         }
+
+                        workflowParamExp.setExpressions(expressionArray);
+
                         XMLBuilder parameterBuilder = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.PARAMETERS);
                         List<ParameterContext> parameterContexts = new ArrayList<>();
                         if (parameterBuilder != null) {
@@ -1357,24 +1464,24 @@ public class PackageBeanUtil {
 
                                 for (XMLBuilder valueElement : valueElements) {
                                     String emailStructureName = valueElement.getElement(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_NAME).getText();
-                                    Template emailStructureTemplate = StringUtils.isNotEmpty(emailStructureName) ?TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE) : null;
+                                    Template emailStructureTemplate = StringUtils.isNotEmpty(emailStructureName) ? TemplateAPI.getTemplate(emailStructureName, Template.Type.EMAIL_STRUCTURE) : null;
                                     if (emailStructureTemplate != null) {
                                         templateJson.put(PackageConstants.WorkFlowRuleConstants.EMAIL_STRUCTURE_ID, emailStructureTemplate.getId());
-                                        templateJson.put("message", ((EMailStructure)emailStructureTemplate).getMessage());
+                                        templateJson.put("message", ((EMailStructure) emailStructureTemplate).getMessage());
                                         templateJson.put("name", templateName);
                                         templateJson.put("subject", ((EMailStructure) emailStructureTemplate).getSubject());
-                                    }else {
+                                    } else {
                                         templateJson.put("message", valueElement.getElement("message").getCData());
                                         templateJson.put("name", templateName);
                                         templateJson.put("subject", valueElement.getElement("subject").getText());
                                     }
-                                        templateJson.put("ftl", isFtl);
-                                        templateJson.put("isAttachmentAdded", isAttachmentAdded);
-                                        templateJson.put("sendAsSeparateMail", Boolean.parseBoolean(valueElement.getElement("sendAsSeparateMail").getText()));
-                                        templateJson.put("to", valueElement.getElement("to").getText());
-                                        templateJson.put("type", templateType);
-                                        templateJson.put("userWorkflow", FieldUtil.getAsProperties(userWorkflowContext));
-                                        templateJson.put("workflow", FieldUtil.getAsProperties(workflowParamExp));
+                                    templateJson.put("ftl", isFtl);
+                                    templateJson.put("isAttachmentAdded", isAttachmentAdded);
+                                    templateJson.put("sendAsSeparateMail", Boolean.parseBoolean(valueElement.getElement("sendAsSeparateMail").getText()));
+                                    templateJson.put("to", valueElement.getElement("to").getText());
+                                    templateJson.put("type", templateType);
+                                    templateJson.put("userWorkflow", FieldUtil.getAsProperties(userWorkflowContext));
+                                    templateJson.put("workflow", FieldUtil.getAsProperties(workflowParamExp));
                                 }
                                 break;
 
@@ -1382,26 +1489,37 @@ public class PackageBeanUtil {
                             case PUSH_NOTIFICATION:
                                 List<XMLBuilder> pushNotificationValues = originalTemplateElement.getElementList(PackageConstants.VALUE_ELEMENT);
 
-                            for (XMLBuilder valueElement : pushNotificationValues) {
-                                String appLinkName = valueElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
-                                long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
-                                String data = valueElement.getElement("data").getText();
-                                JSONParser parser = new JSONParser();
-                                JSONObject dataObj = (JSONObject) parser.parse(data);
-                                templateJson.put(PackageConstants.AppXMLConstants.APPLICATION,appId);
-                                templateJson.put("id",valueElement.getElement("id").getText());
-                                templateJson.put("body",valueElement.getElement("body").getText());
-                                templateJson.put("isPushNotification",Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
-                                templateJson.put("isSendNotification",Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
-                                templateJson.put("message",dataObj.get("text"));
-                                templateJson.put("subject",dataObj.get("title"));
-                                templateJson.put("name",templateName);
-                                templateJson.put("to",valueElement.getElement("id").getText());
-                                templateJson.put("type",templateType);
-                                templateJson.put("userWorkflow",FieldUtil.getAsProperties(userWorkflowContext));
-                                templateJson.put("workflow",FieldUtil.getAsProperties(workflowParamExp));
-                            }
-                            break;
+                                for (XMLBuilder valueElement : pushNotificationValues) {
+                                    String appLinkName = valueElement.getElement(PackageConstants.AppXMLConstants.APP_LINK_NAME).getText();
+                                    long appId = ApplicationApi.getApplicationIdForLinkName(appLinkName);
+                                    JSONObject dataObj = new JSONObject();
+                                    XMLBuilder dataBuilder = valueElement.getElement("data");
+                                    dataObj.put("click_action", dataBuilder.getElement("click_action").getText());
+                                    dataObj.put("content_available", dataBuilder.getElement("content_available").getText());
+                                    dataObj.put("module_name", dataBuilder.getElement("module_name").getText());
+                                    dataObj.put("priority", dataBuilder.getElement("priority").getText());
+                                    dataObj.put("sound", dataBuilder.getElement("sound").getText());
+                                    dataObj.put("summary_id", dataBuilder.getElement("summary_id").getText());
+                                    dataObj.put("text", dataBuilder.getElement("text").getText());
+                                    dataObj.put("title", dataBuilder.getElement("title").getText());
+                                    JSONObject body = new JSONObject();
+                                    body.put("name", templateName);
+                                    body.put("data", dataObj);
+                                    body.put("notification", dataObj);
+                                    templateJson.put(PackageConstants.AppXMLConstants.APPLICATION, appId);
+                                    templateJson.put("id", valueElement.getElement("id").getText());
+                                    templateJson.put("body", body.toJSONString());
+                                    templateJson.put("isPushNotification", Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
+                                    templateJson.put("isSendNotification", Boolean.parseBoolean(valueElement.getElement("isSendNotification").getText()));
+                                    templateJson.put("message", dataBuilder.getElement("text").getText());
+                                    templateJson.put("subject", dataBuilder.getElement("title").getText());
+                                    templateJson.put("name", templateName);
+                                    templateJson.put("to", valueElement.getElement("id").getText());
+                                    templateJson.put("type", templateType);
+                                    templateJson.put("userWorkflow", FieldUtil.getAsProperties(userWorkflowContext));
+                                    templateJson.put("workflow", FieldUtil.getAsProperties(workflowParamExp));
+                                }
+                                break;
 
                             default:
                                 break;
@@ -1435,6 +1553,7 @@ public class PackageBeanUtil {
 
         return builder.get();
     }
+
     public static List<?> getModuleDataForId(Long id, FacilioModule module, Class<?> clazz) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
@@ -1503,28 +1622,28 @@ public class PackageBeanUtil {
     }
 
 
-    public static long getFormRuleId(FormRuleContext formRule) throws Exception{
+    public static long getFormRuleId(FormRuleContext formRule) throws Exception {
 
         GenericSelectRecordBuilder ruleSelectBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getFormRuleModule().getTableName())
                 .select(FieldFactory.getFormRuleFields());
 
-        if (formRule.getFormId()>0){
+        if (formRule.getFormId() > 0) {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("FORM_ID", "formId", String.valueOf(formRule.getFormId()), NumberOperators.EQUALS));
         }
 
-        if (formRule.getSubFormId()>0){
+        if (formRule.getSubFormId() > 0) {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("SUB_FORM_ID", "subFormId", String.valueOf(formRule.getSubFormId()), NumberOperators.EQUALS));
         }
 
-        if(StringUtils.isNotEmpty(formRule.getName())){
+        if (StringUtils.isNotEmpty(formRule.getName())) {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", formRule.getName(), StringOperators.IS));
         }
 
-        if(StringUtils.isNotEmpty(formRule.getDescription())) {
+        if (StringUtils.isNotEmpty(formRule.getDescription())) {
             ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("DESCRIPTION", "description", formRule.getDescription(), StringOperators.IS));
         }
-        ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_RULE", "isDefault",String.valueOf(formRule.getIsDefault()), BooleanOperators.IS));
+        ruleSelectBuilder.andCondition(CriteriaAPI.getCondition("IS_DEFAULT_RULE", "isDefault", String.valueOf(formRule.getIsDefault()), BooleanOperators.IS));
 
         Map<String, Object> prop = ruleSelectBuilder.fetchFirst();
         return MapUtils.isNotEmpty(prop) ? (Long) prop.get("id") : -1;
@@ -1555,7 +1674,7 @@ public class PackageBeanUtil {
         return nsBuilder;
     }
 
-    public static XMLBuilder constructBuilderFromNameSpaceFields(List<NameSpaceField> nsFldCtx ,XMLBuilder nsBuilder) throws Exception {
+    public static XMLBuilder constructBuilderFromNameSpaceFields(List<NameSpaceField> nsFldCtx, XMLBuilder nsBuilder) throws Exception {
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         XMLBuilder fields = nsBuilder.e("Fields");
@@ -1591,7 +1710,7 @@ public class PackageBeanUtil {
             Long execInterval = Long.valueOf(namespaceBuilder.getElement("execInterval").getText());
             ns.setExecInterval(execInterval);
         }
-        int nsType= Integer.parseInt(namespaceBuilder.getElement("type").getText());
+        int nsType = Integer.parseInt(namespaceBuilder.getElement("type").getText());
         XMLBuilder nsFieldsElement = namespaceBuilder.getElement("Fields");
 
         if (nsFieldsElement != null) {
@@ -1649,7 +1768,7 @@ public class PackageBeanUtil {
             criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
         }
         criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
-        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class,Boolean.FALSE);
+        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class, Boolean.FALSE);
         return props;
     }
 
@@ -1658,7 +1777,7 @@ public class PackageBeanUtil {
         List<V3AssetCategoryContext> props = getAssetCategories(fetchSystem);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetCategoryContext prop : props) {
-                assetCategoryIdVsModuleId.put( prop.getId(), prop.getModuleId());
+                assetCategoryIdVsModuleId.put(prop.getId(), prop.getModuleId());
             }
         }
         return assetCategoryIdVsModuleId;
@@ -1670,7 +1789,7 @@ public class PackageBeanUtil {
         List<V3AssetCategoryContext> props = getAssetCategories(fetchSystem);
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3AssetCategoryContext prop : props) {
-                assetCategoryIdVsModuleId.put( prop.getDisplayName(), prop.getId());
+                assetCategoryIdVsModuleId.put(prop.getDisplayName(), prop.getId());
             }
         }
         return assetCategoryIdVsModuleId;
@@ -1764,7 +1883,7 @@ public class PackageBeanUtil {
                 break;
 
             case LARGE_TEXT:
-                fieldProps.put("skipSizeCheck", ((LargeTextField)oldField).getSkipSizeCheck());
+                fieldProps.put("skipSizeCheck", ((LargeTextField) oldField).getSkipSizeCheck());
                 break;
 
             case LOOKUP:
@@ -1853,7 +1972,7 @@ public class PackageBeanUtil {
                 String regex = fieldElement.getElement("regex").getText();
                 int maxLength = Integer.parseInt(fieldElement.getElement("maxLength").getText());
                 facilioField = (StringField) FieldUtil.getAsBeanFromMap(fieldProp, StringField.class);
-                ((StringField)facilioField).setRegex(regex);
+                ((StringField) facilioField).setRegex(regex);
                 ((StringField) facilioField).setMaxLength(maxLength);
                 break;
 
@@ -1958,7 +2077,7 @@ public class PackageBeanUtil {
                     if (lookupModule != null) lookupModuleId = lookupModule.getModuleId();
                 }
 
-                if (dataTypeInt == FieldType.LOOKUP.getTypeAsInt() ) {
+                if (dataTypeInt == FieldType.LOOKUP.getTypeAsInt()) {
                     facilioField = (LookupField) FieldUtil.getAsBeanFromMap(fieldProp, LookupField.class);
                     ((LookupField) facilioField).setRelatedListDisplayName(relatedListDisplayName);
                     ((LookupField) facilioField).setLookupModuleId(lookupModuleId);
@@ -2023,14 +2142,14 @@ public class PackageBeanUtil {
         return dayOfWeeks;
     }
 
-    public static void deleteV3OldRecordFromTargetOrg(String moduleName, Map<String, Long> sourceOrgComponentUIdVsId , List<Long> targetOrgComponentIds) throws Exception {
+    public static void deleteV3OldRecordFromTargetOrg(String moduleName, Map<String, Long> sourceOrgComponentUIdVsId, List<Long> targetOrgComponentIds) throws Exception {
         if (CollectionUtils.isNotEmpty(targetOrgComponentIds) && MapUtils.isNotEmpty(sourceOrgComponentUIdVsId)) {
             targetOrgComponentIds.removeAll(sourceOrgComponentUIdVsId.values());
             if (CollectionUtils.isNotEmpty(targetOrgComponentIds)) {
                 for (long id : targetOrgComponentIds) {
                     JSONObject data = new JSONObject();
                     data.put(moduleName, id);
-                    V3Util.deleteRecords(moduleName, data,null,null,false);
+                    V3Util.deleteRecords(moduleName, data, null, null, false);
                 }
             }
         }
@@ -2072,7 +2191,7 @@ public class PackageBeanUtil {
             for (XMLBuilder attachmentElement : attachmentElements) {
                 if (attachmentElement != null) {
                     FileContext fileContext = PackageFileUtil.addMetaFileAndGetContext(attachmentElement);
-                    if(fileContext != null) {
+                    if (fileContext != null) {
                         Map<String, Object> attachmentObj = new HashMap<>();
                         attachmentObj.put("fileId", fileContext.getFileId());
                         attachmentObj.put("type", 1L);
