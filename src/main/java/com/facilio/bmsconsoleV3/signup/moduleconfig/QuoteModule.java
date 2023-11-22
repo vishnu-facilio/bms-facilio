@@ -11,18 +11,20 @@ import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.SystemButtonApi;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
 import org.json.simple.JSONObject;
@@ -58,6 +60,7 @@ public class QuoteModule extends BaseModuleConfig{
 
     private static void addSystemButtons() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
         SystemButtonRuleContext downloadPdf = new SystemButtonRuleContext();
         downloadPdf.setName("Download Pdf");
         downloadPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -116,6 +119,34 @@ public class QuoteModule extends BaseModuleConfig{
         edit.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         edit.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,edit);
+
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.QUOTE);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.QUOTE);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.QUOTE);
+
+        FacilioStatus status = TicketAPI.getStatus(module, "Draft");
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("moduleState",module.getName()),String.valueOf(status.getId()) , NumberOperators.EQUALS));
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        listDeleteButton.setCriteria(criteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE, listDeleteButton);
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        listEditButton.setCriteria(criteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE, listEditButton);
 
 
     }

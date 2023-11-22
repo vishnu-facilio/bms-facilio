@@ -1037,6 +1037,43 @@ public class AddJobPlanModule extends BaseModuleConfig{
         versionButton.setPermissionRequired(true);
         versionButton.setPermission("READ");
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, versionButton);
+
+        SystemButtonRuleContext bulkPublishButton = new SystemButtonRuleContext();
+        bulkPublishButton.setName("Publish");
+        bulkPublishButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        bulkPublishButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkPublishButton.setIdentifier("bulk_publish");
+        bulkPublishButton.setPermissionRequired(true);
+        bulkPublishButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, bulkPublishButton);
+
+        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.JOB_PLAN);
+        SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.JOB_PLAN);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.JOB_PLAN);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.JOB_PLAN);
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("JP_STATUS","jpStatus",String.valueOf(JobPlanContext.JPStatus.IN_ACTIVE.getVal()),NumberOperators.EQUALS));
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        listDeleteButton.setCriteria(criteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, listDeleteButton);
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        listEditButton.setCriteria(criteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, listEditButton);
     }
 
 }
