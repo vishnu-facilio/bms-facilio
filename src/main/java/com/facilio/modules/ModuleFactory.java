@@ -714,6 +714,14 @@ public class ModuleFactory {
 		return readingRuleModule;
 	}
 
+	public static FacilioModule getReadingKpiModule() {
+		FacilioModule readingKpiModule = new FacilioModule();
+		readingKpiModule.setName("readingkpi");
+		readingKpiModule.setDisplayName("ReadingKPI");
+		readingKpiModule.setTableName("ReadingKPI");
+		return readingKpiModule;
+	}
+
 	public static FacilioModule getFlowModule(){
 		FacilioModule flowModule = new FacilioModule();
 		flowModule.setName("flow");

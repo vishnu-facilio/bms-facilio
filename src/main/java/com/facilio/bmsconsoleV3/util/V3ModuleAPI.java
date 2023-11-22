@@ -101,6 +101,7 @@ public class V3ModuleAPI {
         JOB_PLAN(FacilioConstants.ContextNames.JOB_PLAN,Arrays.asList()),
         PLANNEDMAINTENANCE(ContextNames.PLANNEDMAINTENANCE,Arrays.asList(FacilioConstants.ApplicationLinkNames.FSM_APP)),
         RULES(FacilioConstants.ReadingRules.NEW_READING_RULE, Arrays.asList()),
+        NEW_KPI(FacilioConstants.ReadingKpi.READING_KPI, Arrays.asList()),
         ROUTES(ContextNames.ROUTES,Arrays.asList()),
         SHIFT(FacilioConstants.Shift.SHIFT, Arrays.asList(FacilioConstants.ApplicationLinkNames.IWMS_APP, FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         REQUEST_FOR_QUOTATION(ContextNames.REQUEST_FOR_QUOTATION,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),

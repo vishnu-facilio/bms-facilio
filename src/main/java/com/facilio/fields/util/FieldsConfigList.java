@@ -119,6 +119,22 @@ public class FieldsConfigList {
             "id", "localId", "costImpact", "energyImpact"
     );
 
+    public static final List<String> BMS_ALARM_FIELDS_INCLUDE = Arrays.asList( //SORT
+            "subject", "acknowledgedBy", "acknowledgedTime", "description", "resource", "severity", "lastOccurredTime", "lastClearedTime", "lastOccurrenceId",
+            "lastCreatedTime", "noOfOccurrences", "lastWoId", "condition", "source", "controller", "alarmClass"
+    );
+
+    public static final List<String> SENSOR_ALARM_FIELDS_INCLUDE = Arrays.asList( //SORT
+            "subject", "acknowledgedBy", "acknowledgedTime", "description", "resource", "severity", "lastOccurredTime", "lastClearedTime", "lastOccurrenceId",
+            "lastCreatedTime", "noOfOccurrences", "lastWoId", "readingFieldId"
+    );
+
+    public static final List<String> NEW_READING_ALARM_FIELDS_INCLUDE = Arrays.asList( //SORT
+            "subject", "acknowledgedBy", "acknowledgedTime", "description", "resource", "severity", "lastOccurredTime", "lastClearedTime", "lastOccurrenceId",
+            "lastCreatedTime", "noOfOccurrences", "lastWoId", "rule", "readingAlarmCategory", "faultType", "energyImpact",
+            "costImpact", "readingAlarmAssetCategory"
+    );
+
     public static final List<String> NEW_OP_ALARMS_FIELDS_INCLUDE = Arrays.asList( //SORT
             "subject", "severity", "lastClearedTime", "lastCreatedTime",
             "lastOccurredTime", "resource", "id", "localId"

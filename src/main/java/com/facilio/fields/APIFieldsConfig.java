@@ -77,11 +77,16 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .add(FieldsConfigList.NEW_ALARMS_FIELDS_INCLUDE)
+                .add(FieldsConfigList.NEW_READING_ALARM_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.NEW_READING_ALARM_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
-                .addFixedFields(Arrays.asList("severity"))
+                .add(FieldsConfigList.NEW_READING_ALARM_FIELDS_INCLUDE)
+                .addFixedFields(Arrays.asList("severity", "subject"))
                 .done();
     }
 
@@ -90,11 +95,16 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .sortFields()
-                .add(FieldsConfigList.NEW_ALARMS_FIELDS_INCLUDE)
+                .add(FieldsConfigList.BMS_ALARM_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.BMS_ALARM_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
-                .addFixedSelectableFields(Arrays.asList("severity"))
+                .add(FieldsConfigList.BMS_ALARM_FIELDS_INCLUDE)
+                .addFixedFields(Arrays.asList("severity", "subject"))
                 .done();
     }
 
@@ -146,10 +156,15 @@ public class APIFieldsConfig {
         return () -> new FieldConfig()
 
                 .advancedFields()
-                .skip(FieldsConfigList.SENSOR_ALARM_FIELDS_TO_EXCLUDE)
+                .add(FieldsConfigList.SENSOR_ALARM_FIELDS_INCLUDE)
+                .done()
+
+                .sortFields()
+                .add(FieldsConfigList.SENSOR_ALARM_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
+                .add(FieldsConfigList.SENSOR_ALARM_FIELDS_INCLUDE)
                 .addFixedFields(Arrays.asList("readingFieldId", "subject"))
                 .done();
     }

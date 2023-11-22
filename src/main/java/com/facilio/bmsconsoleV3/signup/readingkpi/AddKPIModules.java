@@ -2,7 +2,9 @@ package com.facilio.bmsconsoleV3.signup.readingkpi;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -12,11 +14,13 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
-public class AddKPIModules extends SignUpData {
+public class AddKPIModules extends BaseModuleConfig {
+
+    public AddKPIModules() throws Exception {
+        setModuleName(FacilioConstants.ReadingKpi.READING_KPI);
+    }
 
     @Override
     public void addData() throws Exception {
@@ -111,5 +115,46 @@ public class AddKPIModules extends SignUpData {
 
         module.setFields(fields);
         return module;
+    }
+
+    @Override
+    public List<Map<String, Object>> getViewsAndGroups() {
+        List<Map<String, Object>> groupVsViews = new ArrayList<>();
+        Map<String, Object> groupDetails;
+
+        int order = 1;
+        ArrayList<FacilioView> readingKpi = new ArrayList<FacilioView>();
+        readingKpi.add(getReadingKpi("all", "All KPI").setOrder(order++));
+
+        groupDetails = new HashMap<>();
+        groupDetails.put("name", "readingKpiViews");
+        groupDetails.put("displayName", "Reading KPI");
+        groupDetails.put("moduleName", FacilioConstants.ReadingKpi.READING_KPI);
+        groupDetails.put("views", readingKpi);
+        groupVsViews.add(groupDetails);
+
+        return groupVsViews;
+    }
+    private static FacilioView getReadingKpi(String name, String displayName) {
+
+        FacilioField createdTime = new FacilioField();
+        createdTime.setName("sysCreatedTime");
+        createdTime.setDataType(FieldType.NUMBER);
+        createdTime.setColumnName("SYS_CREATED_TIME");
+        createdTime.setModule(ModuleFactory.getReadingKpiModule());
+
+        FacilioView view = new FacilioView();
+        view.setName(name);
+        view.setDisplayName(displayName);
+        view.setModuleName(FacilioConstants.ReadingKpi.READING_KPI);
+        view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+        view.setDefault(true);
+
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        view.setAppLinkNames(appLinkNames);
+
+        return view;
     }
 }

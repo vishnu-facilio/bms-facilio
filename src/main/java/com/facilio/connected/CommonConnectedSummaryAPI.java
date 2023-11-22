@@ -15,11 +15,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 import static com.facilio.modules.FieldFactory.getStringField;
 
 public class CommonConnectedSummaryAPI {
-
+    private static final List<String> ALARM_EXCLUDE_FIELDS = Arrays.asList("key", "type", "acknowledged", "noOfNotes");
+    private static final List<String> RULE_EXCLUDE_FIELDS = Arrays.asList("categoryId", "readingModuleId", "readingFieldId", "resourceType", "autoClear", "linkName");
 
     public static List<PagesContext> getNewReadingRuleSystemPage(ApplicationContext app, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -96,6 +98,10 @@ public class CommonConnectedSummaryAPI {
         FacilioField assetCategory = moduleBean.getField("assetCategory", moduleName);
 
         FacilioField messageField = getStringField("Message", "MESSAGE", module);
+        messageField.setDisplayName("Message");
+
+        List<String> readingRuleFilterFields = new ArrayList<>(RULE_EXCLUDE_FIELDS);
+        readingRuleFilterFields.addAll(Arrays.asList("description", "assetCategory"));
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
@@ -112,9 +118,11 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        List<FacilioField> filteredFields = fields.stream().filter(field -> !readingRuleFilterFields.contains(field.getName())).collect(Collectors.toList());
+
         int columnNo = 1, rowNo = 1;
         Stack<FacilioField> stack = new Stack<>();
-        for (FacilioField field : fields) {
+        for (FacilioField field : filteredFields) {
             if("description".equals(field.getName()) ||(FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
                 stack.push(field);
                 continue;
@@ -203,17 +211,17 @@ public class CommonConnectedSummaryAPI {
                 .addTab("insight", "Insight", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("impactDetails", null, null)
-                .addWidget("meanTimeBetweenOccurrence","Mean time between occurrences", PageWidget.WidgetType.MEAN_TIME_BETWEEN_OCCURRENCE, "webMeanTimeBetweenOccurrence_3_6",0,0, null, null)
+                .addWidget("meanTimeBetweenOccurrence","Mean Time between Occurrences", PageWidget.WidgetType.MEAN_TIME_BETWEEN_OCCURRENCE, "webMeanTimeBetweenOccurrence_3_6",0,0, null, null)
                 .widgetDone()
-                .addWidget("meanTimeToClear", "Mean time to clear", PageWidget.WidgetType.MEAN_TIME_TO_CLEAR, "webMeanTimeToClear_3_6", 6, 0, null, null)
+                .addWidget("meanTimeToClear", "Mean Time to Clear", PageWidget.WidgetType.MEAN_TIME_TO_CLEAR, "webMeanTimeToClear_3_6", 6, 0, null, null)
                 .widgetDone()
-                .addWidget("noOfOccurrences", "No. of occurrences", PageWidget.WidgetType.NO_OF_OCCURRENCES, "webNoOfOccurrences_3_6", 0, 6, null, null)
+                .addWidget("noOfOccurrences", "No of Occurrences", PageWidget.WidgetType.NO_OF_OCCURRENCES, "webNoOfOccurrences_3_6", 0, 6, null, null)
                 .widgetDone()
                 .addWidget("impactInfo", "Impact template", PageWidget.WidgetType.IMPACT_INFO, "webImpactInfo_3_6", 6, 6, null, null)
                 .widgetDone()
-                .addWidget("costImpact", "Cost impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact_3_6", 0,12, null, null)
+                .addWidget("costImpact", "Cost Impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact_3_6", 0,12, null, null)
                 .widgetDone()
-                .addWidget("energyImpact", "Energy impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact_3_6", 6,12, null, null)
+                .addWidget("energyImpact", "Energy Impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact_3_6", 6,12, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -251,14 +259,16 @@ public class CommonConnectedSummaryAPI {
         FacilioField rule = moduleBean.getField("rule", moduleName);
         FacilioField resource = moduleBean.getField("resource", moduleName);
 
+        List<String> readingAlarmFilterFields = new ArrayList<>(ALARM_EXCLUDE_FIELDS);
+        readingAlarmFilterFields.addAll(Arrays.asList("lastOccurredTime", "lastCreatedTime", "rule", "resource", "subRule", "readingFieldId", "isNewReadingRule"));
+
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 1, 1, true);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1);
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
@@ -267,14 +277,15 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        List<FacilioField> filteredFields = fields.stream().filter(field -> !readingAlarmFilterFields.contains(field.getName())).collect(Collectors.toList());
         int columnNo = 1, rowNo = 1;
         Stack<FacilioField> stack = new Stack<>();
-        for (FacilioField field : fields) {
+        for (FacilioField field : filteredFields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
                 stack.push(field);
                 continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -288,7 +299,7 @@ public class CommonConnectedSummaryAPI {
                 columnNo = 1;
                 rowNo ++;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4);
             rowNo++;
         }
 
@@ -364,16 +375,18 @@ public class CommonConnectedSummaryAPI {
         FacilioField controller = moduleBean.getField("controller", moduleName);
         FacilioField resource = moduleBean.getField("resource", moduleName);
 
+        List<String> bmsAlarmFilterFields = new ArrayList<>(ALARM_EXCLUDE_FIELDS);
+        bmsAlarmFilterFields.addAll(Arrays.asList("lastOccurredTime", "lastCreatedTime", "condition", "source", "controller", "resource"));
+
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 1, 4, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 1, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 2, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 3, 1, true);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, condition, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, source, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, controller, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 2, 1);
 
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
@@ -383,14 +396,16 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        List<FacilioField> filteredFields = fields.stream().filter(field -> !bmsAlarmFilterFields.contains(field.getName())).collect(Collectors.toList());
+
         int columnNo = 1, rowNo = 1;
         Stack<FacilioField> stack = new Stack<>();
-        for (FacilioField field : fields) {
+        for (FacilioField field : filteredFields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
                 stack.push(field);
                 continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -404,7 +419,7 @@ public class CommonConnectedSummaryAPI {
                 columnNo = 1;
                 rowNo ++;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4);
             rowNo++;
         }
 
@@ -479,14 +494,16 @@ public class CommonConnectedSummaryAPI {
         FacilioField readingField = moduleBean.getField("readingFieldId", moduleName);
         FacilioField resource = moduleBean.getField("resource", moduleName);
 
+        List<String> sensorAlarmFilterFields = new ArrayList<>(ALARM_EXCLUDE_FIELDS);
+        sensorAlarmFilterFields.addAll(Arrays.asList("lastOccurredTime", "lastCreatedTime", "readingFieldId", "resource"));
+
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup primaryDetailsWidgetGroup = new SummaryWidgetGroup();
 
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 1, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 2, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, readingField, 1, 3, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1, false);
-        addAlarmSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 2, 1, 1, true);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastCreatedTime, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, lastOccurredTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, readingField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1);
 
         primaryDetailsWidgetGroup.setName("primaryDetails");
         primaryDetailsWidgetGroup.setDisplayName("Primary Details");
@@ -495,14 +512,16 @@ public class CommonConnectedSummaryAPI {
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
 
         List<FacilioField> fields = moduleBean.getAllFields(moduleName);
+        List<FacilioField> filteredFields = fields.stream().filter(field -> !sensorAlarmFilterFields.contains(field.getName())).collect(Collectors.toList());
+
         int columnNo = 1, rowNo = 1;
         Stack<FacilioField> stack = new Stack<>();
-        for (FacilioField field : fields) {
+        for (FacilioField field : filteredFields) {
             if((FieldType.BIG_STRING.equals(field.getDataTypeEnum())) || (FieldType.LARGE_TEXT.equals(field.getDataTypeEnum()))) {
                 stack.push(field);
                 continue;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, field, rowNo, columnNo, 1);
             columnNo++;
             if(columnNo > 4) {
                 columnNo = 1;
@@ -516,7 +535,7 @@ public class CommonConnectedSummaryAPI {
                 columnNo = 1;
                 rowNo ++;
             }
-            addAlarmSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4, false);
+            addSummaryFieldInWidgetGroup(allFieldsWidgetGroup, bigStringField, rowNo, columnNo, 4);
             rowNo++;
         }
 
@@ -535,31 +554,6 @@ public class CommonConnectedSummaryAPI {
 
         return FieldUtil.getAsJSON(pageWidget);
 
-    }
-
-    private static void addAlarmSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan, Boolean isOneLevelField) throws Exception {
-        if (field != null) {
-            SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
-            summaryField.setName(field.getName());
-            summaryField.setDisplayName(field.getDisplayName());
-            summaryField.setFieldId(field.getFieldId());
-            summaryField.setRowIndex(rowIndex);
-            summaryField.setColIndex(colIndex);
-            summaryField.setColSpan(colSpan);
-            if(isOneLevelField){
-                summaryField.setName("category");
-                summaryField.setDisplayName("Category");
-                summaryField.setParentLookupFieldId(field.getFieldId());
-                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                FacilioField assetCategory = modBean.getField("category", FacilioConstants.ContextNames.ASSET);
-                summaryField.setFieldId(assetCategory.getFieldId());
-            }
-            if (widgetGroup.getFields() == null) {
-                widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
-            } else {
-                widgetGroup.getFields().add(summaryField);
-            }
-        }
     }
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
