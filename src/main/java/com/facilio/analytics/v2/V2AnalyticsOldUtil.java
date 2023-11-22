@@ -1047,7 +1047,7 @@ public class V2AnalyticsOldUtil {
                         FacilioField parent_field = FieldFactory.getIdField(parentModule);
                         String joinOn = new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString();
                         if(parentModule.getName().equals(FacilioConstants.Meter.METER)){
-                            joinOn = new StringBuilder(joinOn).append(" AND Meters.SYS_DELETED IS NULL OR Meters.SYS_DELETED = false").toString();
+                            joinOn = new StringBuilder(joinOn).append(" AND (Meters.SYS_DELETED IS NULL OR Meters.SYS_DELETED = false )").toString();
                             V2AnalyticsOldUtil.applyJoin(null, baseModule, joinOn, parentModule, selectBuilder, addedModules);
                         }
                         else if(parentModule.getName().equals(FacilioConstants.ContextNames.ASSET))
