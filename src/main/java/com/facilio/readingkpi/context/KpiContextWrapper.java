@@ -17,6 +17,7 @@ public class KpiContextWrapper {
     private String name;
     private FacilioFieldKpiWrapper readingField;
     private KPIType kpiType;
+    private Long categoryId;
 
     public KpiContextWrapper(Long id, String name) {
         this.id = id;
@@ -26,6 +27,7 @@ public class KpiContextWrapper {
         this.id = kpi.getId();
         this.name = kpi.getName();
         this.kpiType = kpi.getKpiTypeEnum();
+        this.categoryId = kpi.getCategoryId();
         if (kpiType != KPIType.DYNAMIC) {
             this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
         }

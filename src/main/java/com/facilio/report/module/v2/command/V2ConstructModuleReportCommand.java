@@ -93,16 +93,23 @@ public class V2ConstructModuleReportCommand extends FacilioCommand {
         xAxis.setField(modBean.getModule(dimension.getModuleName()), xField);
         dataPointContext.setxAxis(xAxis);
 
-        if(v2_report.getTimeFilter() != null && v2_report.getTimeFilter().getFieldName() != null)
+        if(v2_report.getTimeFilter() != null)
         {
             int operator = v2_report.getTimeFilter().getDateOperators() > -1 ? v2_report.getTimeFilter().getDateOperators() : DateOperators.BETWEEN.getOperatorId();
             if(operator > -1)
             {
                 reportContext.setDateOperator(operator);
                 String fieldName = v2_report.getTimeFilter().getFieldName();
+                if(fieldName == null || fieldName.equals("")){
+                    fieldName = v2_report.getDimensions().getFieldName();
+                }
+                String moduleName = v2_report.getTimeFilter().getModuleName();
+                if(moduleName == null || moduleName.equals("")){
+                    moduleName = v2_report.getDimensions().getModuleName();
+                }
                 reportContext.setDateValue(new StringBuilder().append(v2_report.getTimeFilter().getStartTime()).append(",").append(v2_report.getTimeFilter().getEndTime()).toString());
                 ReportFieldContext reportFieldContext = new ReportFieldContext();
-                FacilioModule dateFieldModule = modBean.getModule(v2_report.getTimeFilter().getModuleName());
+                FacilioModule dateFieldModule = modBean.getModule(moduleName);
                 FacilioField field = modBean.getField(fieldName, dateFieldModule.getName());
                 if(field == null)
                 {

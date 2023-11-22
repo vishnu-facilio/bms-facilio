@@ -37,7 +37,7 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
     {
         V2ModuleReportContext v2_report = (V2ModuleReportContext) context.get("v2_report");
         String actionType = (String) context.get("actionType");
-        boolean isKpi = (boolean) context.get("isKpi");
+        Boolean isKpi = (Boolean) context.get("isKpi");
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
         if(actionType != null && actionType.equals(FacilioConstants.ContextNames.CREATE) && report != null && report.getId() > 0 && v2_report != null){
             v2_report.setReportId(report.getId());

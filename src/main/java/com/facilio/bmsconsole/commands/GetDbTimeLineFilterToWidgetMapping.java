@@ -99,7 +99,8 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 		  
 		  JSONObject widgetSettings = widget.getWidgetSettings();
 			boolean isFilterExclude = widgetSettings != null && widgetSettings.containsKey("excludeDbFilters") ? (boolean) widgetSettings.get("excludeDbFilters") : false;
-			if (!isFilterExclude) {
+			boolean isTimelineExclude = widgetSettings != null && widgetSettings.containsKey("excludeTimelineFilter") ? (boolean) widgetSettings.get("excludeTimelineFilter") : false;
+			if (!isFilterExclude && !isTimelineExclude) {
 
 				// for reports/charts , modular chart alone timeField differs or is optional ,
 				// for analytics charts always ttime
