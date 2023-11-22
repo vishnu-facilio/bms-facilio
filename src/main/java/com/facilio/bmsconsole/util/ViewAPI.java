@@ -957,6 +957,7 @@ public class ViewAPI {
 						field.setCustomization(displayNameVsCustomization.get(field.getColumnDisplayName()));
 					}
 				}
+				field.setVersion(fieldDetails != null ? fieldDetails.getVersion() : null);
 				field.setViewId(viewId);
 				Map<String, Object> prop = FieldUtil.getAsProperties(field);
 				props.add(prop);
@@ -1057,7 +1058,7 @@ public class ViewAPI {
 			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.table(ModuleFactory.getViewColumnsModule().getTableName())
 													.select(FieldFactory.getViewColumnFields())
-													.andCustomWhere("VIEWID = ?", viewId)
+													.andCustomWhere(CriteriaAPI.getCurrentBuildVersionCriteria()+" AND VIEWID = ?", viewId)
 													.orderBy("ID");
 			
 			List<Map<String, Object>> props = builder.get();

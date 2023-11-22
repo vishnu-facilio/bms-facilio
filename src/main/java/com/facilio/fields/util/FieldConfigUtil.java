@@ -1,6 +1,7 @@
 package com.facilio.fields.util;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.util.PermissionSetUtil;
@@ -43,4 +44,16 @@ public class FieldConfigUtil {
         return modules;
     }
 
+
+    public static List<FacilioField> filterFieldsByCurrentVersion(@NonNull List<FacilioField> fields, boolean fetchUnModifiableList) {
+        Version currentVersion = Version.getCurrentVersion();
+        if(CollectionUtils.isNotEmpty(fields) && currentVersion != null) {
+            long currentVersionId = currentVersion.getVersionId();
+            fields.removeIf(f->f.getVersion() != null && ((f.getVersion() & currentVersionId) != currentVersionId));
+        }
+        if(fetchUnModifiableList) {
+            return CollectionUtils.isNotEmpty(fields) ? Collections.unmodifiableList(fields) : null;
+        }
+        return fields;
+    }
 }

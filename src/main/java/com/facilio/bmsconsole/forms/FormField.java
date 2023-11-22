@@ -15,6 +15,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -22,7 +24,10 @@ public class FormField implements Serializable {
 	private static final long serialVersionUID = 4252438995947509456L;
 	
 	private long id = -1;
-	
+
+	@Getter
+	@Setter
+	private Long version;
 	public long getId() {
 		return this.id;
 	}

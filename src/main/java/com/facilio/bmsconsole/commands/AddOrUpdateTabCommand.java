@@ -77,6 +77,7 @@ public class AddOrUpdateTabCommand extends FacilioCommand {
                 tabBean.deleteTabMappingEntriesForTab(tab.getId());
                 tabBean.insertIntoTabIdAppIdMappingTable(tab);
             } else {
+                tab.setVersion(tab.getTypeEnum() != null ? tab.getTypeEnum().getVersion() : null);
                 long tabId = tabBean.addTab(tab);
                 context.put(FacilioConstants.ContextNames.WEB_TAB_ID, tabId);
                 tab.setId(tabId);

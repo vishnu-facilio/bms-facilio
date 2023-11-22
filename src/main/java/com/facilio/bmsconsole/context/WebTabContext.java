@@ -43,7 +43,13 @@ public class WebTabContext implements Serializable {
             this.specialTypeModules = object.specialTypeModules;
             this.order = object.order;
             this.typeVsColumns = object.typeVsColumns;
+            this.version = object.getVersion();
         }
+    }
+
+    public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense, List<String> specialTypeModules, long appId, long version) {
+        this(name, route, type, moduleIds, config, featureLicense, specialTypeModules, appId);
+        this.version = version;
     }
 
     public WebTabContext(String name, String route, WebTabContext.Type type, List<Long> moduleIds, String config, Integer featureLicense, List<String> specialTypeModules, long appId) {
@@ -60,6 +66,9 @@ public class WebTabContext implements Serializable {
         }
         this.specialTypeModules = specialTypeModules;
         this.applicationId = appId;
+        if(type.getVersion() != null) {
+            this.version = type.getVersion();
+        }
     }
     private long id = -1;
     public long getId() {
@@ -336,6 +345,8 @@ public class WebTabContext implements Serializable {
         private boolean isGroupedType;
 
         private TabType tabType;
+        @Getter @Setter
+        private Long version;
 
         @Getter
         private WebTabHandler handler;
@@ -349,7 +360,10 @@ public class WebTabContext implements Serializable {
             this.isGroupedType = isGroupedType;
             this.tabType = tabType;
         }
-
+        Type(String name, boolean isGroupedType, TabType tabType, WebTabHandler handler, long version) {
+            this(name, isGroupedType, tabType, handler);
+            this.version = version;
+        }
         Type(String name, boolean isGroupedType, TabType tabType, WebTabHandler handler) {
             this.name = name;
             this.isGroupedType = isGroupedType;
@@ -449,6 +463,11 @@ public class WebTabContext implements Serializable {
 		this.featureLicense = featureLicense;
 	}
 
+    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, long version) {
+        this(name, route, type, moduleIds, appId, config);
+        this.version = version;
+    }
+
 
     public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config) {
         this.name = name;
@@ -462,6 +481,11 @@ public class WebTabContext implements Serializable {
     public WebTabContext() {
     }
 
+    public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, int featureLicense, long version) {
+        this(name, route, type, moduleIds, appId, config, featureLicense);
+        this.version = version;
+    }
+
     public WebTabContext(String name, String route, Type type, List<Long> moduleIds, long appId, JSONObject config, int featureLicense) {
         this.name = name;
         this.route = route;
@@ -470,6 +494,9 @@ public class WebTabContext implements Serializable {
         this.applicationId = appId;
         this.config = config;
         this.featureLicense = featureLicense;
+        if(type.getVersion() != null) {
+            this.version = type.getVersion();
+        }
     }
 
     private List<String> specialTypeModules;
@@ -494,4 +521,6 @@ public class WebTabContext implements Serializable {
 
     @Setter @Getter
     private List<TranslationTypeEnum.ClientColumnTypeEnum> typeVsColumns;
+    @Getter@Setter
+    private Long version;
 }

@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.*;
@@ -305,6 +306,29 @@ public class CriteriaAPI extends BaseCriteriaAPI {
 
 	public static Condition getNameCondition(Collection<String>names,FacilioModule module) {
 		return getNameCondition(StringUtils.join(names,","),module);
+	}
+
+	public static String getCurrentBuildVersionCriteria() {
+		Long currentVersionId = Version.getCurrentVersion() != null ? Version.getCurrentVersion().getVersionId() : null;
+
+		FacilioField versionField = FieldFactory.getBuildVersionField(null);
+		String versionFieldColumnName = versionField.getColumnName();
+
+		StringBuilder joinCondition = new StringBuilder();
+		joinCondition.append("( ");
+		joinCondition.append(versionFieldColumnName).append(" IS NULL ");
+
+		if(currentVersionId != null && currentVersionId > 0) {
+			joinCondition.append(" OR ")
+					.append(versionFieldColumnName)
+					.append(" & ")
+					.append(currentVersionId)
+					.append(" = ")
+					.append(currentVersionId);
+		}
+		joinCondition.append(" )");
+
+		return joinCondition.toString();
 	}
 
 	public static FacilioField fetchFieldFromFQFieldName(String fullyQualifiedFieldName) throws Exception {

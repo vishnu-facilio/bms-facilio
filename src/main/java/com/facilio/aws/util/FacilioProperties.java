@@ -4,6 +4,7 @@ import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
+import com.facilio.bmsconsole.enums.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.Getter;
@@ -161,6 +162,8 @@ public class FacilioProperties {
     private static String isNewVersion;
     @Getter
     private static String stableEnvironment;
+    @Getter
+    private static Version buildVersion;
 
     public static boolean isNewVersion() {
         return Boolean.parseBoolean(isNewVersion);
@@ -449,6 +452,7 @@ public class FacilioProperties {
             esDomain = PROPERTIES.getProperty("es.domain");
             esIndex = PROPERTIES.getProperty("es.index");
             isNewVersion = PROPERTIES.getProperty("build.isNewVersion", "false");
+            buildVersion = StringUtils.isNotEmpty(PROPERTIES.getProperty("build.version"))? Version.valueOf(PROPERTIES.getProperty("build.version")) : null;
 
 
             wmsBroadcaster = PROPERTIES.getProperty("wms.broadcaster");
