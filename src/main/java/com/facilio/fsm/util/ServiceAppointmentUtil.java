@@ -1167,7 +1167,7 @@ public class ServiceAppointmentUtil {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(FacilioConstants.ContextNames.COUNT, count);
             jsonObject.put(FacilioConstants.Trip.TOTAL_DURATION, totalDuration);
-            jsonObject.put(FacilioConstants.Trip.TOTAL_DISTANCE, totalDistance);
+            jsonObject.put(FacilioConstants.Trip.TOTAL_DISTANCE, TripUtil.roundOff(totalDistance,2));
 
           return jsonObject;
         }

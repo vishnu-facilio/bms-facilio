@@ -234,7 +234,7 @@
         </action>
 
     </package>
-    <package name="buttons" namespace="/api/v3/module" extends="v3Api">
+    <package name="systembuttons" namespace="/api/v3/module" extends="v3Api">
 
         <action name="utilityDispute/*/systemButton/*" class="com.facilio.utility.UtilityAction" method="updateDisputeStatus">
             <param name="moduleName">utilityDispute</param>

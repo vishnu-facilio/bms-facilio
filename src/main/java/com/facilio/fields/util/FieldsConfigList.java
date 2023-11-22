@@ -429,6 +429,47 @@ public class FieldsConfigList {
     public static final List<String> CALENDAR_EVENTS_SORT_FIELDS_INCLUDE = Arrays.asList(
             "name","eventType","eventFrequency","sysCreatedByPeople","sysModifiedByPeople","sysCreatedTime","sysModifiedTime"
     );
+    public static final List<String> APPOINTMENT_SORT_INCLUDE = Arrays.asList(
+            "name","site","territory","client","category","priority","space","asset","fieldAgent","status","vendor","scheduledStartTime","scheduledEndTime","resolutionDueDuration","resolutionDueTime","resolutionDueStatus","estimatedCost","actualCost","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> APPOINTMENT_FIELDS_INCLUDE = Arrays.asList(
+            "name","site","territory","client","category","priority","space","asset","fieldAgent","status","vendor","scheduledStartTime","scheduledEndTime","resolutionDueDuration","resolutionDueTime","resolutionDueStatus","estimatedCost","actualCost","actualStartTime","actualEndTime","actualDuration","mismatch","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> SERVICE_ORDER_SORT_FIELDS_INCLUDE = Arrays.asList(
+            "name","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> SERVICE_ORDER_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","autoCreateSa","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> SERVICE_ORDER_FILTER_FIELDS_INCLUDE = Arrays.asList(
+            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> TIME_SHEET_FIELDS_INCLUDE = Arrays.asList(
+            "code","startTime","endTime","fieldAgent","serviceAppointment","serviceOrder"
+    );
+    public static final List<String> TRIP_FIELDS_INCLUDE = Arrays.asList(
+            "code","people","startTime","endTime","startLocation","serviceOrder"
+    );
+    public static final List<String> EMPLOYEE_SORT_FIELDS_INCLUDE = Arrays.asList(
+            "name","phone","email","mobile","currentFreeCapacity","rate","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> EMPLOYEE_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "name","avatar","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","rate","dispatchable","trackGeoLocation","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","department","isAssignable","isAppAccess","isLabour","space"
+    );
+    public static final List<String> EMPLOYEE_FILTER_FIELDS_INCLUDE = Arrays.asList(
+            "name","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","rate","dispatchable","trackGeoLocation","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","department","isAssignable","isAppAccess","isLabour","space"
+    );
+
+    public static final List<String> VENDOR_CONTACT_SORT_FIELDS_INCLUDE = Arrays.asList(
+            "name","phone","email","mobile","currentFreeCapacity","rate","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+    );
+
+    public static final List<String> VENDOR_CONTACT_VIEW_FIELDS_INCLUDE = Arrays.asList(
+            "name","avatar","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","rate","dispatchable","trackGeoLocation","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","vendor","isPrimaryContact","isVendorPortalAccess","isLabour"
+    );
+    public static final List<String> VENDOR_CONTACT_FILTER_FIELDS_INCLUDE = Arrays.asList(
+            "name","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","rate","dispatchable","trackGeoLocation","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","vendor","isPrimaryContact","isVendorPortalAccess","isLabour"
+    );
 
     public static final List<String> TENANT_MODULE_VIEW_FIELDS_INCLUDE= Arrays.asList("name","inTime","outTime","primaryContactEmail","primaryContactName",
             "primaryContactPhone","status","sysCreatedTime","sysModifiedTime","tenantType","siteId");

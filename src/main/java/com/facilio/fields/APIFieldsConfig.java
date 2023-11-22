@@ -1176,4 +1176,191 @@ public class APIFieldsConfig {
                 .done();
     }
 
+    @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)
+    public static Supplier<FieldConfig> getServiceAppointmentFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.APPOINTMENT_SORT_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.APPOINTMENT_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.APPOINTMENT_FIELDS_INCLUDE)
+                .done();
+
+    }
+
+    @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER)
+    public static Supplier<FieldConfig> getServiceOrderFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.SERVICE_ORDER_SORT_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.SERVICE_ORDER_VIEW_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.SERVICE_ORDER_FILTER_FIELDS_INCLUDE)
+                .done();
+
+    }
+
+    @Module(FacilioConstants.TimeSheet.TIME_SHEET)
+    public static Supplier<FieldConfig> getTimeSheetFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.TIME_SHEET_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.TIME_SHEET_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.TIME_SHEET_FIELDS_INCLUDE)
+                .done();
+    }
+    @Module(FacilioConstants.Trip.TRIP)
+    public static Supplier<FieldConfig> getTripFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.TRIP_FIELDS_INCLUDE)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.TRIP_FIELDS_INCLUDE)
+                .done()
+                .advancedFields()
+                .add(FieldsConfigList.TRIP_FIELDS_INCLUDE)
+                .done();
+    }
+
+    @Module(FacilioConstants.ContextNames.EMPLOYEE)
+    public static Supplier<FieldConfig> getEmployeeFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.EMPLOYEE_SORT_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("phone","email","mobile","currentFreeCapacity"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.EMPLOYEE_VIEW_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","department","isAssignable","isAppAccess","isLabour","space"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.EMPLOYEE_FILTER_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("name","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","department","isAssignable","isAppAccess","isLabour","space"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+                .done();
+
+    }
+
+    @Module(FacilioConstants.ContextNames.VENDOR_CONTACT)
+    public static Supplier<FieldConfig> getVendorContactFieldConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.VENDOR_CONTACT_SORT_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("phone","email","mobile","currentFreeCapacity"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate"))
+                .appFieldConfigDone()
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.VENDOR_CONTACT_VIEW_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","vendor","isPrimaryContact","isVendorPortalAccess","isLabour"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.VENDOR_CONTACT_FILTER_FIELDS_INCLUDE)
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .skipFields(Arrays.asList("name","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","vendor","isPrimaryContact","isVendorPortalAccess","isLabour"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
+                .skipFields(Arrays.asList("rate","dispatchable","trackGeoLocation"))
+                .appFieldConfigDone()
+                .done();
+    }
+
+
 }
