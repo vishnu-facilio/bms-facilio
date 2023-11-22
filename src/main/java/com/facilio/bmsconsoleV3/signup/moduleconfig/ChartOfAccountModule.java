@@ -99,5 +99,6 @@ public class ChartOfAccountModule extends BaseModuleConfig{
 
         SystemButtonApi.addListEditButton(moduleName);
         SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addListDeleteButton(moduleName);
     }
 }

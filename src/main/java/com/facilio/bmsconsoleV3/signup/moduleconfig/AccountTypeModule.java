@@ -94,5 +94,6 @@ public class AccountTypeModule extends BaseModuleConfig{
 
         SystemButtonApi.addListEditButton(moduleName);
         SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addListDeleteButton(moduleName);
     }
 }

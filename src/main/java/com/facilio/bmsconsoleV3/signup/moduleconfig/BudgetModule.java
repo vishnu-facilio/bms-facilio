@@ -241,5 +241,7 @@ public class BudgetModule extends BaseModuleConfig{
         SystemButtonApi.addListEditButton(moduleName);
         SystemButtonApi.addCreateButton(moduleName);
         SystemButtonApi.addSummaryEditButton(moduleName);
+        SystemButtonApi.addListDeleteButton(moduleName);
+
     }
 }
