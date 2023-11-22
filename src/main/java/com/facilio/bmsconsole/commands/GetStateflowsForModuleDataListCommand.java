@@ -43,7 +43,7 @@ public class GetStateflowsForModuleDataListCommand extends FacilioCommand {
 					String key = stateFlowId + "_" + currentState.getId();
 					if(stateFlows.containsKey(key)) {
 						ArrayList<WorkflowRuleContext> list = new ArrayList<>(stateFlows.get(key));
-						GetAvailableStateCommand.removeUnwantedTranstions(list);
+						StateFlowRulesAPI.removeUnwantedTranstions(list);
 						List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.getExecutableStateTransitions(list, moduleName, record, context);
 						if (CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions)) {
 							record.setEvaluatedTransitionIds(evaluateStateFlowAndExecuteActions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));

@@ -4367,4 +4367,12 @@
             <property name="identifier" type="string" mandatory="true"/>
         </urlparams>
     </request>
+
+    <request path="/api/v2/module/:moduleName/:id/getAllAvailableButtons" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
 </config>

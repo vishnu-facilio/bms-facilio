@@ -991,6 +991,18 @@
 		</action>
 	</package>
 
+	<package name="buttons" extends="v2Api" namespace="/api/v2/module">
+		<action name="*/*/getAllAvailableButtons"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getAllAvailableButtons">
+			<param name="moduleName">{1}</param>
+			<param name="id">{2}</param>
+			<param name="translationImpl">StateFlowTranslation</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+
+	</package>
+
 
 	<package name="statetransition" extends="v2Api" namespace="/api/v2/module">
 		<action name="*/*/statetransition/getOfflineStateTransition"

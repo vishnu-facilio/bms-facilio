@@ -31,6 +31,8 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.impact.GetAllAlarmImpactsCommand;
 import com.facilio.bmsconsoleV3.commands.*;
+import com.facilio.bmsconsoleV3.commands.GetAllAvailableButtonsCommand;
+import com.facilio.bmsconsoleV3.commands.ValidateFilePermission;
 import com.facilio.bmsconsoleV3.commands.bulkActions.DeleteModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.bulkActions.UpdateModuleDataCommand;
 import com.facilio.bmsconsoleV3.commands.reports.ConstructLiveFilterCommandToExport;
@@ -3256,7 +3258,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new ExecuteComboCardWorkflowCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain geAllModulesChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllModulesCommand());
@@ -3651,5 +3653,13 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetPmPlannerTriggerWidgetCommand());
 		return c;
+	}
+
+	public static FacilioChain getAvailableButtonsChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddFieldsAndLookupFieldsInContextCommand());
+		chain.addCommand(new GenericGetModuleDataDetailCommand());
+		chain.addCommand(new GetAllAvailableButtonsCommand());
+		return chain;
 	}
 }

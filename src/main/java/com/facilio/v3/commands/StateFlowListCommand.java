@@ -54,7 +54,7 @@ public class StateFlowListCommand extends FacilioCommand {
                     String key = stateFlowId + "_" + currentState.getId();
                     if(stateFlows.containsKey(key)) {
                         ArrayList<WorkflowRuleContext> list = new ArrayList<>(stateFlows.get(key));
-                        removeUnwantedTranstions(list);
+                        StateFlowRulesAPI.removeUnwantedTranstions(list);
                         List<WorkflowRuleContext> evaluateStateFlowAndExecuteActions = StateFlowRulesAPI.getExecutableStateTransitions(list, moduleName, record, context);
                         if (CollectionUtils.isNotEmpty(evaluateStateFlowAndExecuteActions)) {
                             record.setEvaluatedTransitionIds(evaluateStateFlowAndExecuteActions.stream().map(WorkflowRuleContext::getId).collect(Collectors.toList()));
@@ -66,46 +66,6 @@ public class StateFlowListCommand extends FacilioCommand {
             context.put(Constants.STATE_FLOWS, stateFlows);
         }
         return false;
-    }
-
-    private static void removeUnwantedTranstions(List<WorkflowRuleContext> states) {
-        if (CollectionUtils.isEmpty(states)) {
-            return;
-        }
-
-        Iterator<WorkflowRuleContext> iterator = states.iterator();
-        while (iterator.hasNext()) {
-            AbstractStateTransitionRuleContext transition = (AbstractStateTransitionRuleContext) iterator.next();
-            if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
-                iterator.remove();
-                continue;
-            }
-
-            if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
-                if (!transition.isShowInTenantPortal()) {
-                    iterator.remove();
-                    continue;
-                }
-            }
-            else if(AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
-                if (!transition.isShowInVendorPortal()) {
-                    iterator.remove();
-                    continue;
-                }
-            }
-            else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
-                if (!transition.isShowInOccupantPortal()) {
-                    iterator.remove();
-                    continue;
-                }
-            }
-                else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
-                    if (!transition.isShowInClientPortal()) {
-                        iterator.remove();
-                        continue;
-                    }
-                }
-        }
     }
 
 }

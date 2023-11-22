@@ -596,6 +596,7 @@ public class FacilioConstants {
 		public static final String CUSTOM_BUTTONS = "customButtons";
 		public static final String GET_CUSTOM_BUTTONS = "getCustomButtons";
 		public static final String CUSTOM_BUTTON_LIST = "customButtonList";
+		public static final String AVAILABLE_STATE_TRANSITION = "availableStateTransition";
 
 		public static final String TRIGGER = "trigger";
 		public static final String TRIGGER_TYPE = "triggerType";
