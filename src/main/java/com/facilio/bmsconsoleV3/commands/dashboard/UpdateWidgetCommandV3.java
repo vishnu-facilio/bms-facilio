@@ -103,18 +103,32 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                             Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
                             widgetCardContext.setCustomScriptId(customScriptId);
                         }
+                        Long presentCriteriaId = null;
                         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
                             long criteriaId = -1;
                             WidgetCardContext cardContext = (WidgetCardContext) DashboardUtil.getWidget(updatewidget.getId());
-                            if(cardContext.getCriteriaId() != null && cardContext.getCriteriaId() > 0) {
-                                CriteriaAPI.deleteCriteria(cardContext.getCriteriaId());
-                            }
                             JSONObject cardParams = widgetCardContext.getCardParams();
+                            if(cardContext.getCriteriaId() != null && cardContext.getCriteriaId() > 0) {
+                                presentCriteriaId = cardContext.getCriteriaId();
+                                Criteria presentCriteria = CriteriaAPI.getCriteria(cardContext.getCriteriaId());
+                                if(cardParams.get("criteria") != null) {
+                                    Criteria criteria = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"),Criteria.class);
+                                    if(!presentCriteria.getConditions().equals(criteria.getConditions())){
+                                        criteriaId = DashboardUtil.generateCriteriaId(criteria, (String) cardParams.get("parentModuleName"));
+                                        widgetCardContext.setCriteriaId(criteriaId);
+                                    }
+                                }else {
+                                    widgetCardContext.setCriteriaId(null);
+                                    CriteriaAPI.deleteCriteria(cardContext.getCriteriaId());
+                                }
+                            } else if(cardParams.get("criteria") != null){
+                                    Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
+                                    criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
+                                    widgetCardContext.setCriteriaId(criteriaId);
+                                }
+
                             if(cardParams != null){
                                 widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
-                                Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
-                                criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
-                                widgetCardContext.setCriteriaId(criteriaId);
                             }
                         }
                         GenericUpdateRecordBuilder updateWidgetCard = new GenericUpdateRecordBuilder()
@@ -123,6 +137,9 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                                 .andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetCardModule()));
                         Map<String, Object> props = FieldUtil.getAsProperties(widgetCardContext, true);
                         updateWidgetCard.update(props);
+                        if(presentCriteriaId != null && presentCriteriaId > 0){
+                            CriteriaAPI.deleteCriteria(presentCriteriaId);
+                        }
                     }
                     else if(updatewidget.getType().equals(DashboardWidgetContext.WidgetType.FILTER.getValue())){
 

@@ -62,6 +62,21 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
     private void addNewReportV2(V2ModuleReportContext reportContext, boolean isKpi) throws Exception
     {
         reportContext.setKpi(isKpi);
+        if(reportContext.getFilters() != null && reportContext.getFilters().getGlobalCriteria() != null){
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            Criteria criteria = reportContext.getFilters().getGlobalCriteria();
+            FacilioModule module = modBean.getModule(reportContext.getModuleName());
+                for (String key : criteria.getConditions().keySet())
+                {
+                    Condition condition = criteria.getConditions().get(key);
+                    if (module == null || condition == null || condition.getFieldName() == null) continue;
+                    FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
+                    if(field == null) continue;
+                    condition.setField(field);
+                }
+            long globalCriteriaId = CriteriaAPI.addCriteria(criteria);
+            reportContext.setCriteriaId(globalCriteriaId);
+        }
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getV2ReportModule().getTableName())
                 .fields(FieldFactory.getV2ReportModuleFields());
