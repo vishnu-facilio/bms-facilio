@@ -34,6 +34,8 @@ import com.facilio.v3.context.Constants;
 
 import java.util.*;
 
+import static com.facilio.bmsconsole.util.SystemButtonApi.addSystemButton;
+
 public class AssetModule extends BaseModuleConfig{
     public AssetModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.ASSET);
@@ -117,6 +119,7 @@ public class AssetModule extends BaseModuleConfig{
     }
     public void addData() throws Exception {
         addSystemButtons();
+        addListSystemButtons();
     }
     private static void addSystemButtons() throws Exception {
         SystemButtonRuleContext editAsset = new SystemButtonRuleContext();
@@ -160,8 +163,94 @@ public class AssetModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ASSET,addMeterRelationShip);
     }
 
+    public static void  addListSystemButtons() throws Exception {
 
-    @Override
+
+        // Table Top Bar buttons
+        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
+        createButtonListTop.setName("Create");
+        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButtonListTop.setIdentifier("create");
+        createButtonListTop.setPermissionRequired(true);
+        createButtonListTop.setPermission("CREATE");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, createButtonListTop);
+
+        // Export buttons
+        SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();
+        exportAsExcelButtonListTop.setName("Export as excel");
+        exportAsExcelButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsExcelButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButtonListTop.setIdentifier("export_as_excel");
+        exportAsExcelButtonListTop.setPermissionRequired(true);
+        exportAsExcelButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, exportAsExcelButtonListTop);
+
+        SystemButtonRuleContext exportAsCsvButtonListTop = new SystemButtonRuleContext();
+        exportAsCsvButtonListTop.setName("Export as CSV");
+        exportAsCsvButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsCsvButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCsvButtonListTop.setIdentifier("export_as_csv");
+        exportAsCsvButtonListTop.setPermissionRequired(true);
+        exportAsCsvButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, exportAsCsvButtonListTop);
+
+        // Table bar - Bulk action buttons
+        SystemButtonRuleContext updateButtonListTop = new SystemButtonRuleContext();
+        updateButtonListTop.setName("Update");
+        updateButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        updateButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        updateButtonListTop.setIdentifier("update_bulk");
+        updateButtonListTop.setPermissionRequired(true);
+        updateButtonListTop.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, updateButtonListTop);
+
+        SystemButtonRuleContext printQRButtonListTop = new SystemButtonRuleContext();
+        printQRButtonListTop.setName("Print QR");
+        printQRButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printQRButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        printQRButtonListTop.setIdentifier("printQR");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, printQRButtonListTop);
+
+        SystemButtonRuleContext downloadQRButtonListTop = new SystemButtonRuleContext();
+        downloadQRButtonListTop.setName("Download QR");
+        downloadQRButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        downloadQRButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        downloadQRButtonListTop.setIdentifier("downloadQR");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, downloadQRButtonListTop);
+
+        SystemButtonRuleContext deleteButtonListTop = new SystemButtonRuleContext();
+        deleteButtonListTop.setName("Delete");
+        deleteButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        deleteButtonListTop.setIdentifier("delete_bulk");
+        deleteButtonListTop.setPermissionRequired(true);
+        deleteButtonListTop.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, deleteButtonListTop);
+
+        // Each Record wise
+        SystemButtonRuleContext editButtonList = new SystemButtonRuleContext();
+        editButtonList.setName("Edit");
+        editButtonList.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        editButtonList.setIdentifier("edit_list");
+        editButtonList.setPermissionRequired(true);
+        editButtonList.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, editButtonList);
+
+        SystemButtonRuleContext deleteButtonList = new SystemButtonRuleContext();
+        deleteButtonList.setName("Delete");
+        deleteButtonList.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        deleteButtonList.setIdentifier("delete_list");
+        deleteButtonList.setPermissionRequired(true);
+        deleteButtonList.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.ASSET, deleteButtonList);
+
+    }
+
+
+        @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
 

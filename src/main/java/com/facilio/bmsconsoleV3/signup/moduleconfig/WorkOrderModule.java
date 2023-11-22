@@ -36,6 +36,8 @@ import org.json.simple.JSONObject;
 
 import java.util.*;
 
+import static com.facilio.bmsconsole.util.SystemButtonApi.addSystemButton;
+
 public class WorkOrderModule extends BaseModuleConfig {
 
     public WorkOrderModule() throws Exception {
@@ -43,6 +45,7 @@ public class WorkOrderModule extends BaseModuleConfig {
     }
     public void addData() throws Exception {
         addSystemButtons();
+        addListSystemButtons();
     }
     private static void addSystemButtons() throws Exception {
         SystemButtonRuleContext editWorkorder = new SystemButtonRuleContext();
@@ -81,6 +84,117 @@ public class WorkOrderModule extends BaseModuleConfig {
         prerequisiteApprove.setIdentifier("prerequisiteApprove");
         prerequisiteApprove.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,prerequisiteApprove);
+    }
+
+    public static void addListSystemButtons() throws Exception {
+
+
+        // Table Top Bar buttons
+        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
+        createButtonListTop.setName("Create");
+        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButtonListTop.setIdentifier("create");
+        createButtonListTop.setPermissionRequired(true);
+        createButtonListTop.setPermission("CREATE");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, createButtonListTop);
+
+        // Export buttons
+        SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();
+        exportAsExcelButtonListTop.setName("Export as excel");
+        exportAsExcelButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsExcelButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButtonListTop.setIdentifier("export_as_excel");
+        exportAsExcelButtonListTop.setPermissionRequired(true);
+        exportAsExcelButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, exportAsExcelButtonListTop);
+
+        SystemButtonRuleContext exportAsCsvButtonListTop = new SystemButtonRuleContext();
+        exportAsCsvButtonListTop.setName("Export as CSV");
+        exportAsCsvButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        exportAsCsvButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCsvButtonListTop.setIdentifier("export_as_csv");
+        exportAsCsvButtonListTop.setPermissionRequired(true);
+        exportAsCsvButtonListTop.setPermission("EXPORT");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, exportAsCsvButtonListTop);
+
+        SystemButtonRuleContext mailButtonListTop = new SystemButtonRuleContext();
+        mailButtonListTop.setName("Mail");
+        mailButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        mailButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        mailButtonListTop.setIdentifier("mail");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, mailButtonListTop);
+
+        SystemButtonRuleContext scheduleButtonListTop = new SystemButtonRuleContext();
+        scheduleButtonListTop.setName("Schedule");
+        scheduleButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS .getIndex());
+        scheduleButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        scheduleButtonListTop.setIdentifier("schedule");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, scheduleButtonListTop);
+
+        // Table bar - Bulk action buttons
+        SystemButtonRuleContext bulkUpdateButtonListTop = new SystemButtonRuleContext();
+        bulkUpdateButtonListTop.setName("Bulk Update");
+        bulkUpdateButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        bulkUpdateButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkUpdateButtonListTop.setIdentifier("bulkUpdate");
+        bulkUpdateButtonListTop.setPermissionRequired(true);
+        bulkUpdateButtonListTop.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, bulkUpdateButtonListTop);
+
+        SystemButtonRuleContext printButtonListTop = new SystemButtonRuleContext();
+        printButtonListTop.setName("Print");
+        printButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        printButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        printButtonListTop.setIdentifier("print");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, printButtonListTop);
+
+        SystemButtonRuleContext closeButtonListTop = new SystemButtonRuleContext();
+        closeButtonListTop.setName("Close");
+        closeButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        closeButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        closeButtonListTop.setIdentifier("close");
+        closeButtonListTop.setPermissionRequired(true);
+        closeButtonListTop.setPermission("UPDATE_CLOSE_WORKORDER");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, closeButtonListTop);
+
+        SystemButtonRuleContext assignButtonListTop = new SystemButtonRuleContext();
+        assignButtonListTop.setName("Assign");
+        assignButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        assignButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        assignButtonListTop.setIdentifier("assign");
+        assignButtonListTop.setPermissionRequired(true);
+        assignButtonListTop.setPermission("UPDATE_CHANGE_OWNERSHIP");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, assignButtonListTop);
+
+        SystemButtonRuleContext deleteButtonListTop = new SystemButtonRuleContext();
+        deleteButtonListTop.setName("Delete");
+        deleteButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        deleteButtonListTop.setIdentifier("delete_bulk");
+        deleteButtonListTop.setPermissionRequired(true);
+        deleteButtonListTop.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, deleteButtonListTop);
+
+        // Each Record wise
+        SystemButtonRuleContext editButtonList = new SystemButtonRuleContext();
+        editButtonList.setName("Edit");
+        editButtonList.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        editButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        editButtonList.setIdentifier("edit_list");
+        editButtonList.setPermissionRequired(true);
+        editButtonList.setPermission("UPDATE");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, editButtonList);
+
+        SystemButtonRuleContext deleteButtonList = new SystemButtonRuleContext();
+        deleteButtonList.setName("Delete");
+        deleteButtonList.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        deleteButtonList.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        deleteButtonList.setIdentifier("delete_list");
+        deleteButtonList.setPermissionRequired(true);
+        deleteButtonList.setPermission("DELETE");
+        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, deleteButtonList);
+
     }
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {

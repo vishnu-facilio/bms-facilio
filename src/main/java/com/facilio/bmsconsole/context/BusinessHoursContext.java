@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.JSONObject;
 
@@ -209,6 +210,7 @@ public class BusinessHoursContext implements Serializable {
 
 	public static JSONObject getAsJsonObject(BusinessHoursContext value)throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
 		String jsonInString = mapper.writeValueAsString(value);
 		return new JSONObject(jsonInString);
 	}
