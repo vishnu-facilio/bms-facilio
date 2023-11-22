@@ -25,6 +25,7 @@ import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.iam.accounts.context.SecurityPolicy;
 import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.identity.client.IdentityClient;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.sandbox.context.SandboxConfigContext;
@@ -937,6 +938,15 @@ public class LoginAction extends FacilioAction {
 		account.put("user", AccountUtil.getCurrentUser());
 		if(AccountUtil.getCurrentUser() != null) {
 			account.put("people", PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId()));
+		}
+
+		try{
+			JSONObject userSettings = IdentityClient.getDefaultInstance().getUserBean().getAllUserSettings(AccountUtil.getCurrentUser().getUid());
+			if(userSettings != null){
+				account.put("userSettings",userSettings);
+			}
+		}catch(Exception e){
+			account.put("userSettings",new JSONObject());
 		}
 
 		boolean isDev = false;

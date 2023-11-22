@@ -11,6 +11,7 @@ public class FacilioCookie {
 	
 	public static final String CSRF_TOKEN_COOKIE = "fc.csrfToken";
     public static final String CURRENT_ORG_COOKIE = "fc.currentOrg";
+    public static final String CURRENT_VERSION_COOKIE = "fc.currentVersion";
 
     public static String getUserCookie(HttpServletRequest request, String key) {
         Cookie cookies[] = request.getCookies();
