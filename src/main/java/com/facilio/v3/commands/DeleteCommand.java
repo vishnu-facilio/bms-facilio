@@ -88,7 +88,7 @@ public class DeleteCommand extends FacilioCommand {
                 if (CollectionUtils.isEmpty(fields)) {
                     continue;
                 }
-                List<Long> childRecordIds = checkLookupData(module, restrictModule, fields, recordIds);
+                List<Long> childRecordIds = checkLookupData(module, restrictModule, fields, recordIds,RESTRICT);
                 if (CollectionUtils.isNotEmpty(childRecordIds)) {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "The sub-module " + restrictModule.getDisplayName() + " has data associated. Please delete them manually before deleting");
                 }
@@ -100,7 +100,7 @@ public class DeleteCommand extends FacilioCommand {
             if (CollectionUtils.isEmpty(fields)) {
                 continue;
             }
-            List<Long> rowIds = checkLookupData(module, cascadeModule, fields, recordIds);
+            List<Long> rowIds = checkLookupData(module, cascadeModule, fields, recordIds,CASCADE);
             if (CollectionUtils.isEmpty(rowIds)) {
                 continue;
             }
@@ -151,7 +151,7 @@ public class DeleteCommand extends FacilioCommand {
         }
     }
 
-    private List<Long> checkLookupData(FacilioModule parentModule, FacilioModule childModule, List<FacilioField> relatedLookupFields, List<Long> recordIds) throws Exception {
+    private List<Long> checkLookupData(FacilioModule parentModule, FacilioModule childModule, List<FacilioField> relatedLookupFields, List<Long> recordIds,int type) throws Exception {
         List<Long> rowIds = new ArrayList<>();
         if (!LookupSpecialTypeUtil.isSpecialType(parentModule.getName()) && CollectionUtils.isNotEmpty(recordIds)) {
             String idString = StringUtils.join(recordIds, ",");
@@ -163,6 +163,11 @@ public class DeleteCommand extends FacilioCommand {
                             .module(childModule)
                             .select(fields)
                             .andCondition(CriteriaAPI.getCondition(f, idString, NumberOperators.EQUALS));
+
+                    if(type == RESTRICT){ //For checking purpose we can search only one child record in DB
+                        builder.limit(1);
+                    }
+
                     List<Map<String, Object>> data = builder.getAsProps();
                     if (CollectionUtils.isNotEmpty(data)) {
                         data.forEach(i -> rowIds.add((long) i.get("id")));

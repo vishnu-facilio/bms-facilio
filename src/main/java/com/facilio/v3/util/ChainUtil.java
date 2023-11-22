@@ -183,11 +183,6 @@ public class ChainUtil {
             nonTransactionChain.addCommand(new StateFlowListCommand());
         }
 
-        if(!skipCustomButtonForDataListCommand()){
-            nonTransactionChain.addCommand(new CustomButtonForDataListCommand());
-        }
-        //nonTransactionChain.addCommand(new SystemButtonForDataListCommand());
-
         addIfNotNull(nonTransactionChain, afterFetchCommand);
         //handling primary value for lookup fields
         nonTransactionChain.addCommand(new LookUpPrimaryFieldHandlingCommandV3());
@@ -200,20 +195,6 @@ public class ChainUtil {
         nonTransactionChain.addCommand(new TransformResponseForV4());
 
         return nonTransactionChain;
-    }
-    private static boolean skipCustomButtonForDataListCommand()  {
-        try{
-            long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
-            Map<String,Object> map = CommonCommandUtil.getOrgInfo(orgId,"skipCustomButtonForDataListCommand");
-            if(map!=null){
-                Object value = map.getOrDefault("value",false);
-                return FacilioUtil.parseBoolean(value);
-            }
-        }catch (Exception e){
-            LOGGER.info("CustomButtonForDataListCommand error:"+e.getMessage());
-        }
-        return false;
-
     }
 
     public  static FacilioChain getPickListChain(String moduleName)throws Exception {
