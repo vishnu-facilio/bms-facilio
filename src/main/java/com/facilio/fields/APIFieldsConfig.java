@@ -1191,6 +1191,36 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.CALENDAR_EVENTS_SORT_FIELDS_INCLUDE)
                 .done();
     }
+    @Module(FacilioConstants.ContextNames.CLIENT)
+    public static Supplier<FieldConfig> getCientModuleFieldConfig() {
+        return () -> new FieldConfig()
+                .advancedFields()
+                .add(FieldsConfigList.CLIENT_MODULE_FIELDS_ADVANCE_SEARCH_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.CLIENT_MODULE_SKIP_ONE_LEVEL_FIELDS)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.CLIENT_MODULE_FIELDS_VIEW_SEARCH_INCLUDE)
+                .done()
+                .sortFields()
+                .add(FieldsConfigList.CLIENT_MODULE_SORT_FIELDS_INCLUDE)
+                .done();
+
+    }
+    @Module(FacilioConstants.ContextNames.CLIENT_CONTACT)
+    public static Supplier<FieldConfig> getCientContactModuleFieldConfig() {
+        return () -> new FieldConfig()
+                .advancedFields()
+                .add(FieldsConfigList.CLIENT_CONTACT_MODULE_FIELDS_ADVANCE_SEARCH_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.CLIENT_COMTACT_MODULE_SKIP_ONE_LEVEL_FIELDS)
+                .done()
+                .viewFields()
+                .add(FieldsConfigList.CLIENT_CONTACT_MODULE_FIELDS_VIEW_SEARCH_INCLUDE)
+                .done()
+                .sortFields()
+                .add(FieldsConfigList.CLIENT_CONTACT_MODULE_SORT_FIELDS_SEARCH_INCLUDE)
+                .done();
+
+    }
 
     @Module(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT)
     public static Supplier<FieldConfig> getServiceAppointmentFieldConfig(){

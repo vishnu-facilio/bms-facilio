@@ -7,9 +7,12 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.util.VisitorManagementModulePageUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -28,6 +31,10 @@ import java.util.*;
 public class VisitorLogModule extends BaseModuleConfig{
     public VisitorLogModule(){
         setModuleName(FacilioConstants.ContextNames.VISITOR_LOG);
+    }
+    @Override
+    public void addData() throws Exception {
+        addSystemButton(getModuleName());
     }
 
     @Override
@@ -307,6 +314,65 @@ public class VisitorLogModule extends BaseModuleConfig{
                 .tabDone()
                 .layoutDone()
                 .pageDone().getCustomPages();
+    }
+    private static void addSystemButton(String moduleName) throws Exception{
+
+        SystemButtonRuleContext vipButton = new SystemButtonRuleContext();
+        vipButton.setName("Mark As Vip");
+        vipButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        vipButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        vipButton.setIdentifier("mark_as_vip");
+        vipButton.setPermissionRequired(true);
+        vipButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(moduleName,vipButton);
+
+        SystemButtonRuleContext blockButton = new SystemButtonRuleContext();
+        blockButton.setName("Mark As Blocked");
+        blockButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        blockButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        blockButton.setIdentifier("mark_as_blocked");
+        blockButton.setPermissionRequired(true);
+        blockButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(moduleName,blockButton);
+
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(moduleName,createButton);
+
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(moduleName,listDeleteButton);
+
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(moduleName,exportAsCSVButton);
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(moduleName,exportAsExcelButton);
+
     }
 
 /*    @Override

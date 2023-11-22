@@ -491,6 +491,30 @@ public class FieldsConfigList {
     public static final List<String> TENANT_MODULE_ADVANCED_FIELDS_INCLUDE= Arrays.asList("name","localId","inTime","outTime","primaryContactEmail","primaryContactName",
             "primaryContactPhone","status","sysCreatedTime","sysModifiedTime","tenantType","siteId","address");
 
+    public static final List<String> CLIENT_MODULE_FIELDS_ADVANCE_SEARCH_INCLUDE = Arrays.asList(
+            "name","sysCreatedTime","sysCreatedBy","sysModifiedBy","sysModifiedTime","moduleState","id","address"
+    );
+    public static final List<String> CLIENT_MODULE_FIELDS_VIEW_SEARCH_INCLUDE = Arrays.asList(
+            "name","sysCreatedTime","sysCreatedBy","sysModifiedBy","sysModifiedTime","moduleState","primaryContactEmail","primaryContactPhone","primaryContactName"
+    );
+    public static final List<String> CLIENT_MODULE_SKIP_ONE_LEVEL_FIELDS = Arrays.asList(
+            "moduleState"
+    );
+    public static final List<String> CLIENT_MODULE_SORT_FIELDS_INCLUDE = Arrays.asList(
+            "name","sysCreatedTime","sysCreatedBy","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> CLIENT_CONTACT_MODULE_FIELDS_ADVANCE_SEARCH_INCLUDE = Arrays.asList(
+            "name","id","client"
+    );
+    public static final List<String> CLIENT_CONTACT_MODULE_FIELDS_VIEW_SEARCH_INCLUDE = Arrays.asList(
+            "name","sysCreatedTime","sysCreatedBy","sysModifiedBy","sysModifiedTime","client","isClientPortalAccess","isPrimaryContact","moduleState"
+    );
+    public static final List<String> CLIENT_CONTACT_MODULE_SORT_FIELDS_SEARCH_INCLUDE=Arrays.asList(
+            "name","id","sysCreatedTime","sysCreatedBy","sysModifiedBy","sysModifiedTime"
+    );
+    public static final List<String> CLIENT_COMTACT_MODULE_SKIP_ONE_LEVEL_FIELDS = Arrays.asList(
+            "locatedSpace","moduleState","endLocation","startLocation"
+    );
     public static List<String> getNameField() {
         return Arrays.asList("name");
     }
