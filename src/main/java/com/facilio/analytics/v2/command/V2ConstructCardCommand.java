@@ -148,6 +148,8 @@ public class V2ConstructCardCommand extends FacilioCommand {
     }
     private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
     {
+        Set<FacilioModule> addedModules= new HashSet<>();
+        addedModules.add(baseModule);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation(baseModule);
         selectBuilder.select(fields);
         selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
@@ -155,12 +157,15 @@ public class V2ConstructCardCommand extends FacilioCommand {
         {
             Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(cardContext.getCriteria(), parentModuleForCriteria);
             if (parent_criteria != null) {
-                V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder);
+                V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder, addedModules);
                 selectBuilder.andCriteria(parent_criteria);
             }
         }
         if(db_filter != null && db_filter.getDb_user_filter() != null) {
             applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder );
+        }
+        if(addedModules.size() == 1){
+            V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(selectBuilder, addedModules, baseModule);
         }
         selectBuilder.limit(50);
         return selectBuilder;

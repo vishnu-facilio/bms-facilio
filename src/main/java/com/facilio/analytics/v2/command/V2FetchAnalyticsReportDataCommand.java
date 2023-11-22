@@ -272,6 +272,10 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
         V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
+        if(addedModules != null && addedModules.size() == 1) {
+            V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(newSelectBuilder, addedModules, baseModule);
+        }
+
         List<Map<String, Object>> props = null;
         if(isClickHouseEnabled) {
             props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
