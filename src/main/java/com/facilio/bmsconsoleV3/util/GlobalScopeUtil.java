@@ -43,7 +43,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -387,24 +386,27 @@ public class GlobalScopeUtil {
         if (ActionContext.getContext() == null) {
             return null;
         }
-
-        Parameter skipSwitchCriteria = ActionContext.getContext().getParameters().get("skipSwitchCriteria");
-        if(skipSwitchCriteria != null && skipSwitchCriteria.getValue() != null && skipSwitchCriteria.getValue().equals("true")) {
-            return null;
-        }
-        String switchVariable = appLinkNameResolvedSwitch();
-        if (StringUtils.isNotEmpty(switchVariable)) {
-            byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
-            if (decodedBytes != null) {
-                String decodedString = new String(decodedBytes);
-                if (decodedString != null) {
-                    JSONParser parser = new JSONParser();
-                    JSONObject json = (JSONObject) parser.parse(decodedString);
-                    if (json != null) {
-                        return json;
+        try {
+            Parameter skipSwitchCriteria = ActionContext.getContext().getParameters().get("skipSwitchCriteria");
+            if (skipSwitchCriteria != null && skipSwitchCriteria.getValue() != null && skipSwitchCriteria.getValue().equals("true")) {
+                return null;
+            }
+            String switchVariable = appLinkNameResolvedSwitch();
+            if (StringUtils.isNotEmpty(switchVariable)) {
+                byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
+                if (decodedBytes != null) {
+                    String decodedString = new String(decodedBytes);
+                    if (decodedString != null) {
+                        JSONParser parser = new JSONParser();
+                        JSONObject json = (JSONObject) parser.parse(decodedString);
+                        if (json != null) {
+                            return json;
+                        }
                     }
                 }
             }
+        }catch (Exception ex){
+            LOGGER.info("Error Occurred while Decoding switchVariable");
         }
         return null;
     }
