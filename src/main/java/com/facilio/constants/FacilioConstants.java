@@ -1090,6 +1090,9 @@ public class FacilioConstants {
 		public static final String DASHBOARD_USER_FILTER_ID = "dashboardUserFilterId";
 		public static final String DASHBOARD_WIDGET_TIMELINE_FILTER = "widgetTimelineFilter";
 		public static final String WIDGET = "widget";
+		public static final String ACTUAL_VALUE ="actualValue";
+		public static final String CARD_PERIOD = "period";
+		public static final String BASE_LINE_TREND = "baselineTrend";
 
 		public static final String WIDGET_UPDATE_LIST = "widgetUpdateList";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
@@ -1107,6 +1110,8 @@ public class FacilioConstants {
 		public static final String WIDGET_REPORT_SPACE_FILTER_CONTEXT = "widgetReportSpaceFilterContext";
 
 		public static final String REPORT = "report";
+		public static final String CARD_VALUE = "value";
+		public static final String BASE_LINE_VALUE = "baseLineValue";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
 		public static final String REPORT_ALARMS = "reportAlarms";
 		public static final String REPORT_ALARM_CONTEXT = "reportAlarmsContext";

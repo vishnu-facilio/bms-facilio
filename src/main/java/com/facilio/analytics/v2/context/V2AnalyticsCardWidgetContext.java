@@ -21,7 +21,7 @@ public class V2AnalyticsCardWidgetContext
     public String title;
     public JSONObject cardStyle;
     public String baselineTrend;
-    public boolean isModuleKpi;
+    public Boolean isModuleKpi;
     public boolean isReadingKpi;
     public String parentModuleName;
     public int aggr;
@@ -29,7 +29,13 @@ public class V2AnalyticsCardWidgetContext
     public String baseline;
     public String displayName;
     public String type;
-
+    public Long reportId;
     @JsonIgnore
     public HashMap<String, Map<String, Object>> result = new HashMap<>();
+    public Boolean getIsModuleKpi(){
+        if(this.isModuleKpi==null){
+            return false;
+        }
+        return true;
+    }
 }

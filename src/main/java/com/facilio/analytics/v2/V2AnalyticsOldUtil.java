@@ -550,6 +550,7 @@ public class V2AnalyticsOldUtil {
         selected_fields.add(fieldMap.get("appId"));
         selected_fields.add(fieldMap.get("type"));
         selected_fields.add(newReportFieldMap.get("kpi"));
+        selected_fields.add(newReportFieldMap.get("timeFilterJson"));
         return selected_fields;
     }
     public static void calculateBaseLineRange(ReportContext report)

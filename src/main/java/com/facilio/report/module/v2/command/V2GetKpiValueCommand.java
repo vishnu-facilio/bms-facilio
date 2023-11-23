@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.KPIContext;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -59,8 +60,24 @@ public class V2GetKpiValueCommand extends FacilioCommand {
             kpi.setDateFieldName(v2_report.getTimeFilter().getFieldName());
             kpi.setDateField(dateField);
         }
-        Object value = KPIUtil.getKPIValue(kpi);
-        context.put("value",value);
+        DateOperators cardPeriod = (DateOperators) context.get(FacilioConstants.ContextNames.CARD_PERIOD);
+        String baseLine = (String) context.get(FacilioConstants.ContextNames.BASE_LINE);
+        if(cardPeriod!=null){
+            kpi.setDateOperator(cardPeriod);
+            Object value = KPIUtil.getKPIValue(kpi,baseLine);
+            if(value instanceof JSONObject){
+                JSONObject cardValue  = (JSONObject) value;
+                context.put(FacilioConstants.ContextNames.CARD_VALUE,cardValue.get(FacilioConstants.ContextNames.CARD_VALUE));
+                context.put(FacilioConstants.ContextNames.BASE_LINE_VALUE,cardValue.get(FacilioConstants.ContextNames.BASE_LINE_VALUE));
+            }
+            else{
+                context.put(FacilioConstants.ContextNames.CARD_VALUE,value);
+            }
+        }else{
+            Object value;
+            value = KPIUtil.getKPIValue(kpi);
+            context.put("value",value);
+        }
         return false;
     }
 }

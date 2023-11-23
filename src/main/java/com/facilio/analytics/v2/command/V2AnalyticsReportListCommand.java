@@ -71,6 +71,7 @@ public class V2AnalyticsReportListCommand extends FacilioCommand {
         List<Map<String, Object>> props = select.get();
         if(props != null && props.size() > 0)
         {
+            dateFieldCheckForCards(props);
             List<V2AnalyticsReportResponseContext> response_report_list = FieldUtil.getAsBeanListFromMapList(props, V2AnalyticsReportResponseContext.class);
             List<V2AnalyticsReportResponseContext> filteredReports = response_report_list.stream()
                     .filter(report -> {
@@ -119,6 +120,14 @@ public class V2AnalyticsReportListCommand extends FacilioCommand {
                     }
                 }
         return select;
+    }
+    private static void dateFieldCheckForCards(List<Map<String,Object>> props){
+        for(Map<String,Object> prop : props){
+            Boolean iskpi = (Boolean) prop.get("kpi");
+            if(iskpi!=null && iskpi && prop.containsKey("timeFilterJson")){
+                prop.put("isDateField",true);
+            }
+        }
     }
 
 }
