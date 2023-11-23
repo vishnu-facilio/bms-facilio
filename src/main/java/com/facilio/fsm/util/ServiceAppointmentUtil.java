@@ -1155,7 +1155,7 @@ public class ServiceAppointmentUtil {
             for (TripContext trip : allTrips) {
                 count = count+1;
                 if (trip.getStatus() != null && trip.getStatus().getStatus().equals(FacilioConstants.Trip.COMPLETED)) {
-                    if(trip.getTripDuration() >0){
+                    if(trip.getTripDuration() != null && trip.getTripDuration() >0){
                         totalDuration += trip.getTripDuration();
                     }
                     if(trip.getTripDistance() != null) {
@@ -1167,7 +1167,7 @@ public class ServiceAppointmentUtil {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(FacilioConstants.ContextNames.COUNT, count);
             jsonObject.put(FacilioConstants.Trip.TOTAL_DURATION, totalDuration);
-            jsonObject.put(FacilioConstants.Trip.TOTAL_DISTANCE, TripUtil.roundOff(totalDistance,2));
+            jsonObject.put(FacilioConstants.Trip.TOTAL_DISTANCE, totalDistance);
 
           return jsonObject;
         }

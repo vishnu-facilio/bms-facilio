@@ -168,7 +168,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         resolutionDueStatus.setEnumName("AppointmentDueStatus");
         serviceAppointmentFields.add(resolutionDueStatus);
 
-        FacilioField mismatch = FieldFactory.getDefaultField("mismatch","IS MISMATCH","MISMATCH", FieldType.BOOLEAN);
+        FacilioField mismatch = FieldFactory.getDefaultField("mismatch","Mismatch","MISMATCH", FieldType.BOOLEAN);
         serviceAppointmentFields.add(mismatch);
 
         MultiEnumField mismatchType = FieldFactory.getDefaultField("mismatchType","Mismatch Type",null, FieldType.MULTI_ENUM, FacilioField.FieldDisplayType.SELECTBOX);
@@ -220,6 +220,16 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         FacilioField actualCost = FieldFactory.getDefaultField("actualCost", "Actual Cost", "ACTUAL_COST", FieldType.DECIMAL);
         serviceAppointmentFields.add(actualCost);
+
+        FacilioField dispatched = FieldFactory.getDefaultField("dispatched","Dispatched","DISPATCHED", FieldType.BOOLEAN);
+        serviceAppointmentFields.add(dispatched);
+
+        FacilioField dispatchedTime = FieldFactory.getDefaultField("dispatchedTime","Dispatched Time","DISPATCHED_TIME", FieldType.DATE_TIME);
+        serviceAppointmentFields.add(dispatchedTime);
+
+        LookupField dispatchedBy = FieldFactory.getDefaultField("dispatchedBy","Dispatched By","DISPATCHED_BY",FieldType.LOOKUP);
+        dispatchedBy.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceAppointmentFields.add(dispatchedBy);
 
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);

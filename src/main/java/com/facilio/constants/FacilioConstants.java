@@ -3016,6 +3016,7 @@ public class FacilioConstants {
 			public static final String SERVICE_TASK_STATUS = "serviceTaskStatus";
 			public static final String COLOR="color";
 			public static final String STATUS_TYPE="statusType";
+			public static final String FIELD_AGENT_SCOPING = "Field Agent Scoping";
 		}
 		public static class ServiceTaskStatus {
 			public static final String NEW = "new";

@@ -11,9 +11,7 @@ import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LargeTextField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.json.simple.JSONObject;
@@ -167,15 +165,15 @@ public class ShiftModules extends SignUpData {
                 FacilioModule.ModuleType.BASE_ENTITY);
 
         List<FacilioField> fields = new ArrayList<>();
-        FacilioField nameField = FieldFactory.getStringField("name", "NAME", mod);
+        FacilioField nameField = FieldFactory.getDefaultField("name","Name", "NAME", FieldType.STRING);
         nameField.setMainField(true);
         fields.add(nameField);
-        fields.add(FieldFactory.getNumberField("startTime", "START_TIME", mod));
-        fields.add(FieldFactory.getNumberField("endTime", "END_TIME", mod));
-        fields.add(FieldFactory.getBooleanField("defaultShift", "IS_DEFAULT", mod));
-        fields.add(FieldFactory.getBooleanField("isActive", "IS_ACTIVE", mod));
-        fields.add(FieldFactory.getStringField("weekend", "WEEKEND", mod));
-        fields.add(FieldFactory.getStringField("colorCode", "COLOR_CODE", mod));
+
+        FacilioField weekend = FieldFactory.getDefaultField("weekend","Week Off","WEEKEND",FieldType.STRING);
+        fields.add(weekend);
+
+        FacilioField colorCode = FieldFactory.getDefaultField("colorCode","Color Code","COLOR_CODE",FieldType.STRING);
+        fields.add(colorCode);
 
         FacilioModule ticketStatusMod = Constants.getModBean().getModule(FacilioConstants.ContextNames.TICKET_STATUS);
         LookupField moduleStateField = FieldFactory.getDefaultField("moduleState",
@@ -183,7 +181,33 @@ public class ShiftModules extends SignUpData {
         moduleStateField.setLookupModule(ticketStatusMod);
         fields.add(moduleStateField);
 
-        fields.add(FieldFactory.getNumberField("stateFlowId", "STATE_FLOW_ID", mod));
+        FacilioField defaultShift = FieldFactory.getDefaultField("defaultShift","Default Shift","IS_DEFAULT", FieldType.BOOLEAN);
+        fields.add(defaultShift);
+
+        FacilioField isActive = FieldFactory.getDefaultField("isActive","Active","IS_ACTIVE", FieldType.BOOLEAN);
+        fields.add(isActive);
+
+        FacilioField startTime = FieldFactory.getDefaultField("startTime","Start Time","START_TIME", FieldType.DATE_TIME);
+        startTime.setDisplayType(FacilioField.FieldDisplayType.TIME);
+        fields.add(startTime);
+
+        FacilioField endTime = FieldFactory.getDefaultField("endTime","End Time","END_TIME", FieldType.DATE_TIME);
+        endTime.setDisplayType(FacilioField.FieldDisplayType.TIME);
+        fields.add(endTime);
+
+
+        NumberField stateFlowIdField = FieldFactory.getDefaultField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", FieldType.NUMBER);
+        stateFlowIdField.setDefault(true);
+        fields.add(stateFlowIdField);
+
+        NumberField breakCount = FieldFactory.getDefaultField("associatedBreaks", "Breaks", "ASSOCIATED_BREAK", FieldType.NUMBER);
+        breakCount.setDefault(true);
+        fields.add(breakCount);
+
+        NumberField employeeCount = FieldFactory.getDefaultField("associatedEmployees", "Associated Employees", "ASSOCIATED_EMPLOYEE", FieldType.NUMBER);
+        employeeCount.setDefault(true);
+        fields.add(employeeCount);
+
         for (FacilioField f : fields) {
             f.setDefault(true);
         }

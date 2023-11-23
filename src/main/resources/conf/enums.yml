@@ -560,3 +560,9 @@ enums:
 
   - name: MasterPMType
     enumClassName: com.facilio.fsm.context.ServicePMTemplateContext$MasterPMType
+
+  - name: TripType
+    enumClassName: com.facilio.fsm.context.TripContext$Type
+
+  - name: TimeSheetType
+    enumClassName: com.facilio.fsm.context.TimeSheetContext$Type

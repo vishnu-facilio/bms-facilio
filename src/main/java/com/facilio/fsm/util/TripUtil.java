@@ -82,7 +82,7 @@ public class TripUtil {
 
                 GoogleMapsAPI.TripDistance tripDistance = GoogleMapsAPI.calculateTripDistance(coordinates,-1, false);
                 if(tripDistance != null) {
-                    trip.setTripDistance(roundOff((double) tripDistance.getDistance(),2));
+                    trip.setTripDistance((double) tripDistance.getDistance());
                     trip.setEstimatedDuration(tripDistance.getDuration());
                     long fileId = GoogleMapsAPI.generateTripMapPreview(tripDistance.getOrigin(), tripDistance.getDestination(), tripDistance.getEncodedPolyline(), null);
                     if (fileId > 0) {
@@ -194,9 +194,4 @@ public class TripUtil {
         return OngoingTrips;
     }
 
-    public static double roundOff(double value, int decimalDigits)
-    {
-        double multiplier = Math.pow(10, decimalDigits);
-        return Math.round(value * multiplier) / multiplier ;
-    }
 }

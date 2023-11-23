@@ -24,7 +24,7 @@ public class ValidateAndRollUpTripCommand extends FacilioCommand {
         EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
         if(CollectionUtils.isNotEmpty(trips)) {
             for (TripContext trip : trips) {
-                if (trip.getStartTime()>0  && trip.getEndTime() >0) {
+                if (trip.getStartTime()>0  && trip.getEndTime() != null && trip.getEndTime() >0) {
                     if(trip.getStartTime()<trip.getCurrentTime() && trip.getEndTime()<trip.getCurrentTime()) {
                         if (trip.getStartTime() >= trip.getEndTime()) {
                             throw new FSMException(FSMErrorCode.TRIP_TIME_MISMATCH);

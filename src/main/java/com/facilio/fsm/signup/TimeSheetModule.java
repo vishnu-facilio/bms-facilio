@@ -92,6 +92,10 @@ public class TimeSheetModule extends BaseModuleConfig {
         status.setLookupModule(moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET_STATUS));
         timeSheetFields.add(status);
 
+        SystemEnumField type = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "TYPE", FieldType.SYSTEM_ENUM);
+        type.setEnumName("TimeSheetType");
+        timeSheetFields.add(type);
+
         timeSheetModule.setFields(timeSheetFields);
         modules.add(timeSheetModule);
 

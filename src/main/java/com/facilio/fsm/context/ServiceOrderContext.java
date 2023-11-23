@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -20,6 +21,7 @@ public class ServiceOrderContext extends V3Context {
     private String name;
     private String description;
     private V3SiteContext site;
+    private LocationContextV3 location;
     private V3ClientContext client;
     private V3TenantContext tenant;
     private ServiceOrderMaintenanceType maintenanceType;

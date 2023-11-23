@@ -1193,4 +1193,13 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexiblewebbudgettransactions_9", "Budget Transactions - 9",9, PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule("shift")
+    public static Supplier<ModuleWidgets> getShiftWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("weekOff","Week Off",PageWidget.WidgetType.WEEK_OFF)
+                .addWidgetConfig("webWeekOff_7_6","Week Off - 7 - 6", WidgetConfigContext.ConfigType.FIXED,7,6, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
+
 }

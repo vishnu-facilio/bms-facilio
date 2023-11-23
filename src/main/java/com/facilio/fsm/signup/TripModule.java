@@ -145,6 +145,9 @@ public class TripModule extends BaseModuleConfig {
         status.setLookupModule(modBean.getModule(FacilioConstants.Trip.TRIP_TICKET_STATUS));
         fields.add(status);
 
+        SystemEnumField type = (SystemEnumField) FieldFactory.getDefaultField("type", "Type", "TYPE", FieldType.SYSTEM_ENUM);
+        type.setEnumName("TripType");
+        fields.add(type);
 
         module.setFields(fields);
         return module;
@@ -182,6 +185,7 @@ public class TripModule extends BaseModuleConfig {
         fields.add(doneBy);
 
         FacilioField info = FieldFactory.getDefaultField("infoJsonStr", "Info", "INFO", FieldType.STRING);
+
 
         fields.add(info);
 

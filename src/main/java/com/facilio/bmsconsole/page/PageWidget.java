@@ -652,6 +652,7 @@ public class PageWidget {
 		SERVICE_TASK_WIDGET("serviceTaskWidget"),
 		SERVICE_ORDER_PLANS("serviceOrderPlans"),
 		SERVICE_ORDER_ACTUALS("serviceOrderActuals"),
+		WEEK_OFF("weekOff"),
 		LAST_KNOWN_LOCATION("lastKnownLocation"),
 		CURRENT_STATUS("currentStatus"),
 		SKILL("skill"),

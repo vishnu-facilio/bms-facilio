@@ -143,6 +143,7 @@ public class TransactionChainFactory {
 		c.addCommand(new AddDefaultRolePermissionsFsmApp());
 		c.addCommand(new AddFsmAppRelatedApplicationsCommand());
 		c.addCommand(new AddDefaultDispatchConsoleCommand());
+		c.addCommand(new AddDefaultUserScopingCommand());
 		return c;
 	}
 

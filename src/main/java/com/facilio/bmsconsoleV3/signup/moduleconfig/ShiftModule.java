@@ -2,9 +2,12 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -14,9 +17,7 @@ import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -118,10 +119,10 @@ public class ShiftModule extends BaseModuleConfig{
         FormField descField = new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1);
         ShiftModuleFormFields.add(descField);
 
-        FormField startTime = new FormField("startTime", FacilioField.FieldDisplayType.TIME, "Start", FormField.Required.REQUIRED, 3, 2);
+        FormField startTime = new FormField("startTime", FacilioField.FieldDisplayType.TIME, "Start Time", FormField.Required.REQUIRED, 3, 2);
         startTime.setConfig(timeConfig);
         ShiftModuleFormFields.add(startTime);
-        FormField endTime = new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End", FormField.Required.REQUIRED, 3, 2);
+        FormField endTime = new FormField("endTime", FacilioField.FieldDisplayType.TIME, "End Time", FormField.Required.REQUIRED, 3, 2);
         endTime.setConfig(timeConfig);
         ShiftModuleFormFields.add(endTime);
 
@@ -135,7 +136,7 @@ public class ShiftModule extends BaseModuleConfig{
         isActiveField.setValue(String.valueOf(true));
         ShiftModuleFormFields.add(isActiveField);
 
-        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Days", FormField.Required.REQUIRED, 5, 1 ));
+        ShiftModuleFormFields.add(new FormField("weekend", FacilioField.FieldDisplayType.WEEK_MATRIX, "Week Off", FormField.Required.REQUIRED, 5, 1 ));
         shiftModuleForm.setFields(ShiftModuleFormFields);
 
         FormSection section = new FormSection("Default", 1, ShiftModuleFormFields, false);
@@ -167,6 +168,119 @@ public class ShiftModule extends BaseModuleConfig{
 
 
     }
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+
+        List<String> appNames = new ArrayList<>();
+        appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+
+        Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
+        for (String appName : appNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName, createShiftPage(app, module, false, true));
+        }
+        return appNameVsPage;
+    }
+
+    private static List<PagesContext> createShiftPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+
+        JSONObject historyWidgetParam = new JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.Shift.SHIFT_ACTIVITY);
+
+        return new ModulePages()
+                .addPage("shift", "Shift", "", null, isTemplate, isDefault, false)
+                .addWebLayout()
+                .addTab("shiftSummary", "Summary", PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("shiftSummaryFields", null, null)
+                .addWidget("shiftSummaryFieldsWidget", "Shift Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.ContextNames.SHIFT))
+                .widgetDone()
+                .sectionDone()
+                .addSection("shiftWeekOff", null, null)
+                .addWidget("shiftWeekOffWidget", "Week Off", PageWidget.WidgetType.WEEK_OFF, "webWeekOff_7_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("shiftHistory", "History",PageTabContext.TabType.SIMPLE,  true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_10", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+
+                .pageDone().getCustomPages();
+
+
+    }
+
+
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        List<FacilioField> shiftFields = moduleBean.getAllFields(FacilioConstants.ContextNames.SHIFT);
+        Map<String, FacilioField> shiftFieldsMap = FieldFactory.getAsMap(shiftFields);
+
+
+        FacilioField description = shiftFieldsMap.get("description");
+        FacilioField startTime = shiftFieldsMap.get("startTime");
+        FacilioField endTime = shiftFieldsMap.get("endTime");
+        FacilioField associatedBreaks = shiftFieldsMap.get("associatedBreaks");
+        FacilioField associatedEmployees = shiftFieldsMap.get("associatedEmployees");
+
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(widgetGroup, description, 1, 1, 4);
+        addSummaryFieldInWidgetGroup(widgetGroup, startTime, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, endTime, 2, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, associatedBreaks, 2,3,1);
+        addSummaryFieldInWidgetGroup(widgetGroup, associatedEmployees, 2,4,1);
+
+
+        widgetGroup.setName("moduleDetails");
+        widgetGroup.setDisplayName("General Information");
+        widgetGroup.setColumns(4);
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+
+
+        pageWidget.setDisplayName("");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+
+    }
+
+    private static void addSummaryFieldInWidgetGroup(SummaryWidgetGroup widgetGroup, FacilioField field, int rowIndex, int colIndex, int colSpan) {
+        if (field != null) {
+            SummaryWidgetGroupFields summaryField = new SummaryWidgetGroupFields();
+            summaryField.setName(field.getName());
+            summaryField.setDisplayName(field.getDisplayName());
+            summaryField.setFieldId(field.getFieldId());
+            summaryField.setRowIndex(rowIndex);
+            summaryField.setColIndex(colIndex);
+            summaryField.setColSpan(colSpan);
+
+            if (widgetGroup.getFields() == null) {
+                widgetGroup.setFields(new ArrayList<>(Arrays.asList(summaryField)));
+            } else {
+                widgetGroup.getFields().add(summaryField);
+            }
+        }
+    }
+
 
 }
 

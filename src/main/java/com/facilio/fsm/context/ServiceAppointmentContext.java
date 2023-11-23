@@ -191,4 +191,7 @@ public class ServiceAppointmentContext extends V3Context {
             return null;
         }
     }
+    private boolean dispatched;
+    private long dispatchedTime;
+    private V3PeopleContext dispatchedBy;
 }

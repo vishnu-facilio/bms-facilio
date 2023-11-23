@@ -299,7 +299,7 @@ public class TimeOffModule extends BaseModuleConfig {
                 .addTab("timeoffsummary", "Summary",PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("timeoffsummaryfields", null, null)
-                .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
+                .addWidget("timeoffsummaryfieldswidget", "Time Off Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeOff.TIME_OFF))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -320,7 +320,7 @@ public class TimeOffModule extends BaseModuleConfig {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summary", null, null)
-                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(FacilioConstants.TimeOff.TIME_OFF))
+                .addWidget("summaryFieldsWidget", null, PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblemobilesummaryfieldswidget_14", 0, 0, null, getSummaryWidgetDetails(app,FacilioConstants.TimeOff.TIME_OFF))
                 .widgetDone()
                 .addWidget("attachment", null, PageWidget.WidgetType.ATTACHMENT, "flexiblemobileattachment_8", 0, 15, attachmentWidgetParam, null)
                 .widgetDone()
@@ -345,7 +345,7 @@ public class TimeOffModule extends BaseModuleConfig {
 
     }
 
-    private static JSONObject getSummaryWidgetDetails(String moduleName) throws Exception {
+    private static JSONObject getSummaryWidgetDetails(ApplicationContext app,String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         List<FacilioField> timeOffFields = moduleBean.getAllFields(FacilioConstants.TimeOff.TIME_OFF);
@@ -393,7 +393,7 @@ public class TimeOffModule extends BaseModuleConfig {
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
-        pageWidget.setAppId(ApplicationApi.getApplicationForLinkName(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP).getId());
+        pageWidget.setAppId(app.getId());
         pageWidget.setGroups(widgetGroupList);
 
         return FieldUtil.getAsJSON(pageWidget);

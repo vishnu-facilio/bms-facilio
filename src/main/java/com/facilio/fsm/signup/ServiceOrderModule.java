@@ -228,6 +228,11 @@ public class ServiceOrderModule extends BaseModuleConfig {
         site.setLookupModule(bean.getModule(FacilioConstants.ContextNames.SITE));
         serviceOrderFieldsList.add(site);
 
+        LookupField location = FieldFactory.getDefaultField("location","Location","LOCATION_ID",FieldType.LOOKUP);
+        location.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        location.setLookupModule(bean.getModule("location"));
+        serviceOrderFieldsList.add(location);
+
         LookupField client = FieldFactory.getDefaultField("client", "Client", "CLIENT_ID", FieldType.LOOKUP);
         client.setLookupModule(bean.getModule(FacilioConstants.ContextNames.CLIENT));
         serviceOrderFieldsList.add(client);

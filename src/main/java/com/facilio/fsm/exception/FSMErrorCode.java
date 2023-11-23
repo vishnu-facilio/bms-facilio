@@ -55,6 +55,7 @@ public enum FSMErrorCode {
     TIME_SHEET_TIME_MISMATCH(Severity.ERROR, "Time range is invalid", "Time Sheet should have valid time range."),
     TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Work cannot be started", "You currently have an active work in progress. Please complete the ongoing work to start a new one."),
     TIMESHEET_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Time Sheet","Cannot edit or delete an ongoing Time Sheet."),
+    TIMESHEET_TASK_STATUS_ERROR(Severity.ERROR,"Cannot Create/Edit Time Sheet","Please provide valid end time for the completed task."),
 
     // Trip error codes
     TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a trip"),
