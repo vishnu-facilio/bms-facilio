@@ -134,6 +134,11 @@ public class UriFilter implements Filter {
 
                 // {orgdomain}.faciliosandbox.com/{sandbox}/{appname}/api
                 if (SandboxAPI.isSandboxSubDomain(domainName)) {
+                    if(reqUri.startsWith("/legacy")) {
+                        // TODO - To be removed after changing URI structure in Client
+                        chain.doFilter(request, response);
+                        return;
+                    }
                     List<String> reqUriSplit = Arrays.asList(reqUri.split("/"));
                     int idx = reqUriSplit.indexOf("api");
                     if (idx == 1) {                                                     // "/api/"
