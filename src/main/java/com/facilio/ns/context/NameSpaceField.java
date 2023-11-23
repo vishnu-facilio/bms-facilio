@@ -90,8 +90,10 @@ public class NameSpaceField implements Cloneable, Serializable {
     DefaultExecutionMode defaultExecutionMode;
 
     public void setDefaultExecutionMode(DefaultExecutionMode typ) {
-        this.defaultExecutionMode = typ;
-        this.defaultExecutionModeI = typ.getIndex();
+        if(typ != null) {
+            this.defaultExecutionMode = typ;
+            this.defaultExecutionModeI = typ.getIndex();
+        }
     }
 
     int defaultExecutionModeI;
