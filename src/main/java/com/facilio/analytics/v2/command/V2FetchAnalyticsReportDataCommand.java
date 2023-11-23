@@ -268,7 +268,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         V2AnalyticsOldUtil.applyResourcesJoinOnMeter(selectBuilder, baseModule, report_v2.getDimensions(), dataPoint, addedModules);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
         V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine);
-        V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder);
+        V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder,addedModules);
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
         V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);

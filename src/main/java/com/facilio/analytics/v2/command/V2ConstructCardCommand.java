@@ -162,7 +162,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
         }
         if(db_filter != null && db_filter.getDb_user_filter() != null) {
-            applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder );
+            applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder,addedModules );
         }
         if(addedModules.size() == 1){
             V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(selectBuilder, addedModules, baseModule);
@@ -211,13 +211,11 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         return selectBuilder;
     }
-    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,Set<FacilioModule> addedModules)throws Exception
     {
         if(dbUserFilter != null)
         {
             List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(cardContext.getDisplayName());
-            Set<FacilioModule> addedModules = new HashSet<>();
-            addedModules.add(baseModule);
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));

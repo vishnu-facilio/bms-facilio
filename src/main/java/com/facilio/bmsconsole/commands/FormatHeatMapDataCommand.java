@@ -75,7 +75,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand {
 			if(reportContext.getxAggr() == 20) {
 				timeStep = 3600000;
 			}
-			else if(reportContext.getxAggr() == 12) {
+			else if(reportContext.getxAggr() == 12 || reportContext.getxAggr() == 11) {
 				sdf = new java.text.SimpleDateFormat("yyyy MM dd");
 				timeStep = 86400000;
 			}

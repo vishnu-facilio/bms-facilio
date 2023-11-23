@@ -1066,7 +1066,8 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		reportContext.setCreatedTime(System.currentTimeMillis());
 		reportContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
-		props.put("appId",context.containsKey("dashboard_clone") ? context.get("target_app_id") : AccountUtil.getCurrentUser().getApplicationId());
+		Long appId = context.containsKey("dashboard_clone") ? (Long) context.get("target_app_id") : reportContext.getAppId() > 0 ? reportContext.getAppId() : AccountUtil.getCurrentUser().getApplicationId();
+		props.put("appId",appId);
 		long id = insertBuilder.insert(props);
 		reportContext.setId(id);
 		

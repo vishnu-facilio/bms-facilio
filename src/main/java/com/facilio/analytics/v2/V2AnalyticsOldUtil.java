@@ -805,13 +805,11 @@ public class V2AnalyticsOldUtil {
         }
         return baseline != null ? baseline.getBaseLineRange() : report.getDateRange();
     }
-    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules)throws Exception
     {
         if(dbUserFilter != null)
         {
             List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(dataPoint.getAliases().get("actual"));
-            Set<FacilioModule> addedModules = new HashSet<>();
-            addedModules.add(baseModule);
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));

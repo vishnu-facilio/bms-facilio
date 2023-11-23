@@ -71,11 +71,13 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new ConstructReportDeleteCommand());
         return chain;
     }
-    public static FacilioChain getReportWithDataChain()throws Exception
+    public static FacilioChain getReportWithDataChain(Boolean isDataNeeded)throws Exception
     {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(new V2GetAnalyticReportCommand());
-        chain.addCommand(V2AnalyticsTransactionChain.newV2FetchReportDataChain());
+        if(isDataNeeded == null || (isDataNeeded != null && isDataNeeded == Boolean.TRUE)){
+            chain.addCommand(V2AnalyticsTransactionChain.newV2FetchReportDataChain());
+        }
         return chain;
     }
     public static FacilioChain getAnalyticReportListChain()throws Exception
