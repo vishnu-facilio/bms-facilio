@@ -332,9 +332,20 @@ public class APIFieldsConfig {
     @Module(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)
     public static Supplier<FieldConfig> getPlannedMaintenanceFieldConfig(){
         return () -> new FieldConfig()
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.TENANTS, Arrays.asList("tenant"))
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.VENDOR, Arrays.asList("vendor"))
 
                 .advancedFields()
                 .add(FieldsConfigList.PM_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.PM_VIEW_FIELDS_INCLUDE)
+                .addFixedFields(FieldsConfigList.PM_VIEW_FIXED_FIELDS_INCLUDE)
+                .done()
+
+                .sortFields()
+                .add(FieldsConfigList.PM_VIEW_FIXED_FIELDS_INCLUDE)
                 .done();
     }
 

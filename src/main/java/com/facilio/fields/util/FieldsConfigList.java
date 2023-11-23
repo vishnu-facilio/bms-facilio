@@ -168,9 +168,21 @@ public class FieldsConfigList {
     public static final List<String> PM_FIELDS_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS
             "name", "type", "priority", "assignmentType",
             "category", "spaceCategory", "assetCategory", "isActive",
-            "subject", "tenant", "vendor", "subject",
+            "subject", "tenant", "vendor",
             "description", "sysCreatedTime", "sites", "assignmentGroup",
             "leadTime", "pmStatus");
+
+    public static final List<String> PM_VIEW_FIELDS_INCLUDE = Arrays.asList( //VIEW FIELDS
+            "name", "type", "priority", "assignmentType",
+            "category", "spaceCategory", "assetCategory",
+            "subject", "tenant", "vendor",
+            "description", "sysCreatedTime", "sites", "assignmentGroup",
+            "leadTime", "pmStatus",
+            "modifiedTime", "sysModifiedBy", "estimatedDuration","dueDuration", "createdBy");
+
+    public static final List<String> PM_VIEW_FIXED_FIELDS_INCLUDE = Arrays.asList( //FIXED VIEW FIELDS
+            "name", "subject");
+
 
     public static final List<String> OUTGOING_MAIL_LOGGER_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS
             "subject", "from", "to", "cc",
