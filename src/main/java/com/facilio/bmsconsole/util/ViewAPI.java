@@ -184,7 +184,7 @@ public class ViewAPI {
 				if (!fromBuilder) {
 					Criteria statusFilterCriteria = new Criteria();
 					statusFilterCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(true), BooleanOperators.IS));
-					statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", CommonOperators.IS_EMPTY));
+					statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition(viewFieldsAsMap.get("status"), CommonOperators.IS_EMPTY));
 					selectBuilder.andCriteria(statusFilterCriteria);
 				}
 			}
@@ -1256,7 +1256,7 @@ public class ViewAPI {
 		if(!fromBuilder){
 			Criteria statusFilterCriteria = new Criteria();
 			statusFilterCriteria.addAndCondition(CriteriaAPI.getCondition(statusField, String.valueOf(true), BooleanOperators.IS));
-			statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition("STATUS", "status", CommonOperators.IS_EMPTY));
+			statusFilterCriteria.addOrCondition(CriteriaAPI.getCondition(statusField, CommonOperators.IS_EMPTY));
 			criteria.andCriteria(statusFilterCriteria);
 		}
 		criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getNameField(ModuleFactory.getViewsModule()), StringUtils.join(LoadViewCommand.HIDDEN_VIEW_NAMES, ','), StringOperators.ISN_T));
