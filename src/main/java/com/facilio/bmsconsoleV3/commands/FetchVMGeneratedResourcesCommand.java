@@ -2,8 +2,10 @@ package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -16,6 +18,8 @@ public class FetchVMGeneratedResourcesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        
+        FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
 
         Long relationShipId = (Long) context.get("relationShipId");
 
@@ -26,6 +30,8 @@ public class FetchVMGeneratedResourcesCommand extends FacilioCommand {
                 .andCondition(CriteriaAPI.getIdCondition(relationShipId, relationModule));
 
         Map<String, Object> props = selectRelationBuilder.fetchFirst();
+        
+        FacilioField sysDeletedField = FieldFactory.getIsDeletedField(meterModule);
 
         if (props != null && !props.isEmpty()) {
             RelationContext relation = FieldUtil.getAsBeanFromMap(props, RelationContext.class);
@@ -34,7 +40,10 @@ public class FetchVMGeneratedResourcesCommand extends FacilioCommand {
 
             SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder()
                     .module(relMod)
-                    .select(relModFields);
+                    .innerJoin(meterModule.getTableName())
+                    .on(meterModule.getTableName()+".ID = "+relMod.getTableName()+".RIGHT_ID")
+                    .select(relModFields)
+                    .andCondition(CriteriaAPI.getCondition(sysDeletedField,String.valueOf(false), BooleanOperators.IS));;
 
             List<Map<String, Object>> relModProps = selectBuilder.getAsProps();
             if(relModProps != null && !relModProps.isEmpty()) {
