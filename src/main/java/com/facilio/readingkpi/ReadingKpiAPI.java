@@ -22,6 +22,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
+import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.*;
 import com.facilio.readingkpi.readingslist.AssetDataFetcher;
 import com.facilio.readingkpi.readingslist.KpiAnalyticsDataFetcher;
@@ -59,6 +60,7 @@ import java.util.stream.Collectors;
 
 import static com.facilio.connected.CommonConnectedUtil.getDependencyMapForConnectedRules;
 import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
+import static com.facilio.modules.BaseFieldFactory.getIdField;
 
 @Log4j
 public class ReadingKpiAPI {
@@ -925,10 +927,8 @@ public class ReadingKpiAPI {
 
     public static long getStartTimeForHistoricalCalculation(NamespaceFrequency freq) {
         long currentTime = DateTimeUtil.getCurrenTime() - 10 * 60 * 1000; // trigger happens at 00:00, we need prev interval, so 10 mins behind
-        LOGGER.info("adjusted Time from getStartTimeForHistoricalCalculation" + currentTime);
         switch (freq) {
             case ONE_DAY:
-                LOGGER.info("day start time from getStartTimeForHistoricalCalculation" + DateTimeUtil.getDayStartTimeOf(currentTime));
                 return DateTimeUtil.getDayStartTimeOf(currentTime);
             case WEEKLY:
                 return DateTimeUtil.getWeekStartTimeOf(currentTime);
@@ -936,7 +936,7 @@ public class ReadingKpiAPI {
                 return DateTimeUtil.getMonthStartTimeOf(currentTime);
             case QUARTERLY:
                 return DateTimeUtil.getQuarterStartTimeOf(currentTime);
-            case HALF_YEARLY: // figure out later
+            case HALF_YEARLY:
                 return DateTimeUtil.getYearStartTime(-1);
             case ANNUALLY:
                 return DateTimeUtil.getYearStartTimeOf(currentTime);
@@ -957,5 +957,49 @@ public class ReadingKpiAPI {
             default:
                 throw new IllegalArgumentException("Unsupported Module");
         }
+    }
+
+    public static Set<Long> getMatchedResourcesOfAllKpis(ResourceType resourceType) throws Exception {
+        FacilioModule nsModule = NamespaceModuleAndFieldFactory.getNamespaceModule();
+        FacilioModule nsInclModule = NamespaceModuleAndFieldFactory.getNamespaceInclusionModule();
+        Map<String, FacilioField> nsFieldsMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceFields());
+        Map<String, FacilioField> nsInclFieldsMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceInclusionFields());
+
+        List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(getIdField(nsModule));
+        selectFields.add(nsInclFieldsMap.get("resourceId"));
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(nsModule.getTableName())
+                .select(selectFields)
+                .leftJoin(nsInclModule.getTableName())
+                .on(nsModule.getTableName() + ".ID=" + nsInclModule.getTableName() + ".NAMESPACE_ID")
+                .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("type"), String.valueOf(NSType.KPI_RULE.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("resourceType"), String.valueOf(resourceType.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("status"), String.valueOf(1), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> maps = builder.get();
+        return getInclResIdsFromProps(maps);
+    }
+
+    private static Set<Long> getInclResIdsFromProps(List<Map<String, Object>> maps) {
+        Set<Long> inclResIds = new HashSet<>();
+        Map<Long, Set<Long>> nsIdVsResIds = new HashMap<>();
+        for (Map<String, Object> map : maps) {
+            Long resId = (Long) map.get("resourceId");
+            if(resId == null){
+                return new HashSet<>();
+            }
+            Long nsId = (Long) map.get("id");
+            if(nsIdVsResIds.containsKey(nsId)){
+                Set<Long> resIds = nsIdVsResIds.get(nsId);
+                resIds.add(resId);
+            } else {
+                Set<Long> resIds = new HashSet<>();
+                resIds.add(resId);
+                nsIdVsResIds.put(nsId, resIds);
+            }
+        }
+        return inclResIds;
     }
 }
