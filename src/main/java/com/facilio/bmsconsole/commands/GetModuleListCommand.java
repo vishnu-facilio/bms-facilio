@@ -93,7 +93,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			ContextNames.TICKET_CATEGORY,
 			FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,
 			FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN,
-			FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE
+			FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE,
+			FacilioConstants.Meter.METER,
+			FacilioConstants.Meter.UTILITY_TYPE
 	});
 
 	@Override
