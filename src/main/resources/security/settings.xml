@@ -13,7 +13,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/pdfTemplate/:moduleName/:appId/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/customPage/:moduleName/:appId/:recordId" method="GET">
         <urlparams type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number" mandatory="true"/>

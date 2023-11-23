@@ -23,6 +23,7 @@ import java.util.List;
 
 @ImmutableChildClass(className = "WebTabCacheContext",constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class WebTabContext implements Serializable {
+    private static final long serialVersionUID = 1L;
     public WebTabContext(WebTabContext object) {
         if(object != null) {
             this.id = object.id;
