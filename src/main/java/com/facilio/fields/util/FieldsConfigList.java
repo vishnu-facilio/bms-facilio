@@ -154,8 +154,9 @@ public class FieldsConfigList {
     );
 
     public static final List<String> NEW_READING_RULE_FIELDS_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS
-            "name", "description", "status", "createdTime",
-            "assetCategoryId");
+            "name", "description", "status", "createdTime", "impact", "siteId", "status",
+            "sysCreatedTime", "sysCreatedBy", "sysModifiedTime", "sysModifiedBy", "assetCategory"
+    );
 
     public static final List<String> POINT_FIELDS_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS
             "displayName", "name", "categoryId", "resourceId",

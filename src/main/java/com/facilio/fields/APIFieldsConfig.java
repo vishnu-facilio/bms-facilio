@@ -306,11 +306,16 @@ public class APIFieldsConfig {
     public static Supplier<FieldConfig> getNewReadingRuleFieldConfig(){
         return () -> new FieldConfig()
 
+                .sortFields()
+                .add(FieldsConfigList.NEW_READING_RULE_FIELDS_INCLUDE)
+                .done()
+
                 .advancedFields()
                 .add(FieldsConfigList.NEW_READING_RULE_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
+                .add(FieldsConfigList.NEW_READING_RULE_FIELDS_INCLUDE)
                 .addFixedFields(Arrays.asList("id","name"))
                 .done();
     }
