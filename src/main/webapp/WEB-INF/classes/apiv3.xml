@@ -2775,4 +2775,10 @@
                 method="getNextExecutionDates">
         </action>
     </package>
+    <package name="calendarWizardSpecialApi" namespace="/api/v3/bulkPatch" extends="v3Api">
+        <action name="calendar" class="com.facilio.bmsconsoleV3.actions.CalendarFieldBulkPatchAction" method="bulkUpdateCalendarField">
+            <param name="moduleName">calendar</param>
+            <param name="permission">POST:UPDATE</param>
+        </action>
+    </package>
 </struts>
