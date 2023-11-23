@@ -52,7 +52,7 @@ public class FieldConfigUtil {
             fields.removeIf(f->f.getVersion() != null && ((f.getVersion() & currentVersionId) != currentVersionId));
         }
         if(fetchUnModifiableList) {
-            return CollectionUtils.isNotEmpty(fields) ? Collections.unmodifiableList(fields) : null;
+            return CollectionUtils.isNotEmpty(fields) ? Collections.unmodifiableList(fields) : new ArrayList<>();
         }
         return fields;
     }
