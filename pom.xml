@@ -227,7 +227,7 @@
         <dependency>
             <groupId>com.facilio</groupId>
             <artifactId>identity-client</artifactId>
-            <version>1.24-SNAPSHOT</version>
+            <version>1.25-SNAPSHOT</version>
         </dependency>
 
         <dependency>

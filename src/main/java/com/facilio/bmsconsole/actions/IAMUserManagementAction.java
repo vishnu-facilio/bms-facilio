@@ -513,7 +513,7 @@ public class IAMUserManagementAction extends FacilioAction{
         if(CollectionUtils.isNotEmpty(props)){
             for(Map<String,Object> prop : props){
                 long uid = (long)prop.get("userId");
-                user =  IdentityClient.getDefaultInstance().getUserBean().getUser(uid);
+                user =  ApplicationUserUtil.getUser(uid);
                 if(user != null){
                     break;
                 }

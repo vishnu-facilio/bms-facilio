@@ -33,6 +33,21 @@ import java.util.*;
 
 
 public class ApplicationUserUtil {
+    public static User getUser(long uid) throws Exception {
+        return getUser(AccountUtil.getCurrentOrg().getOrgId(), uid);
+    }
+
+    public static User getUser(long orgId, long uid) throws Exception {
+        return IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, uid);
+    }
+
+    public static User getUser(String userName, String identifier) throws Exception {
+        return getUser(AccountUtil.getCurrentOrg().getOrgId(), userName, identifier);
+    }
+
+    public static User getUser(long orgId, String userName, String identifier) throws Exception {
+        return IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, userName, identifier);
+    }
 
     public static void  addAppUser(long orgId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
        User iamUser;
@@ -227,7 +242,7 @@ public class ApplicationUserUtil {
     }
 
     public static void revokeAppAccess( long userId,long appId) throws Exception {
-        User user = IdentityClient.getDefaultInstance().getUserBean().getUser(userId);
+        User user = getUser(userId);
         if(user != null && !user.getIsSuperUser()){
             List<Map<String, Object>> records = getOrgAppUsers(userId, appId);
             List<Long> orgUserIds = new ArrayList<>();
