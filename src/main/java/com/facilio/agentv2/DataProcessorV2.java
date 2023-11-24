@@ -19,6 +19,7 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.DataLogContextV3;
 import com.facilio.chain.FacilioChain;
@@ -39,6 +40,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.AlarmApproach;
 import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
+import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.util.AckUtil;
 import com.facilio.util.FacilioUtil;
@@ -48,6 +50,7 @@ import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.LongHistogram;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.api.trace.Span;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -122,29 +125,7 @@ public class DataProcessorV2 {
                     break;
                 case TIMESERIES:
                 case COV:
-                    JSONObject timeSeriesPayload = (JSONObject) payload.clone();
-                    Controller timeseriesController = getOrAddController(payload, agent);
-                    if (timeseriesController == null) {
-                        throw new FacilioException("The controller in payload is not available");
-                    }
-                    int messagePartition = 0;
-                    if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
-                        messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
-                    }
-                    Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), timeseriesController.getName()));
-
-                    if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(timeseriesController.getId()) ||
-                            !controllerIdVsLastTimeSeriesTimeStamp.get(timeseriesController.getId()).equals(timeStamp + "#" + messagePartition)) {
-
-                        controllerIdVsLastTimeSeriesTimeStamp.put(timeseriesController.getId(), timeStamp + "#" + messagePartition);
-
-                        timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, timeseriesController.getId());
-                        processStatus = processTimeSeries(agent, timeStamp, timeSeriesPayload, timeseriesController,recordId,partitionId,messageSource,publishType, payloadIndex, startTime);
-                    } else {
-                        //add datalog table entry with this exception
-                        LOGGER.info("Duplicate message for controller id : " + timeseriesController.getId() +
-                                " a_timestamp : " + timeStamp);
-                    }
+                    processStatus = processTimeSeries(agent, timeStamp, payload,recordId,partitionId,messageSource,publishType, payloadIndex, startTime);
                     break;
                 case AGENT_EVENTS:
                     processStatus = processAgentEvents(agent, payload);
@@ -407,39 +388,109 @@ public class DataProcessorV2 {
         return false;
     }
 
-    private boolean processTimeSeries(FacilioAgent agent, long timeStamp, JSONObject payload, Controller controller,long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime) throws Exception {
+    private static void addDefaultValuesForTimeseries(JSONObject payload, FacilioAgent agent) {
+        if (agent.getAgentTypeEnum().isCustomPayload()) {
+            if (!payload.containsKey(AgentConstants.CONTROLLER) && payload.containsKey(AgentConstants.UNIQUE_ID)) {
+                String parentUniqueNum = (String) payload.get(AgentConstants.UNIQUE_ID);
+                JSONObject controller = new JSONObject();
+                controller.put(FacilioConstants.ContextNames.NAME, parentUniqueNum);
+                payload.put(FacilioConstants.ContextNames.CONTROLLER, controller);
+                // Controller must be misc in this case
+                payload.put(AgentConstants.CONTROLLER_TYPE, ControllerType.MISC.getKey());
+            }
+
+            if (!payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
+                payload.put(AgentConstants.CONTROLLER_TYPE, ControllerType.MISC.getKey());
+            }
+        }
+
+    }
+
+
+    private boolean processTimeSeries(FacilioAgent agent, long timeStamp, JSONObject payload,long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime) throws Exception {
+        Controller controller = null;
         try {
-            FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
-            FacilioContext context = chain.getContext();
-            context.put(AgentConstants.RECORD_ID, recordId);
-            context.put(AgentConstants.PARTITION_ID, partitionId);
-            context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
-            context.put(AgentConstants.AGENT, agent);
-            context.put(AgentConstants.IS_NEW_AGENT, true);
-            context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
-            context.put(AgentConstants.PUBLISH_TYPE,publishType);
-            context.put(AgentKeys.START_TIME, startTime);
-            context.put(AgentConstants.CONTROLLER, controller);
-            context.put(AgentConstants.CONTROLLER_ID, controller.getId());
-            context.put(AgentConstants.AGENT_ID, controller.getAgentId());
-            context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, publishType == PublishType.TIMESERIES);
-            context.put(AgentConstants.TIMESTAMP, timeStamp);
-            int version = FacilioUtil.parseInt(payload.getOrDefault(AgentConstants.VERSION, 2));
-            context.put(AgentConstants.VERSION, version);
-            context.put(AgentConstants.PAYLOAD, payload);
+            addDefaultValuesForTimeseries(payload, agent);
+            controller = getOrAddController(payload, agent);
+            if (controller == null) {
+                throw new FacilioException("The controller in payload is not available");
+            }
 
-            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
-            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
-            context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
+            JSONObject timeSeriesPayload = (JSONObject) payload.clone();
 
-            chain.execute();
-            LOGGER.debug(" done processes data command ");
+            // 3.1 version supports multiple timestamp payloads
+            // Splitting timestamp payloads adding each timestamp payload separately as version 3
+            double payloadVersion = FacilioUtil.parseDouble(payload.getOrDefault(AgentConstants.VERSION, 2));
+            if (payloadVersion ==  3.1) {
+                List<Map<String, Object>> trendArr = (ArrayList<Map<String, Object>>) timeSeriesPayload.remove(AgentConstants.TIMESERIES);
+                if(CollectionUtils.isEmpty(trendArr)) {
+                    throw new FacilioException("Timeseries array is mandatory for v3.1");
+                }
+                int pIndex = 1;  // Assuming payloadindex based on transform payload script from processor util wont be there for 3.1
+                for(Map<String, Object> trend: trendArr) {
+                    JSONObject newPayload = (JSONObject) timeSeriesPayload.clone();
+                    newPayload.putAll(trend);
+                    long payloadTs = getPayloadTimeStamp(newPayload);
+                    addTimeseriesData(agent, payloadTs, newPayload, controller, recordId, partitionId, messageSource, publishType, pIndex++, startTime, 3);
+                }
+                return true;
+            }
+
+            // For versions other than 3.1 which will have single timestamp payload
+            int messagePartition = 0;
+            if (payload.containsKey(AgentConstants.MESSAGE_PARTITION)) {
+                messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
+            }
+            Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), controller.getName()));
+
+
+            if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(controller.getId()) ||
+                    !controllerIdVsLastTimeSeriesTimeStamp.get(controller.getId()).equals(timeStamp + "#" + messagePartition)) {
+
+                controllerIdVsLastTimeSeriesTimeStamp.put(controller.getId(), timeStamp + "#" + messagePartition);
+
+                timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
+                addTimeseriesData(agent, timeStamp, timeSeriesPayload, controller,recordId,partitionId,messageSource,publishType, payloadIndex, startTime, (int)payloadVersion);
+            } else {
+                //add datalog table entry with this exception
+                LOGGER.info("Duplicate message for controller id : " + controller.getId() +
+                        " a_timestamp : " + timeStamp);
+            }
             return true;
         } catch (Exception e) {
-            addAgentDataLogForError(e,recordId,agent.getId(),controller.getId(),messageSource,partitionId,payload,publishType, startTime, payloadIndex);
+            long controllerId = controller != null? controller.getId(): -1l;
+            addAgentDataLogForError(e,recordId,agent.getId(),controllerId,messageSource,partitionId,payload,publishType, startTime, payloadIndex);
             LOGGER.info("Exception while processing timeseries data ", e);
         }
         return false;
+    }
+
+    private void addTimeseriesData(FacilioAgent agent, long timeStamp, JSONObject payload, Controller controller, long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime, int version) throws Exception{
+        FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.RECORD_ID, recordId);
+        context.put(AgentConstants.PARTITION_ID, partitionId);
+        context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
+        context.put(AgentConstants.AGENT, agent);
+        context.put(AgentConstants.IS_NEW_AGENT, true);
+        context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
+        context.put(AgentConstants.PUBLISH_TYPE,publishType);
+        context.put(AgentKeys.START_TIME, startTime);
+        context.put(AgentConstants.CONTROLLER, controller);
+        context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+        context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+        context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, publishType == PublishType.TIMESERIES);
+        context.put(AgentConstants.TIMESTAMP, timeStamp);
+        context.put(AgentConstants.VERSION, version);
+        context.put(AgentConstants.PAYLOAD, payload);
+
+        Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+        boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+        context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
+
+        chain.execute();
+        LOGGER.debug(" done processes data command ");
+
     }
 
     private void addAgentDataLogForError(Exception e,long recordId,long agentId,long controllerId,String messageSource,int partitionId,JSONObject payload,PublishType publishType, long startTime, int payloadIndex) throws Exception {
