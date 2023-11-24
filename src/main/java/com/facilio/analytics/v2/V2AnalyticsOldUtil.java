@@ -50,6 +50,7 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1291,48 +1292,76 @@ public class V2AnalyticsOldUtil {
         return dataPoints;
     }
 
-    public static Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception
-    {
+    public static Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
         JSONArray measureArray = new JSONArray();
-        ModuleBean moduleBean = Constants.getModBean();
-        String parentModuleName =null;
-        if(readingRule.getResourceTypeEnum() == ResourceType.ASSET_CATEGORY)
-        {
+        String parentModuleName = null;
+        if (readingRule.getResourceTypeEnum() == ResourceType.ASSET_CATEGORY) {
             parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
         }
         List<NameSpaceField> fields = readingRule.getNs().getFields();
-        for (NameSpaceField nsField : fields)
-        {
-            Long readingFieldId = nsField.getFieldId();
-            if (readingFieldId > 0)
-            {
-                JSONObject measureJson = new JSONObject();
-                List<Long> parentId = new ArrayList<>();
-                parentId.add(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
+        measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, Collections.singletonList(resource.getId())));
 
-                if (nsField.getNsFieldType().equals(RELATED_READING)) {
-                    parentId = RelationUtil.getAllCustomRelationsForRecId(nsField.getRelatedInfo().getRelMapContext(), resource.getId());
-                }
-                measureJson.putAll(constructFieldObject(moduleBean.getField(readingFieldId), readingRule.getCategoryId()));
-                measureJson.put("aggr", 0);
-                measureJson.put("type", 1);
-
-                JSONArray parentIds = FieldUtil.getAsJSONArray(parentId.stream().map(id -> Long.toString(id)).collect(Collectors.toList()), String.class);
-                JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
-                JSONObject operatorJson = new JSONObject();
-                operatorJson.put("operatorId", 9);
-                operatorJson.put("value", parentIds);
-                filterJson.put("id", operatorJson);
-
-                measureJson.put("parentId", parentIds);
-                measureJson.put("criteriaType", 2);
-                measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
-                measureJson.put("parentModuleName", parentModuleName);
-                measureArray.add(measureJson);
+        for (NameSpaceField nsField : fields) {
+            Long catIdForField = getCategoryForField(nsField, readingRule);
+            String categoryName = parentModuleName;
+            if (!Objects.equals(catIdForField, readingRule.getCategoryId())) {
+                categoryName = getModuleNameFromCategory(catIdForField, readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
             }
+
+            List<Long> parentIds = getParentIdsForField(resource, nsField);
+            if (CollectionUtils.isEmpty(parentIds)) {
+                continue;
+            }
+            measureArray.add(getMeasureForField(nsField.getFieldId(), catIdForField, categoryName, parentIds));
         }
         return measureArray;
     }
+
+    private static List<Long> getParentIdsForField(ResourceContext resource, NameSpaceField nsField) throws Exception {
+        if (nsField.getNsFieldType().equals(RELATED_READING)) {
+            return RelationUtil.getAllCustomRelationsForRecId(nsField.getRelatedInfo().getRelMapContext(), resource.getId());
+        }
+        return Collections.singletonList(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
+    }
+
+    private static JSONObject getMeasureForField(Long readingFieldId, Long categoryId, String parentModuleName, List<Long> parentIds) throws Exception {
+        JSONObject measureJson = new JSONObject();
+        measureJson.putAll(constructFieldObject(Constants.getModBean().getField(readingFieldId), categoryId));
+        measureJson.put("aggr", 0);
+        measureJson.put("type", 1);
+        measureJson.put("parentModuleName", parentModuleName);
+
+        JSONArray parentIdsJson = FieldUtil.getAsJSONArray(parentIds.stream().map(id -> Long.toString(id)).collect(Collectors.toList()), String.class);
+        JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
+        JSONObject operatorJson = new JSONObject();
+        operatorJson.put("operatorId", 9);
+        operatorJson.put("value", parentIdsJson);
+        filterJson.put("id", operatorJson);
+
+        measureJson.put("parentId", parentIdsJson);
+        measureJson.put("criteriaType", 2);
+        measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
+
+        return measureJson;
+    }
+
+    private static Long getCategoryForField(NameSpaceField nsField, NewReadingRuleContext readingRule) throws Exception {
+        if (nsField.getNsFieldType() == RELATED_READING) {
+            return Optional.ofNullable(AssetsAPI.getCategoryByAssetModule(nsField.getRelatedInfo().getRelMapContext().getFromModuleId()))
+                    .map(ModuleBaseWithCustomFields::getId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid ModuleId given for fetching Category"));
+        }
+
+        if (nsField.getResourceId() == null) {
+            return readingRule.getCategoryId();
+        }
+        AssetContext assetInfo = AssetsAPI.getAssetInfo(nsField.getResourceId());
+        return Optional.ofNullable(assetInfo)
+                .map(AssetContext::getCategory)
+                .map(ModuleBaseWithCustomFields::getId)
+                .orElse(-1L);
+    }
+
     public static JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext, ResourceContext resource,
                                                 AlarmOccurrenceContext alarm, Set readingMap) throws Exception {
         JSONArray dataPoints = new JSONArray();
