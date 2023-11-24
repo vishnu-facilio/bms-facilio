@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.bmsconsole.commands.ECMOoredo;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -81,12 +84,15 @@ public class AssetPageFactory extends PageFactory {
 			addAlarmCountWidget(tab1Sec1);
 			addFailureMetricWidget(tab1Sec1);
 		}
-		
-		if (AccountUtil.getCurrentOrg().getOrgId() == 436) {
-			addCustomSecondaryDetailsWidget(tab1Sec1);
-		}
-		else {
-			addSecondaryDetailsWidget(tab1Sec1);
+		//special check added ECM Ooredo account to see required fields in place of secondaryDetailsWidget in client portal alone
+		boolean addedSummaryWidgetForClientPortalOfECMOoredo = addSummaryWidgetForClientPortalOfECMOOredo(module, tab1Sec1);
+
+		if(!addedSummaryWidgetForClientPortalOfECMOoredo) {
+			if (AccountUtil.getCurrentOrg().getOrgId() == 436) {
+				addCustomSecondaryDetailsWidget(tab1Sec1);
+			} else {
+				addSecondaryDetailsWidget(tab1Sec1);
+			}
 		}
 		
 		addCommonSubModuleWidget(tab1Sec1, module, asset);
@@ -338,6 +344,24 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
 		alarmWidget.addToLayoutParams(section, 7, 8);
 		section.addWidget(alarmWidget);
+	}
+
+	private static boolean addSummaryWidgetForClientPortalOfECMOOredo(FacilioModule module, Section tab1Sec1) throws Exception {
+        try {
+            boolean isEcmOoredoClientSummaryWidget = AccountUtil.getCurrentOrg().getOrgId() == 552 && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.CLIENT_PORTAL;
+            if (isEcmOoredoClientSummaryWidget) {
+                SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidgetForApp(module.getModuleId());
+                if (pageWidget != null) {
+                    PageWidget newSummaryFieldsWidget = new PageWidget(WidgetType.SUMMARY_FIELDS_WIDGET, FacilioConstants.WidgetNames.MAIN_SUMMARY_WIDGET);
+                    newSummaryFieldsWidget.addToLayoutParams(tab1Sec1, 24, 5);
+                    tab1Sec1.addWidget(newSummaryFieldsWidget);
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+			LOGGER.info("Error occured while adding ECM Ooredo Summary widget for client portal");
+		}
+		return false;
 	}
 	
 	private static void addFailureMetricWidget(Section section) {
