@@ -5,19 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3BuildingContext;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.relation.context.RelationContext;
 import lombok.AllArgsConstructor;
 import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.PlannedMaintenance.PMScopeAssigmentType;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
@@ -63,6 +60,8 @@ public class VirtualMeterTemplateContext extends V3Context{
 	List<V3SiteContext> sites;
 	List<V3BuildingContext> buildings;
 	List<V3ResourceContext> resources;
+
+	RelationContext relationShip;
 	
 	
 	public Integer getScope() {

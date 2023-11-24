@@ -231,7 +231,7 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
 
         fields.add((FacilioField) FieldFactory.getDefaultField("meterDescription", "Meter Description", "METER_DESCRIPTION", FieldType.STRING));
 
-        NumberField relationShipId = (NumberField) FieldFactory.getDefaultField("relationShipId", "Relationship Id", "RELATIONSHIP_ID", FieldType.NUMBER);
+        NumberField relationShipId = (NumberField) FieldFactory.getDefaultField("relationShipId", "Relationship", "RELATIONSHIP_ID", FieldType.NUMBER);
         fields.add(relationShipId);
 
         fields.add((FacilioField) FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME));

@@ -28,9 +28,13 @@ public class VMTemplateSupplementsSupplyCommand extends FacilioCommand {
 
         SupplementRecord spaceCategoryField = (SupplementRecord) fieldsAsMap.get("spaceCategory");
         SupplementRecord utilityTypeField = (SupplementRecord) fieldsAsMap.get("utilityType");
+        SupplementRecord sysCreatedBy = (SupplementRecord) fieldsAsMap.get("sysCreatedByPeople");
+        SupplementRecord sysModifiedBy = (SupplementRecord) fieldsAsMap.get("sysModifiedByPeople");
 
         supplementFields.add(spaceCategoryField);
         supplementFields.add(utilityTypeField);
+        supplementFields.add(sysCreatedBy);
+        supplementFields.add(sysModifiedBy);
 
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, supplementFields);
