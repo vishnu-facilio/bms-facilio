@@ -193,6 +193,9 @@ public class NamespaceBeanImpl implements NamespaceBean {
         fld.setNsId(nsId);
         fld.setResourceId(resourceId);
         fld.setPrimary(isPrimary);
+        if(fld.getDefaultExecutionMode() == null){
+            fld.setDefaultExecutionMode(NameSpaceField.DefaultExecutionMode.SKIP);
+        }
 
     }
 

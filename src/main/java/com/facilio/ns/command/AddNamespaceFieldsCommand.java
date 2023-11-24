@@ -19,6 +19,12 @@ public class AddNamespaceFieldsCommand extends FacilioCommand {
         if (CollectionUtils.isEmpty(fields)) {
             throw new Exception("Fields cannot be empty!");
         }
+
+        fields.forEach(field -> {
+            if (field.getDefaultExecutionMode() == null) {
+                field.setDefaultExecutionMode(NameSpaceField.DefaultExecutionMode.SKIP);
+            }
+        });
         Constants.getNsBean().addNamespaceFields(nsId, fields);
         LOGGER.info("id: " + nsId + ", fields : " + fields);
         return false;
