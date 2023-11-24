@@ -110,7 +110,7 @@ public class DefaultTabsAndTabGroups {
             new WebTabContext("Client","client",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT)), null, 33,null,appId),
             new WebTabContext("Client Contact","clientcontact",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT_CONTACT)), null, 33,null,appId),
             new WebTabContext("Reports", "clientreports", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT,FacilioConstants.ContextNames.CLIENT_CONTACT)), "{\"type\": \"module_reports\"}", 33,null,appId),
-            new WebTabContext("Preventive Maintenance","preventive-maintenance",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)), null, 81,null,appId),
+            new WebTabContext("Planned Maintenance","planned-maintenance",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)), null, 81,null,appId),
             new WebTabContext("Shift","shift",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SHIFT)), null, 61,null,appId),
             new WebTabContext("Shift Planner","shiftplanner",WebTabContext.Type.SHIFT_PLANNER,null, null, 61,null,appId),
             new WebTabContext("Break","break",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.BREAK)), null, 120,null,appId),
@@ -130,8 +130,8 @@ public class DefaultTabsAndTabGroups {
             new WebTabGroupContext(Arrays.asList(tabsMap.get("dashboard"), tabsMap.get("portfolio"), tabsMap.get("approval"),tabsMap.get("survey")), "Home", "home", 1, 1, null, layoutId, IconType.home),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("assets"),tabsMap.get("assetreport")), "Asset", "asset", 6, 2, 4l,layoutId,IconType.asset),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("storeroom"),tabsMap.get("itemtypes"),tabsMap.get("items"),tabsMap.get("tooltypes"),tabsMap.get("tools"),tabsMap.get("inventoryrequests"),tabsMap.get("inventoryreports")), "Inventory", "inventory", 27, 3, 14l,layoutId,IconType.inventory),
-            //new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("preventive-maintenance"),tabsMap.get("calendar"),tabsMap.get("resourcescheduler"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance)
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("preventive-maintenance"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance),
+            //new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("planned-maintenance"),tabsMap.get("calendar"),tabsMap.get("resourcescheduler"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance)
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("workorder"),tabsMap.get("planned-maintenance"),tabsMap.get("workorderreport")), "Maintenance", "maintenance", 0, 4, 1l,layoutId,IconType.maintenance),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("jobplans"),tabsMap.get("safetyplans")), "Plans", "plans", 7, 5, 81l,layoutId,IconType.safety_plan),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("servicerequest"),tabsMap.get("servicecatalog"),tabsMap.get("contactdirectory"),tabsMap.get("documents"),tabsMap.get("servicereport")), "Help Center", "helpcenter", 8, 6, 31l,layoutId,IconType.service_request),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("inspection"),tabsMap.get("inspectiontemplates"),tabsMap.get("inspectionreport")), "Inspection", "inspection", 34, 7, 54l,layoutId,IconType.inspection),
