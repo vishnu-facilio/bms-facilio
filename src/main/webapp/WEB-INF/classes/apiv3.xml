@@ -2442,27 +2442,47 @@
 
     <package name="utilityIntegrationApiV3" namespace="/api/v3/utilityIntegration" extends="v3Api">
         <action name="createUtilityAccounts" class="com.facilio.utility.UtilityAction" method="createUtilityAccounts">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationCustomer</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
 		</action>
         <action name="fetchUtilityCustomerAndMeter"
                 class="com.facilio.utility.UtilityAction"
                 method="fetchUtilityCustomerAndMeter">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationCustomer</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
 		</action>
         <action name="activateMeters" class="com.facilio.utility.UtilityAction" method="activateMeters">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationMeter</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
 		</action>
         <action name="ongoingMonitoring" class="com.facilio.utility.UtilityAction" method="ongoingMonitoring">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationMeter</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE
+            </param>
 		</action>
         <action name="fetchBills" class="com.facilio.utility.UtilityAction" method="fetchBills">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationBills</param>
+            <param name="permission">GET:READ;POST:CREATE;PATCH:UPDATE
+            </param>
 		</action>
         <action name="associateMeter" class="com.facilio.utility.UtilityAction" method="associateMeter">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationMeter</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE
+            </param>
 		</action>
         <action name="removeDummyAccount" class="com.facilio.utility.UtilityAction" method="removeDummyAccount">
-			<param name="deprecated">true</param>
+            <param name="moduleName">utilityIntegrationCustomer</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
 		</action>
     </package>
     <package name="v2ModuleReport" namespace="/api/v3/module/report" extends="v3Api">

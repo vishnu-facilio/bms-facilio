@@ -1032,23 +1032,63 @@ public class APIFieldsConfig {
     @Module(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
     public static Supplier<FieldConfig> getUtilityIntegrationCustomerFieldConfig(){
         return () -> new FieldConfig()
-                .exclude(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE);
+                .sortFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_CUSTOMER_FIELDS_INCLUDE)
+                .done();
     }
     @Module(FacilioConstants.UTILITY_INTEGRATION_TARIFF)
     public static Supplier<FieldConfig> getUtilityIntegrationBillFieldConfig(){
         return () -> new FieldConfig()
-                .exclude(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE);
+                .sortFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_TARIFF_FIELDS_INCLUDE)
+                .done();
     }
 
     @Module(FacilioConstants.UTILITY_DISPUTE)
     public static Supplier<FieldConfig> getUtilityDisputeFieldConfig(){
         return () -> new FieldConfig()
-                .exclude(FieldsConfigList.UTILITY_DISPUTE_FIELDS_EXCLUDE);
+                .sortFields()
+                .add(FieldsConfigList.UTILITY_DISPUTE_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.UTILITY_DISPUTE_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.UTILITY_DISPUTE_FIELDS_INCLUDE)
+                .done();
     }
     @Module(FacilioConstants.UTILITY_INTEGRATION_BILLS)
     public static Supplier<FieldConfig> getUtilityIntegrationBillsFieldConfig(){
         return () -> new FieldConfig()
-                .exclude(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE);
+                .sortFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.UTILITY_INTEGRATION_BILLS_FIELDS_INCLUDE)
+                .done();
     }
     @Module(FacilioConstants.ContextNames.SERVICE_REQUEST)
     public static Supplier<FieldConfig> getServiceRequestFieldConfig(){

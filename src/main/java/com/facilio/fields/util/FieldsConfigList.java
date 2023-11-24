@@ -347,19 +347,24 @@ public class FieldsConfigList {
             "sysModifiedByPeople"
     );
 
-    public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_EXCLUDE = Arrays.asList(
-            "userUid", "templateUid", "secretState","meta","isArchived","isExpired","isRevoked","formUid","localId"
+    public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_INCLUDE = Arrays.asList(
+            "authorizationSubmittedTime","customerEmail","name","customerId","status","userEmail","userStatus","expires","utilityID","noOfConnections",
+            "customerType","revoked"
     );
-    public static final List<String> UTILITY_INTEGRATION_TARIFF_FIELDS_EXCLUDE = Arrays.asList(
-            "fuelSurcharge", "flatRatePerUnit", "unit","localId","fromDate","toDate"
-    );
-
-    public static final List<String> UTILITY_DISPUTE_FIELDS_EXCLUDE = Arrays.asList(
-            "approvalFlowId", "approvalStatus", "stateFlowId","localId"
+    public static final List<String> UTILITY_INTEGRATION_TARIFF_FIELDS_INCLUDE = Arrays.asList(
+            "utilityProviders","utilityType","name","description"
     );
 
-    public static final List<String> UTILITY_INTEGRATION_BILLS_FIELDS_EXCLUDE = Arrays.asList(
-            "stateFlowId","approvalFlowId","approvalStatus","localId","meta","sourceDownloadUrl","sourceUrl","sourceType","serviceAddress","sourceType","sourceUrl","supplierServiceId"
+    public static final List<String> UTILITY_DISPUTE_FIELDS_INCLUDE = Arrays.asList(
+            "account","utilityBill","type","utilityType","billStatus","billDate","expires","supplier","billTotal","subject","terminatedOn",
+            "tariffToBeApplied","tariffApplied","resolvedTime","resolvedBy","actualMeterConsumption","billMeterConsumption","disputedConsumption","expectedCost",
+            "actualCost","differenceInCost","moduleState"
+    );
+
+    public static final List<String> UTILITY_INTEGRATION_BILLS_FIELDS_INCLUDE = Arrays.asList(
+            "billUid","meterUid","customerUid","createdTime","updatedTime","utilityID","serviceIdentifier","serviceTariff","meterNumber","serviceClass","billingContact",
+            "billingAddress","billingAccount","billStatementDate","billStartDate","billEndDate","billTotalUnit","billTotalCost","billTotalVolume","supplierType","supplierName",
+            "supplierTariff","supplierTotalUnit","supplierTotalCost","supplierTotalVolume","billFileId","utilityIntegrationCustomer","utilityIntegrationMeter","billType","utilityBillStatus"
     );
     public static final List<String> SITE_VIEW_FIELDS_INCLUDE = Arrays.asList(
             "name","client", "grossFloorArea", "managedBy", "area",
