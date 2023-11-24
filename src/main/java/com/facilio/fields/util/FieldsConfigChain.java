@@ -34,8 +34,6 @@ public class FieldsConfigChain {
     public static void initFieldConfigHandlerMap() throws Exception {
         Reflections reflections = new Reflections(ClasspathHelper.forPackage("com\\.facilio\\.fields"), new MethodAnnotationsScanner());
         FieldsConfigChainUtil.fillModuleNameMap(reflections);
-        FieldsConfigChainUtil.fillModuleTypeMap(reflections);
-        FieldsConfigChainUtil.fillFieldsConfigMap();
     }
 
     public static FacilioModule getModule(String moduleName) throws Exception {
@@ -177,14 +175,11 @@ public class FieldsConfigChain {
     private static FieldConfig getFieldHandlerForModule(FacilioModule module) throws Exception {
         return  findFieldsConfig(module);
     }
-    private static FieldConfig findFieldsConfig(FacilioModule facilioModule) throws Exception{
-        Supplier<FieldConfig> fieldsConfigSupplier = FIELDS_CONFIG_MODULE_HANDLER_MAP.get(facilioModule.getName());
-        if(fieldsConfigSupplier == null) {
-            if (facilioModule.isCustom()) {
-                fieldsConfigSupplier = FIELDS_CONFIG_MODULE_HANDLER_MAP.get(FacilioConstants.FieldsConfig.CUSTOM);
-            } else {
-                fieldsConfigSupplier = FIELDS_CONFIG_MODULETYPE_HANDLER_MAP.get(facilioModule.getTypeEnum());
-            }
+    private static FieldConfig findFieldsConfig(FacilioModule facilioModule) throws Exception {
+        Supplier<FieldConfig> fieldsConfigSupplier = null;
+        fieldsConfigSupplier = FIELDS_CONFIG_MODULE_HANDLER_MAP.get(facilioModule.getName());
+        if (fieldsConfigSupplier == null && facilioModule.isCustom()) {
+            fieldsConfigSupplier = FIELDS_CONFIG_MODULE_HANDLER_MAP.get(FacilioConstants.FieldsConfig.CUSTOM);
         }
         return fieldsConfigSupplier != null ? fieldsConfigSupplier.get() : null;
     }

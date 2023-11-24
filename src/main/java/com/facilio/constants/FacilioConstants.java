@@ -264,6 +264,7 @@ public class FacilioConstants {
 	public static class FieldsConfig {
 		public static final String LICENSE_BASED_FIELDS_MAP = "licenseBasedFieldsMap";
 		public static final String ACCESS_TYPE = "accessType";
+		public static final String FETCH_CUSTOM_FIELDS = "fetchCustomFields";
 		public static final String SKIP_CONFIG_FIELDS = "skipConfigFields";
 		public static final String IS_ADD_FIELD = "isAddField";
 		public static final String CHECK_FIELDS_PERMISSION = "checkFieldsPermission";

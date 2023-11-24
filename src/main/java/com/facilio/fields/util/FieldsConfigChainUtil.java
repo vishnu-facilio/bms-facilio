@@ -37,10 +37,11 @@ import java.util.stream.Collectors;
 @Log4j
 public class FieldsConfigChainUtil {
     private static final String FIELDS_CONF_PATH = FacilioUtil.normalizePath("conf/fieldsConfig.yaml");
-    protected static final Map<String, Map<String, Object>> FIELDS_CONFIG_MAP = new HashMap<>();
-    // key fieldListType name --> value their configs defined in fieldsComfig.yaml
 
-    protected static void fillFieldsConfigMap() {
+    // key fieldListType name --> value their configs defined in fieldsConfig.yaml
+    protected static final Map<String, Map<String, Object>> FIELDS_CONFIG_MAP = fillFieldsConfigMap();
+
+    private static Map<String, Map<String, Object>> fillFieldsConfigMap() {
         Yaml yaml = new Yaml();
         Map<String, Object> json = null;
         try(InputStream inputStream = FieldsConfigChainUtil.class.getClassLoader().getResourceAsStream(FIELDS_CONF_PATH);) {
@@ -53,6 +54,7 @@ public class FieldsConfigChainUtil {
         try {
             Object fieldListTypes = json.get(FacilioConstants.FieldsConfig.FIELD_LIST_TYPE);
             if (CollectionUtils.isNotEmpty((List<Map<String, Object>>)fieldListTypes)) {
+                Map<String, Map<String, Object>> fieldListTypesConfigMap = new HashMap<>();
                 for (Map<String, Object> fieldConfigMap : (List<Map<String, Object>>)fieldListTypes) {
 
                     FieldListType fieldListType = FieldListType.valueOf((String) fieldConfigMap.get(FacilioConstants.FieldsConfig.NAME));
@@ -79,6 +81,9 @@ public class FieldsConfigChainUtil {
                         configMap.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, Collections.unmodifiableList(fieldsTypesToFetch));
                     }
 
+                    boolean fetchCustomFields = (boolean) fieldConfigMap.getOrDefault(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, true);
+                    configMap.put(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, fetchCustomFields);
+
                     boolean fetchSupplements = (boolean) fieldConfigMap.getOrDefault(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
                     configMap.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements);
 
@@ -88,26 +93,28 @@ public class FieldsConfigChainUtil {
                     }
 
                     if(fieldListType.getFieldListTypeConfig() != null) {
-                        Map<String, Object> fieldListTypeConfigMap = FIELDS_CONFIG_MAP.get(fieldListType.getFieldListTypeConfig().getName());
+                        Map<String, Object> fieldListTypeConfigMap = fieldListTypesConfigMap.get(fieldListType.getFieldListTypeConfig().getName());
                         for(Map.Entry<String, Object> entry : fieldListTypeConfigMap.entrySet()) {
                             if(!configMap.containsKey(entry.getKey())) {
                                 configMap.put(entry.getKey(), entry.getValue());
                             }
                         }
                     }
-                    FIELDS_CONFIG_MAP.put(fieldListType.getName(), Collections.unmodifiableMap(configMap));
+                    fieldListTypesConfigMap.put(fieldListType.getName(), Collections.unmodifiableMap(configMap));
                 }
 
                 for (FieldListType fieldListType : FieldListType.values()) {
-                    if(!FIELDS_CONFIG_MAP.containsKey(fieldListType.getName()) && fieldListType.getFieldListTypeConfig() != null) {
-                        FIELDS_CONFIG_MAP.put(fieldListType.getName(), FIELDS_CONFIG_MAP.get(fieldListType.getFieldListTypeConfig().getName()));
+                    if(!fieldListTypesConfigMap.containsKey(fieldListType.getName()) && fieldListType.getFieldListTypeConfig() != null) {
+                        fieldListTypesConfigMap.put(fieldListType.getName(), fieldListTypesConfigMap.get(fieldListType.getFieldListTypeConfig().getName()));
                     }
                 }
+                return Collections.unmodifiableMap(fieldListTypesConfigMap);
             }
         }
         catch (Exception e) {
             throwRunTimeException(MessageFormat.format("Error occurred while parsing fields conf file, msg : {0}",e.getMessage()), e);
         }
+        return Collections.emptyMap();
     }
 
     private static void throwRunTimeException (String logMsg, Throwable e) {
@@ -181,32 +188,6 @@ public class FieldsConfigChainUtil {
                 throw new IllegalStateException("Fields config already present for moduleName.");
             }
             FieldsConfigChain.FIELDS_CONFIG_MODULE_HANDLER_MAP.put(moduleName, config);
-        }
-    }
-
-    protected static void fillModuleTypeMap(Reflections reflections) throws InvocationTargetException, IllegalAccessException {
-        Set<Method> methodsAnnotatedWithModule = reflections.getMethodsAnnotatedWith(ModuleType.class);
-
-        for (Method method : methodsAnnotatedWithModule) {
-            if (method.getParameterCount() != 0) {
-                continue;
-            }
-            if (!method.getReturnType().equals(Supplier.class)) {
-                continue;
-            }
-
-            ModuleType annotation = method.getAnnotation(ModuleType.class);
-            FacilioModule.ModuleType moduleType = annotation.type();
-
-            if (moduleType == null) {
-                throw new IllegalStateException("Module type cannot be empty for FieldsConfig.");
-            }
-
-            Supplier<FieldConfig> config = (Supplier<FieldConfig>) method.invoke(null, null);
-            if (FieldsConfigChain.FIELDS_CONFIG_MODULETYPE_HANDLER_MAP.containsKey(moduleType)) {
-                throw new IllegalStateException("Fields config already present for moduleType.");
-            }
-            FieldsConfigChain.FIELDS_CONFIG_MODULETYPE_HANDLER_MAP.put(moduleType, config);
         }
     }
 
@@ -298,6 +279,8 @@ public class FieldsConfigChainUtil {
         if (MapUtils.isNotEmpty(licenseBasedFieldsMap)) {
             context.put(FacilioConstants.FieldsConfig.LICENSE_BASED_FIELDS_MAP, Collections.unmodifiableMap(licenseBasedFieldsMap));
         }
+        boolean fetchCustomFields = (boolean) configMap.getOrDefault(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, true);
+        context.put(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, fetchCustomFields);
 
         boolean fetchSupplements = (boolean) configMap.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements);
