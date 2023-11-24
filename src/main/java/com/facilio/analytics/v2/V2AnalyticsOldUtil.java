@@ -1317,13 +1317,14 @@ public class V2AnalyticsOldUtil {
                 measureJson.put("aggr", 0);
                 measureJson.put("type", 1);
 
-                JSONArray parentIds = FieldUtil.getAsJSONArray(parentId,Long.class);
+                JSONArray parentIds = FieldUtil.getAsJSONArray(parentId.stream().map(id -> Long.toString(id)).collect(Collectors.toList()), String.class);
                 JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
                 JSONObject operatorJson = new JSONObject();
                 operatorJson.put("operatorId", 9);
                 operatorJson.put("value", parentIds);
-                filterJson.put("fieldName", "id");
+                filterJson.put("id", operatorJson);
 
+                measureJson.put("parentId", parentIds);
                 measureJson.put("criteriaType", 2);
                 measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
                 measureJson.put("parentModuleName", parentModuleName);
@@ -1354,8 +1355,9 @@ public class V2AnalyticsOldUtil {
                 JSONObject operatorJson = new JSONObject();
                 operatorJson.put("operatorId", 9);
                 operatorJson.put("value", parentIds);
-                filterJson.put("fieldName", "id");
+                filterJson.put("id", operatorJson);
 
+                measureJson.put("parentId", parentIds);
                 measureJson.put("criteriaType", 2);
                 measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
                 measureJson.put("parentModuleName", parentModuleName);
@@ -1461,8 +1463,9 @@ public class V2AnalyticsOldUtil {
             JSONObject operatorJson = new JSONObject();
             operatorJson.put("operatorId", 9);
             operatorJson.put("value", parentIds);
-            filterJson.put("fieldName", "id");
+            filterJson.put("id", operatorJson);
 
+            measureJson.put("parentId", parentIds);
             measureJson.put("criteriaType", 2);
             measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
             measureJson.put("parentModuleName", parentModuleName);
