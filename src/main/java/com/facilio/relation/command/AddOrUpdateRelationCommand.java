@@ -264,7 +264,8 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             String toModuleName = modBean.getModule(relationRequest.getToModuleId()).getParentModule().getName();
             String fromModuleName = modBean.getModule(relationRequest.getFromModuleId()).getParentModule().getName();
             if (!(!StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME)) &&
-                    !(!StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME))) {
+                    !(!StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME)) &&
+                    !(StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME))) {
                 throw new IllegalArgumentException("For Meter Relationship From/To Module should be Meter");
             }
         }

@@ -10,6 +10,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -42,7 +43,7 @@ public class GetSystemModulesListCommand extends FacilioCommand {
 
         systemModules = modBean.getModuleList(criteria);
 
-        if (pagination != null) {
+        if (CollectionUtils.isNotEmpty(systemModules) && pagination != null) {
             int page = (int) pagination.get("page");
             int perPage = (int) pagination.get("perPage");
             int fromIndex = ((page-1) * perPage);
