@@ -4375,4 +4375,14 @@
         </urlparams>
     </request>
 
+    
+    <request path="/api/v3/virtualMeterTemplate/history" method="POST">
+        <property name="vmTemplateId" type="number"/>
+        <property name="startTime" type="number"/>
+        <property name="endTime" type="number"/>
+        <property name="resourceIds" type="array">
+            <items type="number">
+            </items>
+        </property>
+    </request>
 </config>

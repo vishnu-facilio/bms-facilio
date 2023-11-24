@@ -4704,6 +4704,12 @@ public class FacilioConstants {
 		public static final String VIRTUAL_METER_TEMPLATE_ID = "virtualMeterTemplateId";
 		public static final String VIRTUAL_METER_TEMPLATE_BUILDINGS = "virtualMeterTemplateBuildings";
 		public static final String VIRTUAL_METER_TEMPLATE_ACTIVITY = "virtualMeterTemplateActivity";
+		
+		public static final String VIRTUAL_METER_READING_LOGS = "virtualMeterReadingLogs";
+		
+		public static final String VIRTUAL_METER_LOGGER = "virtualMeterLogger";
+		
+		public static final String VIRTUAL_METER_RESOURCE_LOGGER = "virtualMeterResourceLogger";
 	}
 
 	public static class SensorRule{

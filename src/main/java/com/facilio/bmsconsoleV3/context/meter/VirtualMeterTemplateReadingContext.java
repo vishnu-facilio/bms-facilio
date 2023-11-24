@@ -5,6 +5,9 @@ import com.facilio.connected.ResourceCategory;
 import com.facilio.connected.ResourceType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NamespaceFrequency;
+import com.facilio.readingkpi.ReadingKpiLoggerAPI;
+import com.facilio.readingkpi.VMLoggerAPI;
+import com.facilio.readingkpi.context.KPIType;
 import com.facilio.v3.context.V3Context;
 
 import lombok.Getter;
@@ -44,11 +47,14 @@ public class VirtualMeterTemplateReadingContext extends V3Context implements ICo
 
     @Override
     public String getName() {
+    	if(virtualMeterTemplate != null) {
+    		virtualMeterTemplate.getName();
+    	}
         return  null;
     }
 
     @Override
     public long insertLog(Long startTime, Long endTime, Integer resourceCount, boolean isSysCreated) throws Exception {
-        return 0;
+    	return VMLoggerAPI.insertLog(getId(), KPIType.LIVE.getIndex(), startTime, endTime, isSysCreated,  resourceCount);
     }
 }

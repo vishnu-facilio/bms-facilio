@@ -1,5 +1,6 @@
 package com.facilio.readingkpi.context;
 
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +12,7 @@ import java.util.Map;
 @Setter
 public class KpiLoggerContext extends V3Context {
     private ReadingKPIContext kpi ;
+    private VirtualMeterTemplateReadingContext vmReading;
     private Integer kpiType;
     private Integer status;
     private Boolean isSysCreated;
@@ -25,6 +27,15 @@ public class KpiLoggerContext extends V3Context {
 
     public KpiLoggerContext(ReadingKPIContext kpi, Integer kpiType, Integer status, Boolean isSysCreated, Long execStartTime, Integer resourceCount) {
         this.kpi = kpi;
+        this.kpiType = kpiType;
+        this.status = status;
+        this.isSysCreated = isSysCreated;
+        this.execStartTime = execStartTime;
+        this.resourceCount = resourceCount;
+    }
+    
+    public KpiLoggerContext(VirtualMeterTemplateReadingContext vmReading, Integer kpiType, Integer status, Boolean isSysCreated, Long execStartTime, Integer resourceCount) {
+        this.vmReading = vmReading;
         this.kpiType = kpiType;
         this.status = status;
         this.isSysCreated = isSysCreated;

@@ -1,6 +1,7 @@
 package com.facilio.readingkpi.context;
 
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.readingrule.context.ExecutionStatus;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -10,6 +11,7 @@ import lombok.Setter;
 @Setter
 public class ReadingKpiLogsContext extends V3Context {
     private ReadingKPIContext kpi;
+    private VirtualMeterTemplateReadingContext vmReading;
     private String kpiName;
     private Long kpiExecTime;
     private ResourceContext resource;
