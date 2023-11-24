@@ -376,6 +376,29 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/modules/details/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/modules/list/:feature" method="GET">
+        <urlparams>
+            <property name="feature" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/details/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/list/:feature" method="GET">
+        <urlparams>
+            <property name="feature" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/modules/lists/:moduleType" method="GET">
         <urlparams>
             <property name="page" type="number" mandatory="false"/>

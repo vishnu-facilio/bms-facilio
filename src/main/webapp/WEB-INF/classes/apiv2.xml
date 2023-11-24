@@ -3659,6 +3659,19 @@
 		</action>
 	</package>
 
+	<package name="moduleListAPI" namespace="/api/v2/modules" extends="v2Api">
+		<action name="details/*"
+				class="com.facilio.moduleBuilder.actions.ModuleListAction" method="fetchModuleDetails" >
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="list/*"
+				class="com.facilio.moduleBuilder.actions.ModuleListAction" method="fetchModuleList" >
+			<param name="feature">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+
 	<package name="fieldsAPI" namespace="/api/v2/fields" extends="v2Api">
 		<action name="advancedFilter/drilldown/*"
 				class="com.facilio.fields.actions.FieldsAction"

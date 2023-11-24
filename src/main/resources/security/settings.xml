@@ -891,6 +891,12 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/modules/list/:featureOrAPI">
+        <urlparams>
+            <property name="featureOrAPI" type="string"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/tasks/updatestatus">
         <requestbody type="object">
             <property name="id" type="array">

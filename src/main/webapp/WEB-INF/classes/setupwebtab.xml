@@ -1191,6 +1191,23 @@
         </action>
     </package>
 
+    <package name="setupModuleListAPI" namespace="/api/v1/setup/modules" extends="v2Api">
+        <action name="details/*"
+                class="com.facilio.moduleBuilder.actions.ModuleListAction" method="fetchModuleDetails" >
+            <param name="moduleName">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+        </action>
+        <action name="list/*"
+                class="com.facilio.moduleBuilder.actions.ModuleListAction" method="fetchModuleList" >
+            <param name="feature">{1}</param>
+            <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+        </action>
+    </package>
+
     <package name="backgroundactivity" namespace="/api/v1/setup" extends="v3Api">
         <action name="backgroundactivity/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">backgroundActivity</param>

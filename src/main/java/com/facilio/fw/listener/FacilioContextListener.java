@@ -36,6 +36,7 @@ import com.facilio.ims.endpoint.Messenger;
 import com.facilio.jmx.FacilioQueryCounter;
 import com.facilio.jmx.FacilioQueryCounterMBean;
 import com.facilio.logging.SysOutLogger;
+import com.facilio.moduleBuilder.util.ModuleListConfigChainUtil;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.qa.rules.pojo.QAndARuleType;
@@ -169,6 +170,7 @@ public class FacilioContextListener implements ServletContextListener {
 			ChainUtil.initRESTAPIHandler("com\\.facilio\\.apiv3");
 			WidgetConfigUtil.fillWidgetModuleAndConfigMap();
 			ModuleWidgetsUtil.initWidgetConfigHandler();
+			ModuleListConfigChainUtil.initModuleListConfigHandlerMap();
 			WidgetConfigChain.initWidgetConfigHandler();
 			WeatherServiceType.init();
 			FieldsConfigChain.initFieldConfigHandlerMap();

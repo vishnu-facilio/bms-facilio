@@ -49,6 +49,8 @@ import com.facilio.energystar.command.*;
 import com.facilio.fields.commands.FilterFieldsByPermissionCommand;
 import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherBoardListCommand;
 import com.facilio.fsm.commands.dispatchBoard.FetchDispatcherConfigCommand;
+import com.facilio.moduleBuilder.command.GetBasicModuleDetailCommand;
+import com.facilio.moduleBuilder.command.ModuleListResponseCommand;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.pdftemplate.command.*;
 import com.facilio.pdftemplate.command.DownloadPDFTemplateCommand;
@@ -713,6 +715,12 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getRelatedListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedListMetaCommand());
+		return c;
+	}
+
+	public static FacilioChain getResponseFieldModuleMeta() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetBasicModuleDetailCommand());
 		return c;
 	}
 

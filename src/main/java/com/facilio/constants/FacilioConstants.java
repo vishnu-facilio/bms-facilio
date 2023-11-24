@@ -286,6 +286,15 @@ public class FacilioConstants {
 		public static final String FIXED_SELECTABLE_FIELD_NAMES = "fixedSelectableFieldNames";
 	}
 
+	public static class ModuleListConfig {
+		public static final String MODULES = "modules";
+		public static final String SUB_MODULES = "subModules";
+		public static final String MODULES_TO_FETCH = "modulesToFetch";
+		public static final String SUBMODULES_TO_FETCH = "modulesToFetch";
+		public static final String RESPONSE_FIELDS = "responseFields";
+		public static final String FETCH_CUSTOM_MODULES = "fetchCustomModules";
+	}
+
 	public static class ModuleNames {
 		public static final String TOOL_TYPES = "tooltypes";
 		public static final String ITEM_TYPES = "itemtypes";
