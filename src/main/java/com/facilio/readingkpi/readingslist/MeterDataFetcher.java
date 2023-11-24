@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.facilio.readingkpi.ReadingKpiAPI.getInclResIdsFromProps;
+
 public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
     public MeterDataFetcher(FacilioModule module, Context context, List<FacilioField> additionSelectFields) throws Exception {
         super(module, context, additionSelectFields);
@@ -27,8 +29,11 @@ public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
     protected GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
 
         Long utilityType = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
-
-        Set<Long> inclResIds = ReadingKpiAPI.getMatchedResourcesOfAllKpis(ResourceType.METER_CATEGORY);
+        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(utilityType, ResourceType.ASSET_CATEGORY);
+        if (props == null || props.isEmpty()) {
+            return null;
+        }
+        Set<Long> inclResIds = getInclResIdsFromProps(props);
 
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.METER);

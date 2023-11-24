@@ -2,6 +2,7 @@ package com.facilio.readingkpi.readingslist;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
@@ -18,7 +19,13 @@ public class FetchNameListCommand extends FacilioCommand {
         KpiAnalyticsDataFetcher fetcher = ReadingKpiAPI.getKpiAnalyticsDataFetcher(moduleName, context);
         List<Map<String, Object>> kpis = new ArrayList<>();
 
-        List<Map<String, Object>> props = fetcher.fetchBuilder(context, false).get();
+        GenericSelectRecordBuilder dataBuilder = fetcher.fetchBuilder(context, false);
+        if ( dataBuilder == null) {
+            context.put(FacilioConstants.ContextNames.COUNT, 0);
+            context.put(FacilioConstants.ContextNames.DATA, kpis);
+            return false;
+        }
+        List<Map<String, Object>> props = dataBuilder.get();
         for (Map<String, Object> prop : props) {
             Map<String, Object> row = new HashMap<>();
             row.put("name", prop.get("name"));

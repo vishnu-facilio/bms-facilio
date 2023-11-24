@@ -959,7 +959,7 @@ public class ReadingKpiAPI {
         }
     }
 
-    public static Set<Long> getMatchedResourcesOfAllKpis(ResourceType resourceType) throws Exception {
+    public static List<Map<String, Object>> getMatchedResourcesOfAllKpis(Long categoryId, ResourceType resourceType) throws Exception {
         FacilioModule nsModule = NamespaceModuleAndFieldFactory.getNamespaceModule();
         FacilioModule nsInclModule = NamespaceModuleAndFieldFactory.getNamespaceInclusionModule();
         Map<String, FacilioField> nsFieldsMap = FieldFactory.getAsMap(NamespaceModuleAndFieldFactory.getNamespaceFields());
@@ -976,13 +976,13 @@ public class ReadingKpiAPI {
                 .on(nsModule.getTableName() + ".ID=" + nsInclModule.getTableName() + ".NAMESPACE_ID")
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("type"), String.valueOf(NSType.KPI_RULE.getIndex()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("resourceType"), String.valueOf(resourceType.getIndex()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("status"), String.valueOf(1), NumberOperators.EQUALS));
 
-        List<Map<String, Object>> maps = builder.get();
-        return getInclResIdsFromProps(maps);
+        return builder.get();
     }
 
-    private static Set<Long> getInclResIdsFromProps(List<Map<String, Object>> maps) {
+    public static Set<Long> getInclResIdsFromProps(List<Map<String, Object>> maps) {
         Set<Long> inclResIds = new HashSet<>();
         Map<Long, Set<Long>> nsIdVsResIds = new HashMap<>();
         for (Map<String, Object> map : maps) {

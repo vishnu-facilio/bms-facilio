@@ -14,9 +14,12 @@ import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import static com.facilio.readingkpi.ReadingKpiAPI.getInclResIdsFromProps;
 
 public class AssetDataFetcher extends KpiAnalyticsDataFetcher {
 
@@ -28,8 +31,11 @@ public class AssetDataFetcher extends KpiAnalyticsDataFetcher {
     protected GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
         Long categoryId = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
 
-        Set<Long> inclResIds =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(ResourceType.ASSET_CATEGORY);
-
+        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(categoryId, ResourceType.ASSET_CATEGORY);
+        if (props == null || props.isEmpty()) {
+            return null;
+        }
+        Set<Long> inclResIds = getInclResIdsFromProps(props);
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
