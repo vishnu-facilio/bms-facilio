@@ -182,12 +182,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 
         /* dueDuration Field */
         NumberField dueDurationField = SignupUtil.getNumberField(module, "dueDuration", "Due Duration", "DUE_DURATION",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
+                FacilioField.FieldDisplayType.DURATION, false, false, true, orgId);
         fields.add(dueDurationField);
 
         /* estimatedDuration Field */
         NumberField estimatedDurationField = SignupUtil.getNumberField(module, "estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
+                FacilioField.FieldDisplayType.DURATION, false, false, true, orgId);
         fields.add(estimatedDurationField);
         
         
@@ -303,12 +303,12 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 
         /* startTime Field */
         DateField startTimeField = SignupUtil.getDateField(module, "startTime", "Start Time", "TRIGGER_START_TIME",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId); // check for display name
+                FacilioField.FieldDisplayType.DATE, false, false, true, orgId);
         fields.add(startTimeField);
 
         /* endTime Field */
         DateField endTimeField = SignupUtil.getDateField(module, "endTime", "End Time", "TRIGGER_END_TIME",
-                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);
+                FacilioField.FieldDisplayType.DATE, false, false, true, orgId);
         fields.add(endTimeField);
 
         module.setFields(fields);

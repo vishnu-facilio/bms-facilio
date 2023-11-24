@@ -81,8 +81,8 @@ public class PlannedMaintenance extends V3WorkOrderContext {
     @Getter
     public static enum PMStatus implements FacilioIntEnum {
 		
-		IN_ACTIVE("In Active"), 
-		ACTIVE("Active"),
+		IN_ACTIVE("Unpublished"),
+		ACTIVE("Published"),
 		;
     	
 		public int getVal() {
