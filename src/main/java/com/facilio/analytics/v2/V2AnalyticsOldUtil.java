@@ -5,13 +5,18 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -27,14 +32,15 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.ns.NamespaceAPI;
+import com.facilio.ns.context.NSType;
+import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.*;
 import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
@@ -1272,19 +1278,21 @@ public class V2AnalyticsOldUtil {
     }
 
     public static JSONArray getDataPointForReadingRule(Long resourceId, Long readingRuleId) throws Exception {
-        NewReadingRuleContext readingRule = NewReadingRuleAPI.getRule(readingRuleId);
+        NewReadingRuleContext readingRule = NewReadingRuleAPI.getReadingRule(readingRuleId);
+        NameSpaceContext ns = NamespaceAPI.getNameSpaceByRuleId(readingRuleId, NSType.READING_RULE);
+
         ResourceContext resource = ResourceAPI.getResource(resourceId);
         JSONArray dataPoints = new JSONArray();
-        dataPoints.addAll(getDataPointsJSONForReadingRule(readingRule, resource));
+        dataPoints.addAll(getDataPointsJSONForReadingRule(readingRule, ns, resource));
         ReportUtil.setAliasForDataPoints(dataPoints, -1L);
         return dataPoints;
     }
 
-    public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
+    public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, NameSpaceContext ns, ResourceContext resource) throws Exception {
         JSONArray measureArray = new JSONArray();
 
         String parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
-        List<NameSpaceField> fields = readingRule.getNs().getFields();
+        List<NameSpaceField> fields = ns.getFields();
         measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resource.getId()));
 
         Set<String> fieldIdResourceId = new HashSet<>(); // to avoid duplicates

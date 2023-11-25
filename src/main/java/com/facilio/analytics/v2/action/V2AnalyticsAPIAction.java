@@ -22,7 +22,7 @@ public class V2AnalyticsAPIAction extends V3Action {
     public Long categoryId;
     public String type;
     public String searchText;
-    public long readingRuleId;
+    public Long readingRuleId;
     public long resourceId;
     public String getModuleFromCategory()throws Exception
     {

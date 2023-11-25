@@ -130,6 +130,22 @@ public class NewReadingRuleAPI {
         }
     }
 
+    public static NewReadingRuleContext getReadingRule(Long ruleId) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ReadingRules.NEW_READING_RULE);
+        SelectRecordsBuilder<NewReadingRuleContext> builder = new SelectRecordsBuilder<NewReadingRuleContext>()
+                .select(fields)
+                .module(modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE))
+                .beanClass(NewReadingRuleContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(ruleId, modBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE)));
+
+        List<NewReadingRuleContext> rules = builder.get();
+        if (CollectionUtils.isNotEmpty(rules)) {
+            return rules.get(0);
+        }
+        throw new IllegalArgumentException("Invalid Rule Id");
+    }
+
     public static NewReadingRuleContext getRule(Long ruleId) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         List<NewReadingRuleContext> rules = getRules(new Condition[]{
