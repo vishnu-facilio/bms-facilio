@@ -1371,8 +1371,10 @@ public class NewAlarmAPI {
 				.select(fields)
 				.beanClass(ReadingAlarm.class)
 				.module(module)
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS));
+		if (ruleId != null) {
+				builder.andCondition(CriteriaAPI.getCondition("RULE_ID", "rule", String.valueOf(ruleId), NumberOperators.EQUALS));
+		}
 		return builder.fetchFirst();
 	}
 

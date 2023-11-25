@@ -22,8 +22,8 @@ public class V2AnalyticsAPIAction extends V3Action {
     public Long categoryId;
     public String type;
     public String searchText;
-    public boolean isWithPrerequsite;
-    public Long alarmId;
+    public long readingRuleId;
+    public long resourceId;
     public String getModuleFromCategory()throws Exception
     {
         validateInput();
@@ -83,13 +83,12 @@ public class V2AnalyticsAPIAction extends V3Action {
 
     public String getFieldsFromAlarm()throws Exception
     {
-        if(alarmId == null || alarmId < 0)
-        {
+        if (readingRuleId < 0 || resourceId < 0) {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Alarm Id");
         }
         FacilioChain chain = V2AnalyticsTransactionChain.getReadingsForAlarmChain();
-        chain.getContext().put("alarmId", alarmId);
-        chain.getContext().put("isWithPrerequisite", isWithPrerequsite);
+        chain.getContext().put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
+        chain.getContext().put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
         chain.execute();
         if(chain.getContext().containsKey("measures"))
         {

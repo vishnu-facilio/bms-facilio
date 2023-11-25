@@ -7,9 +7,7 @@ import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.*;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleInterface;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -1273,104 +1271,39 @@ public class V2AnalyticsOldUtil {
         return null;
     }
 
-    public static JSONArray getDataPointFromNewAlarm(Long alarmId , boolean isWithPrerequisite, Long readingRuleId ) throws Exception
-    {
-        AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
-        ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-        boolean isNewReadingRule = alarmOccurrence instanceof ReadingAlarmOccurrenceContext ? ((ReadingAlarmOccurrenceContext) alarmOccurrence).getIsNewReadingRule() : false;
-        List<ReadingRuleInterface> readingRules = new ArrayList<>();
-        if (isWithPrerequisite) { // new 1st
-            if (isNewReadingRule) {
-                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getReadingRules(Collections.singletonList(readingAlarmContext.getRule().getId())).get(0);
-                readingRules.add(newRuleCtx);
-            } else {
-                AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
-                readingRules.add(alarmRuleContext.getAlarmTriggerRule());
-                readingRules.add(alarmRuleContext.getPreRequsite());
-            }
-        }
-        else if (readingRuleId != null && readingRuleId > 0) { // new 2nd
-            if (isNewReadingRule) {
-                NewReadingRuleContext newRuleCtx = NewReadingRuleAPI.getRule(readingRuleId);
-                readingRules.add(newRuleCtx);
-            } else {
-                ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
-                readingRules.add(readingruleContext);
-            }
-        }
-        else
-        { // old
-            long ruleId = -1;
-
-            if (alarmOccurrence.getAlarm() instanceof ReadingAlarm) {
-                ruleId = ((ReadingAlarm) alarmOccurrence.getAlarm()).getRule().getId();
-            }
-            if (ruleId > 0) {
-                ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
-                readingRules.add(readingruleContext);
-            }
-        }
-
-        ResourceContext resource = ResourceAPI.getResource(alarmOccurrence.getResource().getId());
+    public static JSONArray getDataPointForReadingRule(Long resourceId, Long readingRuleId) throws Exception {
+        NewReadingRuleContext readingRule = NewReadingRuleAPI.getRule(readingRuleId);
+        ResourceContext resource = ResourceAPI.getResource(resourceId);
         JSONArray dataPoints = new JSONArray();
-        if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
-            Set readingMap = new HashSet();
-            for (ReadingRuleInterface readingRule : readingRules) {
-                if (readingRule != null) {
-                    if (readingRule instanceof ReadingRuleContext) {
-                        dataPoints.addAll(getDataPointsJSONFromRule((ReadingRuleContext) readingRule, resource, alarmOccurrence, readingMap));
-                    } else {//For NewReadingRuleContext
-                        dataPoints.addAll(getDataPointsJSONFromNewRule((NewReadingRuleContext) readingRule, resource));
-                    }
-                }
-            }
-        }
-
-        long baselineId = -1l;
-        if (readingRules != null && !readingRules.isEmpty() && readingRules.get(0) != null) {
-            if(readingRules.get(0) instanceof ReadingRuleContext) {
-                baselineId = ((ReadingRuleContext) readingRules.get(0)).getBaselineId();
-            }
-        }
-        ReportUtil.setAliasForDataPoints(dataPoints, baselineId);
-
-        List<String> resourseNdParentList = new ArrayList<>();
-        // removing duplicate field Id in alarm report
-        for (int i = 0; i < dataPoints.size(); i++)
-        {
-            JSONObject json = (JSONObject) dataPoints.get(i);
-            JSONArray parentIds = (JSONArray) json.get("parentId");
-            String parentFldKey = json.get("fieldId") + "_" + parentIds.get(0);
-            if (resourseNdParentList.contains(parentFldKey)) {
-                dataPoints.remove(i);
-            } else {
-                resourseNdParentList.add(parentFldKey);
-            }
-        }
+        dataPoints.addAll(getDataPointsJSONForReadingRule(readingRule, resource));
+        ReportUtil.setAliasForDataPoints(dataPoints, -1L);
         return dataPoints;
     }
 
-    public static Collection getDataPointsJSONFromNewRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
+    public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, ResourceContext resource) throws Exception {
         JSONArray measureArray = new JSONArray();
-        String parentModuleName = null;
-        if (readingRule.getResourceTypeEnum() == ResourceType.ASSET_CATEGORY) {
-            parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
-        }
+
+        String parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
         List<NameSpaceField> fields = readingRule.getNs().getFields();
         measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resource.getId()));
 
+        Set<String> fieldIdResourceId = new HashSet<>(); // to avoid duplicates
         for (NameSpaceField nsField : fields) {
+            List<Long> parentIds = getParentIdsForField(resource, nsField);
+            if (CollectionUtils.isEmpty(parentIds)) {
+                continue;
+            }
+
             Long catIdForField = getCategoryForField(nsField, readingRule);
             String categoryName = parentModuleName;
             if (!Objects.equals(catIdForField, readingRule.getCategoryId())) {
                 categoryName = getModuleNameFromCategory(catIdForField, readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
             }
 
-            List<Long> parentIds = getParentIdsForField(resource, nsField);
-            if (CollectionUtils.isEmpty(parentIds)) {
-                continue;
-            }
             for (Long parentId : parentIds) {
+                if (!fieldIdResourceId.add(nsField.getFieldId() + "_" + parentId)) {
+                    continue;
+                }
                 measureArray.add(getMeasureForField(nsField.getFieldId(), catIdForField, categoryName, parentId));
             }
         }
