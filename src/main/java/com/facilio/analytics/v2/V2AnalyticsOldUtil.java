@@ -1281,23 +1281,22 @@ public class V2AnalyticsOldUtil {
         NewReadingRuleContext readingRule = NewReadingRuleAPI.getReadingRule(readingRuleId);
         NameSpaceContext ns = NamespaceAPI.getNameSpaceByRuleId(readingRuleId, NSType.READING_RULE);
 
-        ResourceContext resource = ResourceAPI.getResource(resourceId);
         JSONArray dataPoints = new JSONArray();
-        dataPoints.addAll(getDataPointsJSONForReadingRule(readingRule, ns, resource));
+        dataPoints.addAll(getDataPointsJSONForReadingRule(readingRule, ns, resourceId));
         ReportUtil.setAliasForDataPoints(dataPoints, -1L);
         return dataPoints;
     }
 
-    public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, NameSpaceContext ns, ResourceContext resource) throws Exception {
+    public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, NameSpaceContext ns, Long resourceId) throws Exception {
         JSONArray measureArray = new JSONArray();
 
         String parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
         List<NameSpaceField> fields = ns.getFields();
-        measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resource.getId()));
+        measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resourceId));
 
         Set<String> fieldIdResourceId = new HashSet<>(); // to avoid duplicates
         for (NameSpaceField nsField : fields) {
-            List<Long> parentIds = getParentIdsForField(resource, nsField);
+            List<Long> parentIds = getParentIdsForField(resourceId, nsField);
             if (CollectionUtils.isEmpty(parentIds)) {
                 continue;
             }
@@ -1318,11 +1317,11 @@ public class V2AnalyticsOldUtil {
         return measureArray;
     }
 
-    private static List<Long> getParentIdsForField(ResourceContext resource, NameSpaceField nsField) throws Exception {
+    private static List<Long> getParentIdsForField(Long resourceId, NameSpaceField nsField) throws Exception {
         if (nsField.getNsFieldType().equals(RELATED_READING)) {
-            return RelationUtil.getAllCustomRelationsForRecId(nsField.getRelatedInfo().getRelMapContext(), resource.getId());
+            return RelationUtil.getAllCustomRelationsForRecId(nsField.getRelatedInfo().getRelMapContext(), resourceId);
         }
-        return Collections.singletonList(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
+        return Collections.singletonList(nsField.getResourceId() != null ? nsField.getResourceId() : resourceId);
     }
 
     private static JSONObject getMeasureForField(Long readingFieldId, Long categoryId, String parentModuleName, Long parentId) throws Exception {

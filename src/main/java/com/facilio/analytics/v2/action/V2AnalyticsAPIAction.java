@@ -23,7 +23,7 @@ public class V2AnalyticsAPIAction extends V3Action {
     public String type;
     public String searchText;
     public Long readingRuleId;
-    public long resourceId;
+    public Long resourceId;
     public String getModuleFromCategory()throws Exception
     {
         validateInput();
@@ -81,10 +81,12 @@ public class V2AnalyticsAPIAction extends V3Action {
     }
 
 
-    public String getFieldsFromAlarm()throws Exception
-    {
-        if (readingRuleId < 0 || resourceId < 0) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Alarm Id");
+    public String getFieldsFromAlarm()throws Exception {
+        if (readingRuleId == null || readingRuleId < 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Reading Rule Id");
+        }
+        if (resourceId == null || resourceId < 0) {
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid Resource Id");
         }
         FacilioChain chain = V2AnalyticsTransactionChain.getReadingsForAlarmChain();
         chain.getContext().put(FacilioConstants.ContextNames.READING_RULE_ID, readingRuleId);
