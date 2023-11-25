@@ -52,14 +52,6 @@ public class CloudAgent extends FacilioJob {
 		}
 	}
 
-	private void pushToMessageQueue(FacilioAgent agent, List<JSONObject> results) throws Exception {
-		String topic = AccountUtil.getCurrentOrg().getDomain();
-		KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
-		for (JSONObject payload: results) {
-			AgentUtilV2.publishToQueue(topic, agent.getName(), payload, source);
-		}
-	}
-
 	private void getPayloadsFromWorkflowAndPushToMessageQueue(FacilioAgent agent) throws Exception {
 		long currentTime = System.currentTimeMillis();
 		long toTime = adjustTimestamp(currentTime, agent.getInterval());
@@ -76,7 +68,7 @@ public class CloudAgent extends FacilioJob {
 			throw new FacilioException("Fetching data from cloud failed");
 		}
 		else if (!results.isEmpty()) {
-			pushToMessageQueue(agent, results);
+			AgentUtilV2.pushToMessageQueue(agent, results);
 		}
 
 		updateLastReceivedTime(agent, toTime);

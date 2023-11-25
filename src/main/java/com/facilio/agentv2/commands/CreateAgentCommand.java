@@ -41,9 +41,6 @@ public class CreateAgentCommand extends AgentV2Command {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        if (!containsCheck(AgentConstants.AGENT, context))
-            throw new Exception("ADD AGENT :: Agent missing from context " + context);
-
         FacilioAgent agent = (FacilioAgent) context.get(AgentConstants.AGENT);
         checkDuplicateAgentName(agent.getName());
         Organization currentOrg = AccountUtil.getCurrentOrg();
@@ -74,7 +71,7 @@ public class CreateAgentCommand extends AgentV2Command {
         if (dataLogsJob == null) {
             AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId(), FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
         }
-        if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
+        if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO && agentType != AgentType.EMAIL) {
             agentBean.scheduleJob(agent, FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
             if (agent.getControllerAlarmIntervalInMins() != null && agent.getControllerAlarmIntervalInMins() > 0) {
                 agentBean.scheduleJob(agent, FacilioConstants.Job.CONTROLLER_OFFLINE_ALARM_JOB_NAME);

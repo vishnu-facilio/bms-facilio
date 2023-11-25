@@ -8,7 +8,9 @@ import com.facilio.agentv2.FacilioAgent;
 import com.facilio.agentv2.controller.ControllerUtilV2;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.bmsconsole.util.SupportEmailAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -124,6 +126,14 @@ public class AgentBeanImpl implements AgentBean {
     @Override
     public boolean editAgent(FacilioAgent agent, JSONObject jsonObject, boolean updateLastDataReceivedTime) throws Exception {
         AgentType agentType = AgentType.valueOf(agent.getAgentType());
+        if(agentType == AgentType.EMAIL){
+            if(jsonObject.containsKey("supportEmail") && jsonObject.get("supportEmail")!=null){
+                HashMap supportEmail = (HashMap) jsonObject.get("supportEmail");
+                LOGGER.info("Updating Support Email for Agent "+ agent.getDisplayName() + ", Support Email:" + supportEmail);
+                SupportEmailContext supportEmailContext = FieldUtil.getAsBeanFromMap(supportEmail, SupportEmailContext.class);
+                SupportEmailAPI.updateSupportEmailSetting(supportEmailContext);
+            }
+        }
         Long currTime = System.currentTimeMillis();
         if (updateLastDataReceivedTime) {
             agent.setLastDataReceivedTime(currTime);

@@ -7,6 +7,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.activity.ActivityType;
 import com.facilio.activity.AlarmActivityType;
+import com.facilio.agent.fw.constants.PublishType;
+import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.AgentUtilV2;
+import com.facilio.agentv2.FacilioAgent;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
@@ -39,6 +43,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -2024,8 +2029,29 @@ public enum ActionType implements FacilioIntEnum {
 			}
 			return true;
 		}
-	}
+	},
 
+	PUSH_TO_KAFKA(39, false) {
+		@Override
+		public boolean performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			LOGGER.info("PUSH_TO_KAFKA ==> JSONObject: " + obj + " Context: " + context);
+
+			BaseMailMessageContext mailContext = (BaseMailMessageContext) currentRecord;
+			SupportEmailContext supportEmailContext = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
+			Map<String, FacilioField> agentFields = FieldFactory.getAsMap(FieldFactory.getNewAgentFields());
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(agentFields.get(AgentConstants.SUPPORT_EMAIL_ID), String.valueOf(supportEmailContext.getId()), StringOperators.IS));
+			List<FacilioAgent> agents = AgentConstants.getAgentBean().getAgents(criteria);
+			if(agents.isEmpty()) return false;
+			FacilioAgent agent = agents.get(0);
+			if(agent != null){
+				JSONObject payload = AgentUtilV2.getPayloadContent(mailContext, agent);
+				LOGGER.info("PUSHING TO KAFKA :: " + payload);
+				AgentUtilV2.pushToMessageQueue(agent, Collections.singletonList(payload));
+			}
+			return false;
+		}
+	}
 	;
 
 	public static Long getPeopleIdFromPrimaryContact(FacilioField field,Map<String,Object> props) throws Exception{

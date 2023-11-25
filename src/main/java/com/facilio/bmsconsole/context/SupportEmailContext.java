@@ -65,7 +65,36 @@ public class SupportEmailContext implements  Serializable{
 	public void setAutoAssignGroupId(long autoAssignGroupId) {
 		this.autoAssignGroupId = autoAssignGroupId;
 	}
-	
+
+	private EmailSourceType emailSourceType;
+
+	public int getEmailSourceType() {
+		if(this.emailSourceType !=null){
+			return this.emailSourceType.getIndex();
+		}
+		return -1;
+	}
+
+	public void setEmailSourceType(int emailSourceType) {
+		this.emailSourceType = EmailSourceType.valueOf(emailSourceType);
+	}
+
+	public enum EmailSourceType implements FacilioIntEnum{
+		SETUP,
+		AGENT;
+
+		public static EmailSourceType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+
+		public Integer getIndex() {
+			return ordinal() + 1;
+		}
+	}
+
 	@Override
 	public String toString() {
 		return "SupportEmailContext [id=" + id + ", orgId=" + orgId + ", replyName=" + replyName + ", actualEmail="
@@ -165,10 +194,8 @@ public class SupportEmailContext implements  Serializable{
 	public AuthenticationType getAuthenticationEnum() {
 		return authentication;
 	}
-	public void setAuthenticationType(AuthenticationType authenticationType) {
-		this.authentication = authenticationType;
-	}
-	public void setAuthenticationType(int type) {
+
+	public void setAuthentication(int type) {
 		this.authentication = AuthenticationType.valueOf(type);
 	}
 

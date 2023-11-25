@@ -70,6 +70,16 @@ public class FacilioAgent implements Serializable {
     @JsonInclude
     private Integer setPointPriority;
     @JsonInclude
+    private Long supportEmailId;
+
+    public Long getSupportEmailId() {
+        return supportEmailId;
+    }
+
+    public void setSupportEmailId(Long supportEmailId) {
+        this.supportEmailId = supportEmailId;
+    }
+    @JsonInclude
     private Integer autoMappingReadingFieldName = AgentConstants.AutoMappingReadingFieldName.NAME.getIndex();
 
     public Integer getAutoMappingReadingFieldName() {

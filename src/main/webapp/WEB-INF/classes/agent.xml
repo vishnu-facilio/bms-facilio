@@ -680,4 +680,9 @@
         </action>
     </package>
 
+    <package name="EmailSetting" namespace="/api/v2/agent" extends="agent">
+        <action name="getEmailSetting" class="com.facilio.agentv2.actions.AgentIdAction" method="getSupportEmailUsingId">
+            <param name="deprecated">true</param>
+        </action>
+    </package>
 </struts>

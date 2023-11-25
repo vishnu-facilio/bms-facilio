@@ -49,7 +49,7 @@ public class EmailProcessHandler extends ImsHandler {
 						InputStream is=null;
 						try {
 							if(FacilioProperties.isDevelopment()){
-								is = new FileInputStream("/resources/test.eml");
+								is = new FileInputStream("./src/main/resources/test.eml");
 							}
 							else {
 								rawEmail = AwsUtil.getAmazonS3Client().getObject(S3_BUCKET_NAME, s3Id);

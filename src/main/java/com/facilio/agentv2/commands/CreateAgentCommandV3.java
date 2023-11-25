@@ -146,7 +146,7 @@ public class CreateAgentCommandV3 extends FacilioCommand {
         if (dataLogsJob == null) {
             AgentUtilV2.scheduleDataLogDeleteJob(currentOrg.getOrgId(), FacilioConstants.Job.DATA_LOG_DELETE_RECORDS_JOB);
         }
-        if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO) {
+        if (agentType != AgentType.NIAGARA && agentType != AgentType.FACILIO && agentType != AgentType.EMAIL) {
             agentBean.scheduleJob(agent, FacilioConstants.Job.POINTS_DATA_MISSING_ALARM_JOB_NAME);
             if (agent.getControllerAlarmIntervalInMins() != null && agent.getControllerAlarmIntervalInMins() > 0) {
                 agentBean.scheduleJob(agent, FacilioConstants.Job.CONTROLLER_OFFLINE_ALARM_JOB_NAME);

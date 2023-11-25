@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.service.FacilioService;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,7 +16,8 @@ public class GetSupportEmailCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long supportEmailId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if(supportEmailId != -1) {
-			SupportEmailContext supportEmail = SupportEmailAPI.getSupportEmailFromId(AccountUtil.getCurrentOrg().getOrgId(), supportEmailId);
+			long orgId = AccountUtil.getCurrentOrg().getOrgId();
+			SupportEmailContext  supportEmail = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.DEFAULT_SERVICE,() -> SupportEmailAPI.getSupportEmailFromId(orgId, supportEmailId));
 			if(supportEmail != null) {
 				context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
 			}

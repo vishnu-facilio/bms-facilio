@@ -537,6 +537,7 @@
 				<param name="includeProperties">supportEmailId</param>
 			</result>
 		</action>
+
 		<action name="deleteemailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="deleteSupportEmailSetting">
 			<param name="permission">ALL</param>
 			<param name="setupTab">EMAIL_SETTINGS</param>

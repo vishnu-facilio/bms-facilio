@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsoleV3.context.BaseMailMessageContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -541,8 +542,15 @@ public class AgentUtilV2
 
         return MessageSourceUtil.getDefaultSource();
     }
-    
-   
+
+    public static void pushToMessageQueue(FacilioAgent agent, List<JSONObject> results) throws Exception {
+        String topic = AccountUtil.getCurrentOrg().getDomain();
+        KafkaMessageSource source = (KafkaMessageSource) AgentUtilV2.getMessageSource(agent);
+        for (JSONObject payload: results) {
+            AgentUtilV2.publishToQueue(topic, agent.getName(), payload, source);
+        }
+    }
+
     public static Object publishToQueue(String topic, String key, JSONObject payload, KafkaMessageSource source) {
         MessageQueue messageQueue = MessageQueueFactory.getMessageQueue(source);
         try {
@@ -595,5 +603,15 @@ public class AgentUtilV2
             );
         }
         return true;
+    }
+
+    public static JSONObject getPayloadContent(BaseMailMessageContext mailContext, FacilioAgent agent) {
+        JSONObject payload = new JSONObject();
+        payload.put("subject", mailContext.getSubject());
+        payload.put("from", mailContext.getFrom());
+        payload.put("content", mailContext.getContent());
+        payload.put("recipient", mailContext.getRecipient());
+        payload.put(AgentConstants.AGENT, agent.getName());
+        return payload;
     }
 }

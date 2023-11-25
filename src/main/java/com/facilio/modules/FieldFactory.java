@@ -985,6 +985,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField(AgentConstants.READING_SCOPE, "Scope", "SCOPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getDefaultField(AgentConstants.SET_POINT_PRIORITY, "Set Point Priority", "SET_POINT_PRIORITY", module, FieldType.NUMBER));
         fields.add(getDefaultField("autoMappingReadingFieldName", "Auto Mapping Reading Field Name", "AUTO_MAPPING_READING_FIELD_NAME", module, FieldType.SYSTEM_ENUM));
+        fields.add(getDefaultField(AgentConstants.SUPPORT_EMAIL_ID, "Support Emial Id", "SUPPORT_EMAIL_ID", module, FieldType.NUMBER));
 
         SystemEnumField agentType = (SystemEnumField) getDefaultField("agentType", "Agent type", "AGENT_TYPE", module, FieldType.SYSTEM_ENUM);
         agentType.setEnumName("AgentType");
@@ -3221,11 +3222,12 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("port", "PORT", module, FieldType.NUMBER));
         fields.add(getField("userName", "USER_NAME", module, FieldType.STRING));
         fields.add(getField("password", "PASSWORD", module, FieldType.STRING));
-        fields.add(getField("authenticationType", "AUTHENTICATION_TYPE", module, FieldType.ENUM));
+        fields.add(getField("authentication", "AUTHENTICATION_TYPE", module, FieldType.SYSTEM_ENUM));
         fields.add(getField("latestMessageUID", "LATEST_MESSAGE_UID", module, FieldType.NUMBER));
         fields.add(getField("uidValidaity", "UID_VALIDAITY", module, FieldType.NUMBER));
         fields.add(getField("supportRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
         fields.add(getField("imapServiceProviderType","IMAP_SERVICE_PROVIDER_TYPE",module,FieldType.STRING));
+        fields.add(getField("emailSourceType","EMAIL_SOURCE_TYPE",module,FieldType.SYSTEM_ENUM));
 
         return fields;
     }

@@ -572,7 +572,7 @@ public String importData() throws Exception {
 		controllerSettingsId = controllerSettings.getId();
 		return SUCCESS; 
 	}
-	
+
 	public String updateSupportEmailSetting() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);

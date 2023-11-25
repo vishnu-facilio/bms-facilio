@@ -16,7 +16,8 @@ public enum AgentType implements FacilioIntEnum {
     RDM(6, "RDM", false, true, false),
     CLOUD_ON_SERVICE(7, "Cloud Service", true, true, false),
     MQTT(8, "MQTT Client", true, true, false),
-    E2(9,"E2",false,true,false);
+    E2(9,"E2",false,true,false),
+    EMAIL(10,"Email",true,false,false);
 
 
     private int key;

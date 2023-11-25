@@ -5560,6 +5560,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain createAgentChain() {
 		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddSupportEmailAndWorkFlowRuleCommand());
 		chain.addCommand(new CreateAgentCommand());
 		return chain;
 	}

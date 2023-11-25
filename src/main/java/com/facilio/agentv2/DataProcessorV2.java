@@ -570,14 +570,13 @@ public class DataProcessorV2 {
 
     private boolean processCustom(FacilioAgent agent,JSONObject payload) {
 
-    	try {
+        try {
             Controller customController = AgentConstants.getControllerBean().getController(payload,agent.getId());
             JSONObject customPayload = (JSONObject) payload.clone();
             if (customController != null) {
                 customPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, customController.getId());
                 customPayload.put(FacilioConstants.ContextNames.CONTROLLER, FieldUtil.getAsJSON(customController));
             }
-
 
             FacilioChain chain = TransactionChainFactory.getAddCustomDataChain();
             FacilioContext context = chain.getContext();
@@ -589,6 +588,7 @@ public class DataProcessorV2 {
             }
 
             context.put(AgentConstants.DATA, payload);
+            context.put(AgentConstants.AGENT, agent);
 
             if (payload.containsKey(AgentConstants.TIMESTAMP) && (payload.get(AgentConstants.TIMESTAMP) != null)) {
                 context.put(AgentConstants.TIMESTAMP, payload.get(AgentConstants.TIMESTAMP));

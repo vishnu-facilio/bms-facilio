@@ -1,22 +1,9 @@
 package com.facilio.agentv2.actions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.agentv2.cacheimpl.AgentBean;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.chain.FacilioChain;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.AgentUtilV2;
 import com.facilio.agentv2.FacilioAgent;
+import com.facilio.agentv2.cacheimpl.AgentBean;
 import com.facilio.agentv2.iotmessage.AgentMessenger;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
 import com.facilio.agentv2.logs.LogsApi;
@@ -24,15 +11,28 @@ import com.facilio.agentv2.metrics.MetricsApi;
 import com.facilio.agentv2.modbusrtu.ModbusImportUtils;
 import com.facilio.agentv2.point.PointsAPI;
 import com.facilio.agentv2.sqlitebuilder.SqliteBridge;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class AgentIdAction extends AgentActionV2 {
     private static final Logger LOGGER = LogManager.getLogger(AgentIdAction.class.getName());
@@ -46,67 +46,67 @@ public class AgentIdAction extends AgentActionV2 {
     public void setAgentId(Long agentId) {
         this.agentId = agentId;
     }
-    
-	private String name;
-	
-	public String getName() {
-		return name;
-	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	private String querySearch;
-	
-	public String getQuerySearch() {
-		return querySearch;
-	}
+    private String name;
 
-	public void setQuerySearch(String querySearch) {
-		this.querySearch = querySearch;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Integer controllerType;
-	
-	public Integer getControllerType() {
-		return controllerType;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setControllerType(Integer controllerType) {
-		this.controllerType = controllerType;
-	}
+    private String querySearch;
 
-	private Boolean configured;
+    public String getQuerySearch() {
+        return querySearch;
+    }
 
-	
-	public Boolean getConfigured() {
-		return configured;
-	}
+    public void setQuerySearch(String querySearch) {
+        this.querySearch = querySearch;
+    }
 
-	public void setConfigured(Boolean configured) {
-		this.configured = configured;
-	}
+    public Integer controllerType;
 
-	private Boolean type;
-	
-	public Boolean getType() {
-		return type;
-	}
+    public Integer getControllerType() {
+        return controllerType;
+    }
 
-	public void setType(Boolean type) {
-		this.type = type;
-	}
+    public void setControllerType(Integer controllerType) {
+        this.controllerType = controllerType;
+    }
 
-	private Boolean count;
-	
-	public Boolean getCount() {
-		return count;
-	}
+    private Boolean configured;
 
-	public void setCount(Boolean count) {
-		this.count = count;
-	}
+
+    public Boolean getConfigured() {
+        return configured;
+    }
+
+    public void setConfigured(Boolean configured) {
+        this.configured = configured;
+    }
+
+    private Boolean type;
+
+    public Boolean getType() {
+        return type;
+    }
+
+    public void setType(Boolean type) {
+        this.type = type;
+    }
+
+    private Boolean count;
+
+    public Boolean getCount() {
+        return count;
+    }
+
+    public void setCount(Boolean count) {
+        this.count = count;
+    }
 
     public String getModuleName() {
         return moduleName;
@@ -114,6 +114,16 @@ public class AgentIdAction extends AgentActionV2 {
 
     public void setModuleName(String moduleName) {
         this.moduleName = moduleName;
+    }
+
+    private long supportEmailId = -1;
+
+    public long getSupportEmailId() {
+        return supportEmailId;
+    }
+
+    public void setSupportEmailId(long supportEmailId) {
+        this.supportEmailId = supportEmailId;
     }
 
     @Override
@@ -130,84 +140,85 @@ public class AgentIdAction extends AgentActionV2 {
 
     private String moduleName;
 
-	public String getDeviceOrControllersData() {
+    public String getDeviceOrControllersData() {
 
-		try {
-			List<Map<String, Object>> data = new ArrayList<>();
-			FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(AgentConstants.TYPE, type);
-			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+        try {
+            List<Map<String, Object>> data = new ArrayList<>();
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.AGENT_ID, getAgentId());
+            context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
+            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+            context.put(AgentConstants.TYPE, type);
+            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 
-			if ((count != null && count == Boolean.TRUE)) {
-				long count = -1;
-				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-					if ((configured != null && configured == Boolean.TRUE)) {
-						count = AgentConstants.getControllerBean().getControllersCount(context);
-					} else if (configured != null && configured == Boolean.FALSE) {
-						//data = FieldDeviceApi.getDevices(context);
-						if (CollectionUtils.isNotEmpty(data)) {
-							//count = (long) data.get(0).get(AgentConstants.ID);
-						}
-					}
-				setResult(AgentConstants.DATA, count);
-			} else {
-				if ((configured != null && configured == Boolean.TRUE)) {
-					data = AgentConstants.getControllerBean().getControllerDataForAgent(context);
-				}
-				setResult(AgentConstants.DATA, data);
-			}
+            if ((count != null && count == Boolean.TRUE)) {
+                long count = -1;
+                context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+                if ((configured != null && configured == Boolean.TRUE)) {
+                    count = AgentConstants.getControllerBean().getControllersCount(context);
+                } else if (configured != null && configured == Boolean.FALSE) {
+                    //data = FieldDeviceApi.getDevices(context);
+                    if (CollectionUtils.isNotEmpty(data)) {
+                        //count = (long) data.get(0).get(AgentConstants.ID);
+                    }
+                }
+                setResult(AgentConstants.DATA, count);
+            } else {
+                if ((configured != null && configured == Boolean.TRUE)) {
+                    data = AgentConstants.getControllerBean().getControllerDataForAgent(context);
+                }
+                setResult(AgentConstants.DATA, data);
+            }
 
-			ok();
-		} catch (Exception e) {
-			LOGGER.info("Exception occurred while getting Controllers ", e);
-			setResult(AgentConstants.RESULT, ERROR);
-			setResult(AgentConstants.EXCEPTION, e.getMessage());
-			internalError();
-		}
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting Controllers ", e);
+            setResult(AgentConstants.RESULT, ERROR);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
 
-		return SUCCESS;
-	}
+        return SUCCESS;
+    }
 
-	public String getControllersData() { 
-		try {
+    public String getControllersData() {
+        try {
             FacilioChain chain = ReadOnlyChainFactory.getGenerateCriteriaFromFilterChain();
-			FacilioContext context = chain.getContext();
-            context.put(AgentConstants.MODULE_NAME,moduleName);
+            FacilioContext context = chain.getContext();
+            context.put(AgentConstants.MODULE_NAME, moduleName);
             if (filters != null) {
                 JSONParser parser = new JSONParser();
                 JSONObject json = (JSONObject) parser.parse(getFilters());
-                context.put(FacilioConstants.ContextNames.FILTERS, json);;
+                context.put(FacilioConstants.ContextNames.FILTERS, json);
+                ;
             }
             chain.execute();
             context.put(AgentConstants.AGENT_ID, getAgentId());
             context.put(AgentConstants.SEARCH_KEY, getQuerySearch());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
 
-			if (count != null && count) {
-				context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-				setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllersCount(context));
-			} else {
-				setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllerDataForAgent(context));
-			}
-			ok();
-		} catch (Exception e) {
-			LOGGER.info("Exception occurred while getting Controllers ", e);
-			setResult(AgentConstants.EXCEPTION, e.getMessage());
-			internalError();
-		}
-		return SUCCESS;
-	}
+            if (count != null && count) {
+                context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+                setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllersCount(context));
+            } else {
+                setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllerDataForAgent(context));
+            }
+            ok();
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting Controllers ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
+    }
 
     public String getControllerCount() {
         try {
-        	FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.AGENT_ID, getAgentId());
+            context.put(AgentConstants.SEARCH_KEY, getName());
+            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
             setResult(AgentConstants.RESULT, SUCCESS);
             setResult(AgentConstants.DATA, AgentConstants.getControllerBean().getControllersCount(context));
             ok();
@@ -219,14 +230,15 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
+
     public String getControllers() {
         try {
-			FacilioContext context = new FacilioContext();
-			context.put(AgentConstants.SEARCH_KEY, getName());
-			context.put(AgentConstants.AGENT_ID, getAgentId());
-			context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
-			context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-			List<Map<String, Object>> controllers = AgentConstants.getControllerBean().getControllerDataForAgent(context);
+            FacilioContext context = new FacilioContext();
+            context.put(AgentConstants.SEARCH_KEY, getName());
+            context.put(AgentConstants.AGENT_ID, getAgentId());
+            context.put(AgentConstants.CONTROLLER_TYPE, getControllerType());
+            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            List<Map<String, Object>> controllers = AgentConstants.getControllerBean().getControllerDataForAgent(context);
             setResult(AgentConstants.DATA, controllers);
             ok();
         } catch (Exception e) {
@@ -239,7 +251,7 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String pingAgent() throws Exception {
         try {
-        	LOGGER.info(" ping agent " + getAgentId());
+            LOGGER.info(" ping agent " + getAgentId());
             AgentMessenger.pingAgent(getAgentId());
             setResult(AgentConstants.RESULT, SUCCESS);
             ok();
@@ -276,53 +288,6 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
 
     }
-
-  /*  public String getControllers() {
-        JSONArray controllerArray = new JSONArray();
-        try {
-            LOGGER.info(" getting controller for agentId "+agentId);
-                //Map<String, Controller> controllerData = AgentConstants.getControllerBean().getControllersForAgent(getAgentId(),constructListContext(new FacilioContext()));
-                Map<String, Controller> controllerData = AgentConstants.getControllerBean().getControllerDataForAgent(getAgentId(),constructListContext(new FacilioContext()));
-                if ((controllerData != null) && (!controllerData.isEmpty())) {
-                    JSONObject object = new JSONObject();
-                    for (Controller controller : controllerData.values()) {
-                        JSONObject pointCountData = PointsAPI.getControllerPointsCountData(controller.getId());
-                        if(pointCountData != null && ( ! pointCountData.isEmpty()) ){
-                            object.putAll(pointCountData);
-                        }else {
-                            LOGGER.info(" points count null ");
-                        }
-                        object.put(AgentConstants.CHILDJSON, controller.getChildJSON());
-                        object.putAll(controller.toJSON());
-                        controllerArray.add(object);
-                    }
-                    *//*setResult(AgentConstants.RESULT, SUCCESS);*//*
-                    setResult(AgentConstants.DATA, controllerArray);
-                    return SUCCESS;
-                }else {
-                    *//*setResult(AgentConstants.RESULT, NONE);*//*
-                    setResult(AgentConstants.DATA,controllerArray);
-                }
-
-        }catch (Exception e){
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResult(AgentConstants.RESULT,ERROR);
-        }
-        return SUCCESS;
-    }
-*/
-
-//    public String countAgentDevices() {
-//        try {
-//            setResult(AgentConstants.DATA, FieldDeviceApi.getAgentDeviceCount(Arrays.asList(getAgentId())));
-//            setResult(AgentConstants.RESULT, SUCCESS);
-//        } catch (Exception e) {
-//            LOGGER.info("Exception occurred while getting agentDevices count", e);
-//            setResult(AgentConstants.RESULT, ERROR);
-//            setResult(AgentConstants.EXCEPTION, e.getMessage());
-//        }
-//        return SUCCESS;
-//    }
 
     public String getjvmStatus() {
         try {
@@ -380,7 +345,7 @@ public class AgentIdAction extends AgentActionV2 {
         } catch (Exception e) {
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
-            LOGGER.info("Exception occurred while migrating to new Agent " + getAgentId()+"  ",e);
+            LOGGER.info("Exception occurred while migrating to new Agent " + getAgentId() + "  ", e);
         }
         return SUCCESS;
     }
@@ -471,7 +436,7 @@ public class AgentIdAction extends AgentActionV2 {
         try {
             List<Map<String, Object>> result = new ArrayList<>();
             FacilioContext context = new FacilioContext();
-        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
             result = IotMessageApiV2.listIotMessages(agentId, context);
             setResult(AgentConstants.DATA, result);
             ok();
@@ -484,13 +449,13 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    public String getIotMessageCount(){
-        try{
+    public String getIotMessageCount() {
+        try {
             long count = IotMessageApiV2.getCount(agentId);
-            setResult(AgentConstants.DATA,count);
+            setResult(AgentConstants.DATA, count);
             ok();
-        }catch (Exception e){
-            LOGGER.info("Exception while getting iot message count",e);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting iot message count", e);
             setResult(AgentConstants.RESULT, ERROR);
             setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
@@ -511,22 +476,9 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-   /* public String listAgentPointsCount(){
-        try{
-                long count = PointsAPI.getAgentPointsCount(getAgentId(), -1);
-                setResult(AgentConstants.DATA,count);
-                setResult(AgentConstants.RESULT,SUCCESS);
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting all point for agent->"+agentId+" -",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
-            setResult(AgentConstants.RESULT,ERROR);
-        }
-        return SUCCESS;
-    }*/
-
     public String getControllerFilter() {
         try {
-            List<Map<String, Object>> agentControllerFilterData = AgentConstants.getControllerBean().getControllerFilterData(getAgentId() , getControllerType());
+            List<Map<String, Object>> agentControllerFilterData = AgentConstants.getControllerBean().getControllerFilterData(getAgentId(), getControllerType());
             setResult(AgentConstants.DATA, agentControllerFilterData);
             ok();
             return SUCCESS;
@@ -549,37 +501,11 @@ public class AgentIdAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-//    public String getDeviceFilter() {
-//        try {
-//            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getDeviceFilterData(getAgentId());
-//            setResult(AgentConstants.DATA, deviceFilter);
-//            ok();
-//        } catch (Exception e) {
-//            internalError();
-//            LOGGER.info("Exception occurred while getting device filter ", e);
-//            internalError();
-//        }
-//        return SUCCESS;
-//    }
-
-//    public String getModbusDevice(){
-//        try{
-//            List<Map<String, Object>> deviceFilter = FieldDeviceApi.getModbusDeviceFilter(getAgentId());
-//            setResult(AgentConstants.DATA, deviceFilter);
-//            ok();
-//        }catch (Exception e){
-//            internalError();
-//            LOGGER.info("Exception occurred while getting device filter ", e);
-//            internalError();
-//        }
-//        return SUCCESS;
-//    }
-
     public String getMetrics() {
         try {
-        	FacilioContext context = new FacilioContext();
-        	context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
-            List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),context);
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+            List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(), context);
             ok();
             setResult(AgentConstants.DATA, metrics);
         } catch (Exception e) {
@@ -590,12 +516,12 @@ public class AgentIdAction extends AgentActionV2 {
 
     public String getMetricsCount() {
         try {
-        	FacilioContext context = new FacilioContext();
+            FacilioContext context = new FacilioContext();
             context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
-        	List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(),context);
+            List<Map<String, Object>> metrics = MetricsApi.getMetrics(getAgentId(), context);
             long count = 0;
             if (CollectionUtils.isNotEmpty(metrics)) {
-                count =(long) metrics.get(0).get(AgentConstants.ID);
+                count = (long) metrics.get(0).get(AgentConstants.ID);
             }
             setResult(AgentConstants.DATA, count);
             ok();
@@ -604,48 +530,69 @@ public class AgentIdAction extends AgentActionV2 {
         }
         return SUCCESS;
     }
-    
-    public String getPendingControllerImports(){
-        try{
+
+    public String getPendingControllerImports() {
+        try {
             List<Map<String, Object>> maps = ModbusImportUtils.getpendingControllerImports(getAgentId());
-            setResult(AgentConstants.DATA,maps);
+            setResult(AgentConstants.DATA, maps);
             ok();
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting pending controller imports for agentId "+getAgentId()+" ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting pending controller imports for agentId " + getAgentId() + " ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
         }
         return SUCCESS;
     }
 
-    public String pendingDeviceImportCount(){
-        try{
-            setResult(AgentConstants.DATA,ModbusImportUtils.getPendingControllerImportCount(agentId));
-        }catch (Exception e){
-            LOGGER.info("Exception occurred while getting pending point imports count for agentId "+getAgentId()+" ",e);
-            setResult(AgentConstants.EXCEPTION,e.getMessage());
+    public String pendingDeviceImportCount() {
+        try {
+            setResult(AgentConstants.DATA, ModbusImportUtils.getPendingControllerImportCount(agentId));
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred while getting pending point imports count for agentId " + getAgentId() + " ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
             internalError();
         }
         return SUCCESS;
     }
-    
+
     public String getRtuNetworks() {
-    	try {
-    		setResult(AgentConstants.DATA, fetchRtuNetworks(agentId));
-    		ok();
-    	}catch(Exception e) {
-    		LOGGER.error("Exception occurred while getting Rtu Networks. ", e);
-    		setResult(AgentConstants.EXCEPTION, e.getMessage());
-    		internalError();
-    	}
-    	return SUCCESS;
+        try {
+            setResult(AgentConstants.DATA, fetchRtuNetworks(agentId));
+            ok();
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while getting Rtu Networks. ", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+        return SUCCESS;
     }
 
     private List<Map<String, Object>> fetchRtuNetworks(Long agentId) throws Exception {
-    	List<FacilioField> fields = FieldFactory.getRtuNetworkFields();
-    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-    			.select(fields).table(ModuleFactory.getRtuNetworkModule().getTableName())
-    			.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
-    	return builder.get();
+        List<FacilioField> fields = FieldFactory.getRtuNetworkFields();
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .select(fields).table(ModuleFactory.getRtuNetworkModule().getTableName())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get(AgentConstants.AGENT_ID), String.valueOf(agentId), NumberOperators.EQUALS));
+        return builder.get();
     }
+
+    public String getSupportEmailUsingId() throws Exception {
+        try {
+            if (supportEmailId != -1) {
+                FacilioContext context = new FacilioContext();
+                context.put(FacilioConstants.ContextNames.ID, supportEmailId);
+
+                FacilioChain getSupportEmail = FacilioChainFactory.getSupportEmailChain();
+                getSupportEmail.execute(context);
+
+                setResult(FacilioConstants.ContextNames.SUPPORT_EMAIL, context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL));
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred while getting Support Email", e);
+            setResult(AgentConstants.EXCEPTION, e.getMessage());
+            internalError();
+        }
+
+        return SUCCESS;
+    }
+
 }

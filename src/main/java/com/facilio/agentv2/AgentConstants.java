@@ -343,6 +343,8 @@ public class AgentConstants
 
     public static final String EVENT_VERSION = "eventVersion";
     public static final String COMMAND_MAX_RETRY_COUNT = "commandMaxRetryCount";
+    public static final String SUPPORT_EMAIL_ID = "supportEmailId";
+    public static final String SUPPORT_EMAIL_CONTEXT = "supportEmailContext";
     public static final String ALARM_PROCESSOR_TYPE = "alarmProcessorType";
 
     public static final String RECORDS = "records";

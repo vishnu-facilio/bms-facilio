@@ -6,6 +6,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.agentv2.FacilioAgent;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -15,7 +16,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.service.FacilioService;
 import lombok.Getter;
 import lombok.Setter;
-
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -23,7 +23,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.DatatypeConverter;
-
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,12 +54,13 @@ public class AddAgentAction extends AgentActionV2 {
     private String ipAddress;
     private String agentSourceType = AgentConstants.AgentSourceType.WEB.getValue();
     private boolean allowAutoMapping;
+    private SupportEmailContext supportEmail;
 
 	public String createAgent() {
         try {
             FacilioChain addAgentChain = TransactionChainFactory.createAgentChain();
             FacilioContext context = addAgentChain.getContext();
-            FacilioAgent agent = getFacilioAgent();
+            FacilioAgent agent = getFacilioAgent(context);
             context.put(AgentConstants.AGENT, agent);
             addAgentChain.execute();
             setResult(AgentConstants.RESULT, SUCCESS);
@@ -74,7 +74,7 @@ public class AddAgentAction extends AgentActionV2 {
         return SUCCESS;
     }
 
-    private FacilioAgent getFacilioAgent() throws Exception {
+    private FacilioAgent getFacilioAgent(FacilioContext context) throws Exception {
         Organization currentOrg = AccountUtil.getCurrentOrg();
         FacilioAgent agent = new FacilioAgent();
         agent.setDisplayName(getDisplayName());
@@ -99,6 +99,11 @@ public class AddAgentAction extends AgentActionV2 {
                     agent.setAutoMappingParentFieldId(getAutoMappingParentFieldId());
                 }
                 agent.setConnected(true);
+                break;
+            case EMAIL:
+                context.put(AgentConstants.SUPPORT_EMAIL_CONTEXT, supportEmail);
+                agent.setConnected(true);
+                agent.setAlarmProcessorType(2);
                 break;
             case RDM:
                 agent.setUrl(getUrl());

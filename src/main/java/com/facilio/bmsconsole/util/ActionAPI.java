@@ -393,10 +393,9 @@ public class ActionAPI {
 		return actions;
 	}
 	public static List<ActionContext> addActions(List<ActionContext> actions,WorkflowRuleContext rule, boolean shouldSave) throws Exception {
-		
 		if (actions != null && !actions.isEmpty()) {
 			List<ActionContext> actionsToBeAdded = new ArrayList<>();
-			for(ActionContext action:actions) {
+			for(ActionContext action : actions) {
 				if (action.getId() == -1) {
 					if (action.getTemplate() == null && action.getTemplateJson() != null) {
 						System.out.println(action.getTemplateJson());
@@ -469,7 +468,7 @@ public class ActionAPI {
 								break;
 						}
 					}
-					if (action.getTemplateId() == -1) {
+					if (action.getTemplateId() == -1 && action.getTemplate() != null) {
 						action.setTemplateId(TemplateAPI.addTemplate(action.getTemplate()));
 					}
 					actionsToBeAdded.add(action);

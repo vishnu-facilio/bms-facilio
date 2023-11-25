@@ -52,7 +52,26 @@
             <property name="allowAutoMapping" type="boolean"/>
             <property name="autoMappingParentFieldId" type="number"/>
             <property name="readingScope" type="number"/>
+            <property name="supportEmail" type="object">
+                <property name="replyName" type="string"/>
+                <property name="actualEmail" type="string"/>
+                <property name="fwdEmail" type="string"/>
+                <property name="authentication" type="number"/>
+                <property name="isCustomMail" type="boolean"/>
+                <property name="siteId" type="number"/>
+                <property name="userName" type="string"/>
+                <property name="password" type="string"/>
+                <property name="mailServer" type="string"/>
+                <property name="port" type="number"/>
+                <property name="emailSystem" type="string"/>
+            </property>
         </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/getEmailSetting" method="GET">
+        <urlparams type="object">
+            <property name="supportEmailId" type="number"/>
+        </urlparams>
     </request>
 
     <request path="/api/v3/agent/toggleJob" method="POST">
