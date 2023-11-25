@@ -2,7 +2,6 @@ package com.facilio.analytics.v2;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.alarms.sensor.context.sensorrollup.SensorRollUpAlarmContext;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
@@ -28,21 +27,21 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
-import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.*;
 import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.FilterUtil;
@@ -51,12 +50,6 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
-import com.facilio.v3.util.FilterUtil;
-import com.facilio.workflows.context.ExpressionContext;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowExpression;
-import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1364,7 +1357,7 @@ public class V2AnalyticsOldUtil {
             parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
         }
         List<NameSpaceField> fields = readingRule.getNs().getFields();
-        measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, Collections.singletonList(resource.getId())));
+        measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resource.getId()));
 
         for (NameSpaceField nsField : fields) {
             Long catIdForField = getCategoryForField(nsField, readingRule);
@@ -1377,7 +1370,9 @@ public class V2AnalyticsOldUtil {
             if (CollectionUtils.isEmpty(parentIds)) {
                 continue;
             }
-            measureArray.add(getMeasureForField(nsField.getFieldId(), catIdForField, categoryName, parentIds));
+            for (Long parentId : parentIds) {
+                measureArray.add(getMeasureForField(nsField.getFieldId(), catIdForField, categoryName, parentId));
+            }
         }
         return measureArray;
     }
@@ -1389,14 +1384,14 @@ public class V2AnalyticsOldUtil {
         return Collections.singletonList(nsField.getResourceId() != null ? nsField.getResourceId() : resource.getId());
     }
 
-    private static JSONObject getMeasureForField(Long readingFieldId, Long categoryId, String parentModuleName, List<Long> parentIds) throws Exception {
+    private static JSONObject getMeasureForField(Long readingFieldId, Long categoryId, String parentModuleName, Long parentId) throws Exception {
         JSONObject measureJson = new JSONObject();
         measureJson.putAll(constructFieldObject(Constants.getModBean().getField(readingFieldId), categoryId));
         measureJson.put("aggr", 0);
         measureJson.put("type", 1);
         measureJson.put("parentModuleName", parentModuleName);
 
-        JSONArray parentIdsJson = FieldUtil.getAsJSONArray(parentIds.stream().map(id -> Long.toString(id)).collect(Collectors.toList()), String.class);
+        JSONArray parentIdsJson = FieldUtil.getAsJSONArray(Collections.singletonList(Long.toString(parentId)), String.class);
         JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
         JSONObject operatorJson = new JSONObject();
         operatorJson.put("operatorId", 9);
