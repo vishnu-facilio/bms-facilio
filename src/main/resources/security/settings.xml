@@ -13,7 +13,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/pdfTemplate/:moduleName/:appId/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/customPage/:moduleName/:appId/:recordId" method="GET">
         <urlparams type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number" mandatory="true"/>
@@ -4366,5 +4366,23 @@
             <property name="recordId" type="number" mandatory="true"/>
             <property name="identifier" type="string" mandatory="true"/>
         </urlparams>
+    </request>
+
+    <request path="/api/v2/module/:moduleName/:id/getAllAvailableButtons" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    
+    <request path="/api/v3/virtualMeterTemplate/history" method="POST">
+        <property name="vmTemplateId" type="number"/>
+        <property name="startTime" type="number"/>
+        <property name="endTime" type="number"/>
+        <property name="resourceIds" type="array">
+            <items type="number">
+            </items>
+        </property>
     </request>
 </config>

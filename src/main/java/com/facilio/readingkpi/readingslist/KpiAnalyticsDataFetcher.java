@@ -34,6 +34,9 @@ public abstract class KpiAnalyticsDataFetcher {
 
     public GenericSelectRecordBuilder fetchBuilder(Context context, Boolean fetchCount) throws Exception {
         GenericSelectRecordBuilder builder = fetchModuleBuilder();
+        if (builder == null) {
+            return null;
+        }
         ReadingKpiAPI.addFilterToBuilder(context, fieldsMap , builder);
         return fetchCount
                 ? getCountBuilder(builder, module)

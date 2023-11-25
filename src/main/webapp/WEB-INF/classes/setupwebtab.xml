@@ -265,6 +265,17 @@
         </action>
     </package>
 
+    <package name="setupFieldsConfigAPI" namespace="/api/v1/setup/fields" extends="v2Api">
+        <action name="config/*/*"
+                class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList">
+            <param name="fieldListType">{1}</param>
+            <param name="moduleName">{2}</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES,APPROVALS</param>
+        </action>
+    </package>
+
     <package name="customPageSetup" namespace="/api/v1/setup/customPage" extends="v2Api">
         <!--		<action name="changeDefault"-->
         <!--				class="com.facilio.bmsconsole.actions.CustomPageAction" method="changeDefaultPage">-->
@@ -273,41 +284,49 @@
         <action name="changeStatus"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="changePageStatus">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="clone"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="clonePage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="list"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="getAllCustomPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="create"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="createCustomPage">
             <param name="permission">ALL</param>
             <param name="setupTab">MODULES</param>
+            <param name="tabType">SETUP</param>
         </action>
         <action name="fetch"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchCustomPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="patchCustomPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="deleteCustomPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="reorderPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -317,6 +336,7 @@
                 class="com.facilio.bmsconsole.actions.CustomPageAction" method="getPageCriteriaFieldsForModule">
             <param name="moduleName">{1}</param>
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -325,11 +345,13 @@
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageColumnsAction" method="addPageColumns">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageColumnsAction" method="getPageColumn">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -338,26 +360,31 @@
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="addPageSection">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="getPageSection">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="patchPageSection">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="deletePageSection">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.PageSectionsAction" method="reorderPageSections">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -382,24 +409,28 @@
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="addBulkRelatedList">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="updateBulkRelatedList">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="fetchBulkRelatedList">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="relatedModules/list"
                 class="com.facilio.bmsconsole.actions.RelatedListWidgetsAction"
                 method="getRelatedModules">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
 
@@ -410,24 +441,28 @@
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="addBulkRelationshipWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="updateBulkRelationshipWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="fetchBulkRelationshipWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
 		</action>
         <action name="relationship/list"
                 class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction"
                 method="getRelationshipsOfModule">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
 
@@ -437,31 +472,37 @@
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="createWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="get"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="update"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="updateWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="rearrange"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="rearrangeWidgets">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="deleteWidget">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="widgetDetail/get"
                 class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -470,36 +511,43 @@
         <action name="changeStatus"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="changeTabStatus">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="add"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="addPageTabs">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="fetch"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="patch"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="patchPageTab">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="deletePageTabs">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="reorder"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="reorderPageTabs">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="connectedAppTab/add"
                 class="com.facilio.bmsconsole.actions.PageTabsAction" method="addConnectedSummaryTabToPage">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>
@@ -508,11 +556,13 @@
         <action name="list"
                 class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetsForModule">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
         <action name="configs"
                 class="com.facilio.bmsconsole.actions.ModuleWidgetsAction" method="getWidgetConfigs">
             <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
     </package>

@@ -2238,7 +2238,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSelectFieldFields())
 				.table("Fields")
-				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
+				.andCustomWhere(CriteriaAPI.getCurrentBuildVersionCriteria());
 
 		if (filterCriteria != null && !filterCriteria.isEmpty()) {
 			selectBuilder.andCriteria(filterCriteria);

@@ -234,7 +234,7 @@
         </action>
 
     </package>
-    <package name="buttons" namespace="/api/v3/module" extends="v3Api">
+    <package name="systembuttons" namespace="/api/v3/module" extends="v3Api">
 
         <action name="utilityDispute/*/systemButton/*" class="com.facilio.utility.UtilityAction" method="updateDisputeStatus">
             <param name="moduleName">utilityDispute</param>
@@ -2427,6 +2427,10 @@
             <param name="moduleName">virtualMeterTemplate</param>
             <param name="permission">GET:READ</param>
         </action>
+         <action name="history" class="com.facilio.bmsconsoleV3.actions.VirtualMeterTemplateAction" method="runHistoryForVMTemplate">
+            <param name="moduleName">virtualMeterTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+        </action>
     </package>
 
 
@@ -2776,6 +2780,12 @@
         <action name="getNextExecutionDates"
                 class="com.facilio.fsm.actions.ServicePlannedMaintenanceAction"
                 method="getNextExecutionDates">
+        </action>
+    </package>
+    <package name="calendarWizardSpecialApi" namespace="/api/v3/bulkPatch" extends="v3Api">
+        <action name="calendar" class="com.facilio.bmsconsoleV3.actions.CalendarFieldBulkPatchAction" method="bulkUpdateCalendarField">
+            <param name="moduleName">calendar</param>
+            <param name="permission">POST:UPDATE</param>
         </action>
     </package>
 </struts>

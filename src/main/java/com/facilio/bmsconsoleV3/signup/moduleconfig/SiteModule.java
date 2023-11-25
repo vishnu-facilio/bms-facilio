@@ -845,7 +845,7 @@ public class SiteModule extends BaseModuleConfig {
                 .addSection("siteInsights","",null)
                 .addWidget("siteLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,locationWidgetParam,null)
                 .widgetDone()
-                .addWidget("siteInsights","Site Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .addWidget("siteInsights","Site Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS,"webEnergySpaceInsights_4_6",3,0,spaceParam,null)
                 .widgetDone()
                 .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                 .widgetDone()

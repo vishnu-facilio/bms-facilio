@@ -487,6 +487,9 @@ public class APIModuleWidgets {
                 .done()
 
                 .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done()
+
+                .addModuleWidget("energySpaceInsights","Energy Space Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS)
                 .done();
     }
     @WidgetsForModule("floor")
@@ -522,6 +525,9 @@ public class APIModuleWidgets {
                 .done()
 
                 .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done()
+
+                .addModuleWidget("energySpaceInsights","Energy Space Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS)
                 .done();
     }
 
@@ -560,6 +566,9 @@ public class APIModuleWidgets {
                 .done()
 
                 .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done()
+
+                .addModuleWidget("energySpaceInsights","Energy Space Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS)
                 .done();
     }
 
@@ -624,6 +633,10 @@ public class APIModuleWidgets {
                 .done()
 
                 .addModuleWidget("safetyPlanPrecautions","Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .done()
+
+                .addModuleWidget("energySpaceInsights","Energy Space Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS)
+                .addWidgetConfig("webEnergySpaceInsights_4_6","Energy Space Insights - 4 - 6", WidgetConfigContext.ConfigType.FIXED,4,6, PagesContext.PageLayoutType.WEB)
                 .done();
          }
     @WidgetsForModule(FacilioConstants.ContextNames.TENANT)

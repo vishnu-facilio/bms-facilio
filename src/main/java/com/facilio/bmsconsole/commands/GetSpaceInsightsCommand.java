@@ -29,8 +29,9 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         long spaceId = (long) context.get(FacilioConstants.ContextNames.ID);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         JSONObject insights = new JSONObject();
-        long floorCount = 0, spaceCount = 0, independantSpaceCount = 0, buildingCount = 0, assetCount = 0, subSpaceCount = 0;
+        long floorCount = 0, spaceCount = 0, independantSpaceCount = 0, buildingCount = 0, assetCount = 0, subSpaceCount = 0, meterCount = 0;
         assetCount = SpaceAPI.getAssetsCount(spaceId);
+        meterCount = SpaceAPI.getMetersCount(spaceId);
         if (spaceId > 0) {
             switch (moduleName) {
                 case "site":
@@ -60,6 +61,7 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         insights.put("buildings", buildingCount);
         insights.put("assets", assetCount);
         insights.put("sub_spaces", subSpaceCount);
+        insights.put("meters", meterCount);
         context.put(FacilioConstants.ContextNames.COUNT, insights);
         return false;
     }

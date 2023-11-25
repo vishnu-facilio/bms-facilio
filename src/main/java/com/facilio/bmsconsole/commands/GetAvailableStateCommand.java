@@ -46,7 +46,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(stateFlowId, currentState.getId(), moduleName,
 						moduleData, (FacilioContext) context);
-				removeUnwantedTranstions(availableState);
+				StateFlowRulesAPI.removeUnwantedTranstions(availableState);
 				setStateTransitionSequence(availableState);
 				if (ruleType == WorkflowRuleContext.RuleType.APPROVAL_STATE_FLOW) {
 					// if the status is in current state, list count should be 2
@@ -115,45 +115,4 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				throw new IllegalArgumentException("Invalid rule type");
 		}
 	}
-
-	public static void removeUnwantedTranstions(List<WorkflowRuleContext> states) {
-		if (CollectionUtils.isEmpty(states)) {
-			return;
-		}
-		
-		Iterator<WorkflowRuleContext> iterator = states.iterator();
-		while (iterator.hasNext()) {
-			AbstractStateTransitionRuleContext transition = (AbstractStateTransitionRuleContext) iterator.next();
-			if (transition instanceof StateflowTransitionContext) {
-				if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
-					iterator.remove();
-					continue;
-				}
-
-				if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.TENANT_PORTAL.getIndex()) {
-					if (!transition.isShowInTenantPortal()) {
-						iterator.remove();
-						continue;
-					}
-				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.VENDOR_PORTAL.getIndex()) {
-					if (!transition.isShowInVendorPortal()) {
-						iterator.remove();
-						continue;
-					}
-				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.SERVICE_PORTAL.getIndex()) {
-					if (!transition.isShowInOccupantPortal()) {
-						iterator.remove();
-						continue;
-					}
-				}
-					else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomainType.CLIENT_PORTAL.getIndex()) {
-						if (!transition.isShowInClientPortal()) {
-							iterator.remove();
-							continue;
-						}
-					}
-			}
-		}
-	}
-
 }

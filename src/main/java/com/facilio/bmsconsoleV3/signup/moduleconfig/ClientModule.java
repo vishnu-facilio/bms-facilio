@@ -19,6 +19,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
+import com.facilio.remotemonitoring.signup.*;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ public class ClientModule extends BaseModuleConfig{
     }
     @Override
     public void addData() throws Exception {
-        addSystemButton();
+        addSystemButton(getModuleName());
     }
 
     @Override
@@ -67,8 +68,8 @@ public class ClientModule extends BaseModuleConfig{
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CLIENT);
         for (String appName : appNameList) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)) {
-                appNameVsPage.put(appName, buildClientPageForEnergyApp(app, module, false, true));
+            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP) || appName.equals(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING) || appName.equals(FacilioConstants.ApplicationLinkNames.FSM_APP)) {
+                appNameVsPage.put(appName, buildClientPageWithoutWorkorderWidget(app, module, false, true));
             }else {
                 appNameVsPage.put(appName, buildClientPage(app, module, false, true));
             }
@@ -81,11 +82,7 @@ public class ClientModule extends BaseModuleConfig{
         pageDisplayName = "Default " + module.getDisplayName() + " Page ";
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule clientModule=modBean.getModule(getModuleName());
-        List<String> moduleToRemove=new ArrayList<>();
-        moduleToRemove.add(FacilioConstants.ContextNames.WORK_ORDER);
-        moduleToRemove.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
-        moduleToRemove.add(FacilioConstants.ContextNames.SITE);
-        moduleToRemove.add("contact");
+        List<String> moduleToRemove=getModuleTobeRemovedInRelated(app.getLinkName());
 
         return  new ModulePages()
                 .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
@@ -137,29 +134,14 @@ public class ClientModule extends BaseModuleConfig{
                 .layoutDone()
                 .pageDone().getCustomPages();
     }
-    private List<PagesContext> buildClientPageForEnergyApp(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+    private List<PagesContext> buildClientPageWithoutWorkorderWidget(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         String pageName, pageDisplayName;
         pageName = module.getName() + "defaultpage";
         pageDisplayName = "Default " + module.getDisplayName() + " Page ";
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule clientModule=modBean.getModule(getModuleName());
-        List<String> moduleToRemove=new ArrayList<>();
-        moduleToRemove.add(FacilioConstants.ContextNames.WORK_ORDER);
-        moduleToRemove.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
-        moduleToRemove.add(FacilioConstants.ContextNames.SITE);
-        moduleToRemove.add("alarmCategory");
-        moduleToRemove.add("alarmDefinition");
-        moduleToRemove.add("alarmDefinitionMapping");
-        moduleToRemove.add("rawAlarm");
-        moduleToRemove.add("flaggedEventRule");
-        moduleToRemove.add("flaggedEvent");
-        moduleToRemove.add("alarmFilterRule");
-        moduleToRemove.add("filteredAlarm");
-        moduleToRemove.add("alarmDefinitionTagging");
-        moduleToRemove.add("serviceOrder");
-        moduleToRemove.add("serviceAppointment");
-        moduleToRemove.add("contact");
-        moduleToRemove.add("alarmAssetTagging");
+
+        List<String> moduleToRemove=getModuleTobeRemovedInRelated(app.getLinkName());
 
         return  new ModulePages()
                 .addPage(pageName, pageDisplayName,"", null, isTemplate, isDefault, false)
@@ -206,6 +188,60 @@ public class ClientModule extends BaseModuleConfig{
                 .tabDone()
                 .layoutDone()
                 .pageDone().getCustomPages();
+    }
+    public static List<String> getModuleTobeRemovedInRelated(String appName){
+        List<String> moduleTobeRemovedInRelated=new ArrayList<>();
+
+        if(appName.equals(FacilioConstants.ApplicationLinkNames.FSM_APP)){  // serive order and service Appointment
+
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.WORK_ORDER);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.SITE);
+            moduleTobeRemovedInRelated.add(AlarmCategoryModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionMappingModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(RawAlarmModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FlaggedEventRuleModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FlaggedEventModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmFilterRuleModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FilteredAlarmModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionTaggingModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CONTACT);
+            moduleTobeRemovedInRelated.add(AlarmAssetTaggingModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+
+        }else if(appName.equals(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)){  // alarmCategory alarmDefinition alarmDefinitionMapping rawAlarm flaggedEventRule flaggedEvent alarmFilterRule filteredAlarm alarmDefinitionTagging alarmAssetTagging
+
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.WORK_ORDER);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.SITE);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.SERVICE_ORDER);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CONTACT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
+
+        }else{          // calender
+
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.WORK_ORDER);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CLIENT_CONTACT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.SITE);
+            moduleTobeRemovedInRelated.add(AlarmCategoryModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionMappingModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(RawAlarmModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FlaggedEventRuleModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FlaggedEventModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmFilterRuleModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FilteredAlarmModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(AlarmDefinitionTaggingModule.MODULE_NAME);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.SERVICE_ORDER);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+            moduleTobeRemovedInRelated.add(FacilioConstants.ContextNames.CONTACT);
+            moduleTobeRemovedInRelated.add(AlarmAssetTaggingModule.MODULE_NAME);
+
+        }
+        return moduleTobeRemovedInRelated;
     }
 
     private static FacilioView getAllClientView() {
@@ -281,15 +317,69 @@ public class ClientModule extends BaseModuleConfig{
 
         return Arrays.asList(clientForm,RMClientForm);
     }
-    private static void addSystemButton() throws Exception{
-        SystemButtonRuleContext editButton = new SystemButtonRuleContext();
-        editButton.setName("Edit");
-        editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        editButton.setIdentifier(FacilioConstants.ContextNames.CLIENT_MODULE_EDIT_BUTTON);
-        editButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        editButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        editButton.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.CLIENT,editButton);
+    private static void addSystemButton(String moduleName) throws Exception{
 
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("Create");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission("CREATE");
+        SystemButtonApi.addSystemButton(moduleName,createButton);
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(moduleName,listEditButton);
+
+        SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
+        listDeleteButton.setName("Delete");
+        listDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        listDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listDeleteButton.setIdentifier("delete_list");
+        listDeleteButton.setPermissionRequired(true);
+        listDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(moduleName,listDeleteButton);
+
+        SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
+        bulkDeleteButton.setName("Delete");
+        bulkDeleteButton.setButtonType(SystemButtonRuleContext.ButtonType.DELETE.getIndex());
+        bulkDeleteButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
+        bulkDeleteButton.setIdentifier("delete_bulk");
+        bulkDeleteButton.setPermissionRequired(true);
+        bulkDeleteButton.setPermission("DELETE");
+        SystemButtonApi.addSystemButton(moduleName,bulkDeleteButton);
+
+        SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
+        exportAsCSVButton.setName("Export As CSV");
+        exportAsCSVButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsCSVButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsCSVButton.setIdentifier("export_as_csv");
+        exportAsCSVButton.setPermissionRequired(true);
+        exportAsCSVButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(moduleName,exportAsCSVButton);
+
+        SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
+        exportAsExcelButton.setName("Export As Excel");
+        exportAsExcelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        exportAsExcelButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        exportAsExcelButton.setIdentifier("export_as_excel");
+        exportAsExcelButton.setPermissionRequired(true);
+        exportAsExcelButton.setPermission("EXPORT");
+        SystemButtonApi.addSystemButton(moduleName,exportAsExcelButton);
+
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(moduleName,summaryEditButton);
     }
 }

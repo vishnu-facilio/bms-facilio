@@ -3797,6 +3797,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new MarkVMAsPublishedCommand());
         return c;
     }
+    
+    public static FacilioChain getRunHistoryVirtualMeterTemplateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new RunHistoryForVMTemplateReadings());
+        return c;
+    }
 
     public static FacilioChain getGenerateVirtualMeterChain() {
         FacilioChain c = getDefaultChain();

@@ -742,8 +742,8 @@ public class PageWidget {
 		SERVICE_PLAN_TASKS("servicePlanTasks"),
 		SERVICE_PLAN_INVENTORY("servicePlanInventory"),
 		SERVICE_PM_SERVICE_ORDERS("servicePMServiceOrders"),
-		SERVICE_PM("servicePM")
-		;
+		SERVICE_PM("servicePM"),
+		ENERGY_SPACE_INSIGHTS("energySpaceInsights");
 
 		private String name;
 		@Getter

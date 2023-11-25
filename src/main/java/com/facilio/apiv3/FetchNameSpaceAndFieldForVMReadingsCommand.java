@@ -10,11 +10,15 @@ import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateContext;
 import com.facilio.bmsconsoleV3.context.meter.VirtualMeterTemplateReadingContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
 
 public class FetchNameSpaceAndFieldForVMReadingsCommand extends FacilioCommand {
@@ -34,7 +38,14 @@ public class FetchNameSpaceAndFieldForVMReadingsCommand extends FacilioCommand {
         		NameSpaceContext nameSpace = new NameSpaceContext(nsBean.getNamespaceForParent(vmTemplateReading.getId(), NSType.VIRTUAL_METER));
         		vmTemplateReading.setNs(nameSpace);
         		
-        		vmTemplateReading.setVirtualMeterTemplate((VirtualMeterTemplateContext)V3Util.getRecord(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, vmTemplateReading.getVirtualMeterTemplate().getId(), null));
+        		VirtualMeterTemplateContext vmTemplate = (VirtualMeterTemplateContext)V3Util.getRecord(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, vmTemplateReading.getVirtualMeterTemplate().getId(), null);
+        		
+        		V3Context category = CommonConnectedUtil.getCategory(ResourceType.METER_CATEGORY, vmTemplate.getUtilityType().getId());
+		        if (category != null) {
+		        	vmTemplateReading.setCategory(new ResourceCategory<>(ResourceType.METER_CATEGORY, category));
+		        }
+        		
+        		vmTemplateReading.setVirtualMeterTemplate(vmTemplate);
         	}
 			
 		}

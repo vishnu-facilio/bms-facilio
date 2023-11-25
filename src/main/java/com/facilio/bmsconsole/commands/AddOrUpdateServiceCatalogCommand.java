@@ -81,7 +81,7 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
     }
 
     private void updateServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
-        checkForDuplicateName(serviceCatalog.getName(), serviceCatalog.getId());
+        checkForDuplicateName(serviceCatalog.getName(), serviceCatalog.getId(),serviceCatalog.getAppId());
 
         GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
@@ -91,11 +91,12 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
         builder.update(FieldUtil.getAsProperties(serviceCatalog));
     }
 
-    private void checkForDuplicateName(String name, long id) throws Exception {
+    private void checkForDuplicateName(String name, long id,long appId) throws Exception {
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getServiceCatalogModule().getTableName())
                 .select(FieldFactory.getServiceCatalogFields())
-                .andCondition(CriteriaAPI.getCondition("NAME", "name", name, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("NAME", "name", name, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("APP_ID", "appId", String.valueOf(appId), NumberOperators.EQUALS));;
         if (id > 0) {
             builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(id), NumberOperators.NOT_EQUALS));
         }
@@ -106,7 +107,7 @@ public class AddOrUpdateServiceCatalogCommand extends FacilioCommand {
     }
 
     private void addServiceCatalog(ServiceCatalogContext serviceCatalog) throws Exception {
-        checkForDuplicateName(serviceCatalog.getName(), -1);
+        checkForDuplicateName(serviceCatalog.getName(), -1,serviceCatalog.getAppId());
         if (serviceCatalog.isComplaintType()) {
         		serviceCatalog.setGroupId(ServiceCatalogApi.getComplaintCategory().getId());
         }

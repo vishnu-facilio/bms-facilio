@@ -264,6 +264,7 @@ public class FacilioConstants {
 	public static class FieldsConfig {
 		public static final String LICENSE_BASED_FIELDS_MAP = "licenseBasedFieldsMap";
 		public static final String ACCESS_TYPE = "accessType";
+		public static final String FETCH_CUSTOM_FIELDS = "fetchCustomFields";
 		public static final String SKIP_CONFIG_FIELDS = "skipConfigFields";
 		public static final String IS_ADD_FIELD = "isAddField";
 		public static final String CHECK_FIELDS_PERMISSION = "checkFieldsPermission";
@@ -596,6 +597,7 @@ public class FacilioConstants {
 		public static final String CUSTOM_BUTTONS = "customButtons";
 		public static final String GET_CUSTOM_BUTTONS = "getCustomButtons";
 		public static final String CUSTOM_BUTTON_LIST = "customButtonList";
+		public static final String AVAILABLE_STATE_TRANSITION = "availableStateTransition";
 
 		public static final String TRIGGER = "trigger";
 		public static final String TRIGGER_TYPE = "triggerType";
@@ -1089,6 +1091,9 @@ public class FacilioConstants {
 		public static final String DASHBOARD_USER_FILTER_ID = "dashboardUserFilterId";
 		public static final String DASHBOARD_WIDGET_TIMELINE_FILTER = "widgetTimelineFilter";
 		public static final String WIDGET = "widget";
+		public static final String ACTUAL_VALUE ="actualValue";
+		public static final String CARD_PERIOD = "period";
+		public static final String BASE_LINE_TREND = "baselineTrend";
 
 		public static final String WIDGET_UPDATE_LIST = "widgetUpdateList";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
@@ -1106,6 +1111,8 @@ public class FacilioConstants {
 		public static final String WIDGET_REPORT_SPACE_FILTER_CONTEXT = "widgetReportSpaceFilterContext";
 
 		public static final String REPORT = "report";
+		public static final String CARD_VALUE = "value";
+		public static final String BASE_LINE_VALUE = "baseLineValue";
 		public static final String REPORT_SAFE_LIMIT = "reportSafeLimit";
 		public static final String REPORT_ALARMS = "reportAlarms";
 		public static final String REPORT_ALARM_CONTEXT = "reportAlarmsContext";
@@ -1782,6 +1789,9 @@ public class FacilioConstants {
 
 		public static final String RELATIONSHIP = "relationship";
 		public static final String RELATIONSHIP_LIST = "relationshipList";
+		public static final String MODULEID_VS_RELATION_MAPPING = "moduleIdVsRelationMapping";
+		public static final String RELATION_MODULEID_WITH_DATA = "relationModuleIdWithData";
+		public static final String SAME_MODULE_RELATIONSHIP_WITH_DATA_AT_RIGHT_POSITION = "sameModuleRelationShipWithDataAtRightPosition";
 		public static final String RELATED_ASSETS = "relatedAssets";
 
 		public static final String RELATION = "relation";
@@ -4698,6 +4708,12 @@ public class FacilioConstants {
 		public static final String VIRTUAL_METER_TEMPLATE_ID = "virtualMeterTemplateId";
 		public static final String VIRTUAL_METER_TEMPLATE_BUILDINGS = "virtualMeterTemplateBuildings";
 		public static final String VIRTUAL_METER_TEMPLATE_ACTIVITY = "virtualMeterTemplateActivity";
+		
+		public static final String VIRTUAL_METER_READING_LOGS = "virtualMeterReadingLogs";
+		
+		public static final String VIRTUAL_METER_LOGGER = "virtualMeterLogger";
+		
+		public static final String VIRTUAL_METER_RESOURCE_LOGGER = "virtualMeterResourceLogger";
 	}
 
 	public static class SensorRule{

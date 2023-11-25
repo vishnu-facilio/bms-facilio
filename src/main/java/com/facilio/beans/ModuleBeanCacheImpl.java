@@ -3,6 +3,7 @@ package com.facilio.beans;
 import java.util.*;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.fields.util.FieldConfigUtil;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -197,7 +198,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			allFields.addAll(fields);
 			module = module.getExtendModule();
 		}
-		
+
 		return allFields;
 	}
 
@@ -215,7 +216,7 @@ public class ModuleBeanCacheImpl extends ModuleBeanImpl implements ModuleBean {
 			
 			//LOGGER.log(Level.INFO, "getAllFields result from DB for module: "+moduleName +"\n Time taken"+ (System.currentTimeMillis()-begintime));
 		}
-		return fields;
+		return FieldConfigUtil.filterFieldsByCurrentVersion(new ArrayList<>(fields), true);
 	}
 	
 	@Override

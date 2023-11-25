@@ -186,8 +186,10 @@ public class FormsAPI {
 		form.setModule(module);
 		fieldSelectBuilder
 				.andCondition(CriteriaAPI.getCondition("FORMID", "formId", String.valueOf(form.getId()), NumberOperators.EQUALS))
-				.orderBy("SEQUENCE_NUMBER, SPAN");
-		
+				.orderBy("SEQUENCE_NUMBER, SPAN")
+				.andCustomWhere(CriteriaAPI.getCurrentBuildVersionCriteria());
+		;
+
 		List<Map<String, Object>> fieldprops = fieldSelectBuilder.get();
 		List<FormField> fields = new ArrayList<>();
 		for (Map<String, Object> p: fieldprops) {

@@ -1,17 +1,24 @@
 package com.facilio.readingkpi.readingslist;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.facilio.readingkpi.ReadingKpiAPI.getInclResIdsFromProps;
 
 public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
     public MeterDataFetcher(FacilioModule module, Context context, List<FacilioField> additionSelectFields) throws Exception {
@@ -20,20 +27,24 @@ public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
 
     @Override
     protected GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(FacilioConstants.Meter.METER);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Meter.METER);
-        FacilioField utilityTypeField = FieldFactory.getAsMap(fields).get("utilityType");
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
-                .orderBy(module.getTableName() + ".ID DESC");
 
         Long utilityType = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
-        if (utilityType != null) {
-            builder.andCondition(CriteriaAPI.getCondition(utilityTypeField, String.valueOf(utilityType), PickListOperators.IS));
+        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(utilityType, ResourceType.ASSET_CATEGORY);
+        if (props == null || props.isEmpty()) {
+            return null;
         }
+        Set<Long> inclResIds = getInclResIdsFromProps(props);
 
-        return builder;
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.METER);
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.METER));
+        FacilioField utilityTypeField= fieldsMap.get("utilityType");
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .table(module.getTableName())
+                .andCondition(CriteriaAPI.getCondition(utilityTypeField, String.valueOf(utilityType), PickListOperators.IS));
+        if (CollectionUtils.isNotEmpty(inclResIds)) {
+            selectBuilder.andCondition(CriteriaAPI.getIdCondition(inclResIds, module));
+        }
+        return selectBuilder;
     }
 }

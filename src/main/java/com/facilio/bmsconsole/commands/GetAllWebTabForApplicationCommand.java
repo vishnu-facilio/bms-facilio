@@ -6,6 +6,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.command.FacilioCommand;
@@ -37,6 +38,14 @@ public class GetAllWebTabForApplicationCommand extends FacilioCommand {
         application = ApplicationApi.getApplicationForId(appId);
         if(application != null) {
             List<WebTabContext> webTabs = FieldUtil.getAsBeanListFromMapList(FieldUtil.getAsMapList(tabBean.getWebTabsForApplication(appId),WebTabCacheContext.class),WebTabContext.class);
+
+            //handling this to remove webTabs based on Version
+            Version currentVersion = Version.getCurrentVersion();
+            if(currentVersion != null) {
+                long currentVersionId = currentVersion.getVersionId();
+                webTabs.removeIf(f -> f.getVersion() != null && (f.getVersion() & currentVersionId) != currentVersionId);
+            }
+
             if (webTabs != null && !webTabs.isEmpty()) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 if(!fetchSetupTabs) {

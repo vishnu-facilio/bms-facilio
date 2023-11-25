@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityType;
 import com.facilio.beans.ModuleBean;
@@ -840,5 +841,45 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		stateTransition.setLocationLookupFieldId(-99);
 
 		return stateTransition;
+	}
+
+	public static void removeUnwantedTranstions(List<WorkflowRuleContext> states) {
+		if (CollectionUtils.isEmpty(states)) {
+			return;
+		}
+
+		Iterator<WorkflowRuleContext> iterator = states.iterator();
+		while (iterator.hasNext()) {
+			AbstractStateTransitionRuleContext transition = (AbstractStateTransitionRuleContext) iterator.next();
+			if (transition instanceof StateflowTransitionContext) {
+				if (transition.getTypeEnum() != AbstractStateTransitionRuleContext.TransitionType.NORMAL) {
+					iterator.remove();
+					continue;
+				}
+
+				if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.TENANT_PORTAL.getIndex()) {
+					if (!transition.isShowInTenantPortal()) {
+						iterator.remove();
+						continue;
+					}
+				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.VENDOR_PORTAL.getIndex()) {
+					if (!transition.isShowInVendorPortal()) {
+						iterator.remove();
+						continue;
+					}
+				} else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.SERVICE_PORTAL.getIndex()) {
+					if (!transition.isShowInOccupantPortal()) {
+						iterator.remove();
+						continue;
+					}
+				}
+				else if (AccountUtil.getCurrentUser().getAppDomain().getAppDomainType() == AppDomain.AppDomainType.CLIENT_PORTAL.getIndex()) {
+					if (!transition.isShowInClientPortal()) {
+						iterator.remove();
+						continue;
+					}
+				}
+			}
+		}
 	}
 }

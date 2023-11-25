@@ -504,20 +504,19 @@ public class PageFactory {
 		}
 		if (module.getExtendModule() == null) {    // temp
 			// etisalat changes will be changed to standard method
-			switch (module.getName()) {
-				case ContextNames.BILL_ALERT:
-					return BillAlertPageFactory.getBillAlertPage((ModuleBaseWithCustomFields) record, module);
-				case ContextNames.BILL_INVOICE:
-					return BillInvoicePageFactory.getBillInvoicePage((ModuleBaseWithCustomFields) record, module);
-				case ContextNames.BILL_TARIFF:
-					return BillTariffPageFactory.getBillTariffPage((ModuleBaseWithCustomFields) record, module);
-				case ContextNames.BILL_UTILITY:
-					return BillUtilityPageFactory.getBillUtilityPage((ModuleBaseWithCustomFields) record, module);
+//			switch (module.getName()) {
+//				case ContextNames.BILL_ALERT:
+//					return BillAlertPageFactory.getBillAlertPage((ModuleBaseWithCustomFields) record, module);
+//				case ContextNames.BILL_INVOICE:
+//					return BillInvoicePageFactory.getBillInvoicePage((ModuleBaseWithCustomFields) record, module);
+//				case ContextNames.BILL_TARIFF:
+//					return BillTariffPageFactory.getBillTariffPage((ModuleBaseWithCustomFields) record, module);
+//				case ContextNames.BILL_UTILITY:
+//					return BillUtilityPageFactory.getBillUtilityPage((ModuleBaseWithCustomFields) record, module);
 
-				default:
+//				default:
 					return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record, module);
-			}
-			//
+//			}
 		}
 		return null;
 	}

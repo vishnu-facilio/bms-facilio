@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.commands.people;
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.ApplicationUserUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PeopleUserContext;
@@ -41,7 +42,7 @@ public class UpdateAppAccessCommand extends FacilioCommand {
         if (app != null) {
             long appId = app.getId();
                 PeopleUserContext pplUser = new PeopleUserContext();
-                User userObj = IdentityClient.getDefaultInstance().getUserBean().getUser(uid);
+                User userObj = ApplicationUserUtil.getUser(uid);
                 if(securityPolicyId == null || securityPolicyId < 0){
                     securityPolicyId = -99L;
                 }

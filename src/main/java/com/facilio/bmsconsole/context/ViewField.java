@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -132,4 +134,6 @@ public class ViewField{
 			this.customization = (JSONObject) new JSONParser().parse(data);
 		}
 	}
+	@Getter @Setter
+	private Long version;
 }

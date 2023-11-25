@@ -41,6 +41,7 @@ public class V2AnalyticsReportAction extends V3Action {
     private long folderId = -1;
     private int moduleType;
     private Boolean defaultModules;
+    private Boolean isDataNeeded;
 
     V2AnalyticsContextForDashboardFilter db_filter;
     public String create()throws Exception
@@ -108,7 +109,7 @@ public class V2AnalyticsReportAction extends V3Action {
     {
         if(reportId != null && reportId > 0)
         {
-            FacilioChain chain = V2AnalyticsTransactionChain.getReportWithDataChain();
+            FacilioChain chain = V2AnalyticsTransactionChain.getReportWithDataChain(isDataNeeded);
             FacilioContext context = chain.getContext();
             context.put("reportId", reportId);
             context.put("db_filter", db_filter);

@@ -568,7 +568,7 @@ public class SpaceModule extends BaseModuleConfig {
                 .addSection("spaceInsights","",null)
                 .addWidget("spaceLocationWidgets","Location Details", PageWidget.WidgetType.SPACE_LOCATION,"webSpaceLocation_4_3",0,0,null,null)
                 .widgetDone()
-                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.SPACE_INSIGHTS,"webSpaceInsights_4_6",3,0,spaceParam,null)
+                .addWidget("spaceInsights","Insights", PageWidget.WidgetType.ENERGY_SPACE_INSIGHTS,"webEnergySpaceInsights_4_6",3,0,spaceParam,null)
                 .widgetDone()
                 .addWidget("operatingHours","Operating Hours", PageWidget.WidgetType.OPERATING_HOURS,"webOperatingHours_4_3",9,0,null,null)
                 .widgetDone()

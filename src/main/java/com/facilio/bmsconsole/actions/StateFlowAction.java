@@ -465,6 +465,22 @@ public class StateFlowAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String getAllAvailableButtons() throws Exception{
+
+		FacilioChain  chain = ReadOnlyChainFactory.getAvailableButtonsChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.AVAILABLE_STATE_TRANSITION, context.get(FacilioConstants.ContextNames.AVAILABLE_STATE_TRANSITION));
+		setResult(FacilioConstants.ContextNames.CURRENT_STATE, context.get(FacilioConstants.ContextNames.CURRENT_STATE));
+		setResult(FacilioConstants.ContextNames.CUSTOM_BUTTONS,context.get(FacilioConstants.ContextNames.CUSTOM_BUTTONS));
+		setResult(FacilioConstants.ContextNames.SYSTEM_BUTTONS,context.get(FacilioConstants.ContextNames.SYSTEM_BUTTONS));
+		return SUCCESS;
+
+	}
+
 	private void updateContext(FacilioContext context) {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);

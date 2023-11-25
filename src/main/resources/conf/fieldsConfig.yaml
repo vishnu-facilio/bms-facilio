@@ -93,6 +93,7 @@ fieldListType:
       - com.facilio.fields.commands.AdvancedFilterFieldsResponseCommand
 
   - name: PAGE_BUILDER_CRITERIA_FIELDS
+    fetchCustomFields: false
     fetchSupplement: false
 
   - name: SUMMARY_WIDGET_FIELDS

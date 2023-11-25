@@ -83,10 +83,6 @@ public class RelationshipAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getFromModuleName()==null?this.getModuleName():this.getFromModuleName());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getRecordId());
 		context.put(FacilioConstants.ContextNames.RELATION_CATEGORY_NAME, this.getRelationCategory());
-		JSONObject pagination = new JSONObject();
-		pagination.put("page", this.getPage());
-		pagination.put("perPage", this.getPerPage());
-		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 
 		FacilioChain chain = TransactionChainFactory.getRelationshipsWithDataAssociatedChain();
 		chain.execute(context);
@@ -98,10 +94,6 @@ public class RelationshipAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, this.getModuleName());
 		context.put(FacilioConstants.ContextNames.RECORD_ID, this.getRecordId());
 		context.put(FacilioConstants.ContextNames.RELATION_CATEGORY_NAME, this.getRelationCategory());
-		JSONObject pagination = new JSONObject();
-		pagination.put("page", this.getPage());
-		pagination.put("perPage", this.getPerPage());
-		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 
 		FacilioChain chain = TransactionChainFactory.getUnUsedRelationshipsForRecord();
 		chain.execute(context);

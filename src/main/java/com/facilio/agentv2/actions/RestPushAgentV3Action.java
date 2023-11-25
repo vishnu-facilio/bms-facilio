@@ -80,7 +80,7 @@ public class RestPushAgentV3Action extends V3Action {
             throw new FacilioException("Error while processing the payload");
         }
 
-        setData("Result", "Data is queued successfully");
+        setData("result", "Data is queued successfully");
 
         return SUCCESS;
     }

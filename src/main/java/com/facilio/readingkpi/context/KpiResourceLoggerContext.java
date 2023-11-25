@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class KpiResourceLoggerContext extends V3Context {
     private Long kpiId;
+    private Long vmId;
     private Long parentLoggerId;
     private Long resourceId;
     // startTime is either the history start time or normal execution's start time (example last monday morning 00:00 for weekly exec)

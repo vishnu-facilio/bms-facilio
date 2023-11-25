@@ -51,6 +51,12 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import com.facilio.v3.util.FilterUtil;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -567,6 +573,7 @@ public class V2AnalyticsOldUtil {
         selected_fields.add(fieldMap.get("appId"));
         selected_fields.add(fieldMap.get("type"));
         selected_fields.add(newReportFieldMap.get("kpi"));
+        selected_fields.add(newReportFieldMap.get("timeFilterJson"));
         return selected_fields;
     }
     public static void calculateBaseLineRange(ReportContext report)
@@ -771,7 +778,7 @@ public class V2AnalyticsOldUtil {
         addedModules.add(baseSpaceModule);
 
 
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
                 .table(resourceModule.getTableName())
                 .select(Collections.singletonList(FieldFactory.getIdField(resourceModule)))
                 .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS))
@@ -781,7 +788,8 @@ public class V2AnalyticsOldUtil {
             Criteria spaceCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.BUILDING);
             builder.andCriteria(spaceCriteria);
         }
-        selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
+        selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructQueryString() + ")");
+
         return spaceField;
     }
     public static void setGroupByTimeAggregator(ReportDataPointContext dp, AggregateOperator groupByTimeAggr, StringJoiner groupBy)throws Exception
@@ -821,13 +829,11 @@ public class V2AnalyticsOldUtil {
         }
         return baseline != null ? baseline.getBaseLineRange() : report.getDateRange();
     }
-    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules)throws Exception
     {
         if(dbUserFilter != null)
         {
             List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(dataPoint.getAliases().get("actual"));
-            Set<FacilioModule> addedModules = new HashSet<>();
-            addedModules.add(baseModule);
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
@@ -1041,7 +1047,65 @@ public class V2AnalyticsOldUtil {
         }
         return selectBuilder.constructQueryString();
     }
+    public static ScopeHandler.ScopeFieldsAndCriteria  getScopingCriteria(FacilioModule module)throws Exception
+    {
+        return ScopeHandler.getInstance().getFieldsAndCriteriaForSelect(module, null);
+    }
+    public static void checkAndApplyJoinForScopingCriteria(SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, FacilioModule baseModule)throws Exception
+    {
+        if(addedModules != null)
+        {
+            for(FacilioModule module : addedModules)
+            {
+                FacilioModule parentModule = V2AnalyticsOldUtil.getSubmoduleFromChild(module);
+                if(parentModule != null && (parentModule.getName().equals(FacilioConstants.ContextNames.ASSET) || parentModule.getName().equals(FacilioConstants.Meter.METER)))
+                {
+                    ScopeHandler.ScopeFieldsAndCriteria scopingCriteria = V2AnalyticsOldUtil.getScopingCriteria(parentModule);
+                    if (scopingCriteria != null && !scopingCriteria.getCriteria().isEmpty())
+                    {
+                        ModuleBean modBean = Constants.getModBean();
+                        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
+                        FacilioField child_field = fieldsMap.get("parentId");
+                        FacilioField parent_field = FieldFactory.getIdField(parentModule);
+                        String joinOn = new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString();
+                        if(parentModule.getName().equals(FacilioConstants.Meter.METER)){
+                            joinOn = new StringBuilder(joinOn).append(" AND (Meters.SYS_DELETED IS NULL OR Meters.SYS_DELETED = false )").toString();
+                            V2AnalyticsOldUtil.applyJoin(null, baseModule, joinOn, parentModule, selectBuilder, addedModules);
+                        }
+                        else if(parentModule.getName().equals(FacilioConstants.ContextNames.ASSET))
+                        {
+                            V2AnalyticsOldUtil.applyJoin(null, baseModule, joinOn, parentModule, selectBuilder, addedModules);
+                            selectBuilder.andCustomWhere(new StringBuilder().append(" (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = false)").toString());
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    public static FacilioModule  getSubmoduleFromChild(FacilioModule module)throws Exception
+    {
+        List<FacilioField> subModuleRelFields = new ArrayList<>();
+        subModuleRelFields.add(FieldFactory.getField("parentModuleId", "PARENT_MODULE_ID", FieldType.NUMBER));
+        subModuleRelFields.add(FieldFactory.getField("childModuleId", "CHILD_MODULE_ID", FieldType.NUMBER));
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table("SubModulesRel")
+                .select(subModuleRelFields)
+                .andCondition(CriteriaAPI.getCondition("CHILD_MODULE_ID", "childModuleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = selectRecordBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(props))
+        {
+            for(Map<String, Object> prop : props) {
+                FacilioModule readingModule = Constants.getModBean().getModule((long) prop.get("parentModuleId"));
+                if(readingModule != null && readingModule.getExtendModule() != null)
+                {
+                    return readingModule.getExtendModule();
+                }
+            }
+        }
+        return null;
+    }
     public static void applyAnalyticGlobalFilterCriteria(FacilioModule baseModule,ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, V2ReportFiltersContext filterContext, Set<FacilioModule> addedModules)throws Exception
     {
         if(filterContext != null && filterContext.getCriteria() != null && !filterContext.getCriteria().isEmpty() && filterContext.getModuleName() != null)
@@ -1087,7 +1151,6 @@ public class V2AnalyticsOldUtil {
     {
         FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
         if (!V2AnalyticsOldUtil.isAlreadyAdded(addedModules, resourceModule)) {
-
             FacilioField resource_id_field = FieldFactory.getIdField(resourceModule);
             selectBuilder.addJoinModules(Collections.singletonList(resourceModule));
             StringBuilder join_criteria = new StringBuilder(resource_id_field.getCompleteColumnName()).append(" = ").append(meter_field.getCompleteColumnName());
@@ -1095,6 +1158,8 @@ public class V2AnalyticsOldUtil {
             selectBuilder.innerJoin(resourceModule.getTableName())
                     .on(join_criteria.toString());
             addedModules.add(resourceModule);
+
+            selectBuilder.andCustomWhere("( Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = false) ");
         }
         FacilioModule baseSpaceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE);
         selectBuilder.addJoinModules(Collections.singletonList(baseSpaceModule));

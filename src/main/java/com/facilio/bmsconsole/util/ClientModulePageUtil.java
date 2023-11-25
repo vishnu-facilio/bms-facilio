@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.util.SummaryWidgetUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -44,7 +45,6 @@ public class ClientModulePageUtil {
         FacilioField nameField = moduleBean.getField("primaryContactName", moduleName);
         FacilioField emailField = moduleBean.getField("primaryContactEmail", moduleName);
         FacilioField phoneField = moduleBean.getField("primaryContactPhone", moduleName);
-        FacilioField websiteField = moduleBean.getField("website", moduleName);
 
         FacilioField streetField = moduleBean.getField("street", FacilioConstants.ContextNames.LOCATION);
         FacilioField cityField = moduleBean.getField("city", FacilioConstants.ContextNames.LOCATION);
@@ -53,16 +53,20 @@ public class ClientModulePageUtil {
         FacilioField countryField = moduleBean.getField("country", FacilioConstants.ContextNames.LOCATION);
         FacilioField addressField = moduleBean.getField("address", moduleName);
 
+        FacilioField createdByField = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField createdTimeField = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField modifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField modifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
         SummaryWidgetGroup addressWidgetGroup=new SummaryWidgetGroup();
+        SummaryWidgetGroup systemInfoWidgetGroup=new SummaryWidgetGroup();
 
         addSummaryFieldInWidgetGroup(widgetGroup, descriptionField,1, 1, 3,null);
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 2, 1, 1,null);
         addSummaryFieldInWidgetGroup(widgetGroup, emailField, 2, 2, 1,null);
         addSummaryFieldInWidgetGroup(widgetGroup, phoneField,2, 3, 1,null);
-        addSummaryFieldInWidgetGroup(widgetGroup, websiteField,3, 1, 1,null);
 
         widgetGroup.setName("generalInformation");
         widgetGroup.setDisplayName("General Information");
@@ -83,6 +87,16 @@ public class ClientModulePageUtil {
 
         widgetGroupList.add(addressWidgetGroup);
 
+        systemInfoWidgetGroup.setName("systemInformation");
+        systemInfoWidgetGroup.setDisplayName("System Information");
+        systemInfoWidgetGroup.setColumns(4);
+
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(systemInfoWidgetGroup, createdByField,1, 1, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(systemInfoWidgetGroup, createdTimeField,1, 2, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(systemInfoWidgetGroup, modifiedByField,1, 3, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(systemInfoWidgetGroup, modifiedTimeField,1, 4, 1);
+
+        widgetGroupList.add(systemInfoWidgetGroup);
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
         pageWidget.setAppId(app.getId());

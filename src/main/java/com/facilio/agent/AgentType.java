@@ -22,7 +22,7 @@ public enum AgentType implements FacilioIntEnum {
     private int key;
     private String label;
     private boolean agentService;
-    private boolean allowAutoAddition;
+    private boolean customPayload;
     private boolean isMqttConnectionRequired = false;
 
     AgentType(int key, String label) {
@@ -37,11 +37,11 @@ public enum AgentType implements FacilioIntEnum {
         this(key, label, allowAutoAddition, agentService, false);
     }
 
-    AgentType(int key, String label, boolean allowAutoAddition, boolean agentService, boolean isMqttConnectionRequired) {
+    AgentType(int key, String label, boolean customPayload, boolean agentService, boolean isMqttConnectionRequired) {
         this.key = key;
         this.label = label;
         this.agentService = agentService;
-        this.allowAutoAddition = allowAutoAddition;
+        this.customPayload = customPayload;
         this.isMqttConnectionRequired = isMqttConnectionRequired;
     }
 
@@ -56,6 +56,10 @@ public enum AgentType implements FacilioIntEnum {
     
     public boolean isAgentService() {
     	return agentService;
+    }
+
+    public boolean isCustomPayload() {
+        return customPayload;
     }
 
     public static AgentType valueOf(int value) {
@@ -77,7 +81,7 @@ public enum AgentType implements FacilioIntEnum {
     }
 
     public boolean allowAutoAddition(FacilioControllerType controllerType) {
-        return allowAutoAddition && controllerType == FacilioControllerType.MISC;
+        return customPayload && controllerType == FacilioControllerType.MISC;
     }
 
     @Override

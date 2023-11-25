@@ -28,6 +28,7 @@ import java.util.List;
          * @return FieldListBuilder
          * @throws Exception if tried to add and skip fieldName at the same time for a fieldListType (only in development)
          */
+        @Deprecated
         T skip(List<String> fieldNames);
 
         T skipOnelevelFields(List<String> fieldNames);

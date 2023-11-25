@@ -78,7 +78,7 @@ public class FieldListHandler<T extends  FieldListBuilder<T>> implements FieldLi
         }
         return (T) this;
     }
-
+    @Deprecated  //avoid usage of this method will be removed soon
     @Override
     public T skip(List<String> fieldNames){
         if (CollectionUtils.isNotEmpty(fieldNames)) {

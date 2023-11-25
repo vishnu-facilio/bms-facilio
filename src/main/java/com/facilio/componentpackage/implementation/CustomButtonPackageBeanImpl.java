@@ -94,6 +94,7 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
             String moduleName = customButtonRule.getModuleName();
             element.element(PackageConstants.MODULENAME).text(customButtonRule.getModuleName());
             element.element(PackageConstants.NAME).text(customButtonRule.getName());
+            element.element(PackageConstants.WorkFlowRuleConstants.STATUS).text(String.valueOf(customButtonRule.isActive()));
             element.element(PackageConstants.CustomButtonConstants.BUTTON_TYPE).text(((CustomButtonRuleContext)customButtonRule).getButtonType()>0? String.valueOf(((CustomButtonRuleContext) customButtonRule).getButtonTypeEnum()) :null);
             element.element(PackageConstants.CustomButtonConstants.POSITION_TYPE).text(((CustomButtonRuleContext)customButtonRule).getPositionType()>0?String.valueOf(((CustomButtonRuleContext) customButtonRule).getPositionTypeEnum()):null);
             if(customButtonRule.getDescription() != null) {
@@ -209,6 +210,9 @@ public class CustomButtonPackageBeanImpl implements PackageBean<WorkflowRuleCont
         String moduleName = builder.getChildElement(PackageConstants.MODULENAME).getText();
         customButtonRule.setModuleName(moduleName);
         customButtonRule.setModule(modBean.getModule(moduleName));
+
+        boolean status = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.STATUS).getText());
+        customButtonRule.setStatus(status);
 
         if(builder.getElement(PackageConstants.NAME)!=null) {
             String name = builder.getElement(PackageConstants.NAME).getText();

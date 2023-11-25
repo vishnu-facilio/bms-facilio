@@ -22,13 +22,18 @@ public class FacilioIndexJsp {
     public static final String NEW_VERSION_GROUP_NAME = "v2";
 
     public static boolean redirectToNewVersion(HttpServletRequest request) {
+        boolean redirectToNewVersion = false;
         if (!FacilioProperties.isDevelopment() && !DBConf.getInstance().isNewVersion() && request.getAttribute(RequestUtil.REQUEST_APP_NAME) == null) {
             Organization org = (Organization) request.getAttribute(RequestUtil.REQUEST_CURRENT_ORG);
             if (org != null) {
-                return NEW_VERSION_GROUP_NAME.equals(org.getGroupName());
+                redirectToNewVersion = NEW_VERSION_GROUP_NAME.equals(org.getGroupName());
+            }
+            String switchVersionCookie = RequestUtil.getCookieValue(request,FacilioCookie.CURRENT_VERSION_COOKIE);
+            if(StringUtils.isNotEmpty(switchVersionCookie) && !redirectToNewVersion){
+                redirectToNewVersion = switchVersionCookie.equals(NEW_SERVER_QUERY_PARAM_VAL);
             }
         }
-        return false;
+        return redirectToNewVersion;
     }
 
     @SneakyThrows

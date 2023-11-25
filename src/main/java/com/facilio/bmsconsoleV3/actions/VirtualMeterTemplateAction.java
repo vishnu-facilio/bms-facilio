@@ -9,9 +9,29 @@ import com.facilio.v3.V3Action;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.owasp.esapi.util.CollectionsUtil;
+
 public class VirtualMeterTemplateAction extends V3Action {
 
-    private long vmTemplateId;
+	
+	Long startTime;
+	Long endTime;
+	
+	public Long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Long startTime) {
+		this.startTime = startTime;
+	}
+	public Long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(Long endTime) {
+		this.endTime = endTime;
+	}
+
+	private long vmTemplateId;
     public long getVmTemplateId() {
         return vmTemplateId;
     }
@@ -30,6 +50,31 @@ public class VirtualMeterTemplateAction extends V3Action {
     private List<Long> resourceIds;
     public List<Long> getResourceIds() { return resourceIds; }
     public void setResourceIds(List<Long> resourceIds) { this.resourceIds = resourceIds; }
+    
+    
+    public String runHistoryForVMTemplate() throws Exception {
+    	
+    	if(CollectionUtils.isEmpty(resourceIds)) {
+    		throw new IllegalArgumentException("resourceIds cannot be empty");
+    	}
+    	
+    	if(startTime ==null || endTime == null) {
+    		throw new IllegalArgumentException("startTime,endTime cannot be empty");
+    	}
+
+    	if(vmTemplateId <= 0) {
+    		throw new IllegalArgumentException("vmTemplateId cannot be empty");
+    	}
+    	FacilioChain runHistoryirtualMeterTemplate = TransactionChainFactoryV3.getRunHistoryVirtualMeterTemplateChain();
+        FacilioContext context = runHistoryirtualMeterTemplate.getContext();
+        context.put("vmTemplateId", vmTemplateId);
+        context.put("resourceIds", resourceIds);
+        context.put("startTime", startTime);
+        context.put("endTime", endTime);
+        runHistoryirtualMeterTemplate.execute();
+    	
+        return SUCCESS;
+    }
 
     public String publishVMTemplate() throws Exception {
         FacilioChain publishVirtualMeterTemplate = TransactionChainFactoryV3.getPublishVirtualMeterTemplateChain();

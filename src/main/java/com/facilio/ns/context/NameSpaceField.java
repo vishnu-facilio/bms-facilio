@@ -1,6 +1,7 @@
 package com.facilio.ns.context;
 
 import com.facilio.connected.FacilioDataProcessing;
+import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -86,6 +87,26 @@ public class NameSpaceField implements Cloneable, Serializable {
         }
     }
 
+    DefaultExecutionMode defaultExecutionMode;
+
+    public void setDefaultExecutionMode(DefaultExecutionMode typ) {
+        this.defaultExecutionMode = typ == null ? DefaultExecutionMode.SKIP : typ;
+        this.defaultExecutionModeI = typ == null ? DefaultExecutionMode.SKIP.getIndex() : typ.getIndex();
+    }
+
+    int defaultExecutionModeI;
+
+    public void setDefaultExecutionModeI(int defaultExecutionModeI) {
+        if (defaultExecutionMode != null) {
+            this.defaultExecutionModeI = defaultExecutionMode.getIndex();
+        } else {
+            this.defaultExecutionModeI = defaultExecutionModeI;
+            this.defaultExecutionMode = DefaultExecutionMode.valueOf(defaultExecutionModeI);
+        }
+    }
+
+    Long defaultValue;
+
     public String fieldKey() {
         return "O" + orgId + "_NS" + nsId + "_R" + resourceId + "_FLD" + fieldId + "_" + aggregationType;
     }
@@ -108,5 +129,17 @@ public class NameSpaceField implements Cloneable, Serializable {
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
+    }
+
+    public enum DefaultExecutionMode implements FacilioIntEnum {
+        SKIP,
+        DEFAULT;
+
+        public static DefaultExecutionMode valueOf(int idx) {
+            if (idx > 0 && idx <= values().length) {
+                return values()[idx - 1];
+            }
+            return null;
+        }
     }
 }

@@ -4,11 +4,14 @@ import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
+import com.facilio.report.module.v2.context.V2ModuleFilterContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -35,6 +38,13 @@ public class V2GetModuleReportCommand extends FacilioCommand {
             v2_reportContext.setName(report.getName());
             v2_reportContext.setFolderId(report.getReportFolderId());
             v2_reportContext.setDescription(report.getDescription());
+            if(v2_reportContext.getCriteriaId() != null && v2_reportContext.getCriteriaId() > 0) {
+                Criteria globalCriteria = CriteriaAPI.getCriteria(v2_reportContext.getCriteriaId());
+                V2ModuleFilterContext filters = new V2ModuleFilterContext();
+                filters.setGlobalCriteria(globalCriteria);
+                v2_reportContext.setFilters(filters);
+                report.setCriteria(globalCriteria);
+            }
             if(db_filter != null)
             {
                 if(db_filter.getTimeFilter() != null && db_filter.getTimeFilter().getStartTime() > 0 && db_filter.getTimeFilter().getEndTime() > 0) {

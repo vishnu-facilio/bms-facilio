@@ -76,7 +76,7 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
                     if(StringUtils.isEmpty(existingPeople.getEmail())){
                         throw new IllegalArgumentException("EmailId cannot be null");
                     }
-                    User existingUser = IdentityClient.getDefaultInstance().getUserBean().getUser(existingPeople.getEmail(), appDomainObj.getIdentifier());
+                    User existingUser = ApplicationUserUtil.getUser(existingPeople.getEmail(), appDomainObj.getIdentifier());
                     if(existingUser == null){
 
                         User newUser = new User();

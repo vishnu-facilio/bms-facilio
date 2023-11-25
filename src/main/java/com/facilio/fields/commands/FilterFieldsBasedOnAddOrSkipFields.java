@@ -22,7 +22,7 @@ public class FilterFieldsBasedOnAddOrSkipFields extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS);
-
+        boolean fetchCustomFields = (boolean) context.getOrDefault(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, true);
         List<String> fieldsToAddList = (List<String>) context.getOrDefault(FacilioConstants.FieldsConfig.FIELDS_TO_ADD_LIST, null);
         List<String> fieldsToSkipList = (List<String>) context.getOrDefault(FacilioConstants.FieldsConfig.FIELDS_TO_SKIP_LIST, null);
         List<Long> defaultFieldIds = (List<Long>) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD_IDS);
@@ -38,7 +38,7 @@ public class FilterFieldsBasedOnAddOrSkipFields extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(fields)) {
             List<Long> finalDefaultFieldIds = defaultFieldIds;
             fields = fields.stream()
-                    .filter(field -> (isAddField ? (addOrSkipFieldsList.contains(field.getName()) || !field.isDefault()) : !addOrSkipFieldsList.contains(field.getName())) || finalDefaultFieldIds.contains(field.getFieldId()))
+                    .filter(field -> (isAddField ? (addOrSkipFieldsList.contains(field.getName()) || (fetchCustomFields && !field.isDefault())) : !addOrSkipFieldsList.contains(field.getName())) || finalDefaultFieldIds.contains(field.getFieldId()))
                     .collect(Collectors.toList());
             context.put(FacilioConstants.ContextNames.FIELDS, fields);
         }

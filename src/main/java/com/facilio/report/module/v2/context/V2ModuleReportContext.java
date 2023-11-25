@@ -41,6 +41,7 @@ public class V2ModuleReportContext
     private ReportDrilldownPathContext drillDown;
     private String baseLines;
     private boolean kpi = false;
+    private Long criteriaId;
     @JSON(serialize = false)
     public String getDimensionsJson() throws Exception {
         if (dimensions != null) {

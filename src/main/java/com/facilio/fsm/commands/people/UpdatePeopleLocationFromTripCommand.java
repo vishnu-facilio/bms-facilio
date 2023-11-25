@@ -24,6 +24,7 @@ import org.json.simple.parser.JSONParser;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class UpdatePeopleLocationFromTripCommand extends FacilioCommand {
     @Override
@@ -71,8 +72,8 @@ public class UpdatePeopleLocationFromTripCommand extends FacilioCommand {
             fieldList.add(signalInfo);
 
             V3PeopleContext pplRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
-            Long peopleLastSyncTime = pplRecord.getLastSyncTime();
-            if(peopleLastSyncTime != null && time > peopleLastSyncTime){
+            long peopleLastSyncTime = Optional.ofNullable(pplRecord.getLastSyncTime()).orElse(0L);
+            if(time > peopleLastSyncTime){
                 V3PeopleContext peopleContext = new V3PeopleContext();
                 peopleContext.setId(peopleId);
                 peopleContext.setLastSyncTime(time);

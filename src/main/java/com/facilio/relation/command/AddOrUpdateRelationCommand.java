@@ -41,6 +41,9 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             }
 
             RelationRequestContext oldRequest = RelationUtil.convertToRelationRequest(oldRelation, relationRequest.getFromModuleId());
+            if (oldRequest.getFromModuleId() != relationRequest.getFromModuleId() || oldRequest.getToModuleId() != relationRequest.getToModuleId()) {
+                throw new IllegalArgumentException("The modules in relation cannot be changed");
+            }
             if (relationRequest.getRelationTypeEnum() != oldRequest.getRelationTypeEnum()) {
                 throw new IllegalArgumentException("Cannot change relation type");
             }
@@ -136,10 +139,6 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
         for (RelationMappingContext mapping : relationContext.getMappings()) {
             RelationMappingContext oldMapping = oldRelationMap.get(mapping.getPositionEnum());
             if (oldMapping == null) {
-                throw new IllegalArgumentException("The modules in relation cannot be changed");
-            }
-
-            if ((oldMapping.getFromModuleId() != mapping.getFromModuleId()) || (oldMapping.getToModuleId() != mapping.getToModuleId())) {
                 throw new IllegalArgumentException("The modules in relation cannot be changed");
             }
 
@@ -261,10 +260,13 @@ public class AddOrUpdateRelationCommand extends FacilioCommand {
             }
          }
         if (Objects.equals(relationRequest.getRelationCategoryEnum(), RelationContext.RelationCategory.METER)) {
-            long toModuleId = relationRequest.getToModuleId();
-            FacilioModule module = Constants.getModBean().getModule(toModuleId);
-            if (!Objects.equals(module.getParentModule().getName(), FacilioConstants.ContextNames.METER_MOD_NAME)) {
-                throw new IllegalArgumentException("For Meter Relationship To Module should always Meter");
+            ModuleBean modBean = Constants.getModBean();
+            String toModuleName = modBean.getModule(relationRequest.getToModuleId()).getParentModule().getName();
+            String fromModuleName = modBean.getModule(relationRequest.getFromModuleId()).getParentModule().getName();
+            if (!(!StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME)) &&
+                    !(!StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME)) &&
+                    !(StringUtils.equals(toModuleName, FacilioConstants.ContextNames.METER_MOD_NAME) && StringUtils.equals(fromModuleName, FacilioConstants.ContextNames.METER_MOD_NAME))) {
+                throw new IllegalArgumentException("For Meter Relationship From/To Module should be Meter");
             }
         }
     }

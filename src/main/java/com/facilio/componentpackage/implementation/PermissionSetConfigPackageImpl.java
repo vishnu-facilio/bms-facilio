@@ -23,7 +23,9 @@ import com.facilio.permission.factory.PermissionSetModuleFactory;
 import com.facilio.permission.handlers.group.RelatedRecordsPermissionSetHandler;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Triple;
 
@@ -32,7 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
+@Log4j
 public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissionContext> {
 
     PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
@@ -180,6 +182,9 @@ public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissio
             XMLBuilder permissionSetComponentElement = idVsData.getValue();
 
             Long recordId = addOrUpdatePermissionSetConfig(permissionSetComponentElement);
+            if(recordId!=null && recordId == -1){
+                continue;
+            }
             uniqueIdentifierVsPermissionSetConfigIds.put(idVsData.getKey(), recordId);
         }
         return uniqueIdentifierVsPermissionSetConfigIds;
@@ -235,7 +240,8 @@ public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissio
 
     private long addOrUpdatePermissionSetConfig(XMLBuilder permissionSetConfigComponentElement) throws Exception {
         Map<String, Object> permissionSetConfigMap = new HashMap<>();
-        FacilioModule module = Constants.getModBean().getModule(permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.MODULE_NAME).getText());
+        String moduleName = permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.MODULE_NAME).getText();
+        FacilioModule module = Constants.getModBean().getModule(moduleName);
 
         if(module!=null && module.getModuleId() > 0) {
             Long moduleId = module.getModuleId();
@@ -243,16 +249,27 @@ public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissio
             String type = permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.TYPE).getText();
 
             if (type.equals("FIELD_LIST")) {
-                FacilioField field = Constants.getModBean().getField(permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.FIELD_NAME).getText(), module.getName());
+                String fieldName = permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.FIELD_NAME).getText();
+                FacilioField field = Constants.getModBean().getField(fieldName, module.getName());
                 Long fieldId = field != null ? field.getFieldId() : -1L;
                 permissionSetConfigMap.put("fieldId", fieldId);
 
+                if(fieldId == null || fieldId <= 0){
+                    LOGGER.info("####Sandbox - Skipping add or update PermissionSetConfig since Field is null for - "+fieldName+ " of module - "+moduleName);
+                    return -1L;
+                }
             } else if (type.equals("RELATED_LIST")) {
                 RelatedRecordsPermissionSetHandler recordsPermissionSetHandler = new RelatedRecordsPermissionSetHandler();
                 List<FacilioModule> subModules = recordsPermissionSetHandler.getFilteredSubModules(moduleId);
 
                 String relatedModuleName = permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.RELATED_MODULE_NAME).getText();
                 String relatedFieldName = permissionSetConfigComponentElement.getElement(PackageConstants.PermissionSetConfig.RELATED_FIELD_NAME).getText();
+
+                if(Constants.getModBean().getModule(relatedModuleName) == null){
+                    LOGGER.info("####Sandbox - Skipping add or update PermissionSetConfig since relatedModule is null for relatedModuleName - "+relatedModuleName);
+                    return -1L;
+                }
+
                 FacilioField relatedField = Constants.getModBean().getField(relatedFieldName, relatedModuleName);
 
                 Long relatedFieldId = relatedField != null ? relatedField.getId() : -1L;
@@ -260,6 +277,11 @@ public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissio
 
                 permissionSetConfigMap.put("relatedModuleId", relatedModuleId);
                 permissionSetConfigMap.put("relatedFieldId", relatedFieldId);
+
+                if(relatedModuleId <= 0 || relatedFieldId <= 0){
+                    LOGGER.info("####Sandbox - Skipping add or update PermissionSetConfig since relatedModuleId or relatedFieldId is null for relatedModule - "+relatedModuleName+" relatedField - "+relatedFieldName);
+                    return -1L;
+                }
             }
 
             PermissionSetType.Type.valueOf(type).getHandler();
@@ -272,10 +294,13 @@ public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissio
             permissionSetConfigMap.put("permissionSetId", permissionSetId);
             permissionSetConfigMap.put("type", type);
 
-            Map<String, Long> insertRecordId = new HashMap<>();
-            permissionSetBean.addPermissionsForPermissionSet(permissionSetConfigMap, insertRecordId);
-            return insertRecordId.get("ModuleTypePermissionSet");
+            if(MapUtils.isNotEmpty(permissionSetConfigMap)){
+                Map<String, Long> insertRecordId = new HashMap<>();
+                permissionSetBean.addPermissionsForPermissionSet(permissionSetConfigMap, insertRecordId);
+                return insertRecordId.get("ModuleTypePermissionSet");
+            }
         }
+        LOGGER.info("####Sandbox - Skipping add or update PermissionSetConfig since module is null for - "+moduleName);
         return -1L;
     }
 

@@ -59,6 +59,8 @@ public class NamespaceModuleAndFieldFactory extends FieldFactory {
         fields.add(getNumberField("aggregationTypeI", "AGGREGATION_TYPE", module));
         fields.add(getBooleanField("primary", "IS_PRIMARY", module));
         fields.add(getNumberField("nsFieldTypeI", "NS_FIELD_TYPE", module));
+        fields.add(getNumberField("defaultExecutionModeI", "DEFAULT_EXEC_MODE", module));
+        fields.add(getNumberField("defaultValue", "DEFAULT_VALUE", module));
         return fields;
     }
 

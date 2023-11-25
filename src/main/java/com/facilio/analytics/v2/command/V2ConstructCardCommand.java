@@ -5,6 +5,8 @@ import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -20,6 +22,7 @@ import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.formatter.DecimalFormatter;
+import com.facilio.report.module.v2.chain.V2TransactionChainFactory;
 import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Unit;
@@ -40,7 +43,14 @@ public class V2ConstructCardCommand extends FacilioCommand {
         V2AnalyticsContextForDashboardFilter db_filter = (V2AnalyticsContextForDashboardFilter) context.get("db_filter");
         if(cardContext != null)
         {
-            this.getReadingCardValue(cardContext.getCardParams(),db_filter);
+            V2AnalyticsCardWidgetContext cardParams = cardContext.getCardParams();
+            Boolean isModuleKpi = cardParams!=null ? cardParams.getIsModuleKpi() : false;
+            if(isModuleKpi){
+                this.getModuleCardValue(cardParams);
+            }
+            else{
+                this.getReadingCardValue(cardContext.getCardParams(),db_filter);
+            }
         }
         return false;
     }
@@ -148,6 +158,8 @@ public class V2ConstructCardCommand extends FacilioCommand {
     }
     private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
     {
+        Set<FacilioModule> addedModules= new HashSet<>();
+        addedModules.add(baseModule);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation(baseModule);
         selectBuilder.select(fields);
         selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
@@ -155,12 +167,15 @@ public class V2ConstructCardCommand extends FacilioCommand {
         {
             Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(cardContext.getCriteria(), parentModuleForCriteria);
             if (parent_criteria != null) {
-                V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder);
+                V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder, addedModules);
                 selectBuilder.andCriteria(parent_criteria);
             }
         }
         if(db_filter != null && db_filter.getDb_user_filter() != null) {
-            applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder );
+            applyDashboardUserFilterCriteria(baseModule, db_filter.getDb_user_filter(), cardContext,selectBuilder,addedModules );
+        }
+        if(addedModules.size() == 1){
+            V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(selectBuilder, addedModules, baseModule);
         }
         selectBuilder.limit(50);
         return selectBuilder;
@@ -206,13 +221,11 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         return selectBuilder;
     }
-    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,Set<FacilioModule> addedModules)throws Exception
     {
         if(dbUserFilter != null)
         {
             List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(cardContext.getDisplayName());
-            Set<FacilioModule> addedModules = new HashSet<>();
-            addedModules.add(baseModule);
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
@@ -294,4 +307,48 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
     }
 
+    private void getModuleCardValue(V2AnalyticsCardWidgetContext cardParams) throws Exception {
+        Long reportId = cardParams.getReportId();
+        if(reportId!=null && reportId>0){
+            FacilioChain chain = V2TransactionChainFactory.getKpiDataChain();
+            FacilioContext context = chain.getContext();
+            context.put(FacilioConstants.ContextNames.REPORT_ID,cardParams.getReportId());
+            if(cardParams.getTimeFilter()!=null){
+                context.put(FacilioConstants.ContextNames.CARD_PERIOD,cardParams.getTimeFilter().getDateOperatorEnum());
+            }
+            if(cardParams.getBaseline()!=null){
+                context.put(FacilioConstants.ContextNames.BASE_LINE,cardParams.getBaseline());
+            }
+            chain.execute();
+            Object cardValue = context.get(FacilioConstants.ContextNames.CARD_VALUE);
+            Object baseLineValue = context.get(FacilioConstants.ContextNames.BASE_LINE_VALUE);
+            if(cardValue!=null){
+                Map<String,Object> resultMap = new HashMap<>();
+                String period = null;
+                if(cardParams.getTimeFilter()!=null){
+                    period = cardParams.getTimeFilter().getDateLabel();
+                }
+                resultMap = setResultModuleCard(resultMap,cardValue,period,null);
+                cardParams.getResult().put(FacilioConstants.ContextNames.CARD_VALUE,resultMap);
+            }
+            if(baseLineValue!=null){
+                Map<String,Object> resultMap = new HashMap<>();
+                String baseLinePeriod = cardParams.getBaseline();
+                String baseLineTrend = cardParams.getBaselineTrend();
+                resultMap = setResultModuleCard(resultMap,baseLineValue,baseLinePeriod,baseLineTrend);
+                cardParams.getResult().put("baseline_value",resultMap);
+            }
+        }
+    }
+    private Map<String,Object> setResultModuleCard(Map<String,Object> resultMap, Object cardValue, String period, String baseLineTrend){
+        resultMap.put(FacilioConstants.ContextNames.CARD_VALUE,cardValue);
+        resultMap.put(FacilioConstants.ContextNames.ACTUAL_VALUE,cardValue);
+        if(period!=null){
+            resultMap.put(FacilioConstants.ContextNames.CARD_PERIOD,period);
+        }
+        if(baseLineTrend!=null && !baseLineTrend.isEmpty()){
+            resultMap.put(FacilioConstants.ContextNames.BASE_LINE_TREND,baseLineTrend);
+        }
+        return resultMap;
+    }
 }

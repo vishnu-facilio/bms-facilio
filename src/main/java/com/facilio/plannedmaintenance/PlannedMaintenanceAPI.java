@@ -16,6 +16,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -402,11 +403,14 @@ public class PlannedMaintenanceAPI {
         FacilioModule pmResourcePlannerModule = modBean.getModule(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
         List<FacilioField> resourcePlannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
         FacilioModule plannedMaintenacenanceModule = modBean.getModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
+        FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 
         List<FacilioField> fields = new ArrayList<>();
         FacilioField pmName = modBean.getField("name",FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
         FacilioField pmId = modBean.getField("pmId",FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
         FacilioField jobPlan = modBean.getField("jobPlan",FacilioConstants.PM_V2.PM_V2_RESOURCE_PLANNER);
+        FacilioField pmStatus = modBean.getField("pmStatus",FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
+        FacilioField sysDeletedField = FieldFactory.getIsDeletedField(ticketModule);
         fields.add(pmName);
         fields.add(pmId);
 
@@ -415,7 +419,11 @@ public class PlannedMaintenanceAPI {
                 .select(fields)
                 .innerJoin(plannedMaintenacenanceModule.getTableName())
                 .on(pmResourcePlannerModule.getTableName()+".PM_ID = "+plannedMaintenacenanceModule.getTableName()+".ID")
-                .andCondition(CriteriaAPI.getCondition(jobPlan,String.valueOf(jobPlanId),NumberOperators.EQUALS));
+                .innerJoin(ticketModule.getTableName())
+                .on(pmResourcePlannerModule.getTableName()+".PM_ID = "+ticketModule.getTableName()+".ID")
+                .andCondition(CriteriaAPI.getCondition(jobPlan,String.valueOf(jobPlanId),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(pmStatus,String.valueOf(PlannedMaintenance.PMStatus.ACTIVE.getVal()),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(sysDeletedField,String.valueOf(false), BooleanOperators.IS));
         return builder.get();
     }
     public static int computeFrequencyForCalendar(ScheduleInfo.FrequencyType frequencyType){

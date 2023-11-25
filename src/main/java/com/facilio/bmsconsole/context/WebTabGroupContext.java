@@ -8,6 +8,9 @@ import com.facilio.util.FacilioEnumClassTypeIdResolverBase;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
@@ -17,7 +20,7 @@ import java.util.List;
 
 @ImmutableChildClass(className = "WebTabGroupCacheContext", constructorPolicy = AnnotationEnums.ConstructorPolicy.REQUIRE_COPY_CONSTRUCTOR)
 public class WebTabGroupContext implements Serializable {
-
+    private static final long serialVersionUID = 1L;
     public WebTabGroupContext(WebTabGroupContext object) {
         if(object != null) {
             this.id = object.id;
@@ -29,9 +32,14 @@ public class WebTabGroupContext implements Serializable {
             this.webTabs = object.webTabs;
             this.featureLicense = object.featureLicense;
             this.layoutId = object.layoutId;
+            this.version = object.version;
         }
     }
 
+    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId,IconType iconTypeEnum, long version){
+        this(webTabs, name, route, iconType, order, featureLicense, layoutId, iconTypeEnum);
+        this.version = version;
+    }
     public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense,long layoutId,IconType iconTypeEnum){
         this.webTabs = webTabs;
         this.name = name;
@@ -44,7 +52,10 @@ public class WebTabGroupContext implements Serializable {
         this.layoutId = layoutId;
         this.iconTypeEnum = iconTypeEnum;
     }
-
+    public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense, long layoutId, long version){
+        this(webTabs, name, route, iconType, order, featureLicense, layoutId);
+        this.version = version;
+    }
     public WebTabGroupContext(List<WebTabContext> webTabs, String name, String route, int iconType, int order, Long featureLicense, long layoutId){
         this.webTabs = webTabs;
         this.name = name;
@@ -147,6 +158,10 @@ public class WebTabGroupContext implements Serializable {
         this.order = order;
         this.iconTypeEnum = iconTypeEnum;
     }
+    public WebTabGroupContext(String name, String route, long layout, int iconType, int order, long license, long version) {
+        this(name, route, layout, iconType, order, license);
+        this.version = version;
+    }
 
     public WebTabGroupContext(String name, String route, long layout, int iconType, int order, long license) {
         this.name = name;
@@ -166,5 +181,12 @@ public class WebTabGroupContext implements Serializable {
     public void setLayoutId(long layoutId) {
         this.layoutId = layoutId;
     }
+
+    public void setVersion(Long version) {
+        this.version = version;
+    }
+
+    @Getter
+    private Long version;
 
 }

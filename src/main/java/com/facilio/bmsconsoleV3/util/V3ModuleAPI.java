@@ -147,11 +147,11 @@ public class V3ModuleAPI {
         FAILURE_CODE_CAUSES(ContextNames.FAILURE_CODE_CAUSES,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         FAILURE_CODE_REMEDIES(ContextNames.FAILURE_CODE_REMEDIES,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
 
-        ELECTRICITY_METER(FacilioConstants.Meter.ELECTRICITY_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        GAS_METER(FacilioConstants.Meter.GAS_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        WATER_METER(FacilioConstants.Meter.WATER_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        HEAT_METER(FacilioConstants.Meter.HEAT_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-        BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //ELECTRICITY_METER(FacilioConstants.Meter.ELECTRICITY_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //GAS_METER(FacilioConstants.Meter.GAS_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //WATER_METER(FacilioConstants.Meter.WATER_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //HEAT_METER(FacilioConstants.Meter.HEAT_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
+        //BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SERVICE_PLANNED_MAINTENANCE(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         SERVICE_PLAN(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         SERVICE_PM_TEMPLATE(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP))

@@ -21,7 +21,7 @@ import static com.facilio.modules.FieldFactory.getStringField;
 
 public class CommonConnectedSummaryAPI {
     private static final List<String> ALARM_EXCLUDE_FIELDS = Arrays.asList("key", "type", "acknowledged", "noOfNotes");
-    private static final List<String> RULE_EXCLUDE_FIELDS = Arrays.asList("categoryId", "readingModuleId", "readingFieldId", "resourceType", "autoClear", "linkName");
+    private static final List<String> RULE_EXCLUDE_FIELDS = Arrays.asList("name", "categoryId", "readingModuleId", "readingFieldId", "resourceType", "autoClear", "linkName");
 
     public static List<PagesContext> getNewReadingRuleSystemPage(ApplicationContext app, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -221,7 +221,7 @@ public class CommonConnectedSummaryAPI {
                 .widgetDone()
                 .addWidget("costImpact", "Cost Impact", PageWidget.WidgetType.COST_IMPACT, "webCostImpact_3_6", 0,12, null, null)
                 .widgetDone()
-                .addWidget("energyImpact", "Energy Impact (KWH)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact_3_6", 6,12, null, null)
+                .addWidget("energyImpact", "Energy Impact (kWh)", PageWidget.WidgetType.ENERGY_IMPACT, "webEnergyImpact_3_6", 6,12, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -270,8 +270,8 @@ public class CommonConnectedSummaryAPI {
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1);
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1);
 
-        primaryDetailsWidgetGroup.setName("primaryDetails");
-        primaryDetailsWidgetGroup.setDisplayName("Primary Details");
+        primaryDetailsWidgetGroup.setName("faultDetails");
+        primaryDetailsWidgetGroup.setDisplayName("Fault Details");
         primaryDetailsWidgetGroup.setColumns(4);
 
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();

@@ -1165,6 +1165,10 @@ public class FieldFactory extends BaseFieldFactory {
         return getField(AgentKeys.URL, "VERSION", FieldType.STRING);
     }
 
+    public static FacilioField getBuildVersionField(FacilioModule module) {
+        return getField("version", "VERSION", module, FieldType.NUMBER);
+    }
+
     public static FacilioField getWritableField(FacilioModule module) {
         return getField(AgentKeys.WRITABLE, "WRITABLE", module, FieldType.BOOLEAN);
     }
@@ -1271,6 +1275,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("isDisabled", "IS_DISABLED", module, FieldType.BOOLEAN));
         fields.add(getField("value", "DEFAULT_VALUE", module, FieldType.STRING));
         fields.add(getField("sectionId", "SECTIONID", module, FieldType.NUMBER));
+        fields.add(getBuildVersionField(module));
 
         fields.add(getField("configStr", "CONFIG", module, FieldType.STRING));
         fields.add(getField("formFieldSequenceNumber", "FIELD_SEQUENCE_NUMBER", module, FieldType.DECIMAL));
@@ -1764,6 +1769,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
         fields.add(getBooleanField("locked", "IS_LOCKED", module));
         fields.add(getField("exportable","IS_EXPORTABLE",module,FieldType.BOOLEAN));
+        fields.add(getBuildVersionField(module));
 
         return fields;
     }
@@ -6888,6 +6894,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(parentFieldId);
 
         fields.add(getStringField("customization", "CUSTOMIZATION", module));
+        fields.add(getBuildVersionField(module));
 
         return fields;
     }
@@ -10314,6 +10321,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("iconTypeEnum","ICON_TYPE_ENUM",module));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
         fields.add(getField("order", "TABGROUP_ORDER", module, FieldType.NUMBER));
+        fields.add(getBuildVersionField(module));
         FacilioField layoutField = getField("layoutId", "LAYOUT_ID", module, FieldType.NUMBER);
         fields.add(layoutField);
         fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
@@ -10333,6 +10341,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("applicationId", "APPLICATION_ID", module, FieldType.NUMBER));
         fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
         fields.add(getField("route", "ROUTE", module, FieldType.STRING));
+        fields.add(getBuildVersionField(module));
         fields.add(getField("config", "CONFIG", module, FieldType.STRING));
         fields.add(getField("featureLicense", "FEATURE_LICENSE", module, FieldType.STRING));
 

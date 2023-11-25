@@ -20,4 +20,5 @@ public class V2AnalyticsReportResponseContext{
     public Long reportFolderId;
     public Integer type;
     public Boolean kpi;
+    public Boolean isDateField;
 }
