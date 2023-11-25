@@ -420,6 +420,9 @@ public class APIModuleWidgets {
                 .done()
                 .addModuleWidget("alarmRca", "Alarm RCA", PageWidget.WidgetType.ALARM_RCA)
                 .addFixedWidgetConfig("webAlarmRca_11_12", "Alarm RCA - 11 - 12", 11, 12, PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("alarmReport", "Alarm Report", PageWidget.WidgetType.ALARM_REPORT)
+                .addFlexibleWidgetConfig("webAlarmReport_6", "Alarm Report - 6", 6, PagesContext.PageLayoutType.WEB)
                 .done();
     }
 

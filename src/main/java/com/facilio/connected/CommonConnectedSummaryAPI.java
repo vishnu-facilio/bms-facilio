@@ -195,11 +195,15 @@ public class CommonConnectedSummaryAPI {
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("alarmDetails", null, null)
-                .addWidget("readingAlarmDetails", "Faults Details", PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET, "webfixedsummaryfieldswidget_6_9", 0, 0, null, getReadingAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM, app))
+                .addWidget("readingAlarmDetails", "Fault Details", PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET, "webfixedsummaryfieldswidget_6_9", 0, 0, null, getReadingAlarmSummaryWidgetDetails(FacilioConstants.ContextNames.NEW_READING_ALARM, app))
                 .widgetDone()
                 .addWidget("readingAlarmLocationDetails", "Location details",PageWidget.WidgetType.LOCATION_DETAILS,"webLocationDetails_3_3",9,0,null,null)
                 .widgetDone()
                 .addWidget("readingAlarmDuration", "Time details", PageWidget.WidgetType.ALARM_DURATION, "webAlarmDuration_3_3", 9,3, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("alarmReport", null, null)
+                .addWidget("faultReport", "Fault Report", PageWidget.WidgetType.ALARM_REPORT, "webAlarmReport_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -270,8 +274,8 @@ public class CommonConnectedSummaryAPI {
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, rule, 1, 3, 1);
         addSummaryFieldInWidgetGroup(primaryDetailsWidgetGroup, resource, 1, 4, 1);
 
-        primaryDetailsWidgetGroup.setName("faultDetails");
-        primaryDetailsWidgetGroup.setDisplayName("Fault Details");
+        primaryDetailsWidgetGroup.setName("primaryDetails");
+        primaryDetailsWidgetGroup.setDisplayName("Primary Details");
         primaryDetailsWidgetGroup.setColumns(4);
 
         SummaryWidgetGroup allFieldsWidgetGroup = new SummaryWidgetGroup();
