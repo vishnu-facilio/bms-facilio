@@ -20,7 +20,12 @@ public class AddAssetCategoryModuleCommandV3 extends FacilioCommand {
 
         // Get the request payload data as Map
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(context);
+        Map<String, List<Object>> queryParams = Constants.getQueryParams(context);
         V3AssetCategoryContext assetCategory = (V3AssetCategoryContext) recordMap.get("assetcategory").get(0);
+        String assetModuleName = null;
+        if (queryParams != null && queryParams.containsKey("assetModuleName")) {
+            assetModuleName = queryParams.get("assetModuleName").get(0).toString();
+        }
 
         // set Name if it's null or empty
         if (assetCategory.getName() == null || assetCategory.getName().isEmpty()) {
@@ -38,7 +43,11 @@ public class AddAssetCategoryModuleCommandV3 extends FacilioCommand {
 
         // Create a new module for the new Asset Category
         FacilioModule module = new FacilioModule();
-        module.setName("custom_" + name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
+        if (assetModuleName != null && !assetModuleName.isEmpty()){
+            module.setName(assetModuleName);
+        }else{
+            module.setName("custom_" + name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
+        }
         module.setDisplayName(displayName != null && !displayName.trim().isEmpty() ? displayName : name);
         module.setTableName("AssetCustomModuleData");
         module.setType(FacilioModule.ModuleType.BASE_ENTITY);

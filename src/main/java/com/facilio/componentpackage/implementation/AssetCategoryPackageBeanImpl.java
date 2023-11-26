@@ -1,5 +1,6 @@
 package com.facilio.componentpackage.implementation;
 
+import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioContext;
@@ -116,8 +117,13 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             XMLBuilder assetCategoryElement = idVsData.getValue();
             String uniqueIdentifier = idVsData.getKey();
+            String assetModuleName = null;
             V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
-            long assetCategoryId = addAssetCategory(assetCategoryContext);
+            XMLBuilder assetModuleBuilder = assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.ASSET_MODULE_NAME);
+            if(assetModuleBuilder != null) {
+                assetModuleName = assetModuleBuilder.getText();
+            }
+            long assetCategoryId = addAssetCategory(assetCategoryContext, assetModuleName);
             uniqueIdentifierVsComponentId.put(uniqueIdentifier, assetCategoryId);
         }
         return uniqueIdentifierVsComponentId;
@@ -219,11 +225,17 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         return assetCategories;
     }
 
-    private long addAssetCategory(V3AssetCategoryContext v3AssetCategoryContext) throws Exception {
+    private long addAssetCategory(V3AssetCategoryContext v3AssetCategoryContext, String assetModuleName) throws Exception {
         Map<String, Object> assetCategoryData = FieldUtil.getAsProperties(v3AssetCategoryContext);
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("assetcategory");
-        FacilioContext context = V3Util.createRecord(module, assetCategoryData);
+        Map<String, List<Object>> queryParams = new HashMap<>();
+        List<Object> assetModule = new ArrayList<>();
+        if (assetModuleName != null){
+            assetModule.add(assetModuleName);
+            queryParams.put("assetModuleName", assetModule);
+        }
+        FacilioContext context = V3Util.createRecord(module, assetCategoryData, null, queryParams);
         Map<String, Object> recordMap =(Map<String, Object>)  context.get(Constants.RECORD_MAP);
         List<V3AssetCategoryContext> assetCategoryContexts = (List<V3AssetCategoryContext>) recordMap.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
         return assetCategoryContexts.get(0).getId();
