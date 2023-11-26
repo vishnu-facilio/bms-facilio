@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -82,18 +83,29 @@ public class V2DashboardCardAction extends V3Action {
     }
     private V2CardResponseContext executeCardFlow(long cardId) throws Exception {
         V2AnalyticsContextForDashboardFilter dbFilterContext = new V2AnalyticsContextForDashboardFilter();
+        V2ModuleContextForDashboardFilter dbUserFilter = new V2ModuleContextForDashboardFilter();
         if(db_filter != null) {
-            if(db_filter.getTimeFilter() != null){
-                dbFilterContext.setTimeFilter(db_filter.getTimeFilter().get(String.valueOf(cardId)));
-            }
-            if(db_filter.getDb_user_filter() != null) {
-                dbFilterContext.setDb_user_filter((db_filter.getDb_user_filter().get(String.valueOf(cardId))));
+            if(db_filter.getCardType().equals("telemetry")) {
+                if(db_filter.getTimeFilter() != null){
+                    dbFilterContext.setTimeFilter(db_filter.getTimeFilter().get(String.valueOf(cardId)));
+                }
+                if(db_filter.getDb_user_filter() != null) {
+                    dbFilterContext.setDb_user_filter((db_filter.getDb_user_filter().get(String.valueOf(cardId))));
+                }
+            }else {
+                if(db_filter.getTimeFilter() != null){
+                    dbUserFilter.setTimeFilter(db_filter.getTimeFilter().get(String.valueOf(cardId)));
+                }
+                if(db_filter.getDb_user_filter() != null) {
+                    dbUserFilter.setDb_user_filter(String.valueOf((db_filter.getDb_user_filter().get(String.valueOf(cardId)))));
+                }
             }
         }
         FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticCardDataChain();
         chain.getContext().put("cardId", cardId);
         chain.getContext().put("v2", true);
         chain.getContext().put("db_filter",dbFilterContext);
+        chain.getContext().put("db_user_filter",dbUserFilter);
         chain.execute();
         cardContext = (V2CardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT);
         V2CardResponseContext result =  setCardResponse(chain.getContext());

@@ -8,12 +8,14 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportPivotParamsContext;
+import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -200,12 +202,30 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 					else if (cardLayout.equals("v2_reading_card")) {
 						dateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
 					}
+					else if (cardLayout.equals("v2_module_card")) {
+						JSONObject cardParams = newCardWidget.getCardParams();
+						if(cardParams.get("reportId") != null) {
+							V2ModuleReportContext v2_report = V2AnalyticsOldUtil.getV2ModuleReport((Long) cardParams.get("reportId"));
+							if(v2_report.getTimeFilter() != null && v2_report.getTimeFilter().getOperatorId() > 0) {
+								dateField = new HashMap<>(Collections.singletonMap("dateField", v2_report.getTimeFilter().getFieldName()));
+							}
+						}
+					}
 					else if (cardLayout.equals(CardLayout.COMBO_CARD.getName())) {
 						for(WidgetCardContext childCard : newCardWidget.getChildCards()){
 							Map<String, String> newDateField = null;
 							String childCardLayout = childCard.getCardLayout();
 							if (childCardLayout.equals("v2_reading_card")) {
 								newDateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
+							}
+							else if(childCardLayout.equals("v2_module_card")) {
+								JSONObject cardParams = childCard.getCardParams();
+								if(cardParams.get("reportId") != null) {
+									V2ModuleReportContext v2_report = V2AnalyticsOldUtil.getV2ModuleReport((Long) cardParams.get("reportId"));
+									if(v2_report.getTimeFilter() != null && v2_report.getTimeFilter().getOperatorId() > 0) {
+										newDateField = new HashMap<>(Collections.singletonMap("dateField", v2_report.getTimeFilter().getFieldName()));
+									}
+								}
 							}
 							else if (childCardLayout.equals(CardLayout.KPICARD_LAYOUT_1.getName()) || childCardLayout.equals(CardLayout.KPICARD_LAYOUT_2.getName())) {
 

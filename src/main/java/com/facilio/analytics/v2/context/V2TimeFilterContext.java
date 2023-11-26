@@ -17,6 +17,7 @@ public class V2TimeFilterContext {
     private long startTime = -1;
     private long endTime = -1;
     public String baselinePeriod;
+    public String dateValueString;
     public DateRange baselineRange;
     public int getDateOperator() {
         return dateOperator != null ? ((DateOperators)dateOperator).getOperatorId() : -1;

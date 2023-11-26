@@ -264,6 +264,9 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 					   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 				   }
 
+			   } else {
+				   filter.getWidgetModuleMap().put(widgetId, widgetModule != null ? widgetModule.getName() : null);
+				   filter.getWidgetExcludeFieldMap().put(widgetId,DashboardFilterUtil.getFilterApplicableField(moduleForFilter,widgetModule, null));
 			   }
 
 		   } else if (fieldForFilter != null) {

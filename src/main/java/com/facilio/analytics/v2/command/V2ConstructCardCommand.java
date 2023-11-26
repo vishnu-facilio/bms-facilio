@@ -23,6 +23,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.report.formatter.DecimalFormatter;
 import com.facilio.report.module.v2.chain.V2TransactionChainFactory;
+import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Unit;
@@ -41,12 +42,13 @@ public class V2ConstructCardCommand extends FacilioCommand {
     {
         V2CardContext cardContext = (V2CardContext) context.get("cardContext");
         V2AnalyticsContextForDashboardFilter db_filter = (V2AnalyticsContextForDashboardFilter) context.get("db_filter");
+        V2ModuleContextForDashboardFilter db_user_filter = (V2ModuleContextForDashboardFilter) context.get("db_user_filter");
         if(cardContext != null)
         {
             V2AnalyticsCardWidgetContext cardParams = cardContext.getCardParams();
             Boolean isModuleKpi = cardParams!=null ? cardParams.getIsModuleKpi() : false;
             if(isModuleKpi){
-                this.getModuleCardValue(cardParams);
+                this.getModuleCardValue(cardParams,db_user_filter);
             }
             else{
                 this.getReadingCardValue(cardContext.getCardParams(),db_filter);
@@ -307,14 +309,21 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
     }
 
-    private void getModuleCardValue(V2AnalyticsCardWidgetContext cardParams) throws Exception {
+    private void getModuleCardValue(V2AnalyticsCardWidgetContext cardParams, V2ModuleContextForDashboardFilter db_filter) throws Exception {
         Long reportId = cardParams.getReportId();
         if(reportId!=null && reportId>0){
             FacilioChain chain = V2TransactionChainFactory.getKpiDataChain();
             FacilioContext context = chain.getContext();
             context.put(FacilioConstants.ContextNames.REPORT_ID,cardParams.getReportId());
             if(cardParams.getTimeFilter()!=null){
-                context.put(FacilioConstants.ContextNames.CARD_PERIOD,cardParams.getTimeFilter().getDateOperatorEnum());
+                if(db_filter != null && db_filter.getTimeFilter() != null) {
+                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,db_filter.getTimeFilter().dateOperator);
+                }else {
+                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,cardParams.getTimeFilter().getDateOperatorEnum());
+                }
+            }
+            if(db_filter != null) {
+                context.put("db_filter",db_filter);
             }
             if(cardParams.getBaseline()!=null){
                 context.put(FacilioConstants.ContextNames.BASE_LINE,cardParams.getBaseline());
@@ -325,7 +334,10 @@ public class V2ConstructCardCommand extends FacilioCommand {
             if(cardValue!=null){
                 Map<String,Object> resultMap = new HashMap<>();
                 String period = null;
-                if(cardParams.getTimeFilter()!=null){
+                if(db_filter != null && db_filter.getTimeFilter() != null) {
+                    period = db_filter.getTimeFilter().getDateLabel();
+                }
+                else if(cardParams.getTimeFilter()!=null){
                     period = cardParams.getTimeFilter().getDateLabel();
                 }
                 resultMap = setResultModuleCard(resultMap,cardValue,period,null);

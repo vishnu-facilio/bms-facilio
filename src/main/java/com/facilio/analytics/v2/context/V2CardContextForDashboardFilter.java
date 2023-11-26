@@ -11,4 +11,5 @@ import java.util.Map;
 public class V2CardContextForDashboardFilter {
     private Map<Long, JSONObject> db_user_filter;
     private Map<Long, V2TimeFilterContext> timeFilter;
+    private String cardType = "telemetry";
 }

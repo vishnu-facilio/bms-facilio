@@ -356,7 +356,13 @@ public class DashboardFilterUtil {
 						
 					}
 
-				}
+				}else if(newCardWidget.getCardLayout().equals("v2_module_card")) {
+				 JSONObject cardParams = newCardWidget.getCardParams();
+				 if(cardParams.get("reportId") != null && (Long) cardParams.get("reportId") > 0){
+					 ReportContext report = ReportUtil.getReport((Long) cardParams.get("reportId"));
+					 moduleId = report.getModuleId();
+				 }
+			 }
 		 }
 		 else if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && widget.getWidgetType().equals(WidgetType.FILTER)){
 			 DashboardUserFilterContext userFilterContext = DashboardFilterUtil.getDashboardUserFiltersForWidgetId(widget.getId());
