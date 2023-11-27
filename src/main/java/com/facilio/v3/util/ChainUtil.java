@@ -334,8 +334,9 @@ public class ChainUtil {
 
         addIfNotNull(transactionChain, afterSaveCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterSaveCommand", moduleName));
-
-        addWorkflowChain(transactionChain,configParams);
+        if(v3Config==null || !v3Config.isSkipWorkflowRules()) {
+            addWorkflowChain(transactionChain);
+        }
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
@@ -465,8 +466,9 @@ public class ChainUtil {
 
         addIfNotNull(transactionChain, afterSaveCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "UpdateStateForModuleDataCommand", moduleName));
-
-        addWorkflowChain(transactionChain);
+        if(v3Config==null || !v3Config.isSkipWorkflowRules()) {
+            addWorkflowChain(transactionChain);
+        }
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new CheckContextTampering("getCreateRecordChain", "afterTransactionCommand", moduleName));
 
@@ -498,7 +500,9 @@ public class ChainUtil {
         transactionChain.addCommand(new DeleteCommand());
         transactionChain.addCommand(new UpdateTransactionEventTypeCommand());
         addIfNotNull(transactionChain, afterDeleteCommand);
-        addWorkflowChain(transactionChain);
+        if(v3Config==null || !v3Config.isSkipWorkflowRules()) {
+            addWorkflowChain(transactionChain);
+        }
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.DELETE));
 
@@ -584,8 +588,9 @@ public class ChainUtil {
         transactionChain.addCommand(new UpdateSubModuleMultiCurrencyDataCommand());
         transactionChain.addCommand(new SendNotificationForOfflineRecordUpdate(OfflineUpdateType.RECORD));
 
-
-        updateWorkflowChain(transactionChain,configParams);
+        if(v3Config==null || !v3Config.isSkipWorkflowRules()) {
+            updateWorkflowChain(transactionChain);
+        }
         // execute custom button action if the custom button id is sent
         transactionChain.addCommand(new ExecuteSpecificWorkflowsCommand(WorkflowRuleContext.RuleType.CUSTOM_BUTTON));
 

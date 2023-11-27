@@ -6,6 +6,8 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Command;
 
 import java.util.ArrayList;
@@ -27,7 +29,8 @@ public class V3Config implements V3Builder {
 
     private PickListHandler pickListHandler;
     private boolean dontUseInScript = false;
-
+    @Getter@Setter
+    private boolean skipWorkflowRules=false;
     public V3Config dontUseInScript() {
         this.dontUseInScript = true;
         return this;
@@ -98,10 +101,14 @@ public class V3Config implements V3Builder {
     public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount) {
         this (bean, customFieldsCount, null);
     }
-
     public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount, V3Config config) {
+        this (bean, customFieldsCount, config,false);
+    }
+
+    public V3Config(Class bean, ModuleCustomFieldsCount customFieldsCount, V3Config config,boolean skipWorkflowRule) {
         this.beanClass = bean;
         this.customFieldsCount = customFieldsCount;
+        this.skipWorkflowRules=skipWorkflowRule;
         if (config != null) {
             this.createHandler = config.createHandler;
             this.updateHandler = config.updateHandler;
