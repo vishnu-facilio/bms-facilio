@@ -79,7 +79,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
         fields.add(FieldFactory.getDefaultField("isPublished","Published","IS_PUBLISHED", FieldType.BOOLEAN));
         fields.add(FieldFactory.getDefaultField("leadTime","Lead Time (Days)","LEAD_TIME",FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("counter","Counter","COUNTER",FieldType.NUMBER));
-        fields.add(FieldFactory.getDefaultField("previewPeriod","Preview Period (Days)","PREVIEW_PERIOD",FieldType.NUMBER));
+        fields.add(FieldFactory.getDefaultField("previewPeriod","Forecast Period (Days)","PREVIEW_PERIOD",FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("nextRun","Next Run","NEXT_RUN",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
         fields.add(FieldFactory.getDefaultField("lastRun","Last Run","LAST_RUN",FieldType.DATE_TIME, FacilioField.FieldDisplayType.DATETIME));
         fields.add(FieldFactory.getDefaultField("estimatedDuration", "Estimated Duration", "ESTIMATED_DURATION", FieldType.NUMBER, FacilioField.FieldDisplayType.DURATION));
@@ -163,7 +163,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
         servicePMSectionFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
         servicePMSectionFields.add(new FormField("estimatedDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.REQUIRED, 10, 2));
         servicePMSectionFields.add(new FormField("leadTime", FacilioField.FieldDisplayType.NUMBER, "Lead Time (Days)", FormField.Required.OPTIONAL, 11, 2));
-        servicePMSectionFields.add(new FormField("previewPeriod", FacilioField.FieldDisplayType.NUMBER, "Preview Period (Days)", FormField.Required.OPTIONAL, 12, 2));
+        servicePMSectionFields.add(new FormField("previewPeriod", FacilioField.FieldDisplayType.NUMBER, "Forecast Period (Days)", FormField.Required.OPTIONAL, 12, 2));
 
         FormSection servicePMSection = new FormSection("PM Information", 1, servicePMSectionFields, true);
         servicePMSection.setSectionType(FormSection.SectionType.FIELDS);
@@ -434,7 +434,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
         servicePMViewFields.add(new ViewField("servicePMTrigger","Recurring Schedule"));
         servicePMViewFields.add(new ViewField("isPublished","Published"));
         servicePMViewFields.add(new ViewField("leadTime","Lead Time"));
-        servicePMViewFields.add(new ViewField("previewPeriod","Preview Period"));
+        servicePMViewFields.add(new ViewField("previewPeriod","Forecast Period (Days)"));
         servicePMViewFields.add(new ViewField("nextRun","Next Run"));
         servicePMViewFields.add(new ViewField("lastRun","Last Run"));
         servicePMViewFields.add(new ViewField("servicePMTemplate","Master PM"));
@@ -475,7 +475,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
         servicePMViewFields.add(new ViewField("servicePMTrigger","Recurring Schedule"));
         servicePMViewFields.add(new ViewField("isPublished","Published"));
         servicePMViewFields.add(new ViewField("leadTime","Lead Time"));
-        servicePMViewFields.add(new ViewField("previewPeriod","Preview Period"));
+        servicePMViewFields.add(new ViewField("previewPeriod","Forecast Period (Days)"));
         servicePMViewFields.add(new ViewField("nextRun","Next Run"));
         servicePMViewFields.add(new ViewField("lastRun","Last Run"));
         servicePMViewFields.add(new ViewField("servicePMTemplate","Master PM"));
@@ -515,7 +515,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
         servicePMViewFields.add(new ViewField("servicePMTrigger","Recurring Schedule"));
         servicePMViewFields.add(new ViewField("isPublished","Published"));
         servicePMViewFields.add(new ViewField("leadTime","Lead Time"));
-        servicePMViewFields.add(new ViewField("previewPeriod","Preview Period"));
+        servicePMViewFields.add(new ViewField("previewPeriod","Forecast Period (Days)"));
         servicePMViewFields.add(new ViewField("nextRun","Next Run"));
         servicePMViewFields.add(new ViewField("lastRun","Last Run"));
         servicePMViewFields.add(new ViewField("servicePMTemplate","Master PM"));

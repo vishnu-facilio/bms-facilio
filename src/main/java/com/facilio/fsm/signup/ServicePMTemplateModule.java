@@ -214,7 +214,7 @@ public class ServicePMTemplateModule extends BaseModuleConfig {
         servicePMTemplateViewFields.add(new ViewField("resolutionDueDuration","Resolution Due Duration"));
         servicePMTemplateViewFields.add(new ViewField("estimatedDuration","Estimated Duration"));
         servicePMTemplateViewFields.add(new ViewField("leadTime","Lead Time"));
-        servicePMTemplateViewFields.add(new ViewField("previewPeriod","Preview Period"));
+        servicePMTemplateViewFields.add(new ViewField("previewPeriod","Forecast Period (Days)"));
 
         allView.setFields(servicePMTemplateViewFields);
 
@@ -266,7 +266,7 @@ public class ServicePMTemplateModule extends BaseModuleConfig {
         servicePMTemplateSectionFields.add(new FormField("resolutionDueDuration", FacilioField.FieldDisplayType.DURATION, "Resolution Due Duration", FormField.Required.OPTIONAL, 9, 2));
         servicePMTemplateSectionFields.add(new FormField("estimatedDuration", FacilioField.FieldDisplayType.DURATION, "Estimated Duration", FormField.Required.REQUIRED, 10, 2));
         servicePMTemplateSectionFields.add(new FormField("leadTime", FacilioField.FieldDisplayType.NUMBER, "Lead Time (Days)", FormField.Required.OPTIONAL, 11, 2));
-        servicePMTemplateSectionFields.add(new FormField("previewPeriod", FacilioField.FieldDisplayType.NUMBER, "Preview Period (Days)", FormField.Required.OPTIONAL, 12, 2));
+        servicePMTemplateSectionFields.add(new FormField("previewPeriod", FacilioField.FieldDisplayType.NUMBER, "Forecast Period (Days)", FormField.Required.OPTIONAL, 12, 2));
 
         FormSection templateSection = new FormSection("Master PM Information", 1, servicePMTemplateSectionFields, true);
         templateSection.setSectionType(FormSection.SectionType.FIELDS);

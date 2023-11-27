@@ -30,7 +30,9 @@ public class AddServiceTaskCommand extends FacilioCommand {
             for(ServiceOrderContext serviceOrder : serviceOrders){
                 if(serviceOrder.getServicePlannedMaintenance()!=null && serviceOrder.getServicePlannedMaintenance().getId()>0){
                     List<ServiceTaskContext> serviceTasks = getServiceTasks(serviceOrder.getServicePlannedMaintenance(),serviceOrder);
-                    V3Util.preCreateRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsMapList(serviceTasks,ServiceTaskContext.class),null,null);
+                    if(CollectionUtils.isNotEmpty(serviceTasks)){
+                        V3Util.preCreateRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, FieldUtil.getAsMapList(serviceTasks,ServiceTaskContext.class),null,null);
+                    }
                 }
             }
         }

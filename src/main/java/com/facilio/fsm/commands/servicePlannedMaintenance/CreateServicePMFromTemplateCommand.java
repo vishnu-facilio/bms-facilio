@@ -4,24 +4,29 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.bmsconsoleV3.context.vendorquotes.V3VendorQuotesContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fsm.context.ServicePMTemplateContext;
 import com.facilio.fsm.context.ServicePMTriggerContext;
 import com.facilio.fsm.context.ServicePlannedMaintenanceContext;
 import com.facilio.fsm.context.ServicePMTemplateContext.MasterPMType;
+import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.SubFormContext;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Log4j
 public class CreateServicePMFromTemplateCommand extends FacilioCommand {
     @Override
@@ -33,6 +38,7 @@ public class CreateServicePMFromTemplateCommand extends FacilioCommand {
         List<Long> spaceIds = (List<Long>) context.get("spaceIds");
         List<Long> assetIds = (List<Long>) context.get("assetIds");
         ServicePMTriggerContext trigger = (ServicePMTriggerContext) context.get("trigger");
+        Boolean publish = (Boolean) context.get("publish");
         List<ServicePMTemplateContext> servicePMTemplates = new ArrayList<>();
         ServicePMTemplateContext servicePMTemplate = V3RecordAPI.getRecord(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE,servicePMTemplateId,ServicePMTemplateContext.class);
         if(type.equals(MasterPMType.SITE.getIndex()) && CollectionUtils.isNotEmpty(siteIds)){
@@ -77,7 +83,21 @@ public class CreateServicePMFromTemplateCommand extends FacilioCommand {
                 servicePMTemplates.add(servicePMTemplateClone);
             }
         }
-        V3Util.createRecordList(modBean.getModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE), FieldUtil.getAsMapList(servicePMTemplates, ServicePlannedMaintenanceContext.class), null, null);
+        FacilioContext createdServicePMs = V3Util.createRecordList(modBean.getModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE), FieldUtil.getAsMapList(servicePMTemplates, ServicePlannedMaintenanceContext.class), null, null);
+        if (createdServicePMs != null && publish) {
+            List<ModuleBaseWithCustomFields> servicePMList = getRecordsList(createdServicePMs);
+            List<Long> servicePMIds = servicePMList.stream().map(ModuleBaseWithCustomFields ::getId).collect(Collectors.toList());
+            FacilioContext servicePMSummaryList =V3Util.getSummary(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,servicePMIds);
+            servicePMList = getRecordsList(servicePMSummaryList);
+            JSONObject bodyParams = new JSONObject();
+            bodyParams.put("publishServicePM",true);
+            V3Util.processAndUpdateBulkRecords(modBean.getModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE),servicePMList,  FieldUtil.getAsMapList(servicePMList, ServicePlannedMaintenanceContext.class)  ,bodyParams,null,null,null,null,null,null,null,false,false,null);
+        }
         return false;
+    }
+    private List<ModuleBaseWithCustomFields> getRecordsList(FacilioContext servicePMs){
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(servicePMs);
+        List<ModuleBaseWithCustomFields> servicePMList = recordMap.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE);
+        return servicePMList;
     }
 }

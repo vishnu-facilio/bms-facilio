@@ -89,6 +89,8 @@ public class NewPermissionUtil {
         moduleTabType.put("CLONE",134217728L);
         moduleTabType.put("COMPLETE",268435456L);
         moduleTabType.put("MANAGE_ACCESS",536870912L);
+        moduleTabType.put("PUBLISH_PM",1073741824L);
+        moduleTabType.put("PM_CREATE",2147483648L);
         return moduleTabType;
     }
 
@@ -439,6 +441,26 @@ public class NewPermissionUtil {
 //        permissions.add(new Permission("VIEW_PRICING", "View Pricing", moduleTabType.get("VIEW_PRICING"), null));
         permissions.add(new Permission("MANAGE_INVENTORY_REQUEST", "Manage Inventory Request", moduleTabType.get("MANAGE_INVENTORY_REQUEST"), null));
         permissionMap.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("PUBLISH_PM", "Publish", moduleTabType.get("PUBLISH_PM"), null));
+        permissionMap.put(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
+
+        permissions = new ArrayList<>();
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+        permissions.add(new Permission("PM_CREATE", "Create PM", moduleTabType.get("PM_CREATE"), null));
+        permissionMap.put(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         permissions = new ArrayList<>();

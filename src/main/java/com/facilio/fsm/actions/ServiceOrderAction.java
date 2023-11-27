@@ -152,7 +152,7 @@ public class ServiceOrderAction extends V3Action {
                             if(isTimeAfterToday(createdTime)){
                                 serviceOrder.setCreatedTime(createdTime);
                             }else{
-                                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Your preferred start date cannot be rescheduled to a date that would set the 'created time' field to today or a date in the past!");
+                                throw new RESTException(ErrorCode.VALIDATION_ERROR,"Rescheduling 'Preferred Start Date' updates 'Created Time' based on 'Lead Time'. Please reschedule to ensure that 'Created Time' is not current or past date");
                             }
                         }
                         if(estimatedDuration!=null && estimatedDuration>0){
@@ -165,7 +165,7 @@ public class ServiceOrderAction extends V3Action {
                     }
                 }
                 V3Util.processAndUpdateBulkRecords(serviceOrderModule,oldServiceOrders,FieldUtil.getAsMapList(updatedServiceOrders,ServiceOrderContext.class) , null, null, null, null, null, null, null, null, true,false,null);
-                successMsg.put("message","Work Order Rescheduled Successfully");
+                successMsg.put("message","Your Work Order has been rescheduled successfully!");
             }
             setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
 

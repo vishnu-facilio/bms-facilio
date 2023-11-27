@@ -74,6 +74,7 @@ public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
             //Adding Default Permission for Dispatcher Role
             List<NewPermission> dispatcherDefaultPermission = new ArrayList<>();
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("dashboard"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.DASHBOARD)));
+
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("dispatch"), dispatcherRolePermissionMap.get(FacilioConstants.ServiceAppointment.DISPATCH)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("approval"), dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.APPROVAL)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("portfolio"), dispatcherRolePermissionMap.get(FacilioConstants.Portfolio.PORTFOLIO)));
@@ -89,6 +90,9 @@ public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("trip"),dispatcherRolePermissionMap.get(FacilioConstants.Trip.TRIP)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("timeSheet"),dispatcherRolePermissionMap.get(FacilioConstants.TimeSheet.TIME_SHEET)));
             dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("homepage"),dispatcherRolePermissionMap.get(FacilioConstants.ContextNames.HOME_PAGE)));
+            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("servicePlannedMaintenance"), dispatcherRolePermissionMap.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE)));
+            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("servicePMTemplate"), dispatcherRolePermissionMap.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE)));
+            dispatcherDefaultPermission.add(new NewPermission(routeVsId.get("servicePlan"), dispatcherRolePermissionMap.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN)));
 
             addDefaultTabPermissionForRoles(dispatcher, dispatcherDefaultPermission, Collections.singletonList(roleApp));
 
@@ -147,7 +151,7 @@ public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
 
     public static List<Map<String,Object>> getWebtabIdVsRoute(long appId) throws Exception{
 
-        List<String> routeList = new ArrayList<>(Arrays.asList("serviceOrder","serviceAppointment","timeSheet","trip","dashboard","dispatch","approval","portfolio","assets","quote","employees","shift","shiftplanner","attendance","myAttendance","timeOff","vendors","vendorcontact","client","clientcontact","items","tools","service","storeroom","itemtypes","tooltypes","inventoryrequest","transferrequest","homepage"));
+        List<String> routeList = new ArrayList<>(Arrays.asList("serviceOrder","serviceAppointment","timeSheet","trip","dashboard","dispatch","approval","portfolio","assets","quote","employees","shift","shiftplanner","attendance","myAttendance","timeOff","vendors","vendorcontact","client","clientcontact","items","tools","service","storeroom","itemtypes","tooltypes","inventoryrequest","transferrequest","homepage","servicePlan","servicePMTemplate","servicePlannedMaintenance"));
 
 
         List<FacilioField> fields = new ArrayList<>();
@@ -223,6 +227,32 @@ public class AddDefaultRolePermissionsFsmApp extends FacilioCommand {
                 + moduleTabPermissions.get("MANAGE_SERVICE_TASKS")
                 + moduleTabPermissions.get("MANAGE_INVENTORY_REQUEST");
         dispatcherRolePermissions.put(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, permission);
+
+        permission = 0L; // TODO: Reinitialize
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("READ")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("DELETE")
+                + moduleTabPermissions.get("EXPORT")
+                + moduleTabPermissions.get("PUBLISH_PM");
+        dispatcherRolePermissions.put(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, permission);
+
+        permission = 0L; // TODO: Reinitialize
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("READ")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("DELETE")
+                + moduleTabPermissions.get("EXPORT")
+                + moduleTabPermissions.get("PM_CREATE");
+        dispatcherRolePermissions.put(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, permission);
+
+        permission = 0L; // TODO: Reinitialize
+        permission += moduleTabPermissions.get("CREATE")
+                + moduleTabPermissions.get("READ")
+                + moduleTabPermissions.get("UPDATE")
+                + moduleTabPermissions.get("DELETE")
+                + moduleTabPermissions.get("EXPORT");
+        dispatcherRolePermissions.put(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN, permission);
 
         permission = 0L; // TODO: Reinitialize
         permission += moduleTabPermissions.get("CREATE")

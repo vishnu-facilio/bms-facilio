@@ -28,6 +28,7 @@ public class ServicePMTemplateAction  extends V3Action {
     private List<Long> assetIds;
     private List<Long> spaceIds;
     private ServicePMTriggerContext trigger;
+    private Boolean publish;
 
     public String createServicePM() throws Exception{
         try{
@@ -55,6 +56,7 @@ public class ServicePMTemplateAction  extends V3Action {
             message.put("assetIds", assetIds);
             message.put("spaceIds", spaceIds);
             message.put("trigger", trigger);
+            message.put("publish", publish);
 
             Messenger.getMessenger().sendMessage(new Message()
                     .setKey("service_pm_template/" + recordId + "/execute")
@@ -62,7 +64,7 @@ public class ServicePMTemplateAction  extends V3Action {
                     .setContent(message)
             );
             HashMap<String, String> successMsg = new HashMap<>();
-            successMsg.put("message","Successfully created PMs");
+            successMsg.put("message","Your PMs have been created successfully!");
             setData(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_STATUS_ACTIONS,successMsg);
         }catch (Exception e){
             throw new RESTException(ErrorCode.VALIDATION_ERROR,e.getMessage());
