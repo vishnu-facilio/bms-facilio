@@ -200,7 +200,7 @@ public class AddPmV2ModuleAndFields extends SignUpData {
 //        fields.add(isActiveField);
         
         
-        SystemEnumField pmStatus = (SystemEnumField) FieldFactory.getDefaultField("pmStatus", "PM Status", "PM_STATUS", FieldType.SYSTEM_ENUM);
+        SystemEnumField pmStatus = (SystemEnumField) FieldFactory.getDefaultField("pmStatus", "Publish Status", "PM_STATUS", FieldType.SYSTEM_ENUM);
         pmStatus.setEnumName("PlannedMaintenanceStatus");
         
         fields.add(pmStatus);
