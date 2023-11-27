@@ -3372,6 +3372,17 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain PMV2TriggerBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructTriggerNameCommand());
+        return c;
+    }
+
+    public static FacilioChain PMV2TriggerBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConstructTriggerNameCommand());
+        return c;
+    }
     public static FacilioChain SpaceBookingSupplementsAndExtraFieldsChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SpaceBookingExtraFieldsCommand());

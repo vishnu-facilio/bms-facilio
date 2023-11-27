@@ -8,6 +8,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
@@ -15,8 +17,10 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BeforeSavePMPlannerCommand extends FacilioCommand {
     @Override
@@ -49,8 +53,11 @@ public class BeforeSavePMPlannerCommand extends FacilioCommand {
         }
 
         if (!updateTriggerRecords.isEmpty()) {
-            List<FacilioField> pmTriggerV2Fields = modBean.getAllFields("pmTriggerV2");
-            V3RecordAPI.batchUpdateRecords("pmTriggerV2", updateTriggerRecords, pmTriggerV2Fields);
+            for(ModuleBaseWithCustomFields triggerV2: updateTriggerRecords){
+                Map<String, Object> triggerMap = FieldUtil.getAsProperties(triggerV2);
+                V3Util.updateBulkRecords("pmTriggerV2",triggerMap, Collections.singletonList(triggerV2.getId()),false);
+            }
+            //V3RecordAPI.batchUpdateRecords("pmTriggerV2", updateTriggerRecords, pmTriggerV2Fields);
         }
         return false;
     }

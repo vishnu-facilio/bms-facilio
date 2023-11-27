@@ -281,6 +281,11 @@ public class AddPmV2ModuleAndFields extends SignUpData {
          * Adding fields pmTriggerV2 Module
          */
         List<FacilioField> fields = new ArrayList<>();
+        /* Name Field */
+        StringField nameField = SignupUtil.getStringField(module, "name", "Name", "NAME",
+                FacilioField.FieldDisplayType.TEXTBOX, false, false, true, true, orgId);
+        fields.add(nameField);
+
         /* pmId Field */
         NumberField pmIdField = SignupUtil.getNumberField(module, "pmId", "PM ID", "PM_ID",
                 FacilioField.FieldDisplayType.TEXTBOX, false, false, true, orgId);

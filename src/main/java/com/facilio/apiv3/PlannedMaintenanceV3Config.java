@@ -36,7 +36,9 @@ public class PlannedMaintenanceV3Config {
     public static Supplier<V3Config> getPMTriggers() {
         return () -> new V3Config(PMTriggerV2.class, null)
                 .update()
+                .beforeSave(TransactionChainFactoryV3.PMV2TriggerBeforeUpdateChain())
                 .create()
+                .beforeSave(TransactionChainFactoryV3.PMV2TriggerBeforeSaveChain())
                 .delete()
                 .list()
                 .summary()

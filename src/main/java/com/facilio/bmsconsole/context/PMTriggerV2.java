@@ -15,6 +15,7 @@ import lombok.Data;
 
 @Data
 public class PMTriggerV2 extends V3Context {
+    private String name;
     private long pmId;
     private String schedule;
     private PMTriggerFrequency frequency;
@@ -24,6 +25,14 @@ public class PMTriggerV2 extends V3Context {
     private long endTime;
 
     private long cutOffTime;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public PMTriggerFrequency getFrequencyEnum() {
         return frequency;
