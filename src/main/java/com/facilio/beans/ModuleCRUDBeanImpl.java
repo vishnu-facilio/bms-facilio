@@ -1437,6 +1437,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogContext) throws Exception{
 		WorkflowRuleLogUtil.insertWorkflowRuleLog(workflowRuleLog,workflowRuleActionLogContext);
 	}
+	@Override
+	public void addBulkWorkflowRuleLog(List<WorkflowRuleLogContext> workflowRuleLog) throws Exception{
+		WorkflowRuleLogUtil.insertBulkWorkflowRuleLog(workflowRuleLog);
+	}
 
 	@Override
 	public void addFlowLog(FlowLogContext flowLogContext) throws Exception {

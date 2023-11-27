@@ -172,6 +172,7 @@ public interface ModuleCRUDBean {
 	//void extendPlanner(long plannerId, Duration duration) throws Exception;
 	void addWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog, List<WorkflowRuleActionLogContext> workflowRuleActionLogList) throws Exception;
 	void addFlowLog(FlowLogContext flowLogContext) throws Exception;
+	void addBulkWorkflowRuleLog(List<WorkflowRuleLogContext> workflowRuleLog) throws Exception;
 
 	void scheduleServicePM(Long servicePMId, ServicePlannedMaintenanceAPI.ScheduleOperation operation) throws Exception;
 }

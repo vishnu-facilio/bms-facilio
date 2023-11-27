@@ -25,13 +25,36 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class WorkflowRuleLogUtil {
 
     public static final Logger LOGGER = LogManager.getLogger(WorkflowRuleLogUtil.class.getName());
+    public static void insertBulkWorkflowRuleLog(List<WorkflowRuleLogContext> workflowRuleLogList) throws Exception{
+        if (CollectionUtils.isEmpty(workflowRuleLogList))
+            return;
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        InsertRecordBuilder<WorkflowRuleLogContext> insertRecordBuilder = new InsertRecordBuilder<WorkflowRuleLogContext>()
+                .module(module)
+                .fields(fields)
+                .addRecords(workflowRuleLogList);
+        insertRecordBuilder.save();
+
+        List<WorkflowRuleActionLogContext> actionLogList=new LinkedList<>();
+        for(WorkflowRuleLogContext log:workflowRuleLogList){
+            List<WorkflowRuleActionLogContext> actionLog=log.getActions();
+            if(CollectionUtils.isNotEmpty(actionLog)) {
+                actionLog.forEach(i -> i.setWorkflowRuleLogId(log.getId()));
+                actionLogList.addAll(actionLog);
+            }
+        }
+        insertBulkWorkflowRuleActionLog(actionLogList);
+    }
     public static void insertWorkflowRuleLog(WorkflowRuleLogContext workflowRuleLog,List<WorkflowRuleActionLogContext> workflowRuleActionLogContext) throws Exception{
         if (workflowRuleLog == null)
             return;
@@ -48,6 +71,18 @@ public class WorkflowRuleLogUtil {
         if(CollectionUtils.isNotEmpty(workflowRuleActionLogContext)) {
             insertWorkflowRuleActionLog((long) props.get("id"), workflowRuleActionLogContext);
         }
+    }
+    public static void insertBulkWorkflowRuleActionLog(List<WorkflowRuleActionLogContext> actionLogList) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORKFLOW_RULE_ACTION_LOGS);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+
+        InsertRecordBuilder<WorkflowRuleActionLogContext> builder = new InsertRecordBuilder<WorkflowRuleActionLogContext>()
+                .module(module)
+                .fields(fields)
+                .addRecords(actionLogList);
+        builder.save();
     }
     public static void insertWorkflowRuleActionLog(long workflowRuleLogId,List<WorkflowRuleActionLogContext> workflowRuleActionLogContext) throws Exception
     {

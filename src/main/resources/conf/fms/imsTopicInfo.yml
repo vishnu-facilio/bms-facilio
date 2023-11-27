@@ -65,5 +65,6 @@ topics:
       - { key: __background_activity_rollup__/+/rollup, handler: com.facilio.backgroundactivity.handlers.BackgroundActivityRollupTopicHandler, recordTimeout: 120 }
 
   - topic: workflow-rulelog
+    batch-process: true
     keys:
       - { key: __workflow_rule_logs__/#/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }
