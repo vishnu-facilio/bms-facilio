@@ -2,9 +2,12 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.point.GetPointRequest;
+import com.facilio.agentv2.point.Point;
 import com.facilio.bmsconsole.activity.CommandActivityType;
 import com.facilio.bmsconsole.activity.ControlActionActivityType;
 import com.facilio.bmsconsole.activity.ControlActionTemplateActivityType;
+import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PeopleContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.PeopleAPI;
@@ -206,6 +209,7 @@ public class ControlActionAPI {
         List<FacilioField> fields = new ArrayList<>();
         fields.add(fieldMap.get("errorMsg"));
         fields.add(fieldMap.get("controlActionCommandStatus"));
+        fields.add(fieldMap.get("afterValue"));
 
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
@@ -457,6 +461,112 @@ public class ControlActionAPI {
         context1.put(FacilioConstants.ContextNames.ACTIVITY_LIST, Collections.singletonList(activityContext));
         FacilioCommand command = new AddActivitiesCommandV3(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ACTIVITY_MODULE_NAME);
         command.executeCommand(context1);
+    }
+    public static V3CommandsContext getV3Commands(Long commandId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+
+        SelectRecordsBuilder<V3CommandsContext> builder = new SelectRecordsBuilder<V3CommandsContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(V3CommandsContext.class)
+                .andCondition(CriteriaAPI.getIdCondition(commandId,module));
+        return builder.fetchFirst();
+    }
+    public static List<V3CommandsContext> getScheduledActionCommandsOfControlAction(Long controlActionId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        Map<String,FacilioField> filedMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<V3CommandsContext> builder = new SelectRecordsBuilder<V3CommandsContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(V3CommandsContext.class)
+                .andCondition(CriteriaAPI.getCondition(filedMap.get("commandActionType"),String.valueOf(V3CommandsContext.CommandActionType.SCHEDULED_ACTION.getVal()),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(filedMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static List<V3CommandsContext> getRevertActionCommandsOfControlAction(Long controlActionId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        List<FacilioField> fieldList = modBean.getAllFields(FacilioConstants.Control_Action.COMMAND_MODULE_NAME);
+        Map<String,FacilioField> filedMap = FieldFactory.getAsMap(fieldList);
+
+        SelectRecordsBuilder<V3CommandsContext> builder = new SelectRecordsBuilder<V3CommandsContext>()
+                .module(module)
+                .select(fieldList)
+                .beanClass(V3CommandsContext.class)
+                .andCondition(CriteriaAPI.getCondition(filedMap.get("commandActionType"),String.valueOf(V3CommandsContext.CommandActionType.REVERT_ACTION.getVal()),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(filedMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS));
+        return builder.get();
+    }
+    public static V3ControlActionContext.ControlActionStatus getControlActionCompletionStatus(List<V3CommandsContext> commandsContexts,Boolean isRevertAction){
+        int count = 0;
+        for(V3CommandsContext commandsContext : commandsContexts){
+            if(commandsContext.getControlActionCommandStatus() == V3CommandsContext.ControlActionCommandStatus.FAILED.getVal()){
+                count += 1;
+            }
+        }
+        if(isRevertAction){
+            if(count == 0){
+                return V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SUCCESS;
+            } else if (count == commandsContexts.size()) {
+                return V3ControlActionContext.ControlActionStatus.REVERT_ACTION_FAILED;
+            } else {
+               return V3ControlActionContext.ControlActionStatus.REVERT_ACTION_COMPLETED_WITH_ERROR;
+            }
+        }
+        else{
+            if(count == 0){
+                return V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SUCCESS;
+            } else if (count == commandsContexts.size()) {
+                return V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_FAILED;
+            } else {
+                return V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_COMPLETED_WITH_ERROR;
+            }
+        }
+    }
+
+    public static void updateControlActionStatus(V3ControlActionContext controlActionContext, Boolean isRevertAction) throws Exception{
+        if(isRevertAction){
+            List<V3CommandsContext> revertActionCommandsList = getRevertActionCommandsOfControlAction(controlActionContext.getId());
+            V3ControlActionContext.ControlActionStatus status = getControlActionCompletionStatus(revertActionCommandsList,isRevertAction);
+            controlActionContext.setControlActionStatus(status.getVal());
+            controlActionContext.setRevertActionStatus(status.getVal());
+            ControlActionAPI.addControlActionActivity(controlActionContext.getControlActionStatusEnum().getValue(), controlActionContext.getId());
+        }
+        else{
+            List<V3CommandsContext> scheduleActionCommandsList = getScheduledActionCommandsOfControlAction(controlActionContext.getId());
+            V3ControlActionContext.ControlActionStatus status = getControlActionCompletionStatus(scheduleActionCommandsList,isRevertAction);
+            controlActionContext.setControlActionStatus(status.getVal());
+            controlActionContext.setScheduleActionStatus(status.getVal());
+            ControlActionAPI.addControlActionActivity(controlActionContext.getControlActionStatusEnum().getValue(), controlActionContext.getId());
+            if(CollectionUtils.isNotEmpty(getRevertActionCommandsOfControlAction(controlActionContext.getId()))){
+                ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SCHEDULED.getValue(), controlActionContext.getId());
+                controlActionContext.setRevertActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SCHEDULED.getVal());
+                controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.REVERT_ACTION_SCHEDULED.getVal());
+            }
+        }
+        updateControlAction(controlActionContext);
+    }
+
+    public static void setControllerForV3Command(V3CommandsContext commandsContext) throws Exception{
+        Criteria criteria = new Criteria();
+        FacilioModule pointModule = AgentConstants.getPointModule()==null?ModuleFactory.getPointModule():AgentConstants.getPointModule();
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointFieldIdField(pointModule), String.valueOf(commandsContext.getFieldId()),NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPointResourceIdField(pointModule), String.valueOf(commandsContext.getAsset().getId()), NumberOperators.EQUALS));
+
+        GetPointRequest getPointRequest = new GetPointRequest();
+        // return single Point
+        List<Point> points = getPointRequest.withCriteria(criteria).getPoints();
+
+        if(CollectionUtils.isNotEmpty(points) && points.get(0) != null) {
+            ControllerContext context = new ControllerContext();
+            context.setId(points.get(0).getControllerId());
+            commandsContext.setController(context);
+        }
     }
 
 

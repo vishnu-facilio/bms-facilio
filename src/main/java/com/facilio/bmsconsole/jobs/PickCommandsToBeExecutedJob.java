@@ -46,7 +46,9 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
         if(controlActionContext == null){
             throw new IllegalArgumentException("Control Action is Empty - #"+controlActionId);
         }
+        boolean isRevert = true;
         if(jobName.equals("PickCommandsToBeExecutedScheduledAction")){
+            isRevert = false;
             controlActionContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
             controlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_IN_PROGRESS.getVal());
             ControlActionAPI.updateControlAction(controlActionContext);
@@ -69,6 +71,7 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
            for (V3CommandsContext commandsContext : commandsContextList) {
                V3ActionContext actionContext = actionContextMap.get(commandsContext.getAction().getId());
                ControlActionAPI.setReadingValueForCommand(commandsContext, actionContext);
+               ControlActionAPI.setControllerForV3Command(commandsContext);
                ControlActionAPI.updateCommand(commandsContext);
                if(commandsContext.getControlActionCommandStatus() == V3CommandsContext.ControlActionCommandStatus.POINT_NOT_COMMISSIONED.getVal()){
                    commandsContextList.remove(commandsContext);
@@ -84,7 +87,26 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
            //Todo validate IotMessageAPI.setReadingValueForV3CommandContext()
            //Todo ask agent team abt the value of command (setValue())
            if (controlActionContext.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.ACTUAL.getVal()) {
-               IoTMessageAPI.setReadingValueForV3CommandContext(commandsContextList);
+               try {
+                   IoTMessageAPI.setReadingValueForV3CommandContext(commandsContextList);
+               }
+               catch (Exception e){
+                   for(V3CommandsContext commandsContext : commandsContextList){
+                       commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.FAILED.getVal());
+                       commandsContext.setErrorMsg(e.getMessage());
+                   }
+                   ControlActionAPI.updateCommandsStatus(commandsContextList);
+               }
+
+                ControlActionAPI.updateControlActionStatus(controlActionContext,isRevert);
+           }
+           else{
+               for(V3CommandsContext commandsContext : commandsContextList){
+                   commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal());
+                   ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.SCHEDULED.getValue(),commandsContext.getId());
+                   ControlActionAPI.updateCommand(commandsContext);
+               }
+               ControlActionAPI.updateControlActionStatus(controlActionContext,isRevert);
            }
        }
         else{

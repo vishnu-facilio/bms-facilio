@@ -25,6 +25,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.util.V3Util;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
@@ -32,10 +33,11 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
+@Log4j
 public class CreateControlActionCommandsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        LOGGER.info("CreateControlActionCommandsCommand Class Entry ---->");
         Long controlActionId = (Long) context.get(FacilioConstants.Control_Action.CONTROL_ACTION_ID);
         if(controlActionId == null || controlActionId < 0){
             return false;
@@ -48,13 +50,15 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(assetContextList)){
             return false;
         }
-        boolean check = false;
+        boolean check = true;
         List<PeopleContext> firstLevelApproverList = ControlActionAPI.getApprovalList(v3ControlActionContext.getId(),FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
-        V3CommandsContext.ControlActionCommandStatus commandStatus = V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED;
-        if(CollectionUtils.isEmpty(firstLevelApproverList)) {
+        V3CommandsContext.ControlActionCommandStatus commandStatus = V3CommandsContext.ControlActionCommandStatus.SCHEDULED;
+        if(CollectionUtils.isNotEmpty(firstLevelApproverList)) {
+            LOGGER.info("First Level Approver List is not Empty --->");
             if (v3ControlActionContext.getControlActionStatus() == V3ControlActionContext.ControlActionStatus.PUBLISHED.getVal()){
-                commandStatus = V3CommandsContext.ControlActionCommandStatus.SCHEDULED;
-                check = true;
+                commandStatus = V3CommandsContext.ControlActionCommandStatus.NOT_SCHEDULED;
+                LOGGER.info("Command Status will be Not Scheduled");
+                check = false;
             }
         }
 
@@ -76,6 +80,9 @@ public class CreateControlActionCommandsCommand extends FacilioCommand {
                 v3ControlActionContext.setScheduleActionStatus(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getVal());
                 ControlActionAPI.updateControlAction(v3ControlActionContext);
                 ControlActionAPI.addControlActionActivity(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getValue(), v3ControlActionContext.getId());
+            }
+            else{
+                LOGGER.info("Approval Pending - Control Action status will be Published And Command Status Will be Not Scheduled");
             }
         }
         context.put(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,v3ControlActionContext);

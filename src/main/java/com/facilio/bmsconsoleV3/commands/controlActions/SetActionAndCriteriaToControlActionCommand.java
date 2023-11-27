@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.controlActions;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ActionContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.command.FacilioCommand;
@@ -42,6 +43,9 @@ public class SetActionAndCriteriaToControlActionCommand extends FacilioCommand {
             }
             if(controlActionContext.getControllerCriteriaId() != null && controlActionContext.getControllerCriteriaId() > 0){
                 controlActionContext.setControllerCriteria(CriteriaAPI.getCriteria(controlActionContext.getControllerCriteriaId()));
+            }
+            if(controlActionContext.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.SANDBOX.getVal()){
+                controlActionContext.setIsSandBox(true);
             }
         }
         return false;

@@ -44,6 +44,9 @@ public class FillActionsAndCriteriaForControlActionTemplateCommand extends Facil
             if(controlActionContextTemplate.getControllerCriteriaId() != null && controlActionContextTemplate.getControllerCriteriaId() > 0){
                 controlActionContextTemplate.setControllerCriteria(CriteriaAPI.getCriteria(controlActionContextTemplate.getControllerCriteriaId()));
             }
+            if(controlActionContextTemplate.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.SANDBOX.getVal()){
+                controlActionContextTemplate.setIsSandBox(true);
+            }
         }
         return false;
     }

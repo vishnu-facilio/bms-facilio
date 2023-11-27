@@ -55,14 +55,19 @@ public class UpdateDataCommandStatus extends AgentV2Command {
         List<V3CommandsContext> commandsContextList = new ArrayList<>();
         JSONObject stateObject = (JSONObject) context.get("state");
         for (Object controlId : stateObject.keySet()) {
-            V3CommandsContext v3CommandsContext = new V3CommandsContext();
-            v3CommandsContext.setId(Long.parseLong(controlId.toString()));
+            V3CommandsContext v3CommandsContext = ControlActionAPI.getV3Commands(Long.parseLong(controlId.toString()));
             JSONObject pointState = (JSONObject) stateObject.get(controlId);
             Object status = pointState.get("status");
             if(status == null) continue;
-            v3CommandsContext.setControlActionCommandStatus(Integer.parseInt(status.toString()));
+            int statusVal = Integer.parseInt(status.toString());
+            v3CommandsContext.setControlActionCommandStatus(statusVal);
             if(pointState.get("message") != null){
                 v3CommandsContext.setErrorMsg(pointState.get("message").toString());
+            }
+            if(statusVal == V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal()){
+                v3CommandsContext.setAfterValue(v3CommandsContext.getSetValue());
+            } else if(statusVal == V3CommandsContext.ControlActionCommandStatus.FAILED.getVal()){
+                v3CommandsContext.setAfterValue(v3CommandsContext.getPreviousValue());
             }
             commandsContextList.add(v3CommandsContext);
         }

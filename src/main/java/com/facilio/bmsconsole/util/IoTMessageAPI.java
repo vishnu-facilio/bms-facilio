@@ -12,8 +12,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.agentv2.AgentConstants;
+import com.facilio.agentv2.controller.Controller;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.controlActions.V3CommandsContext;
+import com.facilio.bmsconsoleV3.util.ControlActionAPI;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -637,7 +639,8 @@ public class IoTMessageAPI {
 		}
 		List<Point> pointData = PointsAPI.getPointData(pairs);
 		Map<Long, List<Point>> pointControllerMap = new HashMap<>();
-		for (Point point: pointData) {
+
+		for (Point point : pointData) {
 			List<Point> pointList = pointControllerMap.get(point.getControllerId());
 			if (pointList == null) {
 				pointList = new ArrayList<>();
