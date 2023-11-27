@@ -31,7 +31,7 @@ public class PublishServicePMCommand extends FacilioCommand {
                 if(MapUtils.isNotEmpty(bodyParams) && bodyParams.containsKey("publishServicePM") && (boolean) bodyParams.get("publishServicePM")){
                     if(!servicePlannedMaintenance.getIsPublished()){
                         ServicePMTriggerContext servicePMTrigger = servicePlannedMaintenance.getServicePMTrigger();
-                        if(servicePMTrigger.getStartTime()==null){
+                        if(servicePMTrigger!=null && servicePMTrigger.getStartTime()==null){
                             throw new RESTException(ErrorCode.VALIDATION_ERROR,"Execution start date is required");
                         }
                         servicePlannedMaintenance.setIsPublished(true);

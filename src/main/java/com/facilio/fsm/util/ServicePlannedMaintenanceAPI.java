@@ -114,7 +114,7 @@ public class ServicePlannedMaintenanceAPI {
                 .orderBy("SO_CREATED_TIME ASC")
                 .limit(1);
         ServiceOrderContext serviceOrder = recordsBuilder.fetchFirst();
-        if(serviceOrder.getCreatedTime() !=null){
+        if(serviceOrder!=null && serviceOrder.getCreatedTime() !=null){
             return serviceOrder.getCreatedTime();
         }
         return null;

@@ -238,6 +238,7 @@ import com.facilio.fsm.commands.servicePMTemplate.SetServicePMTriggerInListComma
 import com.facilio.fsm.commands.servicePMTemplate.ValidateServicePMTemplateCommand;
 import com.facilio.fsm.commands.servicePlan.*;
 import com.facilio.fsm.commands.servicePlannedMaintenance.ConstructTriggerNameCommand;
+import com.facilio.fsm.commands.servicePlannedMaintenance.LoadServicePMLookupCommand;
 import com.facilio.fsm.commands.servicePlannedMaintenance.UpdateServicePlannedMaintenanceCommand;
 import com.facilio.fsm.commands.servicePlannedMaintenance.ValidateServicePMCommand;
 import com.facilio.fsm.commands.serviceTasks.DeleteSATaskRelCommand;
@@ -4566,27 +4567,9 @@ public class APIv3Config {
                 .afterSave(new ConstructUpdateCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_ACTIVITY))
                 .list()
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTrigger")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTemplate")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "site")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "space")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "client")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "asset")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePlan")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "priority")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "fieldAgent")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "vendor")
+                .beforeFetch(new LoadServicePMLookupCommand())
                 .summary()
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTrigger")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePMTemplate")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "site")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "space")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "client")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "asset")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "servicePlan")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "priority")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "fieldAgent")
-                .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "vendor")
+                .beforeFetch(new LoadServicePMLookupCommand())
                 .delete()
                 .build();
     }

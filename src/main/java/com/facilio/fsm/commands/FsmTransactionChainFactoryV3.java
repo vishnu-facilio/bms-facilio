@@ -392,13 +392,13 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain getServicePMBeforeUpdateChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new PublishServicePMCommand());
-        c.addCommand(new UpdateNextRunCommand());
         return c;
     }
     public static FacilioChain preCreateServiceOrder(){
         FacilioChain c = FacilioChain.getTransactionChain(1800000);// in ms
         c.addCommand(new GenerateServiceOrdersCommand());
         c.addCommand(new PreCreateServiceOrdersCommand());
+        c.addCommand(new UpdateNextRunCommand());
         return c;
     }
     public static FacilioChain getServiceOrderStatusChangeChain(){

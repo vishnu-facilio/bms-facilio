@@ -11,10 +11,13 @@ import com.facilio.fsm.context.ServicePMTemplateContext;
 import com.facilio.fsm.context.ServicePMTriggerContext;
 import com.facilio.fsm.context.ServicePlannedMaintenanceContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.xpath.operations.Bool;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class ServicePMCreationFromTemplateHandler extends ImsHandler{
@@ -26,7 +29,8 @@ public class ServicePMCreationFromTemplateHandler extends ImsHandler{
             List<Long> siteIds  = (List<Long>) message.getContent().get("siteIds");
             List<Long> assetIds=(List<Long>) message.getContent().get("assetIds");
             List<Long> spaceIds=(List<Long>) message.getContent().get("spaceIds");
-            ServicePMTriggerContext trigger = (ServicePMTriggerContext) message.getContent().get("trigger");
+            Map<String, Object> triggerData = (Map<String, Object>) message.getContent().get("trigger");
+            ServicePMTriggerContext trigger = FieldUtil.getAsBeanFromMap(triggerData,ServicePMTriggerContext.class);
             Boolean publish = (Boolean) message.getContent().get("publish");
             FacilioContext context = new FacilioContext();
             context.put("servicePMTemplateId",servicePMTemplateId);
