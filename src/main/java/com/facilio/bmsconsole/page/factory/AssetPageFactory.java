@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.bmsconsole.commands.ECMOoredo;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -348,7 +347,7 @@ public class AssetPageFactory extends PageFactory {
 
 	private static boolean addSummaryWidgetForClientPortalOfECMOOredo(FacilioModule module, Section tab1Sec1) throws Exception {
         try {
-            boolean isEcmOoredoClientSummaryWidget = AccountUtil.getCurrentOrg().getOrgId() == 552 && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.CLIENT_PORTAL;
+			boolean isEcmOoredoClientSummaryWidget = AccountUtil.getCurrentOrg().getOrgId() == 552 && AccountUtil.getCurrentOrg().getDomain().equals("ecmooredoo") && AccountUtil.getCurrentUser().getAppDomain().getAppDomainTypeEnum() == AppDomain.AppDomainType.CLIENT_PORTAL;
             if (isEcmOoredoClientSummaryWidget) {
                 SummaryWidget pageWidget = SummaryWidgetUtil.getMainSummaryWidgetForApp(module.getModuleId());
                 if (pageWidget != null) {
