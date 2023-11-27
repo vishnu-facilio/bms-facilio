@@ -2244,7 +2244,7 @@ public class APIv3Config {
 
     @ModuleType(type = FacilioModule.ModuleType.TIME_LOG)
     public static Supplier<V3Config> getWorkOrderTimeLog(){
-        return () -> new V3Config(TimelogContext.class,null)
+        return () -> new V3Config(TimelogContext.class,null,null,true)
                 .list()
                 .beforeFetch(new FacilioCommand() {
                     @Override
