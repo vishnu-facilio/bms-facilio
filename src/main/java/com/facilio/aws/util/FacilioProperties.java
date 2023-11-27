@@ -165,6 +165,8 @@ public class FacilioProperties {
     @Getter
     private static Version buildVersion;
 
+    private static boolean additionalSecret;
+
     public static boolean isNewVersion() {
         return Boolean.parseBoolean(isNewVersion);
     }
@@ -286,7 +288,8 @@ public class FacilioProperties {
             PROPERTIES.load(stream);
             PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
             environment = PROPERTIES.getProperty("environment");
-
+            service = PROPERTIES.getProperty("service");
+            additionalSecret = Boolean.parseBoolean(PROPERTIES.getProperty("isAdditionalSecret","false"));
             mailDomain = PROPERTIES.getProperty("mail.domain");
             if (StringUtils.isEmpty(mailDomain)) {
                 mailDomain = "facilio.com";
@@ -297,6 +300,10 @@ public class FacilioProperties {
 //            LOGGER.info("Before secret reading => ("+environment + "-app.properties)");
             HashMap<String, String> awsSecret = getPassword(environment + "-app.properties");
             awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
+            if (additionalSecret){
+                awsSecret = getPassword(environment + "-" + service + ".properties");
+                awsSecret.forEach((k, v) -> PROPERTIES.put(k.trim(), v.trim()));
+            }
 //            LOGGER.info("After secret reading "+awsSecret);
             productionEnvironment = ("demo".equalsIgnoreCase(environment) || "production".equalsIgnoreCase(environment)) || "preprod".equalsIgnoreCase(environment);
             developmentEnvironment = "development".equalsIgnoreCase(environment);
@@ -413,7 +420,6 @@ public class FacilioProperties {
 
             cloudAgentUrl = PROPERTIES.getProperty("agent.cloud.url", "facilioagent.com");
 
-            service = PROPERTIES.getProperty("service");
             developerAppDomain = PROPERTIES.getProperty("facilioapisdomain", "facilioapis.com");
             hydraUrl = PROPERTIES.getProperty("hydraUrl", "http://127.0.0.1:4445");
 
