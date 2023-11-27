@@ -47,6 +47,8 @@ import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioUtil;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.FilterUtil;
 import com.facilio.workflows.context.ExpressionContext;
@@ -369,6 +371,17 @@ public class V2AnalyticsOldUtil {
                         V2MeasuresContext measure_context = FieldUtil.getAsBeanFromJson(measure_json, V2MeasuresContext.class);
                         if(measure.getCriteria_id() != null && measure.getCriteria_id() > 0){
                             measure_context.setCriteria(CriteriaAPI.getCriteria(measure.getCriteria_id()));
+                        }
+                        if(measure_context.getFieldId() != null && measure_context.getFieldId() > 0)
+                        {
+                            FacilioField measure_field = Constants.getModBean().getField(measure_context.getFieldId());
+                            if(measure_field != null && measure_field instanceof  NumberField)
+                            {
+                                Unit unit = UnitsUtil.getDisplayUnit((NumberField) measure_field);
+                                if(unit != null && unit.getSymbol() != null && !"".equals(unit.getSymbol())) {
+                                    measure_context.setUnit(unit.getSymbol());
+                                }
+                            }
                         }
                         v2_measure_list.add(measure_context);
                     }
