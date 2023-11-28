@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
@@ -286,14 +287,7 @@ public class PlannedMaintenanceModule extends BaseModuleConfig{
 
         /** LIST PAGE SYSTEM BUTTONS **/
         // Table Top Bar buttons
-        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
-        createButtonListTop.setName("Create");
-        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
-        createButtonListTop.setIdentifier("create");
-        createButtonListTop.setPermissionRequired(true);
-        createButtonListTop.setPermission("CREATE");
-        addSystemButton(FacilioConstants.ContextNames.PLANNEDMAINTENANCE, createButtonListTop);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.PLANNEDMAINTENANCE);
 
         // Export buttons
         SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();

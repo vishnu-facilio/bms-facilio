@@ -584,7 +584,7 @@ public class FloorModule extends BaseModuleConfig {
 
     private void addSystemButtons() throws Exception {
         //List buttons
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.FLOOR);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.FLOOR);
         SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.FLOOR);
         SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.FLOOR);
         SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.FLOOR);

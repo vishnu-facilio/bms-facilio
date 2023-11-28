@@ -166,14 +166,7 @@ public class AssetModule extends BaseModuleConfig{
 
 
         // Table Top Bar buttons
-        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
-        createButtonListTop.setName("Create");
-        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
-        createButtonListTop.setIdentifier("create");
-        createButtonListTop.setPermissionRequired(true);
-        createButtonListTop.setPermission("CREATE");
-        addSystemButton(FacilioConstants.ContextNames.ASSET, createButtonListTop);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.ASSET);
 
         // Export buttons
         SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();

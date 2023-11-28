@@ -320,7 +320,7 @@ public class ClientModule extends BaseModuleConfig{
     private static void addSystemButton(String moduleName) throws Exception{
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Clients");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

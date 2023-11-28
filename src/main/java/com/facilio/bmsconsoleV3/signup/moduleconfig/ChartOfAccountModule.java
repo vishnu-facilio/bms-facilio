@@ -98,7 +98,7 @@ public class ChartOfAccountModule extends BaseModuleConfig{
         String moduleName = "chartofaccount";
 
         SystemButtonApi.addListEditButton(moduleName);
-        SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(moduleName);
         SystemButtonApi.addListDeleteButton(moduleName);
     }
 }

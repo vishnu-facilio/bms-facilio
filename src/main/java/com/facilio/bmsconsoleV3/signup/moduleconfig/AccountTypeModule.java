@@ -93,7 +93,7 @@ public class AccountTypeModule extends BaseModuleConfig{
         String moduleName = FacilioConstants.ContextNames.ACCOUNT_TYPE;
 
         SystemButtonApi.addListEditButton(moduleName);
-        SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(moduleName);
         SystemButtonApi.addListDeleteButton(moduleName);
     }
 }

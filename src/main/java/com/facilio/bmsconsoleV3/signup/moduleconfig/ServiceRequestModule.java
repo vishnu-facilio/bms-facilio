@@ -489,7 +489,7 @@ public class ServiceRequestModule extends BaseModuleConfig{
         //List Page System Buttons
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Service Request");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

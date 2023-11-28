@@ -12,7 +12,7 @@ public class AddSystemButtonForModuleCommand extends FacilioCommand {
 
         FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
         String moduleName = module.getName();
-        SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(moduleName);
         SystemButtonApi.addListEditButton(moduleName);
         SystemButtonApi.addSummaryEditButton(moduleName);
         SystemButtonApi.addListDeleteButton(moduleName);

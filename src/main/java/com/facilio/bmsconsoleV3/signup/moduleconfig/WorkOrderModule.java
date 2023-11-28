@@ -98,14 +98,7 @@ public class WorkOrderModule extends BaseModuleConfig {
 
 
         // Table Top Bar buttons
-        SystemButtonRuleContext createButtonListTop = new SystemButtonRuleContext();
-        createButtonListTop.setName("Create");
-        createButtonListTop.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        createButtonListTop.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
-        createButtonListTop.setIdentifier("create");
-        createButtonListTop.setPermissionRequired(true);
-        createButtonListTop.setPermission("CREATE");
-        addSystemButton(FacilioConstants.ContextNames.WORK_ORDER, createButtonListTop);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.WORK_ORDER);
 
         // Export buttons
         SystemButtonRuleContext exportAsExcelButtonListTop = new SystemButtonRuleContext();

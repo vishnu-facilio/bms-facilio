@@ -239,7 +239,7 @@ public class BudgetModule extends BaseModuleConfig{
         String moduleName = FacilioConstants.ContextNames.BUDGET;
 
         SystemButtonApi.addListEditButton(moduleName);
-        SystemButtonApi.addCreateButton(moduleName);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(moduleName);
         SystemButtonApi.addSummaryEditButton(moduleName);
         SystemButtonApi.addListDeleteButton(moduleName);
 

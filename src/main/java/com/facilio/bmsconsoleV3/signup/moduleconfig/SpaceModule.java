@@ -114,7 +114,7 @@ public class SpaceModule extends BaseModuleConfig {
     }
     private void addSystemButtons() throws Exception{
         //List buttons
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.SPACE);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.SPACE);
         SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.SPACE);
         SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.SPACE);
         SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.SPACE);

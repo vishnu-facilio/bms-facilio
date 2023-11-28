@@ -361,7 +361,7 @@ public class TenantContactModule extends BaseModuleConfig{
 
         //LIST BUTTONS
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Tenant Contact");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

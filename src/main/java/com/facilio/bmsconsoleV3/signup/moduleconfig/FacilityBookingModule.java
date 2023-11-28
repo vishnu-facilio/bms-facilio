@@ -461,7 +461,7 @@ public class FacilityBookingModule extends BaseModuleConfig{
         //List Page System Buttons
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Booking");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

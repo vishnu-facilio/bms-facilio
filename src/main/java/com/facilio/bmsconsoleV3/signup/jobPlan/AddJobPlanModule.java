@@ -1040,7 +1040,7 @@ public class AddJobPlanModule extends BaseModuleConfig{
         bulkPublishButton.setPermission("UPDATE");
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.JOB_PLAN, bulkPublishButton);
 
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.JOB_PLAN);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.JOB_PLAN);
         SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.JOB_PLAN);
         SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.JOB_PLAN);
         SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.JOB_PLAN);

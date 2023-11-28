@@ -501,7 +501,7 @@ public class VendorContactModule extends BaseModuleConfig{
         portalAccessButton.setPermissionRequired(true);
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Vendor Contact");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

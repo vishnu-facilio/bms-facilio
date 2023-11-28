@@ -115,7 +115,7 @@ public class QuoteModule extends BaseModuleConfig{
         edit.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,edit);
 
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.QUOTE);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.QUOTE);
         SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.QUOTE);
         SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.QUOTE);
 

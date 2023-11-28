@@ -204,7 +204,7 @@ public class ClientContactModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(moduleName, portalAccessButton);
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New Client Contact");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

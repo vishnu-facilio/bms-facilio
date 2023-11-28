@@ -78,7 +78,7 @@ public class BuildingModule extends BaseModuleConfig {
     }
 
     private void addSystemButtons() throws Exception{
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.BUILDING);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.BUILDING);
         SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.BUILDING);
         SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.BUILDING);
         SystemButtonApi.addExportAsCSV(FacilioConstants.ContextNames.BUILDING);
