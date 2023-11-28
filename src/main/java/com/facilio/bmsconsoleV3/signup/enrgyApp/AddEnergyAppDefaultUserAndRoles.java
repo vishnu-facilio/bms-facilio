@@ -17,6 +17,7 @@ public class AddEnergyAppDefaultUserAndRoles extends FacilioCommand {
 
         Role energySuperAdmin = new Role();
         energySuperAdmin.setIsPrevileged(true);
+        energySuperAdmin.setIsSuperAdmin(true);
         energySuperAdmin.setName(FacilioConstants.DefaultRoleNames.ENERGY_SUPER_ADMIN);
         AccountUtil.getRoleBean().createRole(AccountUtil.getCurrentOrg().getOrgId(),energySuperAdmin);
 

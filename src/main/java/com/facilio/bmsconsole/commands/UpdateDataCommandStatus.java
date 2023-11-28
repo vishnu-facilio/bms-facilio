@@ -65,16 +65,16 @@ public class UpdateDataCommandStatus extends AgentV2Command {
                 v3CommandsContext.setErrorMsg(pointState.get("message").toString());
             }
             if(statusVal == V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal()){
-                v3CommandsContext.setAfterValue(v3CommandsContext.getSetValue());
+                Object setValue = v3CommandsContext.getSetValue();
+                v3CommandsContext.setAfterValue(setValue);
             } else if(statusVal == V3CommandsContext.ControlActionCommandStatus.FAILED.getVal()){
-                v3CommandsContext.setAfterValue(v3CommandsContext.getPreviousValue());
+                Object preValue = v3CommandsContext.getPreviousValue();
+                v3CommandsContext.setAfterValue(preValue);
             }
-            commandsContextList.add(v3CommandsContext);
-        }
-        if(!commandsContextList.isEmpty()){
-            ControlActionAPI.updateCommandsStatus(commandsContextList);
+            ControlActionAPI.updateCommand(v3CommandsContext);
         }
     }
+
 
     private void updateStatusUsingControlIds(Context context) throws Exception {
         JSONArray controlIds = (JSONArray) context.get(FacilioConstants.ContextNames.DataProcessor.CONTROL_IDS);
