@@ -192,12 +192,14 @@ public class ApplicationUserUtil {
     }
 
     private static void updateOrgUser(PeopleUserContext user) throws Exception{
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
         FacilioField people = FieldFactory.getNumberField("peopleId","PEOPLE_ID",AccountConstants.getAppOrgUserModule());
             GenericUpdateRecordBuilder updatOrgUserBuilder = new GenericUpdateRecordBuilder()
                     .table(AccountConstants.getAppOrgUserModule().getTableName())
                     .fields(Collections.singletonList(people))
                     .andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouid", String.valueOf(user.getOrgUserId()), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("USERID", "uid", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("USERID", "uid", String.valueOf(user.getUid()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("ORGID","orgId",String.valueOf(orgId),NumberOperators.EQUALS));
 
             Map<String, Object> updateMap = new HashMap<>();
             updateMap.put("peopleId", user.getPeopleId());
@@ -206,12 +208,15 @@ public class ApplicationUserUtil {
     }
 
     private static void updateOrgAppUser(PeopleUserContext user) throws Exception{
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
         if(user.getApplicationId() > 0) {
             GenericUpdateRecordBuilder updateAppUserBuilder = new GenericUpdateRecordBuilder()
                     .table(AccountConstants.getOrgUserAppsModule().getTableName())
                     .fields(Collections.singletonList(AccountConstants.getRoleIdField()))
                     .andCondition(CriteriaAPI.getCondition("APPLICATION_ID", "applicationId", String.valueOf(user.getApplicationId()), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOrgUserId()), NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOrgUserId()), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+                    ;
 //            Criteria criteria = new Criteria();
 //            criteria.addAndCondition(CriteriaAPI.getCondition("IAM_USERID", "uid", String.valueOf(user.getUid()), NumberOperators.EQUALS));
 //            criteria.addOrCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOrgUserId()), NumberOperators.EQUALS));
@@ -262,10 +267,12 @@ public class ApplicationUserUtil {
     }
 
     private static void deleteOrgAppUsers(long userId, List<Long> orgUserIds,Long applicationId) throws Exception {
-
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
         GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
                 .table(AccountConstants.getOrgUserAppsModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", StringUtils.join(orgUserIds, ","), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS))
+                ;
         if (applicationId != null && applicationId > 0) {
             deleteBuilder.andCondition(CriteriaAPI.getCondition("APPLICATION_ID","applicationId", String.valueOf(applicationId), NumberOperators.EQUALS));
         }
@@ -278,7 +285,7 @@ public class ApplicationUserUtil {
     }
 
     public static List<Map<String, Object>> getOrgAppUsers( long uid,Long appId)throws Exception{
-
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(AccountConstants.getOrgUserAppsFields());
         fields.add(AccountConstants.getApplicationIdField());
@@ -293,7 +300,7 @@ public class ApplicationUserUtil {
                 .on("ORG_Users.ORG_USERID = ORG_User_Apps.ORG_USERID");
 
 
-
+        selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
         selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "uid", String.valueOf(uid), NumberOperators.EQUALS));
 
         if (appId != null && appId > 0) {
