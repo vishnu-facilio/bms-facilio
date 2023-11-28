@@ -72,7 +72,6 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
 
         List<ImportFieldMappingContext> fieldMappings = new ArrayList<>();
         fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL));
-        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.GROUPED_FIELD));
 
         mappedFields = MultiImportApi.getMappedFields(fieldMappings,
                 fieldIdVsFacilioFieldMap,fieldNameVsFacilioFieldMap);

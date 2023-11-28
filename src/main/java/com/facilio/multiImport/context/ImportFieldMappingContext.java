@@ -22,6 +22,7 @@ public class ImportFieldMappingContext implements Serializable {
     private long relMappingId = -1l;
     private long parentLookupFieldId = -1l;
     private ImportFieldMappingType type;
+    private String propName;
 
     public int getLookupIdentifier() {
         if(lookupIdentifier!=null){

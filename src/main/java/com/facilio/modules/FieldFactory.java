@@ -3821,6 +3821,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("lookupIdentifier","LOOKUP_IDENTIFIER",module));
         fields.add(getNumberField("relMappingId","RELATION_MAPPING_ID",module));
         fields.add(getNumberField("type","TYPE",module));
+        fields.add(getStringField("propName","PROP_NAME",module));
         return fields;
     }
     public static List<FacilioField> getMultiImportProcessLogFields(){

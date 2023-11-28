@@ -289,9 +289,8 @@ public enum FieldTypeImportRowProcessor {
                 urlProps = new HashMap();
                 props.put(field.getName(), urlProps);
             }
-            String urlPropFieldName = importFieldMappingContext.getFieldName();
-            String fieldName = urlPropFieldName.split("\\.")[1];
-            urlProps.put(fieldName,cellValue);
+            String urlPropName = importFieldMappingContext.getPropName();
+            urlProps.put(urlPropName,cellValue);
         }
         @Override
         public boolean isSupportedFieldTypeForHistory() {
@@ -309,16 +308,19 @@ public enum FieldTypeImportRowProcessor {
         public List<FacilioField> getGroupedFields(FacilioField field){
             FacilioField hrefField = new FacilioField();
             hrefField.setName("href");
+            hrefField.setDisplayName("Href");
             hrefField.setFieldId(field.getFieldId());
             hrefField.setDataType(FieldType.STRING);
 
             FacilioField nameField = new FacilioField();
             nameField.setName("name");
+            nameField.setDisplayName("Name");
             nameField.setFieldId(field.getFieldId());
             nameField.setDataType(FieldType.STRING);
 
             FacilioField altField = new FacilioField();
             altField.setName("alt");
+            altField.setDisplayName("Alt");
             altField.setFieldId(field.getFieldId());
             altField.setDataType(FieldType.STRING);
 

@@ -87,9 +87,9 @@ public class ImportFieldsMappingCommand extends FacilioCommand {
                 FacilioField field = fieldMap.get(fieldId);
                 FieldTypeImportRowProcessor rowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(field.getDataTypeEnum());
                 if(rowProcessor.isGroupedFieldType()){
-                   String groupedFieldName =  fieldMappingContext.getFieldName();
-                   if(!groupedFieldName.contains(".")){
-                       throw new IllegalArgumentException("Grouped field name '"+ groupedFieldName +"' should contain dot followed by parent field name in prefix");
+                   String propName = fieldMappingContext.getPropName();
+                   if(StringUtils.isEmpty(propName)){
+                       throw new IllegalArgumentException("propName can not be empty for '"+field.getDisplayName()+"'");
                    }
                 }
             }
@@ -112,18 +112,10 @@ public class ImportFieldsMappingCommand extends FacilioCommand {
             }else if(fieldId!=-1l && !fieldMap.containsKey(fieldId)){
                 fieldMappingContext.setType(ImportFieldMappingType.UNIQUE_FIELD);
             }
-            else if(fieldId!=-1l){
-                FacilioField field = fieldMap.get(fieldId);
-                FieldTypeImportRowProcessor rowProcessor = FieldTypeImportRowProcessor.getFieldTypeImportRowProcessor(field.getDataTypeEnum());
-                if(rowProcessor.isGroupedFieldType()){
-                    fieldMappingContext.setType(ImportFieldMappingType.GROUPED_FIELD);
-                }else {
-                    fieldMappingContext.setType(ImportFieldMappingType.NORMAL);
-                }
-            }
-            else if(StringUtils.isNotEmpty(fieldName)){
+            else if(fieldId!=-1l || StringUtils.isNotEmpty(fieldName)){
                 fieldMappingContext.setType(ImportFieldMappingType.NORMAL);
-            }else {
+            }
+            else {
                 throw new IllegalArgumentException("Invalid import field mapping type");
             }
         }

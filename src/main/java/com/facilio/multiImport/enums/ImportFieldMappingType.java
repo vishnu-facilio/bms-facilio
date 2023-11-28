@@ -10,8 +10,7 @@ public enum ImportFieldMappingType implements FacilioIntEnum {
     NORMAL,
     RELATIONSHIP,
     ONE_LEVEL,
-    UNIQUE_FIELD,
-    GROUPED_FIELD;
+    UNIQUE_FIELD;
 
     private static final Map<Integer,ImportFieldMappingType> TYPE_MAP = Collections.unmodifiableMap(initMap());
     private static Map<Integer,ImportFieldMappingType> initMap(){

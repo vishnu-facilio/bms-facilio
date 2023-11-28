@@ -66,10 +66,7 @@ public  class V4MultiImportProcessCommand extends BaseMultiImportProcessCommand 
 
     @Override
     protected List<ImportFieldMappingContext> getCurrentModuleFieldMappings() {
-        List<ImportFieldMappingContext> fieldMappings = new ArrayList<>();
-        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.NORMAL));
-        fieldMappings.addAll(typeVsFieldMappings.get(ImportFieldMappingType.GROUPED_FIELD));
-        return fieldMappings;
+        return typeVsFieldMappings.get(ImportFieldMappingType.NORMAL);
     }
 
     @Override
