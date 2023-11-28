@@ -43,7 +43,8 @@ public class ServiceRequestModule extends BaseModuleConfig{
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        FacilioModule module=ModuleFactory.getServiceRequestModule();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SERVICE_REQUEST);
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -104,10 +105,6 @@ public class ServiceRequestModule extends BaseModuleConfig{
                 .tabDone()
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("servicerequestrelatedsection", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("servicerequestrelatedwidget", "Related", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
-                .widgetDone()
-                .sectionDone()
                 .addSection("servicerequesttrelatedlist", "Related List", "List of all related records across modules")
                 .addWidget("servicerequestbulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
@@ -132,8 +129,8 @@ public class ServiceRequestModule extends BaseModuleConfig{
         attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.SERVICE_REQUEST_ATTACHMENTS);
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT,  "flexiblewebcomment_5", 0, 0, commentWidgetParam, null)
+                .addSection("notes", "Comments", "")
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT,  "flexiblewebcomment_5", 0, 0, commentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
                 .addSection("documents", "Attachments", "")

@@ -39,7 +39,8 @@ public class ItemTypesModule extends BaseModuleConfig{
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
-        FacilioModule module=ModuleFactory.getItemTypesModule();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
         List<String> appNames = new ArrayList<>();
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
@@ -94,10 +95,6 @@ public class ItemTypesModule extends BaseModuleConfig{
                 .tabDone()
                 .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("itemtypebulkrelationship", "Relationships", "List of relationships and types between records across modules")
-                .addWidget("itemtypebulkrelationship", "Related", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
-                .widgetDone()
-                .sectionDone()
                 .addSection("itemtyperelatedlist", "Related List", "List of all related records across modules")
                 .addWidget("itemtyperelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
