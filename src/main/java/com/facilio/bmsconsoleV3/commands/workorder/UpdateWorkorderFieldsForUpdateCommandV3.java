@@ -34,13 +34,20 @@ public class UpdateWorkorderFieldsForUpdateCommandV3 extends FacilioCommand {
             if (wos.get(0).getSyncTime() != null && oldWoForSync.getModifiedTime() > wos.get(0).getSyncTime()) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "The workorder was modified after the last sync");
             }
-            updateWODetails(wos.get(0));
+            updateWODetails(wos.get(0), oldWos.get(0));
         }
         return false;
     }
 
-    private void updateWODetails (V3WorkOrderContext wo) throws Exception {
-        V3TicketAPI.updateTicketAssignedBy(wo);
+    private void updateWODetails (V3WorkOrderContext wo, V3WorkOrderContext oldWo) throws Exception {
+        if(oldWo.getAssignedBy() == null || // initially when assignedTo/Team is updated for the first time
+                (oldWo.getAssignedTo() != null && wo.getAssignedTo() != null && oldWo.getAssignedTo().getId() != wo.getAssignedTo().getId()) || // assignedTo is changed
+                (oldWo.getAssignedTo() == null && wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0)  || // assigned to is updated after team is added
+                (oldWo.getAssignmentGroup() != null && wo.getAssignmentGroup() != null && oldWo.getAssignmentGroup().getId() != wo.getAssignmentGroup().getId()) || // team is changed
+                (oldWo.getAssignmentGroup() == null && wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0) // team is changed
+        ) {
+            V3TicketAPI.updateTicketAssignedBy(wo);
+        }
         wo.setModifiedTime(wo.getCurrentTime());
         if(wo.getStatus() != null &&  wo.getStatus().getId() > 0) {
             FacilioStatus statusObj = V3TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), wo.getStatus().getId());
