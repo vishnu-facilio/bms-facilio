@@ -177,6 +177,10 @@ public class QuoteModule extends BaseModuleConfig{
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());
         for (String appName : appNames) {
