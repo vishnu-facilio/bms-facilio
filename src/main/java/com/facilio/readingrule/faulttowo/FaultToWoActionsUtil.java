@@ -37,6 +37,8 @@ public class FaultToWoActionsUtil {
             if (!m.isEmpty()) {
                 TaskContext task = new TaskContext();
                 task.setSubject(m);
+                task.setInputType(TaskContext.InputType.TEXT.getVal());
+                task.setData(Collections.singletonMap("inputTypeEnum", TaskContext.InputType.TEXT.name()));
                 woTaskList.add(task);
             }
         });
