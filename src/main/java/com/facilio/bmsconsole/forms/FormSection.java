@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.forms;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import lombok.extern.java.Log;
+import com.facilio.modules.FacilioIntEnum;
+import com.facilio.util.FacilioUtil;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.modules.FacilioIntEnum;
-import com.facilio.util.FacilioUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 @Log4j
 public class FormSection {
@@ -37,8 +37,12 @@ public class FormSection {
 			LOGGER.info("#### Error occurred while parsing subFormValue" + e);
 		}
 	}
-	
-	
+
+
+	@Getter
+	@Setter
+	private Long version;
+
 	private String name;
 	public String getName() {
 		return name;

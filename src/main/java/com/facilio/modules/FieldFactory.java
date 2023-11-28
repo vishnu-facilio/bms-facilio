@@ -1320,6 +1320,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sysCreatedBy", "Created By", "SYS_CREATED_BY", module, FieldType.LOOKUP));
         fields.add(getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY", module, FieldType.LOOKUP));
         fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getBuildVersionField(module));
 
         return fields;
     }
