@@ -14,7 +14,7 @@ public class V2AnalyticsTransactionChain
     }
     public static FacilioChain newV2FetchReportDataChain()
     {
-        FacilioChain c = getDefaultChain();
+        FacilioChain c = FacilioChain.getNonTransactionChain();
         c.addCommand(new ReportDrilldownCommand());
         c.addCommand(new FilterFieldCommand());
         c.addCommand(new V2FetchAnalyticDataCommand());
@@ -33,24 +33,24 @@ public class V2AnalyticsTransactionChain
         return c;
     }
     public static FacilioChain getCHAnalyticsDataChain()throws Exception{
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2FetchAnalyticsReportDataCommand());
         return chain;
     }
-    public static FacilioChain getMySqlAnalyticsDataChain()throws Exception{
-        FacilioChain chain = getDefaultChain();
-        chain.addCommand(new FetchReportDataCommand());
-        return chain;
-    }
+//    public static FacilioChain getMySqlAnalyticsDataChain()throws Exception{
+//        FacilioChain chain = FacilioChain.getNonTransactionChain();
+//        chain.addCommand(new FetchReportDataCommand());
+//        return chain;
+//    }
     public static FacilioChain getCategoryModuleChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new GetModuleFromCategoryCommand());
         return chain;
     }
     public static FacilioChain getAnalyticsReportDataOldChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2CreateOldAnalyticsReportCommand());
         chain.addCommand(V2AnalyticsTransactionChain.newV2FetchReportDataChain());
         return chain;
@@ -73,7 +73,7 @@ public class V2AnalyticsTransactionChain
     }
     public static FacilioChain getReportWithDataChain(Boolean isDataNeeded)throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2GetAnalyticReportCommand());
         if(isDataNeeded == null || (isDataNeeded != null && isDataNeeded == Boolean.TRUE)){
             chain.addCommand(V2AnalyticsTransactionChain.newV2FetchReportDataChain());
@@ -82,13 +82,13 @@ public class V2AnalyticsTransactionChain
     }
     public static FacilioChain getAnalyticReportListChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2AnalyticsReportListCommand());
         return chain;
     }
     public static FacilioChain getReadingsFromCategoryChain(String type)throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         if(type != null && (type.equals("asset") || type.equals("fault"))) {
             chain.addCommand(new GetCategoryReadingsCommand());
         }else if(type != null && type.equals("meter")) {
@@ -101,33 +101,33 @@ public class V2AnalyticsTransactionChain
     }
     public static FacilioChain getCHCardAnalyticsCardData()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2FetchAnalyticDataCommand());
         chain.addCommand(new ApplyConditionalFormattingForCard());
         return chain;
     }
     public static FacilioChain getAnalyticsCardDataChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2ConstructCardCommand());
         return chain;
     }
     public static FacilioChain getAnalyticsKPIChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2AnalyticsGetKPIListCommand());
         return chain;
     }
 
     public static FacilioChain getReadingsForAlarmChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2FetchReadingFromAlarmCommand());
         return chain;
     }
     public static FacilioChain getAnalyticCardDataChain()throws Exception
     {
-        FacilioChain chain = getDefaultChain();
+        FacilioChain chain = FacilioChain.getNonTransactionChain();
         chain.addCommand(new V2GetAnalyticCardWidgetCommand());
         chain.addCommand(new V2FetchAnalyticDataCommand());
         chain.addCommand(new ApplyConditionalFormattingForCard());

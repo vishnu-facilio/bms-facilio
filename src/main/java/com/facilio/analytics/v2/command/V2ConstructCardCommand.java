@@ -194,8 +194,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             catch (Exception e)
             {
                 LOGGER.error("CLICKHOUSE SELECT BUILDER Object for getting card data ---" + selectBuilder, e);
-                SelectRecordsBuilder<ModuleBaseWithCustomFields> mysql_selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
-                props = mysql_selectBuilder.getAsProps();
+                LOGGER.error("ERROR while executing clickhouse card query", e);
             }
         }
         else
@@ -213,14 +212,9 @@ public class V2ConstructCardCommand extends FacilioCommand {
     }
     private SelectRecordsBuilder<ModuleBaseWithCustomFields> setBaseModuleAggregation(FacilioModule baseModule)throws Exception
     {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(baseModule) //Assuming X to be the base module
                 .setAggregation();
-        FacilioField marked = modBean.getField("marked", baseModule.getName());
-        if(marked != null) {
-            selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
-        }
         return selectBuilder;
     }
     public static void applyDashboardUserFilterCriteria(FacilioModule baseModule, JSONObject dbUserFilter,V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,Set<FacilioModule> addedModules)throws Exception

@@ -117,7 +117,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                     && rdp.isHandleEnum() == dataPoint.isHandleEnum()
                     && V2AnalyticsOldUtil.isSameTable(rdp, dataPoint)
                     && (!rdp.isRightInclusive() == !dataPoint.isRightInclusive())
-                    && Objects.equals(rdp.getV2Criteria() , dataPoint.getV2Criteria()))
+                    && Objects.equals(rdp.getV2Criteria() , dataPoint.getV2Criteria())
+                    && Objects.equals(rdp.getDynamicKpi() , dataPoint.getDynamicKpi()))
+
             {
                 ReportDataPointContext.OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? ReportDataPointContext.OrderByFunction.NONE : rdp.getOrderByFuncEnum();
                 ReportDataPointContext.OrderByFunction dataPointFunc = dataPoint.getOrderByFuncEnum() == null ? ReportDataPointContext.OrderByFunction.NONE : dataPoint.getOrderByFuncEnum();
@@ -186,10 +188,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
                 .module(baseModule) //Assuming X to be the base module
                 .setAggregation();
-        FacilioField marked = modBean.getField("marked", baseModule.getName());
-        if(marked != null) {
-            selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
-        }
         return selectBuilder;
     }
 

@@ -99,4 +99,14 @@ public class V2AnalyticsAPIAction extends V3Action {
         return V3Action.SUCCESS;
     }
 
+    public String weatherReadings()throws Exception
+    {
+        FacilioChain chain = V2AnalyticsTransactionChain.getReadingsFromCategoryChain("weather");
+        FacilioContext context = chain.getContext();
+        context.put("type", "weather");
+        context.put("searchText", searchText);
+        chain.execute();
+        setData("fields", context.get("fields"));
+        return V3Action.SUCCESS;
+    }
 }

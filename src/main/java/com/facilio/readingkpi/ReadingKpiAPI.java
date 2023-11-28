@@ -1,5 +1,6 @@
 package com.facilio.readingkpi;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -539,6 +540,7 @@ public class ReadingKpiAPI {
                     if (!isValidRelatedField) return new ArrayList<>();
                     break;
                 case ASSET_READING:
+                case METER_READING:
                     if (fld.getResourceId() == null) {
                         NameSpaceField nsField = getNsFieldClone(resourceId, fld);
                         flattenedNsFields.add(nsField);
@@ -604,9 +606,9 @@ public class ReadingKpiAPI {
         selectRecordBuilder
                 .table(module.getTableName())
                 .select(selectFields)
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(field.getModuleId()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), Collections.singleton(nsField.getResourceId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(field.getModuleId()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
                 .andCondition(CriteriaAPI.getCondition(field, CommonOperators.IS_NOT_EMPTY))
                 .groupBy(groupBy)
                 .limit(20000);
@@ -658,7 +660,14 @@ public class ReadingKpiAPI {
     private static String getGroupByString(AggregateOperator aggr, AggregationType nsAggrType, FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
         if (aggr instanceof BmsAggregateOperators.DateAggregateOperator) { // normal
             FacilioField groupBy = aggr.getSelectField(fieldMap.get("ttime"));
-            adjustGroupByOptionBasedOnDayOfWeek(aggr, groupBy);
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
+            {
+                groupBy = BmsAggregateOperators.getCHAggregateOperator(aggr.getValue()).getSelectField(fieldMap.get("ttime")).clone();
+            }
+            FacilioField groupByField = adjustGroupByOptionBasedOnDayOfWeek(aggr , fieldMap.get("ttime"));
+            if(groupByField != null){
+                groupBy = groupByField.clone();
+            }
             return groupBy.getCompleteColumnName();
         } else if (aggr == null) { // dashboard
             return fieldMap.get("parentId").getCompleteColumnName();
@@ -668,18 +677,15 @@ public class ReadingKpiAPI {
         return null; // high res
     }
 
-    private static void adjustGroupByOptionBasedOnDayOfWeek(AggregateOperator aggr, FacilioField groupBy) {
+    private static FacilioField adjustGroupByOptionBasedOnDayOfWeek(AggregateOperator aggr, FacilioField xField) throws Exception{
         // edge case handled in reports (FetchReportDataCommand:1336), copied here
         if (aggr == BmsAggregateOperators.DateAggregateOperator.WEEKANDYEAR) {
             DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
             if (dayOfWeek == DayOfWeek.MONDAY) {
-                String expr_col = groupBy.getColumnName();
-                if (expr_col != null) {
-                    expr_col = expr_col.replace("%V", "%v");
-                    groupBy.setColumnName(expr_col);
-                }
+                return AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) ? BmsAggregateOperators.CHDateAggregateOperator.MONDAY_START_WEEKLY.getSelectField(xField).clone() : BmsAggregateOperators.DateAggregateOperator.MONDAY_START_WEEKANDYEAR.getSelectField(xField).clone();
             }
         }
+        return null;
     }
 
     private static void populateReadingsMapFromProps(AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, String varName, FacilioField field, List<Map<String, Object>> props) {

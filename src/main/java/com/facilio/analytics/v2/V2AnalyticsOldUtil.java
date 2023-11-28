@@ -959,6 +959,11 @@ public class V2AnalyticsOldUtil {
                 .module(module);
 
         if(criteria != null) {
+            Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, module);
+            if(parent_criteria != null)
+            {
+                selectBuilder.andCriteria(parent_criteria);
+            }
             selectBuilder.andCriteria(criteria);
         }
         List<Map<String, Object>> props = selectBuilder.getAsProps();

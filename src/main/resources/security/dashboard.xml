@@ -541,6 +541,9 @@
             <property name="categoryId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/analytics/weather/readings" method="GET">
+        <urlparams/>
+    </request>
     <request path="/api/v3/module/kpi/fetch" method="PUT">
         <requestbody/>
     </request>

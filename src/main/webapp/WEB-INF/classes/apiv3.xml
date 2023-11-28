@@ -2559,6 +2559,9 @@
             <param name="categoryId">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
         </action>
+        <action name="weather/readings" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="weatherReadings">
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
         <action name="faults" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getFieldsFromAlarm">
             <param name="permission">GET:VIEW,READ</param>
         </action>
