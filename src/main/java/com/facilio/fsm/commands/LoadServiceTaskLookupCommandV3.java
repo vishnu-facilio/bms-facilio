@@ -28,6 +28,7 @@ public class LoadServiceTaskLookupCommandV3 extends FacilioCommand {
         List<SupplementRecord> additionaLookups = new ArrayList<>();
         additionaLookups.add((LookupField) fieldsAsMap.get("workType"));
         additionaLookups.add((LookupField) fieldsAsMap.get("status"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("serviceAppointment"));
         MultiLookupMeta skills = new MultiLookupMeta((MultiLookupField) fieldsAsMap.get("skills"));
         additionaLookups.add(skills);
         for (FacilioField field : fields) {
