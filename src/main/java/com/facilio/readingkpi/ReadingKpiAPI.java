@@ -4,8 +4,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.CommonConnectedUtil;
@@ -1022,5 +1024,12 @@ public class ReadingKpiAPI {
             }
         }
         return inclResIds;
+    }
+
+    public static void setKpiCategoryStr(ReadingKPIContext kpi) throws Exception {
+        KPICategoryContext kpiCategoryContext = KPIUtil.getKPICategoryContext(kpi.getKpiCategory());
+        if(kpiCategoryContext != null) {
+            kpi.setKpiCategoryStr(kpiCategoryContext.getName());
+        }
     }
 }

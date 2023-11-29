@@ -25,6 +25,7 @@ public class FetchMetricAndUnitCommand extends FacilioCommand {
             for (ReadingKPIContext kpi : list) {
 
                 ReadingKpiAPI.setCategory(kpi);
+                ReadingKpiAPI.setKpiCategoryStr(kpi);
                 if (kpi.getKpiTypeEnum() == KPIType.DYNAMIC) {
                     continue;
                 }

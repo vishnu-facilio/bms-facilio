@@ -566,3 +566,9 @@ enums:
 
   - name: TimeSheetType
     enumClassName: com.facilio.fsm.context.TimeSheetContext$Type
+
+  - name: FacilioUnit
+    enumClassName: com.facilio.unitconversion.Unit
+
+  - name: FacilioMetric
+    enumClassName: com.facilio.unitconversion.Metric

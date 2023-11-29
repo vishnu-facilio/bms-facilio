@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.readingkpi;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
@@ -31,6 +32,7 @@ public class AddKPIModules extends BaseModuleConfig {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(kpiModule));
         addModuleChain.execute();
+        addSystemButtonsForKPI();
 
     }
 
@@ -66,7 +68,7 @@ public class AddKPIModules extends BaseModuleConfig {
         NumberField categoryId = FieldFactory.getDefaultField("categoryId", "Category", "CATEGORY_ID", FieldType.NUMBER);
         fields.add(categoryId);
 
-        NumberField kpiCategoryId = FieldFactory.getDefaultField("kpiCategory", "KPI Category ID", "KPI_CATEGORY_ID", FieldType.NUMBER);
+        NumberField kpiCategoryId = FieldFactory.getDefaultField("kpiCategory", "KPI Category", "KPI_CATEGORY_ID", FieldType.NUMBER);
         fields.add(kpiCategoryId);
 
         NumberField readingModuleId = FieldFactory.getDefaultField("readingModuleId", "Reading Module ID", "READING_MODULE_ID", FieldType.NUMBER);
@@ -79,16 +81,18 @@ public class AddKPIModules extends BaseModuleConfig {
         frequency.setEnumName("NamespaceFrequency");
         fields.add(frequency);
 
-        NumberField siteId = FieldFactory.getDefaultField("siteId", "Site ID", "SITE_ID", FieldType.NUMBER);
+        NumberField siteId = FieldFactory.getDefaultField("siteId", "Site", "SITE_ID", FieldType.NUMBER);
         fields.add(siteId);
 
-        NumberField unitId = FieldFactory.getDefaultField("unitId", "Unit ID", "UNIT_ID", FieldType.NUMBER);
+        SystemEnumField unitId = FieldFactory.getDefaultField("unitId", "Unit", "UNIT_ID", FieldType.SYSTEM_ENUM);
+        unitId.setEnumName("FacilioUnit");
         fields.add(unitId);
 
         FacilioField customUnit = FieldFactory.getDefaultField("customUnit", "Custom Unit", "CUSTOM_UNIT", FieldType.STRING);
         fields.add(customUnit);
 
-        NumberField metric = FieldFactory.getDefaultField("metricId", "Metric", "METRIC", FieldType.NUMBER);
+        SystemEnumField metric = FieldFactory.getDefaultField("metricId", "Metric", "METRIC", FieldType.SYSTEM_ENUM);
+        metric.setEnumName("FacilioMetric");
         fields.add(metric);
 
         BooleanField status = FieldFactory.getDefaultField("status", "Status", "STATUS", FieldType.BOOLEAN);
@@ -98,7 +102,7 @@ public class AddKPIModules extends BaseModuleConfig {
         resourceType.setEnumName("ConnectedResourceAssignmentType");
         fields.add(resourceType);
 
-        NumberField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.NUMBER);
+        DateField sysCreatedTime = FieldFactory.getDefaultField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", FieldType.DATE_TIME);
         fields.add(sysCreatedTime);
 
         LookupField sysCreatedBy = FieldFactory.getField("sysCreatedBy", "Created By", "SYS_CREATED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
@@ -106,7 +110,7 @@ public class AddKPIModules extends BaseModuleConfig {
         fields.add(sysCreatedBy);
 
 
-        NumberField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.NUMBER);
+        DateField sysModifiedTime = FieldFactory.getDefaultField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", FieldType.DATE_TIME);
         fields.add(sysModifiedTime);
 
         LookupField sysModifiedBy = FieldFactory.getField("sysModifiedBy", "Modified By", "SYS_MODIFIED_BY",ModuleFactory.getUsersModule(), FieldType.LOOKUP);
@@ -115,6 +119,12 @@ public class AddKPIModules extends BaseModuleConfig {
 
         module.setFields(fields);
         return module;
+    }
+
+    private void addSystemButtonsForKPI() throws Exception {
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.ReadingKpi.READING_KPI, "New KPI");
+        SystemButtonApi.addListEditButton(FacilioConstants.ReadingKpi.READING_KPI);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ReadingKpi.READING_KPI);
     }
 
     @Override

@@ -41,6 +41,10 @@ public class AddReadingRuleModules extends SignUpData {
 
     private void addSystemButtonsForRules() throws Exception {
 
+        SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.ReadingRules.NEW_READING_RULE, "New Rule");
+        SystemButtonApi.addListEditButton(FacilioConstants.ReadingRules.NEW_READING_RULE);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ReadingRules.NEW_READING_RULE);
+
         SystemButtonRuleContext editNewRules = new SystemButtonRuleContext();
         editNewRules.setName("Edit");
         editNewRules.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -49,15 +53,6 @@ public class AddReadingRuleModules extends SignUpData {
         editNewRules.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         editNewRules.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, editNewRules);
-
-        SystemButtonRuleContext addRules = new SystemButtonRuleContext();
-        addRules.setName("Add NewRules");
-        addRules.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        addRules.setIdentifier("addNewRules");
-        addRules.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        addRules.setPermission(AccountConstants.ModulePermission.CREATE.name());
-        addRules.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ReadingRules.NEW_READING_RULE, addRules);
 
         SystemButtonRuleContext deactivateRule = new SystemButtonRuleContext();
         deactivateRule.setName("Deactivate");
