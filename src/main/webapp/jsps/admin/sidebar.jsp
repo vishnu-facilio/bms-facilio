@@ -262,7 +262,16 @@ if (buildinfo == null) {
                 <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                     <span class="nav-title">ML Service</span>
                 </a>
-            </li> 
+            </li>
+
+            <li>
+                <a href="featureLimits">
+                <span class="nav-icon">
+                <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
+                    <span class="nav-title">Feature Limits</span>
+                </a>
+            </li>
+
             <li>
                 <a href="moveReadings">
                 <span class="nav-icon">

@@ -586,3 +586,5 @@ classes:
   - com.facilio.fsm.signup.ServicePMTemplateModule
   
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateLogsModule
+  #  Add Feature Limits
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFeatureLimit

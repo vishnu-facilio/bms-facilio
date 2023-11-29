@@ -318,6 +318,13 @@ public class ModuleFactory {
 		agentLogModule.setTableName(AgentKeys.AGENT_LOG_TABLE);
 		return agentLogModule;
 	}
+	public static FacilioModule getFeatureLimitsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("featureLimits");
+		module.setDisplayName("Feature Limits");
+		module.setTableName("Feature_Limits");
+		return module;
+	}
 
 	public static FacilioModule	getAgentMessageModule(){
 		FacilioModule agentMessageModule = new FacilioModule();

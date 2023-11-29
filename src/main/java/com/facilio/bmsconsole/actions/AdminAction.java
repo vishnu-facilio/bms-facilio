@@ -30,8 +30,10 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.v3.context.Constants;
+import com.facilio.bmsconsole.util.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -54,9 +56,6 @@ import com.facilio.aws.util.DescribeInstances;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.util.AdminAPI;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -528,6 +527,17 @@ public class AdminAction extends ActionSupport {
 		bean.initMLService(mlServiceData);
 		return SUCCESS;
 
+	}
+	public String updateFeatureLimits() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String[] featureName = request.getParameterValues("featureName");
+		String[] featureLimit=request.getParameterValues("featureLimit");
+		Long orgId = Long.parseLong(request.getParameter("orgid"));
+		AccountUtil.setCurrentAccount(orgId);
+		if(featureLimit !=null && featureName !=null && StringUtils.isNotEmpty(featureName[0]) && StringUtils.isNotEmpty(featureLimit[0])){
+			FeatureLimitsUtil.updateFeatureLimits(featureName[0],Long.valueOf(featureLimit[0]));
+		}
+		return SUCCESS;
 	}
 
 	public String moveReadings() throws Exception {

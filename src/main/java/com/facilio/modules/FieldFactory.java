@@ -2252,7 +2252,14 @@ public class FieldFactory extends BaseFieldFactory {
 
         return fields;
     }
-
+    public static List<FacilioField> getFeatureLimitsFields(){
+        List<FacilioField> fields=new ArrayList<>();
+        FacilioModule module=ModuleFactory.getFeatureLimitsModule();
+        fields.add(getIdField(module));
+        fields.add(FieldFactory.getDefaultField("featureName","Feature Name","FEATURE_NAME",FieldType.STRING));
+        fields.add(FieldFactory.getDefaultField("limitCount","Limit Count","LIMIT_COUNT",FieldType.NUMBER));
+        return fields;
+    }
     public static List<FacilioField> getWorkflowRuleFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getWorkflowRuleModule();

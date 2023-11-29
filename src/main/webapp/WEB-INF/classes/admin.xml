@@ -419,6 +419,14 @@
 			<result name="success" type="tiles">adminpage/preCommitWorkflowRule.jsp</result>
 			<param name="permission">READ,UPDATE</param>
 		</action>
+		<action name="featureLimits" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result type="tiles">adminpage/featureLimits.jsp</result>
+			<param name="permission">READ,UPDATE</param>
+		</action>
+		<action name="updateFeatureLimits" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateFeatureLimits">
+			<result name="success" type="tiles">adminpage/featureLimits.jsp</result>
+			<param name="permission">READ,UPDATE</param>
+		</action>
 	</package>
 
 </struts>
