@@ -1,24 +1,25 @@
 package com.facilio.componentpackage.implementation;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
-import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.connected.ResourceCategory;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.readingrule.context.NewReadingRuleContext;
 import com.facilio.readingrule.context.RuleAlarmDetails;
-import com.facilio.readingrule.faultimpact.FaultImpactAPI;
 import com.facilio.readingrule.faultimpact.FaultImpactContext;
 import com.facilio.readingrule.rca.context.RCAConditionScoreContext;
 import com.facilio.readingrule.rca.context.RCAGroupContext;
@@ -32,7 +33,10 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -125,10 +129,18 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
 
         for (Map.Entry<Long, XMLBuilder> xmlNdIds : idVsXMLComponents.entrySet()) {
 
+            Long ruleId = xmlNdIds.getKey();
+            XMLBuilder ruleBuilder = xmlNdIds.getValue();
+
             NewReadingRuleContext ruleCtx = new NewReadingRuleContext();
-            ruleCtx.setId(xmlNdIds.getKey());
+            ruleCtx.setId(ruleId);
 
             new RuleXMLdeSerializer(ruleCtx, xmlNdIds.getValue()).convertRootCause();
+
+            ResourceType resourceType = ResourceType.valueOf(Integer.valueOf(ruleBuilder.getElement("resourceType").getText()));
+            NameSpaceContext nsCtx = PackageBeanUtil.updateDataIdForConnected(ruleId, NSType.READING_RULE, resourceType);
+            NamespaceBean nsBean = (NamespaceBean) BeanFactory.lookup("NamespaceBean");
+            nsBean.updateNamespace(nsCtx);
 
             if (ruleCtx.getRca() != null) {
                 FacilioChain rcaChain = TransactionChainFactoryV3.addRCARuleChain();
@@ -175,7 +187,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
         }
 
         private void convertBasicFields() throws Exception {
-            FacilioField readingField=Constants.getModBean().getField(rule.getReadingFieldId());
+            FacilioField readingField = Constants.getModBean().getField(rule.getReadingFieldId());
 
             ruleBuilder.e(PackageConstants.NAME).cData(rule.getName());
             ruleBuilder.e(PackageConstants.DESCRIPTION).cData(rule.getDescription());
@@ -184,6 +196,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             ruleBuilder.e(PackageConstants.LINK_NAME).cData(rule.getLinkName());
             ruleBuilder.e(PackageConstants.MODULENAME).t(readingField.getModule().getName());
             ruleBuilder.e(PackageConstants.NameSpaceConstants.FIELD_NAME).t(readingField.getName());
+            ruleBuilder.e("resourceType").t(String.valueOf(rule.getResourceType()));
         }
 
         private void convertFaultImpact() throws Exception {
@@ -195,11 +208,11 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             }
         }
 
+        //change category
         private void convertAssetCategory() throws Exception {
-            XMLBuilder assetCategoryBuilder = ruleBuilder.e(PackageConstants.AssetCategoryConstants.ASSET_CATEGORY);
-            AssetCategoryContext assetCategory = rule.getAssetCategory();
-            V3AssetCategoryContext categoryContext = AssetsAPI.getAssetCategories(Collections.singletonList(assetCategory.getId())).get(0);
-            assetCategoryBuilder.e(PackageConstants.NAME).text(value(categoryContext.getDisplayName()));
+            XMLBuilder assetCategoryBuilder = ruleBuilder.e("category");
+            ResourceCategory category = rule.getCategory();
+            assetCategoryBuilder.e(PackageConstants.NAME).text(value(category.fetchDisplayName()));
         }
 
         private void convertRootCause() throws Exception {
@@ -306,7 +319,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
                     List<XMLBuilder> rcaRuleIdBuilder = rootCauseBuilder.getElementList("ruleLinkName");
                     List<Long> rcaRuleIds = new ArrayList<>();
                     for (XMLBuilder builder : rcaRuleIdBuilder) {
-                        Long ruleId = ConnectedRuleUtil.getConnectedRuleIdWithLinkName(builder.getText(),FacilioConstants.ReadingRules.NEW_READING_RULE);
+                        Long ruleId = ConnectedRuleUtil.getConnectedRuleIdWithLinkName(builder.getText(), FacilioConstants.ReadingRules.NEW_READING_RULE);
                         rcaRuleIds.add(ruleId);
                     }
 
@@ -326,7 +339,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
                         rcaGroup.setCriteria(PackageBeanUtil.constructCriteriaFromBuilder(rcaGroupBuilder.getElement(PackageConstants.CriteriaConstants.CRITERIA)));
 
                         rcaGroupContexts.add(rcaGroup);
-                        XMLBuilder rcaCondition=rcaGroupBuilder.getElement(PackageConstants.ReadingRuleConstants.RCA_CONDITIONS);
+                        XMLBuilder rcaCondition = rcaGroupBuilder.getElement(PackageConstants.ReadingRuleConstants.RCA_CONDITIONS);
                         convertRcaConditions(rcaGroup, rcaCondition);
 
                     }
@@ -358,7 +371,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             XMLBuilder faultImpactBuilder = ruleBuilder.getElement(PackageConstants.FaultImpactConstants.FAULT_IMPACT);
 
             if (faultImpactBuilder != null) {
-                Long impactId = ConnectedRuleUtil.getConnectedRuleIdWithLinkName(faultImpactBuilder.getElement(PackageConstants.LINK_NAME).getCData(),FacilioConstants.FaultImpact.MODULE_NAME);
+                Long impactId = ConnectedRuleUtil.getConnectedRuleIdWithLinkName(faultImpactBuilder.getElement(PackageConstants.LINK_NAME).getCData(), FacilioConstants.FaultImpact.MODULE_NAME);
                 if (impactId != null) {
                     rule.setImpactId(impactId);
                 }
@@ -380,19 +393,20 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             rule.setLinkName(ruleBuilder.getElement(PackageConstants.LINK_NAME).getCData());
             rule.setReadingFieldId(facilioField.getFieldId());
             rule.setReadingModuleId(facilioField.getModuleId());
+            rule.setResourceType(Integer.valueOf(ruleBuilder.getElement("resourceType").getText()));
         }
 
         private void convertAssetCategory() throws Exception {
-            XMLBuilder assetBuilder = ruleBuilder.getElement(PackageConstants.AssetCategoryConstants.ASSET_CATEGORY);
+            XMLBuilder assetBuilder = ruleBuilder.getElement("category");
             String categoryName = assetBuilder.getElement(PackageConstants.NAME).getText();
 
-            Map<String, Long> assetNameVsId = PackageBeanUtil.getAssetCategoryNameVsId(null);
-            AssetCategoryContext assetCategory = new AssetCategoryContext();
-            assetCategory.setId(assetNameVsId.get(categoryName));
-
-            rule.setAssetCategory(assetCategory);
+            Long categoryId = PackageBeanUtil.getCategoryIdForFDDBasedOnResourceType(ResourceType.valueOf(rule.getResourceType()), categoryName);
+            rule.setCategoryId(categoryId);
+            //TODO:need to remove once meter support is live in alarms
+            AssetCategoryContext assetCategoryContext = new AssetCategoryContext();
+            assetCategoryContext.setId(categoryId);
+            rule.setAssetCategory(assetCategoryContext);
         }
-
 
         private void convertAlarmDetails() throws Exception {
 

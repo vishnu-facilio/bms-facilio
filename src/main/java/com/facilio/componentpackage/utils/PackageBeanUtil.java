@@ -18,10 +18,13 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
@@ -36,12 +39,15 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.field.validation.date.DateValidatorType;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.*;
+import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
@@ -1818,6 +1824,21 @@ public class PackageBeanUtil {
     }
 
 
+    public static Map<String, Long> getUtilityTypeNameVsId(Boolean fetchSystem) throws Exception {
+        Map<String, Long> utilityTypeIdVsModuleId = new HashMap<>();
+        Criteria utilityTypeCriteria = new Criteria();
+        if(fetchSystem!=null) {
+            utilityTypeCriteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
+        }
+        List<V3UtilityTypeContext> props = (List<V3UtilityTypeContext>) getModuleData(utilityTypeCriteria, Constants.getModBean().getModule(FacilioConstants.Meter.UTILITY_TYPE), V3UtilityTypeContext.class, Boolean.FALSE);
+        if (CollectionUtils.isNotEmpty(props)) {
+            for (V3UtilityTypeContext prop : props) {
+                utilityTypeIdVsModuleId.put(prop.getDisplayName(), prop.getId());
+            }
+        }
+        return utilityTypeIdVsModuleId;
+    }
+
     public static Map<String, Long> getAssetCategoryNameVsId(Boolean fetchSystem) throws Exception {
         Map<String, Long> assetCategoryIdVsModuleId = new HashMap<>();
         List<V3AssetCategoryContext> props = getAssetCategories(fetchSystem);
@@ -1827,6 +1848,40 @@ public class PackageBeanUtil {
             }
         }
         return assetCategoryIdVsModuleId;
+    }
+
+    public static Long getCategoryIdForFDDBasedOnResourceType(ResourceType resourceType, String categoryName) throws Exception {
+        switch (resourceType) {
+            case ASSET_CATEGORY:
+                Map<String, Long> assetNameVsId = PackageBeanUtil.getAssetCategoryNameVsId(null);
+                return assetNameVsId.get(categoryName);
+            case METER_CATEGORY:
+                Map<String, Long> meterNameVsId = PackageBeanUtil.getUtilityTypeNameVsId(null);
+                return meterNameVsId.get(categoryName);
+        }
+        return null;
+    }
+
+    public static NameSpaceContext updateDataIdForConnected(Long parentRuleId, NSType type, ResourceType resourceType) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        DataMigrationBean dataMigrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, AccountUtil.getCurrentOrg().getOrgId());
+
+        NameSpaceContext ns = NamespaceAPI.getNameSpaceByRuleId(parentRuleId, type);
+        FacilioModule dataModule = moduleBean.getModule(resourceType.getModuleName());
+
+        Map<Long, Long> includedAssetsIdMap = dataMigrationBean.getOldVsNewId(null, dataModule.getModuleId(), ns.getIncludedAssetIds());
+        ns.setIncludedAssetIds(includedAssetsIdMap.values().stream().collect(Collectors.toList()));
+
+        ns.getFields().stream().filter(field -> field.getResourceId() != null).forEach(field -> {
+            try {
+                FacilioModule nsTypeDataModule = CommonConnectedUtil.getModuleBasedOnNsFieldType(field.getNsFieldType());
+                Map<Long, Long> fieldAssetMap = dataMigrationBean.getOldVsNewId(null, nsTypeDataModule.getModuleId(), Collections.singletonList(field.getResourceId()));
+                field.setResourceId(fieldAssetMap.get(field.getResourceId()));
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+        return ns;
     }
 
     public static void convertFacilioFieldToXML(FacilioField facilioField, XMLBuilder fieldElement) throws Exception {

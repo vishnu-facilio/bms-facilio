@@ -23,6 +23,7 @@ import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
+import com.facilio.ns.context.NsFieldType;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
@@ -548,5 +549,24 @@ public class CommonConnectedUtil {
                 selectRecordBuilder.innerJoin(virtualMeterTemplateTable).on( virtualMeterTemplateTable +".ID = " + module.getTableName() + ".VIRTUAL_METER_TEMPLATE_ID");
         }
         return selectRecordBuilder;
+    }
+
+    public static FacilioModule getModuleBasedOnNsFieldType(NsFieldType nsFieldType) throws Exception {
+        ModuleBean moduleBean = Constants.getModBean();
+        switch (nsFieldType) {
+            case ASSET:
+            case ASSET_READING:
+                return moduleBean.getModule(FacilioConstants.ContextNames.ASSET);
+            case METER:
+            case METER_READING:
+                return moduleBean.getModule(FacilioConstants.Meter.METER);
+            case SITE:
+            case SITE_READING:
+                return moduleBean.getModule(FacilioConstants.ContextNames.SITE);
+            case SPACE:
+            case SPACE_READING:
+                return moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+        }
+        return null;
     }
 }
