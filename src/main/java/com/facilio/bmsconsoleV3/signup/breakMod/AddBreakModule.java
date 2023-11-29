@@ -113,6 +113,7 @@ public class AddBreakModule extends SignUpData {
         FacilioField breakTime = FieldFactory.getDefaultField("breakTime","Break Time","BREAK_TIME",FieldType.NUMBER);
         breakTime.setDefault(true);
         breakTime.setDisplayType(FacilioField.FieldDisplayType.DURATION);
+        fields.add(breakTime);
 
         StringSystemEnumField breakType = FieldFactory.getDefaultField("breakType", "Break Type", "BREAK_TYPE", FieldType.STRING_SYSTEM_ENUM);
         breakType.setEnumName("BreakType");
