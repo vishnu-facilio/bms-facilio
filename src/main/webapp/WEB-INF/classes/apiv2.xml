@@ -285,12 +285,17 @@
 		<action name="forms"
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="translationImpl">FormTranslation</param>
-			<param name="permission">ALL</param>
-			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS</param>
 		</action>
-		
+		<action name="*/forms"
+				class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="moduleName">{1}</param>
+			<param name="translationImpl">FormTranslation</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+
 		<action name="operators" class="com.facilio.bmsconsole.actions.ModuleAction" method="fetchOperators">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -641,7 +646,7 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
 			<param name="translationImpl">StateFlowTranslationV2</param>
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,STATEFLOWS</param>
 		</action>
@@ -653,7 +658,9 @@
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">STATEFLOWS</param>
 		</action>
 	</package>
 	
@@ -716,7 +723,7 @@
 		</action>
 		<action name="getAvailableButtonsForList"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		</package>
 
@@ -881,26 +888,42 @@
 		</action>
 	</package>
 
+	<!--remove below api without moduleName once client change is done -->
 	<package name="relation" namespace="/api/v2/relation" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.relation.action.RelationAction" method="addOrUpdateRelation" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="view"
 				class="com.facilio.relation.action.RelationAction" method="viewRelation" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="list"
 				class="com.facilio.relation.action.RelationAction" method="list" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.relation.action.RelationAction" method="delete" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fetchRelations"
 				class="com.facilio.relation.action.RelationAction" method="fetchRelations" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+		</action>
+		<action name="*/fetchRelations"
+				class="com.facilio.relation.action.RelationAction" method="fetchRelations" >
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="fetchMeterRelations/*"
 				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" >
@@ -910,9 +933,17 @@
 	</package>
 
 	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
-		<action name="addOrUpdate" class="com.facilio.relation.action.VirtualRelationAction" method="addOrUpdateVirtualRelation" />
+		<action name="addOrUpdate" class="com.facilio.relation.action.VirtualRelationAction" method="addOrUpdateVirtualRelation" >
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+		</action>
 		<action name="fetchFilteredRelations"
-				class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" />
+				class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" >
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+		</action>
 	</package>
 
 	<package name="stateTransition"
@@ -1714,19 +1745,19 @@
 
 	<package name="weekendApi" namespace="/api/v2/weekends" extends="v2Api">
 		<action name="list" class="com.facilio.weekends.WeekendAction" method="getWeekendList">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="add" class="com.facilio.weekends.WeekendAction" method="addOrUpdateWeekend">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE</param>
 		</action>
 		<action name="update" class="com.facilio.weekends.WeekendAction" method="addOrUpdateWeekend">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="delete" class="com.facilio.weekends.WeekendAction" method="deleteWeekend">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 		<action name="get" class="com.facilio.weekends.WeekendAction" method="getWeekendData">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -1735,12 +1766,24 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.ViewAction"
 				method="getViewGroupList">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/list"
+				class="com.facilio.bmsconsole.actions.ViewAction"
+				method="getViewGroupList">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getViews"
 				class="com.facilio.bmsconsole.actions.ViewAction"
 				method="getViewsForGroup">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getViews"
+				class="com.facilio.bmsconsole.actions.ViewAction"
+				method="getViewsForGroup">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -1749,31 +1792,65 @@
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="translationImpl">ViewTranslation</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">EMAIL_LOGS</param>
+		</action>
+		<action name="*/viewList"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			<param name="moduleName">{1}</param>
+			<param name="translationImpl">ViewTranslation</param>
 			<param name= "permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name= "permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_LOGS</param>
 		</action>
 		<action name="getViewFromId"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="getViewFromId">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getViewFromId"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="getViewFromId">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="*/edit"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="editStatus"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="editViewStatus">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="*/editStatus"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="editViewStatus">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
+		</action>
+		<action name="*/delete"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 		<action name="*"
-			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="viewName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/*"
+			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+			<param name="translationImpl">ViewColumnTranslation</param>
+			<param name="moduleName">{1}</param>
+			<param name="viewName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		
@@ -1804,23 +1881,48 @@
 	<package name="woScheduledViewV2" namespace="/api/v2/scheduledViews" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2AddScheduleView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE</param>
+		</action>
+		<action name="*/add"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2AddScheduleView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:CREATE</param>
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2EditScheduledView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="*/edit"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2EditScheduledView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteScheduledView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
+		</action>
+		<action name="*/delete"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2DeleteScheduledView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2GetScheduledView">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/get"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2GetScheduledView">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2ScheduledViewList">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/list"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2ScheduledViewList">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -1829,7 +1931,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -2941,18 +3043,24 @@
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="fetchFormFromDB">
 			<param name="formName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getFromId"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="fetchFormFromId">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="fields"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="loadApprovalFormFields">
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -2960,23 +3068,33 @@
 			 extends="v2Api">
 		<action name="add"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRuleList">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="deleteRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 	</package>
 
@@ -2984,90 +3102,158 @@
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="addRule">
-			<param name="permission">CREATE</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="updateRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="deleteRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRule">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="getRulesMap"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getFormRulesMap">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getRulesMap"
+				class="com.facilio.bmsconsole.actions.FormRuleAction" method="getFormRulesMap">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getRuleList"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRuleList">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getRuleList"
+				class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRuleList">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="changeRuleStatus"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="changeStatus">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
-			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
 		</action>
+		<action name="*/executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
+			<param name="moduleName">{1}</param>
+			<param name="setupTab">MODULES</param>
+			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
+		</action>
+
 	</package>
 
 	<package name="formApiv2" namespace="/api/v2/forms"
 		extends="v2Api">
 		<action name="adddbform"
 				class="com.facilio.bmsconsole.actions.FormAction" method="addDBForm">
-			<param name="permission">CREATE</param>
+            <param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
-			<param name="permission">CREATE,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">SERVICE_CATALOGS,APPROVALS</param>
+			<param name="permission">POST:CREATE;ALL</param>
+            <param name="tabType">SETUP</param>
+			<param name="setupTab">SERVICE_CATALOGS,APPROVALS,MODULES</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderForms" >
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="addSubForm"
 				class="com.facilio.bmsconsole.actions.FormAction" method="addSubForm">
-			<param name="permission">CREATE</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="subFormModules"
 				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules">
-				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">APPROVALS</param>
+			<param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
+			<param name="setupTab">APPROVALS,MODULES</param>
 		</action>
+		<action name="*/subFormModules"
+				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+		</action>
+		<action name="*/fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
+			<param name="moduleName">{1}</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
-			<param name="deprecated">true</param>
+			<param name="setupTab">MODULES</param>
+			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+		<action name="*/executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">FormFieldTranslation</param>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	<package name="formSharing" namespace="/api/v2/forms/formSharing" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FormAction" method="addOrUpdateFormSharingRoles">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getSharingList" class="com.facilio.bmsconsole.actions.FormAction" method="getFormSharingRolesForForms">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	<package name="formFieldApiv2" namespace="/api/v2/forms/fields"
@@ -3075,52 +3261,72 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormField">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="modify"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFieldAndFormField">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="init"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormFields">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="initForms"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="updateFormListFields">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="unusedlist"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="formUnusedFieldList">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="formFieldUsages"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="findFormFieldUsages">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getSupportedFieldTypes"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="getSupportedFieldTypes">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addFormField"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addCustomFormField">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="deleteFormField"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="deleteFormField">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorderFormFields"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderFormFields">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	<package name="formSectionApiv2"
@@ -3128,27 +3334,37 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateSection">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addSection"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addFormSection">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="deleteSection"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="deleteFormSection">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addSubForm"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addSubFormWithSection">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorderFormSections"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderFormSections">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	
@@ -3832,26 +4048,36 @@
 	<package name="moduleApiV2" namespace="/api/v2/module" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2AddModule">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addDB" class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2AddModuleDB">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2UpdateModule">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="recordsDuplication" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2RecordsDuplication">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModuleList">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="lists" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModulesList">
@@ -3863,7 +4089,9 @@
 				class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2GetModule">
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	
@@ -4102,17 +4330,24 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="addOrUpdateRelationShip">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
+
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="getRelationshipList">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="deleteRelationship">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getRelationshipForRecord"
             class="com.facilio.bmsconsole.actions.RelationshipAction"
@@ -4204,7 +4439,7 @@
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
             <param name="tabType">SETUP</param>
 			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING</param>
 		</action>
@@ -4224,7 +4459,7 @@
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 			<param name="dataType">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 		</action>
 	</package>
 
@@ -6306,11 +6541,13 @@
 	<package name="moduleFieldApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2addCustomFields">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2getFieldsList">
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
             <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 <!--			<param name="translationImpl">FieldOptionTranslation</param>-->
@@ -6324,12 +6561,16 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getFieldForms"
 				class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2getFieldUsageInForms">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="changeFieldTo" class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="changeNameToLocalID" >
@@ -6346,7 +6587,9 @@
 			method="v2metadata">
 			<param name="translationImpl">FieldTranslationV2</param>
 			<param name="moduleName">{1}</param>
-			<param name="permission">GET:READ</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">MODULES</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -9135,7 +9378,7 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
 				method="getExtendedModules">
 			<param name="moduleName">{1}</param>
-            <param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 		</action>
 	</package>
 
@@ -9149,6 +9392,11 @@
 	<package name="PageTabs" namespace="/api/v2/customPage/tabs" extends="v2Api">
 		<action name="fetch"
 				class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/fetch"
+				class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -9172,25 +9420,30 @@
 		</action>
 		<action name="getBaseCurrency"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getBaseCurrency">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getAllCurrencies">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="list/filter"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getFilteredCurrencies">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="list/count"
 				class="com.facilio.bmsconsole.actions.CurrencyAction" method="getCurrenciesCount">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
 	<package name="customPage" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="fetchForRecord"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/fetchForRecord"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -9200,11 +9453,21 @@
 				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="*/get"
+				class="com.facilio.bmsconsole.actions.PageWidgetsAction" method="fetchWidgetDetail">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 
 	<package name="relationSummaryWidget" namespace="/api/v2/customPage/relation/summaryWidget" extends="v2Api">
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction" method="fetchSummaryWidgetForRelation">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/get"
+				class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction" method="fetchSummaryWidgetForRelation">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>

@@ -907,6 +907,16 @@
         </requestbody>
     </request>
 
+    <request path="/api/v2/:moduleName/forms" method="GET">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="fetchExtendedModuleForms" type="boolean"/>
+            <property name="fetchDisabledForms" type="boolean"/>
+            <property name="appId" type="number"/>
+            <property name="skipTemplatePermission" type="boolean"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/workorders/activity">
         <requestbody type="object">
             <property name="workOrderId" type="number"/>
@@ -1328,23 +1338,12 @@
     </request>
 
     <!-- MultiCurrency -->
-    <request path="/api/v2/multicurrency/list" method="GET">
-        <urlparams>
-            <property name="page" type="number" mandatory="false"/>
-            <property name="perPage" type="number" mandatory="false"/>
-            <property name="search" type="string" mandatory="false"/>
-        </urlparams>
-    </request>
     <request path="/api/v2/multicurrency/list/count" method="GET">
         <urlparams>
             <property name="search" type="string" mandatory="false"/>
         </urlparams>
     </request>
-    <request path="/api/v2/multicurrency/list/filter" method="GET">
-    </request>
-    <request path="/api/v2/multicurrency/getBaseCurrency" method="GET">
-    </request>
-    <request path="/api/v2/multicurrency/addOrUpdate">
+    <request path="/api/v2/multicurrency/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="currency" type="object">
                 <property name="currencyCode" type="string" mandatory="true"/>
@@ -1353,7 +1352,52 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v2/multicurrency/updateStatus">
+    <request path="/api/v2/multicurrency/updateStatus" method="POST">
+        <requestbody type="object">
+            <property name="currency" type="object">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="status" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/multicurrency/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/multicurrency/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/multicurrency/list/count" method="GET">
+        <urlparams>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/multicurrency/list/filter" method="GET">
+    </request>
+    <request path="/api/v2/multicurrency/list/filter" method="GET">
+    </request>
+    <request path="/api/v2/multicurrency/getBaseCurrency" method="GET">
+    </request>
+    <request path="/api/v1/setup/multicurrency/getBaseCurrency" method="GET">
+    </request>
+    <request path="/api/v1/setup/multicurrency/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="currency" type="object">
+                <property name="currencyCode" type="string" mandatory="true"/>
+                <property name="exchangeRate" type="number"/>
+                <property name="decimalPlace" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/multicurrency/updateStatus" method="POST">
         <requestbody type="object">
             <property name="currency" type="object">
                 <property name="id" type="number" mandatory="true"/>
@@ -2915,8 +2959,21 @@
             <property name="fromBuilder" type="boolean" mandatory="false"/>
         </urlparams>
     </request>
-
+    <request path="/api/v2/viewGroup/:moduleName/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="false"/>
+            <property name="fromBuilder" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+    <!--Remove below validation once client api is changed-->
     <request path="/api/v2/viewGroup/getViews" method="GET">
+        <urlparams>
+            <property name="viewGroupId" type="number" mandatory="true"/>
+            <property name="fromBuilder" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/viewGroup/:moduleName/getViews" method="GET">
         <urlparams>
             <property name="viewGroupId" type="number" mandatory="true"/>
             <property name="fromBuilder" type="boolean" mandatory="false"/>

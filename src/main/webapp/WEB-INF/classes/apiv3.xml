@@ -2240,14 +2240,14 @@
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="relationName">{3}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
         <action name="*/*/relatedList/*/*" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 

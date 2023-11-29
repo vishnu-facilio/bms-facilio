@@ -113,10 +113,27 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/relation/:moduleName/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="relation" type="object">
+                <property name="name" type="string" />
+                <property name="relationType" type="number" />
+                <property name="fromModuleId" type="number" />
+                <property name="toModuleId" type="number" />
+                <property name="relationName" type="string" />
+                <property name="reverseRelationName" type="string" />
+            </property>
+        </requestbody>
+    </request>
     <request path="/api/v2/relation/view">
         <requestbody type="object">
             <property name="id" type="number" />
             <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/relation/:moduleName/view" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number" />
         </requestbody>
     </request>
     <request path="/api/v2/relation/list">
@@ -124,7 +141,19 @@
             <property name="moduleName" type="string" />
         </requestbody>
     </request>
+    <request path="/api/v2/relation/:moduleName/list" method="GET">
+        <requestbody type="object">
+            <property name="search" type="string" />
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+        </requestbody>
+    </request>
     <request path="/api/v2/relation/delete">
+        <requestbody type="object">
+            <property name="id" type="number" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/relation/:moduleName/delete" method="POST">
         <requestbody type="object">
             <property name="id" type="number" />
         </requestbody>

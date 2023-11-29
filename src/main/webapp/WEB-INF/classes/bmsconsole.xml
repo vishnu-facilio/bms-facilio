@@ -1706,8 +1706,8 @@
 		</action>
 		<action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metaFilterFields">
-			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="tabType">SETUP</param>
 			<param name="setupTab">USERS,EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS</param>
 			<param name="translationImpl">FieldTranslation</param>
 			<result name="success" type="json">
