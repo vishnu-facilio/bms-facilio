@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.relation.context.RelationRequestContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class ApprovalRuleMetaContext implements Serializable {
 
@@ -258,4 +260,12 @@ public class ApprovalRuleMetaContext implements Serializable {
     public void setResendFormId(long resendFormId) {
         this.resendFormId = resendFormId;
     }
+
+    @Setter
+    @Getter
+    List<Map<Long,Object>> releatedList;
+
+    @Getter
+    @Setter
+    List<RelationRequestContext> relations;
 }

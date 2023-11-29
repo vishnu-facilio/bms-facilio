@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.ApprovalRuleMetaContext;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -7,10 +8,23 @@ import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.relation.context.RelationRequestContext;
+import com.facilio.relation.util.RelationUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GetApprovalRuleCommand extends FacilioCommand {
@@ -38,6 +52,44 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                 approvalMeta.setFieldIds(fieldIds);
             }
             approvalMeta.setId(stateFlowContext.getId());
+            String configJson = stateFlowContext.getConfigJson();
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(stateFlowContext.getModuleId());
+
+            if (StringUtils.isNotEmpty(configJson)) {
+                JSONParser parser = new JSONParser();
+                try {
+                    JSONObject parse = (JSONObject) parser.parse(configJson);
+                    JSONArray relatedModules = (JSONArray) parse.get("relatedModules");
+                    List<Long> extendedModuleIds = module.getExtendedModuleIds();
+                    List<Map<Long,Object>> relatedList = new ArrayList<>();
+                    for (Object relatedModuleId: relatedModules) {
+                        if (relatedModuleId instanceof Long) {
+                            FacilioModule subModule = modBean.getModule((Long) relatedModuleId);
+                            List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
+                            List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && (extendedModuleIds.contains(((LookupField) field).getLookupModuleId())))).collect(Collectors.toList());
+                            if (CollectionUtils.isNotEmpty(fields)) {
+                                for (FacilioField field : fields) {
+                                    Map<Long,Object> relatedMap = new HashMap<>();
+                                    JSONObject relatedJson = new JSONObject();
+                                    relatedJson.put("module", subModule);
+                                    relatedJson.put("field", field);
+                                    relatedMap.put(subModule.getModuleId(),relatedJson);
+                                    relatedList.add(relatedMap);
+                                }
+                            }
+                        }
+                    }
+                    approvalMeta.setReleatedList(relatedList);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            List<RelationRequestContext> relations = RelationUtil.getAllRelations(module);
+            if (CollectionUtils.isNotEmpty(relations)) {
+                approvalMeta.setRelations(relations);
+            }
 
             List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(stateFlowContext.getId());
             if (CollectionUtils.isNotEmpty(allStateTransitionList)) {
