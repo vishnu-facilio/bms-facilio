@@ -66,7 +66,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 if(dataPointList.get(0) != null && dataPointList.get(0).getDynamicKpi() != null && dataPointList.get(0).getDynamicKpi().getDynamicKpi() != null)
                 {
                     LOGGER.info("this is for dynamic kpi");
-                    ReportDataContext data = fetchLiveKpiDataForAnalytics(report, dataPoints);
+                    ReportDataContext data = fetchLiveKpiDataForAnalytics(report, dataPointList);
                     reportData.add(data);
                 }
                 else
@@ -111,7 +111,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         for (List<ReportDataPointContext> dpList : groupedList)
         {
             ReportDataPointContext rdp = dpList.get(0);
-            if(rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField())
+            if(rdp.getDynamicKpi() == null && rdp.getxAxis().getField().equals(dataPoint.getxAxis().getField())
                     && rdp.getyAxis().getModule().equals(dataPoint.getyAxis().getModule())
                     && Objects.equals(rdp.getOrderBy(), dataPoint.getOrderBy())
                     && rdp.isHandleEnum() == dataPoint.isHandleEnum()

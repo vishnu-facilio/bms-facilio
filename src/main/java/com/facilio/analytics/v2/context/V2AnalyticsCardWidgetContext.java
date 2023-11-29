@@ -23,6 +23,7 @@ public class V2AnalyticsCardWidgetContext
     public String baselineTrend;
     public Boolean isModuleKpi;
     public boolean isReadingKpi;
+    public Long dynamicKpiId;
     public String parentModuleName;
     public int aggr;
     public V2TimeFilterContext timeFilter;

@@ -33,6 +33,7 @@ import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.scriptengine.util.ScriptUtil;
+import com.facilio.service.FacilioService;
 import com.facilio.storm.InstructionType;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
@@ -612,8 +613,22 @@ public class ReadingKpiAPI {
                 .andCondition(CriteriaAPI.getCondition(field, CommonOperators.IS_NOT_EMPTY))
                 .groupBy(groupBy)
                 .limit(20000);
-        List<Map<String, Object>> props = selectRecordBuilder.get();
 
+        List<Map<String, Object>> props = null;
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
+        {
+            try {
+                props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
+                        () -> selectRecordBuilder.get());
+            }catch (Exception e){
+                LOGGER.error("Error while execution dynamic kpi--- " , e);
+            }
+        }
+        else
+        {
+            props = selectRecordBuilder.get();
+        }
+        LOGGER.debug("SELECT BUILDER EXECUTED FOR DYNAMICK KPI" + selectRecordBuilder);
         if (CollectionUtils.isNotEmpty(props)) {
             populateReadingsMapFromProps(aggr, readingsMap, nsField.getVarName(), field, props);
         }
