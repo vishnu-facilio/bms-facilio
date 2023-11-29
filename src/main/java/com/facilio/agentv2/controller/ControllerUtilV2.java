@@ -22,8 +22,10 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
 import com.facilio.remotemonitoring.context.AlarmApproach;
+import com.facilio.remotemonitoring.context.AlarmTypeContext;
 import com.facilio.remotemonitoring.context.IncomingRawAlarmContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
@@ -322,6 +324,9 @@ public class ControllerUtilV2 {
             alarmContext.setController(controller);
             alarmContext.setSourceType(IncomingRawAlarmContext.RawAlarmSourceType.CONTROLLER);
             alarmContext.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
+            AlarmTypeContext alarmType = new AlarmTypeContext();
+            alarmType.setLinkName(RemoteMonitorConstants.SystemAlarmTypes.CONTROLLER_OFFLINE);
+            alarmContext.setAlarmType(alarmType);
             if (severity.equals(FacilioConstants.Alarm.CRITICAL_SEVERITY)) {
                 alarmContext.setOccurredTime(timestamp);
             } else {

@@ -118,7 +118,7 @@ public class AlarmCountsInAPeriodOfTimeRURHandler implements AlarmCriteriaHandle
             if (lastAlarmOfType != null) {
                 if (lastAlarmOfType.getId() == rawAlarm.getId()) {
                     RawAlarmUtil.clearAlarm(rawAlarm, currentTime);
-                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getId()));
+//                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getId()));
                 }
             }
         }

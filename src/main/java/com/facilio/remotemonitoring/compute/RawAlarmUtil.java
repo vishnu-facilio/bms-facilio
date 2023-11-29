@@ -40,6 +40,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.logging.Filter;
 import java.util.stream.Collectors;
 
 public class RawAlarmUtil {
@@ -397,7 +398,8 @@ public class RawAlarmUtil {
                     .fields(Arrays.asList(modBean.getField("clearedTime", RawAlarmModule.MODULE_NAME)))
                     .andCriteria(criteria);
             updateRecordBuilder.update(rawAlarmContext);
-            FilterAlarmUtil.clearAlarms(ids,clearTime);
+            FilterAlarmUtil.pushToStormFilterAlarmQueue(ids);
+//            FilterAlarmUtil.clearAlarms(ids,clearTime);
         }
     }
 
@@ -416,7 +418,8 @@ public class RawAlarmUtil {
                     .fields(Arrays.asList(modBean.getField("clearedTime", RawAlarmModule.MODULE_NAME)))
                     .andCriteria(criteria);
             updateRecordBuilder.update(rawAlarmContext);
-            FilterAlarmUtil.clearAlarms(Collections.singletonList(rawAlarm.getId()),clearTime);
+            FilterAlarmUtil.pushToStormFilterAlarmQueue(Collections.singletonList(rawAlarm.getId()));
+//            FilterAlarmUtil.clearAlarms(Collections.singletonList(rawAlarm.getId()),clearTime);
             clearAllParentAlarms(rawAlarm,clearTime);
         }
     }
@@ -437,7 +440,7 @@ public class RawAlarmUtil {
                     }
                     if (allCleared) {
                         clearAlarm(alarm.getParentAlarm(),clearTime);
-                        FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(alarm.getParentAlarm().getId()));
+//                        FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(alarm.getParentAlarm().getId()));
                     }
                 }
             }
@@ -460,7 +463,7 @@ public class RawAlarmUtil {
                 }
                 if (allCleared) {
                     clearAlarm(rawAlarm.getParentAlarm(),clearTime);
-                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getParentAlarm().getId()));
+//                    FilterAlarmUtil.clearFlaggedEvent(Collections.singletonList(rawAlarm.getParentAlarm().getId()));
                 }
             }
         }
@@ -484,15 +487,15 @@ public class RawAlarmUtil {
         if(rawAlarm.getId() > -1) {
             criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(rawAlarmModule), String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
         }
-        if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {
-            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getClearedTime()), NumberOperators.LESS_THAN_EQUAL));
-        } else {
-            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getOccurredTime()), NumberOperators.LESS_THAN_EQUAL));
-        }
+//        if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {
+//            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getClearedTime()), NumberOperators.LESS_THAN_EQUAL));
+//        } else {
+//            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getOccurredTime()), NumberOperators.LESS_THAN_EQUAL));
+//        }
         List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
         if (CollectionUtils.isNotEmpty(rawAlarms)) {
             List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
-            Long clearTime = rawAlarm.getOccurredTime();
+            Long clearTime = System.currentTimeMillis();
             if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {
                 clearTime = rawAlarm.getClearedTime();
             }

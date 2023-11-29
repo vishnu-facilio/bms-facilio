@@ -380,10 +380,10 @@ public class FlaggedEventUtil {
         if (filteredAlarm != null && filteredAlarm.getClient() != null && filteredAlarm.getAlarmType() != null && filteredAlarm.getFlaggedAlarmProcess() != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria criteria = new Criteria();
-            FilteredAlarmContext lastClearedFilterAlarm = getLastClearedAlarm(filteredAlarm);
-            if (lastClearedFilterAlarm != null) {
-                criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(lastClearedFilterAlarm.getClearedTime()), NumberOperators.GREATER_THAN_EQUAL));
-            }
+//            FilteredAlarmContext lastClearedFilterAlarm = getLastClearedAlarm(filteredAlarm);
+//            if (lastClearedFilterAlarm != null) {
+//                criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(lastClearedFilterAlarm.getId()), NumberOperators.GREATER_THAN_EQUAL));
+//            }
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(filteredAlarm.getClient().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "", CommonOperators.IS_EMPTY));
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(filteredAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
@@ -415,6 +415,7 @@ public class FlaggedEventUtil {
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(filteredAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER", "controller", String.valueOf(filteredAlarm.getController().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE", FilteredAlarmModule.FLAGGED_ALARM_PROCESS_FIELD_NAME, String.valueOf(filteredAlarm.getFlaggedAlarmProcess().getId()), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(filteredAlarm.getId()), NumberOperators.LESS_THAN));
 
             SelectRecordsBuilder<FilteredAlarmContext> selectRecordsBuilder = new SelectRecordsBuilder<FilteredAlarmContext>()
                     .select(modBean.getAllFields(FilteredAlarmModule.MODULE_NAME))
@@ -703,7 +704,7 @@ public class FlaggedEventUtil {
             if(event != null) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                 Criteria criteria = new Criteria();
-                criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT", FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, String.valueOf(flaggedEventId), NumberOperators.EQUALS));
+//                criteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT", FilteredAlarmModule.FLAGGED_ALARM_FIELD_NAME, String.valueOf(flaggedEventId), NumberOperators.EQUALS));
                 criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(alarmTypeId), NumberOperators.EQUALS));
                 criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(event.getClient().getId()), NumberOperators.EQUALS));
                 criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(event.getSite().getId()), NumberOperators.EQUALS));

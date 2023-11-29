@@ -8,11 +8,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.remotemonitoring.signup.FlaggedEventModule;
+import com.facilio.remotemonitoring.signup.*;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class GetAutomationModulesCommand extends FacilioCommand {
     @Override
@@ -141,6 +142,18 @@ public class GetAutomationModulesCommand extends FacilioCommand {
         }
         modules.add(modBean.getModule(FacilioConstants.Meter.METER));
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
+
+        if(AccountUtil.getCurrentApp() != null && Objects.equals(AccountUtil.getCurrentApp().getLinkName(), FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)){
+            modules.add(modBean.getModule(RawAlarmModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmTypeModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmCategoryModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmDefinitionModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmDefinitionMappingModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmDefinitionTaggingModule.MODULE_NAME));
+            modules.add(modBean.getModule(AlarmAssetTaggingModule.MODULE_NAME));
+            modules.add(modBean.getModule(FilteredAlarmModule.MODULE_NAME));
+            modules.add(modBean.getModule(FlaggedEventModule.MODULE_NAME));
+        }
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         return false;

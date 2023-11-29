@@ -29,12 +29,14 @@ import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
 import com.facilio.remotemonitoring.signup.FilteredAlarmModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
+import com.facilio.remotemonitoring.signup.RawAlarmModule;
 import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.util.FacilioUtil;
-import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONObject;
@@ -131,6 +133,17 @@ public class FilterAlarmUtil {
                 AlarmCriteriaHandler alarmCriteriaHandler = filterRuleAndCriteriaPair.getRight().getFilterCriteria().getHandler(rawAlarm);
                 if (alarmCriteriaHandler != null) {
                     alarmCriteriaHandler.compute(rawAlarm,filterRuleAndCriteriaPair.getRight());
+                }
+            }
+        }
+    }
+
+    public static void pushToStormFilterAlarmQueue(List<Long> ids) throws Exception {
+        if(CollectionUtils.isNotEmpty(ids)) {
+            List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsList(RawAlarmModule.MODULE_NAME, ids, RawAlarmContext.class);
+            if(CollectionUtils.isNotEmpty(rawAlarms)) {
+                for(RawAlarmContext rawAlarm : rawAlarms) {
+                    pushToStormFilterAlarmQueue(rawAlarm);
                 }
             }
         }
@@ -295,6 +308,7 @@ public class FilterAlarmUtil {
 
     public static void clearAlarms(List<Long> rawAlarmIds,Long clearedTime) throws Exception {
         if(CollectionUtils.isNotEmpty(rawAlarmIds)) {
+
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FilteredAlarmContext updateFilteredAlarm = new FilteredAlarmContext();
             updateFilteredAlarm.setClearedTime(clearedTime);
@@ -305,6 +319,18 @@ public class FilterAlarmUtil {
                     .fields(Arrays.asList(modBean.getField("clearedTime", FilteredAlarmModule.MODULE_NAME),modBean.getField("alarm", FilteredAlarmModule.MODULE_NAME)))
                     .andCriteria(criteria);
             updateRecordBuilder.update(updateFilteredAlarm);
+            Criteria criteriaFilterAlarm = new Criteria();
+            criteriaFilterAlarm.addAndCondition(CriteriaAPI.getCondition("RAW_ALARM","alarm", StringUtils.join(rawAlarmIds,","), NumberOperators.EQUALS));
+            List<FilteredAlarmContext> filteredAlarms = V3RecordAPI.getRecordsListWithSupplements(FilteredAlarmModule.MODULE_NAME, null, FilteredAlarmContext.class, criteriaFilterAlarm, null);
+            if(CollectionUtils.isNotEmpty(filteredAlarms)) {
+                for(FilteredAlarmContext filteredAlarm : filteredAlarms) {
+                    if(filteredAlarm.getFlaggedAlarm() != null && filteredAlarm.getFlaggedAlarm().getId() > -1) {
+                        if(FlaggedEventUtil.isAllFlaggedEventAlarmsClosed(filteredAlarm.getFlaggedAlarm().getId())) {
+                            FlaggedEventUtil.pushToStormFlaggedEventQueue(filteredAlarm);
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -316,7 +342,13 @@ public class FilterAlarmUtil {
             List<FilteredAlarmContext> filteredAlarms = V3RecordAPI.getRecordsListWithSupplements (FilteredAlarmModule.MODULE_NAME, null, FilteredAlarmContext.class, criteria, null);
             if(CollectionUtils.isNotEmpty(filteredAlarms)) {
                 for(FilteredAlarmContext filteredAlarm : filteredAlarms) {
-                    if(filteredAlarm.getFlaggedAlarm() != null && filteredAlarm.getFlaggedAlarm().getId() > -1) {
+                    FlaggedEventRuleContext flaggedAlarmProcess = filteredAlarm.getFlaggedAlarmProcess();
+                    boolean autoCloseOnClear = false;
+                    if(flaggedAlarmProcess != null && flaggedAlarmProcess.getId() > 0){
+                        FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig = RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedAlarmProcess.getId());
+                        autoCloseOnClear = flaggedEventRuleClosureConfig != null && BooleanUtils.isTrue(flaggedEventRuleClosureConfig.getAutoCloseOnClear());
+                    }
+                    if(filteredAlarm.getFlaggedAlarm() != null && filteredAlarm.getFlaggedAlarm().getId() > -1 && autoCloseOnClear) {
                         FlaggedEventUtil.checkAndCloseAlarmFlaggedEvent(filteredAlarm.getFlaggedAlarm().getId());
                     }
                 }

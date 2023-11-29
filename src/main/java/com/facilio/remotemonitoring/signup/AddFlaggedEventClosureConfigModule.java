@@ -107,6 +107,16 @@ public class AddFlaggedEventClosureConfigModule extends SignUpData {
         sendWorkorderCloseCommand.setDefault(true);
         modBean.addField(sendWorkorderCloseCommand);
 
+        BooleanField autoCloseOnClear = new BooleanField();
+        autoCloseOnClear.setName("autoCloseOnClear");
+        autoCloseOnClear.setDisplayName("Auto Close On Clear");
+        autoCloseOnClear.setColumnName("AUTO_CLOSE_ON_CLEAR");
+        autoCloseOnClear.setDataType(FieldType.BOOLEAN);
+        autoCloseOnClear.setDisplayType(FacilioField.FieldDisplayType.RADIO);
+        autoCloseOnClear.setModule(mod);
+        autoCloseOnClear.setDefault(true);
+        modBean.addField(autoCloseOnClear);
+
         MultiLookupField workorderCloseCommandCriteria = new MultiLookupField();
         workorderCloseCommandCriteria.setName("workorderCloseCommandCriteria");
         workorderCloseCommandCriteria.setModule(mod);

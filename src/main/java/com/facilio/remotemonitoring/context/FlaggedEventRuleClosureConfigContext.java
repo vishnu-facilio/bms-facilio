@@ -26,6 +26,8 @@ public class FlaggedEventRuleClosureConfigContext extends V3Context {
     private FacilioStatus workorderCloseStatus;
     private Long flaggedEventTriggerCriteriaReevaluationTime;
     private String warningMessage;
+    private Boolean autoCloseOnClear;
+
     public enum ClosureRestriction implements FacilioStringEnum {
         WARN("Warning"),
         RESTRICT("Restrict");
