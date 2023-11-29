@@ -4223,4 +4223,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new ValidateEventDetailsCommand());
         return c;
     }
+    public static FacilioChain getControlActionCancelChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CancelControlActionCommand());
+        return c;
+    }
 }

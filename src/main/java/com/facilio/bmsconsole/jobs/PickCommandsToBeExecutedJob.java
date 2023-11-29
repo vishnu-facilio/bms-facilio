@@ -79,9 +79,6 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
                else {
                    ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.IN_PROGRESS.getValue(), commandsContext.getId());
                }
-               if (controlActionContext.getControlActionExecutionType() == V3ControlActionContext.ControlActionExecutionType.SANDBOX.getVal()) {
-                   validateExecutionForSandBox(commandsContext);
-               }
            }
 
            //Todo validate IotMessageAPI.setReadingValueForV3CommandContext()
@@ -103,7 +100,7 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
            else{
                for(V3CommandsContext commandsContext : commandsContextList){
                    commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal());
-                   ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.SCHEDULED.getValue(),commandsContext.getId());
+                   ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getValue(),commandsContext.getId());
                    ControlActionAPI.updateCommand(commandsContext);
                }
                ControlActionAPI.updateControlActionStatus(controlActionContext,isRevert);
@@ -125,10 +122,5 @@ public class PickCommandsToBeExecutedJob extends FacilioJob {
             return true;
         }
         return false;
-    }
-    public void validateExecutionForSandBox(V3CommandsContext commandsContext) throws Exception{
-        commandsContext.setAfterValue(commandsContext.getSetValue());
-        commandsContext.setControlActionCommandStatus(V3CommandsContext.ControlActionCommandStatus.SUCCESS.getVal());
-        ControlActionAPI.addCommandActivity(V3CommandsContext.ControlActionCommandStatus.SCHEDULED.getValue(),commandsContext.getId());
     }
 }

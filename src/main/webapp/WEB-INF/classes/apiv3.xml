@@ -2640,6 +2640,13 @@
             <param name="identifier">unPublish</param>
             <param name="buttonPermission">true</param>
         </action>
+        <action name="cancelV3ControlAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionAction" method="v3ControlActionCancel">
+            <param name="moduleName">controlAction</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">cancel</param>
+            <param name="buttonPermission">true</param>
+        </action>
     </package>
     <package name="controlActionTemplateV3Api" namespace="/api/v3/ControlActionTemplate" extends="v3Api">
         <action name="activate" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="activateControlActionTemplate">

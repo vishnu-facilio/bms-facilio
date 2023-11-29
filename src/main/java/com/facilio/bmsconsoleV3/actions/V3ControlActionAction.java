@@ -43,5 +43,13 @@ public class V3ControlActionAction extends V3Action {
         chain.execute();
         return SUCCESS;
     }
+    public String v3ControlActionCancel() throws Exception{
+        FacilioContext context = new FacilioContext();
+        context.put("controlActionId",controlActionId);
+        FacilioChain chain = TransactionChainFactoryV3.getControlActionCancelChain();
+        chain.setContext(context);
+        chain.execute();
+        return SUCCESS;
+    }
 
 }

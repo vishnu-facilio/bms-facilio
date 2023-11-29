@@ -277,7 +277,6 @@ public class AddControlActionModule extends SignUpData {
         unPublishControlAction.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         Criteria unPublishCriteria = new Criteria();
         unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()), EnumOperators.IS));
-        unPublishCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.REJECTED.getIndex()), EnumOperators.IS));
         unPublishControlAction.setCriteria(unPublishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,unPublishControlAction);
 
@@ -291,7 +290,31 @@ public class AddControlActionModule extends SignUpData {
         publishControlAction.setCriteria(publishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,publishControlAction);
 
-        SystemButtonApi.addSummaryEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
+        SystemButtonRuleContext cancelButton = new SystemButtonRuleContext();
+        cancelButton.setName("Cancel");
+        cancelButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        cancelButton.setIdentifier("cancelControlAction");
+        cancelButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria cancelCriteria = new Criteria();
+        cancelCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()),EnumOperators.IS));
+        cancelCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getIndex()),EnumOperators.IS));
+        cancelButton.setCriteria(cancelCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,cancelButton);
+
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria summaryEditCriteria = new Criteria();
+        summaryEditCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getIndex()),EnumOperators.IS));
+        summaryEditCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()),EnumOperators.IS));
+        summaryEditCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.SCHEDULE_ACTION_SCHEDULED.getIndex()),EnumOperators.IS));
+        summaryEditButton.setCriteria(summaryEditCriteria);
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,summaryEditButton);
+
         SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
         SystemButtonApi.addExportAsCSV(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);
         SystemButtonApi.addExportAsExcel(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME);

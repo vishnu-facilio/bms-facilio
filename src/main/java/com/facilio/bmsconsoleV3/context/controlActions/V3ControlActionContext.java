@@ -187,7 +187,7 @@ public class V3ControlActionContext extends V3Context {
         REVERT_ACTION_SUCCESS("Revert Action Success"),
         REVERT_ACTION_FAILED("Revert Action Failed"),
         REVERT_ACTION_COMPLETED_WITH_ERROR("Revert Action Completed with Error"),
-        REJECTED("Rejected");
+        REJECTED("Cancelled");
 
         public String getValue() {
             return this.name;

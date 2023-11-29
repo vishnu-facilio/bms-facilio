@@ -4442,4 +4442,9 @@
             </items>
         </property>
     </request>
+    <request path="/api/v3/ControlAction/cancelV3ControlAction" method="POST">
+        <requestbody type="object">
+            <property name="controlActionId" type="number"></property>
+        </requestbody>
+    </request>
 </config>

@@ -24,6 +24,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.*;
+import com.facilio.tasker.FacilioTimer;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
@@ -181,7 +182,8 @@ public class ControlActionAPI {
                 .select(fieldList)
                 .beanClass(V3CommandsContext.class)
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlAction"),String.valueOf(controlActionId),NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("actionTime"),String.valueOf(actionTime),NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("actionTime"),String.valueOf(actionTime),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionCommandStatus"),String.valueOf(V3CommandsContext.ControlActionCommandStatus.SCHEDULED.getIndex()),NumberOperators.EQUALS));
         return builder.get();
     }
     public static int updateCommand(V3CommandsContext commandsContext) throws Exception{
@@ -567,6 +569,10 @@ public class ControlActionAPI {
             context.setId(points.get(0).getControllerId());
             commandsContext.setController(context);
         }
+    }
+    public static void deleteCommandExecutionJobOfControlAction(Long controlActionId) throws Exception{
+        FacilioTimer.deleteJob(controlActionId, "PickCommandsToBeExecutedScheduledAction");
+        FacilioTimer.deleteJob(controlActionId,"PickCommandsToBeExecutedRevertAction");
     }
 
 
