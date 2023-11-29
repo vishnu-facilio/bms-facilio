@@ -19,7 +19,7 @@ public class ModuleFlowLogServiceImpl extends FlowLogService {
     public void log(String message) {
         flowLogContext.setLogMessage(message);
         flowLogContext.setFlowId(flowEngineInterFace.getFlow().getId());
-        long recordId =-1l,blockId=1l;
+        long recordId =-1l,blockId=-1l;
         JSONObject record = flowEngineInterFace.getCurrentRecord();
         if(record!=null && record.containsKey("id")){
             recordId = (Long) record.get("id");
