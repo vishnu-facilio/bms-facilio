@@ -55,6 +55,8 @@
 <%@ page import="com.facilio.modules.fields.FacilioField" %>
 <%@ page import="com.facilio.modules.FieldType" %>
 <%@ page import="com.facilio.bmsconsole.commands.FacilioChainFactory" %>
+<%@page import="com.facilio.fw.cache.LRUCache"%>
+
 
 
 <%--
