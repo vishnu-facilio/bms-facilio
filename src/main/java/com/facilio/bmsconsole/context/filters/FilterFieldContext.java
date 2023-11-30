@@ -70,12 +70,12 @@ public class FilterFieldContext {
             options = new ArrayList<>();
             String trueVal = ((BooleanField) field).getTrueVal();
             if (StringUtils.isEmpty(trueVal)) {
-                trueVal = "True";
+                trueVal = "Yes";
             }
             options.add(new FieldOption<>("true", trueVal));
             String falseVal = ((BooleanField) field).getFalseVal();
             if (StringUtils.isEmpty(falseVal)) {
-                falseVal = "False";
+                falseVal = "No";
             }
             options.add(new FieldOption<>("false", falseVal));
         }
