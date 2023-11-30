@@ -19,10 +19,14 @@ public class ConstructTriggerNameCommand extends FacilioCommand {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<ServicePMTriggerContext> servicePMTriggers = recordMap.get(moduleName);
         if(CollectionUtils.isNotEmpty(servicePMTriggers)){
-            for(ServicePMTriggerContext servicePMTrigger : servicePMTriggers){
-                ScheduleInfo scheduleInfo = servicePMTrigger.getScheduleInfo();
-                String triggerName = scheduleInfo.getDescription(servicePMTrigger.getStartTime());
-                if(triggerName!=null){
+            for(ServicePMTriggerContext servicePMTrigger : servicePMTriggers) {
+                if (servicePMTrigger != null) {
+                    if (servicePMTrigger.getFrequencyEnum() == null) {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Trigger Frequency is required");
+                    }
+                    Long startTime = servicePMTrigger.getStartTime() != null ? servicePMTrigger.getStartTime() : System.currentTimeMillis();
+                    ScheduleInfo scheduleInfo = servicePMTrigger.getScheduleInfo();
+                    String triggerName = scheduleInfo.getDescription(startTime);
                     servicePMTrigger.setName(triggerName);
                 }
             }
