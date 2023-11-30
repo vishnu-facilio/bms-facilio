@@ -1,12 +1,14 @@
 package com.facilio.flowengine.executor;
 
 import com.facilio.blockfactory.blocks.BaseBlock;
+import com.facilio.blockfactory.blocks.BaseLoopBlock;
 import com.facilio.flowLog.FlowLogLevel;
 import com.facilio.flowLog.FlowLogService;
 import com.facilio.flowengine.exception.FlowException;
 import com.facilio.flowengine.observers.Observer;
 import com.facilio.flows.context.FlowContext;
 import com.facilio.modules.FieldUtil;
+import lombok.Getter;
 import lombok.Setter;
 import org.json.simple.JSONObject;
 
@@ -24,6 +26,8 @@ public class FlowEngine implements FlowEngineInterFace {
     private FlowLogService flowLogService;
     private JSONObject currentRecord;
     private BaseBlock currentBlock;
+    @Getter
+    private BaseLoopBlock rootParentBlock;
 
     private int blocksExecuted = 0;
     private List<Observer> observers = new LinkedList<>();
@@ -50,20 +54,7 @@ public class FlowEngine implements FlowEngineInterFace {
 
         try{
             emitFlowStart(cloneMemory(memory));
-            currentBlock = startBlock;
-            while (currentBlock != null) {
-                blocksExecuted++;
-                currentBlock.setFlowEngineInterFace(this);
-                emitBlockStart(currentBlock, cloneMemory(memory));
-
-                currentBlock.execute(memory);
-
-                emitBlockEnd(currentBlock, cloneMemory(memory));
-                if (blocksExecuted > maxBlocks) {
-                    break;
-                }
-                currentBlock = currentBlock.getNextBlock();
-            }
+            runBlocks(null,startBlock,memory);
             emitFlowEnd(cloneMemory(memory));
         }catch (Exception e){
             String errorMeg = "Exception occurred in flowEngine for flowId:"+flow.getId()+" message:"+e.getMessage();
@@ -77,6 +68,56 @@ public class FlowEngine implements FlowEngineInterFace {
             log.debug(msg);
         }
 
+    }
+    private void runBlocks(BaseLoopBlock rootParent, BaseBlock startBlock, Map<String,Object> memory) throws FlowException {
+        currentBlock = startBlock;
+        rootParentBlock = rootParent;
+
+        while (currentBlock != null) {
+            blocksExecuted++;
+            currentBlock.setFlowEngineInterFace(this);
+
+            emitBlockStart(currentBlock, cloneMemory(memory));
+
+            currentBlock.execute(memory);
+
+            if(rootParent!=null && (rootParent.isBreakLoop() || rootParent.isContinueLoop()) ){
+                rootParentBlock.setContinueLoop(false);
+                break;
+            }
+
+            if(currentBlock instanceof BaseLoopBlock){
+                BaseLoopBlock forLoopBlock = (BaseLoopBlock) currentBlock;
+                handleForLoopBlock(forLoopBlock,memory);
+                currentBlock = forLoopBlock;
+            }
+
+            emitBlockEnd(currentBlock, cloneMemory(memory));
+
+            if (blocksExecuted > maxBlocks) {
+                LOGGER.info("Maximum Block execution reached");
+                break;
+            }
+
+            currentBlock = currentBlock.getNextBlock();
+        }
+    }
+    private void handleForLoopBlock(BaseLoopBlock forLoopBlock, Map<String,Object> memory) throws FlowException {
+        BaseBlock forStartBlock = forLoopBlock.getNextBlock();
+        if(forStartBlock == null){
+            forLoopBlock.resetExecutablePosition();
+            return;
+        }
+        while (forLoopBlock.hasNext()){
+            Object i = forLoopBlock.next();
+            forLoopBlock.putToMemory(memory,i);
+            runBlocks(forLoopBlock,forStartBlock,memory);
+            if(forLoopBlock.isBreakLoop()){
+                forLoopBlock.setBreakLoop(false);
+                break;
+            }
+        }
+        forLoopBlock.resetExecutablePosition();
     }
 
     private void emitFlowStart(Map<String, Object> memory) {

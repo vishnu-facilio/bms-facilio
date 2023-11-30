@@ -32,4 +32,7 @@ public class Constants {
         public static final String TEMPLATE_ID = "templateId";
         public static final String SEND_AS_SEPARATE_MAIL = "sendAsSeparateMail";
     }
+    public static class ForLoopBlockConstants{
+        public static final String ITERABLE_OBJECTS = "iterableObjects";
+    }
 }

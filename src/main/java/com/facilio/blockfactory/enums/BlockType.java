@@ -19,7 +19,10 @@ public enum BlockType implements FacilioStringEnum {
     change_status(Group.ACTION,"Change Status",ChangeStatusBlock.class,FlowType.GENERIC,FlowType.MODULE),
     script(Group.ACTION,"Script", ScriptBlock.class),
     send_notification(Group.ACTION,"Send Notification", SendPushNotificationBlock.class,FlowType.GENERIC,FlowType.MODULE),
-    send_mail(Group.ACTION,"Send Mail", SendEmailBlock.class,FlowType.GENERIC,FlowType.MODULE);
+    send_mail(Group.ACTION,"Send Mail", SendEmailBlock.class,FlowType.GENERIC,FlowType.MODULE),
+    for_loop(Group.LOGIC,"Iterator",ForLoopBlock.class),
+    break_loop(Group.LOGIC,"Break", BreakBlock.class,for_loop),
+    continue_loop(Group.LOGIC,"Continue", ContinueBlock.class,for_loop);
 
     private Class clazz;
     @Getter
@@ -27,11 +30,15 @@ public enum BlockType implements FacilioStringEnum {
     private Group group;
     @Getter
     private Long supportedFlowTypes;
-
+    private BlockType parentBlockType;
     BlockType(Group group, String name, Class clazz, FlowType... supportedFlowTypes) {
+        this(group,name,clazz,null,supportedFlowTypes);
+    }
+    BlockType(Group group, String name, Class clazz, BlockType parentBlockType,FlowType... supportedFlowTypes){
         this.group = group;
         this.name = name;
         this.clazz = clazz;
+        this.parentBlockType = parentBlockType;
         this.supportedFlowTypes = sum(supportedFlowTypes);
     }
     private long sum(FlowType... supportedFlowTypes){
@@ -103,7 +110,14 @@ public enum BlockType implements FacilioStringEnum {
             Map<String, Object> blockMap = new HashMap<>();
             blockMap.put("displayName", block.name);
             blockMap.put("name", block);
-            blocks.add(blockMap);
+            if(block.parentBlockType!=null){
+                Map<String, Object> parentBlockMap = blocks.stream().filter(b-> (b.get("name") == block.parentBlockType) ).findFirst().get();
+                List<Map<String,Object>> childBlocks  = parentBlockMap.get("childBlocks") == null?new ArrayList<>(): (List<Map<String, Object>>) parentBlockMap.get("childBlocks");
+                childBlocks.add(blockMap);
+                parentBlockMap.putIfAbsent("childBlocks",childBlocks);
+            }else {
+                blocks.add(blockMap);
+            }
 
             if (typeMap.get(block.group.name) == null) {
                 groupMap.put("displayName", block.group.name);
