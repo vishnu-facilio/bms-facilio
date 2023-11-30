@@ -505,7 +505,7 @@ public class ReadingKpiAPI {
 
         if (CollectionUtils.isEmpty(parentIds)) {
             // when dimension is chosen as assets, parentIds can be null. Not yet supported from ui
-//            parentIds = AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(buildingId));
+            // parentIds = AssetsAPI.getAssetIdsFromBaseSpaceIds(Collections.singletonList(buildingId));
             throw new IllegalArgumentException("Parent Ids cannot be null");
         }
         // data collection
@@ -642,7 +642,7 @@ public class ReadingKpiAPI {
 
         FacilioField aggrField = aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && nsField.getAggregationType() != AggregationType.COUNT
                 ? field  // high res
-                : getAggregatedField(nsField.getAggregationType(), field); // normal and dashboard
+                : getAggregatedField(nsField, field); // normal and dashboard
 
         FacilioField ttimeField = aggr instanceof BmsAggregateOperators.DateAggregateOperator
                 ? ((BmsAggregateOperators.DateAggregateOperator) aggr).getTimestampField(fieldMap.get("ttime"))  // normal
@@ -653,9 +653,14 @@ public class ReadingKpiAPI {
         return selectFields;
     }
 
-    private static FacilioField getAggregatedField(AggregationType aggregationType, FacilioField field) throws Exception {
-        FacilioField aggrField = getAggrOperatorForAggrType(aggregationType).getSelectField(field);
-        aggrField.setColumnName("ROUND(" + aggrField.getCompleteColumnName() + ",3)");
+    private static FacilioField getAggregatedField(NameSpaceField nsField, FacilioField field) throws Exception {
+        FacilioField aggrField = getAggrOperatorForAggrType(nsField.getAggregationType()).getSelectField(field);
+
+        String columnName = "ROUND(" + aggrField.getCompleteColumnName() + ",3)";
+        if (nsField.getDefaultExecutionMode() == NameSpaceField.DefaultExecutionMode.DEFAULT) {
+            columnName = "COALESCE(" + columnName + ", " + nsField.getDefaultValue() + ")";
+        }
+        aggrField.setColumnName(columnName);
         return aggrField;
     }
 
@@ -743,10 +748,7 @@ public class ReadingKpiAPI {
 
                 groupByVarNameAndGetVarNameVsValueMap(ns, entry.getValue())
                         .map(varNameVsValueMap -> executeScriptAndGetResultProp(script, entry.getKey(), varNameVsValueMap))
-                        .map(resultProp -> {
-                            resourceResultProps.add(resultProp);
-                            return null;
-                        });
+                        .map(resourceResultProps::add);
             }
             finalResultProps.put(parentId, resourceResultProps);
         }

@@ -2,6 +2,8 @@ package com.facilio.readingkpi.readingslist;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.connected.CommonConnectedUtil;
+import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -43,9 +45,12 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsFieldMap = FieldFactory.getAsMap(FieldFactory.getNumberFieldFields());
 
         List<FacilioField> selectFields = new ArrayList<>();
+        selectFields.add(readingKpiFieldMap.get("resourceType"));
+        selectFields.add(readingKpiFieldMap.get("categoryId"));
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(rdmModule.getTableName())
+                .innerJoin(readingKpiModule.getTableName()).on(readingKpiFieldMap.get("readingFieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
                 .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("value"), "-1", NumberOperators.NOT_EQUALS))
                 .andCondition(CriteriaAPI.getCondition(readingKpiModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS))
                 .andCondition(CriteriaAPI.getCondition(readingKpiFieldMap.get("status"), String.valueOf(Boolean.TRUE), BooleanOperators.IS));
@@ -56,8 +61,8 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
             Long fieldId = readingKpi.getReadingFieldId();
             List<Long> includedAssetIds = readingKpi.getNs().getIncludedAssetIds();
             builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
-                    .innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
-                    .innerJoin(readingKpiModule.getTableName()).on(readingKpiFieldMap.get("readingFieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName());
+                    .innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName());
+
 
             String resourceTypeModule = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
             joinTablesBasedOnResourceType(resourceTypeModule, builder, selectFields, rdmFieldMap);
@@ -66,8 +71,7 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
                 builder.andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("resourceId"), includedAssetIds, NumberOperators.EQUALS));
             }
         } else {
-            builder.innerJoin(readingKpiModule.getTableName()).on(readingKpiFieldMap.get("readingFieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
-                    .innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
+            builder.innerJoin(fieldsModule.getTableName()).on(fieldsFieldMap.get("fieldId").getCompleteColumnName() + "=" + rdmFieldMap.get("fieldId").getCompleteColumnName())
                     .andCondition(CriteriaAPI.getCondition(rdmFieldMap.get("resourceId"), String.valueOf(recordId), NumberOperators.EQUALS));
             selectFields.add(readingKpiFieldMap.get("name"));
         }
@@ -112,21 +116,35 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
         ReadingKpiAPI.addFilterToBuilder(context, null, builder);
         ReadingKpiAPI.addPaginationPropsToBuilder(context, builder);
         List<Map<String, Object>> records = builder.get();
-        setMetricAndUnit(records);
+        for (Map<String, Object> record : records) {
+            setReadingField(record);
+            setCategoryModuleName(record);
+            setMetricAndUnit(record);
+        }
         return records;
     }
 
-    private static void setMetricAndUnit(List<Map<String, Object>> records) throws Exception {
-        for (Map<String, Object> record : records) {
-            if (record.get("unit") == null) continue;
+    private static void setReadingField(Map<String, Object> record) throws Exception {
+        Long fieldId = (Long) record.get("fieldId");
+        record.put("readingField", Constants.getModBean().getField(fieldId));
+    }
 
-            NumberField field = new NumberField();
-            field.setMetric((Integer) record.get("metric"));
-            field.setUnitId((Integer) record.get("unit"));
+    private static void setCategoryModuleName(Map<String, Object> record) throws Exception {
+        int resourceType = (int) record.get("resourceType");
+        long categoryId = (long) record.get("categoryId");
+        ResourceType resourceType1 = ResourceType.valueOf(resourceType);
+        String moduleNameFromCategory = CommonConnectedUtil.getModuleNameFromCategory(resourceType1, categoryId);
+        record.put("parentModuleName", moduleNameFromCategory);
+    }
 
-            Double convertedValue = (Double) UnitsUtil.convertToDisplayUnit(record.get("value"), field);
-            record.replace("value", convertedValue);
-        }
+    private static void setMetricAndUnit(Map<String, Object> record) throws Exception {
+        if (record.get("unit") == null) return;
+        NumberField field = new NumberField();
+        field.setMetric((Integer) record.get("metric"));
+        field.setUnitId((Integer) record.get("unit"));
+
+        Double convertedValue = (Double) UnitsUtil.convertToDisplayUnit(record.get("value"), field);
+        record.replace("value", convertedValue);
     }
 
     private void joinTablesBasedOnResourceType(String moduleName, GenericSelectRecordBuilder builder, List<FacilioField> selectFields, Map<String, FacilioField> rdmFieldMap) throws Exception {

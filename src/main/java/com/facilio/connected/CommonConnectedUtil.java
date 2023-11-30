@@ -5,9 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.MetersAPI;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
-import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -16,7 +14,10 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
@@ -34,7 +35,6 @@ import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.antlr.v4.runtime.misc.OrderedHashSet;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.AsSubgraph;
@@ -451,26 +451,27 @@ public class CommonConnectedUtil {
         runStormHistorical.execute();
     }
 
-    public static V3Context getCategory(ResourceType type, Long categoryId) throws Exception {
+    public static String getModuleNameFromCategory(ResourceType type, Long categoryId) throws Exception {
+        V3Context category = getCategory(type, categoryId);
+        long moduleId = type.getModuleId(category);
+        if (moduleId <= 0) {
+            throw new IllegalArgumentException("Not supported exception");
+        }
+        return Constants.getModBean().getModule(moduleId).getName();
+    }
+
+    public static <T extends V3Context> V3Context getCategory(ResourceType type, Long categoryId) throws Exception {
         if(categoryId == null) {
             return null;
             //TODO: hack, need to remove this return check. added for backward compatibility
             //throw new Exception("Category id cannot be null");
         }
-        FacilioContext resultCtx;
-        switch (type) {
-            case ASSET_CATEGORY:
-                resultCtx = V3Util.getSummary(FacilioConstants.ContextNames.ASSET_CATEGORY, Lists.newArrayList(categoryId));
-                List<V3AssetCategoryContext> assetCategoriesCtx = Constants.getRecordListFromContext(resultCtx, FacilioConstants.ContextNames.ASSET_CATEGORY);
-                return CollectionUtils.isNotEmpty(assetCategoriesCtx) ? assetCategoriesCtx.get(0) : null;
-            case METER_CATEGORY:
-                resultCtx = V3Util.getSummary(FacilioConstants.Meter.UTILITY_TYPE, Lists.newArrayList(categoryId));
-                List<V3UtilityTypeContext> utilityCtxs = Constants.getRecordListFromContext(resultCtx, FacilioConstants.Meter.UTILITY_TYPE);
-                return CollectionUtils.isNotEmpty(utilityCtxs) ? utilityCtxs.get(0) : null;
-            case SITE:
-                throw new Exception("Not supported yet");
+        FacilioContext resultCtx = V3Util.getSummary(type.getCategoryModuleName(), Lists.newArrayList(categoryId));
+        List<T> categories = Constants.getRecordListFromContext(resultCtx, type.getCategoryModuleName());
+        if (CollectionUtils.isEmpty(categories)) {
+            throw new IllegalArgumentException("Invalid Category Id");
         }
-        return null;
+        return categories.get(0);
     }
 
     public static Long getCategoryForResource(Long resourceId, ResourceType resourceType) throws Exception {
@@ -493,18 +494,12 @@ public class CommonConnectedUtil {
         }
     }
 
-    public static List<Long> getResourceIdsBasedOnCategory(ResourceType resourceType, Long categoryId) throws Exception {
-        switch (resourceType) {
-            case ASSET_CATEGORY:
-                List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(categoryId);
-                return assets.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
-            case METER_CATEGORY:
-                List<V3MeterContext> meters = MetersAPI.getMeterListOfUtilityType(categoryId);
-                return meters.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
-            case SITE:
-                throw new Exception("Not supported yet");
+    public static <T extends ModuleBaseWithCustomFields> List<Long> getResourceIdsBasedOnCategory(ResourceType resourceType, Long categoryId) throws Exception {
+        List<T> resources = resourceType.getResources(categoryId);
+        if (CollectionUtils.isEmpty(resources)) {
+            return new ArrayList<>();
         }
-        return new ArrayList<>();
+        return resources.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
     }
 
     public static Map<String, Object> getConnectedData(NameSpaceContext ns) throws Exception {

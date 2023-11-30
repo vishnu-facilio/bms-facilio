@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -1336,7 +1337,7 @@ public class V2AnalyticsOldUtil {
     public static JSONArray getDataPointsJSONForReadingRule(NewReadingRuleContext readingRule, NameSpaceContext ns, Long resourceId) throws Exception {
         JSONArray measureArray = new JSONArray();
 
-        String parentModuleName = getModuleNameFromCategory(readingRule.getCategoryId(), readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
+        String parentModuleName = CommonConnectedUtil.getModuleNameFromCategory(readingRule.getResourceTypeEnum(), readingRule.getCategoryId());
         List<NameSpaceField> fields = ns.getFields();
         measureArray.add(getMeasureForField(readingRule.getReadingFieldId(), readingRule.getCategoryId(), parentModuleName, resourceId));
 
@@ -1350,7 +1351,7 @@ public class V2AnalyticsOldUtil {
             Long catIdForField = getCategoryForField(nsField, readingRule);
             String categoryName = parentModuleName;
             if (!Objects.equals(catIdForField, readingRule.getCategoryId())) {
-                categoryName = getModuleNameFromCategory(catIdForField, readingRule.getResourceTypeEnum().getName().toLowerCase(Locale.ROOT));
+                categoryName =  CommonConnectedUtil.getModuleNameFromCategory(readingRule.getResourceTypeEnum(), catIdForField);
             }
 
             for (Long parentId : parentIds) {

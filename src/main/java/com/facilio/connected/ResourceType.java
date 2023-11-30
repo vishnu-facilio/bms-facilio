@@ -1,22 +1,91 @@
 package com.facilio.connected;
 
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.connected.scopeHandler.AssetCommissioningHandler;
 import com.facilio.connected.scopeHandler.MeterCommissioningHandler;
 import com.facilio.connected.scopeHandler.ScopeCommissioningHandler;
 import com.facilio.connected.scopeHandler.SpaceCommissioningHandler;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Getter
 public enum ResourceType implements FacilioIntEnum {
-    ASSET_CATEGORY(FacilioConstants.ContextNames.ASSET, new AssetCommissioningHandler(), "Asset"),
-    SPACE_CATEGORY(FacilioConstants.ContextNames.SPACE, new SpaceCommissioningHandler(), "Space"),
-    METER_CATEGORY(FacilioConstants.Meter.METER, new MeterCommissioningHandler(), "Meter"),
-    SITE(FacilioConstants.ContextNames.SITE, null, "Site");
+    ASSET_CATEGORY(FacilioConstants.ContextNames.ASSET, new AssetCommissioningHandler(), "Asset") {
+        @Override
+        public String getCategoryModuleName() {
+            return FacilioConstants.ContextNames.ASSET_CATEGORY;
+        }
 
+        @Override
+        public Long getModuleId(V3Context category) {
+            return ((V3AssetCategoryContext) category).getAssetModuleID();
+        }
+
+        @Override
+        public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
+            return (List<T>) AssetsAPI.getAssetListOfCategory(categoryId);
+        }
+
+    },
+    SPACE_CATEGORY(FacilioConstants.ContextNames.SPACE, new SpaceCommissioningHandler(), "Space") {
+        @Override
+        public String getCategoryModuleName() {
+            throw new IllegalArgumentException("Not Supported Yet");
+        }
+
+        @Override
+        public Long getModuleId(V3Context category) {
+            return -1L;
+        }
+
+        @Override
+        public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
+            throw new IllegalArgumentException("Not Supported Yet");
+        }
+    },
+    METER_CATEGORY(FacilioConstants.Meter.METER, new MeterCommissioningHandler(), "Meter") {
+        @Override
+        public String getCategoryModuleName() {
+            return FacilioConstants.Meter.UTILITY_TYPE;
+        }
+
+        @Override
+        public Long getModuleId(V3Context category) {
+            return ((V3UtilityTypeContext) category).getMeterModuleID();
+        }
+
+        @Override
+        public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
+            return (List<T>) MetersAPI.getMeterListOfUtilityType(categoryId);
+        }
+    },
+    SITE(FacilioConstants.ContextNames.SITE, null, "Site") {
+        @Override
+        public String getCategoryModuleName() {
+            throw new IllegalArgumentException("Not Supported Yet");
+        }
+
+        @Override
+        public Long getModuleId(V3Context category) {
+            return -1L;
+        }
+
+        @Override
+        public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
+            throw new IllegalArgumentException("Not Supported Yet");
+        }
+    };
+
+    @Getter
     String moduleName;
     ScopeCommissioningHandler scopeHandler;
     String name;
@@ -34,15 +103,15 @@ public enum ResourceType implements FacilioIntEnum {
         this.name = name;
     }
 
+    public abstract String getCategoryModuleName() throws Exception;
+    public abstract Long getModuleId(V3Context category);
+    public abstract <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception;
+
     public static ResourceType valueOf(int value) {
         if (value > 0 && value <= values().length) {
             return values()[value - 1];
         }
         return null;
-    }
-
-    public String getModuleName() {
-        return moduleName;
     }
 
     public static ResourceType getResourceTypeFromModuleName(String moduleName) {
