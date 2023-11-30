@@ -12,6 +12,7 @@ import com.facilio.v3.annotation.Config;
 import com.facilio.v3.annotation.Module;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.function.Supplier;
 
 @Config
@@ -72,6 +73,25 @@ public class APIFieldsConfig {
                 .skip(FieldsConfigList.WORKPERMIT_VIEW_FIELDS_EXCLUDE)
                 .done();
     }
+
+    @Module(FacilioConstants.ReadingKpi.READING_KPI)
+    public static Supplier<FieldConfig> getReadingKpiFieldConfig() {
+        return () -> new FieldConfig()
+
+                .sortFields()
+                .add(FieldsConfigList.READING_KPI_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.READING_KPI_FIELDS_INCLUDE)
+                .done()
+
+                .viewFields()
+                .add(FieldsConfigList.READING_KPI_FIELDS_INCLUDE)
+                .addFixedFields(Collections.singletonList("name"))
+                .done();
+    }
+
     @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<FieldConfig> getNewReadingAlarmFieldConfig(){
         return () -> new FieldConfig()

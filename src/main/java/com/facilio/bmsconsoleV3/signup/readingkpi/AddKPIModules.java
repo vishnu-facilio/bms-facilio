@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.signup.readingkpi;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -153,9 +154,24 @@ public class AddKPIModules extends BaseModuleConfig {
         createdTime.setColumnName("SYS_CREATED_TIME");
         createdTime.setModule(ModuleFactory.getReadingKpiModule());
 
+        List<ViewField> columns = new ArrayList<>();
+        columns.add(new ViewField("name", "Name"));
+        columns.add(new ViewField("assetCategory", "Asset Category"));
+        columns.add(new ViewField("description", "Description"));
+        columns.add(new ViewField("resourceType", "Resource Type"));
+        columns.add(new ViewField("categoryId", "Category"));
+        columns.add(new ViewField("frequency", "Frequency"));
+        columns.add(new ViewField("kpiType", "KPI Type"));
+        columns.add(new ViewField("unitId", "Unit"));
+        columns.add(new ViewField("metricId", "Metric"));
+        columns.add(new ViewField("sysCreatedTime", "Created Time"));
+        columns.add(new ViewField("sysCreatedBy", "Created By"));
+        columns.add(new ViewField("status", "Status"));
+
         FacilioView view = new FacilioView();
         view.setName(name);
         view.setDisplayName(displayName);
+        view.setFields(columns);
         view.setModuleName(FacilioConstants.ReadingKpi.READING_KPI);
         view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
         view.setDefault(true);

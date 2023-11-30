@@ -153,6 +153,12 @@ public class FieldsConfigList {
             "lastOccurrenceId", "key", "description", "noOfOccurrences"
     );
 
+    public static final List<String> READING_KPI_FIELDS_INCLUDE = Arrays.asList(
+            "name", "description", "kpiType", "assetCategory", "categoryId",
+            "frequency", "unitId", "metricId", "status", "resourceType",
+            "sysCreatedTime", "sysCreatedBy", "sysModifiedTime", "sysModifiedBy"
+    );
+
     public static final List<String> NEW_READING_RULE_FIELDS_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS
             "name", "description", "status", "createdTime", "impact", "siteId", "status",
             "sysCreatedTime", "sysCreatedBy", "sysModifiedTime", "sysModifiedBy", "assetCategory"
