@@ -1641,14 +1641,34 @@ public class TransactionChainFactory {
 		c.addCommand(new SiUnitConversionToEnteredReadingUnit());
 		return c;
 	}
-		public static FacilioChain getProcessDataChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new ProcessDataCommand());
-			c.addCommand(new ModeledDataCommand());
-			c.addCommand(new UnModeledDataCommand());
-			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
-			return c;
-		}
+
+	public static FacilioChain getProcessDataChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ProcessDataCommand());
+		c.addCommand(new ModeledDataCommand());
+		c.addCommand(new UnModeledDataCommand());
+		c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+		return c;
+	}
+	
+	public static FacilioChain getTimeSeriesAddOrUpdateChain() throws Exception {
+                FacilioChain chain = getDefaultChain();
+		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+		chain.addCommand(new AddAgentDataCommand());
+		return chain;
+	}
+
+	public static FacilioChain getTimeSeriesProcessChainV3() throws Exception {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ProcessDataCommandV3());
+		//chain.addCommand(new AutoCommissionPoints());
+		chain.addCommand(new UpdateDataCommandStatus());
+		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
+		chain.addCommand(new ModeledDataCommandV2());
+		chain.addCommand(new UnModeledDataCommandV2());
+		chain.addCommand(new AddAgentDataCommand());
+		return chain;
+	}
 
 	public static FacilioChain getTimeSeriesProcessChainV2() throws Exception {
 		FacilioChain chain = getDefaultChain();
