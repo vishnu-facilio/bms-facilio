@@ -789,7 +789,7 @@ public class V2AnalyticsOldUtil {
         addedModules.add(baseSpaceModule);
 
 
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(resourceModule.getTableName())
                 .select(Collections.singletonList(FieldFactory.getIdField(resourceModule)))
                 .andCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", "false", BooleanOperators.IS))
@@ -799,7 +799,7 @@ public class V2AnalyticsOldUtil {
             Criteria spaceCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.BUILDING);
             builder.andCriteria(spaceCriteria);
         }
-        selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructQueryString() + ")");
+        selectBuilder.andCustomWhere(spaceField.getCompleteColumnName() + " in (" + builder.constructSelectStatement() + ")");
 
         return spaceField;
     }
