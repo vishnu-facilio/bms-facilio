@@ -996,9 +996,15 @@ public class DataMigrationUtil {
                     put("inspectionTemplate","inspectionTemplate");
                 }});
 
+                put("inspectionTrigger",new HashMap<String,String>(){{
+                    put("parent","inspectionTemplate");
+                }});
+
                 put("inspectionResponse",new HashMap<String,String>(){{
                     put("parent","inspectionTemplate");
                     put("template","qandaTemplate");
+                    put("sysCreatedBy","users");
+                    put("sysModifiedBy","users");
                 }});
 
                 put("qandaResponse",new HashMap<String,String>(){{
@@ -1006,7 +1012,7 @@ public class DataMigrationUtil {
                 }});
 
                 put("moves",new HashMap<String,String>(){{
-                    put("employee","employee");
+                    put(FacilioConstants.ContextNames.EMPLOYEE,FacilioConstants.ContextNames.EMPLOYEE);
                 }});
 
                 put("energydata",new HashMap<String,String>(){{
@@ -1022,9 +1028,25 @@ public class DataMigrationUtil {
                 }});
 
                 put("bookingslot",new HashMap<String,String>(){{
-                    put("booking","facilitybooking");
+                    put("booking",FacilioConstants.ContextNames.FACILITY_BOOKING);
+                    put("slot","slot");
                 }});
 
+                put(FacilioConstants.ContextNames.FACILITY_BOOKING,new HashMap<String,String>(){{
+                    put("reservedFor",FacilioConstants.ContextNames.PEOPLE);
+                }});
+
+                put(FacilioConstants.ContextNames.ASSET_BREAKDOWN,new HashMap<String,String>(){{
+                    put(FacilioConstants.ContextNames.ASSET,FacilioConstants.ContextNames.ASSET);
+                }});
+
+                put(FacilioConstants.Inspection.INSPECTION_TEMPLATE,new HashMap<String,String>(){{
+                    put("sysCreatedBy","users");
+                    put("sysModifiedBy","users");
+                }});
+                put(FacilioConstants.ContextNames.ASSET_PHOTOS,new HashMap<String,String>(){{
+                    put("parentId",FacilioConstants.ContextNames.ASSET);
+                }});
             }}
     );
 

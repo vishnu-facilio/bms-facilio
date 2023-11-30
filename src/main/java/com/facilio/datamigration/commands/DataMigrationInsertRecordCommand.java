@@ -73,6 +73,13 @@ public class DataMigrationInsertRecordCommand extends FacilioCommand {
 
         for (String moduleName : allDataConfigModuleNames) {
 
+            Map<String, ComponentType> nameVsComponentType = PackageUtil.nameVsComponentType;
+
+            if(nameVsComponentType.containsKey(moduleName)){
+                LOGGER.info("Data Migration - Insert Data - skipped for meta moduleName -" + moduleName);
+                continue;
+            }
+
             if(skipDataMigrationModules.contains(moduleName)){
                 LOGGER.info("Data Migration - Insert Data - skipped for moduleName -" + moduleName);
                 continue;
@@ -116,6 +123,19 @@ public class DataMigrationInsertRecordCommand extends FacilioCommand {
                     i.put("approvalRuleId",-1l);
                 }
             }
+
+            if (targetModule.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
+                List<Map<String, Object>> insertActivityDataProps = new ArrayList<>(insertDataProps);
+                for (Map<String, Object> p : insertActivityDataProps) {
+                    Object parentId = p.get("parentId");
+                    long activityParentId = (long) parentId;
+                    if (activityParentId < 1l) {
+                        insertDataProps.remove(p);
+                    }
+                }
+            }
+
+
 
             Map<Long, Long> oldVsNewIds = targetConnection.createModuleData(targetModule, targetFields, targetSupplements, insertDataProps, addLogger);
 

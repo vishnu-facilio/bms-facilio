@@ -825,9 +825,9 @@ public class PackageUtil {
         componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT_CONTACT,ComponentType.PEOPLE);
         componentNameVsTypes.put(FacilioConstants.ContextNames.VENDOR_CONTACT,ComponentType.PEOPLE);
         componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT_CONTACT,ComponentType.PEOPLE);
-        componentNameVsTypes.put(FacilioConstants.ContextNames.VENDORS,null);
-        componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT,null);
-        componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,null);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.VENDORS,ComponentType.VENDOR);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT,ComponentType.CLIENT);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,ComponentType.TENANT);
 
         return componentNameVsTypes;
     }
