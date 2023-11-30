@@ -25,8 +25,8 @@ public class ResponseFormatUtil {
             if (propertyDescriptorMap.containsKey(fieldName)) {
                 Object value = propertyDescriptorMap.get(fieldName).getReadMethod().invoke(module);
 
-                if (value instanceof FacilioField && iterateOverInstance) {
-                    value = formatFieldsBasedOnResponseFields((FacilioField) value, responseFieldNames, false);
+                if (value instanceof FacilioModule && iterateOverInstance) {
+                    value = formatModuleBasedOnResponseFields((FacilioModule) value, responseFieldNames, false);
                 }
 
                 moduleResponse.put(fieldName, value);

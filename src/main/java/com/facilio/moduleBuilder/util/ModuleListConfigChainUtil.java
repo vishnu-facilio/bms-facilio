@@ -88,19 +88,15 @@ public class ModuleListConfigChainUtil {
         if(CollectionUtils.isNotEmpty(modulesToFetch)) {
             fetchModuleList.addAll(modulesToFetch);
         }
-        addLicenseEnabledOrDisabledModules(fetchModuleList, moduleListHandler);
+        fetchModuleList.addAll(getLicenseEnabledAndDisabledModulesToFetch(moduleListHandler.getFeatureLicensePairMap()));
         FacilioUtil.throwIllegalArgumentException(CollectionUtils.isEmpty(fetchModuleList), "ModulesToFetch list can't be empty for fetching modules - " + feature);
 
         ApplicationContext app = appId > 0 ? ApplicationApi.getApplicationForId(appId) : AccountUtil.getCurrentApp();
-        FacilioUtil.throwIllegalArgumentException(app == null, "App can't be null for fetching modulesList - " + feature);
-        Map<AppDomain.AppDomainType, List<String>> domainBasedSkipModules = moduleListHandler.getDomainBasedSkipModules();
-        if (MapUtils.isNotEmpty(domainBasedSkipModules)) {
-            fetchModuleList.removeAll(domainBasedSkipModules.get(AppDomain.AppDomainType.valueOf(app.getDomainType())));
-        }
-        Map<String, List<String>> appBasedSkipModules = moduleListHandler.getAppBasedSkipModules();
-        if (MapUtils.isNotEmpty(appBasedSkipModules)) {
-            fetchModuleList.removeAll(appBasedSkipModules.get(app.getLinkName()));
-        }
+        FacilioUtil.throwIllegalArgumentException(app == null, "App can't be null for fetching modulesList of - " + feature);
+
+        fetchModuleList.addAll(getDomainBasedModulesToAdd(AppDomain.AppDomainType.valueOf(app.getDomainType()), moduleListHandler.getDomainBasedAddModules()));
+        fetchModuleList.addAll(getAppBasedModulesToAdd(app.getLinkName(), moduleListHandler.getAppBasedAddModules()));
+
         addIfNotNull(context, FacilioConstants.ModuleListConfig.MODULES_TO_FETCH, fetchModuleList);
 
         chain.addCommand(new GetModuleListFromBuilderCommand());
@@ -117,23 +113,48 @@ public class ModuleListConfigChainUtil {
         }
     }
 
-    private static void addLicenseEnabledOrDisabledModules(@NonNull  List<String> modulesToFetch, @NonNull ModuleListHandler moduleListHandler) throws Exception {
-        Map<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> featureLicensePairMap = moduleListHandler.getFeatureLicensePairMap();
+    private static List<String> getDomainBasedModulesToAdd(AppDomain.AppDomainType currentAppDomain, Map<AppDomain.AppDomainType, List<String>> domainBasedAddModulesMap) {
+        if(MapUtils.isNotEmpty(domainBasedAddModulesMap)) {
+            List<String> domainBasedModulesToAdd = domainBasedAddModulesMap.get(currentAppDomain);
+            if(CollectionUtils.isNotEmpty(domainBasedModulesToAdd)) {
+                return domainBasedModulesToAdd;
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<String> getAppBasedModulesToAdd(String currentAppName, Map<String, List<String>> appBasedAddModulesMap) {
+        if(MapUtils.isNotEmpty(appBasedAddModulesMap)) {
+            List<String> appBasedModulesToAdd = appBasedAddModulesMap.get(currentAppName);
+            if(CollectionUtils.isNotEmpty(appBasedModulesToAdd)) {
+                return appBasedModulesToAdd;
+            }
+        }
+        return Collections.emptyList();
+    }
+    private static List<String> getLicenseEnabledAndDisabledModulesToFetch(@NonNull Map<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> featureLicensePairMap) throws Exception {
+        List<String> licenseBasedModulesToFetch = new ArrayList<>();
         if(MapUtils.isNotEmpty(featureLicensePairMap)) {
             for(Map.Entry<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> licenseEnabledAndDisabledModules : featureLicensePairMap.entrySet()) {
                 if(AccountUtil.isFeatureEnabled(licenseEnabledAndDisabledModules.getKey())) {
-                    modulesToFetch.addAll(licenseEnabledAndDisabledModules.getValue().getLeft());
+                    licenseBasedModulesToFetch.addAll(licenseEnabledAndDisabledModules.getValue().getLeft());
                 } else  {
-                    modulesToFetch.addAll(licenseEnabledAndDisabledModules.getValue().getRight());
+                    licenseBasedModulesToFetch.addAll(licenseEnabledAndDisabledModules.getValue().getRight());
                 }
             }
         }
+        return licenseBasedModulesToFetch;
     }
 
     private static void addIfNotNull(FacilioChain chain, Command command) {
         if (command != null) {
             chain.addCommand(command);
         }
+    }
+
+    @SneakyThrows
+    public static boolean hasLicenseEnabled(AccountUtil.FeatureLicense license) {
+        return license == null || AccountUtil.isFeatureEnabled(license);
     }
 
 }

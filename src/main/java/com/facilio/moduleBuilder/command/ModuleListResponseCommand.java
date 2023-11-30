@@ -22,13 +22,13 @@ public class ModuleListResponseCommand extends FacilioCommand {
             List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ModuleListConfig.MODULES);
 
             Map<String, Object> resultMap = new HashMap<>();
+            List<Map<String, Object>> modulesMapList = new ArrayList<>();
             if(CollectionUtils.isNotEmpty(modules)) {
-                List<Map<String, Object>> modulesMapList = new ArrayList<>();
                 for(FacilioModule module : modules) {
                     modulesMapList.add(ResponseFormatUtil.formatModuleBasedOnResponseFields(module, responseFields, true));
                 }
-                resultMap.put(FacilioConstants.ContextNames.MODULE_LIST, modulesMapList);
             }
+            resultMap.put(FacilioConstants.ContextNames.MODULE_LIST, modulesMapList);
             context.put(FacilioConstants.ContextNames.RESULT, resultMap);
 
         } else {

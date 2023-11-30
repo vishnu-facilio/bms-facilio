@@ -27,17 +27,17 @@ public class ModuleListHandler implements ModuleListBuilder {
     private List<String> fieldsInResponse;
 
 
-    public Map<String, List<String>> getAppBasedSkipModules() {
-        return MapUtils.isNotEmpty(appBasedSkipModules) ? Collections.unmodifiableMap(appBasedSkipModules) : null;
+    public Map<String, List<String>> getAppBasedAddModules() {
+        return MapUtils.isNotEmpty(appBasedAddModules) ? Collections.unmodifiableMap(appBasedAddModules) : null;
     }
 
-    private Map<String, List<String>> appBasedSkipModules;
+    private Map<String, List<String>> appBasedAddModules;
 
-    public Map<AppDomain.AppDomainType, List<String>> getDomainBasedSkipModules() {
-        return MapUtils.isNotEmpty(domainBasedSkipModules) ? Collections.unmodifiableMap(domainBasedSkipModules) : null;
+    public Map<AppDomain.AppDomainType, List<String>> getDomainBasedAddModules() {
+        return MapUtils.isNotEmpty(domainBasedAddModules) ? Collections.unmodifiableMap(domainBasedAddModules) : null;
     }
 
-    private Map<AppDomain.AppDomainType, List<String>> domainBasedSkipModules;
+    private Map<AppDomain.AppDomainType, List<String>> domainBasedAddModules;
 
     public Map<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> getFeatureLicensePairMap() {
         return MapUtils.isNotEmpty(featureLicensePairMap) ? Collections.unmodifiableMap(featureLicensePairMap) : null;
@@ -61,25 +61,25 @@ public class ModuleListHandler implements ModuleListBuilder {
         return this;
     }
     @Override
-    public ModuleListBuilder skipModulesForApp(String appName, @NonNull List<String> moduleNames) {
-        if (appBasedSkipModules == null) {
-            appBasedSkipModules = new HashMap<>();
+    public ModuleListBuilder addModulesForApp(String appName, @NonNull List<String> moduleNames) {
+        if (appBasedAddModules == null) {
+            appBasedAddModules = new HashMap<>();
         }
-        if (!appBasedSkipModules.containsKey(appName)) {
-            appBasedSkipModules.put(appName, new ArrayList<>());
+        if (!appBasedAddModules.containsKey(appName)) {
+            appBasedAddModules.put(appName, new ArrayList<>());
         }
-        appBasedSkipModules.get(appName).addAll(moduleNames);
+        appBasedAddModules.get(appName).addAll(moduleNames);
         return this;
     }
     @Override
-    public ModuleListBuilder skipModulesForDomain(AppDomain.AppDomainType appDomainType, List<String> moduleNames) {
-        if (domainBasedSkipModules == null) {
-            domainBasedSkipModules = new HashMap<>();
+    public ModuleListBuilder addModulesForDomain(AppDomain.AppDomainType appDomainType, List<String> moduleNames) {
+        if (domainBasedAddModules == null) {
+            domainBasedAddModules = new HashMap<>();
         }
-        if (!domainBasedSkipModules.containsKey(appDomainType)) {
-            domainBasedSkipModules.put(appDomainType, new ArrayList<>());
+        if (!domainBasedAddModules.containsKey(appDomainType)) {
+            domainBasedAddModules.put(appDomainType, new ArrayList<>());
         }
-        domainBasedSkipModules.get(appDomainType).addAll(moduleNames);
+        domainBasedAddModules.get(appDomainType).addAll(moduleNames);
         return this;
     }
 

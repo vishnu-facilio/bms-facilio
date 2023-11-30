@@ -9,9 +9,9 @@ import java.util.List;
 public interface ModuleListBuilder {
     ModuleListBuilder add(List<String> moduleNames);
 
-    ModuleListBuilder skipModulesForApp(String appName, List<String> moduleNames);
+    ModuleListBuilder addModulesForApp(String appName, List<String> moduleNames);
 
-    ModuleListBuilder skipModulesForDomain(AppDomain.AppDomainType appDomainType, List<String> moduleNames);
+    ModuleListBuilder addModulesForDomain(AppDomain.AppDomainType appDomainType, List<String> moduleNames);
 
     ModuleListBuilder responseFields(List<String> fieldNames);
 

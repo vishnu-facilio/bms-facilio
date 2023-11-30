@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.moduleBuilder.command.AddAutomationModuleBasedOnTabType;
 import com.facilio.moduleBuilder.command.GetSubModulesForTransactionRuleCommand;
+import com.facilio.moduleBuilder.util.ModuleListConfigChainUtil;
 import com.facilio.v3.annotation.Config;
 
 import java.util.Arrays;
@@ -44,7 +45,7 @@ public class APIModuleListConfig {
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.CONTRACT,Arrays.asList(FacilioConstants.ContextNames.PURCHASE_CONTRACTS,
                         FacilioConstants.ContextNames.LABOUR_CONTRACTS,FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS,FacilioConstants.ContextNames.WARRANTY_CONTRACTS),null )
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.WORK_PERMIT,Arrays.asList(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT),null )
-                .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.INVENTORY,Arrays.asList(FacilioConstants.ContextNames.INVENTORY_REQUEST),Arrays.asList(FacilioConstants.Induction.INDUCTION_RESPONSE))
+                .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.INVENTORY,Arrays.asList(FacilioConstants.ContextNames.INVENTORY_REQUEST), null)
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.PURCHASE,Arrays.asList(FacilioConstants.ContextNames.PURCHASE_REQUEST,
                         FacilioConstants.ContextNames.PURCHASE_ORDER),null )
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.VENDOR,Arrays.asList(FacilioConstants.ContextNames.VENDORS,
@@ -63,13 +64,16 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.BMS_ALARM),Arrays.asList(FacilioConstants.ContextNames.ALARM) )
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.PM_PLANNER,Arrays.asList(FacilioConstants.ContextNames.JOB_PLAN,
                         FacilioConstants.ContextNames.PLANNEDMAINTENANCE),null )
-                .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.FSM,Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
-                        FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, FacilioConstants.TimeSheet.TIME_SHEET, FacilioConstants.Trip.TRIP),null )
+                .addLicenseEnabledAndDisabledModulesToFetch(ModuleListConfigChainUtil.hasLicenseEnabled(AccountUtil.FeatureLicense.PURCHASE)? AccountUtil.FeatureLicense.REQUEST_FOR_QUOTATION : AccountUtil.FeatureLicense.PURCHASE, Arrays.asList(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, FacilioConstants.ContextNames.VENDOR_QUOTES), null )
+                .addLicenseEnabledAndDisabledModulesToFetch(ModuleListConfigChainUtil.hasLicenseEnabled(AccountUtil.FeatureLicense.INVENTORY)? AccountUtil.FeatureLicense.TRANSFER_REQUEST : AccountUtil.FeatureLicense.INVENTORY, Arrays.asList(FacilioConstants.ContextNames.TRANSFER_REQUEST), null)
                 .add(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SITE,
                         FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.BUILDING,
                         FacilioConstants.ContextNames.SPACE, FacilioConstants.PeopleGroup.PEOPLE_GROUP,
                         FacilioConstants.Meter.METER, FacilioConstants.Inspection.INSPECTION_TEMPLATE,
-                        FacilioConstants.Inspection.INSPECTION_RESPONSE, FacilioConstants.Induction.INDUCTION_TEMPLATE))
+                        FacilioConstants.Inspection.INSPECTION_RESPONSE, FacilioConstants.Induction.INDUCTION_TEMPLATE,
+                        FacilioConstants.Induction.INDUCTION_RESPONSE))
+                .addModulesForApp(FacilioConstants.ApplicationLinkNames.FSM_APP, Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
+                        FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, FacilioConstants.TimeSheet.TIME_SHEET, FacilioConstants.Trip.TRIP))
                 .fetchCustomModules()
                 .afterFetch(new AddAutomationModuleBasedOnTabType())
                 .done();
