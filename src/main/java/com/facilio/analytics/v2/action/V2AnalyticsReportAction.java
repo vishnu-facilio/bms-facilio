@@ -33,7 +33,7 @@ public class V2AnalyticsReportAction extends V3Action {
     public Long reportId ;
     private int reportType;
     private int page=1;
-    private boolean fetchOnlyKpi = false;
+    private Boolean fetchOnlyKpi;
     private String fetchOnlyModule;
     private int perPage=50;
     private boolean withCount;

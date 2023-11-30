@@ -31,6 +31,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
@@ -843,53 +844,43 @@ public class V2AnalyticsOldUtil {
     {
         if(dbUserFilter != null)
         {
-            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(dataPoint.getAliases().get("actual"));
+            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(dataPoint.getModuleName());
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
                 FacilioField appliedField = new FacilioField();
                 Criteria criteria = new Criteria();
                 for(Map<String, JSONObject> filterMap : filterMappings) {
                     for (String alias : filterMap.keySet()) {
                         Condition condition = new Condition();
                         HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
-                        condition.setOperatorId(36);
+                        condition.setOperatorId(((Long) selected_dp_map.get("operatorId")).intValue());
                         List<String> value = (List<String>) selected_dp_map.get("value");
                         StringJoiner joiner = new StringJoiner(",");
                         value.forEach(val -> joiner.add(val));
                         condition.setValue(String.valueOf(joiner));
-                        if(dataPoint.getModuleName().equals(FacilioConstants.Meter.METER)){
-                            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getModuleName()));
-                            if(alias.equals("siteId")){
-                                FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
-                                appliedField = modBean.getField("siteId", meterModule.getName());
-                            } else if(alias.equals("meterLocation")){
-                                appliedField = fieldMap.get("meterLocation");
-                            } else if(alias.equals("utilitytype")){
-                                appliedField = fieldMap.get("utilitytype");
-                            } else {
-                                appliedField = fieldsMap.get("parentId");
+                        Boolean picklistJoin = false;
+                        String filterModule =  null;
+                        if(alias.equals("parentId")) {
+                            appliedField = modBean.getField("parentId",baseModule.getName());
+                        }else{
+                            if(selected_dp_map.get("moduleName") != null) {
+                                picklistJoin = true;
+                                filterModule = (String) selected_dp_map.get("moduleName");
+                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName"));
                             }
-                        }
-                        else {
-                            Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getParentReadingModule().getName()));
-                            if (alias.equals("space")) {
-                                appliedField = fieldMap.get("space");
-                            } else if(alias.equals("category")){
-                                appliedField = fieldMap.get("category");
-                            } else {
-                                appliedField = fieldsMap.get("parentId");
+                            else {
+                                appliedField = modBean.getField(alias, dataPoint.getModuleName());
                             }
                         }
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);
-                        applyFilterCriteria(baseModule,dataPoint,selectBuilder,addedModules,criteria);
+                        applyFilterCriteria(baseModule,dataPoint,selectBuilder,addedModules,criteria, picklistJoin, filterModule);
                     }
                 }
             }
         }
     }
-    public static void applyFilterCriteria(FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria)throws Exception
+    public static void applyFilterCriteria(FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, Boolean picklistJoin, String filterModule)throws Exception
     {
         LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -901,13 +892,50 @@ public class V2AnalyticsOldUtil {
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
                 FacilioField child_field = fieldsMap.get("parentId");
                 applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
-                Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, dataPoint.getParentReadingModule());
-                if(parent_criteria != null)
-                {
-                    selectBuilder.andCriteria(parent_criteria);
+                if(picklistJoin) {
+                    applyPicklistJoin(moduleVsAlias, baseModule, dataPoint, selectBuilder,addedModules, criteria, filterModule);
+                }else {
+                    Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, dataPoint.getParentReadingModule());
+                    if(parent_criteria != null)
+                    {
+                        selectBuilder.andCriteria(parent_criteria);
+                    }
                 }
             }
         }
+    }
+    public static void applyPicklistJoin(LinkedHashMap<String, String> moduleVsAlias, FacilioModule baseModule, ReportDataPointContext dataPoint,  SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, String filterModule) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioField childField = isFilterApplicable(modBean, dataPoint, filterModule);
+        if(childField != null) {
+            FacilioModule filterModuleObj = modBean.getModule(filterModule);
+            FacilioField parentField = FieldFactory.getIdField(filterModuleObj);
+            applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parentField.getCompleteColumnName()).append("=").append(childField.getCompleteColumnName()).toString(), filterModuleObj, selectBuilder, addedModules);
+            Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, filterModuleObj);
+            if(parent_criteria != null)
+            {
+                selectBuilder.andCriteria(parent_criteria);
+            }
+        }
+    }
+    public static FacilioField isFilterApplicable(ModuleBean modBean, ReportDataPointContext dataPoint, String filterModule) throws Exception {
+        List<FacilioField> allFields = modBean.getAllFields(dataPoint.getParentReadingModule().getName());
+        if(filterModule.equals(FacilioConstants.ContextNames.SITE) && dataPoint.getModuleName().equals(FacilioConstants.ContextNames.METER_MOD_NAME)) {
+            return modBean.getField("siteId",dataPoint.getParentReadingModule().getName());
+        }
+        List<FacilioField> filterApplicableFields = allFields.stream().filter((FacilioField field) -> {
+            if (field.getDataTypeEnum() == FieldType.LOOKUP) {
+                LookupField lookupField = (LookupField) field;
+                if (lookupField.getLookupModule().getName().equals(filterModule)) {
+                    return true;
+                }
+            }
+            return false;
+        }).collect(Collectors.toList());
+        if(filterApplicableFields != null && filterApplicableFields.size() > 0) {
+            return filterApplicableFields.get(0);
+        }
+        return null;
     }
     public static void applyMeasureCriteriaV2(HashMap<String, String> moduleVsAlias, FacilioField xAggrField, FacilioModule baseModule, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, String xValues, Set<FacilioModule> addedModules)throws Exception
     {

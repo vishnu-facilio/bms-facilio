@@ -32,9 +32,6 @@
     <request path="/api/v3/dashboard/tab/update" method="POST">
         <requestbody type="object"></requestbody>
     </request>
-    <request path="/api/v2/dashboardFilter/addOrUpdateReadingFilter" method="POST">
-        <requestbody type="object"></requestbody>
-    </request>
     <request path="/api/v2/dashboardFilter/getDashboardUserFilter" method="POST">
         <requestbody type="object"></requestbody>
     </request>

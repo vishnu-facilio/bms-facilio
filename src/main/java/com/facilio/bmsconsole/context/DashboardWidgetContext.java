@@ -45,11 +45,18 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 
 	private String linkName;
 	private List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping;
+	private List<DashboardReadingWidgetFilterContext> readingWidgetFieldMapping;
 	public void setWidgetFieldMapping(List<DashboardUserFilterWidgetFieldMappingContext> widgetFieldMapping) {
 		this.widgetFieldMapping = widgetFieldMapping;
 	}
+	public void setReadingWidgetFieldMapping(List<DashboardReadingWidgetFilterContext> readingWidgetFieldMapping) {
+		this.readingWidgetFieldMapping = readingWidgetFieldMapping;
+	}
 	public List<DashboardUserFilterWidgetFieldMappingContext> getWidgetFieldMapping(){
 		return this.widgetFieldMapping;
+	}
+	public List<DashboardReadingWidgetFilterContext> getReadingWidgetFieldMapping(){
+		return this.readingWidgetFieldMapping;
 	}
 
 	public Long getSectionId() {

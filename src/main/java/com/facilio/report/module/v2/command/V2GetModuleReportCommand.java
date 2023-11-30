@@ -9,6 +9,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.report.module.v2.context.V2ModuleFilterContext;
@@ -16,6 +17,7 @@ import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -33,6 +35,15 @@ public class V2GetModuleReportCommand extends FacilioCommand {
             FacilioModule module = modBean.getModule(report.getModuleId());
             if(module != null){
                 v2_reportContext.setModuleName(module.getName());
+            }
+            if(report.getBaseLines() != null) {
+                JSONArray baseLines = new JSONArray();
+                for(ReportBaseLineContext baseLine : report.getBaseLines()) {
+                    JSONObject baseLineObj = new JSONObject();
+                    baseLineObj.put("baseLineId",baseLine.getBaseLineId());
+                    baseLines.add(baseLineObj);
+                }
+                v2_reportContext.setBaseLines(baseLines.toJSONString());
             }
             v2_reportContext.setAppId(report.getAppId());
             v2_reportContext.setName(report.getName());

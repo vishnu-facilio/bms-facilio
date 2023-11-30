@@ -23,6 +23,7 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.formatter.DecimalFormatter;
@@ -257,10 +258,9 @@ public class V2ConstructCardCommand extends FacilioCommand {
     {
         if(dbUserFilter != null)
         {
-            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(cardContext.getDisplayName());
+            List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) dbUserFilter.get(cardContext.getType());
             if(filterMappings != null && filterMappings.size() > 0) {
                 ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
                 FacilioField appliedField = new FacilioField();
                 FacilioField yField = modBean.getField(cardContext.getFieldId());
                 Criteria criteria = new Criteria();
@@ -268,59 +268,38 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     for (String alias : filterMap.keySet()) {
                         Condition condition = new Condition();
                         HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
-                        condition.setOperatorId(36);
+                        condition.setOperatorId(((Long) selected_dp_map.get("operatorId")).intValue());
                         List<String> value = (List<String>) selected_dp_map.get("value");
                         StringJoiner joiner = new StringJoiner(",");
                         value.forEach(val -> joiner.add(val));
                         condition.setValue(String.valueOf(joiner));
-                        appliedField = getFieldFromModule(alias, cardContext, fieldsMap);
+                        Boolean picklistJoin = false;
+                        String filterModule =  null;
+                        if(alias.equals("parentId")) {
+                            appliedField = modBean.getField("parentId",baseModule.getName());
+                        }else{
+                            if(selected_dp_map.get("moduleName") != null) {
+                                picklistJoin = true;
+                                filterModule = (String) selected_dp_map.get("moduleName");
+                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName"));
+                            }
+                            else {
+                                appliedField = modBean.getField(alias, cardContext.getType());
+                            }
+                        }
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);
-                        applyFilterCriteria(baseModule,cardContext.parentModuleName,selectBuilder,addedModules,criteria,yField);
+                        applyFilterCriteria(baseModule,cardContext,selectBuilder,addedModules,criteria,yField,picklistJoin, filterModule);
                     }
                 }
             }
         }
     }
-    public static FacilioField getFieldFromModule(String alias, V2AnalyticsCardWidgetContext cardContext, Map<String,FacilioField> fieldsMap) throws Exception {
-        FacilioField appliedField = new FacilioField();
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(cardContext.parentModuleName));
-        if(!cardContext.getType().equals("meter")) {
-            switch (alias) {
-                case "space":
-                    appliedField = fieldMap.get("space");
-                    break;
-                case "category":
-                    appliedField = fieldMap.get("category");
-                    break;
-                default:
-                    appliedField = fieldsMap.get("parentId");
-                    break;
-            }
-        }else {
-            switch (alias) {
-                case "siteId":
-                    FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
-                    appliedField = modBean.getField("siteId", meterModule.getName());
-                    break;
-                case "meterLocation":
-                    appliedField = fieldMap.get("meterLocation");
-                    break;
-                case "utilitytype":
-                    appliedField = fieldMap.get("utilitytype");
-                    break;
-                default:
-                    appliedField = fieldsMap.get("parentId");
-                    break;
-            }
-        }
-        return appliedField;
-    }
-    public static void applyFilterCriteria(FacilioModule baseModule, String parentReadingModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, FacilioField yField)throws Exception
+    public static void applyFilterCriteria(FacilioModule baseModule, V2AnalyticsCardWidgetContext cardContext, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, Set<FacilioModule> addedModules, Criteria criteria, FacilioField yField, Boolean picklistJoin, String filterModule)throws Exception
     {
         LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String parentReadingModule = cardContext.getParentModuleName();
         FacilioModule parentModule = modBean.getModule(parentReadingModule);
             if(parentReadingModule != null)
             {
@@ -330,10 +309,18 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
                     FacilioField child_field = fieldsMap.get("parentId");
                     V2AnalyticsOldUtil.applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), parentModule, selectBuilder, addedModules);
-                    Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, parentModule);
-                    if(parent_criteria != null)
-                    {
-                        selectBuilder.andCriteria(parent_criteria);
+                    if(picklistJoin) {
+                        ReportDataPointContext dataPoint = new ReportDataPointContext();
+                        dataPoint.setParentReadingModule(parentModule);
+                        dataPoint.setModuleName(cardContext.getType());
+                        V2AnalyticsOldUtil.applyPicklistJoin(moduleVsAlias, baseModule, dataPoint, selectBuilder,addedModules, criteria, filterModule);
+
+                    }else {
+                        Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, parentModule);
+                        if(parent_criteria != null)
+                        {
+                            selectBuilder.andCriteria(parent_criteria);
+                        }
                     }
                 }
             }

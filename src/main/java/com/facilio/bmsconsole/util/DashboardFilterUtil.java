@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -375,7 +376,19 @@ public class DashboardFilterUtil {
 		 return moduleId;
 		 
 	}
-	
+	public static FacilioField getApplicableField(FacilioModule filterModule, FacilioModule parentModule, FacilioModule energyModule) throws Exception {
+		FacilioField mappingField = new FacilioField();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if(filterModule.getName().equals(parentModule.getName()) || (filterModule.getExtendModule() != null && filterModule.getExtendModule().getName().equals(parentModule.getName()))){
+			mappingField = modBean.getField("parentId", energyModule.getName());
+		} else if(parentModule.getName().equals(FacilioConstants.ContextNames.METER_MOD_NAME) && filterModule.getName().equals(FacilioConstants.ContextNames.SITE)) {
+			mappingField = modBean.getField("siteId", parentModule.getName());
+		}
+		else {
+			mappingField = DashboardFilterUtil.getFilterApplicableField(filterModule,parentModule,null);
+		}
+		return mappingField;
+	}
 	public static  Map<Long,FacilioField> getUserFilterToWidgetColumnMapping(long userFilterId) throws Exception
 	{
 		FacilioModule module = ModuleFactory.getDashboardUserFilterWidgetFieldMappingModule();
@@ -638,11 +651,11 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 	}
 	public static List<Long> getReadingFilterMappingIdForFilterId(Long widgetId, Long filterId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getDashboardFilterReadingWidgetFieldMappingModule().getTableName())
-				.select(FieldFactory.getDashboardFilterReadingWidgetFieldMappingFields())
-				.andCondition(CriteriaAPI.getCondition("TRIGGER_WIDGET_ID","triggerWidgetId", String.valueOf(filterId),NumberOperators.EQUALS));
+				.table(ModuleFactory.getDashboardReadingWidgetFieldMappingModule().getTableName())
+				.select(FieldFactory.getDashboardReadingWidgetFieldMappingFields())
+				.andCondition(CriteriaAPI.getCondition("USER_FILTER_ID","userFilterId", String.valueOf(filterId),NumberOperators.EQUALS));
 		if(widgetId != null && widgetId > 0){
-			builder.andCondition(CriteriaAPI.getCondition("TARGET_WIDGET_ID","targetWidgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition("WIDGET_ID","widgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
 		}
 		List<Map<String, Object>> props = builder.get();
 		List<Long> filterMappingIds = new ArrayList<>();
@@ -651,20 +664,20 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 		}
 		return filterMappingIds;
 	}
-	public static List<DashboardReadingWidgetFilterContext> getReadingFilterMappingsForFilterId(Long filterId, Long widgetId) throws Exception {
+	public static Map<String,DashboardReadingWidgetFilterContext> getReadingFilterMappingsForFilterId(Long filterId, Long widgetId) throws Exception {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getDashboardFilterReadingWidgetFieldMappingModule().getTableName())
-				.select(FieldFactory.getDashboardFilterReadingWidgetFieldMappingFields());
+				.table(ModuleFactory.getDashboardReadingWidgetFieldMappingModule().getTableName())
+				.select(FieldFactory.getDashboardReadingWidgetFieldMappingFields());
 		if(filterId != null && filterId > 0){
-			builder.andCondition(CriteriaAPI.getCondition("TRIGGER_WIDGET_ID","triggerWidgetId", String.valueOf(filterId),NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition("USER_FILTER_ID","userFilterId", String.valueOf(filterId),NumberOperators.EQUALS));
 		}
 		if(widgetId != null && widgetId > 0){
-			builder.andCondition(CriteriaAPI.getCondition("TARGET_WIDGET_ID","targetWidgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition("WIDGET_ID","widgetId", String.valueOf(widgetId),NumberOperators.EQUALS));
 		}
 		List<Map<String, Object>> props = builder.get();
-		List<DashboardReadingWidgetFilterContext> filterMappings = new ArrayList<>();
+		Map<String,DashboardReadingWidgetFilterContext> filterMappings = new HashMap<>();
 		for(Map<String, Object> prop : props){
-			filterMappings.add(FieldUtil.getAsBeanFromMap(prop, DashboardReadingWidgetFilterContext.class));
+			filterMappings.put((String) prop.get("moduleName"),FieldUtil.getAsBeanFromMap(prop, DashboardReadingWidgetFilterContext.class));
 		}
 		return filterMappings;
 	}

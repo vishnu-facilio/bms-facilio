@@ -5,6 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.context.V2MeasuresContext;
+import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.command.FacilioCommand;
@@ -154,51 +157,107 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 							   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 						   }
 					   }
-					   if(supportedModules.contains(filter.getModule().getName()) || supportedMeterModules.contains(filter.getModule().getName())){
+					   V2ReportContext reportContext = V2AnalyticsOldUtil.getV2Report(chartWidget.getNewReportId());
+					   List<V2MeasuresContext> measures = reportContext.getMeasures();
+					   if(filter.getFieldId() < 0 && filter.getModuleName() != null) {
 						   FacilioModule energyModule = modBean.getModule(report.getModuleId());
 						   if(energyModule != null && energyModule.getName().equals("energydata")) {
-							   List<ReportDataPointContext> dpContexts = new ArrayList<>();
-							   List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
-							   for(ReportDataPointContext dp: report.getDataPoints()){
-								   if((supportedModules.contains(filter.getModule().getName()) && !dp.getModuleName().equals("meter")) || supportedMeterModules.contains(filter.getModule().getName()) && dp.getModuleName().equals("meter")) {
-									   if (mappings.stream().anyMatch(mapping -> mapping.getDataPointAlias().equals(dp.getAliases().get("actual")))) {
-										   dp.setFetchMetersWithResource(dp.getModuleName().equals(FacilioConstants.Meter.METER)  ? true : false);
-										   dpContexts.add(dp);
+							   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
+							   List<String> allModules = new ArrayList<>();
+							   Map<String, FacilioField> mappingFields = new HashMap<>();
+							   Map<String, FacilioField> excludedMappingFields = new HashMap<>();
+							   for(V2MeasuresContext measure: measures) {
+								   if(!allModules.contains(measure.getModuleName())) {
+									   allModules.add(measure.getModuleName());
+									   FacilioModule parentModule = modBean.getModule(measure.getModuleName());
+									   parentModule.setFields(modBean.getAllFields(measure.getModuleName()));
+									   FacilioModule filterModule = modBean.getModule(filter.getModuleName());
+									   FacilioField mappingField = null;
+									   FacilioField excludedMappingField = null;
+									   if(customMapping.containsKey(parentModule.getName())){
+										   DashboardReadingWidgetFilterContext customMap = customMapping.get(parentModule.getName());
+										   if(customMap.getWidgetFieldId() == null) {
+											   excludedMappingField = DashboardFilterUtil.getApplicableField(filterModule, parentModule, energyModule);
+										   }else{
+											   mappingField = modBean.getField(customMap.getWidgetFieldId(), parentModule.getName());
+										   }
+									   }else{
+										   mappingField = DashboardFilterUtil.getApplicableField(filterModule, parentModule, energyModule);
+									   }
+									   if(mappingField != null) {
+										   mappingFields.put(parentModule.getName(),mappingField);
+									   }
+									   if(excludedMappingField != null) {
+										   excludedMappingFields.put(parentModule.getName(), excludedMappingField);
 									   }
 								   }
 							   }
-							   if(dpContexts != null && dpContexts.size() > 0){
-								   filter.getReadingWidgetFieldMap().put(widgetId,dpContexts);
+							   filter.getReadingWidgetModuleMap().put(widgetId,allModules);
+							   if(mappingFields != null && mappingFields.size() > 0) {
+								   filter.getReadingWidgetFieldMap().put(widgetId,mappingFields);
+							   }
+							   if(excludedMappingFields != null && excludedMappingFields.size() > 0) {
+								   filter.getExcludedReadingWidgetFieldMap().put(widgetId,excludedMappingFields);
 							   }
 						   }
+					   }else if(filter.getFieldId() > 0) {
+						   List<String> allModules = new ArrayList<>();
+						   Map<String, FacilioField> mappingFields = new HashMap<>();
+						   for(V2MeasuresContext measure: measures) {
+							   if(!allModules.contains(measure.getModuleName())) {
+								   allModules.add(measure.getModuleName());
+								   FacilioModule parentModule = modBean.getModule(measure.getModuleName());
+								   FacilioField mappingField = modBean.getField(filter.getFieldId());
+								   if(mappingField != null) {
+									   mappingFields.put(parentModule.getName(),mappingField);
+								   }
+							   }
+						   }
+						   filter.getReadingWidgetModuleMap().put(widgetId,allModules);
+						   filter.getReadingWidgetFieldMap().put(widgetId,mappingFields);
 					   }
 				   }
 			   }
-			   else if (widget.getWidgetType() == DashboardWidgetContext.WidgetType.CARD) {
+			   else if(widget.getWidgetType() == DashboardWidgetContext.WidgetType.CARD) {
 				   WidgetCardContext cardWidget = (WidgetCardContext) widget;
 				   if(cardWidget.getCardLayout().equals("v2_reading_card")) {
-					   for (DashboardUserFilterContext filter : userFilters) {
+					   for(DashboardUserFilterContext filter : userFilters) {
 						   JSONObject cardParams = cardWidget.getCardParams();
 						   String moduleName = (String) cardParams.get("type");
-						   if((supportedModules.contains(filter.getModule().getName()) && !moduleName.equals("meter")) || supportedMeterModules.contains(filter.getModule().getName()) && moduleName.equals("meter")){
-								   List<DashboardReadingWidgetFilterContext> mappings = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getWidget_id(), widgetId);
-								   if(mappings != null && mappings.size() > 0) {
-									   ReportDataPointContext dataPoint = new ReportDataPointContext();
-									   ReportYAxisContext yAxis = new ReportYAxisContext();
-									   FacilioField measureField = modBean.getField((Long) cardParams.get("fieldId"));
-									   yAxis.setField(measureField.getModule(), measureField);
-									   dataPoint.setModuleName((String) cardParams.get("type"));
-									   dataPoint.setFetchMetersWithResource(moduleName.equals(FacilioConstants.Meter.METER)  ? true : false);
-									   dataPoint.setyAxis(yAxis);
-									   dataPoint.setName(dataPoint.getyAxis().getField().getDisplayName());
-									   dataPoint.setParentReadingModule(modBean.getModule((String) cardParams.get("parentModuleName")));
-									   filter.getReadingWidgetFieldMap().put(widgetId, Collections.singletonList(dataPoint));
+						   if(filter.getFieldId() < 0 && filter.getModuleName() != null) {
+							   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
+							   FacilioField field = modBean.getField((Long) cardParams.get("fieldId"));
+							   FacilioModule baseModule = field.getModule();
+							   filter.getReadingWidgetModuleMap().put(widgetId,Collections.singletonList(moduleName));
+							   FacilioModule parentModule = modBean.getModule(moduleName);
+							   parentModule.setFields(modBean.getAllFields(moduleName));
+							   FacilioModule filterModule = modBean.getModule(filter.getModuleName());
+							   FacilioField mappingField = null;
+							   FacilioField excludedMappingField = null;
+							   if(customMapping.containsKey(parentModule.getName())){
+								   DashboardReadingWidgetFilterContext customMap = customMapping.get(parentModule.getName());
+								   if(customMap.getWidgetFieldId() == null){
+									   excludedMappingField = DashboardFilterUtil.getApplicableField(filterModule, parentModule, baseModule);
+								   }else{
+									   mappingField = modBean.getField(customMap.getWidgetFieldId(), parentModule.getName());
 								   }
+							   }else{
+								   mappingField = DashboardFilterUtil.getApplicableField(filterModule, parentModule, baseModule);
+							   }
+							   if(mappingField != null) {
+								   filter.getReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,mappingField));
+							   }
+							   if(excludedMappingField != null) {
+								   filter.getExcludedReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,excludedMappingField));
+							   }
+						   }
+						   else if(filter.getFieldId() > 0) {
+							   filter.getReadingWidgetModuleMap().put(widgetId,Collections.singletonList(moduleName));
+							   filter.getReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,modBean.getField(filter.getFieldId())));
 						   }
 					   }
 				   }
 			   }
-
 		   }
 		   catch(Exception e)
 		   {

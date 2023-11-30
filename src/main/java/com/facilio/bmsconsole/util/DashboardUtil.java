@@ -3736,6 +3736,22 @@ public class DashboardUtil {
 				.addRecords(widgetFieldMappingProps);
 		insertRecordBuilder.save();
 	}
+	public static void addReadingWidgetFieldMapping(DashboardWidgetContext widget) throws Exception {
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getDashboardReadingWidgetFieldMappingModule().getTableName())
+				.andCustomWhere("WIDGET_ID = ?", widget.getId());
+		deleteBuilder.delete();
+
+		List<Map<String, Object>> widgetFieldMappingProps = new ArrayList<>();
+		for(DashboardReadingWidgetFilterContext widgetFieldMapping : widget.getReadingWidgetFieldMapping()) {
+			widgetFieldMappingProps.add(FieldUtil.getAsProperties(widgetFieldMapping));
+		}
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getDashboardReadingWidgetFieldMappingModule().getTableName())
+				.fields(FieldFactory.getDashboardReadingWidgetFieldMappingFields())
+				.addRecords(widgetFieldMappingProps);
+		insertRecordBuilder.save();
+	}
 	public static void addWidgetCustomActions(List<DashboardCustomActionContext> customActions, Long widgetId) throws Exception {
 		List<Long> existingIds = new ArrayList<>();
 		if(customActions != null && !customActions.isEmpty()){

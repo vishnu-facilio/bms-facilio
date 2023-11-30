@@ -9133,11 +9133,6 @@
 				method="addOrUpdateDashboardFilters">
 			<param name="permission">POST:EDIT</param>
 		</action>
-		<action name="addOrUpdateReadingFilter"
-				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
-				method="addOrUpdateReadingFilter">
-			<param name="permission">POST:READ</param>
-		</action>
 		<action name="updateWidgetSettings"
 				class="com.facilio.bmsconsole.actions.DashboardFilterAction"
 				method="updateWidgetSettings">			

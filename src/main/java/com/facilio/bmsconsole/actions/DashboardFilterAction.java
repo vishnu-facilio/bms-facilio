@@ -106,15 +106,6 @@ public class DashboardFilterAction extends FacilioAction{
 		setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 		return SUCCESS;
 	}
-	public String addOrUpdateReadingFilter() throws Exception
-	{
-		FacilioChain chain = TransactionChainFactory.getUpdateReadingWidgetFilterChain();
-		FacilioContext context = chain.getContext();
-		context.put("readingWidgetMappings",readingWidgetFilterMapping);
-		context.put(ContextNames.WIDGET_ID,targetWidgetId);
-		chain.execute();
-		return SUCCESS;
-	}
 	public String getDashboardUserFilter() throws Exception {
 		DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 		FacilioChain getDashboardFilterChain = ReadOnlyChainFactory.getFetchDashboardUserFilterFromId();

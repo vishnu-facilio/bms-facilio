@@ -109,8 +109,8 @@ public class V2AnalyticsReportListCommand extends FacilioCommand {
                 if(reportType != null){
                     select.andCondition(CriteriaAPI.getCondition(new StringBuilder(ModuleFactory.getReportModule().getTableName()).append(".REPORT_TYPE").toString(), "type", reportType.getValue()+"", NumberOperators.EQUALS));
                 }
-                if(fetchOnlyKpi){
-                    select.andCondition(CriteriaAPI.getCondition(new StringBuilder(ModuleFactory.getV2ReportModule().getTableName()).append(".IS_KPI").toString(), "kpi","true", BooleanOperators.IS));
+                if(fetchOnlyKpi != null){
+                    select.andCondition(CriteriaAPI.getCondition(new StringBuilder(ModuleFactory.getV2ReportModule().getTableName()).append(".IS_KPI").toString(), "kpi",String.valueOf(fetchOnlyKpi), BooleanOperators.IS));
                 }
                 if(fetchOnlyModule != null && !fetchOnlyModule.equals("")){
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

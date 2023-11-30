@@ -5053,12 +5053,12 @@ public class ModuleFactory {
 		return module;
 		
 	}
-	public static FacilioModule getDashboardFilterReadingWidgetFieldMappingModule()
+	public static FacilioModule getDashboardReadingWidgetFieldMappingModule()
 	{
 		FacilioModule module = new FacilioModule();
-		module.setName("DashboardFilterReadingWidgetFieldMapping");
-		module.setDisplayName("Dashboard filter reading widget field mapping");
-		module.setTableName("Dashboard_Filter_Reading_Widget_Field_Mapping");
+		module.setName("dashboardReadingWidgetFieldMapping");
+		module.setDisplayName("Dashboard Reading Widget Field Mapping");
+		module.setTableName("Dashboard_Reading_Widget_Field_Mapping");
 		return module;
 
 	}

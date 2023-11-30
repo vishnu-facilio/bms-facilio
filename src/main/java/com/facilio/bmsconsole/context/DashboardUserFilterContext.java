@@ -17,10 +17,12 @@ import com.facilio.util.FacilioUtil;
 public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 
 	private Map<Object,FacilioField> widgetFieldMap=new HashMap<>();
-	private Map<Object,List<ReportDataPointContext>> readingWidgetFieldMap = new HashMap<>();
+	private Map<Object,Map<String, FacilioField>> readingWidgetFieldMap = new HashMap<>();
+	private Map<Object,Map<String, FacilioField>> excludedReadingWidgetFieldMap = new HashMap<>();
 	private Map<Object,FacilioField> filterFieldMap=new HashMap<>();
 	private Map<Object,FacilioField> widgetExcludeFieldMap=new HashMap<>();
 	private Map<Long,String> widgetModuleMap=new HashMap<>();
+	private Map<Long, List<String>> readingWidgetModuleMap = new HashMap<>();
 	Map<Long,FacilioField>  cascadingFilters;
 	private List<DashboardFieldMappingContext> fieldMappingMap;
 	public Map<Long, FacilioField> getCascadingFilters() {
@@ -508,11 +510,23 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	public void setWidgetModuleMap(Map<Long,String> widgetModuleMap) {
 		this.widgetModuleMap = widgetModuleMap;
 	}
-	public Map<Object, List<ReportDataPointContext>> getReadingWidgetFieldMap() {
+	public Map<Long,List<String>> getReadingWidgetModuleMap() {
+		return this.readingWidgetModuleMap;
+	}
+	public void setReadingWidgetModuleMap(Map<Long,List<String>> readingWidgetModuleMap) {
+		this.readingWidgetModuleMap = readingWidgetModuleMap;
+	}
+	public Map<Object, Map<String, FacilioField>> getReadingWidgetFieldMap() {
 		return this.readingWidgetFieldMap;
 	}
-	public void setReadingWidgetFieldMap(Map<Object,List<ReportDataPointContext>> readingWidgetFieldMap) {
+	public Map<Object, Map<String, FacilioField>> getExcludedReadingWidgetFieldMap() {
+		return this.excludedReadingWidgetFieldMap;
+	}
+	public void setReadingWidgetFieldMap(Map<Object,Map<String, FacilioField>> readingWidgetFieldMap) {
 		this.readingWidgetFieldMap = readingWidgetFieldMap;
+	}
+	public void setExcludedReadingWidgetFieldMap(Map<Object,Map<String, FacilioField>> excludedReadingWidgetFieldMap) {
+		this.excludedReadingWidgetFieldMap = excludedReadingWidgetFieldMap;
 	}
 	public Map<Object,FacilioField> getWidgetExcludeFieldMap() {
 		return this.widgetExcludeFieldMap;
