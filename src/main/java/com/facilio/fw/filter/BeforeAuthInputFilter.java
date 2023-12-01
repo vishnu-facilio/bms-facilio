@@ -15,6 +15,7 @@ import com.facilio.security.requestvalidator.retree.URLReTree;
 import com.facilio.util.RequestUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.json.JSONObject;
@@ -23,6 +24,8 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.*;
@@ -155,7 +158,14 @@ public class BeforeAuthInputFilter implements Filter {
         filterChain.doFilter(securityRequestWrapper, servletResponse);
     }
 
-    private void log(SecurityRequestWrapper securityRequestWrapper, String message) {
+    private void log(SecurityRequestWrapper securityRequestWrapper, String message) throws MalformedURLException {
+        String referrer = securityRequestWrapper.getHeader(HttpHeaders.REFERER);
+        if (referrer != null && !"".equals(referrer.trim())) {
+            URL url = new URL(referrer);
+            if(url != null) {
+                message = message.concat(" referrerURI - "+url.getPath());
+            }
+        }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
         RequestUtil.addRequestLogEvents(securityRequestWrapper, event);
         LOGGER.callAppenders(event);

@@ -37,9 +37,13 @@ public class PermissionInterceptor extends AbstractInterceptor {
         boolean skipPermission = skipPermissionParam != null && Boolean.parseBoolean(skipPermissionParam.getValue());
 
         if (AccountUtil.getCurrentOrg() != null) {
-            if (V3PermissionUtil.isAllowedEnvironment() && !skipPermission && APIPermissionUtil.shouldCheckPermission(request.getRequestURI())
-                    && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()))) {
-                return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
+            try {
+                boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
+                if (V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
+                    return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error while checking permission", e);
             }
         }
         return invocation.invoke();
@@ -117,7 +121,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
             moduleName = moduleNameParam.getValue();
         }
         if (action==null) {
-            LOGGER.info("API Permission Check is Missing");
+            WebTabUtil.permissionLogsForModule();
             return false;
         } else if (!WebTabUtil.isAuthorizedAccess(moduleName, action.getValue())) {
             return false;
@@ -138,6 +142,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         try {
             if(AccountUtil.getCurrentOrg() != null) {
                 if(deprecated != null && deprecated) {
+                    WebTabUtil.permissionLogsForModule();
                     LOGGER.info("This is Deprecated API");
                     return true;
                 }

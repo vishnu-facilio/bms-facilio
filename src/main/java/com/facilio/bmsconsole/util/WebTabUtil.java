@@ -192,13 +192,14 @@ public class WebTabUtil {
             }
 
             if (tabId > 0) {
-                return WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters);
-            } else {
-                permissionLogsForTabs(tabId, moduleName, action);
-                return false;
+                if(!WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters)) {
+                    permissionLogsForModule();
+                    return false;
+                }
+                return true;
             }
         } catch (Exception e) {
-            LOGGER.info("scope interceptor error occured tab");
+            LOGGER.info("Permission interceptor error occured tab");
         }
         return AccountUtil.getCurrentOrg() == null;
     }
@@ -237,10 +238,14 @@ public class WebTabUtil {
         }
     }
 
-    private static void permissionLogsForModule(String moduleName, String roleName, String action) {
+    public static void permissionLogsForModule() {
         try {
+            WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+            WebTabContext tab = tabBean.getWebTab(V3PermissionUtil.getCurrentTabId());
+            String tabName = tab!=null? tab.getName() : null;
+
             //Handled in client - need to check after logs
-            LOGGER.info("scope interceptor module permission : Module Name - " + moduleName + " - Role Name - " + roleName + " - Action - " + action + " - referrer - " + getReferrerUri());
+            LOGGER.info("Permission interceptor Tab permission missing for : Tab - " +tabName+ " reqURI - " +ServletActionContext.getRequest().getRequestURI()+ " referrerURI - " + getReferrerUri());
         } catch (Exception e) {
             LOGGER.info("Exception in module permission logs - " + e);
         }
