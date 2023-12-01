@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsoleV3.commands.GetDashboardThumbnailCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardListPropsContext;
@@ -355,6 +356,12 @@ public class V3DashboardAction extends V3Action {
                         }
                     }
                 }
+            }
+            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)) {
+                GetDashboardThumbnailCommand thumbnailCommand = new GetDashboardThumbnailCommand();
+                FacilioContext context = new FacilioContext();
+                context.put(FacilioConstants.ContextNames.DASHBOARD,DashboardUtil.getDashboard((Long) data.get("dashboardId")));
+                thumbnailCommand.executeCommand(context);
             }
             setData("result", "success");
         }

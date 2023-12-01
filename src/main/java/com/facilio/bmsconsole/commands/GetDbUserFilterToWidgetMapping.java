@@ -200,21 +200,33 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 								   filter.getExcludedReadingWidgetFieldMap().put(widgetId,excludedMappingFields);
 							   }
 						   }
-					   }else if(filter.getFieldId() > 0) {
+					   }
+					   else if(filter.getFieldId() > 0) {
 						   List<String> allModules = new ArrayList<>();
 						   Map<String, FacilioField> mappingFields = new HashMap<>();
+						   Map<String, FacilioField> excludedMappingFields = new HashMap<>();
+						   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
 						   for(V2MeasuresContext measure: measures) {
 							   if(!allModules.contains(measure.getModuleName())) {
 								   allModules.add(measure.getModuleName());
 								   FacilioModule parentModule = modBean.getModule(measure.getModuleName());
 								   FacilioField mappingField = modBean.getField(filter.getFieldId());
 								   if(mappingField != null) {
-									   mappingFields.put(parentModule.getName(),mappingField);
+									   if(customMapping.containsKey(parentModule.getName()) && customMapping.get(parentModule.getName()).getWidgetFieldId() == null) {
+										   excludedMappingFields.put(parentModule.getName(),mappingField);
+									   }else {
+										   mappingFields.put(parentModule.getName(),mappingField);
+									   }
 								   }
 							   }
 						   }
 						   filter.getReadingWidgetModuleMap().put(widgetId,allModules);
-						   filter.getReadingWidgetFieldMap().put(widgetId,mappingFields);
+						   if(mappingFields != null && mappingFields.size() > 0){
+							   filter.getReadingWidgetFieldMap().put(widgetId,mappingFields);
+						   }
+						   if(excludedMappingFields != null && excludedMappingFields.size() > 0) {
+							   filter.getExcludedReadingWidgetFieldMap().put(widgetId,excludedMappingFields);
+						   }
 					   }
 				   }
 			   }
@@ -253,7 +265,12 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						   }
 						   else if(filter.getFieldId() > 0) {
 							   filter.getReadingWidgetModuleMap().put(widgetId,Collections.singletonList(moduleName));
-							   filter.getReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,modBean.getField(filter.getFieldId())));
+							   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
+							   if(customMapping.containsKey(moduleName) && customMapping.get(moduleName).getWidgetFieldId() == null){
+								   filter.getExcludedReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,modBean.getField(filter.getFieldId())));
+							   }else {
+								   filter.getReadingWidgetFieldMap().put(widgetId,Collections.singletonMap(moduleName,modBean.getField(filter.getFieldId())));
+							   }
 						   }
 					   }
 				   }
