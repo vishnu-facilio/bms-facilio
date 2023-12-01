@@ -460,6 +460,9 @@ public class DataProcessorV2 {
             FacilioContext context = chain.getContext();
             context.put(FacilioConstants.ContextNames.READINGS_MAP,mergedReadingMap);
             context.put(FacilioConstants.ContextNames.HISTORY_READINGS,false);
+            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+            context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
             return !chain.execute();
         } catch (Exception e) {
             long controllerId = controller != null? controller.getId(): -1l;

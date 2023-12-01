@@ -1653,21 +1653,19 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain getTimeSeriesAddOrUpdateChain() throws Exception {
         FacilioChain chain = getDefaultChain();
-		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+        chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
         chain.addCommand(new UnModeledDataAddCommandV3());
-		chain.addCommand(new AddAgentDataCommand());
+        chain.addCommand(new AddAgentDataCommand());
 		return chain;
 	}
 
 	public static FacilioChain getTimeSeriesProcessChainV3() throws Exception {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new ProcessDataCommandV3());
-		//chain.addCommand(new AutoCommissionPoints());
 		chain.addCommand(new UpdateDataCommandStatus());
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());
 		chain.addCommand(new UnModeledDataCollectCommandV3());
-		chain.addCommand(new AddAgentDataCommand());
 		return chain;
 	}
 
