@@ -428,13 +428,25 @@ public class DataProcessorV2 {
                     throw new FacilioException("Timeseries array is mandatory for v3.1");
                 }
                 int pIndex = 1;  // Assuming payloadindex based on transform payload script from processor util wont be there for 3.1
+                Map<String, List<ReadingContext>> mergedReadingMap = new HashMap();
+                List<Map<String, Object>> mergedUnmodeledRecords = new ArrayList();
                 for(Map<String, Object> trend: trendArr) {
                     JSONObject newPayload = (JSONObject) timeSeriesPayload.clone();
                     newPayload.putAll(trend);
                     long payloadTs = getPayloadTimeStamp(newPayload);
-                    addTimeseriesData(agent, payloadTs, newPayload, controller, recordId, partitionId, messageSource, publishType, pIndex++, startTime, 3);
+                    Map<String, List<ReadingContext>> readingMap = getReadingContexts(agent, timeStamp, timeSeriesPayload, controller,recordId,partitionId,messageSource,publishType, payloadIndex, startTime, (int)payloadVersion,mergedUnmodeledRecords);
+                    mergeReadingMap(mergedReadingMap,readingMap);
                 }
-                return true;
+                FacilioChain chain = TransactionChainFactory.getTimeSeriesAddOrUpdateChain();
+                FacilioContext context = chain.getContext();
+                context.put(FacilioConstants.ContextNames.DataProcessor.UNMODELED_RECORDS,mergedUnmodeledRecords);
+                context.put(FacilioConstants.ContextNames.READINGS_MAP,mergedReadingMap);
+                context.put(FacilioConstants.ContextNames.HISTORY_READINGS,false);
+                context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, publishType == PublishType.TIMESERIES);
+                Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
+                boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
+                context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
+                return !chain.execute();
             }
 
             // For versions other than 3.1 which will have single timestamp payload
@@ -443,27 +455,21 @@ public class DataProcessorV2 {
                 messagePartition = Integer.parseInt(payload.get(AgentConstants.MESSAGE_PARTITION).toString());
             }
             Span.current().setAllAttributes(Attributes.of(AttributeKey.stringKey("controller-name"), controller.getName()));
- 
-            Map<String, List<ReadingContext>> mergedReadingMap = new HashMap(); 
+
+
             if (!controllerIdVsLastTimeSeriesTimeStamp.containsKey(controller.getId()) ||
                     !controllerIdVsLastTimeSeriesTimeStamp.get(controller.getId()).equals(timeStamp + "#" + messagePartition)) {
+
                 controllerIdVsLastTimeSeriesTimeStamp.put(controller.getId(), timeStamp + "#" + messagePartition);
+
                 timeSeriesPayload.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
-                Map<String, List<ReadingContext>> readingMap = addTimeseriesData(agent, timeStamp, timeSeriesPayload, controller,recordId,partitionId,messageSource,publishType, payloadIndex, startTime, (int)payloadVersion);
-                mergeReadingMap(mergedReadingMap,readingMap);
+                addTimeseriesData(agent, timeStamp, timeSeriesPayload, controller,recordId,partitionId,messageSource,publishType, payloadIndex, startTime, (int)payloadVersion);
             } else {
                 //add datalog table entry with this exception
                 LOGGER.info("Duplicate message for controller id : " + controller.getId() +
                         " a_timestamp : " + timeStamp);
             }
-            FacilioChain chain = TransactionChainFactory.getTimeSeriesAddOrUpdateChain();
-            FacilioContext context = chain.getContext();
-            context.put(FacilioConstants.ContextNames.READINGS_MAP,mergedReadingMap);
-            context.put(FacilioConstants.ContextNames.HISTORY_READINGS,false);
-            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING);
-            boolean forkPostProcessing = orgInfoMap == null ? false : Boolean.parseBoolean(orgInfoMap.get(FacilioConstants.OrgInfoKeys.FORK_READING_POST_PROCESSING));
-            context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
-            return !chain.execute();
+            return true;
         } catch (Exception e) {
             long controllerId = controller != null? controller.getId(): -1l;
             addAgentDataLogForError(e,recordId,agent.getId(),controllerId,messageSource,partitionId,payload,publishType, startTime, payloadIndex);
@@ -477,10 +483,33 @@ public class DataProcessorV2 {
 		   List<ReadingContext> readingList = dest.getOrDefault(key,new ArrayList()); 
 		   readingList.addAll(src.get(key));
 	    }	   
-    } 
+    }
 
-    private Map<String, List<ReadingContext>> addTimeseriesData(FacilioAgent agent, long timeStamp,JSONObject payload, Controller controller, long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime, int version) throws Exception{
+    private Map<String, List<ReadingContext>> getReadingContexts(FacilioAgent agent, long timeStamp,JSONObject payload, Controller controller, long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime, int version,List<Map<String, Object>> mergedUnmodeledRecords) throws Exception {
         FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV3();
+        FacilioContext context = chain.getContext();
+        context.put(AgentConstants.RECORD_ID, recordId);
+        context.put(AgentConstants.PARTITION_ID, partitionId);
+        context.put(AgentKeys.PAYLOAD_INDEX,payloadIndex);
+        context.put(AgentConstants.AGENT, agent);
+        context.put(AgentConstants.IS_NEW_AGENT, true);
+        context.put(AgentConstants.MESSAGE_SOURCE,messageSource);
+        context.put(AgentConstants.PUBLISH_TYPE,publishType);
+        context.put(AgentKeys.START_TIME, startTime);
+        context.put(AgentConstants.CONTROLLER, controller);
+        context.put(AgentConstants.CONTROLLER_ID, controller.getId());
+        context.put(AgentConstants.AGENT_ID, controller.getAgentId());
+        context.put(AgentConstants.TIMESTAMP, timeStamp);
+        context.put(AgentConstants.VERSION, version);
+        context.put(AgentConstants.PAYLOAD, payload);
+
+        chain.execute();
+        mergedUnmodeledRecords.addAll((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.DataProcessor.UNMODELED_RECORDS));
+        return (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.READINGS_MAP);
+    }
+
+    private void addTimeseriesData(FacilioAgent agent, long timeStamp,JSONObject payload, Controller controller, long recordId,int partitionId,String messageSource,PublishType publishType, int payloadIndex, long startTime, int version) throws Exception{
+        FacilioChain chain = TransactionChainFactory.getTimeSeriesProcessChainV2();
         FacilioContext context = chain.getContext();
         context.put(AgentConstants.RECORD_ID, recordId);
         context.put(AgentConstants.PARTITION_ID, partitionId);
@@ -503,7 +532,7 @@ public class DataProcessorV2 {
         context.put(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, forkPostProcessing);
 
         chain.execute();
-        return (Map<String, List<ReadingContext>>)context.get(FacilioConstants.ContextNames.READINGS_MAP);
+        LOGGER.debug(" done processes data command ");
 
     }
 
