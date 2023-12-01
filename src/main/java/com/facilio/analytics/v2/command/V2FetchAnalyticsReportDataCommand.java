@@ -137,6 +137,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     {
         ReportDataContext data = new ReportDataContext();
         Set<FacilioModule> addedModules = new HashSet<>();
+        Set<FacilioModule> baseLineAddedModules = new HashSet<>();
         /**
          * fields will be used to collect all the fields which will be available as selected columns in select query
          */
@@ -162,6 +163,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
 
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
         Map<String, List<Map<String, Object>>> props = new HashMap<>();
+        baseLineAddedModules.addAll(addedModules);
         List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules);
         props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
 
@@ -175,7 +177,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines())
             {
-                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, xValues, addedModules));
+                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, xValues, baseLineAddedModules));
                 data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
             }
         }

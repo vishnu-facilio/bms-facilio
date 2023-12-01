@@ -15,6 +15,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
+import com.facilio.report.module.v2.context.V2ModuleTimeFilterContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -71,16 +72,30 @@ public class V2GetKpiValueCommand extends FacilioCommand {
         }
         if(v2_report.getTimeFilter() != null && v2_report.getTimeFilter().getFieldName() != null){
             DateOperators dateOperator = DateOperators.CURRENT_MONTH;
+            V2ModuleTimeFilterContext timeFilter = v2_report.getTimeFilter();
+            int operatorId = timeFilter.getOperatorId();
             if(db_filter != null && db_filter.getTimeFilter() != null) {
                 dateOperator = db_filter.getTimeFilter().dateOperator;
                 kpi.setDateValue(db_filter.getTimeFilter().getDateValueString());
             }
-            else if(v2_report.getTimeFilter().getOperatorId() > 0){
-                dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(String.valueOf(v2_report.getTimeFilter().getOperatorId())));
+            else if(operatorId == DateOperators.BETWEEN.getOperatorId()){
+                long startTime = timeFilter.getStartTime();
+                long endTime = timeFilter.getEndTime();
+                if(startTime > 0 && endTime > 0){
+                    String dateValue = new StringBuilder()
+                            .append(startTime)
+                            .append(",")
+                            .append(endTime).toString();
+                    dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(String.valueOf(operatorId)));
+                    kpi.setDateValue(dateValue);
+                }
             }
-            FacilioField dateField = modBean.getField(v2_report.getTimeFilter().getFieldName(),v2_report.getTimeFilter().getModuleName());
+            else if(operatorId > 0){
+                dateOperator = (DateOperators) Operator.getOperator(Integer.parseInt(String.valueOf(operatorId)));
+            }
+            FacilioField dateField = modBean.getField(timeFilter.getFieldName(),timeFilter.getModuleName());
             kpi.setDateOperator(dateOperator);
-            kpi.setDateFieldName(v2_report.getTimeFilter().getFieldName());
+            kpi.setDateFieldName(timeFilter.getFieldName());
             kpi.setDateField(dateField);
         }
         DateOperators cardPeriod = (DateOperators) context.get(FacilioConstants.ContextNames.CARD_PERIOD);
