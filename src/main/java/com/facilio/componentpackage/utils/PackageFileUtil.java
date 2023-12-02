@@ -18,9 +18,9 @@ import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fs.FileInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -45,6 +45,7 @@ import org.zeroturnaround.zip.ZipUtil;
 import java.io.*;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.function.Function;
@@ -52,7 +53,6 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class PackageFileUtil {
-
     public static long saveAsZipFile(PackageFolderContext rootFolder) throws Exception {
 
         String rootPath = System.getProperties().getProperty("java.io.tmpdir") + File.separator + "sandbox"+ File.separator + "Unzipped-Package-Files" + File.separator + rootFolder.getName();
@@ -468,7 +468,6 @@ public class PackageFileUtil {
         writer.close();
     }
 
-
     public static List<String> getDataConfigModuleNames(PackageFolderContext rootFolder) throws Exception {
         PackageFileContext dataConfigFileContext = rootFolder.getFile(PackageConstants.DATA_CONF_FILE_NAME + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN);
         XMLBuilder dataConfigXml = dataConfigFileContext.getXmlContent();
@@ -479,7 +478,6 @@ public class PackageFileUtil {
         }
         return allModulesXml.stream().map(xml -> xml.getAttribute(PackageConstants.NAME)).collect(Collectors.toList());
     }
-
 
     public static Map<String, String> getModuleNameVsXmlFileName(PackageFolderContext rootFolder) {
         PackageFileContext dataConfigFileContext = rootFolder.getFile(PackageConstants.DATA_CONF_FILE_NAME + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.XML_FILE_EXTN);

@@ -100,6 +100,8 @@ public class FacilioProperties {
     private static String emailClient;
     private static String azureDevelopment;
     private static String fileStore;
+    private static String sandboxFileStore;
+    private static String sandboxS3BucketName;
     private static boolean isServicesEnabled;
 
     private static String localFileStorePath;
@@ -342,6 +344,8 @@ public class FacilioProperties {
             isServicesEnabled = "enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
             emailClient = PROPERTIES.getProperty("service.email");
             fileStore = PROPERTIES.getProperty("service.file.store");
+            sandboxFileStore = PROPERTIES.getProperty("sandbox.file.store");
+            sandboxS3BucketName = PROPERTIES.getProperty("s3.sandbox.bucket.name");
             anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
             anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
             anomalyBucket = PROPERTIES.getProperty("anomalyBucket", "facilio-analytics");
@@ -899,6 +903,14 @@ public class FacilioProperties {
 
     public static String getFileStore() {
         return fileStore;
+    }
+
+    public static String getSandboxFileStore() {
+        return sandboxFileStore;
+    }
+
+    public static String getSandboxS3BucketName() {
+        return sandboxS3BucketName;
     }
 
     public static boolean isServicesEnabled() {

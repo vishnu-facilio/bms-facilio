@@ -25,6 +25,9 @@ import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -334,11 +337,17 @@ public class DataMigrationUtil {
                 module.getTypeEnum().equals(FacilioModule.ModuleType.ATTACHMENTS) ||
                 module.getTypeEnum().equals(FacilioModule.ModuleType.ACTIVITY)) {
             FacilioModule parentModule = targetModuleBean.getParentModule(module.getModuleId());
-            // "customactivity" has no relation in SubModuleRel
-            if (module.getName().equals("customactivity")) {
-                parentModule = module;
+            // "customactivity", "commentattachments" has no relation in SubModuleRel
+            // "customactivity" - Container table consists of activities of all CustomModules (ModuleId Column refers to "customactivity" ModuleId, "parentId" refers to CustomModuleData)
+            parentModule = (module.getName().equals("customactivity") || module.getName().equals("commentattachments")) ? module : parentModule;
+            if (module.getName().equals("commentattachments")) {
+                // "parent" -> refers to the ID in a Module with Notes Type (eg. ID of Ticket_Notes (SubModule of Ticket))
+                addNumberLookupDetails("parent", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
+                // refers to the ModuleId with Notes Type
+                addNumberLookupDetails("commentModuleId", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
+            } else {
+                addNumberLookupDetails("parentId", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
             }
-            addNumberLookupDetails("parentId", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
         } else if (module.getTypeEnum().equals(FacilioModule.ModuleType.READING)) {
             addNumberLookupDetails("parentId", "resource", targetModuleNameVsObj, numberFieldsVsLookupModules);
         }
@@ -495,6 +504,25 @@ public class DataMigrationUtil {
                     "kpiLogger",
                     "kpiResourceLogger"))
     );
+
+    public static Set<String> getMisConfiguredModules() {
+        Set<String> skipModules = new HashSet<>();
+        //Modules with no relation in SubModuleRel
+        skipModules.add("cmdattachments");      // Container table consists of attachments of all CustomModules (ModuleId Column refers to ModuleId of Attachment Type module of a CustomModule)
+        skipModules.add("cmdnotes");            // Container table consists of notes of all CustomModules (ModuleId Column refers to ModuleId of Note Type module of a CustomModule)
+        skipModules.add("dashboardnotes");
+        skipModules.add("reportnotes");
+
+        //Modules with invalid tablename or column names
+        //skipModules.add("assetdepreciationRel");
+        skipModules.add("leedconfiguration");   // table not present
+        skipModules.add("mlBmsPointsTagging");  // ML_BmsPredictedPoints.MODULEID column not present
+        skipModules.add("occupantattachments"); // Occupants_Attachments.PARENT_CONTACT column not present
+        skipModules.add("readingalarm");        // Reading_Alarms.IS_NEW_READING_RULE column not present
+        skipModules.add("assetdepreciation");   // Skipping this since one of the number/decimal field doesnt have entry in sub table-numberfields
+        skipModules.add("agentMetrics");        // Doesn't have parentid
+        return Collections.unmodifiableSet(skipModules);
+    }
 
     public static List<Map<String, Object>> getInsertDataPropsFromCsv(File moduleCsvFile, FacilioModule targetModule, Map<ComponentType, List<PackageChangeSetMappingContext>> packageChangSets,Map<String,Map<String,String>> nonNullableModuleVsFieldVsLookupModules,DataMigrationBean targetConnection,DataMigrationStatusContext dataMigrationObj,Map<Long,Long>siteIdMappings,boolean allowNotesAndAttachments,Map<String, Map<String, Object>> numberLookupDetails) throws Exception {
 
@@ -1046,6 +1074,12 @@ public class DataMigrationUtil {
                 }});
                 put(FacilioConstants.ContextNames.ASSET_PHOTOS,new HashMap<String,String>(){{
                     put("parentId",FacilioConstants.ContextNames.ASSET);
+                }});
+                put(FacilioConstants.ContextNames.COMMENT_ATTACHMENTS, new HashMap<String, String>() {{
+                    // "parent" -> refers to the ID in a Module with Notes Type (eg. ID of Ticket_Notes (SubModule of Ticket))
+                    // put("parent", FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
+                    // refers to the ModuleId with Notes Type
+                    put("commentModuleId", FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
                 }});
             }}
     );

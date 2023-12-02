@@ -3,6 +3,7 @@ package com.facilio.datamigration.beans;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -24,6 +25,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.services.filestore.FileStore;
+import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -179,6 +181,34 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         }
 
         return systemSubModules;
+    }
+
+    @Override
+    public List<FacilioField> getRelatedFields(List<Long> parentModuleIds, List<Long> childModuleIds) throws Exception {
+        FacilioModule fieldsModule = ModuleFactory.getFieldsModule();
+        FacilioModule lookupFieldsModule = ModuleFactory.getLookupFieldsModule();
+        List<FacilioField> fieldFields = FieldFactory.getFieldFields();
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fieldFields);
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .table(fieldsModule.getTableName())
+                .select(Collections.singleton(fieldsMap.get("fieldId")))
+                .innerJoin(lookupFieldsModule.getTableName())
+                .on(lookupFieldsModule.getTableName() + ".FIELDID = " + fieldsModule.getTableName() + ".FIELDID")
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"), childModuleIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsMap.get("dataType"), String.valueOf(FieldType.LOOKUP.getTypeAsInt()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("LOOKUP_MODULE_ID", "lookupModuleId", StringUtils.join(parentModuleIds, ","), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> propsList = selectRecordBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(propsList)) {
+            List<Long> fieldIds = propsList.stream().map(field -> (long) field.get("fieldId")).collect(Collectors.toList());
+
+            List<FacilioField> fieldList = Constants.getModBean().getFields(fieldIds);
+            return fieldList;
+        }
+
+        return null;
     }
 
     public List<FacilioModule> getAllModules() throws Exception{

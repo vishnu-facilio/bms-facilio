@@ -64,6 +64,7 @@ public class PackageConstants {
     public static final String DATA_FOLDER_NAME = "datas";
     public static final String DATA_ATTACHMENT_FILE_FOLDER_NAME = "dataAttachmentFiles";
     public static final String MODULE_NAMES = "moduleNames";
+    public static final String MODULES = "modules";
     public static final String MODULE =  "module";
     public static final String DATA_CONF_FILE_NAME = "DataConf";
     public static final String DATA = "Data";

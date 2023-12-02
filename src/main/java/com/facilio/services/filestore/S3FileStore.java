@@ -508,5 +508,5 @@ public class S3FileStore extends FileStore {
 		LOGGER.info("size of delete rows :"+fileIds.size());
 		return deleteFileEntries(namespace, fileIds);
 	}
-	
+
 }

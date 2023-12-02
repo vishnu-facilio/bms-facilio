@@ -30,6 +30,9 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -112,6 +115,7 @@ public class PackageNotesUtil {
 
         return notes;
     }
+
 
     public static List<FacilioField> getAllNotesCsvFields(FacilioModule noteModule) throws Exception {
 

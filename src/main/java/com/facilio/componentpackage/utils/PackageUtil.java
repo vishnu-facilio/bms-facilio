@@ -63,6 +63,7 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Map<Long, List<FacilioField>>>> ASSET_CATEGORY_ID_VS_READING_FIELDS = ThreadLocal.withInitial(HashMap::new);
     private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
     private static ThreadLocal<String> PACKAGE_ROOT_PATH = new ThreadLocal<>();         // Root folder path
+    private static ThreadLocal<String> SANDBOX_BUCKET_NAME = new ThreadLocal<>();       // Sandbox Bucket Name (used for Cross DC cases)
     private static ThreadLocal<Long> PACKAGE_ID = new ThreadLocal<>();
     private static ThreadLocal<Long> DATA_MIGRATION_ID = new ThreadLocal<>();           // Data Migration Id
 
@@ -331,6 +332,21 @@ public class PackageUtil {
     }
     public static String getRootFolderPath() {
         return PACKAGE_ROOT_PATH.get();
+    }
+
+    public static void removeRootFolderPath() {
+        PACKAGE_ROOT_PATH.remove();
+    }
+
+    public static void setSandboxBucketName(String bucketName) {
+        SANDBOX_BUCKET_NAME.set(bucketName);
+    }
+    public static String getSandboxBucketName() {
+        return SANDBOX_BUCKET_NAME.get();
+    }
+
+    public static void removeSandboxBucketName() {
+        SANDBOX_BUCKET_NAME.remove();
     }
 
     public static void clearPickListConf() throws Exception {
@@ -828,6 +844,7 @@ public class PackageUtil {
         componentNameVsTypes.put(FacilioConstants.ContextNames.VENDORS,ComponentType.VENDOR);
         componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT,ComponentType.CLIENT);
         componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,ComponentType.TENANT);
+        componentNameVsTypes.put(FacilioConstants.PeopleGroup.PEOPLE_GROUP,ComponentType.TEAM);
         componentNameVsTypes.put(FacilioConstants.ContextNames.MODULE_STATE,ComponentType.TICKET_STATUS);
 
         return componentNameVsTypes;

@@ -19,6 +19,8 @@ public interface DataMigrationBean {
 
     List<FacilioModule> getSystemSubModules(List<Long> parentModuleIds) throws Exception;
 
+    List<FacilioField> getRelatedFields(List<Long> parentModuleIds, List<Long> childModuleIds) throws Exception;
+
     public Map<Long, Long> createModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements, List<Map<String, Object>> props, Boolean addLogger) throws Exception;
 
     public void updateModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements, List<Map<String, Object>> props, Boolean addLogger) throws Exception;

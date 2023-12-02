@@ -349,5 +349,5 @@ public class OracleFileStore extends FileStore {
 		LOGGER.info("size of delete rows :"+fileIds.size());
 		return deleteFileEntries(namespace, fileIds);
 	}
-	
+
 }
