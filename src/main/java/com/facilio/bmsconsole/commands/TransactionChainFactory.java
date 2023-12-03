@@ -1655,7 +1655,6 @@ public class TransactionChainFactory {
         FacilioChain chain = getDefaultChain();
         chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
         chain.addCommand(new UnModeledDataAddCommandV3());
-        chain.addCommand(new AddAgentDataCommand());
 		return chain;
 	}
 
@@ -1666,6 +1665,7 @@ public class TransactionChainFactory {
 		chain.addCommand(new UpdateLastRecordedValueAndFilterPointsCommand());
 		chain.addCommand(new ModeledDataCommandV2());
 		chain.addCommand(new UnModeledDataCollectCommandV3());
+		chain.addCommand(new AddAgentDataCommand());
 		return chain;
 	}
 

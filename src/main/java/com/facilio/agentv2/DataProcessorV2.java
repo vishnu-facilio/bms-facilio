@@ -434,7 +434,7 @@ public class DataProcessorV2 {
                     JSONObject newPayload = (JSONObject) timeSeriesPayload.clone();
                     newPayload.putAll(trend);
                     long payloadTs = getPayloadTimeStamp(newPayload);
-                    Map<String, List<ReadingContext>> readingMap = getReadingContexts(agent, timeStamp, timeSeriesPayload, controller,recordId,partitionId,messageSource,publishType, payloadIndex, startTime, (int)payloadVersion,mergedUnmodeledRecords);
+                    Map<String, List<ReadingContext>> readingMap = getReadingContexts(agent, payloadTs, newPayload, controller,recordId,partitionId,messageSource,publishType, pIndex++, startTime, (int)payloadVersion,mergedUnmodeledRecords);
                     mergeReadingMap(mergedReadingMap,readingMap);
                 }
                 FacilioChain chain = TransactionChainFactory.getTimeSeriesAddOrUpdateChain();
@@ -480,8 +480,10 @@ public class DataProcessorV2 {
 
     private void mergeReadingMap(Map<String, List<ReadingContext>> dest, Map<String, List<ReadingContext>> src){
 	    for (String key: src.keySet()){
-		   List<ReadingContext> readingList = dest.getOrDefault(key,new ArrayList()); 
-		   readingList.addAll(src.get(key));
+            List<ReadingContext> readingListDest = dest.getOrDefault(key, new ArrayList<>());
+            List<ReadingContext> readingListSrc = src.get(key);
+            readingListDest.addAll(readingListSrc);
+            dest.put(key, readingListDest);
 	    }	   
     }
 
