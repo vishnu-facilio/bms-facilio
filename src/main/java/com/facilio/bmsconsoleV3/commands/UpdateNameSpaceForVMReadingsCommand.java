@@ -29,6 +29,8 @@ public class UpdateNameSpaceForVMReadingsCommand extends FacilioCommand {
         WorkflowContext workflow = virtualMeterTemplateReadingContext.getNs().getWorkflowContext();
         workflow.setId(nameSpaceContext.getWorkflowId());
 
+        virtualMeterTemplateReadingContext.getNs().setParentRuleId(nameSpaceContext.getParentRuleId());
+        virtualMeterTemplateReadingContext.getNs().setType(nameSpaceContext.getType());
         Long execInterval = virtualMeterTemplateReadingContext.getFrequencyEnum() != null ? virtualMeterTemplateReadingContext.getFrequencyEnum().getMs() : null;
         virtualMeterTemplateReadingContext.getNs().setExecInterval(execInterval);
 

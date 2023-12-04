@@ -294,9 +294,32 @@ public class AddVirtualMeterTemplateModules extends SignUpData {
         generateVM.setCriteria(generateCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE,generateVM);
 
-        SystemButtonApi.addSummaryEditButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+        SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
+        summaryEditButton.setName("Edit");
+        summaryEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        summaryEditButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        summaryEditButton.setIdentifier("edit_summary");
+        summaryEditButton.setPermissionRequired(true);
+        summaryEditButton.setPermission("UPDATE");
+        Criteria editCriteria = new Criteria();
+        editCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("vmTemplateStatus"),String.valueOf(VirtualMeterTemplateContext.VMTemplateStatus.PUBLISHED.getIndex()), EnumOperators.ISN_T));
+        summaryEditButton.setCriteria(editCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, summaryEditButton);
+
+        //SystemButtonApi.addSummaryEditButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
         SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE , "New Template");
-        SystemButtonApi.addListEditButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
+
+        SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
+        listEditButton.setName("Edit");
+        listEditButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+        listEditButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        listEditButton.setIdentifier("edit_list");
+        listEditButton.setPermissionRequired(true);
+        listEditButton.setPermission("UPDATE");
+        listEditButton.setCriteria(editCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE, listEditButton);
+
+        //SystemButtonApi.addListEditButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
         SystemButtonApi.addListDeleteButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
         SystemButtonApi.addBulkDeleteButton(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
         SystemButtonApi.addExportAsCSV(FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE);
