@@ -112,7 +112,7 @@ public class SetActivityMessageForImportRecordsCommand extends FacilioCommand {
                     Object newValue = changeSet.getNewValue();
                     FacilioField field = Constants.getModBean().getField(fieldId, moduleName);
 
-                    if (oldValue == null && newValue == null) {
+                    if ((oldValue == null && newValue == null) || field ==null) {
                         continue;
                     }
 
