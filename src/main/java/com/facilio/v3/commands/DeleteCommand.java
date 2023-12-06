@@ -208,7 +208,7 @@ public class DeleteCommand extends FacilioCommand {
             Map<String,FacilioField> fieldsMap=FieldFactory.getAsMap(FieldFactory.getCustomRelationFields());
             if(CollectionUtils.isNotEmpty(recordIds)) {
 
-                List<RelationRequestContext> relationMappingList = RelationUtil.getAllRelations(module);
+                List<RelationRequestContext> relationMappingList = RelationUtil.getAllRelations(module,false,null,null,true,null,null);
                 Map<Long,List<RelationRequestContext>> moduleIdVsRelationShip=relationMappingList.stream().collect(Collectors.groupingBy(i->i.getRelationModule().getModuleId(), HashMap::new, Collectors.toCollection(ArrayList::new)));
                 if(MapUtils.isNotEmpty(moduleIdVsRelationShip)){
                     Criteria criteria=constructCriteria(moduleIdVsRelationShip,recordIds,fieldsMap);
