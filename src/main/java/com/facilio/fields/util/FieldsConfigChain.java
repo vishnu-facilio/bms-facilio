@@ -74,11 +74,11 @@ public class FieldsConfigChain {
 
         if (fieldHandler != null) {
             List<String> fieldsToFetch = fieldHandler.getFieldsToAdd();
+            List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
             if(CollectionUtils.isNotEmpty(fieldsToFetch)) {
                 fieldsToAddList.addAll(fieldsToFetch);
-            } else  {
+            } else  if(CollectionUtils.isNotEmpty(fieldsToSkip)) {
                 // TODO remove once skip is deprecated completely
-                List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
                 LOGGER.info("Remove skip fields for moduleName -- "+ moduleName);
                 fieldsToSkipList.addAll(fieldsToSkip);
             }
@@ -142,11 +142,11 @@ public class FieldsConfigChain {
 
         if (fieldHandler != null) {
             List<String> fieldsToFetch = fieldHandler.getFieldsToAdd();
+            List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
             if(CollectionUtils.isNotEmpty(fieldsToFetch)) {
                 fieldsToAddList.addAll(fieldsToFetch);
-            } else  {
+            } else  if(CollectionUtils.isNotEmpty(fieldsToSkip)) {
                 // TODO remove once skip is deprecated completely
-                List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
                 LOGGER.info("Remove skip fields for moduleName -- "+ moduleName);
                 fieldsToSkipList.addAll(fieldsToSkip);
             }
