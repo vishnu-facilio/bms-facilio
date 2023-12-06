@@ -25,6 +25,9 @@ public class ValidateServicePMCommand extends FacilioCommand {
                 if(servicePlannedMaintenance.getPmType()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"PM Type is required");
                 }
+                if(servicePlannedMaintenance.getPreviewPeriod()!=null && servicePlannedMaintenance.getPreviewPeriod()>90){
+                    throw new RESTException(ErrorCode.VALIDATION_ERROR,"Forecast period can't be more than 90 days");
+                }
                 if(servicePlannedMaintenance.getEstimatedDuration()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Estimated duration is required");
                 }

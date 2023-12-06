@@ -393,6 +393,7 @@ public class FsmTransactionChainFactoryV3 {
     }
     public static FacilioChain getServicePMBeforeUpdateChain(){
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ValidateServicePMCommand());
         c.addCommand(new PublishServicePMCommand());
         return c;
     }

@@ -18,10 +18,11 @@ import static com.facilio.fsm.util.ServicePlannedMaintenanceAPI.*;
 public class ScheduleExecutor extends ExecutorBase {
     @Override
     protected List<Long> getNextExecutionTimes(Context context) throws Exception {
+        ServicePlannedMaintenanceContext plannedMaintenance = (ServicePlannedMaintenanceContext) context.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE);
         ServicePMTriggerContext trigger = (ServicePMTriggerContext) context.get(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TRIGGER);
         Long currentTime = System.currentTimeMillis();
         Long startTime = trigger.getStartTime()!=null && trigger.getStartTime() > 0 ? trigger.getStartTime() > currentTime ? trigger.getStartTime() - 300 : currentTime : currentTime;
-        Long endTime = calculateEndTime(trigger, startTime);
+        Long endTime = calculateEndTime(trigger, startTime,plannedMaintenance.getPreviewPeriod());
         List<Long> nextExecutionTimes = new ArrayList<>();
 
         List<DateRange> nextExecutionTimesRange = trigger.getScheduleInfo().getTimeIntervals(startTime,endTime);
@@ -40,18 +41,20 @@ public class ScheduleExecutor extends ExecutorBase {
         }
         return nextExecutionTimes;
     }
-    private long calculateEndTime(ServicePMTriggerContext trigger, Long cutOffTime) throws Exception {
-        // planEndtime is the time till which the trigger will be executed
-        // trigger end time is the time till which the trigger was configured
-
-        // case 1: planEndtime and triggerEndtime are not configured -> we compute using triggertype
-        // case 2: planEndtime is configured but triggerEndtime is not configured -> we choose planEndtime
-        // case 3: trigger endTime is configured but not planEndtime -> we chose trigger end time
-        // case 4: both are configured - > we chose earliest of the two
-
-        ScheduleInfo scheduleInfo = trigger.getScheduleInfo();
-        Long endTime = trigger.getEndTime()!=null ? trigger.getEndTime() : computeEndTimeUsingTriggerType(scheduleInfo, cutOffTime);
-        return endTime;
+    private long calculateEndTime(ServicePMTriggerContext trigger, Long cutOffTime, Integer previewPeriod) throws Exception {
+//        Long endTime = trigger.getEndTime()!=null ? trigger.getEndTime() : computeEndTimeUsingTriggerType(scheduleInfo, cutOffTime);
+        if(trigger.getEndTime()!=null && previewPeriod==null){
+            return trigger.getEndTime();
+        } else if(previewPeriod!=null && trigger.getEndTime()==null){
+         Long endTimeAfterPreviewPeriod = computeEndTimeUsingPreviewPeriod(cutOffTime,previewPeriod);
+         return endTimeAfterPreviewPeriod;
+        } else if(previewPeriod!=null && trigger.getEndTime()!=null){
+            Long endTimeAfterPreviewPeriod = computeEndTimeUsingPreviewPeriod(cutOffTime,previewPeriod);
+            return endTimeAfterPreviewPeriod < trigger.getEndTime() ? endTimeAfterPreviewPeriod : trigger.getEndTime();
+        }else {
+            ScheduleInfo scheduleInfo = trigger.getScheduleInfo();
+            return computeEndTimeUsingTriggerType(scheduleInfo, cutOffTime);
+        }
     }
 
     @Override

@@ -115,6 +115,11 @@ public abstract class ExecutorBase implements Executor {
         }
         return zonedEnd.toEpochSecond()*1000;
     }
+    public long computeEndTimeUsingPreviewPeriod(long startTime,Integer previewPeriod){
+        ZonedDateTime dateTime = DateTimeUtil.getDateTime(startTime, false);
+        ZonedDateTime endTime = dateTime.plusDays(previewPeriod);
+        return endTime.toEpochSecond()*1000;
+    }
     public void deletePreOpenServiceOrders(Long servicePMId) throws Exception {
 
     }
