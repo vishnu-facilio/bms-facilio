@@ -13,6 +13,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.context.*;
@@ -96,7 +97,11 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
                 if(dataPoint.getTypeEnum() == ReportDataPointContext.DataPointType.MODULE)
                 {
-                    if ((dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE)) && (dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM))) {
+                    if(dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM) && (dataPoint.getyAxis().getAggr() == CommonAggregateOperator.COUNT.getValue()))
+                    {
+                        dataPoint.setHandleEnum(true);
+                    }
+                    else if ((dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE)) && (dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)) && (dataPoint.getyAxis().getAggrEnum() == null || dataPoint.getyAxis().getAggr() == BmsAggregateOperators.CommonAggregateOperator.ACTUAL.getValue())) {
                         dataPoint.getyAxis().setAggr(null);
                         dataPoint.setHandleEnum(true);
                     }
@@ -157,6 +162,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         if(groupBy != null) {
             selectBuilder.groupBy(groupBy.toString());
         }
+        this.setBooleanOrEnumSelectFields(dp, fields);
         List<FacilioField> cloneFields = new ArrayList<>();
         cloneFields.addAll(fields.stream().filter(field -> field != null).map(FacilioField::clone).collect(Collectors.toList()));
         selectBuilder.select(cloneFields);
@@ -275,7 +281,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         if(addedModules != null && addedModules.size() == 1) {
             V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(newSelectBuilder, addedModules, baseModule);
         }
-
         List<Map<String, Object>> props = null;
         if(isClickHouseEnabled) {
             props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
@@ -342,4 +347,64 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         return kpiData;
     }
 
+    private void setBooleanOrEnumSelectFields(ReportDataPointContext dataPoint, List<FacilioField> fields)throws Exception
+    {
+        if(dataPoint.isHandleEnum() && dataPoint.getyAxis().getAggrEnum() != null)
+        {
+            if(dataPoint.getyAxis().getAggr() == CommonAggregateOperator.COUNT.getValue())
+            {
+                if(dataPoint.getyAxis().getField() != null &&  dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.BOOLEAN) {
+                    fields.add(this.getTrueCountSelectField(dataPoint.getyAxis().getField()));
+                    fields.add(this.getFalseCountSelectField(dataPoint.getyAxis().getField()));
+                }
+                else if(dataPoint.getyAxis().getField() != null &&  dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.ENUM){
+                    fields.addAll(getEnumSelectField(dataPoint.getyAxis().getField()));
+                }
+            }
+        }
+    }
+    private FacilioField getTrueCountSelectField(FacilioField field)
+    {
+        StringBuilder selectFieldString = new StringBuilder().append("SUM(CASE WHEN ").append(field.getCompleteColumnName()).append(" = 1 THEN 1 ELSE 0 END)");
+        FacilioField selectField =  new FacilioField();
+        selectField.setName("count_1");
+        selectField.setDisplayName(field.getDisplayName());
+        selectField.setColumnName(selectFieldString.toString());
+        selectField.setFieldId(field.getFieldId());
+        selectField.setDataType(FieldType.STRING);
+        return selectField;
+    }
+    private FacilioField getFalseCountSelectField(FacilioField field)
+    {
+        StringBuilder selectFieldString = new StringBuilder().append("SUM(CASE WHEN ").append(field.getCompleteColumnName()).append(" = 0 THEN 1 ELSE 0 END)");
+        FacilioField selectField =  new FacilioField();
+        selectField.setName("count_0");
+        selectField.setDisplayName(field.getDisplayName());
+        selectField.setColumnName(selectFieldString.toString());
+        selectField.setFieldId(field.getFieldId());
+        selectField.setDataType(FieldType.STRING);
+        return selectField;
+    }
+
+    private List<FacilioField> getEnumSelectField(FacilioField field) throws Exception
+    {
+        List<FacilioField> enum_field_list = null;
+        Map<Integer, Object> enumMap = ((EnumField)field).getEnumMap();
+        if(enumMap != null)
+        {
+            enum_field_list = new ArrayList<>();
+            for(Map.Entry<Integer, Object> pair : enumMap.entrySet())
+            {
+                StringBuilder selectFieldString = new StringBuilder().append("SUM(CASE WHEN ").append(field.getCompleteColumnName()).append(" = ").append(pair.getKey()).append(" THEN ").append( 1 ).append(" END)");
+                FacilioField selectField =  new FacilioField();
+                selectField.setName((String)pair.getValue());
+                selectField.setDisplayName(field.getDisplayName());
+                selectField.setColumnName(selectFieldString.toString());
+                selectField.setFieldId(field.getFieldId());
+                selectField.setDataType(FieldType.STRING);
+               enum_field_list.add(selectField);
+            }
+        }
+      return enum_field_list;
+    }
 }

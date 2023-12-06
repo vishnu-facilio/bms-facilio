@@ -37,11 +37,6 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new V2FetchAnalyticsReportDataCommand());
         return chain;
     }
-//    public static FacilioChain getMySqlAnalyticsDataChain()throws Exception{
-//        FacilioChain chain = FacilioChain.getNonTransactionChain();
-//        chain.addCommand(new FetchReportDataCommand());
-//        return chain;
-//    }
     public static FacilioChain getCategoryModuleChain()throws Exception
     {
         FacilioChain chain = FacilioChain.getNonTransactionChain();

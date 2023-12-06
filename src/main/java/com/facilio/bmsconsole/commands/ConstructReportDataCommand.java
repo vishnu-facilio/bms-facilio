@@ -8,8 +8,7 @@ import java.util.AbstractMap.SimpleEntry;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.MultiEnumField;
-import com.facilio.modules.fields.MultiLookupField;
+import com.facilio.modules.fields.*;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -25,8 +24,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataContext;
@@ -148,7 +145,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     }
                     Object minYVal = null, maxYVal = null;
                     if (yVal != null) {
-                        yVal = dataPoint.getDynamicKpi() != null ? DECIMAL_FORMAT.format(yVal) : formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
+                        yVal = dataPoint.getDynamicKpi() != null ? DECIMAL_FORMAT.format(yVal) : formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal, xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap, prop);
                         if (dataPoint.getyAxis() != null && dataPoint.getyAxis().isFetchMinMax()) {
                             minYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MIN, prop.get(dataPoint.getyAxis().getField().getName() + "_min"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
                             maxYVal = formatVal(dataPoint.getyAxis(), NumberAggregateOperator.MAX, prop.get(dataPoint.getyAxis().getField().getName() + "_max"), xVal, dataPoint.isHandleEnum(), dpLookUpMap, dpMultiLookUpMap);
@@ -200,13 +197,26 @@ public class ConstructReportDataCommand extends FacilioCommand {
             transformedData.add(data);
         }
 
-        if (dataPoint.isHandleEnum()) {
-            List<SimpleEntry<Long, Integer>> value = (List<SimpleEntry<Long, Integer>>) data.get(yAlias);
-            if (value == null) {
-                value = new ArrayList<>();
-                data.put(yAlias, value);
+        if (dataPoint.isHandleEnum())
+        {
+            if(dataPoint.getyAxis().getAggr() == BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue())
+            {
+                List<SimpleEntry<Long, HashMap<String, Long>>> value_map = (List<SimpleEntry<Long, HashMap<String, Long>>>) data.get(yAlias);
+                if (value_map == null) {
+                    value_map = new ArrayList<SimpleEntry<Long, HashMap<String, Long>>>();
+                    data.put(yAlias, value_map);
+                }
+                value_map.add((SimpleEntry<Long, HashMap<String, Long>>) yVal);
             }
-            value.add((SimpleEntry<Long, Integer>) yVal);
+            else
+            {
+                List<SimpleEntry<Long, Integer>> value = (List<SimpleEntry<Long, Integer>>) data.get(yAlias);
+                if (value == null) {
+                    value = new ArrayList<>();
+                    data.put(yAlias, value);
+                }
+                value.add((SimpleEntry<Long, Integer>) yVal);
+            }
         } else {
             data.put(yAlias, yVal);
 
@@ -252,8 +262,47 @@ public class ConstructReportDataCommand extends FacilioCommand {
 
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.####");
 
-    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap) throws Exception {
+    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap) throws Exception
+    {
+        return formatVal(reportFieldContext, aggr, val, actualxVal, handleEnum, dpLookUpMap, dpMultiLookUpMap, null);
+    }
+    private Object constructBooleanResponse(FacilioField field, Map<String, Object> prop, AggregateOperator aggr, Object xVal)throws Exception
+    {
+        Object true_val_count = prop.get("count_1");
+        Object false_val_count = prop.get("count_0");
+
+        String true_label = ((BooleanField)field).getTrueVal();
+        String false_label = ((BooleanField)field).getFalseVal();
+        Map<String, Object> bool_val_map = new HashMap<>();
+        bool_val_map.put(true_label != null ? true_label : "True", true_val_count);
+        bool_val_map.put(false_label != null ? false_label : "False", false_val_count);
+        return new SimpleEntry<>((Long)xVal, bool_val_map);
+    }
+    private Object constructEnumResponse(FacilioField field, Map<String, Object> prop, AggregateOperator aggr, Object xVal)throws Exception
+    {
+        Map<String, Object> bool_val_map = new HashMap<>();
+        Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
+        for(Map.Entry<Integer, Object> pair: enumMap.entrySet())
+        {
+            String option_label = (String) pair.getValue();
+            if(prop != null && prop.containsKey(option_label))
+            {
+                Object option_value = prop.get(option_label);
+                bool_val_map.put(option_label , option_value);
+            }
+        }
+        return new SimpleEntry<>((Long)xVal, bool_val_map);
+    }
+    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, Object actualxVal, boolean handleEnum, HashMap<ReportFieldContext, List<Long>> dpLookUpMap, HashMap<ReportFieldContext, List<Long>> dpMultiLookUpMap, Map<String, Object> prop) throws Exception {
         FacilioField field = reportFieldContext.getField();
+        if(field != null && field.getDataTypeEnum() == FieldType.BOOLEAN && aggr != null && aggr == BmsAggregateOperators.CommonAggregateOperator.COUNT)
+        {
+            return constructBooleanResponse(field, prop, aggr, actualxVal);
+        }
+        else if(field != null && field.getDataTypeEnum() == FieldType.ENUM && aggr != null && aggr == BmsAggregateOperators.CommonAggregateOperator.COUNT){
+            return constructEnumResponse(field, prop, aggr, actualxVal);
+        }
+
         if (val == null) {
             return "";
         }

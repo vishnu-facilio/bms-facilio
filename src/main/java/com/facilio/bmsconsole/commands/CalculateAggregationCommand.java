@@ -58,8 +58,11 @@ public class CalculateAggregationCommand extends FacilioCommand {
 							break;
 						case BOOLEAN:
 						case ENUM:
-							if (dp.isHandleEnum()) {
+							if (dp.isHandleEnum() && dp.getyAxis().getAggrEnum() == null) {
 								doEnumAggr(report, dp, csvData, aggrData, sortAlias);
+							}
+							else if(dp.isHandleEnum() && dp.getyAxis().getAggrEnum() != CommonAggregateOperator.COUNT){
+								doDecimalAggr(dp, csvData, sortAlias, aggrData);
 							}
 							break;
 						default:
