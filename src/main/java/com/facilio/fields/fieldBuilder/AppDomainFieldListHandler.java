@@ -16,9 +16,23 @@ public class AppDomainFieldListHandler<T extends  FieldListBuilder<T>> implement
     private List<String> onelevelFieldsToSkip;
     @Getter
     private List<String> fieldsToSkip;
+    @Getter
+    private List<String> fieldsToAdd;
     public AppDomainFieldListHandler(T fieldListBuilder) {
         this.fieldListBuilder = fieldListBuilder;
     }
+
+    @Override
+    public AppDomainFieldListBuilder<T> addFields(List<String> fieldNames){
+        if (CollectionUtils.isNotEmpty(fieldNames)) {
+            if (fieldsToAdd == null) {
+                fieldsToAdd = new ArrayList<>();
+            }
+            fieldsToAdd.addAll(fieldNames);
+        }
+        return this;
+    }
+
     @Override
     public AppDomainFieldListBuilder<T> skipFields(List<String> fieldNames){
         if (CollectionUtils.isNotEmpty(fieldNames)) {

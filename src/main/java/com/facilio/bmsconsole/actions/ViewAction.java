@@ -683,6 +683,16 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String customizeViewColumns() throws Exception {
+		FacilioChain chain = TransactionChainFactory.getCustomizeViewColumnWidthChain();
+
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, getFields());
+		chain.execute();
+
+		return SUCCESS;
+	}
+
 	public String deleteSortColumns() throws Exception {
 		FacilioChain chain = FacilioChainFactory.getDeleteViewCustomizeSortColumnsChain();
 

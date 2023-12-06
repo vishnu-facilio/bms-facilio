@@ -43,6 +43,19 @@ public class APIWidgetConfig {
                 .fetchCommand(ReadOnlyChainFactory.getSummaryWidgetForPageWidgetChain())
                 .build();
     }
+
+    @WidgetType(PageWidget.WidgetType.CONNNECTED_APP)
+    public static Supplier<WidgetConfig> getConnectedAppWidgetCRUD() {
+        return () -> new WidgetConfig()
+                .create()
+                .saveCommand(new AddPageConnectedAppWidgetCommand())
+                .update()
+                .updateCommand(new AddPageConnectedAppWidgetCommand())
+                .summary()
+                .fetchCommand(new GetPageConnectedAppWidgetCommand())
+                .build();
+    }
+
     @WidgetType(PageWidget.WidgetType.FIXED_SUMMARY_FIELDS_WIDGET)
     public static Supplier<WidgetConfig> getFixedSummaryWidgetCRUD() {
         return () -> new WidgetConfig()

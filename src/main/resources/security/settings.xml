@@ -1808,7 +1808,14 @@
         <requestbody type="object">
             <property name="pageId" type="number" mandatory="true"/>
             <property name ="moduleName" type="string" mandatory="true"/>
-            <property name="widgetName" type="string"/>
+            <property name="widgetName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/customPage/tabs/connectedAppTabs/add">
+        <requestbody type="object">
+            <property name="pageId" type="number" mandatory="true"/>
+            <property name ="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
 
@@ -2989,6 +2996,23 @@
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/views/:moduleName/column/customization" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="fields" type="array" mandatory="true">
+                <items type="object">
+                    <property name="id" type="number" mandatory="true"/>
+                    <property name="customization" type="object" mandatory="true">
+<!--                        <property name="columnWidth" type="number" mandatory="true"/>-->
+<!--                        <property name="text-wrap" type="string" mandatory="true"/>-->
+                    </property>
+                </items>
+            </property>
         </requestbody>
     </request>
 

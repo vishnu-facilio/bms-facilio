@@ -117,4 +117,14 @@ public class PageTabsAction extends FacilioAction{
         setResult(FacilioConstants.CustomPage.PAGE_TABS, context.get(FacilioConstants.CustomPage.PAGE_TABS));
         return SUCCESS;
     }
+
+    public String addConnectedSummaryTabsToPage() throws Exception {
+        FacilioChain chain = TransactionChainFactory.getAddConnectedSummaryTabsToPageChain();
+        FacilioContext context = chain.getContext();
+        context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+        chain.execute();
+        setResult(FacilioConstants.CustomPage.PAGE_TABS, context.get(FacilioConstants.CustomPage.PAGE_TABS));
+        return SUCCESS;
+    }
 }

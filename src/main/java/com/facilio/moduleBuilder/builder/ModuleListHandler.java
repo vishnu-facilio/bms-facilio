@@ -106,6 +106,17 @@ public class ModuleListHandler implements ModuleListBuilder {
 //    }
 
     @Override
+    public ModuleListBuilder addLicenseBasedModules(AccountUtil.FeatureLicense license, List<String> licenseEnabledModules) {
+        if (featureLicensePairMap == null) {
+            featureLicensePairMap = new HashMap<>();
+        }
+        if (license != null) {
+            featureLicensePairMap.put(license, Pair.of(CollectionUtils.isNotEmpty(licenseEnabledModules)? Collections.unmodifiableList(licenseEnabledModules) : Collections.emptyList(), Collections.emptyList()));
+        }
+        return this;
+    }
+
+    @Override
     public ModuleListBuilder addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense license, List<String> licenseEnabledModules, List<String> licenseDisabledModules) {
         if (featureLicensePairMap == null) {
             featureLicensePairMap = new HashMap<>();

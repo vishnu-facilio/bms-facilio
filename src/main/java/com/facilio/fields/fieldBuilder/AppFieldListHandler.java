@@ -15,8 +15,22 @@ public class AppFieldListHandler<T extends FieldListBuilder<T>> implements AppFi
     private List<String> onelevelFieldsToSkip;
     @Getter
     private List<String> fieldsToSkip;
+    @Getter
+    private List<String> fieldsToAdd;
+
     public AppFieldListHandler(T fieldListBuilder) {
         this.fieldListBuilder = fieldListBuilder;
+    }
+
+    @Override
+    public AppFieldListBuilder<T> addFields(List<String> fieldNames) {
+        if (CollectionUtils.isNotEmpty(fieldNames)) {
+            if (fieldsToAdd == null) {
+                fieldsToAdd = new ArrayList<>();
+            }
+            fieldsToAdd.addAll(fieldNames);
+        }
+        return this;
     }
 
     @Override

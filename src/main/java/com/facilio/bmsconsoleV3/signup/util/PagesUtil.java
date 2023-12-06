@@ -22,9 +22,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
+import com.facilio.util.PageConnectedAppWidgetUtil;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -154,7 +156,7 @@ public class PagesUtil {
         }
     }
 
-    private static void addTabs(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageTabContext>> layoutTabsMap) throws Exception {
+    public static void addTabs(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageTabContext>> layoutTabsMap) throws Exception {
         FacilioChain tabChain = TransactionChainFactory.getAddPageTabsChain();
         FacilioContext tabChainContext = tabChain.getContext();
         tabChainContext.put(FacilioConstants.CustomPage.LAYOUT_TABS_MAP, layoutTabsMap);
@@ -171,7 +173,7 @@ public class PagesUtil {
         LOGGER.info("||| Completed adding columns for Tabs");
     }
 
-    private static void addColumns(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageColumnContext>> tabColumnsMap) throws Exception {
+    public static void addColumns(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageColumnContext>> tabColumnsMap) throws Exception {
         FacilioChain columnsChain = TransactionChainFactory.getAddPageColumnsChain();
         FacilioContext columnsChainContext = columnsChain.getContext();
         columnsChainContext.put(FacilioConstants.CustomPage.TAB_COLUMNS_MAP, tabColumnsMap);
@@ -189,7 +191,7 @@ public class PagesUtil {
         LOGGER.info("|||| Completed adding sections for columns");
     }
 
-    private static void addSections(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageSectionContext>> columnSectionsMap) throws Exception {
+    public static void addSections(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageSectionContext>> columnSectionsMap) throws Exception {
         FacilioChain sectionChain = TransactionChainFactory.getAddPageSectionChain();
         FacilioContext sectionChainContext = sectionChain.getContext();
         sectionChainContext.put(FacilioConstants.CustomPage.COLUMN_SECTIONS_MAP, columnSectionsMap);
@@ -208,7 +210,7 @@ public class PagesUtil {
 
     }
 
-    private static void addWidgets(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageSectionWidgetContext>> sectionWidgetsMap) throws Exception {
+    public static void addWidgets(long appId, String moduleName, boolean isSystem, PagesContext.PageLayoutType layoutType, Map<Long, List<PageSectionWidgetContext>> sectionWidgetsMap) throws Exception {
         if(MapUtils.isNotEmpty(sectionWidgetsMap)) {
             FacilioChain chain = TransactionChainFactory.getAddPageSectionWidgetsChain();
             FacilioContext context = chain.getContext();
@@ -306,7 +308,7 @@ public class PagesUtil {
     }
     public static PageTabContext addConnectedAppSummaryTabs(long pageId, String moduleName, String widgetName) throws Exception {
         List<PageTabContext> tabs = addConnectedAppSummaryTabs(pageId, moduleName, -1L,widgetName, false);
-        return tabs.get(0);
+        return CollectionUtils.isNotEmpty(tabs)? tabs.get(0) : null;
     }
 
     public static List<PageTabContext> addConnectedAppSummaryTabs(long pageId, long moduleId) throws Exception {
@@ -314,7 +316,7 @@ public class PagesUtil {
     }
     public static PageTabContext addConnectedAppSummaryTabs(long pageId, long moduleId, String widgetName) throws Exception {
         List<PageTabContext> tabs = addConnectedAppSummaryTabs(pageId, null,moduleId, widgetName, false);
-        return tabs.get(0);
+        return CollectionUtils.isNotEmpty(tabs)? tabs.get(0) : null;
     }
     public static List<PageTabContext> addConnectedAppSummaryTabs(long pageId, String moduleName, Long moduleId, String widgetName, boolean isSystem) throws Exception {
         if(moduleId == null || moduleId <= 0) {
@@ -324,16 +326,16 @@ public class PagesUtil {
             moduleId = module.getModuleId();
         }
         List<ConnectedAppWidgetContext> connectedAppSummaryWidgets = ConnectedAppAPI.getConnectedAppWidgets(ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE, String.valueOf(moduleId));
+        List<Long> existingConnectedAppWidgetIds = PageConnectedAppWidgetUtil.getExistingConnectedAppWidgetIdsInPage(pageId);
         if(CollectionUtils.isNotEmpty(connectedAppSummaryWidgets)) {
             List<PageTabContext> tabs = new ArrayList<>();
             for (ConnectedAppWidgetContext connectedAppSummaryWidget : connectedAppSummaryWidgets) {
-                if(connectedAppSummaryWidget != null && (StringUtils.isBlank(widgetName) || widgetName.equals(connectedAppSummaryWidget.getLinkName()))) {
-                    JSONObject widgetParam = new JSONObject();
-                    widgetParam.put("widgetId", connectedAppSummaryWidget.getId());
+                if(connectedAppSummaryWidget != null && !existingConnectedAppWidgetIds.contains(connectedAppSummaryWidget.getId()) && (StringUtils.isBlank(widgetName) || widgetName.equals(connectedAppSummaryWidget.getLinkName()))) {
+                    PageConnectedAppWidgetContext pageConnectedAppWidgetContext = new PageConnectedAppWidgetContext(-1, connectedAppSummaryWidget.getId());
                     PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), -1D, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                             .addSection("section", "", null)
-                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_6", 0, 0, widgetParam, null)
+                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_6", 0, 0, null, FieldUtil.getAsJSON(pageConnectedAppWidgetContext))
                             .widgetDone()
                             .sectionDone()
                             .columnDone();

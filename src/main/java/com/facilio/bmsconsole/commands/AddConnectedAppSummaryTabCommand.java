@@ -8,17 +8,18 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
-import java.util.List;
 
-public class AddConnectedAppSummaryTabsCommand extends FacilioCommand {
+public class AddConnectedAppSummaryTabCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long pageId = (long) context.get(FacilioConstants.CustomPage.PAGE_ID);
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+        String widgetName = (String) context.get(FacilioConstants.CustomPage.WIDGET_NAME);
 
-        List<PageTabContext> tabs = PagesUtil.addConnectedAppSummaryTabs(pageId, moduleName);
-        context.put(FacilioConstants.CustomPage.PAGE_TABS, tabs);
-
+        if(StringUtils.isNotBlank(widgetName) && StringUtils.isNotBlank(moduleName)) {
+            PageTabContext connectedTab = PagesUtil.addConnectedAppSummaryTabs(pageId, moduleName, widgetName);
+            context.put(FacilioConstants.CustomPage.PAGE_TABS, Arrays.asList(connectedTab));
+        }
         return false;
     }
 }

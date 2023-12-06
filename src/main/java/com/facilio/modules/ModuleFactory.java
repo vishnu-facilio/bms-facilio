@@ -2,7 +2,6 @@ package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.constants.FacilioConstants.ModuleNames;
@@ -5849,6 +5848,9 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return module;
 	}
 
+	public static FacilioModule getPageConnectedAppWidgetModule() {
+		return constructModule("pageConnectedAppWidget","Page Connected App Widget","Page_Connected_App_Widget");
+	}
 	public static FacilioModule getPageRelatedListWidgetsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("pageRelatedListWidgets");

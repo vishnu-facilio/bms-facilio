@@ -913,6 +913,13 @@ public class TransactionChainFactory {
 			c.addCommand(new GetDBViewCommand());
 			return c;
 		}
+
+	public static FacilioChain getCustomizeViewColumnWidthChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new ViewColumnCustomizationCommand());
+		return c;
+	}
+
 		public static FacilioChain updateWorkflowRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateWorkflowRuleCommand());
@@ -7085,6 +7092,12 @@ public class TransactionChainFactory {
 		return chain;
 	}
 	public static FacilioChain getAddConnectedSummaryTabToPageChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new AddConnectedAppSummaryTabCommand());
+		return chain;
+	}
+
+	public static FacilioChain getAddConnectedSummaryTabsToPageChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new AddConnectedAppSummaryTabsCommand());
 		return chain;

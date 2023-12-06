@@ -43,6 +43,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.TimelineViewUtil;
 import com.facilio.weekends.WeekendUtil;
+import lombok.NonNull;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1078,8 +1079,38 @@ public class ViewAPI {
 		}
 		return columns;
 	}
-	
-	public static List<SortField> getSortFields(long viewID, String moduleName) throws Exception {
+
+	public static void updateViewColumnCustomization(@NonNull List<ViewField> viewFields) throws Exception {
+		if(CollectionUtils.isNotEmpty(viewFields)) {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getViewColumnFields());
+
+			List<GenericUpdateRecordBuilder.BatchUpdateContext> updateBatch = new ArrayList<>();
+			for (ViewField viewField : viewFields) {
+				if(viewField != null && viewField.getId() > 0) {
+					GenericUpdateRecordBuilder.BatchUpdateContext updateContext = new GenericUpdateRecordBuilder.BatchUpdateContext();
+					updateContext.addUpdateValue("customization", viewField.getCustomization());
+
+					updateContext.addWhereValue("id", viewField.getId());
+					updateBatch.add(updateContext);
+				}
+			}
+
+			List<FacilioField> whereField = new ArrayList<>();
+			whereField.add(fieldMap.get("id"));
+
+			List<FacilioField> updateFields = new ArrayList<>();
+			updateFields.add(fieldMap.get("customization"));
+
+			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+					.fields(updateFields)
+					.table(ModuleFactory.getViewColumnsModule().getTableName());
+
+			builder.batchUpdate(whereField, updateBatch);
+		}
+	}
+
+
+		public static List<SortField> getSortFields(long viewID, String moduleName) throws Exception {
 		List<SortField> sortFields = new ArrayList<>();
 		
 		try {

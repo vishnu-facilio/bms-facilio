@@ -1001,6 +1001,12 @@
             <param name="tabType">SETUP</param>
             <param name="setupTab">MODULES</param>
         </action>
+        <action name="connectedAppTabs/add"
+                class="com.facilio.bmsconsole.actions.PageTabsAction" method="addConnectedSummaryTabsToPage">
+            <param name="permission">ALL</param>
+            <param name="tabType">SETUP</param>
+            <param name="setupTab">MODULES</param>
+        </action>
     </package>
 
     <package name="ModuleWidgetsConfig" namespace="/api/v1/setup/moduleWidgets" extends="v2Api">

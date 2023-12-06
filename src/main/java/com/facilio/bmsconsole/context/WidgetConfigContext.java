@@ -44,7 +44,8 @@ public class WidgetConfigContext {
     public enum ConfigType implements FacilioIntEnum {
 
         FIXED("fixed"),
-        FLEXIBLE("flexible");
+        FLEXIBLE("flexible"),
+        SINGLE_PAGE_WIDGET("singlePageWidget");
 
         private final String name;
         ConfigType(String name){

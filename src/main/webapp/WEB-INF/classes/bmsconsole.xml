@@ -1161,7 +1161,7 @@
 				 <param name="ignoreHierarchy">false</param>
 				<param name="root">viewObj</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="deleteView">
@@ -1169,28 +1169,28 @@
 			<result name="success" type="json">
 				<param name="root">view</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 		<action name="customize" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeView">
 			<result name="success" type="json">
 				<param name="includeProperties">views.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="customizeColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeColumns">
 			<result name="success" type="json">
 				<param name="includeProperties">fields.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="customizeSortColumns" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="customizeSortColumns">
 			<result name="success" type="json">
 				<param name="includeProperties">sortFields.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="getViewDetail">
@@ -1201,7 +1201,7 @@
 				<param name="root">viewObj</param>
 				<param name="excludeProperties">criteria.conditions.*\.computedWhereClause</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
 		<action name="woScheduleView" class="com.facilio.bmsconsole.actions.ViewAction" method="addWoScheduleView">
@@ -4081,19 +4081,19 @@
 			<result name="success" type="json">
 				<param name="includeProperties">form.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getFields" class="com.facilio.bmsconsole.actions.FormAction" method="fetchFormFields">
 			<result name="success" type="json">
 				<param name="includeProperties">fields.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 	</package>
 	

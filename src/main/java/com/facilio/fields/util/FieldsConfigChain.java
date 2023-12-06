@@ -63,7 +63,7 @@ public class FieldsConfigChain {
             licenseBasedFieldsMap = fieldConfig.getLicenseBasedFieldsMap();
         }
 
-        List<String> fieldsToAddList = null;
+        List<String> fieldsToAddList = new ArrayList<>();
         List<String> fieldsToSkipList = new ArrayList<>();
         List<String> onelevelFieldsToSkipList = new ArrayList<>();
         List<FieldType> fieldTypesToSkip = null;
@@ -73,13 +73,15 @@ public class FieldsConfigChain {
         Command afterFetchCommand = null;
 
         if (fieldHandler != null) {
-            // TODO remove once skip is deprecated completely
-            List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
-            if(CollectionUtils.isNotEmpty(fieldsToSkip)) {
+            List<String> fieldsToFetch = fieldHandler.getFieldsToAdd();
+            if(CollectionUtils.isNotEmpty(fieldsToFetch)) {
+                fieldsToAddList.addAll(fieldsToFetch);
+            } else  {
+                // TODO remove once skip is deprecated completely
+                List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
                 LOGGER.info("Remove skip fields for moduleName -- "+ moduleName);
                 fieldsToSkipList.addAll(fieldsToSkip);
             }
-            fieldsToAddList = fieldHandler.getFieldsToAdd();
             List<String> onelevelFieldsToSkip = fieldHandler.getOnelevelFieldsToSkip();
             if(CollectionUtils.isNotEmpty(onelevelFieldsToSkip)) {
                 onelevelFieldsToSkipList.addAll(onelevelFieldsToSkip);
@@ -89,8 +91,8 @@ public class FieldsConfigChain {
             fixedSelectableFields = fieldHandler.getFixedSelectableFields();
             customization = fieldHandler.getCustomization();
             afterFetchCommand = fieldHandler.getAfterFetchCommand();
-            FieldsConfigChainUtil.addDomainBasedConfigs(fieldHandler, app, fieldsToSkipList, onelevelFieldsToSkipList);
-            FieldsConfigChainUtil.addAppBasedConfigs(fieldHandler, app, fieldsToSkipList, onelevelFieldsToSkipList);
+            FieldsConfigChainUtil.addDomainBasedConfigs(fieldHandler, app, fieldsToAddList, fieldsToSkipList, onelevelFieldsToSkipList);
+            FieldsConfigChainUtil.addAppBasedConfigs(fieldHandler, app, fieldsToAddList, fieldsToSkipList, onelevelFieldsToSkipList);
         }
 
         FacilioChain chain = getDefaultChain();
@@ -132,28 +134,30 @@ public class FieldsConfigChain {
             licenseBasedFieldsMap = fieldConfig.getLicenseBasedFieldsMap();
         }
 
-        List<String> fieldsToAddList = null;
+        List<String> fieldsToAddList = new ArrayList<>();
         List<String> fieldsToSkipList = new ArrayList<>();
         List<String> onelevelFieldsToSkipList = new ArrayList<>();
         List<FieldType> fieldTypesToSkip = null;
         Command afterFetchCommand = null;
 
         if (fieldHandler != null) {
-            // TODO remove once skip is deprecated completely
-            List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
-            if(CollectionUtils.isNotEmpty(fieldsToSkip)) {
+            List<String> fieldsToFetch = fieldHandler.getFieldsToAdd();
+            if(CollectionUtils.isNotEmpty(fieldsToFetch)) {
+                fieldsToAddList.addAll(fieldsToFetch);
+            } else  {
+                // TODO remove once skip is deprecated completely
+                List<String> fieldsToSkip = fieldHandler.getFieldsToSkip();
                 LOGGER.info("Remove skip fields for moduleName -- "+ moduleName);
                 fieldsToSkipList.addAll(fieldsToSkip);
             }
-            fieldsToAddList = fieldHandler.getFieldsToAdd();
             List<String> onelevelFieldsToSkip = fieldHandler.getOnelevelFieldsToSkip();
             if(CollectionUtils.isNotEmpty(onelevelFieldsToSkip)) {
                 onelevelFieldsToSkipList.addAll(onelevelFieldsToSkip);
             }
             fieldTypesToSkip = fieldHandler.getFieldTypesToSkip();
             afterFetchCommand = fieldHandler.getAfterFetchCommand();
-            FieldsConfigChainUtil.addDomainBasedConfigs(fieldHandler, app, fieldsToSkipList, onelevelFieldsToSkipList);
-            FieldsConfigChainUtil.addAppBasedConfigs(fieldHandler, app, fieldsToSkipList, onelevelFieldsToSkipList);
+            FieldsConfigChainUtil.addDomainBasedConfigs(fieldHandler, app, fieldsToAddList, fieldsToSkipList, onelevelFieldsToSkipList);
+            FieldsConfigChainUtil.addAppBasedConfigs(fieldHandler, app, fieldsToAddList, fieldsToSkipList, onelevelFieldsToSkipList);
         }
 
         FacilioChain chain = getDefaultChain();

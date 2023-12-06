@@ -19,6 +19,8 @@ public interface ModuleListBuilder {
 
     ModuleListBuilder fetchCustomModules();
 
+    ModuleListBuilder addLicenseBasedModules(AccountUtil.FeatureLicense license, List<String> licenseEnabledModules);
+
     ModuleListBuilder addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense license, List<String> licenseEnabledModules, List<String> licenseDisabledModules);
 
     ModuleListHandler done();

@@ -12229,6 +12229,15 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));
         return fields;
     }
+
+    public static List<FacilioField> getPageConnectedAppWidgetFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module=ModuleFactory.getPageConnectedAppWidgetModule();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("connectedAppWidgetId", "CONNECTED_WIDGET_ID", module));
+        fields.add(getNumberField("widgetId", "WIDGETID", module));
+        return fields;
+    }
     public static List<FacilioField> getPageRelatedListWidgetsFields(){
         List<FacilioField> fields=new ArrayList<>();
         FacilioModule module=ModuleFactory.getPageRelatedListWidgetsModule();

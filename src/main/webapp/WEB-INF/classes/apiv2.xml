@@ -1813,6 +1813,11 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="*/column/customization"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="customizeViewColumns">
+			<param name="moduleName">{1}</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2editView">
 			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
@@ -1856,25 +1861,25 @@
 		
 		<action name="addGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2addGroup">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE</param>
 		</action>
 		
 		<action name="updateGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2UpdateGroup">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		
 		<action name="deleteGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2deleteGroup">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:DELETE,DELETE_TEAM,DELETE_OWN</param>
 		</action>
 		<action name="customizeView"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeView">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="customizeViewGroups"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeViewGroups">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 	</package>
 

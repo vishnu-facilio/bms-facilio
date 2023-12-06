@@ -248,27 +248,29 @@ public class WidgetAPI {
         return CollectionUtils.isNotEmpty(withLayoutTypeProps);
     }
 
-    public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetails) throws Exception {
+    public static PageSectionWidgetContext parsePageWidgetDetails(PageWidget.WidgetType type, JSONObject widgetDetail) throws Exception {
         switch (type){
             case SUMMARY_FIELDS_WIDGET:
             case FIXED_SUMMARY_FIELDS_WIDGET:
             case SR_DETAILS_WIDGET:
-                return  FieldUtil.getAsBeanFromJson(widgetDetails, SummaryWidget.class);
+                return  FieldUtil.getAsBeanFromJson(widgetDetail, SummaryWidget.class);
             case BULK_RELATED_LIST:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelatedListContext.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, BulkRelatedListContext.class);
             case WIDGET_GROUP:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, WidgetGroupContext.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, WidgetGroupContext.class);
             case BULK_RELATION_SHIP_WIDGET:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, BulkRelationshipWidget.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, BulkRelationshipWidget.class);
             case RELATED_LIST:
             case SITE_LIST_WIDGET:
             case CLIENT_CONTACT_LIST_WIDGET:
             case TENANT_CONTACT_RELATED_LIST:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, RelatedListWidgetContext.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, RelatedListWidgetContext.class);
             case RELATIONSHIP_WIDGET:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, RelationshipWidget.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, RelationshipWidget.class);
             case PDF_VIEWER:
-                return FieldUtil.getAsBeanFromJson(widgetDetails, PdfTemplateWidgetContext.class);
+                return FieldUtil.getAsBeanFromJson(widgetDetail, PdfTemplateWidgetContext.class);
+            case CONNNECTED_APP:
+                return FieldUtil.getAsBeanFromJson(widgetDetail, PageConnectedAppWidgetContext.class);
             default:
                 return null;
 

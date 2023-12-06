@@ -59,6 +59,11 @@ public class FieldsConfigChainUtil {
 
                     FieldListType fieldListType = FieldListType.valueOf((String) fieldConfigMap.get(FacilioConstants.FieldsConfig.NAME));
 
+                    Map<String, Object> fieldListTypeConfigMap = null;
+                    if(fieldListType.getFieldListTypeConfig() != null) {
+                        fieldListTypeConfigMap = fieldListTypesConfigMap.get(fieldListType.getFieldListTypeConfig().getName());
+                    }
+
                     Map<String, Object> configMap = new HashMap<>();
 
                     List<String> skipConfigFields = (List<String>) fieldConfigMap.get(FacilioConstants.FieldsConfig.SKIP_CONFIG_FIELDS);
@@ -81,19 +86,26 @@ public class FieldsConfigChainUtil {
                         configMap.put(FacilioConstants.FieldsConfig.FIELD_TYPES_TO_FETCH, Collections.unmodifiableList(fieldsTypesToFetch));
                     }
 
-                    boolean fetchCustomFields = (boolean) fieldConfigMap.getOrDefault(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, true);
-                    configMap.put(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, fetchCustomFields);
+                    Boolean fetchCustomFields = (Boolean) fieldConfigMap.get(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS);
+                    if(fetchCustomFields == null && fieldListTypeConfigMap == null) {
+                        configMap.put(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, true);
+                    } else {
+                        configMap.put(FacilioConstants.FieldsConfig.FETCH_CUSTOM_FIELDS, fetchCustomFields == null || fetchCustomFields.booleanValue());
+                    }
 
-                    boolean fetchSupplements = (boolean) fieldConfigMap.getOrDefault(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
-                    configMap.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements);
+                    Boolean fetchSupplements = (Boolean) fieldConfigMap.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
+                    if(fetchSupplements == null && fieldListTypeConfigMap == null) {
+                        configMap.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, false);
+                    } else {
+                        configMap.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS, fetchSupplements != null && fetchSupplements.booleanValue());
+                    }
 
                     List<String> fieldsResponseCommand = (List<String>) fieldConfigMap.get(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN); //add fieldResponseChain
                     if(CollectionUtils.isNotEmpty(fieldsResponseCommand)) {
                         configMap.put(FacilioConstants.FieldsConfig.FIELD_RESPONSE_CHAIN, Collections.unmodifiableList(fieldsResponseCommand));
                     }
 
-                    if(fieldListType.getFieldListTypeConfig() != null) {
-                        Map<String, Object> fieldListTypeConfigMap = fieldListTypesConfigMap.get(fieldListType.getFieldListTypeConfig().getName());
+                    if(fieldListTypeConfigMap != null) {
                         for(Map.Entry<String, Object> entry : fieldListTypeConfigMap.entrySet()) {
                             if(!configMap.containsKey(entry.getKey())) {
                                 configMap.put(entry.getKey(), entry.getValue());
@@ -191,12 +203,16 @@ public class FieldsConfigChainUtil {
         }
     }
 
-    public static void addDomainBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
+    public static void addDomainBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app,List<String> fieldsToAddList, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
         if(app != null) {
             Map<AppDomain.AppDomainType, AppDomainFieldListHandler> appDomainFieldListHandlerMap = fieldHandler.getAppDomainFieldsConfigMap();
             if (MapUtils.isNotEmpty(appDomainFieldListHandlerMap)) {
                 AppDomainFieldListHandler appDomainFieldListHandler = appDomainFieldListHandlerMap.get(AppDomain.AppDomainType.valueOf(app.getDomainType()));
                 if(appDomainFieldListHandler != null) {
+                    List<String> domainBasedAddFields = (List<String>) appDomainFieldListHandler.getFieldsToAdd();
+                    if (CollectionUtils.isNotEmpty(domainBasedAddFields)) {
+                        fieldsToAddList.addAll(domainBasedAddFields);
+                    }
                     List<String> domainBasedSkipFields = (List<String>) appDomainFieldListHandler.getFieldsToSkip();
                     if (CollectionUtils.isNotEmpty(domainBasedSkipFields)) {
                         fieldsToSkipList.addAll(domainBasedSkipFields);
@@ -210,13 +226,17 @@ public class FieldsConfigChainUtil {
         }
     }
 
-    public static void addAppBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
+    public static void addAppBasedConfigs(FieldListHandler fieldHandler,ApplicationContext app,List<String> fieldsToAddList, List<String> fieldsToSkipList, List<String> onelevelFieldsToSkipList) {
         if(app != null) {
             Map<String, AppFieldListHandler> appFieldListHandlerMap = fieldHandler.getAppFieldConfigMap();
             if(MapUtils.isNotEmpty(appFieldListHandlerMap)) {
                 AppFieldListHandler appFieldListHandler = appFieldListHandlerMap.get(app.getLinkName());
 
                 if(appFieldListHandler != null) {
+                    List<String> appBasedAddFields = (List<String>) appFieldListHandler.getFieldsToAdd();
+                    if (CollectionUtils.isNotEmpty(appBasedAddFields)) {
+                        fieldsToAddList.addAll(appBasedAddFields);
+                    }
                     List<String> appBasedSkipFields = (List<String>) appFieldListHandler.getFieldsToSkip();
                     if (CollectionUtils.isNotEmpty(appBasedSkipFields)) {
                         fieldsToSkipList.addAll(appBasedSkipFields);
