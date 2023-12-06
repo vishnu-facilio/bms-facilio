@@ -3492,6 +3492,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("moduleId", "MODULEID", module));
         fields.add(getNumberField("left", "LEFT_ID", module));
         fields.add(getNumberField("right", "RIGHT_ID", module));
+        fields.add(getBooleanField("isDeleted", "IS_DELETED", module));
         return fields;
     }
 

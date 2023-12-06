@@ -5,6 +5,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -50,7 +51,8 @@ public class GetRelationShipAndDataCommand extends FacilioCommand {
         if(criteria.getConditions()!=null) {
             GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                     .select(Collections.singletonList(customRelationFields.get("moduleId")))
-                    .table(ModuleFactory.getCustomRelationModule().getTableName());
+                    .table(ModuleFactory.getCustomRelationModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition(customRelationFields.get("isDeleted"),String.valueOf(false), BooleanOperators.IS));
             builder.andCriteria(criteria);
             builder.groupBy("moduleId");
             List<Map<String, Object>> relationshipData = builder.get();
@@ -62,7 +64,8 @@ public class GetRelationShipAndDataCommand extends FacilioCommand {
         if(sameModuleRelationCriteria.getConditions()!=null) {
             GenericSelectRecordBuilder builder1 = new GenericSelectRecordBuilder()
                     .select(Collections.singletonList(customRelationFields.get("moduleId")))
-                    .table(ModuleFactory.getCustomRelationModule().getTableName());
+                    .table(ModuleFactory.getCustomRelationModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition(customRelationFields.get("isDeleted"),String.valueOf(false), BooleanOperators.IS));
             builder1.andCriteria(sameModuleRelationCriteria);
             builder1.groupBy("moduleId");
             List<Map<String, Object>> props = builder1.get();

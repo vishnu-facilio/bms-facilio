@@ -3,6 +3,10 @@ package com.facilio.v3.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -18,10 +22,12 @@ import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.ChainUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DeleteCommand extends FacilioCommand {
     private static int RESTRICT = 0;
@@ -118,6 +124,7 @@ public class DeleteCommand extends FacilioCommand {
                 ;
 
         if (module.isTrashEnabled()) {
+            markAsDeletedForRelationshipData(module,rowIds);
             builder.andCondition(CriteriaAPI.getIdCondition(rowIds, module));
             boolean markAsDeleteByPeople = Constants.getMarkAsDeleteByPeople(context);
             return builder.markAsDelete(markAsDeleteByPeople);
@@ -195,5 +202,52 @@ public class DeleteCommand extends FacilioCommand {
                 }
             }
         }
+    }
+    private static void markAsDeletedForRelationshipData(FacilioModule module,List<Long> recordIds) throws  Exception{
+        if(module != null && !module.getTypeEnum().equals(FacilioModule.ModuleType.RELATION_DATA)) {
+            Map<String,FacilioField> fieldsMap=FieldFactory.getAsMap(FieldFactory.getCustomRelationFields());
+            if(CollectionUtils.isNotEmpty(recordIds)) {
+
+                List<RelationRequestContext> relationMappingList = RelationUtil.getAllRelations(module);
+                Map<Long,List<RelationRequestContext>> moduleIdVsRelationShip=relationMappingList.stream().collect(Collectors.groupingBy(i->i.getRelationModule().getModuleId(), HashMap::new, Collectors.toCollection(ArrayList::new)));
+                if(MapUtils.isNotEmpty(moduleIdVsRelationShip)){
+                    Criteria criteria=constructCriteria(moduleIdVsRelationShip,recordIds,fieldsMap);
+                    if(criteria.getConditions()!=null) {
+                            Map<String,Object> prop=new HashMap<>();
+                            prop.put("isDeleted",true);
+                            GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+                                    .table(ModuleFactory.getCustomRelationModule().getTableName())
+                                    .fields(Collections.singletonList(fieldsMap.get("isDeleted")))
+                                    .andCriteria(criteria);
+                            updateBuilder.update(prop);
+                    }
+                }
+            }
+
+        }
+    }
+
+    public static Criteria constructCriteria(Map<Long,List<RelationRequestContext>> moduleIdVsRelationship, List<Long> recordId, Map<String,FacilioField> fieldsMap) {
+        Criteria dataCriteria = new Criteria();
+        for (Long moduleId : moduleIdVsRelationship.keySet()) {
+            List<RelationRequestContext> relationMappingList = moduleIdVsRelationship.get(moduleId);
+            Criteria criteria=new Criteria();
+            if (CollectionUtils.isNotEmpty(relationMappingList)) {
+                if (relationMappingList.get(0).getFromModuleId() == relationMappingList.get(0).getToModuleId()) {
+                    criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("left"), recordId, NumberOperators.EQUALS));
+                    criteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("right"), recordId, NumberOperators.EQUALS));
+                }else{
+                    RelationMappingContext.Position position= RelationMappingContext.Position.valueOf(relationMappingList.get(0).getPosition());
+                    if(position== RelationMappingContext.Position.LEFT) {
+                        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("left"), recordId, NumberOperators.EQUALS));
+                    }else{
+                        criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("right"), recordId, NumberOperators.EQUALS));
+                    }
+                }
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("moduleId"),String.valueOf(moduleId), NumberOperators.EQUALS));
+                dataCriteria.orCriteria(criteria);
+            }
+        }
+        return  dataCriteria;
     }
 }
