@@ -60,4 +60,6 @@
 
 	<bean name="OrgSwitchBean" class="com.facilio.componentpackage.bean.OrgSwitchBeanImpl"/>
 
+	<bean name="TelemetryCriteriaBean" class="com.facilio.telemetry.beans.TelemetryCriteriaBeanCacheImpl"/>
+
 </beans>

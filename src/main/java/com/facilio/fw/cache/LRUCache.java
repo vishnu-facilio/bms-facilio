@@ -15,6 +15,8 @@ import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.permission.context.BasePermissionContext;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.remotemonitoring.context.*;
+import com.facilio.telemetry.context.TelemetryCriteriaCacheContext;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -75,6 +77,8 @@ public class LRUCache {
 
 	private static FacilioCache<String, FlaggedEventRuleContext> flaggedEventRuleCache = new PubSubLRUCache<>("flaggedEventRuleCache", 500);
 	private static FacilioCache<String, AlarmAssetTaggingContext> alarmAssetTaggingCache = new PubSubLRUCache<>("alarmAssetTaggingCache", 500);
+	@Getter
+	private static FacilioCache<String, TelemetryCriteriaCacheContext> telemetryCriteriaCache = new PubSubLRUCache<>("telemetryCriteriaCache", 500);
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();

@@ -9,6 +9,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 
 public class FlaggedEventRuleModule extends SignUpData {
 
@@ -227,6 +228,16 @@ public class FlaggedEventRuleModule extends SignUpData {
         controlActionTemplateField.setDefault(true);
         controlActionTemplateField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         modBean.addField(controlActionTemplateField);
+
+        MultiLookupField onCreateTelemetryCriteria = new MultiLookupField();
+        onCreateTelemetryCriteria.setName("onCreateTelemetryCriteria");
+        onCreateTelemetryCriteria.setDisplayName("On Create Telemetry Criteria");
+        onCreateTelemetryCriteria.setModule(mod);
+        onCreateTelemetryCriteria.setLookupModule(modBean.getModule(AddTelemetryCriteriaModule.MODULE_NAME));
+        onCreateTelemetryCriteria.setDataType(FieldType.MULTI_LOOKUP);
+        onCreateTelemetryCriteria.setDefault(true);
+        onCreateTelemetryCriteria.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        modBean.addField(onCreateTelemetryCriteria);
 
         addSystemButtons();
     }

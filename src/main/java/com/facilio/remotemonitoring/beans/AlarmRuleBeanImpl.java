@@ -129,6 +129,8 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<SupplementRecord> supplements = new ArrayList<>();
         supplements.add((SupplementRecord) modBean.getField("controlActionTemplate",FlaggedEventRuleModule.MODULE_NAME));
+        supplements.add((SupplementRecord) modBean.getField("onCreateTelemetryCriteria",FlaggedEventRuleModule.MODULE_NAME));
+        supplements.add((SupplementRecord) modBean.getField("onCloseTelemetryCriteria",FlaggedEventRuleModule.MODULE_NAME));
         Criteria clientCriteria = new Criteria();
         clientCriteria.addAndCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(id), NumberOperators.EQUALS));
         clientCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",String.valueOf(Boolean.TRUE), BooleanOperators.IS));

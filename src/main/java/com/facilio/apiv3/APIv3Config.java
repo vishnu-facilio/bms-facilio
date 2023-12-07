@@ -253,6 +253,7 @@ import com.facilio.fsm.commands.timeSheet.CheckRecordLockForTimeSheetCommand;
 import com.facilio.fsm.commands.timeSheet.FetchTimeSheetSupplementsCommand;
 import com.facilio.fsm.commands.trip.FetchTripSupplementsCommand;
 import com.facilio.fsm.context.*;
+import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.mailtracking.commands.MailReadOnlyChainFactory;
@@ -278,6 +279,11 @@ import com.facilio.relation.context.RelationDataContext;
 import com.facilio.remotemonitoring.commands.*;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
+import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
+import com.facilio.telemetry.command.FetchNamespaceForTelemetryCriteriaCommand;
+import com.facilio.telemetry.context.TelemetryCriteriaCacheContext;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 import com.facilio.util.FacilioUtil;
 import com.facilio.utility.commands.*;
 import com.facilio.utility.context.*;
@@ -4773,6 +4779,37 @@ public class APIv3Config {
                 .fetchSupplement(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "vendor")
                 .afterFetch(new SetServicePMTriggerCommandV3())
                 .delete()
+                .build();
+    }
+
+    @Module(AddTelemetryCriteriaModule.MODULE_NAME)
+    public static Supplier<V3Config> getTelemetryCriteriaModule(){
+        return () -> new V3Config(TelemetryCriteriaContext.class,null)
+                .create()
+                .beforeSave(new AddTelemetryCriteriaNameSpaceCommand())
+                .update()
+                .beforeSave(new AddTelemetryCriteriaNameSpaceCommand())
+                .delete()
+                .afterDelete(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        FacilioCache<String, TelemetryCriteriaCacheContext> telemetryCriteriaCache = LRUCache.getTelemetryCriteriaCache();
+                        String key = CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId());
+                        telemetryCriteriaCache.removeStartsWith(key);
+                        return false;
+                    }
+                })
+                .markAsDeleteByPeople()
+                .list()
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "sysCreatedByPeople")
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "sysModifiedByPeople")
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "assetCategory")
+                .afterFetch(new FetchNamespaceForTelemetryCriteriaCommand())
+                .summary()
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "sysCreatedByPeople")
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "sysModifiedByPeople")
+                .fetchSupplement(AddTelemetryCriteriaModule.MODULE_NAME, "assetCategory")
+                .afterFetch(new FetchNamespaceForTelemetryCriteriaCommand())
                 .build();
     }
 }

@@ -80,6 +80,8 @@ import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.service.FacilioService;
 import com.facilio.taskengine.common.JobConstants;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.AttachmentV3Context;
 import com.facilio.v3.util.ChainUtil;
@@ -3089,6 +3091,7 @@ public class FacilioConstants {
 		public static final String READ_PERMISSIONS = "READ,READ_TEAM,READ_OWN,VIEW";
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 
+		public static final String NAME_SPACE = "namespace";
 
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -3570,6 +3573,8 @@ public class FacilioConstants {
 			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY,ActivityContext.class);
 			classMap.put(ContextNames.INVOICE_ACTIVITY,ActivityContext.class);
 			classMap.put(Survey.SURVEY_RESPONSE_ACTIVITY, ActivityContext.class);
+			classMap.put(AddTelemetryCriteriaModule.MODULE_NAME,TelemetryCriteriaContext.class);
+
 
 
 			for (QuestionType type : QuestionType.values()) {

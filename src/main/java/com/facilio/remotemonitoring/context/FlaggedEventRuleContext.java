@@ -14,6 +14,7 @@ import com.facilio.remotemonitoring.handlers.ticketmodulecreate.ServiceOrderReco
 import com.facilio.remotemonitoring.handlers.ticketmodulecreate.TicketModuleRecordCreationHandler;
 import com.facilio.remotemonitoring.handlers.ticketmodulecreate.WorkOrderRecordCreationHandler;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
 import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
@@ -56,6 +57,7 @@ public class FlaggedEventRuleContext extends V3Context {
     private WorkflowContext workflowContext;
     private Long workflowId;
     private List<V3ControlActionTemplateContext> controlActionTemplate;
+    private List<TelemetryCriteriaContext> onCreateTelemetryCriteria;
     public boolean shouldSendEmailNotification() {
         if(sendEmailNotification == null) {
             return false;

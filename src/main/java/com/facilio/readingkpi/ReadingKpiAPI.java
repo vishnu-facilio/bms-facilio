@@ -567,7 +567,7 @@ public class ReadingKpiAPI {
         return flattenedNsFields;
     }
 
-    private static boolean resolveRelatedFieldsAndAddToList(Long resourceId, List<NameSpaceField> flattenedNsFields, NameSpaceField fld) throws Exception {
+    public static boolean resolveRelatedFieldsAndAddToList(Long resourceId, List<NameSpaceField> flattenedNsFields, NameSpaceField fld) throws Exception {
         NamespaceFieldRelated relatedInfo = fld.getRelatedInfo();
         List<Long> relatedResIds = fetchRelatedResourceIds(relatedInfo.getRelMapId(), resourceId, relatedInfo.getCriteria());
         if (org.apache.commons.collections.CollectionUtils.isNotEmpty(relatedResIds)) {
@@ -604,7 +604,7 @@ public class ReadingKpiAPI {
         return resIds;
     }
 
-    private static void fetchReadingsForNsField(DateRange dateRange, AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, NameSpaceField nsField, boolean isCHAggregatedTableEnabled, boolean isFromCard) throws Exception {
+    public static void fetchReadingsForNsField(DateRange dateRange, AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, NameSpaceField nsField, boolean isCHAggregatedTableEnabled, boolean isFromCard) throws Exception {
         FacilioField field = nsField.getField();
 
         ModuleBean modBean = Constants.getModBean();
@@ -830,7 +830,7 @@ public class ReadingKpiAPI {
         return null;
     }
 
-    private static void populateReadingsMapFromProps(AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, String varName, FacilioField field, List<Map<String, Object>> props) {
+    public static void populateReadingsMapFromProps(AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, String varName, FacilioField field, List<Map<String, Object>> props) {
         for (Map<String, Object> prop : props) {
             Long ttime=null;
             if(prop.get("ttime") instanceof UnsignedLong){
@@ -881,7 +881,7 @@ public class ReadingKpiAPI {
         return finalResultProps;
     }
 
-    private static Optional<Map<String, Object>> groupByVarNameAndGetVarNameVsValueMap(NameSpaceContext ns, Map<String, List<Double>> varNameVsValues) {
+    public static Optional<Map<String, Object>> groupByVarNameAndGetVarNameVsValueMap(NameSpaceContext ns, Map<String, List<Double>> varNameVsValues) {
         Map<String, Object> groupedVarNameVsValueMap = new HashMap<>();
 
         for (NameSpaceField fld : ns.getFields()) {
@@ -900,7 +900,7 @@ public class ReadingKpiAPI {
         return Optional.of(groupedVarNameVsValueMap);
     }
 
-    private static List<Double> getDefaultOnNullData(NameSpaceField fld, List<Double> values) {
+    public static List<Double> getDefaultOnNullData(NameSpaceField fld, List<Double> values) {
         if (CollectionUtils.isNotEmpty(values)) {
             return values;
         }
@@ -931,7 +931,7 @@ public class ReadingKpiAPI {
 
     }
 
-    private static Double getValueForAggregation(AggregationType aggregationType, List<Double> values) {
+    public static Double getValueForAggregation(AggregationType aggregationType, List<Double> values) {
         switch (aggregationType) {
             case SUM:
                 return values.stream().mapToDouble(d -> d).sum();

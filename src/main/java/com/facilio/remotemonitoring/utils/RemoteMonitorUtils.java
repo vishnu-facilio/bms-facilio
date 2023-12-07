@@ -34,6 +34,8 @@ import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.taskengine.job.JobContext;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
@@ -222,28 +224,38 @@ public class RemoteMonitorUtils {
         return null;
     }
 
-    public static FlaggedEventRuleClosureConfigContext getFlaggedEventRuleClosureConfig(Long parentId) throws Exception {
-        if (parentId != null && parentId > -1) {
+    public static FlaggedEventRuleClosureConfigContext getFlaggedEventRuleClosureConfig(Long parentId) throws Exception{
+        if(parentId != null && parentId > -1) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Criteria flaggedEvenRuleCriteria = new Criteria();
-            flaggedEvenRuleCriteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE_ID", "flaggedEventRule", String.valueOf(parentId), NumberOperators.EQUALS));
+            flaggedEvenRuleCriteria.addAndCondition(CriteriaAPI.getCondition("FLAGGED_EVENT_RULE_ID","flaggedEventRule",String.valueOf(parentId), NumberOperators.EQUALS));
             List<SupplementRecord> supplementRecord = new ArrayList<>();
             supplementRecord.add((SupplementRecord) modBean.getField("workorderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("workorderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("serviceOrderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("serviceOrderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("warningMessage", AddFlaggedEventClosureConfigModule.MODULE_NAME));
-            List<FlaggedEventRuleClosureConfigContext> flaggedEventRuleClosureConfigList = V3RecordAPI.getRecordsListWithSupplements(AddFlaggedEventClosureConfigModule.MODULE_NAME, null, FlaggedEventRuleClosureConfigContext.class, flaggedEvenRuleCriteria, supplementRecord);
-            if (CollectionUtils.isNotEmpty(flaggedEventRuleClosureConfigList)) {
+            supplementRecord.add((SupplementRecord) modBean.getField("onCloseTelemetryCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
+            List<FlaggedEventRuleClosureConfigContext> flaggedEventRuleClosureConfigList = V3RecordAPI.getRecordsListWithSupplements(AddFlaggedEventClosureConfigModule.MODULE_NAME,null,FlaggedEventRuleClosureConfigContext.class,flaggedEvenRuleCriteria,supplementRecord);
+            if(CollectionUtils.isNotEmpty(flaggedEventRuleClosureConfigList)){
                 FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig = flaggedEventRuleClosureConfigList.get(0);
                 flaggedEventRuleClosureConfig.setFlaggedEventStatuses(FlaggedEventUtil.getClosureFlaggedEventStatus(flaggedEventRuleClosureConfig.getId()));
                 flaggedEventRuleClosureConfig.setCloseEmailRule(getEmailRule(flaggedEventRuleClosureConfig.getCloseEmailNotificationRuleId()));
-                return flaggedEventRuleClosureConfig;
+                fetchTelemetryCriteriaTemplatesForFlaggedRuleOnClose(flaggedEventRuleClosureConfig);
+                return  flaggedEventRuleClosureConfig;
             }
         }
         return null;
     }
 
+
+    public static void fetchTelemetryCriteriaTemplatesForFlaggedRuleOnClose(FlaggedEventRuleClosureConfigContext config) throws Exception {
+        if(CollectionUtils.isNotEmpty(config.getOnCloseTelemetryCriteria())) {
+            List<Long> ids = config.getOnCloseTelemetryCriteria().stream().map(TelemetryCriteriaContext::getId).collect(Collectors.toList());
+            List<TelemetryCriteriaContext> telemetryCriteriaContexts = V3RecordAPI.getRecordsList(AddTelemetryCriteriaModule.MODULE_NAME,ids,TelemetryCriteriaContext.class);
+            config.setOnCloseTelemetryCriteria(telemetryCriteriaContexts);
+        }
+    }
     public static List<RelationContext> getAssetRelationForAssetCategory(Long assetCategoryModuleId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, FacilioField> relationFields = FieldFactory.getAsMap(FieldFactory.getRelationFields());

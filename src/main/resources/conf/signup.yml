@@ -489,6 +489,8 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityDisputeAttachmentModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.UtilityIntegrationMeterActivityModule
 
+  - com.facilio.telemetry.signup.AddTelemetryCriteriaModule
+
   - com.facilio.remotemonitoring.signup.AlarmCategoryModule
   - com.facilio.remotemonitoring.signup.AlarmTypeModule
   - com.facilio.remotemonitoring.signup.AlarmDefinitionModule

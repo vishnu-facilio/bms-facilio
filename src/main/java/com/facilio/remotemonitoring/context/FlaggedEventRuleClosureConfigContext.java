@@ -5,6 +5,7 @@ import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.signup.ServiceOrderTicketStatus;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStringEnum;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +33,7 @@ public class FlaggedEventRuleClosureConfigContext extends V3Context {
     private Long flaggedEventTriggerCriteriaReevaluationTime;
     private String warningMessage;
     private Boolean autoCloseOnClear;
-
+    private List<TelemetryCriteriaContext> onCloseTelemetryCriteria;
     public enum ClosureRestriction implements FacilioStringEnum {
         WARN("Warning"),
         RESTRICT("Restrict");

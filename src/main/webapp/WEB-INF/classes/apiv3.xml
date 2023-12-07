@@ -395,6 +395,37 @@
             <param name="skipPermission">true</param>
         </action>
     </package>
+
+    <package name="setupTelemetryCriteria" extends="v3Api" namespace="/api/v1/setup/telemetryCriteria">
+        <action name="create" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">telemetryCriteria</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONDITION_MANAGER</param>
+        </action>
+        <action name="fetch" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">telemetryCriteria</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONDITION_MANAGER</param>
+        </action>
+        <action name="update/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="id">{1}</param>
+            <param name="moduleName">telemetryCriteria</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONDITION_MANAGER</param>
+        </action>
+        <action name="summary/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="id">{1}</param>
+            <param name="moduleName">telemetryCriteria</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONDITION_MANAGER</param>
+        </action>
+        <action name="delete/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="id">{1}</param>
+            <param name="moduleName">telemetryCriteria</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">CONDITION_MANAGER</param>
+        </action>
+    </package>
     <package name="systembuttons" namespace="/api/v3/module" extends="v3Api">
 
         <action name="utilityDispute/*/systemButton/*" class="com.facilio.utility.UtilityAction" method="updateDisputeStatus">

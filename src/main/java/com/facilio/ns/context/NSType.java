@@ -2,13 +2,16 @@ package com.facilio.ns.context;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.remotemonitoring.signup.AlarmFilterRuleModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 
 public enum NSType implements FacilioIntEnum {
     READING_RULE("Reading Rule", FacilioConstants.ReadingRules.NEW_READING_RULE),
     FAULT_IMPACT_RULE("Fault Impact Rule",FacilioConstants.ReadingRules.NEW_READING_RULE),
     KPI_RULE("KPI",FacilioConstants.ReadingKpi.READING_KPI),
     SENSOR_RULE("Sensor Rule",FacilioConstants.ContextNames.SENSOR_RULE_MODULE),
-    VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING)
+    VIRTUAL_METER("Virtual Meter",FacilioConstants.Meter.VIRTUAL_METER_TEMPLATE_READING),
+    NAMED_CRITERIA("Named Criteria",null),
     ;
 
     private String name;

@@ -7,6 +7,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 
 public class AddFlaggedEventClosureConfigModule extends SignUpData {
     public static final String MODULE_NAME = "flaggedEventClosureConfig";
@@ -148,5 +149,14 @@ public class AddFlaggedEventClosureConfigModule extends SignUpData {
         flaggedEventTriggerCriteriaReevaluationTime.setDefault(true);
         modBean.addField(flaggedEventTriggerCriteriaReevaluationTime);
 
+        MultiLookupField onCloseTelemetryCriteria = new MultiLookupField();
+        onCloseTelemetryCriteria.setName("onCloseTelemetryCriteria");
+        onCloseTelemetryCriteria.setDisplayName("On Close Telemetry Criteria");
+        onCloseTelemetryCriteria.setModule(mod);
+        onCloseTelemetryCriteria.setLookupModule(modBean.getModule(AddTelemetryCriteriaModule.MODULE_NAME));
+        onCloseTelemetryCriteria.setDataType(FieldType.MULTI_LOOKUP);
+        onCloseTelemetryCriteria.setDefault(true);
+        onCloseTelemetryCriteria.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        modBean.addField(onCloseTelemetryCriteria);
     }
 }

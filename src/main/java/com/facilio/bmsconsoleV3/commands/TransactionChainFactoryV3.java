@@ -86,6 +86,7 @@ import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 import com.facilio.readingkpi.commands.create.SetFieldAndModuleCommand;
 import com.facilio.readingrule.command.*;
 
+import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
 import com.facilio.utility.commands.*;
 
 import com.facilio.trigger.command.*;
@@ -4430,6 +4431,11 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getUtilityIntegrationBillsBeforeFetchChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchSupplementsForUtilityIntegrationBillsCommand());
+        return c;
+    }
+    public static FacilioChain addTelemetryCriteriaNamespace(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddTelemetryCriteriaNameSpaceCommand());
         return c;
     }
 }

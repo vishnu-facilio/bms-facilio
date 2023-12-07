@@ -13,6 +13,8 @@ import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleAlarmTypeRel;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
+import com.facilio.telemetry.context.TelemetryCriteriaContext;
+import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 import com.facilio.v3.context.Constants;
 import com.facilio.workflows.action.WorkflowAction;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -54,11 +56,19 @@ public class SetFlaggedEventRuleRelatedRecordsCommand extends FacilioCommand {
                     flaggedEventRule.setWorkflowContext(WorkflowUtil.getWorkflowContext(flaggedEventRule.getWorkflowId()));
                 }
                 fetchControlActionTemplatesForFlaggedRule(flaggedEventRule);
+                fetchTelemetryCriteriaTemplatesForFlaggedRuleOnCreate(flaggedEventRule);
             }
         }
         return false;
     }
 
+    public static void fetchTelemetryCriteriaTemplatesForFlaggedRuleOnCreate(FlaggedEventRuleContext rule) throws Exception {
+        if(CollectionUtils.isNotEmpty(rule.getOnCreateTelemetryCriteria())) {
+            List<Long> ids = rule.getOnCreateTelemetryCriteria().stream().map(TelemetryCriteriaContext::getId).collect(Collectors.toList());
+            List<TelemetryCriteriaContext> telemetryCriteriaContexts = V3RecordAPI.getRecordsList(AddTelemetryCriteriaModule.MODULE_NAME,ids,TelemetryCriteriaContext.class);
+            rule.setOnCreateTelemetryCriteria(telemetryCriteriaContexts);
+        }
+    }
     public static void fetchControlActionTemplatesForFlaggedRule(FlaggedEventRuleContext rule) throws Exception {
         if(CollectionUtils.isNotEmpty(rule.getControlActionTemplate())) {
             List<Long> ids = rule.getControlActionTemplate().stream().map(V3ControlActionTemplateContext::getId).collect(Collectors.toList());

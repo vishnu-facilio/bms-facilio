@@ -64,6 +64,8 @@ public class CacheUtil {
 	public static final String CONTROLLER_TYPE = "controllerType";
 
 	public static final String CONTROLLER_IDENTIFIER = "controllerIdentifier";
+	public static final String TELEMETRY_CRITERIA_ID = "telemetryCriteriaId";
+
 
 	public static final String ROLE_ID_KEY ( long orgId,long roleId ) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + ROLE_ID + KEY_SEPARATOR + roleId;
@@ -263,7 +265,9 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + FLAGGED_EVENT_KEY(flaggedEventId);
 	}
 
-
+	public static String TELEMETRY_CRITERIA_KEY(long orgId, long telemetryCriteriaId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + TELEMETRY_CRITERIA_ID + KEY_SEPARATOR + telemetryCriteriaId;
+	}
 	private static final String ALARM_DEFINITION = "alarmDefinition";
 	private static final String CONTROLLER = "controller";
 
