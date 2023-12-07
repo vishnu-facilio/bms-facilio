@@ -42,6 +42,7 @@ public class UpdateItemTransactionsCommandV3 extends FacilioCommand {
             chain.getContext().put(FacilioConstants.ContextNames.ITEM_TYPES_ID,context.get(FacilioConstants.ContextNames.ITEM_TYPES_ID));
             chain.getContext().put(FacilioConstants.ContextNames.ITEM_TYPES_IDS,context.get(FacilioConstants.ContextNames.ITEM_TYPES_IDS));
             chain.getContext().put(FacilioConstants.ContextNames.TRANSACTION_STATE,context.get(FacilioConstants.ContextNames.TRANSACTION_STATE));
+            chain.getContext().put(FacilioConstants.ContextNames.ITEMS,context.get(FacilioConstants.ContextNames.ITEMS));
             chain.execute();
         }
             return false;

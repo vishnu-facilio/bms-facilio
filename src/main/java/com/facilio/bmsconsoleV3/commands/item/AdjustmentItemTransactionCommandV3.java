@@ -55,8 +55,9 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
 
 
             List<V3ItemTransactionsContext> itemTransactionsToBeAdded = new ArrayList<>();
+            List<V3ItemContext> items = new ArrayList<>();
             long itemTypeId = -1;
-            if (itemTransactions != null && !itemTransactions.isEmpty()) {
+            if (CollectionUtils.isNotEmpty(itemTransactions)) {
                 for (V3ItemTransactionsContext itemTransaction : itemTransactions) {
                     V3ItemContext item = V3ItemsApi.getItems(itemTransaction.getItem().getId());
                     itemTypeId = item.getItemType().getId();
@@ -105,6 +106,8 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
 
                     } else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_INCREASE
                             && !itemType.isRotating()) {
+                        item.setPurchasedItems(Collections.singletonList(itemTransaction.getPurchasedItem()));
+                        items.add(item);
                         V3PurchasedItemContext pi = itemTransaction.getPurchasedItem();
                         pi.setItem(item);
                         pi.setItemType(itemType);
@@ -119,7 +122,6 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                                 itemTransaction, itemType, baseCurrency, currencyMap);
                         itemTransactionsToBeAdded.add(woItem);
                     }
-
                 }
 
                 recordMap.put(moduleName, itemTransactionsToBeAdded);
@@ -133,6 +135,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(itemTypeId));
                 context.put(FacilioConstants.ContextNames.TRANSACTION_STATE,
                         itemTransactions.get(0).getTransactionStateEnum());
+                context.put(FacilioConstants.ContextNames.ITEMS,items);
             }
         }
         return false;

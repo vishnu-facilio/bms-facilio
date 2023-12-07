@@ -78,6 +78,7 @@ import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
 import com.facilio.bmsconsoleV3.commands.invoice.FillInvoiceLookupFieldCommand;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
+import com.facilio.bmsconsoleV3.commands.itemtypes.SetItemTypesCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.ValidateItemTypeCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
@@ -983,6 +984,7 @@ public class APIv3Config {
     public static Supplier<V3Config> getItemTypes() {
         return () -> new V3Config(V3ItemTypesContext.class, new ModuleCustomFieldCount30())
                 .create()
+                .beforeSave(new SetItemTypesCommandV3())
                 .update()
                 .beforeSave(new ValidateItemTypeCommandV3())
                 .list()

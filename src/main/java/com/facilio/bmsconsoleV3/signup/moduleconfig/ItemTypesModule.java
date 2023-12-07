@@ -16,12 +16,11 @@ import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.lang.reflect.InvocationTargetException;
@@ -34,9 +33,19 @@ public class ItemTypesModule extends BaseModuleConfig{
 
     @Override
     public void addData() throws Exception {
+        addFields();
         addSystemButtons();
     }
-
+    private void addFields() throws Exception{
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
+        if(itemTypesModule!=null && itemTypesModule.getModuleId()>0){
+            SystemEnumField costType = FieldFactory.getDefaultField("costType","Cost Type","COST_TYPE",FieldType.SYSTEM_ENUM);
+            costType.setEnumName("CostType");
+            costType.setModule(itemTypesModule);
+            modBean.addField(costType);
+        }
+    }
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

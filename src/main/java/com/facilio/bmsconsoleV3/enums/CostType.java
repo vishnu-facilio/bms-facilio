@@ -3,7 +3,12 @@ package com.facilio.bmsconsoleV3.enums;
 import com.facilio.modules.FacilioIntEnum;
 
 public enum CostType implements FacilioIntEnum {
-    FIFO, LIFO;
+    FIFO("FIFO"), LIFO("LIFO"),WEIGHTED_AVERAGE("Weighted Average");
+
+    private final String value;
+    CostType(String value) {
+        this.value = value;
+    }
 
     @Override
     public Integer getIndex() {
@@ -12,7 +17,7 @@ public enum CostType implements FacilioIntEnum {
 
     @Override
     public String getValue() {
-        return name();
+        return value;
     }
 
     public static CostType valueOf(int value) {

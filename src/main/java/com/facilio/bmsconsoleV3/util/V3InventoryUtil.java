@@ -49,7 +49,7 @@ public class V3InventoryUtil {
         List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
         List<V3PurchasedItemContext> purchasedItems = new ArrayList<>();
         if (item.getCostTypeEnum() == null || item.getCostType() <= 0
-                || item.getCostType().equals(CostType.FIFO.getIndex())) {
+                || item.getCostType().equals(CostType.FIFO.getIndex()) || item.getCostType().equals(CostType.WEIGHTED_AVERAGE.getIndex())) {
             purchasedItems = getPurchasedItemList(item.getId(), " asc", purchasedItemModule,
                     purchasedItemFields);
         } else if (item.getCostType().equals(CostType.LIFO.getIndex())) {

@@ -14,6 +14,7 @@ import com.facilio.bmsconsoleV3.context.V3SpaceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -190,7 +191,9 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     woItem = setWorkorderItemObj(pItem, workorderItem.getQuantity(), item, parentId,
                                             approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                     workorderItemslist.add(woItem);
-                                    itemToBeAdded.add(woItem);
+                                    if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE)){
+                                        itemToBeAdded.add(woItem);
+                                    }
                                 } else {
                                     double requiredQuantity = workorderItem.getQuantity();
                                     for (V3PurchasedItemContext purchaseitem : purchasedItems) {
@@ -205,7 +208,9 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                                 parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         workorderItemslist.add(woItem);
-                                        itemToBeAdded.add(woItem);
+                                        if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE)){
+                                            itemToBeAdded.add(woItem);
+                                        }
                                         if (requiredQuantity <= 0) {
                                             break;
                                         }

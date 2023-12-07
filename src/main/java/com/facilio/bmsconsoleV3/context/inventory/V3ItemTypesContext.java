@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
+import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.v3.context.V3Context;
 
 public class V3ItemTypesContext extends V3Context {
@@ -22,6 +23,7 @@ public class V3ItemTypesContext extends V3Context {
 	public Boolean isConsumable;
 	private Boolean isApprovalNeeded;
 	private Double sellingPrice;
+	private CostType costType;
 	
 	public Double getMinimumQuantity() {
 		return minimumQuantity;
@@ -185,4 +187,11 @@ public class V3ItemTypesContext extends V3Context {
 		return false;
 	}
 
+	public CostType getCostType() {
+		return costType;
+	}
+
+	public void setCostType(CostType costType) {
+		this.costType = costType;
+	}
 }

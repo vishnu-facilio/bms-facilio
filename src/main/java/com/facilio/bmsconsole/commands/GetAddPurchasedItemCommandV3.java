@@ -29,9 +29,9 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		List<V3PurchasedItemContext> purchasedItem = (List<V3PurchasedItemContext>) context
+		List<V3PurchasedItemContext> purchasedItems = (List<V3PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
-		if (purchasedItem != null && !purchasedItem.isEmpty()) {
+		if (purchasedItems != null && !purchasedItems.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 
@@ -56,12 +56,12 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 			Map<Long, ModuleBaseWithCustomFields> recordsMap = new HashMap<>();
 			List<String> currRecordPatchFieldNames = new ArrayList<>();
 
-			if (purchasedItem != null && !purchasedItem.isEmpty()) {
-				List<Long> purchasedItemIds = purchasedItem.stream().map(ModuleBaseWithCustomFields::getId).filter(id -> id > 0).collect(Collectors.toList());
+			if (purchasedItems != null && !purchasedItems.isEmpty()) {
+				List<Long> purchasedItemIds = purchasedItems.stream().map(ModuleBaseWithCustomFields::getId).filter(id -> id > 0).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(purchasedItemIds)) {
 					recordsMap = V3RecordAPI.getRecordsMap(purchasedItemModule.getName(), purchasedItemIds);
 				}
-				for (V3PurchasedItemContext pi : purchasedItem) {
+				for (V3PurchasedItemContext pi : purchasedItems) {
 					SelectRecordsBuilder<V3ItemTypesContext> itemTypesselectBuilder = new SelectRecordsBuilder<V3ItemTypesContext>()
 							.select(itemTypesFields).table(itemTypesModule.getTableName())
 							.moduleName(itemTypesModule.getName()).beanClass(V3ItemTypesContext.class)
@@ -104,12 +104,12 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 							pi = FieldUtil.getAsBeanFromMap(newRecordAsMap, V3PurchasedItemContext.class);
 						}
 						purchaseItemsList.add(pi);
-						updateInventorycost(purchasedItemModule, purchasedItemFields, pi);
+						updatePurchasedItem(purchasedItemModule, purchasedItemFields, pi);
 					}
 				}
 
 				if (pcToBeAdded != null && !pcToBeAdded.isEmpty()) {
-				 addInventorycost(purchasedItemModule, purchasedItemFields, pcToBeAdded);
+					addPurchasedItems(purchasedItemModule, purchasedItemFields, pcToBeAdded);
 				}
 			}
 			itemIds.addAll(uniqueItemIds);
@@ -126,22 +126,16 @@ public class GetAddPurchasedItemCommandV3 extends FacilioCommand {
 		return false;
 	}
 
-	private void addInventorycost(FacilioModule module, List<FacilioField> fields, List<V3PurchasedItemContext> parts)
-			throws Exception {
+	private void addPurchasedItems(FacilioModule module, List<FacilioField> fields, List<V3PurchasedItemContext> parts) throws Exception {
 		InsertRecordBuilder<V3PurchasedItemContext> readingBuilder = new InsertRecordBuilder<V3PurchasedItemContext>()
 				.module(module).fields(fields).addRecords(parts);
 		readingBuilder.save();
 	}
 
-	private void updateInventorycost(FacilioModule module, List<FacilioField> fields, V3PurchasedItemContext part)
-			throws Exception {
-
+	private void updatePurchasedItem(FacilioModule module, List<FacilioField> fields, V3PurchasedItemContext part) throws Exception {
 		UpdateRecordBuilder<V3PurchasedItemContext> updateBuilder = new UpdateRecordBuilder<V3PurchasedItemContext>()
 				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(part.getId(), module));
 		updateBuilder.update(part);
-
-		System.err.println(Thread.currentThread().getName() + "Exiting updateCosts in  AddorUpdateCommand#######  ");
-
 	}
 
 }

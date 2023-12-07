@@ -25,6 +25,7 @@ public class V3ItemContext extends V3Context {
     private Double minimumQuantity;
     public Boolean isUnderstocked;
     public Double issuanceCost;
+    private Double weightedAverageCost;
 
     public V3ItemTypesContext getItemType() {
         return itemType;
@@ -152,15 +153,19 @@ public class V3ItemContext extends V3Context {
         isUnderstocked = understocked;
     }
 
-
-
-
-
     public Double getIssuanceCost() {
         return issuanceCost;
     }
 
     public void setIssuanceCost(Double issuanceCost) {
         this.issuanceCost = issuanceCost;
+    }
+
+    public Double getWeightedAverageCost() {
+        return weightedAverageCost;
+    }
+
+    public void setWeightedAverageCost(Double weightedAverageCost) {
+        this.weightedAverageCost = weightedAverageCost;
     }
 }

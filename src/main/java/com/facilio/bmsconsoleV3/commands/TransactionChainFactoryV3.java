@@ -1716,6 +1716,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getAdjustmentItemTransactionsChainV3() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ComputeWeightedAverageCostCommand());
         c.addCommand(new PurchasedItemsQuantityRollUpCommandV3());
         c.addCommand(getUpdateItemQuantityRollupChain());
         return c;
@@ -2231,6 +2232,7 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getAddItemChain() {
         FacilioChain c = getDefaultChain();
+        c.addCommand(new ComputeWeightedAverageCostCommand());
         c.addCommand(new AddItemCommandV3());
         c.addCommand(getAddPurchasedItemChain());
         c.addCommand(getUpdateItemQuantityRollupChain());

@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.CurrencyUtil;
@@ -26,6 +27,9 @@ public class SetItemFieldsBeforeSaveCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(items)) {
             for (V3ItemContext item : items) {
+                if(item.getItemType()!=null && item.getItemType().getCostType()!=null){
+                    item.setCostType(item.getItemType().getCostType().getIndex());
+                }
                 List<V3PurchasedItemContext> purchasedItems = item.getPurchasedItems();
                 if (CollectionUtils.isNotEmpty(purchasedItems)) {
                     V3PurchasedItemContext lastPurchasedItem = purchasedItems.stream()
@@ -39,7 +43,7 @@ public class SetItemFieldsBeforeSaveCommand extends FacilioCommand {
         }
 
         context.put(Constants.RECORD_MAP, recordMap);
-
+        context.put(FacilioConstants.ContextNames.ITEMS,items);
         return false;
     }
 }

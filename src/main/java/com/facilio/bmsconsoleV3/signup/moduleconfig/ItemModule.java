@@ -22,11 +22,13 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 
@@ -37,7 +39,20 @@ public class ItemModule extends BaseModuleConfig{
         setModuleName(FacilioConstants.ContextNames.ITEM);
     }
 
-
+    @Override
+    public void addData() throws Exception {
+        addFields();
+        addSystemButton();
+    }
+    private void addFields() throws Exception{
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+        if(itemModule!=null && itemModule.getModuleId()>0){
+           FacilioField weightedAverageCost = FieldFactory.getDefaultField("weightedAverageCost","Weighted Average Cost","WEIGHTED_AVERAGE_COST",FieldType.DECIMAL, FacilioField.FieldDisplayType.DECIMAL);
+           weightedAverageCost.setModule(itemModule);
+           modBean.addField(weightedAverageCost);
+        }
+    }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
         List<Map<String, Object>> groupVsViews = new ArrayList<>();
@@ -192,10 +207,6 @@ public class ItemModule extends BaseModuleConfig{
         itemForm.setType(FacilioForm.Type.FORM);
 
         return Collections.singletonList(itemForm);
-    }
-    @Override
-    public void addData() throws Exception {
-        addSystemButton();
     }
 
     @Override
