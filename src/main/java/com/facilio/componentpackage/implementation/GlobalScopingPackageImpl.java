@@ -78,16 +78,19 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
         }
 
         Long applicableModuleId = component.getApplicableModuleId();
-        if(applicableModuleId !=null && applicableModuleId > 0){
+        String applicableModuleName = component.getApplicableModuleName();
+        if((applicableModuleId !=null && applicableModuleId > 0)){
             ModuleBean modbean = Constants.getModBean();
             FacilioModule module = modbean.getModule(applicableModuleId);
             if(module!=null && StringUtils.isNotEmpty(module.getName())){
                 scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).text(module.getName());
             }else {
-                throw new IllegalArgumentException("Module cannot be null");
+                throw new IllegalArgumentException("Module cannot be null for ModuleId - "+applicableModuleId);
             }
+        } else if (StringUtils.isNotEmpty(applicableModuleName)) {
+            scopeVariableElement.element(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).text(applicableModuleName);
         } else {
-            throw new IllegalArgumentException("Module cannot be null");
+            throw new IllegalArgumentException("ApplicableModuleId or ApplicableModuleName cannot be null");
         }
 
         ValueGeneratorBean valGenBean = (ValueGeneratorBean) BeanFactory.lookup("ValueGeneratorBean");
@@ -155,13 +158,23 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
                 String linkName = globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.LINK_NAME).getText();
                 List<String> defaultGlobalScopeVariable = PackageConstants.GlobalScopeVariableConstants.DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE;
                 if (CollectionUtils.isNotEmpty(defaultGlobalScopeVariable) && defaultGlobalScopeVariable.contains(linkName)) {
-                    continue;
+                    GlobalScopeVariableContext defaultScopeVariable = scopeBean.getScopeVariable(linkName);
+                    if(defaultScopeVariable != null && defaultScopeVariable.getId() > 0) {
+                        globalScopeVariableContext.setId(defaultScopeVariable.getId());
+                    }
+                    globalScopeVariableContext.setLinkName(linkName);
                 }
                 String applicableModuleName = globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APPLICABLE_MODULE_NAME).getText();
                 FacilioModule applicableModule = modBean.getModule(applicableModuleName);
                 Long applicableModuleId = applicableModule!=null? applicableModule.getModuleId(): null;
 
-                globalScopeVariableContext.setApplicableModuleId(applicableModuleId);
+                if (applicableModuleId != null && applicableModuleId > 0) {
+                    globalScopeVariableContext.setApplicableModuleId(applicableModuleId);
+                }else if (StringUtils.isNotEmpty(applicableModuleName)){
+                    globalScopeVariableContext.setApplicableModuleName(applicableModuleName);
+                }else {
+                    LOGGER.info("####Sandbox - GlobalScopeVariable since applicableModuleName and applicableModuleId both are null ");
+                }
                 globalScopeVariableContext.setStatus(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.STATUS).getText()));
                 globalScopeVariableContext.setShowSwitch(Boolean.valueOf(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.SHOW_SWITCH).getText()));
                 globalScopeVariableContext.setAppId(ApplicationApi.getApplicationIdForLinkName(globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.APP_LINK_NAME).getText()));
@@ -185,7 +198,6 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
                 }
 
                 Long newGlobalScopeVariableId = addOrUpdateGlobalScopeVariable(globalScopeVariableContext);
-//                     newGlobalScopeVariableId = scopeBean.addScopeVariable(globalScopeVariableContext);
                 uniqueIdentifierVsGlobalScopeVariableIds.put(idVsData.getKey(), newGlobalScopeVariableId);
             }
         }
@@ -219,7 +231,7 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
             }else {
                 globalScopeVariableContext.setValueGeneratorId(null);
             }
-            scopeBean.updateScopeVariable(globalScopeVariableContext);
+            addOrUpdateGlobalScopeVariable(globalScopeVariableContext);
         }
     }
 
