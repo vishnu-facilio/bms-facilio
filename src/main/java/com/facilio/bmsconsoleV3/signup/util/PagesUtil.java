@@ -224,7 +224,7 @@ public class PagesUtil {
         }
     }
 
-    public static void cloneTemplateToPage(long appId, long moduleId, long pageId, PagesContext.PageLayoutType layoutType) throws Exception {
+    public static void cloneTemplateToPage(long appId, long moduleId, long pageId, PagesContext.PageLayoutType layoutType, boolean addConnectedAppTabs) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleId);
         ApplicationContext app = ApplicationApi.getApplicationForId(appId);
@@ -234,6 +234,11 @@ public class PagesUtil {
         if (templatePage == null) {
             templatePage = TemplatePageUtil.getTemplatePageFromFactory(module, app);
             if (templatePage != null) {
+                if(addConnectedAppTabs) {
+                    List<PageTabContext> tabs = templatePage.getLayouts().get(PagesContext.PageLayoutType.WEB.name());
+                    List<PageTabContext> connectedTabs = PagesUtil.createAndFetchConnectedTabs(moduleId, null, -1, false, tabs.size()*10);
+                    tabs.addAll(connectedTabs);
+                }
                 addLayouts(appId, module.getName(), false, pageId, templatePage.getLayouts());
             }
 
@@ -325,16 +330,30 @@ public class PagesUtil {
             FacilioModule module = modBean.getModule(moduleName);
             moduleId = module.getModuleId();
         }
+        List<PageTabContext> tabs = createAndFetchConnectedTabs(moduleId, widgetName, pageId, true);
+        if (CollectionUtils.isNotEmpty(tabs)) {
+            Map<Long, List<PageTabContext>> layoutTabsMap = new HashMap<>();
+            long layoutId = CustomPageAPI.getLayoutIdForPageId(pageId, PagesContext.PageLayoutType.WEB);
+            layoutTabsMap.put(layoutId, tabs);
+            addTabs(-1, moduleName, isSystem, PagesContext.PageLayoutType.WEB, layoutTabsMap);
+        }
+        return tabs;
+    }
+
+    public static List<PageTabContext> createAndFetchConnectedTabs(long moduleId, String widgetName, long pageId, boolean removeExistingConnectedTabsInPage) throws Exception{
+        return createAndFetchConnectedTabs(moduleId, widgetName, pageId, removeExistingConnectedTabsInPage , 0);
+    }
+    public static List<PageTabContext> createAndFetchConnectedTabs(long moduleId, String widgetName, long pageId, boolean removeExistingConnectedTabsInPage, double sequenceNumber) throws Exception{
         List<ConnectedAppWidgetContext> connectedAppSummaryWidgets = ConnectedAppAPI.getConnectedAppWidgets(ConnectedAppWidgetContext.EntityType.SUMMARY_PAGE, String.valueOf(moduleId));
-        List<Long> existingConnectedAppWidgetIds = PageConnectedAppWidgetUtil.getExistingConnectedAppWidgetIdsInPage(pageId);
+        List<Long> existingConnectedAppWidgetIds = removeExistingConnectedTabsInPage ? PageConnectedAppWidgetUtil.getExistingConnectedAppWidgetIdsInPage(pageId) : Collections.emptyList();
+        List<PageTabContext> tabs = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(connectedAppSummaryWidgets)) {
-            List<PageTabContext> tabs = new ArrayList<>();
             for (ConnectedAppWidgetContext connectedAppSummaryWidget : connectedAppSummaryWidgets) {
-                if(connectedAppSummaryWidget != null && !existingConnectedAppWidgetIds.contains(connectedAppSummaryWidget.getId()) && (StringUtils.isBlank(widgetName) || widgetName.equals(connectedAppSummaryWidget.getLinkName()))) {
+                if (connectedAppSummaryWidget != null && !existingConnectedAppWidgetIds.contains(connectedAppSummaryWidget.getId()) && (StringUtils.isEmpty(widgetName) || widgetName.equals(connectedAppSummaryWidget.getLinkName()))) {
                     PageConnectedAppWidgetContext pageConnectedAppWidgetContext = new PageConnectedAppWidgetContext(-1, connectedAppSummaryWidget.getId());
-                    PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), -1D, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
+                    PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), sequenceNumber+=10, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                            .addSection("section", "", null)
+                            .addSection("section", null, null)
                             .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_6", 0, 0, null, FieldUtil.getAsJSON(pageConnectedAppWidgetContext))
                             .widgetDone()
                             .sectionDone()
@@ -342,15 +361,8 @@ public class PagesUtil {
                     tabs.add(tab);
                 }
             }
-            if(CollectionUtils.isNotEmpty(tabs)) {
-                Map<Long, List<PageTabContext>> layoutTabsMap = new HashMap<>();
-                long layoutId = CustomPageAPI.getLayoutIdForPageId(pageId, PagesContext.PageLayoutType.WEB);
-                layoutTabsMap.put(layoutId, tabs);
-                addTabs(-1, moduleName, isSystem, PagesContext.PageLayoutType.WEB, layoutTabsMap);
-            }
-            return tabs;
         }
-        return null;
+        return tabs;
     }
 
     public static List<Map<String, Object>> getPageComponent(CustomPageAPI.PageComponent fetchPageComponent, List<FacilioField> selectFields, Criteria criteria) throws Exception {

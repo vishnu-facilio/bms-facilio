@@ -4651,6 +4651,7 @@ public class FacilioConstants {
 		public static final String CLONED_PAGE = "clonedPage";
 		public static final String IS_DEFAULT_PAGE = "isDefaultPage";
 		public static final String CUSTOM_PAGE = "customPage";
+		public static final String ADD_CONNECTED_APP_TABS = "addConnectedAppTabs";
 		public static final String CUSTOM_PAGES = "customPages";
 		public static final String PAGE_ID = "pageId";
 		public static final String WIDGET_NAME = "widgetName";

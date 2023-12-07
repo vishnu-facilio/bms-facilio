@@ -144,9 +144,10 @@ public class AddCustomPageCommand extends FacilioCommand {
         Map<String, Long> layoutMap = CustomPageAPI.createLayoutsForPage(customPage.getId());
 
 
-        boolean isClonePage = (boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_CLONE_PAGE, false);
+        boolean isClonePage = (boolean) context.getOrDefault(FacilioConstants.CustomPage.CLONED_PAGE, false);
         if (!isClonePage && (isSystem == null || !isSystem) && (customPage.getIsTemplate() == null || !customPage.getIsTemplate())) {
-            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), null);
+            boolean addConnectedAppTabs = (boolean) context.getOrDefault(FacilioConstants.CustomPage.ADD_CONNECTED_APP_TABS, false);
+            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), null, addConnectedAppTabs);
 //            PagesUtil.addConnectedAppSummaryTabs(customPage.getId(), moduleId);
 //            PagesUtil.cloneTemplateToPage(appId, moduleId, customPage.getId(), PagesContext.PageLayoutType.MOBILE);
         }

@@ -40,6 +40,7 @@ public class CustomPageAction extends FacilioAction {
     private PagesContext customPage;
     private String tabName;
     private Boolean status;
+    private boolean addConnectedAppTabs = true;
     private Boolean approval = false;
     private PagesContext.PageLayoutType layoutType;
     private Boolean excludeTabs = false;
@@ -49,6 +50,7 @@ public class CustomPageAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getCreateCustomPageChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.CustomPage.CUSTOM_PAGE, customPage);
+        context.put(FacilioConstants.CustomPage.ADD_CONNECTED_APP_TABS, addConnectedAppTabs);
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         context.put(FacilioConstants.CustomPage.IS_SYSTEM, false);
         context.put(FacilioConstants.CustomPage.IS_DEFAULT_PAGE,false);
