@@ -22,6 +22,15 @@ public class OutgoingMailAction extends V3Action {
     private long endTime = -1L;
     private String emailAddress;
 
+    /***
+     * Possible apis :
+     * /api/v3/ogmail/history?startId=180&endId=184 - range of ids & recipient!=0
+     * /api/v3/ogmail/history?startId=180&endId=184&runAll=true - range of ids, irrespective of recipient count
+     * /api/v3/ogmail/history?startId=180 - single id & recipient!=0
+     * /api/v3/ogmail/history?startId=180&runAll=true - single id, irrespective of recipient count
+     * @return map of (rowCount, mailSent)
+     * @throws Exception
+     */
     public String resendFailedMails() throws Exception {
         FacilioChain chain = MailReadOnlyChainFactory.runHistoricChain();
         FacilioContext context = chain.getContext();
@@ -33,15 +42,6 @@ public class OutgoingMailAction extends V3Action {
         return V3Action.SUCCESS;
     }
 
-    /***
-     * Possible apis :
-     * /api/v3/ogmail/history?startId=180&endId=184 - range of ids & recipient!=0
-     * /api/v3/ogmail/history?startId=180&endId=184&runAll=true - range of ids, irrespective of recipient count
-     * /api/v3/ogmail/history?startId=180 - single id & recipient!=0
-     * /api/v3/ogmail/history?startId=180&runAll=true - single id, irrespective of recipient count
-     * @return map of (rowCount, mailSent)
-     * @throws Exception
-     */
     public String apiStats() throws Exception {
         FacilioChain chain = MailReadOnlyChainFactory.getApiStatsChain();
         FacilioContext context = chain.getContext();

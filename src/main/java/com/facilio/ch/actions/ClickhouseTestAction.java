@@ -19,9 +19,9 @@ public class ClickhouseTestAction extends V3Action {
 
     public String fetchSampleAggrQuery() throws Exception {
         setData(ClickhouseUtil.fetchSampleAggrQuery());
-        setData("sample1", ClickhouseUtil.getAggregatedTableName("Electricity_Data", "Europe/London"));
-        setData("sample2", ClickhouseUtil.getAggregatedTableName("Electricity_Data", "Asia/Kolkata"));
-        setData("sample3", ClickhouseUtil.getAggregatedTableName("Readings_3", "Europe/London"));
+        setData("sample1", ClickhouseUtil.getAggregatedTableName("Electricity_Data", "Europe/London", "Daily"));
+        setData("sample2", ClickhouseUtil.getAggregatedTableName("Electricity_Data", "Asia/Kolkata", "Daily"));
+        setData("sample3", ClickhouseUtil.getAggregatedTableName("Readings_3", "Europe/London", "Daily"));
         return V3Action.SUCCESS;
     }
 

@@ -149,16 +149,18 @@ public class ClickhouseUtil {
         return commonFields;
     }
 
-    public static String getAggregatedTableName(String tableName, String timezone) throws Exception {
-        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(tableName), "Table name can't be empty");
+    public static String getAggregatedTableName(String tableName, String timezone, String aggrType) throws Exception {
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(tableName), "table name can't be empty");
         FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(timezone), "timezone can't be empty");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(aggrType), "aggrType can't be empty");
         FacilioModule module = ModuleFactory.getAggregationReadingInfoModule();
         List<FacilioField> fields = FieldFactory.getAggregationReadingInfoFields();
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
                 .select(fields)
                 .andCondition(CriteriaAPI.getCondition("TABLE_NAME", "tableName", tableName, StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("TIMEZONE", "timezone", timezone, StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition("TIMEZONE", "timezone", timezone, StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("AGGR_TYPE", "aggrType", aggrType, StringOperators.IS));
         List<Map<String, Object>> result = selectRecordBuilder.get();
         String aggrTableName = null;
         if(CollectionUtils.isNotEmpty(result)) {

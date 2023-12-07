@@ -12810,6 +12810,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(AccountConstants.getOrgIdField(module));
         fields.add(getStringField("tableName", "TABLE_NAME", module));
         fields.add(getStringField("timezone", "TIMEZONE", module));
+        fields.add(getStringField("aggrType", "AGGR_TYPE", module));
         fields.add(getStringField("aggregatedTableName", "AGGREGATED_TABLE_NAME", module));
         return fields;
     }
