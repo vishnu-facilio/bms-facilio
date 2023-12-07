@@ -23,7 +23,9 @@ public class ExecuteTriggerCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		long triggerId = (long)context.get(FacilioConstants.ContextNames.ID);
-		BaseTriggerContext trigger = TriggerUtil.getTrigger(triggerId);
+		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+
+		BaseTriggerContext trigger = TriggerUtil.getTrigger(triggerId,eventType);
 		if (trigger == null) {
 			throw new IllegalArgumentException("Invalid trigger");
 		}
@@ -32,7 +34,6 @@ public class ExecuteTriggerCommand extends FacilioCommand {
 			return false;
 		}
 
-		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		if (eventType != null) {
 			if (trigger.getEventTypeEnum() != eventType) {
 				return false;

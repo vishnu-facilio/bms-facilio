@@ -98,10 +98,12 @@
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduleRuleCreateJob' classname = 'com.facilio.bmsconsole.jobs.ScheduleRuleCreateJob' transactionTimeout='900000'/>
 	 <job name='ScheduleRuleExecuteJob' classname = 'com.facilio.bmsconsole.jobs.ScheduleRuleExecuteJob' transactionTimeout='900000'/>
+	 <job name='ScheduledTriggerExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduleTriggerExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
 	 <job name='PreviousRecordRuleExecution' classname = 'com.facilio.bmsconsole.jobs.PreviousRecordRuleExecutionJob' transactionTimeout='900000'/>
 	<job name='ScheduleOneTimeRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduleOneTimeRuleExecutionJob' transactionTimeout='900000'/>
 	<job name='DeleteScheduledOneTimeRuleExecution' classname = 'com.facilio.bmsconsole.jobs.DeleteScheduledOneTimeRuleExecution' transactionTimeout='900000'/>
+	<job name="ScheduleOneTimeTriggerExecution" classname="com.facilio.bmsconsole.jobs.ScheduleOneTimeTriggerExecutionJob" transactionTimeout="900000" />
 
 	<job name="RuleRollupJob" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />
 	<job name="RuleRollupJob-OneTime" classname="com.facilio.bmsconsole.jobs.RuleRollupJob" transactionTimeout="1800000" />

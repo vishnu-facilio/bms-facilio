@@ -1,12 +1,19 @@
 package com.facilio.trigger.command;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerType;
 import com.facilio.trigger.util.TriggerUtil;
@@ -15,6 +22,8 @@ import org.apache.commons.collections.CollectionUtils;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class GetAllTriggersCommand extends FacilioCommand {
 

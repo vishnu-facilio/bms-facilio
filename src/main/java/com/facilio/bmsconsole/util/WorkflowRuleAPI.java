@@ -33,6 +33,8 @@ import com.facilio.scriptengine.util.WorkflowGlobalParamUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.trigger.context.ScheduleTriggerRecordRelationContext;
+import com.facilio.trigger.context.TriggerFieldRelContext;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
@@ -229,11 +231,11 @@ public class WorkflowRuleAPI {
 			default:
 				break;
 		}
-		
+
+
 		if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
 			addFieldChangeFields(rule);
-		}
-		else if (EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+		} else if (EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 			ScheduledRuleAPI.addScheduledRuleJob(rule);
 		}
 
@@ -487,7 +489,7 @@ public class WorkflowRuleAPI {
 			addFieldChangeFields(rule);
 		}
 
-		if(EventType.SCHEDULED.isPresent(oldRule.getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
+		if (EventType.SCHEDULED.isPresent(oldRule.getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
 			if (rule.getTimeObj() != null) {
 				ScheduledRuleAPI.validateScheduledRule(rule, true);
 				ScheduledRuleAPI.updateScheduledRuleJob(rule);
@@ -498,8 +500,7 @@ public class WorkflowRuleAPI {
 					if (rule.getTimeObj() == null) {
 						ScheduledRuleAPI.updateScheduledRuleJob(oldRule);
 					}
-				}
-				else {
+				} else {
 					ScheduledRuleAPI.deleteScheduledRuleJob(rule);
 				}
 			}
@@ -835,6 +836,61 @@ public class WorkflowRuleAPI {
 		return getActiveWorkflowRulesFromActivityAndRuleType(module,activityTypes, criteria, true, true, ruleTypes);
 	}
 
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromTriggerAndRuleType(FacilioModule module, List<BaseTriggerContext> triggers,Criteria criteria,boolean fetchChildren, boolean fetchExtended, RuleType... ruleTypes) throws Exception{
+		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		fields.addAll(FieldFactory.getTriggerActionFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule triggerActionModule = ModuleFactory.getTriggerActionModule();
+
+
+		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+				.table(ruleModule.getTableName())
+				.select(fields)
+				.innerJoin(triggerActionModule.getTableName())
+				.on("Workflow_Rule.ID = Trigger_Action.TYPE_PRIMARY_ID")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
+				.orderBy("FIELD(MODULEID,"+StringUtils.join(module.getExtendedModuleIds(), ",")+"), Trigger_Action.EXECUTION_ORDER,Trigger_Action.TRIGGER_ID");
+
+		if(module.hideFromParents()) {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getModuleId()+"", NumberOperators.EQUALS));
+		}
+		else {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS));
+		}
+
+		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+
+		if(ruleTypes != null && ruleTypes.length > 0) {
+			StringJoiner ids = new StringJoiner(",");
+			for(RuleType type : ruleTypes) {
+				ids.add(String.valueOf(type.getIntVal()));
+			}
+			Condition ruleTypeCondition = new Condition();
+			ruleTypeCondition.setColumnName("RULE_TYPE");
+			ruleTypeCondition.setOperator(NumberOperators.EQUALS);
+			ruleTypeCondition.setValue(ids.toString());
+			ruleBuilder.andCondition(ruleTypeCondition);
+		}
+
+		if (criteria != null) {
+			ruleBuilder.andCriteria(criteria);
+		}
+
+		List<Long> triggerIds = triggers.stream().map(BaseTriggerContext::getId).collect(Collectors.toList());
+		if (CollectionUtils.isNotEmpty(triggers)){
+			ruleBuilder.andCondition(CriteriaAPI.getCondition("TRIGGER_ID","triggerId",StringUtils.join(triggerIds,','),NumberOperators.EQUALS));
+		}
+		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+		List<Map<String, Object>> props = ruleBuilder.get();
+
+		return getWorkFlowsFromMapList(props, fetchChildren, fetchExtended);
+	}
+
+	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromTriggerAndRuleType(FacilioModule module,BaseTriggerContext trigger,Criteria criteria) throws Exception{
+		return getActiveWorkflowRulesFromTriggerAndRuleType(module,Collections.singletonList(trigger),criteria, true, true,null);
+	}
+
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, boolean fetchChildren, boolean fetchExtended, RuleType... ruleTypes) throws Exception {
 		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
@@ -1061,13 +1117,21 @@ public class WorkflowRuleAPI {
 					fieldChangeRuleIds.add((Long) prop.get("id"));
 				}
 			}
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<Object> moduleObj = props.stream().map(prop -> prop.get("moduleId")).collect(Collectors.toList());
+			Set<Long> activityTypes = props.stream().map(prop -> (Long) prop.get("activityType")).collect(Collectors.toSet());
+			Set<EventType> eventTypes = new HashSet<>();
+			for (Long activityType : activityTypes){
+				eventTypes.add(EventType.valueOf(activityType));
+			}
+			String moduleName = modBean.getModule(Long.parseLong(moduleObj.get(0).toString())).getName();
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = fetchExtended ? getTypeWiseExtendedProps(typeWiseIds) : null;
 			Map<Long, WorkflowContext> workflowMap = fetchChildren && !workflowIds.isEmpty() ? WorkflowUtil.getWorkflowsAsMap(workflowIds, true) : null;
 			Map<Long, Criteria> criteriaMap = fetchChildren && !criteriaIds.isEmpty() ? CriteriaAPI.getCriteriaAsMap(criteriaIds) : null;
 			Map<Long, List<FieldChangeFieldContext>> ruleFieldsMap = getFieldChangeFields(fieldChangeRuleIds);
-			Map<Long, Set<BaseTriggerContext>> ruleTriggerMap = fetchChildren ? TriggerUtil.getRuleTriggerMap(props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList())) : null;
+			Map<Long, Set<BaseTriggerContext>> ruleTriggerMap = fetchChildren ? TriggerUtil.getRuleTriggerMap(props.stream().map(prop -> (Long) prop.get("id")).collect(Collectors.toList()),moduleName,eventTypes) : null;
 
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
 				WorkflowRuleContext rule = null;
 				
@@ -1322,21 +1386,48 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
-	private static boolean evalFieldChange(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) {
-		if (rule.getActivityTypeEnum() == EventType.FIELD_CHANGE) {
-			if (changeSetList != null && !changeSetList.isEmpty()) {
-				for (FieldChangeFieldContext field : rule.getFields()) {
-					for (UpdateChangeSet changeSet : changeSetList) {
-						if (field.getFieldId() == changeSet.getFieldId() 
-								&& (field.getOldValue() == null || ( changeSet.getOldValue() != null && field.getOldValue().toString().equals(changeSet.getOldValue().toString())) )
-								&& (field.getNewValue() == null || ( changeSet.getNewValue() != null &&  field.getNewValue().toString().equals(changeSet.getNewValue().toString())) )
-								) {
-							return true;
+	private static boolean evalFieldChange(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) throws Exception{
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TRIGGER_MAP)){
+			return evalFieldChangeTrigger(rule,changeSetList);
+		}else {
+			if (rule.getActivityTypeEnum() == EventType.FIELD_CHANGE) {
+				if (changeSetList != null && !changeSetList.isEmpty()) {
+					for (FieldChangeFieldContext field : rule.getFields()) {
+						for (UpdateChangeSet changeSet : changeSetList) {
+							if (field.getFieldId() == changeSet.getFieldId()
+									&& (field.getOldValue() == null || (changeSet.getOldValue() != null && field.getOldValue().toString().equals(changeSet.getOldValue().toString())))
+									&& (field.getNewValue() == null || (changeSet.getNewValue() != null && field.getNewValue().toString().equals(changeSet.getNewValue().toString())))
+							) {
+								return true;
+							}
 						}
 					}
 				}
+				return false;
 			}
-			return false;
+		}
+			return true;
+	}
+
+	private static boolean evalFieldChangeTrigger(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) {
+		if (CollectionUtils.isNotEmpty(rule.getTriggers())) {
+			List<BaseTriggerContext> triggers = rule.getTriggers().stream().filter(trigger -> trigger.getEventTypeEnum().equals(EventType.FIELD_CHANGE)).collect(Collectors.toList());
+			for (BaseTriggerContext trigger : triggers) {
+				if (trigger.getEventTypeEnum() == EventType.FIELD_CHANGE) {
+					if (changeSetList != null && !changeSetList.isEmpty()) {
+						TriggerFieldRelContext triggerFieldRel = (TriggerFieldRelContext) trigger;
+						for (UpdateChangeSet changeSet : changeSetList) {
+							if (triggerFieldRel.getFieldId() == changeSet.getFieldId()
+									&& (triggerFieldRel.getOldValue() == null || (changeSet.getOldValue() != null && triggerFieldRel.getOldValue().toString().equals(changeSet.getOldValue().toString())))
+									&& (triggerFieldRel.getNewValue() == null || (changeSet.getNewValue() != null && triggerFieldRel.getNewValue().toString().equals(changeSet.getNewValue().toString())))
+							) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			}
 		}
 		return true;
 	}
@@ -1819,6 +1910,39 @@ public class WorkflowRuleAPI {
 		return executionTime;
 	}
 
+	public static void executeWorkflowRuleFromTrigger(Context context) throws Exception{
+		BaseTriggerContext trigger = (BaseTriggerContext) context.get(FacilioConstants.ContextNames.TRIGGER);
+		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
+		LOGGER.debug("Record Map : "+recordMap);
+
+		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		long moduleId = trigger.getModuleId();
+		FacilioModule module = moduleBean.getModule(moduleId);
+		List<WorkflowRuleContext> rules = getActiveWorkflowRulesFromTriggerAndRuleType(module,trigger,null);
+		for (WorkflowRuleContext rule : rules) {
+			if (rule != null && recordMap != null && !recordMap.isEmpty()) {
+				Map<String, Object> placeHolders = getOrgPlaceHolders();
+				for (Map.Entry<String, List> entry : recordMap.entrySet()) {
+					String moduleName = entry.getKey();
+					if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
+						LOGGER.log(Level.WARN, "Module Name / Records is null/ empty ==> " + moduleName + "==>" + entry.getValue());
+						continue;
+					}
+					Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap == null ? null : changeSetMap.get(moduleName);
+
+					for (Object record : entry.getValue()) {
+						List<UpdateChangeSet> changeSet = currentChangeSet == null ? null : currentChangeSet.get(((ModuleBaseWithCustomFields) record).getId());
+						Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(moduleName, record, placeHolders);
+						boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(rule, moduleName, record, changeSet, recordPlaceHolders, (FacilioContext) context);
+						LOGGER.info("Result of record : " + ((ModuleBaseWithCustomFields) record).getId() + " for for rule : " + rule.getId() + " is " + result);
+					}
+
+				}
+			}
+		}
+	}
+
 	public static void executeSingleWorkflowRuleCommand(Context context) throws Exception {
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
@@ -1936,4 +2060,5 @@ public class WorkflowRuleAPI {
 
 		update.update(prop);
 	}
+
 }

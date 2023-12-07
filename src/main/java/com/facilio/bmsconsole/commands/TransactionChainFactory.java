@@ -1209,6 +1209,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getScheduleTriggerExecutionChain(){
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new FetchScheduleTriggerMatchingRecordsCommand());
+			chain.addCommand(new CreateOneTimeTriggerExecutableJobsCommand());
+			return chain;
+		}
+
 		public static FacilioChain scheduledRuleExecutionChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());

@@ -1,29 +1,26 @@
 package com.facilio.trigger.command;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.TriggerType;
 import org.apache.commons.chain.Context;
 
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.util.TriggerUtil;
-import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.collections4.MapUtils;
+
 
 public class AddOrUpdateTriggerCommand extends FacilioCommand {
 
@@ -81,8 +78,10 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			list.add(field);
 		}
 
-		Map<String, Object> props = FieldUtil.getAsProperties(trigger);
+		Map<String, Object> props = new HashMap<>();
 		if (trigger.getId() < 0) {
+			trigger.setExecutionOrder(getTriggerMaxExecutionOrder(trigger.getModuleId()) + 1);
+			props = FieldUtil.getAsProperties(trigger);
 			for (FacilioModule mod : moduleOrder) {
 				GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
 						.table(mod.getTableName())
@@ -93,11 +92,11 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			}
 		} else {
 			
-			BaseTriggerContext oldTrigger = TriggerUtil.getTrigger(trigger.getId());
+			BaseTriggerContext oldTrigger = TriggerUtil.getTrigger(trigger.getId(),trigger.getEventTypeEnum());
 			if (oldTrigger.getTypeEnum() != trigger.getTypeEnum()) {
 				throw new IllegalArgumentException("Trigger type cannot be changed");
 			}
-			
+			props = FieldUtil.getAsProperties(trigger);
 			for (FacilioModule mod : moduleOrder) {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(mod.getTableName())
@@ -164,6 +163,24 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 			long criteriaId = CriteriaAPI.addCriteria(trigger.getCriteria());
 			trigger.setCriteriaId(criteriaId);
 		}
+	}
+
+
+	public static Integer getTriggerMaxExecutionOrder(long moduleId) throws Exception {
+		 Integer triggerMaxExecutionOrder = null;
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getTriggerFields());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getTriggerModule().getTableName())
+				.select(Arrays.asList(fieldMap.get("moduleId")))
+				.aggregate(BmsAggregateOperators.NumberAggregateOperator.MAX, fieldMap.get("executionOrder"))
+				.andCondition(CriteriaAPI.getCondition("MODULE_ID","moduleId", String.valueOf(moduleId),NumberOperators.EQUALS));
+
+		Map<String, Object> props = builder.fetchFirst();
+
+		triggerMaxExecutionOrder = MapUtils.isNotEmpty(props) ? (Integer) props.get("executionOrder") : 0;
+
+		return triggerMaxExecutionOrder;
 	}
 	
 	

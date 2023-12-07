@@ -16,7 +16,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.trigger.context.BaseTriggerContext;
 import com.facilio.trigger.context.TriggerActionContext;
+import com.facilio.trigger.context.TriggerFieldRelContext;
 import com.facilio.trigger.context.TriggerType;
+import com.facilio.trigger.util.TriggerChainUtil;
 import com.facilio.trigger.util.TriggerUtil;
 import com.facilio.v3.V3Action;
 
@@ -35,7 +37,7 @@ public class TriggerAction extends V3Action {
 	}
 
 	public String addOrUpdateTrigger() throws Exception {
-		FacilioChain chain = TransactionChainFactoryV3.getTriggerAddOrUpdateChain();
+		FacilioChain chain = TransactionChainFactoryV3.getInitTriggerAddOrUpdateChain();
 		FacilioContext context = chain.getContext();
 		context.put(TriggerUtil.TRIGGER_CONTEXT, FieldUtil.getAsBeanFromMap(trigger,  BaseTriggerContext.class));
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
@@ -50,7 +52,7 @@ public class TriggerAction extends V3Action {
 	}
 	
 	private void fetchTriggers(FacilioContext contextParams) throws Exception {
-		FacilioChain chain = TransactionChainFactoryV3.getAllTriggers();
+		FacilioChain chain = TransactionChainFactoryV3.getTriggerListChain();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		if (contextParams != null) {
@@ -58,7 +60,7 @@ public class TriggerAction extends V3Action {
 		}
 		chain.execute();
 
-		setData(TriggerUtil.TRIGGERS_LIST, context.get(TriggerUtil.TRIGGERS_LIST));
+		setData(TriggerUtil.TRIGGERS_LIST, FieldUtil.getAsMapList((List<?>) context.get(TriggerUtil.TRIGGERS_LIST), TriggerFieldRelContext.class));
 	}
 	
 	public String triggerDetails() throws Exception {
@@ -68,7 +70,7 @@ public class TriggerAction extends V3Action {
 	}
 
 	public String deleteTrigger() throws Exception {
-		FacilioChain chain = TransactionChainFactoryV3.getTriggerDeleteChain();
+		FacilioChain chain = TransactionChainFactoryV3.getTriggerDeleteChainV2();
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
 		chain.execute();

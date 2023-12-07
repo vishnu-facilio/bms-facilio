@@ -26,6 +26,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.trigger.context.ScheduleTriggerRecordRelationContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.annotation.Config;
@@ -342,6 +343,7 @@ public class ChainUtil {
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.CREATE));
+        transactionChain.addCommand(new AddOneTimeJobForScheduleTrigger(ScheduleTriggerRecordRelationContext.EventType.CREATE));
 
         return transactionChain;
     }
@@ -505,6 +507,7 @@ public class ChainUtil {
         }
         addIfNotNull(transactionChain, afterTransactionCommand);
         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.DELETE));
+        transactionChain.addCommand(new AddOneTimeJobForScheduleTrigger(ScheduleTriggerRecordRelationContext.EventType.DELETE));
 
         return transactionChain;
     }
@@ -597,7 +600,8 @@ public class ChainUtil {
         addIfNotNull(transactionChain, afterTransactionCommand);
 
         transactionChain.addCommand(new AddActivitiesCommandV3());
-        transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
+         transactionChain.addCommand(new AddOneTimeJobForScheduledRule(WorkflowRuleRecordRelationshipContext.EventType.PATCH));
+        transactionChain.addCommand(new AddOneTimeJobForScheduleTrigger(ScheduleTriggerRecordRelationContext.EventType.PATCH));
 
         return transactionChain;
     }

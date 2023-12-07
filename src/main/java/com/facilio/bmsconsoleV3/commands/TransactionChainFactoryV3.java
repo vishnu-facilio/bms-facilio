@@ -86,6 +86,7 @@ import com.facilio.readingrule.command.*;
 
 import com.facilio.utility.commands.*;
 
+import com.facilio.trigger.command.*;
 import com.facilio.v3.commands.*;
 import com.facilio.remotemonitoring.commands.*;
 import org.apache.commons.chain.Command;
@@ -295,6 +296,7 @@ import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
 import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
+import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -1086,6 +1088,11 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getInitTriggerAddOrUpdateChain(){
+        FacilioChain chain = FacilioChain.getTransactionChain();
+        chain.addCommand(new InitTriggerAddOrUpdateCommand());
+        return chain;
+    }
     public static FacilioChain getTriggerAddOrUpdateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateTriggerCommand());
@@ -1104,6 +1111,17 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteTriggerCommand());
         return c;
+    }
+
+    public static FacilioChain getTriggerListChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetAllTriggerCommand());
+        return c;
+    }
+    public static FacilioChain getTriggerDeleteChainV2(){
+        FacilioChain chain = getDefaultChain();
+        chain.addCommand(new InitDeleteTriggerCommand());
+        return chain;
     }
 
     public static FacilioChain rearrangeTriggerActionChain() {
@@ -3797,7 +3815,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new MarkVMAsPublishedCommand());
         return c;
     }
-    
+
     public static FacilioChain getRunHistoryVirtualMeterTemplateChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new RunHistoryForVMTemplateReadings());
@@ -3885,7 +3903,7 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetMeterPeakCommand());
         return c;
     }
-        
+
     public static FacilioChain getSFG20ConnectCommand() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new SFG20ConnectCommand());

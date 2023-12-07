@@ -2,6 +2,7 @@ package com.facilio.agentv2.triggers;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.facilio.agentv2.FacilioAgent;
@@ -51,15 +52,20 @@ public class PostTimeseriesTriggerContext extends BaseTriggerContext {
 
 	@Override
 	public void validateTrigger() {
-		if (getId() < 0) {
-			if (agentId <= 0) {
-				throw new IllegalArgumentException("Agent cannot be empty");
+		try {
+
+			if (getId() < 0) {
+				if (agentId <= 0) {
+					throw new IllegalArgumentException("Agent cannot be empty");
+				}
+				if (criteria == null) {
+					throw new IllegalArgumentException("Criteria cannot be empty");
+				}
 			}
-			if (criteria == null) {
-				throw new IllegalArgumentException("Criteria cannot be empty");
-			}
+			super.validateTrigger();
+		}catch (Exception e){
+
 		}
-		super.validateTrigger();
 	}
 
 	@Override
@@ -79,5 +85,4 @@ public class PostTimeseriesTriggerContext extends BaseTriggerContext {
 		List<ModuleBaseWithCustomFields> props = builder.get();
 		return props.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
 	}
-	
 }

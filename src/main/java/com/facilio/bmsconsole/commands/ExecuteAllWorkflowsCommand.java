@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.command.PostTransactionCommand;
+import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.trigger.context.TriggerType;
+import com.facilio.trigger.util.TriggerChainUtil;
+import com.facilio.trigger.util.TriggerUtil;
 import io.opentelemetry.extension.annotations.WithSpan;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -113,7 +112,18 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements PostTr
 		if (parentCriteria == null) {
 			return null;
 		}
-		List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+		List<WorkflowRuleContext> workflowRules;
+		List<RuleType> ruleTypeList = Arrays.asList(ruleTypes);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TRIGGER_MAP) && (ruleTypeList.contains(RuleType.MODULE_RULE) || ruleTypeList.contains(RuleType.MODULE_RULE_NOTIFICATION))) {
+			List<BaseTriggerContext> triggers = new ArrayList<>();
+			Set<EventType> eventTypes = activities.stream().collect(Collectors.toSet());
+			for (EventType eventType : eventTypes){
+				triggers.addAll(TriggerUtil.getTriggers(module.getName(),eventType,null,null,null,null,null));
+			}
+			workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromTriggerAndRuleType(module, triggers, parentCriteria, true, true, ruleTypes);
+		}else {
+			workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+		}
 		return workflowRules;
 	}
 

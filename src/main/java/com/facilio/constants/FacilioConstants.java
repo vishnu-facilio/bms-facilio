@@ -612,7 +612,9 @@ public class FacilioConstants {
 		public static final String CUSTOM_BUTTON_LIST = "customButtonList";
 		public static final String AVAILABLE_STATE_TRANSITION = "availableStateTransition";
 
+		public static final String SCHEDULE_TRIGGER_EXECUTION = "ScheduledTriggerExecution";
 		public static final String TRIGGER = "trigger";
+		public static final String TRIGGERS = "triggers";
 		public static final String TRIGGER_TYPE = "triggerType";
 		public static final String TYPE_PRIMARY_ID = "typePrimaryId";
 		public static final String GLOBAL_VARIABLE_GROUP_LIST = "globalVariableGroupList";
@@ -1662,6 +1664,12 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_ID_LIST = "workflowRuleIDList";
 		public static final String SCHEDULE_RULE_META = "scheduleRuleMeta";
+
+		public static final String SCHEDULE_RULE_TYPE = "scheduleRuleType";
+
+		public static final String TIME_INTERVAL = "timeInterval";
+		public static final String TIME_VALUE = "timeValue";
+
 		public static final String WORKFLOW_RULE_PARENT_LOGGER_ID = "workflowRuleParentLoggerId";
 		public static final String WORKFLOW_RULE_RESOURCE_ID = "workflowRuleResourceId";
 		public static final String WORKFLOW_RULE_LOGGERS = "workflowRuleLoggers";

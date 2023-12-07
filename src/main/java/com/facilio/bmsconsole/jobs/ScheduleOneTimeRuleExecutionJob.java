@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.WorkflowRuleRecordRelationshipContext;
@@ -23,6 +24,11 @@ public class ScheduleOneTimeRuleExecutionJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
+
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TRIGGER_MAP)){
+                return;
+            }
+
             Long id = jc.getJobId();
             WorkflowRuleRecordRelationshipContext ruleRecordRel = ScheduleOneTimeRuleExecutionJob.getRuleFromRuleAndRecordRelationshipTable(id);
 

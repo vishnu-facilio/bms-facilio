@@ -11319,6 +11319,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("internal", "IS_INTERNAL", module, FieldType.BOOLEAN));
         fields.add(getField("eventType", "EVENT_TYPE", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
+        fields.add(getNumberField("executionOrder","EXECUTION_ORDER",module));
         return fields;
     }
 
@@ -11342,6 +11343,19 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("typeRefPrimaryId", "TYPE_PRIMARY_ID", module, FieldType.NUMBER));
         fields.add(getField("triggerId", "TRIGGER_ID", module, FieldType.NUMBER));
         fields.add(getField("executionOrder", "EXECUTION_ORDER", module, FieldType.NUMBER));
+        return fields;
+    }
+
+    public static List<FacilioField> getTriggerFieldRelFields(){
+        FacilioModule module = ModuleFactory.getTriggerFieldRelModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("fieldId","FIELD_ID",module));
+        fields.add(getStringField("oldValue","OLD_VALUE",module));
+        fields.add(getStringField("newValue","NEW_VALUE",module));
+        fields.add(getNumberField("scheduleType","SCHEDULE_TYPE",module));
+        fields.add(getNumberField("timeInterval","TIME_INTERVAL",module));
+        fields.add(getNumberField("timeValue","TIME_VALUE",module));
         return fields;
     }
 
@@ -12525,6 +12539,19 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getNumberField("id","ID",module));
         fieldList.add(getNumberField("numberOfDecimal","NUMBER_OF_DECIMAL",module));
         fieldList.add(getBooleanField("canTruncateValue","CAN_TRUNCATE",module));
+
+        return fieldList;
+    }
+
+    public static List<FacilioField> getScheduleTriggerRelationFields() {
+        FacilioModule module = ModuleFactory.getScheduleTriggerRecordRelationModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getIdField(module));
+        fieldList.add(getNumberField("recordId","RECORD_ID",module));
+        fieldList.add(getNumberField("triggerId","TRIGGER_ID",module));
+        fieldList.add(getNumberField("moduleId","MODULE_ID",module));
+        fieldList.add(getNumberField("dateFieldValue","DATE_FIELD_VALUE",module));
+        fieldList.add(getNumberField("executionTime","EXECUTION_TIME",module));
 
         return fieldList;
     }

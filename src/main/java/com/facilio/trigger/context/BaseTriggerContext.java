@@ -1,39 +1,42 @@
 package com.facilio.trigger.context;
 
 import com.facilio.agentv2.triggers.PostTimeseriesTriggerContext;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.trigger.util.TriggerUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import org.apache.commons.collections.CollectionUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, visible = true, property = "type")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, visible = true, property = "eventType")
 @JsonSubTypes({
+		@JsonSubTypes.Type(value = TriggerFieldRelContext.class, name = "1048576"),
+		@JsonSubTypes.Type(value = TriggerFieldRelContext.class, name = "524288"),
 		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "1"),
 		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "2"),
-		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "3"),
-		@JsonSubTypes.Type(value = PostTimeseriesTriggerContext.class, name = "4")
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "4"),
+		@JsonSubTypes.Type(value = BaseTriggerContext.class, name = "1073741824"),
+		@JsonSubTypes.Type(value = PostTimeseriesTriggerContext.class, name = "-2147483648")
 })
 public class BaseTriggerContext implements Serializable {
 
 	/**
 	 * 
 	 */
+
+	public  BaseTriggerContext(){}
+
+	public BaseTriggerContext(String name,long moduleId,TriggerType type,EventType eventType){
+		this.name = name;
+		this.moduleId = moduleId;
+		this.type = type;
+		this.eventType = eventType;
+	}
 	private static final long serialVersionUID = 1L;
 	
 	private long id = -1;
@@ -70,6 +73,9 @@ public class BaseTriggerContext implements Serializable {
 		this.type = type;
 	}
 
+	@Getter
+	@Setter
+	int executionOrder;
 	private long moduleId = -1;
 	public long getModuleId() {
 		return moduleId;
@@ -174,7 +180,7 @@ public class BaseTriggerContext implements Serializable {
 		return Objects.hash(id);
 	}
 
-	public void validateTrigger() {
+	public void validateTrigger() throws Exception {
 		if (StringUtils.isEmpty(getName())) {
 			throw new IllegalArgumentException("Trigger name cannot be empty");
 		}

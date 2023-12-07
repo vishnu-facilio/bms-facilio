@@ -2258,7 +2258,7 @@ public class ModuleFactory {
 		customFiltersModule.setTableName("Custom_Relation");
 		return customFiltersModule;
 	}
-	
+
 	public static FacilioModule getQuickFilterModule() {
 		FacilioModule quickFiltersModule = new FacilioModule();
 		quickFiltersModule.setName("quickFilters");
@@ -5236,7 +5236,16 @@ public class ModuleFactory {
 		module.setTableName("Trigger_Action");
 		return module;
 	}
-	
+
+	public static FacilioModule getTriggerFieldRelModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("triggerFieldRel");
+		module.setDisplayName("Trigger Field Rel");
+		module.setTableName("Trigger_Field_Rel");
+		module.setExtendModule(getTriggerModule());
+		return module;
+	}
+
 //	public static FacilioModule getTriggerActionRelModule()
 //	{
 //		FacilioModule module=new FacilioModule();
@@ -5989,7 +5998,7 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return pdfTemplatesModule;
 	}
 
-	
+
 	public static FacilioModule getSFG20SettingModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("sfg20Setting");
@@ -6035,6 +6044,14 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setName(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE);
 		module.setDisplayName("Service Planned Maintenance");
 		module.setTableName("Service_Planned_Maintenance");
+		return module;
+	}
+
+	public static FacilioModule getScheduleTriggerRecordRelationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("scheduleTriggerRecordRelation");
+		module.setTableName("Schedule_Trigger_Record_Relation");
+		module.setDisplayName("Schedule Trigger Record Relation");
 		return module;
 	}
 }

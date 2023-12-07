@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.facilio.trigger.context.BaseTriggerContext;
+import com.facilio.trigger.context.TriggerFieldRelContext;
+import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -78,7 +80,7 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 		}
 	}
 	
-	protected static void addScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
+	public static void addScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
 
 		String jobName = rule.getSchedulerJobName();
@@ -93,14 +95,37 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 			FacilioTimer.schedulePeriodicJob(rule.getId(), jobName, 300, DATE_TIME_RULE_INTERVAL * 60, "facilio");
 		}
 	}
-	
+
+	public static void addScheduledRuleJob(BaseTriggerContext trigger) throws Exception {
+		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
+
+		String jobName = FacilioConstants.ContextNames.SCHEDULE_TRIGGER_EXECUTION;
+
+		TriggerFieldRelContext fieldRel = (TriggerFieldRelContext) trigger;
+		if (fieldRel.getTimeValue() != null) {
+			ScheduleInfo info = new ScheduleInfo();
+			info.setFrequencyType(FrequencyType.DAILY);
+			info.addTime(fieldRel.getTimeValue());
+			FacilioTimer.scheduleCalendarJob(trigger.getId(), jobName, startTime, info, "facilio");
+		}
+		else {
+			FacilioTimer.schedulePeriodicJob(trigger.getId(), jobName, 300, DATE_TIME_RULE_INTERVAL * 60, "facilio");
+		}
+	}
+
+	public static void deleteScheduledTriggerJob(long triggerId) throws Exception {
+		TriggerUtil.deleteTriggerRecordRelationshipTable(triggerId);
+		String jobName = FacilioConstants.ContextNames.SCHEDULE_TRIGGER_EXECUTION;
+		FacilioTimer.deleteJob(triggerId, jobName);
+	}
+
 	protected static void deleteScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
-		
+
 		String jobName = rule.getSchedulerJobName();
 		if(ScheduledRuleJobsMetaUtil.checkNewOrOldScheduleRuleExecution()) {
 			jobName = rule.getScheduleRuleJobName();
 		}
-		
+
 		FacilioTimer.deleteJob(rule.getId(), jobName);
 	}
 	
