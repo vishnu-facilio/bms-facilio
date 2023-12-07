@@ -96,6 +96,11 @@ public class AgentDataLoggerModule extends BaseModuleConfig {
         subjectField.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
         fields.add(subjectField);
 
+        NumberField payloadIndex = FieldFactory.getDefaultField("payloadIndex","Payload Index", "PAYLOAD_INDEX",FieldType.NUMBER);
+        payloadIndex.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        payloadIndex.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
+        fields.add(payloadIndex);
+
         StringField errorStackTrace = FieldFactory.getDefaultField("errorStackTrace","ErrorStackTrace","ERROR_STACK_TRACE",FieldType.STRING);
         errorStackTrace.setDisplayType(FacilioField.FieldDisplayType.TEXTAREA);
         errorStackTrace.setAccessType(calculateAccessType(FacilioField.AccessType.READ));
