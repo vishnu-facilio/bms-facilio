@@ -19,10 +19,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.*;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.context.ReadingKPIContext;
@@ -130,12 +127,13 @@ public class V2ConstructCardCommand extends FacilioCommand {
         if(trend != null && !trend.equals("")){
             result_json.put("baselineTrend",trend);
         }
-//        if(range != null){
-//            result_json.put("dateRange", range);
-//        }
         if (field != null && field instanceof NumberField) {
             NumberField numberField = (NumberField)field;
             result_json.put("unit", numberField.getUnit());
+            Unit unitMap = Unit.getUnitFromSymbol(numberField.getUnit());
+            if(unitMap != null) {
+                result_json.put("unit_map", FieldUtil.getAsJSON(unitMap));
+            }
             if(numberField.getUnitId() > 0) {
                 result_json.put("value", UnitsUtil.convertToSiUnit(value, Unit.valueOf(numberField.getUnitId())));
             }
@@ -244,6 +242,9 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, aggr, dynKpi.getNs());
                     cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend()));
                 }
+                Map<String, Object> parentIdMap = new HashMap<>();
+                parentIdMap.put("parentId", parentIds.get(0));
+                cardParams.getResult().put("parentIds", parentIdMap);
             }
         }
     }

@@ -1201,6 +1201,7 @@ public class FacilioConstants {
 
 		public static final String AGGR_KEY = "aggr";
 		public static final String DATA_KEY = "data";
+		public static final String OPTIONS = "options";
 		public static final String FORMULA = "formula";
 		public static final String FORMULA_HEADERS = "formulaHeaders";
 

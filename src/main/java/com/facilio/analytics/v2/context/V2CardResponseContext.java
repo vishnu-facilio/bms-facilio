@@ -16,4 +16,5 @@ public class V2CardResponseContext {
     private V2TimeFilterContext timeFilter;
     private JSONObject styles;
     private JSONObject cardStyle;
+    private Object parentId;
 }

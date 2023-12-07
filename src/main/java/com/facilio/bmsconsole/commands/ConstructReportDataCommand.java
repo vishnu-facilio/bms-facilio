@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
@@ -60,6 +61,8 @@ public class ConstructReportDataCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         // TODO Auto-generated method stub
+        JSONObject dataPoints_enumMap = new JSONObject();
+        V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
         String xAlias = getxAlias(report);
@@ -83,6 +86,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
                             constructData(report, dataPoint, props, data.getBaseLineMap().get(entry.getKey()), transformedData, intermediateData);
                         }
                     }
+                    this.constructOptionsMapForEnumAndBoolean(report_v2, dataPoints_enumMap, dataPoint);
                 }
             }
         }
@@ -111,6 +115,10 @@ public class ConstructReportDataCommand extends FacilioCommand {
 
         JSONObject data = new JSONObject();
         data.put(FacilioConstants.ContextNames.DATA_KEY, transformedData);
+        if(!dataPoints_enumMap.isEmpty())
+        {
+            data.put(FacilioConstants.ContextNames.OPTIONS, dataPoints_enumMap);
+        }
 //		data.put(FacilioConstants.ContextNames.LABEL_MAP, labelMap);
         context.put(FacilioConstants.ContextNames.REPORT_SORT_ALIAS, xAlias);
         context.put(FacilioConstants.ContextNames.REPORT_DATA, data);
@@ -201,12 +209,12 @@ public class ConstructReportDataCommand extends FacilioCommand {
         {
             if(dataPoint.getyAxis().getAggr() == BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue())
             {
-                List<SimpleEntry<Long, HashMap<String, Long>>> value_map = (List<SimpleEntry<Long, HashMap<String, Long>>>) data.get(yAlias);
+                List<SimpleEntry<Long, HashMap<Integer, Long>>> value_map = (List<SimpleEntry<Long, HashMap<Integer, Long>>>) data.get(yAlias);
                 if (value_map == null) {
-                    value_map = new ArrayList<SimpleEntry<Long, HashMap<String, Long>>>();
+                    value_map = new ArrayList<SimpleEntry<Long, HashMap<Integer, Long>>>();
                     data.put(yAlias, value_map);
                 }
-                value_map.add((SimpleEntry<Long, HashMap<String, Long>>) yVal);
+                value_map.add((SimpleEntry<Long, HashMap<Integer, Long>>) yVal);
             }
             else
             {
@@ -271,16 +279,16 @@ public class ConstructReportDataCommand extends FacilioCommand {
         Object true_val_count = prop.get("count_1");
         Object false_val_count = prop.get("count_0");
 
-        String true_label = ((BooleanField)field).getTrueVal();
-        String false_label = ((BooleanField)field).getFalseVal();
-        Map<String, Object> bool_val_map = new HashMap<>();
-        bool_val_map.put(true_label != null ? true_label : "True", true_val_count);
-        bool_val_map.put(false_label != null ? false_label : "False", false_val_count);
+//        String true_label = ((BooleanField)field).getTrueVal();
+//        String false_label = ((BooleanField)field).getFalseVal();
+        Map<Integer, Object> bool_val_map = new HashMap<>();
+        bool_val_map.put(0, false_val_count);
+        bool_val_map.put(1, true_val_count);
         return new SimpleEntry<>((Long)xVal, bool_val_map);
     }
     private Object constructEnumResponse(FacilioField field, Map<String, Object> prop, AggregateOperator aggr, Object xVal)throws Exception
     {
-        Map<String, Object> bool_val_map = new HashMap<>();
+        Map<Integer, Object> bool_val_map = new HashMap<>();
         Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
         for(Map.Entry<Integer, Object> pair: enumMap.entrySet())
         {
@@ -288,7 +296,7 @@ public class ConstructReportDataCommand extends FacilioCommand {
             if(prop != null && prop.containsKey(option_label))
             {
                 Object option_value = prop.get(option_label);
-                bool_val_map.put(option_label , option_value);
+                bool_val_map.put(pair.getKey() , option_value);
             }
         }
         return new SimpleEntry<>((Long)xVal, bool_val_map);
@@ -523,6 +531,30 @@ public class ConstructReportDataCommand extends FacilioCommand {
         {
             dayOfWeek.put(dateTime.getDayOfWeek(), DateTimeUtil.getDayStartTimeOf(dateTime.toEpochSecond() * 1000));
             dateTime = dateTime.plusDays(1);
+        }
+    }
+
+    private void constructOptionsMapForEnumAndBoolean(V2ReportContext report_v2, JSONObject dataPoints_enumMap, ReportDataPointContext dataPoint)throws Exception
+    {
+        if(report_v2 != null && dataPoint.isHandleEnum() && (dataPoint.getyAxis() != null  && dataPoint.getyAxis().getField() != null && (dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.ENUM) && dataPoint.getyAxis().getAggrEnum() != null && dataPoint.getyAxis().getAggrEnum() == BmsAggregateOperators.CommonAggregateOperator.COUNT))
+        {
+            Map<Integer, Object> enumMap = new HashMap<>();
+            if(dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.BOOLEAN)
+            {
+                enumMap.put(0, ((BooleanField) dataPoint.getyAxis().getField()).getFalseVal());
+                enumMap.put(1, ((BooleanField) dataPoint.getyAxis().getField()).getTrueVal());
+            }
+            else if(dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.ENUM )
+            {
+                enumMap = ((EnumField) dataPoint.getyAxis().getField()).getEnumMap();
+            }
+            if(!enumMap.isEmpty())
+            {
+                for(Map.Entry<String, String> aliasPair : dataPoint.getAliases().entrySet())
+                {
+                    dataPoints_enumMap.put(new StringBuilder(aliasPair.getValue()).append(".options").toString(), enumMap);
+                }
+            }
         }
     }
 }

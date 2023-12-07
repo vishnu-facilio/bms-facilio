@@ -20,6 +20,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -65,6 +66,14 @@ public class V2DashboardCardAction extends V3Action {
         JSONObject json = new JSONObject();
         json.putAll(cardContext.getCardParams().getResult().get("value"));
         json.put("title",cardContext.getCardParams().getTitle());
+        if(cardContext.getCardParams().getResult().containsKey("parentIds"))
+        {
+            Map<String, Object> parentMap = cardContext.getCardParams().getResult().get("parentIds");
+            if(parentMap != null && !parentMap.isEmpty())
+            {
+                response.setParentId(parentMap.get("parentId"));
+            }
+        }
         response.setValue(json);
         JSONObject baseline_json = new JSONObject();
         if(cardContext.getCardParams().getResult().get("baseline_value") != null)
