@@ -1087,6 +1087,8 @@
     </request>
 
     <request path="/api/v3/wms/connections"/>
+    <request path="/api/v3/ch/selectQuery"/>
+    <request path="/api/v3/ch/aggrQuery"/>
 
     <request path="/api/v3/homepage/widgetData">
         <urlparams>

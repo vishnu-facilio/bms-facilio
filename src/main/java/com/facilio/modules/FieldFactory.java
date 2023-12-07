@@ -12633,6 +12633,17 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("sequenceNumber", "SEQUENCE_NUMBER", module));
         return fields;
     }
+
+    public static List<FacilioField> getAggregationReadingInfoFields() {
+        FacilioModule module = ModuleFactory.getAggregationReadingInfoModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(AccountConstants.getOrgIdField(module));
+        fields.add(getStringField("tableName", "TABLE_NAME", module));
+        fields.add(getStringField("timezone", "TIMEZONE", module));
+        fields.add(getStringField("aggregatedTableName", "AGGREGATED_TABLE_NAME", module));
+        return fields;
+    }
+
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

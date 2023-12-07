@@ -1793,6 +1793,19 @@
 		</action>
     </package>
 
+    <package name="clickhouse" namespace="/api/v3/ch" extends="v3Api">
+        <action name="selectQuery"
+                class="com.facilio.ch.actions.ClickhouseTestAction"
+                method="fetchSampleSelectQuery">
+            <param name="deprecated">true</param>
+        </action>
+        <action name="aggrQuery"
+                class="com.facilio.ch.actions.ClickhouseTestAction"
+                method="fetchSampleAggrQuery">
+            <param name="deprecated">true</param>
+        </action>
+    </package>
+
     <package name="homePageFactory" namespace="/api/v3/homepage" extends="v3Api">
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.homepagefactory.HomePageFactoryAction"

@@ -168,7 +168,7 @@ public class ModuleFactory {
 
 		return moduleMap;
 	}
-	
+
 	private static FacilioModule constructModule (String name, String displayName, String tableName) {
 		FacilioModule module = new FacilioModule();
 		module.setName(name);
@@ -6006,7 +6006,6 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return pdfTemplatesModule;
 	}
 
-
 	public static FacilioModule getSFG20SettingModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("sfg20Setting");
@@ -6053,6 +6052,10 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setDisplayName("Service Planned Maintenance");
 		module.setTableName("Service_Planned_Maintenance");
 		return module;
+	}
+
+	public static FacilioModule getAggregationReadingInfoModule() {
+		return constructModule("aggregationReadingInfo", "Aggregation Reading Info", "Aggregation_Reading_Info");
 	}
 
 	public static FacilioModule getScheduleTriggerRecordRelationModule() {

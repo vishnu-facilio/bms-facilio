@@ -76,3 +76,5 @@
 /api/v2/application/relatedApps/fetchList
 /api/v3/dashboard/list
 /v2/cachedResponse
+/api/v3/ch/selectQuery
+/api/v3/ch/aggrQuery
