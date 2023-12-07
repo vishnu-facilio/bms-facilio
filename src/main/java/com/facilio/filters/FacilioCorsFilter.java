@@ -10,7 +10,9 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.fw.filter.UriFilter;
 import com.facilio.util.RequestUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -118,12 +120,18 @@ public class FacilioCorsFilter implements Filter {
         response.setHeader(REFERRER_POLICY, "strict-origin-when-cross-origin");
 
         if( ! (FacilioProperties.isOnpremise() || FacilioProperties.isDevelopment())) {
+            String csp = "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' %s https://*.facilio.in  https://apis.google.com https://maps.googleapis.com https://ssl.gstatic.com https://www.google-analytics.com https://www.googletagmanager.com https://accounts.google.com https://*.pendo.io https://pendo-eu-static.storage.googleapis.com https://pendo-eu-static-5428851650920448.storage.googleapis.com; child-src 'self' blob:  https:; worker-src 'self' blob:; style-src 'self' data: 'unsafe-inline' https://*.facilio.in https://*.googleapis.com https://accounts.google.com; connect-src wss: https: data:; object-src 'none'; form-action https:; upgrade-insecure-requests; img-src 'self' blob: data: https:;";
             if (FacilioProperties.isProduction()) {
-                response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.facilio.com https://apis.google.com https://maps.googleapis.com https://ssl.gstatic.com https://www.google-analytics.com https://www.googletagmanager.com https://accounts.google.com https://*.pendo.io https://pendo-eu-static.storage.googleapis.com https://pendo-eu-static-5428851650920448.storage.googleapis.com; child-src 'self' blob:  https:; worker-src 'self' blob:; style-src 'self' data: 'unsafe-inline' https://*.facilio.com https://*.googleapis.com https://accounts.google.com; connect-src wss: https: data:; object-src 'none'; form-action https:; upgrade-insecure-requests; img-src 'self' blob: data: https:;");
-           } else {
-                response.setHeader(CONTENT_SECURITY_POLICY , "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.facilio.in  https://apis.google.com https://maps.googleapis.com https://ssl.gstatic.com https://www.google-analytics.com https://www.googletagmanager.com https://accounts.google.com https://*.pendo.io https://pendo-eu-static.storage.googleapis.com https://pendo-eu-static-5428851650920448.storage.googleapis.com; child-src 'self' blob:  https:; worker-src 'self' blob:; style-src 'self' data: 'unsafe-inline' https://*.facilio.in https://*.googleapis.com https://accounts.google.com; connect-src wss: https: data:; object-src 'none'; form-action https:; upgrade-insecure-requests; img-src 'self' blob: data: https:;");
+                csp = "default-src 'self' data: 'unsafe-inline' 'unsafe-eval' https:; script-src 'self' %s https://*.facilio.com https://apis.google.com https://maps.googleapis.com https://ssl.gstatic.com https://www.google-analytics.com https://www.googletagmanager.com https://accounts.google.com https://*.pendo.io https://pendo-eu-static.storage.googleapis.com https://pendo-eu-static-5428851650920448.storage.googleapis.com; child-src 'self' blob:  https:; worker-src 'self' blob:; style-src 'self' data: 'unsafe-inline' https://*.facilio.com https://*.googleapis.com https://accounts.google.com; connect-src wss: https: data:; object-src 'none'; form-action https:; upgrade-insecure-requests; img-src 'self' blob: data: https:;";
             }
+            if(!(StringUtils.isNotEmpty(request.getRequestURI()) && request.getRequestURI().contains(UriFilter.URL_PATTERN))) {
+                csp = String.format(csp,"'unsafe-inline' 'unsafe-eval'");
+            }
+            response.setHeader(CONTENT_SECURITY_POLICY , csp);
         }
+
+
+
         response.setHeader(FEATURE_POLICY, "geolocation 'none'; autoplay 'none'");
 
         String corsRequestType = getCorsRequestType(request);

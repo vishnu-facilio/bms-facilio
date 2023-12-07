@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.*;
 
 public class UriFilter implements Filter {
-    private static final String URL_PATTERN = "/api/";
+    public static final String URL_PATTERN = "/api/";
 
     private List<String> whiteListedUris = null;
     private List<String> allowedExtensions = null;
