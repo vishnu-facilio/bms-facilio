@@ -62,6 +62,18 @@ public class TriggerAction extends V3Action {
 
 		setData(TriggerUtil.TRIGGERS_LIST, FieldUtil.getAsMapList((List<?>) context.get(TriggerUtil.TRIGGERS_LIST), TriggerFieldRelContext.class));
 	}
+
+	private void fetchAgentTrigger(FacilioContext contextParams) throws Exception{
+		FacilioChain chain = TransactionChainFactoryV3.getAllTriggers();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		if (contextParams != null) {
+			context.putAll(contextParams);
+		}
+		chain.execute();
+
+		setData(TriggerUtil.TRIGGERS_LIST, context.get(TriggerUtil.TRIGGERS_LIST));
+	}
 	
 	public String triggerDetails() throws Exception {
 		BaseTriggerContext triggerContext = TriggerUtil.getTrigger(getId(), true);
@@ -148,8 +160,8 @@ public class TriggerAction extends V3Action {
 			criteria.addAndCondition(CriteriaAPI.getCondition(triggerFields.get("agentId"), String.valueOf(agentId), NumberOperators.EQUALS));
 			context.put(ContextNames.CRITERIA, criteria);
 		}
-		
-		fetchTriggers(context);
+
+		fetchAgentTrigger(context);
 		
 		return SUCCESS;
 	}
