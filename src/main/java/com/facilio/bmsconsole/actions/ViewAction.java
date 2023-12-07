@@ -20,11 +20,14 @@ import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.ims.handler.AuditLogHandler;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -104,6 +107,8 @@ public class ViewAction extends FacilioAction {
 	public List<ReportInfo> getScheduledReports() {
 		return scheduledReports;
 	}
+	@Getter @Setter
+	private Criteria criteria;
 	
 	public void setScheduledReports(List<ReportInfo> scheduledReports) {
 		this.scheduledReports = scheduledReports;
@@ -687,9 +692,12 @@ public class ViewAction extends FacilioAction {
 		FacilioChain chain = TransactionChainFactory.getCustomizeViewColumnWidthChain();
 
 		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
+		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, getFields());
 		chain.execute();
 
+		setResult("view", context.get(FacilioConstants.ContextNames.EXISTING_CV));
 		return SUCCESS;
 	}
 

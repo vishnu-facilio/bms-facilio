@@ -182,7 +182,7 @@
 		</action>
 		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getGroups">
-			<param name="permission">ALL</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
             <param name="tabType">SETUP</param>
 			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS</param>
 		</action>
@@ -1324,7 +1324,9 @@
 		</action>
 		<action name="slaModule"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">SLA_POLICIES</param>
 		</action>
 	</package>
 	<package name="permalinkToken" namespace="/api/v2/permalink" extends="v2Api">
@@ -9492,7 +9494,14 @@
 		</action>
 	</package>
 
-	<package name="moduleSetting" namespace="/api/v2/moduleSetting/status" extends="v2Api">
+	<package name="moduleSetting" namespace="/api/v2/modules" extends="v2Api">
+		<action name="*/setting/*"
+				class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+				method="getSettingConfigDetails">
+			<param name="moduleName">{1}</param>
+			<param name="settingName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 		<action name="pageBuilder/*"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="checkPageBuilderEnabled">
 			<param name="moduleName">{1}</param>

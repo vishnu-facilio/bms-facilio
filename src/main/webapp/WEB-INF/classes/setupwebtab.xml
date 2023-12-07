@@ -242,7 +242,8 @@
             <param name="moduleName">{1}</param>
             <param name="settingName">{2}</param>
             <param name="tabType">SETUP</param>
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
         </action>
     </package>
 

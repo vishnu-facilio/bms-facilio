@@ -219,7 +219,7 @@
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="type">glimpse</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
         <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
