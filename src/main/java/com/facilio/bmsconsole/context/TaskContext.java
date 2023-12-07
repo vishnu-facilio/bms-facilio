@@ -509,7 +509,7 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public Boolean getRemarksRequired() {
 		return remarksRequired;
 	}
-	public void setRemarksRequired(Boolean remarksRequired) {
+	public void setRemarksRequired(boolean remarksRequired) {
 		this.remarksRequired = remarksRequired;
 	}
 
