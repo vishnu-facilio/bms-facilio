@@ -1469,7 +1469,7 @@ public class TransactionChainFactory {
 			if(!isModuleAlreadyCreated){
 				c.addCommand(getAddReadingsChain());
 			}
-			c.addCommand(new AddResourceReadingRelCommand());
+			c.addCommand(new GetCategoryResourcesCommand());
 			c.addCommand(new InsertReadingDataMetaForNewReadingCommand());
 			return c;
 		}

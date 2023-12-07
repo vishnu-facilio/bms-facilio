@@ -903,9 +903,7 @@ public class ReadingKpiAPI {
     public static void setCategory(ReadingKPIContext kpi) throws Exception {
         ResourceType type = kpi.getResourceTypeEnum();
         V3Context category = CommonConnectedUtil.getCategory(type, kpi.getCategoryId());
-        if (category != null) {
-            kpi.setCategory(new ResourceCategory<>(type, category));
-        }
+        kpi.setCategory(new ResourceCategory<>(type, category));
     }
 
     public static void addFilterToBuilder(Context context, Map<String, FacilioField> fieldsMap, GenericSelectRecordBuilder builder) {

@@ -10,10 +10,13 @@ import com.facilio.connected.scopeHandler.ScopeCommissioningHandler;
 import com.facilio.connected.scopeHandler.SpaceCommissioningHandler;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -75,14 +78,16 @@ public enum ResourceType implements FacilioIntEnum {
         }
 
         @Override
-        public Long getModuleId(V3Context category) {
-            return -1L;
+        public Long getModuleId(V3Context category) throws Exception {
+            FacilioModule siteModule= Constants.getModBean().getModule(FacilioConstants.ContextNames.SITE);
+            return siteModule.getModuleId();
         }
 
         @Override
         public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
-            throw new IllegalArgumentException("Not Supported Yet");
+            return new ArrayList<>();
         }
+
     };
 
     @Getter
@@ -104,7 +109,7 @@ public enum ResourceType implements FacilioIntEnum {
     }
 
     public abstract String getCategoryModuleName() throws Exception;
-    public abstract Long getModuleId(V3Context category);
+    public abstract Long getModuleId(V3Context category) throws Exception;
     public abstract <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception;
 
     public static ResourceType valueOf(int value) {

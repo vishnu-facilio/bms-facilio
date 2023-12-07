@@ -22,8 +22,8 @@ public class GetCategoryResourcesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		LOGGER.info("Inside GetCategoryResourcesCommand");
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-		if (categoryReadingRelModule != null) {
-			long category=(long)context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
+
+         long category=(long)context.getOrDefault(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,-1l);
 			
 			List <? extends ResourceContext> resourceList= null;
 			String categoryName=(String)context.get(FacilioConstants.ContextNames.PARENT_MODULE);
@@ -33,6 +33,9 @@ public class GetCategoryResourcesCommand extends FacilioCommand {
 			else if (categoryName.equals(FacilioConstants.ContextNames.ASSET_CATEGORY)) {
 				resourceList=AssetsAPI.getAssetListOfCategory(category);
 			}
+            else if (categoryName.equals(FacilioConstants.ContextNames.SITE)) {
+                resourceList = SpaceAPI.getAllSites();
+            }
 			else if (categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {	// parent module will be asset module. so checking categoryreadingrelmodule
 				resourceList=AssetsAPI.getAssetListOfCategory(category);
 			}
@@ -40,7 +43,7 @@ public class GetCategoryResourcesCommand extends FacilioCommand {
 			if (resourceList != null) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, resourceList.stream().map(ResourceContext::getId).collect(Collectors.toList()));
 			}
-		}
+
 		
 		return false;
 	}

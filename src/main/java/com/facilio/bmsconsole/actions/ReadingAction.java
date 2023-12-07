@@ -144,6 +144,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, ContextNames.SITE);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		FacilioChain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
@@ -676,6 +677,8 @@ public class ReadingAction extends FacilioAction {
 	public String getAllSpaceTypeReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE,getSpaceType());
+		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
+		context.put(FacilioConstants.ContextNames.FETCH_CONTROLLABLE_FIELDS, fetchControllableFields);
 		if (StringUtils.isNotEmpty(getReadingType())) {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
@@ -1897,7 +1900,7 @@ public class ReadingAction extends FacilioAction {
 			getSpaceReadings();
 		}
 		else if(BooleanUtils.isTrue(site)){
-			getCategoryReadings(ModuleFactory.getSiteModule());
+			getAllSpaceTypeReadings();
 		}
 		else {
 			getAssetReadings();

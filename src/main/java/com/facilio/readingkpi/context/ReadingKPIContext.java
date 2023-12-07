@@ -88,7 +88,7 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
 
     public void setResourceType(Integer type) {
         this.resourceType = ResourceType.valueOf(type);
-        if(this.resourceType == null || type == PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getIndex()) { //TODO: added this check for backward compatability. should be del this block.
+        if(this.resourceType == null ) { //TODO: added this check for backward compatability. should be del this block.
             this.resourceType = ResourceType.ASSET_CATEGORY;
         }
     }

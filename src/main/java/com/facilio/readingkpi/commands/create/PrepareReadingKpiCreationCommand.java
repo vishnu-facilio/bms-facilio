@@ -1,5 +1,6 @@
 package com.facilio.readingkpi.commands.create;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -107,8 +108,10 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
               //  context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,ModuleFactory.getSubModulesRelModule());
                 break;
             case SITE:
+                ModuleBean moduleBean=Constants.getModBean();
+                FacilioModule siteModule=moduleBean.getModule(FacilioConstants.ContextNames.SITE);
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getCategoryId());
+                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, siteModule.getModuleId());
                 break;
         }
     }

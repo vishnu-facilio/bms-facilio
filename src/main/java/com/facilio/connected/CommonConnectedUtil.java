@@ -464,7 +464,6 @@ public class CommonConnectedUtil {
         if(categoryId == null) {
             return null;
             //TODO: hack, need to remove this return check. added for backward compatibility
-            //throw new Exception("Category id cannot be null");
         }
         FacilioContext resultCtx = V3Util.getSummary(type.getCategoryModuleName(), Lists.newArrayList(categoryId));
         List<T> categories = Constants.getRecordListFromContext(resultCtx, type.getCategoryModuleName());
