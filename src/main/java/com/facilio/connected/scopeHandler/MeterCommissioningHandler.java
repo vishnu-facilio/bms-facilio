@@ -72,6 +72,7 @@ public class MeterCommissioningHandler implements ScopeCommissioningHandler {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, false);
         context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, utilityType);
+        context.put(FacilioConstants.ContextNames.FILTER, "available");
 
         FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
         getCategoryReadingChain.execute(context);

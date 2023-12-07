@@ -126,16 +126,20 @@ public class ProcessDataCommandV3 extends FacilioCommand {
         boolean allowAutoMap = agent.isAllowAutoMapping() && agent.getReadingScope() > 0 && agent.getAutoMappingParentFieldId() > 0;
         Long categoryId = 0L, parentId = 0L;
         Map<String, FacilioField> nameVsField = new HashMap<>();
-        if (allowAutoMap) {
-            LOGGER.info("Auto Mapping for agent : " + agent.getDisplayName() + " and controller : " + controller.getName());
-            String fieldValue = getParentIdentifierFieldValue(controller.getName(), payload);
-            Pair<Long, Long> categoryIdAndParentId = PointsUtil.getCategoryAndParentId(agent.getReadingScope(), agent.getAutoMappingParentFieldId(), fieldValue);
-            if (categoryIdAndParentId != null) {
-                categoryId = categoryIdAndParentId.getKey();
-                parentId = categoryIdAndParentId.getValue();
-                nameVsField = ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId);
+        try{
+            if (allowAutoMap) {
+                LOGGER.info("Auto Mapping for agent : " + agent.getDisplayName() + " and controller : " + controller.getName());
+                String fieldValue = getParentIdentifierFieldValue(controller.getName(), payload);
+                Pair<Long, Long> categoryIdAndParentId = PointsUtil.getCategoryAndParentId(agent.getReadingScope(), agent.getAutoMappingParentFieldId(), fieldValue);
+                if (categoryIdAndParentId != null) {
+                    categoryId = categoryIdAndParentId.getKey();
+                    parentId = categoryIdAndParentId.getValue();
+                    nameVsField = ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId);
+                }
+                LOGGER.info("Category/UtilityType Id " + categoryId + ", Parent Id : " + parentId);
             }
-            LOGGER.info("Category/UtilityType Id " + categoryId + ", Parent Id : " + parentId);
+        } catch (Exception e) {
+            LOGGER.error("Exception while auto mapping", e);
         }
 
         pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
