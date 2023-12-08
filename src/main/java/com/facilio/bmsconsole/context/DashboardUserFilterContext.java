@@ -659,4 +659,5 @@ public class DashboardUserFilterContext extends ModuleBaseWithCustomFields {
 	private int layoutWidth=-1;
 	private int layoutHeight=-1;
 	private int layoutPosition=-1;
+
 }

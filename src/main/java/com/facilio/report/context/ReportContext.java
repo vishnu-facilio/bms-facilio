@@ -27,7 +27,8 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-@Getter@Setter
+
+@Getter @Setter
 public class ReportContext {
 	
 	
@@ -57,6 +58,17 @@ public class ReportContext {
 	private long appId = -1;
 	public long getAppId() { return appId; }
 	public void setAppId(long appId) { this.appId = appId; }
+
+	private String appName;
+
+	public String getAppName() {
+		return appName;
+	}
+
+	public void setAppName(String appName) {
+		this.appName = appName;
+	}
+
 	private ArrayList FilterSiteId;
 
 	public ArrayList getFilterSiteId() {
@@ -920,6 +932,9 @@ public class ReportContext {
 	public void setDrilldownParams(ReportDrilldownParamsContext drilldownParams) {
 		this.drilldownParams = drilldownParams;
 	}
+
+	private String folderName;
+	private String workFlowString;
 	private String linkName;
 
 }

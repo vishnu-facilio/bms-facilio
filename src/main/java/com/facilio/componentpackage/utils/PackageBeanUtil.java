@@ -25,6 +25,7 @@ import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -40,6 +41,7 @@ import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.emailtemplate.context.EMailStructure;
 import com.facilio.fs.FileInfo;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.ns.context.*;
@@ -888,7 +890,7 @@ public class PackageBeanUtil {
         return FieldUtil.getAsBeanListFromMapList(props, Role.class);
     }
 
-    public static <T extends SingleSharingContext> void constructBuilderFromSharingContext(SharingContext<T> sharingContext, XMLBuilder sharingElement) throws Exception {
+    public static <T extends SingleSharingContext> void constructBuilderFromSharingContext(SharingContext<T> sharingContext, XMLBuilder sharingElement,boolean isDashboardSharing) throws Exception {
         if (CollectionUtils.isEmpty(sharingContext)) {
             return;
         }
@@ -935,10 +937,21 @@ public class PackageBeanUtil {
                 default:
                     break;
             }
+            if(isDashboardSharing){
+                NewDashboardSharingContext newContext = (NewDashboardSharingContext) singleSharingContext;
+                singleSharingElement.element(PackageConstants.DashboardConstants.LOCKED).text(String.valueOf(newContext.getLocked()));
+            }
         }
     }
 
-    public static <T extends SingleSharingContext> SharingContext<T> constructSharingContextFromBuilder(XMLBuilder sharingElement, Class<? extends T> clazz) throws Exception {
+    public static <T extends SingleSharingContext> void constructBuilderFromSharingContext(SharingContext<T> sharingContext, XMLBuilder sharingElement) throws Exception {
+        constructBuilderFromSharingContext(sharingContext,sharingElement,false);
+    }
+    public static <T extends SingleSharingContext> SharingContext<T> constructSharingContextFromBuilder(XMLBuilder sharingElement,Class<? extends T> clazz) throws Exception{
+        return constructSharingContextFromBuilder(sharingElement,clazz,false);
+    }
+
+    public static <T extends SingleSharingContext> SharingContext<T> constructSharingContextFromBuilder(XMLBuilder sharingElement, Class<? extends T> clazz,boolean isDashboardSharing) throws Exception {
         XMLBuilder sharingContextElement = sharingElement.getElement(PackageConstants.SharingContextConstants.SHARING_CONTEXT);
         if (sharingContextElement == null) {
             return null;
@@ -2229,5 +2242,12 @@ public class PackageBeanUtil {
             }
         }
         return attachmentList;
+    }
+    public static Map<Long,Long> getNewRecordIds(String moduleName,List<Long> oldIds) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(moduleName);
+        DataMigrationBean dataMigrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, AccountUtil.getCurrentOrg().getOrgId());
+        Map<Long,Long> idMap = dataMigrationBean.getOldVsNewId(-1l,module.getModuleId(),oldIds);
+        return idMap;
     }
 }

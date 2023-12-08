@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.facilio.db.criteria.operators.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
@@ -17,6 +19,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Getter @Setter
 public class ReportUserFilterContext {
 
 	public static final String ALL = "all";
@@ -208,4 +211,6 @@ public class ReportUserFilterContext {
 			return (CollectionUtils.isNotEmpty(values));
 		}
 	}
+	private String moduleName;
+	private String fieldName;
 }

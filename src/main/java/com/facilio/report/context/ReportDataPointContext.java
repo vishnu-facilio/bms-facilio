@@ -13,7 +13,9 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.json.simple.JSONObject;
 
+@Getter @Setter
 public class ReportDataPointContext implements  Cloneable{
 
 	private long id = -1; 
@@ -128,7 +130,9 @@ public class ReportDataPointContext implements  Cloneable{
 	public void setAssetCategoryId(long assetCategoryId) {
 		this.assetCategoryId = assetCategoryId;
 	}
-	
+
+	private String assetCategoryName;
+
 	private String name;
 	public String getName() {
 		return name;

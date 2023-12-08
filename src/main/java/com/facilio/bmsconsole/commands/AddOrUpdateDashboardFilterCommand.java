@@ -58,18 +58,22 @@ public class AddOrUpdateDashboardFilterCommand extends FacilioCommand {
 		return false;
 	}
 	
-	public Long addDashboardFilter(DashboardFilterContext dashboardFilterContext) throws Exception{
+	public static Long addDashboardFilter(DashboardFilterContext dashboardFilterContext) throws Exception{
 
 		addFilterLinkName(dashboardFilterContext);
 		GenericInsertRecordBuilder builder=new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getDashboardFilterModule().getTableName())
 				.fields(FieldFactory.getDashboardFilterFields());
 		
-		
-		return builder.insert(FieldUtil.getAsProperties(dashboardFilterContext)); 
+		Map<String,Object> props = FieldUtil.getAsProperties(dashboardFilterContext);
+		if(!props.isEmpty()){
+			props.put("isTimelineFilterEnabled",dashboardFilterContext.getIsTimelineFilterEnabled());
+			props.put("hideFilterInsideWidgets",dashboardFilterContext.isHideFilterInsideWidgets());
+		}
+		return builder.insert(props);
 		
 	}
-	public void updateDashboardFilter(DashboardFilterContext dashboardFilterContext) throws Exception
+	public static void updateDashboardFilter(DashboardFilterContext dashboardFilterContext) throws Exception
 	{
 		FacilioModule module=ModuleFactory.getDashboardFilterModule();
 		GenericUpdateRecordBuilder builder=new GenericUpdateRecordBuilder()

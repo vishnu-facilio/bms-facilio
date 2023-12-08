@@ -35,10 +35,6 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	public void setHideFilterInsideWidgets(boolean hideFilterInsideWidgets) {
 		this.hideFilterInsideWidgets = hideFilterInsideWidgets;
 	}
-	
-	
-	
-
 	public List<Long> getCustomScriptWidgets() {
 		return customScriptWidgets;
 	}
@@ -106,5 +102,9 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 		this.isTimelineFilterEnabled = isTimelineFilterEnabled;
 	}
 	private String linkName;
+	private String dashboardLinkName;
+
+	private String tabLinkName;
+
 
 }

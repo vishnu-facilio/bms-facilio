@@ -78,7 +78,13 @@ public enum ComponentType implements FacilioIntEnum {
     SERVICE_CATALOG_ITEM(ServiceCatalogItemPackageImpl.class,null,false),
     VENDOR(null, null, false),
     TENANT(null, null, false),
-    CLIENT(null, null, false);
+    CLIENT(null, null, false),
+    MODULE_KPI(ModuleKpiPackageBeamImpl.class,null,false),
+    REPORT_FOLDER(ReportFolderPackageBeanImpl.class,null,false),
+    REPORT(ReportsPackageBeanImpl.class,null,true),
+    DASHBOARD_FOLDER(DashboardFolderPackageBeanImpl.class,null,false),
+    DASHBOARD(DashboardPackageBeanImpl.class,null,true),
+    DASHBOARD_WIDGET(DashboardWidgetPackageBeanImpl.class,null,true);
 
     public static final List<ComponentType> ORDERED_COMPONENT_TYPE_LIST = Collections.unmodifiableList(initOrderedList());
     public static List<ComponentType> initOrderedList() {
@@ -147,6 +153,12 @@ public enum ComponentType implements FacilioIntEnum {
             add(PEOPLE_PERMISSION_SET_CONFIG);
             add(SERVICE_CATALOG_GROUP);
             add(SERVICE_CATALOG_ITEM);
+            add(MODULE_KPI);
+            add(REPORT_FOLDER);
+            add(REPORT);
+            add(DASHBOARD_FOLDER);
+            add(DASHBOARD);
+            add(DASHBOARD_WIDGET);
         }};
         return componentOrder;
     }

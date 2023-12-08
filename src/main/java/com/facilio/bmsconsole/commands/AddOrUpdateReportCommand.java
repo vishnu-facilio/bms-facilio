@@ -55,7 +55,7 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 			}
 			ReportUtil.deleteReportFields(report.getId());
 		}
-		
+
 		Set<ReportFieldContext> reportFields = new HashSet<>();
 		if(report.getDataPoints() != null && report.getDataPoints().size() >0){
 			for(ReportDataPointContext dataPoint : report.getDataPoints()) {
@@ -78,11 +78,15 @@ public class AddOrUpdateReportCommand extends FacilioCommand {
 		}
 		if (report.getFilters() != null && !report.getFilters().isEmpty()) {
 			for (ReportFilterContext filter : report.getFilters()) {
-				reportFields.add(constructReportField(filter.getModule(), filter.getField(), report.getId()));
+				if(filter!=null){
+					reportFields.add(constructReportField(filter.getModule(), filter.getField(), report.getId()));
+				}
 			}
 		}
 		
 		ReportUtil.addReportFields(reportFields);
+		//check this will cause any impact
+		context.put(FacilioConstants.ContextNames.REPORT,report);
 		return false;
 	}
 	

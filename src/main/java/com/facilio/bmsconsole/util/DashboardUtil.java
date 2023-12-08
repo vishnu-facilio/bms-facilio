@@ -15,10 +15,14 @@ import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
+import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.constants.PackageConstants.DashboardConstants;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -40,6 +44,9 @@ import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.context.ReadingKPIContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
@@ -50,12 +57,14 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -3149,6 +3158,9 @@ public class DashboardUtil {
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
 		updateBuilder.update(props);
+		if(CollectionUtils.isNotEmpty(dashboard.getDashboardSharingContext())){
+			applyDashboardSharing(dashboard.getId(),dashboard.getDashboardSharingContext());
+		}
 	}
 	
 	public static void updateDashboardTab(DashboardTabContext dashboardTabContext) throws Exception {
@@ -3836,7 +3848,7 @@ public class DashboardUtil {
 				.select(Collections.singletonList(field))
 				.table(tableName);
 		List<Map<String,Object>> props = selectBuilder.get();
-		if(CollectionUtils.isNotEmpty(props)){
+        if(CollectionUtils.isNotEmpty(props)){
 			for(Map<String,Object> prop: props){
 				if(prop.get("linkName")!=null){
 					linkNames.add((String) prop.get("linkName"));
@@ -3845,6 +3857,7 @@ public class DashboardUtil {
 		}
 		return linkNames;
 	}
+
 	public static String getLinkName(String name,List<String> linkNames) {
 		int i=1;
 		String temp = name;
@@ -3858,6 +3871,703 @@ public class DashboardUtil {
 		}
 	}
 
+	public static Map<Long, String> getAppIdVsAppName() throws Exception {
+		List<ApplicationContext> applicationContexts = ApplicationApi.getAllApplicationsWithOutFilter();
+		Map<Long, String> appIdVsAppName = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(applicationContexts)) {
+			for (ApplicationContext applicationContext : applicationContexts) {
+				if (applicationContext.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {continue;}
+				appIdVsAppName.put(applicationContext.getId(),applicationContext.getLinkName());
+			}
+		}
+		return appIdVsAppName;
+	}
+
+	public static Map<Long, DashboardFolderContext> getDashboardFolderWithIds(List<Long> folderIds) throws Exception {
+
+		Map<Long, DashboardFolderContext> folderIdVsFolderMap = new HashMap<>();
+		Map<String,FacilioField> folderFieldsAsMap = FieldFactory.getAsMap(FieldFactory.getDashboardFolderFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFolderFields())
+				.table(ModuleFactory.getDashboardFolderModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(folderFieldsAsMap.get(PackageConstants.DashboardConstants.ID), StringUtils.join(folderIds,","), StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+
+		if(CollectionUtils.isNotEmpty(props)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String,Object> prop : props){
+				DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(prop, DashboardFolderContext.class);
+				Long appId = dashboardFolderContext.getAppId();
+				if(dashboardFolderContext.getModuleId()>-1){
+					FacilioModule module = modBean.getModule(dashboardFolderContext.getModuleId());
+					String moduleName = module.getName();
+					dashboardFolderContext.setModuleName(moduleName);
+				}
+				String appName = getAppIdVsAppName().get(appId);
+				dashboardFolderContext.setAppName(appName);
+				folderIdVsFolderMap.put(dashboardFolderContext.getId(),dashboardFolderContext);
+			}
+		}
+		return folderIdVsFolderMap;
+	}
+
+	public static List<Map<String,Object>> getIdAndLinkNameAsProp(FacilioModule module) throws Exception {
+		String tableName = module.getTableName();
+		List<FacilioField> fields = getFields(module);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(tableName);
+		List<Map<String,Object>> props = selectBuilder.get();
+		return props;
+	}
+
+	public static Map<Long, DashboardContext> getDashboardWithIds(List<Long> ids, Map<Long,String> folderIdVsLinkName,Map<Long,String> tabIdsVsLinkName) throws Exception {
+
+		Map<Long, DashboardContext> dashboardIdVsDashboardMap = new HashMap<>();
+		Map<String,FacilioField> dashboardFieldsAsMap = FieldFactory.getAsMap(FieldFactory.getDashboardFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFields())
+				.table(ModuleFactory.getDashboardModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(dashboardFieldsAsMap.get(PackageConstants.DashboardConstants.ID), StringUtils.join(ids,","), StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+		Map<Long,DashboardFilterContext> filter = getTimeFilterWithIds(ids);
+		if(CollectionUtils.isNotEmpty(props)){
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String,Object> prop :  props){
+				DashboardContext dashboardContext = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				if(dashboardContext.getModuleId()>-1){
+					FacilioModule module = modBean.getModule(dashboardContext.getModuleId());
+					String moduleName = module.getName();
+					dashboardContext.setModuleName(moduleName);
+				}
+				List<DashboardSharingContext> sharingContext = getDashboardSharing(dashboardContext.getId());
+				if(sharingContext!=null){
+					SharingContext<SingleSharingContext> newSharingContext = sharingContextConversion(sharingContext);
+					dashboardContext.setNewSharingContext(newSharingContext);
+				}
+				dashboardContext.setFolderLinkName(folderIdVsLinkName.get(dashboardContext.getDashboardFolderId()));
+				List<DashboardTabContext> tabs = getDashboardTabContext(dashboardContext.getId(),tabIdsVsLinkName);
+				dashboardContext.setDashboardTabContexts(tabs);
+				DashboardFilterContext filterContext = filter.get(dashboardContext.getId());
+				if(filterContext !=null){
+					dashboardContext.setDashboardFilter(filterContext);
+				}
+				dashboardIdVsDashboardMap.put(dashboardContext.getId(),dashboardContext);
+			}
+		}
+		return dashboardIdVsDashboardMap;
+	}
+
+	public static List<DashboardTabContext> getDashboardTabContext(Long dashboardId,Map<Long,String> tabIdsVsLinkName) throws Exception {
+		List<DashboardTabContext> tabContexts = new ArrayList<>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardTabFields())
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("DASHBOARD_ID","dashboardId", String.valueOf(dashboardId), NumberOperators.EQUALS));
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> prop : props){
+				DashboardTabContext tab = FieldUtil.getAsBeanFromMap(prop,DashboardTabContext.class);
+				if(tab.getDashboardTabId()>0){
+					tab.setSubTabLinkName(tabIdsVsLinkName.get(tab.getDashboardTabId()));
+				}
+				DashboardFilterContext filterContext = getTimeLineFilterWithTab(tab.getId());
+				if(filterContext!=null){
+					tab.setDashboardFilter(filterContext);
+
+				}
+				tabContexts.add(tab);
+			}
+		}
+		return tabContexts;
+	}
+
+	public static Map<Long, DashboardFilterContext> getTimeFilterWithIds(List<Long> ids) throws Exception {
+		Map<Long, DashboardFilterContext> idVsMap = new HashMap<>();
+		Map<String, FacilioField> timeFilterFieldAsMap = FieldFactory.getAsMap(FieldFactory.getDashboardFilterFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFilterFields())
+				.table(ModuleFactory.getDashboardFilterModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(timeFilterFieldAsMap.get(FacilioConstants.ContextNames.DASHBOARD_ID), StringUtils.join(ids,","), StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> prop : props){
+				DashboardFilterContext dashboardFilterContext = FieldUtil.getAsBeanFromMap(prop, DashboardFilterContext.class);
+				idVsMap.put(dashboardFilterContext.getDashboardId(),dashboardFilterContext);
+			}
+		}
+		return idVsMap;
+	}
+
+	public static DashboardFilterContext getTimeLineFilterWithTab(Long id) throws Exception {
+		Map<String, FacilioField> timeFilterFieldAsMap = FieldFactory.getAsMap(FieldFactory.getDashboardFilterFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardFilterFields())
+				.table(ModuleFactory.getDashboardFilterModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(timeFilterFieldAsMap.get(FacilioConstants.ContextNames.DASHBOARD_TAB_ID), String.valueOf(id), NumberOperators.EQUALS));
+		Map<String, Object> prop = selectBuilder.fetchFirst();
+		if(MapUtils.isNotEmpty(prop)){
+			DashboardFilterContext filterContext = FieldUtil.getAsBeanFromMap(prop,DashboardFilterContext.class);
+			return filterContext;
+		}
+		return null;
+	}
+
+	public static void addDashboard(DashboardContext dashboard) throws Exception {
+
+		dashboard.setPublishStatus(DashboardContext.DashboardPublishStatus.NONE.ordinal());
+		dashboard.setCreatedByUserId(AccountUtil.getCurrentUser().getId());
+		dashboard.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		dashboard.setCreatedBy(AccountUtil.getCurrentUser().getPeopleId());
+		dashboard.setCreatedTime(System.currentTimeMillis());
+
+		List<FacilioField> DashboardFields = FieldFactory.getDashboardFields();
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.fields(DashboardFields)
+				.table(ModuleFactory.getDashboardModule().getTableName());
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		dashboard.setId((Long) props.get("id"));
+		if(CollectionUtils.isNotEmpty(dashboard.getDashboardSharingContext())){
+			for(DashboardSharingContext shareContext : dashboard.getDashboardSharingContext()) {
+				shareContext.setDashboardId(dashboard.getId());
+			}
+			DashboardUtil.applyDashboardSharing(dashboard.getId(),dashboard.getDashboardSharingContext());
+		}
+	}
+	public static String getCardWidgetIds() throws Exception{
+		List<String> cardIdsList = new ArrayList<>();
+		Map<String,FacilioField> cardsField = FieldFactory.getAsMap(FieldFactory.getWidgetCardFields());
+		GenericSelectRecordBuilder cardWidget = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(cardsField.get(PackageConstants.DashboardConstants.ID)))
+				.table(ModuleFactory.getWidgetCardModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(cardsField.get("cardLayout"),"web_layout_1, floorplan_layout_1",StringOperators.IS));
+		List<Map<String,Object>> widgetList = cardWidget.get();
+		if(CollectionUtils.isNotEmpty(widgetList)){
+			for(Map<String,Object> widget : widgetList)
+				cardIdsList.add(String.valueOf(widget.get("id")));
+		}
+		String cardIds = String.join(",",cardIdsList);
+		return cardIds;
+	}
+	public static Map<Long,Long> getDashboardWidgetsId() throws Exception {
+		Map<String, FacilioField> widgetFieldAsMap = FieldFactory.getAsMap(FieldFactory.getWidgetFields());
+		String cardIds = getCardWidgetIds();
+		Map<Long,Long> widgetIds = new HashMap<>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(widgetFieldAsMap.get(PackageConstants.DashboardConstants.ID)))
+				.table(ModuleFactory.getWidgetModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(PackageConstants.DashboardConstants.SECTION_ID),CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get("type"), String.valueOf(5),NumberOperators.NOT_EQUALS));
+		if(!cardIds.isEmpty()){
+			selectBuilder.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(DashboardConstants.ID),cardIds,StringOperators.ISN_T));
+		}
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			props.forEach(prop -> widgetIds.put((Long) prop.get(PackageConstants.DashboardConstants.ID),-1L));
+		}
+		return widgetIds;
+	}
+
+	public static Map<Long, DashboardWidgetContext> getWidgetWithIds(List<Long> ids, Map<Long,String> dashboardIdsVsLinkName, Map<Long,String> tabIdsVsLinkName, Map<Long,Map<String, String>> fieldMap,Map<Long,String> filterIdVsName,Map<Long,String> reportIdVsName,Map<Long,String> kpiIdVsName,Map<Long,String> categoryIdVsName) throws Exception {
+		Map<Long, DashboardWidgetContext> widgetIdVsContextMap = new HashMap<>();
+
+		Map<String,FacilioField> filterFields = FieldFactory.getAsMap(FieldFactory.getDashboardUserFilterFields());
+		String tableName = ModuleFactory.getDashboardUserFilterModule().getTableName();
+		Map<Long,Criteria> criteriaMap = getIdVsCriteria(tableName,filterFields.get(PackageConstants.DashboardConstants.CRITERIA_ID));
+		List<DashboardWidgetContext> widgets = getWidgetContextWithIdNew(ids,dashboardIdsVsLinkName,tabIdsVsLinkName,fieldMap,filterIdVsName,criteriaMap,reportIdVsName,kpiIdVsName,categoryIdVsName);
+		for(DashboardWidgetContext widget : widgets) {
+			widgetIdVsContextMap.put(widget.getId(), widget);
+		}
+		Map<String, FacilioField> widgetFieldAsMap = FieldFactory.getAsMap(FieldFactory.getWidgetFields());
+		List<Long> widgetIds = new ArrayList<>();
+		String cardIds = getCardWidgetIds();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(widgetFieldAsMap.get(PackageConstants.DashboardConstants.ID)))
+				.table(ModuleFactory.getWidgetModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(PackageConstants.DashboardConstants.SECTION_ID),CommonOperators.IS_NOT_EMPTY));
+		if(!cardIds.isEmpty()) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(DashboardConstants.ID), cardIds, StringOperators.ISN_T));
+		}
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			props.forEach(prop -> widgetIds.add((Long) prop.get(PackageConstants.DashboardConstants.ID)));
+		}
+		Map<Long,List<DashboardWidgetContext>> sectionIdVsContext = new HashMap<>();
+		if(widgetIds.size()>0) {
+			List<DashboardWidgetContext> widgetContexts = getWidgetContextWithIdNew(widgetIds, dashboardIdsVsLinkName, tabIdsVsLinkName, null, null, null, reportIdVsName,kpiIdVsName,categoryIdVsName);
+			for(DashboardWidgetContext widgetContext : widgetContexts){
+				if(widgetContext!=null){
+					List<DashboardWidgetContext> sectionWidgets = sectionIdVsContext.get(widgetContext.getSectionId());
+					if(sectionWidgets!=null){
+						sectionWidgets.add(widgetContext);
+						sectionIdVsContext.put(widgetContext.getSectionId(),sectionWidgets);
+					} else{
+						List<DashboardWidgetContext> widgetList = new ArrayList<>();
+						widgetList.add(widgetContext);
+						sectionIdVsContext.put(widgetContext.getSectionId(),widgetList);
+					}
+				}
+			}
+		}
+		for(Long sectionId : sectionIdVsContext.keySet()){
+			WidgetSectionContext widget = (WidgetSectionContext) widgetIdVsContextMap.get(sectionId);
+			widget.setWidgets_in_section(sectionIdVsContext.get(sectionId));
+			widgetIdVsContextMap.put(widget.getId(),widget);
+		}
+		return widgetIdVsContextMap;
+	}
+
+	public static List<DashboardWidgetContext> getWidgetContextWithIdNew(List<Long> ids,Map<Long,String> dashboardIdsVsLinkName, Map<Long,String> tabIdsVsLinkName,Map<Long,Map<String, String>> fieldMap,Map<Long,String> filterIdVsName,Map<Long,Criteria> criteriaMap,Map<Long,String> reportIdVsName,Map<Long,String> kpiIdVsName,Map<Long,String> categoryIdVsName) throws Exception {
+		List<FacilioField> fields = FieldFactory.getWidgetFields();
+		Map<String, FacilioField> widgetFieldAsMap = FieldFactory.getAsMap(FieldFactory.getWidgetFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(ModuleFactory.getWidgetModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(PackageConstants.DashboardConstants.ID), ids,NumberOperators.EQUALS));
+		List<Map<String,Object>> props = selectBuilder.get();
+		Map<Long,DashboardWidgetContext> chartList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> viewsList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> staticList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> webList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> graphicList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> cardList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> sectionList = new HashMap<>();
+		Map<Long,DashboardWidgetContext> filterList = new HashMap<>();
+		for(Map<String,Object> prop : props){
+			WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
+			DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
+            Integer type = dashboardWidgetContext.getType();
+			switch(type){
+				case 0:
+					staticList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+                    break;
+				case 1:
+					chartList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 2:
+					viewsList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 4:
+					webList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 5:
+					graphicList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 6:
+					cardList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 7:
+					sectionList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+				case 8:
+					filterList.put(dashboardWidgetContext.getId(),dashboardWidgetContext);
+					break;
+			}
+		}
+		List<Map<Long,DashboardWidgetContext>> typesList = Arrays.asList(staticList,chartList,viewsList,webList,graphicList,cardList,sectionList,filterList);
+		List<DashboardWidgetContext> widgetsContext = new ArrayList<>();
+		for(Map<Long,DashboardWidgetContext> type : typesList){
+			//check typeCast error
+			Set<Long> widgetIdSet = type.keySet() != null ? type.keySet() : new HashSet<>();
+			if(!widgetIdSet.isEmpty()){
+				List<Long> widgetIds = new ArrayList<>(widgetIdSet);
+				Integer widgetType = type.get(widgetIds.get(0)).getType();
+				List<FacilioField> widgetFields = new ArrayList<>();
+				switch(widgetType){
+					case 0:
+						widgetFields.addAll(FieldFactory.getWidgetStaticFields());
+						String staticTableName = ModuleFactory.getWidgetStaticModule().getTableName();
+						List<DashboardWidgetContext> staticContextList = getWidgetDetails(widgetFields,staticTableName,widgetIds,widgetType,staticList);
+						widgetsContext.addAll(staticContextList);
+						break;
+					case 1:
+						widgetFields.addAll(FieldFactory.getWidgetChartFields());
+						String chartTableName = ModuleFactory.getWidgetChartModule().getTableName();
+						List<DashboardWidgetContext> chartContextList = getWidgetDetails(widgetFields,chartTableName,widgetIds,widgetType,chartList);
+						widgetsContext.addAll(chartContextList);
+						break;
+					case 2:
+						widgetFields.addAll(FieldFactory.getWidgetListViewFields());
+						String listViewTableName = ModuleFactory.getWidgetListViewModule().getTableName();
+						List<DashboardWidgetContext> listViewContextList = getWidgetDetails(widgetFields,listViewTableName,widgetIds,widgetType,viewsList);
+						widgetsContext.addAll(listViewContextList);
+						break;
+					case 4:
+						widgetFields.addAll(FieldFactory.getWidgetWebFields());
+						String webTableName = ModuleFactory.getWebTabModule().getTableName();
+						List<DashboardWidgetContext> webContextList = getWidgetDetails(widgetFields,webTableName,widgetIds,widgetType,webList);
+						widgetsContext.addAll(webContextList);
+						break;
+					case 5:
+						widgetFields.addAll(FieldFactory.getWidgetGraphicsFields());
+						String graphicsTableName = ModuleFactory.getGraphicsModule().getTableName();
+						List<DashboardWidgetContext> graphicsContextList = getWidgetDetails(widgetFields,graphicsTableName,widgetIds,widgetType,graphicList);
+						widgetsContext.addAll(graphicsContextList);
+						break;
+					case 6:
+						widgetFields.addAll(FieldFactory.getWidgetCardFields());
+						String cardTableName = ModuleFactory.getWidgetCardModule().getTableName();
+						List<DashboardWidgetContext> cardContextList = getWidgetDetails(widgetFields,cardTableName,widgetIds,widgetType,cardList);
+						widgetsContext.addAll(cardContextList);
+						break;
+					case 7:
+						widgetFields.addAll(FieldFactory.getWidgetSectionFields());
+						String sectionTableName = ModuleFactory.getWidgetSectionModule().getTableName();
+						List<DashboardWidgetContext> sectionContextList = getWidgetDetails(widgetFields,sectionTableName,widgetIds,widgetType,sectionList);
+						widgetsContext.addAll(sectionContextList);
+						break;
+					case 8:
+						widgetFields.addAll(FieldFactory.getDashboardUserFilterFields());
+						String userFilterTableName = ModuleFactory.getDashboardUserFilterModule().getTableName();
+						List<DashboardWidgetContext> userFilterContextList = getWidgetDetails(widgetFields,userFilterTableName,widgetIds,widgetType,filterList);
+						widgetsContext.addAll(userFilterContextList);
+						break;
+				}
+			}
+		}
+		return getWidgetContextList(widgetsContext,dashboardIdsVsLinkName,tabIdsVsLinkName,fieldMap,filterIdVsName,criteriaMap,reportIdVsName,kpiIdVsName,categoryIdVsName);
+	}
+
+	public static List<DashboardWidgetContext> getWidgetDetails(List<FacilioField> fields, String tableName,List<Long> ids, Integer type, Map<Long,DashboardWidgetContext> widgetsMap) throws Exception {
+		Map<String, FacilioField> widgetFieldAsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(tableName);
+		if(type!=8){
+			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get(PackageConstants.DashboardConstants.ID), ids,NumberOperators.EQUALS));
+		} else {
+			selectRecordBuilder.andCondition(CriteriaAPI.getCondition(widgetFieldAsMap.get("widget_id"), ids,NumberOperators.EQUALS));
+		}
+		List<Map<String,Object>> props = selectRecordBuilder.get();
+		List<DashboardWidgetContext> contextList = new ArrayList<>();
+		if(CollectionUtils.isNotEmpty(props)){
+			for(Map<String,Object> prop : props){
+				DashboardWidgetContext context =type!= 8 ? widgetsMap.get(prop.get("id")) : widgetsMap.get(prop.get("widget_id"));
+				Map<String,Object> widgetGenericProps =  FieldUtil.getAsProperties(context);
+				prop.putAll(widgetGenericProps);
+				WidgetType widgetType = WidgetType.getWidgetType((Integer) prop.get("type"));
+				DashboardWidgetContext dashboardWidgetContext = (DashboardWidgetContext) FieldUtil.getAsBeanFromMap(prop, widgetType.getWidgetContextClass());
+				contextList.add(dashboardWidgetContext);
+			}
+		}
+		return contextList;
+	}
+
+	public static List<DashboardWidgetContext> getWidgetContextList(List<DashboardWidgetContext> contexts,Map<Long,String> dashboardIdsVsLinkName, Map<Long,String> tabIdsVsLinkName,Map<Long,Map<String, String>> fieldMap,Map<Long,String> filterIdVsName,Map<Long,Criteria> criteriaMap,Map<Long,String> reportIdVsName,Map<Long,String> kpiIdVsName,Map<Long,String> categoryIdVsName) throws Exception{
+		JSONParser parser = new JSONParser();
+		for(DashboardWidgetContext dashboardWidgetContext: contexts){
+			if(dashboardWidgetContext.getDashboardId()!=null){
+				dashboardWidgetContext.setDashboardLinkName(dashboardIdsVsLinkName.get(dashboardWidgetContext.getDashboardId()));
+			}
+			if(dashboardWidgetContext.getDashboardTabId()!=null){
+				dashboardWidgetContext.setTabLinkName(tabIdsVsLinkName.get(dashboardWidgetContext.getDashboardTabId()));
+			}
+			if(dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.FILTER)){
+				WidgetDashboardFilterContext filterContext = (WidgetDashboardFilterContext) dashboardWidgetContext;
+				filterContext.setFilterLinkName(filterIdVsName.get(filterContext.getDashboardFilterId()));
+				if(filterContext.getFieldId()!=null){
+					filterContext.setLinkNameMap(fieldMap.get(filterContext.getFieldId()));
+				}
+				if(filterContext.getCriteriaId()>0){
+					filterContext.setCriteria(criteriaMap.get(filterContext.getCriteriaId()));
+				}
+				if(filterContext.getDashboardUserFilterJson()!=null){
+					String userFilterJson = filterContext.getDashboardUserFilterJson();
+					JSONObject userFilter = (JSONObject) parser.parse(userFilterJson);
+					if(userFilter.containsKey("widget_field_mapping")){
+						List<JSONObject> mappingList = (List<JSONObject>) userFilter.get("widget_field_mapping");
+						for(JSONObject map : mappingList){
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							Long fieldId = map.containsKey("fieldId") ? (Long) map.get("fieldId") : -1;
+							FacilioField field = modBean.getField(fieldId);
+							map.put("fieldName",field.getName());
+						}
+						userFilter.put("widget_field_mapping",mappingList);
+					}
+					filterContext.setDashboardUserFilterJson(userFilter.toString());
+				}
+			}
+			if(dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+				WidgetCardContext cardContext = (WidgetCardContext) dashboardWidgetContext;
+				serializeCardParams(cardContext,kpiIdVsName,categoryIdVsName);
+				serializeDrillDown(cardContext,cardContext.getCardLayout());
+			}
+			if(dashboardWidgetContext.getWidgetType().equals(WidgetType.STATIC)) {
+				WidgetStaticContext staticContext = (WidgetStaticContext) dashboardWidgetContext;
+				String metaJsonString = staticContext.getMetaJson();
+				try {
+					JSONObject metaJson = (JSONObject) parser.parse(metaJsonString);
+					JSONObject option = (JSONObject) metaJson.get("options");
+					List<JSONObject> areaList = (List<JSONObject>) option.get("areas");
+					for(JSONObject area : areaList){
+						JSONObject link = (JSONObject) area.get("link");
+						String dashboardId = (String) link.get("dashboardId");
+						String reportId = (String) link.get("reportId");
+						if(!dashboardId.isEmpty()){
+							String dashboardLinkName = dashboardIdsVsLinkName.get(Long.valueOf(dashboardId));
+							link.put("dashboardLinkName",dashboardLinkName);
+						}
+						if(!reportId.isEmpty()){
+							String reportLinkName = reportIdVsName.get(Long.valueOf(reportId));
+							link.put("reportLinkName",reportLinkName);
+						}
+						area.put("link",link);
+					}
+					option.put("areas",areaList);
+					metaJson.put("options",option);
+					staticContext.setMetaJson(metaJson.toString());
+				}
+				catch(Exception e){
+				}
+			}
+			if(dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.CHART)){
+				WidgetChartContext chartContext = (WidgetChartContext) dashboardWidgetContext;
+				if(chartContext.getReportId()!=null){
+					chartContext.setReportName(reportIdVsName.get(chartContext.getReportId()));
+				} else{
+					chartContext.setNewReportName(reportIdVsName.get(chartContext.getNewReportId()));
+				}
+				String reportTemplate = chartContext.getReportTemplate();
+				if(reportTemplate!=null){
+					Map<String,String> assetCategoryIdVsName = PackageUtil.getRecordIdVsNameForPicklistModule("assetcategory");
+					JSONObject templateJson = (JSONObject) parser.parse(reportTemplate);
+					if(templateJson!=null){
+						Long categoryId = templateJson.get("categoryId") !=null ? (Long) templateJson.get("categoryId") : -1l;
+						templateJson.put("categoryName",assetCategoryIdVsName.get(String.valueOf(categoryId)));
+						chartContext.setReportTemplate(templateJson.toString());
+					}
+				}
+			}
+			if (dashboardWidgetContext != null) {
+				dashboardWidgetContext.setWidgetVsWorkflowContexts(DashboardUtil.getWidgetVsWorkflowList(dashboardWidgetContext.getId()));
+			}
+		}
+		return contexts;
+	}
+
+public static void deleteRecords(List<Long> ids,FacilioModule module) throws Exception{
+	GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
+	genericDeleteRecordBuilder.table(module.getTableName())
+			.andCondition(CriteriaAPI.getCondition("ID", "id", StringUtils.join(ids, ","), StringOperators.IS));
+
+	genericDeleteRecordBuilder.delete();
+}
+
+	public static List<Long> getFilterFieldIds() throws Exception {
+		Map<String,FacilioField> userFilterFields = FieldFactory.getAsMap(FieldFactory.getDashboardUserFilterFields());
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(userFilterFields.get(FacilioConstants.ContextNames.FIELD_ID)))
+				.table(ModuleFactory.getDashboardUserFilterModule().getTableName());
+		List<Long> fieldIds = new ArrayList<>();
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			for(Map<String,Object> prop: props){
+				if(prop.get(FacilioConstants.ContextNames.FIELD_ID)!=null){
+					fieldIds.add((Long) prop.get(FacilioConstants.ContextNames.FIELD_ID));
+				}
+
+			}
+		}
+		return fieldIds;
+	}
+
+	public static Map<Long,Map<String, String>> getFieldIdVsLinkName(List<Long> ids) throws Exception {
+		Map<Long,Map<String, String>> idVsName = new HashMap<>();
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = moduleBean.getFields(ids);
+		if(CollectionUtils.isNotEmpty(fields)){
+			for(FacilioField field : fields){
+				Map<String,String> linkNameMap= new HashMap<>();
+				linkNameMap.put(FacilioConstants.ContextNames.MODULE_NAME,field.getModule().getName());
+				linkNameMap.put(PackageConstants.DashboardConstants.FIELD_NAME,field.getName());
+				idVsName.put(field.getFieldId(),linkNameMap);
+			}
+		}
+		return idVsName;
+	}
+
+	public static Map<Long, Criteria> getIdVsCriteria(String tableName, FacilioField field) throws Exception {
+		List<Long> criteriaIds = new ArrayList<>();
+		Map<Long,Criteria> criteriaMap = new HashMap<>();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(field))
+				.table(tableName);
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			for(Map<String,Object> prop : props){
+				if(prop.get(PackageConstants.DashboardConstants.CRITERIA_ID)!=null){
+					criteriaIds.add((Long) prop.get(PackageConstants.DashboardConstants.CRITERIA_ID));
+				}
+			}
+		}
+		if(CollectionUtils.isNotEmpty(criteriaIds)){
+			criteriaMap = CriteriaAPI.getCriteriaAsMap(criteriaIds);
+		}
+		return criteriaMap;
+	}
+
+	public static List<FacilioField> getFields(FacilioModule module) throws Exception{
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(BaseFieldFactory.getIdField(module));
+		fields.add(FieldFactory.getField("linkName","LINK_NAME",module,FieldType.STRING));
+		return fields;
+	}
+
+	public static SharingContext<SingleSharingContext> sharingContextConversion(List<DashboardSharingContext> sharing){
+		SharingContext<SingleSharingContext> newSharingContext = new SharingContext<>();
+		for (DashboardSharingContext dashboardSharingContext : sharing) {
+			NewDashboardSharingContext sharingContext = new NewDashboardSharingContext();
+			sharingContext.setId(dashboardSharingContext.getId());
+			sharingContext.setOrgId(dashboardSharingContext.getOrgId());
+			sharingContext.setUserId(dashboardSharingContext.getOrgUserId());
+			sharingContext.setRoleId(dashboardSharingContext.getRoleId());
+			sharingContext.setGroupId(dashboardSharingContext.getGroupId());
+			sharingContext.setType(dashboardSharingContext.getSharingType());
+			sharingContext.setLocked(dashboardSharingContext.getLocked());
+			newSharingContext.add(sharingContext);
+		}
+		return newSharingContext;
+	}
+
+	public static void serializeCardParams(WidgetCardContext cardContext,Map<Long,String> kpiIdVsName,Map<Long,String> categoryIdVsName)  throws Exception {
+		Map<String,String> assetCategoryMap = PackageUtil.getRecordIdVsNameForPicklistModule("assetcategory");
+		Long scriptId = cardContext.getCustomScriptId();
+		List<String> kpiTypeList = Arrays.asList(DashboardConstants.KPI_CARD_LAYOUT_1,DashboardConstants.KPI_CARD_LAYOUT_1);
+		List<String> gaugeLayouts = Arrays.asList(DashboardConstants.GAUGE_LAYOUT_1, DashboardConstants.GAUGE_LAYOUT_2, DashboardConstants.GAUGE_LAYOUT_3,DashboardConstants.GAUGE_LAYOUT_4,DashboardConstants.GAUGE_LAYOUT_5,DashboardConstants.GAUGE_LAYOUT_6);
+		JSONObject cardParams = cardContext.getCardParams();
+		if(scriptId!=null){
+			WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scriptId);
+			cardContext.setCustomScript(workflow.getWorkflowString());
+		}
+		if(cardContext.getCardLayout().equals(PackageConstants.DashboardConstants.GAUGE_LAYOUT_7)){
+			String centerKpiType = cardParams.get("centerTextType")!=null ? (String)  cardParams.get("centerTextType") : "";
+			String maxSafeLimitType =cardParams.get("maxSafeLimitType")!=null ? (String) cardParams.get("maxSafeLimitType") : "";
+			String kpiType = (String) cardParams.get("kpiType");
+			List<JSONObject> kpiList = (List<JSONObject>) cardParams.get("kpis");
+			if(centerKpiType.equals("kpi")){
+				JSONObject centerTextKpi = (JSONObject) cardParams.get("centerTextKpi");
+				replaceKpiIdWithName(centerTextKpi,kpiType,kpiIdVsName,categoryIdVsName);
+			}
+			if(maxSafeLimitType.equals("kpi")){
+				JSONObject maxSafeLimitKpi = (JSONObject) cardParams.get("maxSafeLimitKpi");
+				replaceKpiIdWithName(maxSafeLimitKpi,kpiType,kpiIdVsName,categoryIdVsName);
+			}
+			for(JSONObject kpi : kpiList){
+				replaceKpiIdWithName(kpi,kpiType,kpiIdVsName,categoryIdVsName);
+			}
+		} else if(kpiTypeList.contains(cardContext.getCardLayout())){
+			JSONObject kpi = (JSONObject) cardParams.get("kpi");
+			String kpiType = (String) cardParams.get("kpiType");
+			replaceKpiIdWithName(kpi,kpiType,kpiIdVsName,categoryIdVsName);
+		} else if(gaugeLayouts.contains(cardContext.getCardLayout())){
+			String maxSafeLimitType =  cardParams.get("maxSafeLimitType") !=null ? (String) cardParams.get("maxSafeLimitType") : "";
+			String minSafeLimitType =  cardParams.get("minSafeLimitType")!=null ? (String) cardParams.get("minSafeLimitType") : "";
+			if(maxSafeLimitType.equals("reading")){
+				JSONObject maxSafeLimitReading = (JSONObject) cardParams.get("maxSafeLimitReading");
+				replaceKpiIdInGaugeCard(maxSafeLimitReading);
+			}
+			if(minSafeLimitType.equals("reading")){
+                JSONObject minSafeLimitReading = (JSONObject) cardParams.get("minSafeLimitReading");
+				replaceKpiIdInGaugeCard(minSafeLimitReading);
+			}
+			JSONObject reading = (JSONObject) cardParams.get("reading");
+			replaceKpiIdInGaugeCard(reading);
+		} else if(cardContext.getCardLayout().equals(DashboardConstants.TABLE_LAYOUT_1)){
+			Long assetCategoryId = (Long) cardParams.get("assetCategoryId");
+			String categoryName = assetCategoryMap.get(String.valueOf(assetCategoryId));
+			cardParams.put("assetCategoryName",categoryName);
+		}
+	}
+
+	public static void replaceKpiIdWithName(JSONObject kpi,String kpiType, Map<Long,String> kpiIdVsName,Map<Long,String>categoryIdVsName) throws Exception {
+           if(kpiType.equals("reading")){
+                 Long categoryId = Long.valueOf((String) kpi.get("categoryId"));
+			   String categoryName = categoryIdVsName.get(categoryId);
+			   kpi.put("categoryName",categoryName);
+			   boolean isNewKpi = kpi.containsKey("isNewKpi") ? (boolean) kpi.get("isNewKpi") : false;
+			   if(isNewKpi){
+				   Long kpiId = (Long) kpi.get("kpiId");
+				   ReadingKPIContext kpiContext = ReadingKpiAPI.getReadingKpi(Long.valueOf(kpiId));
+				   String kpiLinkName = kpiContext.getLinkName();
+				   kpi.put("kpiLinkName",kpiLinkName);
+			   }
+		   } else{
+			   Long kpiId  = (Long) kpi.get("kpiId");
+			   String  moduleKpiName = kpiIdVsName.get(kpiId);
+			   kpi.put("moduleKpiName",moduleKpiName);
+		   }
+	}
+
+	public static void replaceKpiIdInGaugeCard(JSONObject kpi) throws Exception {
+		String kpiType = kpi.containsKey("kpiType") ? (String) kpi.get("kpiType") : "";
+		if(kpiType.equals("DYNAMIC")){
+			Long kpiId = (Long) kpi.get("fieldId");
+			ReadingKPIContext kpiContext = ReadingKpiAPI.getReadingKpi(Long.valueOf(kpiId));
+			kpi.put("kpiLinkName",kpiContext.getLinkName());
+		}
+	}
+
+	public static void serializeDrillDown(WidgetCardContext cardContext, String cardLayout) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		JSONObject drillDown = cardContext.getCardDrilldown();
+		if(drillDown!=null){
+			JSONObject drillDownObject = (JSONObject) (cardLayout.equals("controlcard_layout_1") ? drillDown.get("set-reading-button") : drillDown.get("default"));
+			String actionType = (String) drillDownObject.get("actionType");
+			JSONObject data = (JSONObject) drillDownObject.get("data");
+			if(actionType.equals("controlAction")){
+				Long fieldId = (Long) data.get("fieldId");
+				if(fieldId!=null) {
+					FacilioField field = modBean.getField(fieldId);
+					data.put("fieldName", field.getName());
+					data.put("moduleName",field.getModule().getName());
+				}
+			} else if (actionType.equals("showReport")) {
+				Long reportId = (Long) data.get("reportId");
+				Map<Long,String> reportIdVsName = getIdVsNameMap(ModuleFactory.getReportModule());
+				data.put("reportLinkName",reportIdVsName.get(reportId));
+			}
+			drillDownObject.put("data",data);
+			if(cardLayout.equals("controlcard_layout_1")){
+				drillDown.put("set-reading-button",drillDownObject);
+			}
+			else{
+				drillDown.put("default",drillDownObject);
+			}
+		}
+	}
+	public static Map<String,Long> getNameVsIdMap(FacilioModule module) throws Exception{
+		List<Map<String,Object>> propsList = DashboardUtil.getIdAndLinkNameAsProp(module);
+		Map<String,Long> nameVsId = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(propsList)) {
+			for (Map<String, Object> prop : propsList) {
+				String linkName = (String) prop.get(DashboardConstants.LINK_NAME);
+				Long id = (Long) prop.get(DashboardConstants.ID);
+				if(linkName!=null && id!=null){
+					nameVsId.put(linkName, id);
+				}
+			}
+		}
+		return nameVsId;
+	}
+	public static Map<Long,String> getIdVsNameMap(FacilioModule module) throws Exception{
+		List<Map<String,Object>> propsList = DashboardUtil.getIdAndLinkNameAsProp(module);
+		Map<Long,String> idVsName = new HashMap<>();
+		if (CollectionUtils.isNotEmpty(propsList)) {
+			for (Map<String, Object> prop : propsList) {
+				String linkName = (String) prop.get(DashboardConstants.LINK_NAME);
+				Long id = (Long) prop.get(DashboardConstants.ID);
+				if(linkName!=null && id!=null){
+					idVsName.put(id, linkName);
+				}
+			}
+		}
+		return idVsName;
+	}
 }
 class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
 { 

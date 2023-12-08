@@ -98,5 +98,10 @@ public class DashboardTabContext implements Comparable<DashboardTabContext> {
 		int compareQuantity = that.getSequence(); 
 		return this.sequence - compareQuantity;
 	}
+
 	private String linkName;
+
+	private String dashboardLinkName;
+
+	private String subTabLinkName;
 }

@@ -12,11 +12,15 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.report.V3ScheduledReportRelContext;
 import com.facilio.bmsconsoleV3.util.HashMapValueComparator;
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fs.FileInfo;
 import com.facilio.modules.*;
+import com.facilio.readingkpi.ReadingKpiAPI;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportFieldContext;
@@ -1066,6 +1070,11 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		reportContext.setCreatedTime(System.currentTimeMillis());
 		reportContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
 		Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+		if(context.containsKey("dashboard_clone")){
+			props.put("appId",context.get("target_app_id"));
+		}else if(!(reportContext.getAppId() > 0)){
+			props.put("appId",AccountUtil.getCurrentUser().getApplicationId());
+		}
 		Long appId = context.containsKey("dashboard_clone") ? (Long) context.get("target_app_id") : reportContext.getAppId() > 0 ? reportContext.getAppId() : AccountUtil.getCurrentUser().getApplicationId();
 		props.put("appId",appId);
 		long id = insertBuilder.insert(props);
@@ -1930,4 +1939,536 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return dataresult;
 	}
-}
+
+	public static Map<Long, ReportFolderContext> getReportFolderWithIds(List<Long> folderIds) throws Exception {
+
+		Map<Long, ReportFolderContext> folderIdVsFolderMap = new HashMap<>();
+		Map<String,FacilioField> folderFieldsAsMap = FieldFactory.getAsMap(FieldFactory.getReport1FolderFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReport1FolderFields())
+				.table(ModuleFactory.getReportFolderModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(folderFieldsAsMap.get(PackageConstants.DashboardConstants.ID), StringUtils.join(folderIds,","), StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+
+		Map<Long, String> appIdVsAppName = DashboardUtil.getAppIdVsAppName();
+		if(CollectionUtils.isNotEmpty(props)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String,Object> prop : props){
+				ReportFolderContext reportFolderContext = FieldUtil.getAsBeanFromMap(prop, ReportFolderContext.class);
+				Long appId = reportFolderContext.getAppId();
+				FacilioModule module = modBean.getModule(reportFolderContext.getModuleId());
+				String moduleName = module.getName();
+				String appName = appIdVsAppName.get(appId);
+				reportFolderContext.setAppName(appName);
+				reportFolderContext.setModuleName(moduleName);
+				folderIdVsFolderMap.put(reportFolderContext.getId(),reportFolderContext);
+			}
+		}
+		return folderIdVsFolderMap;
+	}
+
+	public static boolean getReportWithLinkName(String linkName) throws Exception {
+		FacilioModule module = ModuleFactory.getReportModule();
+		Map<String,FacilioField> reportFields = FieldFactory.getAsMap(FieldFactory.getReport1Fields());
+		FacilioField reportLinkName = reportFields.get(FacilioConstants.ContextNames.LINK_NAME);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(reportLinkName))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName", linkName, StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(props)){
+			return true;
+		}
+		return false;
+	}
+
+	public static Map<Long, ReportContext> getReportsWithId(List<Long> reportIds,Map<Long,String> folderIdVsLinkName) throws Exception {
+		Map<Long,ReportContext> reports = new HashMap<>();
+		Map<String,FacilioField> reportFields = FieldFactory.getAsMap(FieldFactory.getReport1Fields());
+		Map<String,String> categoryIdVsName = PackageUtil.getRecordIdVsNameForPicklistModule("assetcategory");
+		FacilioModule module = ModuleFactory.getReportModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReport1Fields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(reportFields.get(PackageConstants.DashboardConstants.ID),StringUtils.join(reportIds,","),StringOperators.IS));
+
+		List<Map<String,Object>> props = selectBuilder.get();
+		Map<Long, String> appIdVsAppName = DashboardUtil.getAppIdVsAppName();
+		if(CollectionUtils.isNotEmpty(props)){
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for(Map<String,Object> prop : props){
+				ReportContext report =FieldUtil.getAsBeanFromMap(prop,ReportContext.class);
+				if(report.getModuleId()>0){
+					FacilioModule moduleObject= modBean.getModule(report.getModuleId());
+					String modName = moduleObject.getName();
+					report.setModuleName(modName);
+				}
+				reports.put(report.getId(),report);
+				String folderName = folderIdVsLinkName.get(report.getReportFolderId());
+				report.setFolderName(folderName);
+				String appName = appIdVsAppName.get(report.getAppId());
+				report.setAppName(appName);
+				if(report.getWorkflowId()!=null){
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(report.getWorkflowId());
+					report.setWorkFlowString(workflow.getWorkflowString());
+				}
+
+				String chartState = report.getChartState();
+				JSONParser parse = new JSONParser();
+				if(chartState !=null){
+					JSONObject chartStateJson = (JSONObject) parse.parse(chartState);
+					JSONObject newChartState = new JSONObject();
+					Set<String> keys = chartStateJson.keySet();
+
+					if(report.getType() == 2){
+						for(String key : keys){
+							if(key.equals("initialConfig")){
+								JSONObject initialConfig = (JSONObject) chartStateJson.get("initialConfig");
+								JSONObject dimension = (JSONObject) initialConfig.get("dimension");
+								JSONObject newDimension = serializeDimension(dimension,newChartState);
+								initialConfig.put("dimension",newDimension);
+								List<JSONObject> metrics = (List<JSONObject>) initialConfig.get("metric");
+								List<JSONObject> newMetric = new ArrayList<>();
+								JSONObject newMetricAgg = new JSONObject();
+								for(JSONObject metric : metrics) {
+									if(metric.containsKey("defaultMetric")) {
+										newMetric.add(metric);
+									} else {
+										JSONObject metricObj = new JSONObject();
+										metricObj.put("fieldName",metric.get("name"));
+										String moduleName = metric.containsKey("module") ? (String) ((JSONObject) metric.get("module")).get("name") : null;
+										metricObj.put("moduleName",moduleName);
+										JSONObject metricAggregation = (JSONObject) initialConfig.get("metricAggregation");
+										StringBuilder aggKey = new StringBuilder();
+										aggKey.append(metric.get("id"))
+												.append("__")
+												.append(metric.get("name"));
+										Long fieldId = (Long) metric.get("id");
+										if(fieldId ==-1) {
+											metricObj.put("fieldId",metric.get("fieldId"));
+											newMetricAgg.put(aggKey.toString(),metricAggregation.get(aggKey.toString()));
+										} else {
+											StringBuilder newAggKey = new StringBuilder();
+											newAggKey.append(metric.get("name"))
+													.append("__")
+													.append(moduleName);
+											newMetricAgg.put(newAggKey.toString(),metricAggregation.get(aggKey.toString()));
+										}
+										newMetric.add(metricObj);
+									}
+								}
+								initialConfig.put("metric",newMetric);
+								initialConfig.put("metricAggregation", newMetricAgg);
+								JSONObject groupBy = (JSONObject) initialConfig.get("groupBy");
+								JSONObject groupDimension = (JSONObject) groupBy.get("dimension");
+								JSONObject groupSubDimension = (JSONObject) groupBy.get("subDimension");
+								if(groupDimension!=null && groupSubDimension!=null){
+									JSONObject newGroupBy = serializeDimension(groupBy,newChartState);
+									initialConfig.put("groupBy",newGroupBy);
+								}
+								if(initialConfig.get("criteria") !=null) {
+									JSONObject criteria = (JSONObject) initialConfig.get("criteria");
+									newChartState.put("configCriteria",criteria);
+								}
+								if(initialConfig.get("customDateField")!=null){
+									String customDateField = (String) initialConfig.get("customDateField");
+									List<String> dateSplit = Arrays.asList(customDateField.split("_"));
+									FacilioField field = modBean.getField(Long.parseLong(dateSplit.get(0)));
+									Map<String,String> newCustomDateField = new HashMap<>();
+									newCustomDateField.put("fieldName",field.getName());
+									newCustomDateField.put("moduleName",field.getModule().getName());
+									initialConfig.put("customDateField",newCustomDateField);
+								}
+								if(initialConfig.get("userFilters")!=null){
+									serializeUserFilter(initialConfig);
+								}
+								if(initialConfig.get("having")!=null){
+									for(JSONObject dataFilter : (List<JSONObject>) initialConfig.get("having")){
+										FacilioField field = modBean.getField((Long) dataFilter.get("fieldId"));
+										dataFilter.put("moduleName",field.getModule().getName());
+									}
+								}
+								if(initialConfig.get("reportDrilldownPath")!=null){
+									for(JSONObject drillDown : (List<JSONObject>) initialConfig.get("reportDrilldownPath")){
+										JSONObject xField = (JSONObject) drillDown.get("xField");
+										FacilioField field = modBean.getField((Long) xField.get("field_id"));
+										xField.put("fieldName",field.getName());
+										xField.put("moduleName",field.getModule().getName());
+										drillDown.put("xField",xField);
+									}
+								}
+								newChartState.put("initialConfig",initialConfig);
+							} else if(key.equals("dataPoints")) {
+								List<JSONObject> dataPoints = dataPointSerialize(chartStateJson,newChartState);
+								newChartState.put("dataPoints",dataPoints);
+							} else {
+								newChartState.put(key,chartStateJson.get(key));
+							}
+						}
+					} else {
+						for(String key : keys){
+							if(key.equals("common")){
+								JSONObject common = (JSONObject) chartStateJson.get("common");
+								JSONObject filters = (JSONObject) common.get("filters");
+								if(filters !=null){
+									JSONObject filterState = (JSONObject) filters.get("filterState");
+									if(filterState!=null){
+										List<Long> categoryFilter = (List<Long>) filterState.get("categoryFilter");
+										if(CollectionUtils.isNotEmpty(categoryFilter)){
+											List<String> newAssetCategory = new ArrayList<>();
+											for(Long categoryId : categoryFilter){
+												newAssetCategory.add(categoryIdVsName.get(String.valueOf(categoryId)));
+											}
+											filterState.put("categoryFilter",newAssetCategory);
+										}
+										filters.put("filterState",filterState);
+									}
+									common.put("filters",filters);
+								}
+
+								JSONObject sorting = (JSONObject) common.get("sorting");
+								if(sorting!=null){
+									Long sortingFieldId  = sorting.get("sortByField") != null ? (Long) sorting.get("sortByField") : -1;
+									if(sortingFieldId > -1){
+										FacilioField sortingField = modBean.getField(sortingFieldId);
+										sorting.put("fieldName",sortingField.getName());
+										sorting.put("moduleName", sortingField.getModule().getName());
+										common.put("sorting",sorting);
+									}
+								}
+								newChartState.put("common",common);
+							} else{
+								newChartState.put(key,chartStateJson.get(key));
+							}
+						}
+					}
+					String newChartStateString = newChartState.toString();
+					report.setChartState(newChartStateString);
+				}
+
+				String tabularState = report.getTabularState();
+				if(tabularState !=null){
+					JSONObject tabularStateJson = (JSONObject) parse.parse(tabularState);
+					Long dateFieldId = (Long) tabularStateJson.get("dateFieldId");
+					if(dateFieldId!=null && dateFieldId>0){
+						FacilioField field = modBean.getField(dateFieldId);
+						tabularStateJson.put("dateFieldModuleName",field.getModule().getName());
+						tabularStateJson.put("dateFieldName",field.getName());
+					}
+
+					List<JSONObject> dataList = (List<JSONObject>) tabularStateJson.get("data");
+					if(CollectionUtils.isNotEmpty(dataList)){
+						for(JSONObject data : dataList){
+							pivotDataSerialize(data);
+						}
+						tabularStateJson.put("data",dataList);
+					}
+					List<JSONObject> valuesList = (List<JSONObject>) tabularStateJson.get("values");
+					if(CollectionUtils.isNotEmpty(valuesList)){
+						for(JSONObject value : valuesList){
+                           String valueType = (String) value.get("valueType");
+							if(valueType.equals("DATA")){
+								JSONObject moduleMeasure = (JSONObject) value.get("moduleMeasure");
+								pivotDataSerialize(moduleMeasure);
+								value.put("moduleMeasure",moduleMeasure);
+							}
+						}
+						tabularStateJson.put("values",valuesList);
+					}
+					List<JSONObject> rows = (List<JSONObject>) tabularStateJson.get("rows");
+					if(CollectionUtils.isNotEmpty(rows)){
+						for(JSONObject row : rows){
+							pivotDataSerialize(row);
+						}
+						tabularStateJson.put("rows",rows);
+					}
+					report.setTabularState(tabularStateJson.toString());
+				}
+
+				List<ReportDataPointContext> dataPoints =  report.getDataPoints();
+				for(ReportDataPointContext dataPoint : dataPoints){
+					if(dataPoint.getHavingCriteria()!=null){
+						List<ReportHavingContext> havingCriteria = dataPoint.getHavingCriteria();
+						for(ReportHavingContext having : havingCriteria){
+							FacilioField field = modBean.getField(having.getFieldId());
+							having.setModuleName(field.getModule().getName());
+						}
+						dataPoint.setHavingCriteria(havingCriteria);
+					}
+					if(dataPoint.getxAxis()!=null){
+						int lookupFieldId = (int) dataPoint.getxAxis().getLookupFieldId();
+						if(lookupFieldId>0){
+							FacilioField field = modBean.getField(lookupFieldId);
+							dataPoint.getxAxis().setLookUpFieldName(field.getName());
+							dataPoint.getxAxis().setLookUpFieldModuleName(field.getModule().getName());
+						}
+					}
+					if(dataPoint.getyAxis()!=null){
+						int lookupFieldId = (int) dataPoint.getyAxis().getLookupFieldId();
+						if(lookupFieldId>0){
+							FacilioField field = modBean.getField(lookupFieldId);
+							dataPoint.getyAxis().setLookUpFieldName(field.getName());
+							dataPoint.getyAxis().setLookUpFieldModuleName(field.getModule().getName());
+						}
+						String kpiId = dataPoint.getyAxis().getDynamicKpi();
+						if(kpiId!=null && !(kpiId.isEmpty())){
+							ReadingKPIContext kpiContext = ReadingKpiAPI.getReadingKpi(Long.valueOf(kpiId));
+							dataPoint.getyAxis().setKpiLinkName(kpiContext.getLinkName());
+						}
+					}
+					List<ReportGroupByField> groupByFields = dataPoint.getGroupByFields();
+					if(groupByFields!=null){
+						for(ReportGroupByField groupByField : groupByFields){
+							if(groupByField!=null && groupByField.getLookupFieldId()>0){
+								FacilioField field = modBean.getField(groupByField.getLookupFieldId());
+								groupByField.setLookUpFieldName(field.getName());
+								groupByField.setLookUpFieldModuleName(field.getModule().getName());
+							}
+						}
+					}
+					Long dateFieldId = dataPoint.getDateFieldId();
+					if(dateFieldId > -1){
+						if(!(dataPoint.getDateFieldModuleName() !=null && dataPoint.getDateFieldName()!=null)){
+							FacilioField field = modBean.getField(dateFieldId);
+							dataPoint.setDateFieldName(field.getName());
+							dataPoint.setDateFieldModuleName(field.getModule().getName());
+						}
+					}
+					Map<String,Object> metaData = dataPoint.getMetaData();
+					if(metaData!=null){
+						if(metaData.containsKey("categoryId")){
+							Integer categoryId = (Integer) metaData.get("categoryId");
+							metaData.put("categoryName",categoryIdVsName.get(String.valueOf(categoryId)));
+						}
+					}
+					Long assetCategoryId = dataPoint.getAssetCategoryId();
+					if(assetCategoryId>0){
+						dataPoint.setAssetCategoryName(categoryIdVsName.get(String.valueOf(assetCategoryId)));
+					}
+				}
+				report.setDataPoints(dataPoints);
+
+				List<ReportDrilldownPathContext> drillDowns = report.getReportDrilldownPath();
+				if(drillDowns!=null) {
+					for(ReportDrilldownPathContext drillDown : drillDowns) {
+						JSONObject xField = drillDown.getxField();
+						FacilioField field = modBean.getField((Integer) xField.get("field_id"));
+						xField.put("fieldName",field.getName());
+						xField.put("moduleName",field.getModule().getName());
+						drillDown.setxField(xField);
+					}
+					report.setReportDrilldownPath(drillDowns);
+				}
+
+				ReportTemplateContext templateContext = report.getReportTemplate();
+				if(templateContext!=null){
+					if(templateContext.getCategoryId()!=null){
+						templateContext.setCategoryName(categoryIdVsName.get(String.valueOf(templateContext.getCategoryId())));
+					}
+					report.setReportTemplate(templateContext);
+				}
+
+				JSONObject dataFilter = report.getDataFilterJSON();
+				JSONObject conditions = (JSONObject) dataFilter.get("conditions");
+				if(conditions !=null && CollectionUtils.isNotEmpty(conditions.keySet())){
+					Set<String> filterKeys = (Set<String>) conditions.keySet();
+					for(String key : filterKeys){
+						JSONObject condition = (JSONObject) conditions.get(key);
+						Long fieldId = (Long) condition.get("fieldId");
+						if(fieldId>0){
+							FacilioField field = modBean.getField(fieldId);
+							condition.put("moduleName", field.getModule().getName());
+							condition.put("fieldName",field.getName());
+							conditions.put(key,condition);
+						}
+					}
+					dataFilter.put("conditions",conditions);
+					report.setDataFilter(dataFilter.toString());
+				}
+
+			}
+		}
+		return reports;
+	}
+
+	public static JSONObject serializeDimension(JSONObject axisObject ,JSONObject newChartState) throws Exception {
+		JSONObject dimensionObject = (JSONObject) axisObject.get("dimension");
+		String displayName = (String) dimensionObject.get("displayName");
+		JSONObject subDimension = (JSONObject) axisObject.get("subDimension");
+		JSONObject newSubDimension =  new JSONObject();
+		if(!displayName.equals("Space")){
+			dimensionObject.put("subFields",new ArrayList<>());
+			newSubDimension.put("fieldName",subDimension.get("name"));
+			JSONObject moduleObj = (JSONObject) subDimension.get("module");
+			newSubDimension.put("moduleName",moduleObj.get("name"));
+			if(subDimension.containsKey("selectedIds")){
+				JSONObject selectedIdObj = new JSONObject();
+				List<Long> selectedIds = (List<Long>) subDimension.get("selectedIds");
+				JSONObject lookUpModule = (JSONObject) subDimension.get("lookupModule");
+				Long moduleType = (Long) lookUpModule.get("type");
+				selectedIdObj.put("lookUpModuleName",lookUpModule.get("name"));
+				selectedIdObj.put("moduleType",moduleType);
+				int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
+				if(moduleType == pickListModule && lookUpModule.equals("ticketstatus")){
+					newChartState.put("dimensionSelectedId",selectedIds);
+					newChartState.put("dimensionPickListName",moduleObj.get("name"));
+				} else if(moduleType == pickListModule){
+					Map<String,String> recordIdVsName = PackageUtil.getRecordIdVsNameForPicklistModule((String) lookUpModule.get("name"));
+					List<String> pickListName = selectedIds.stream().map(id->recordIdVsName.get(String.valueOf(id))).collect(Collectors.toList());
+					selectedIdObj.put("names",pickListName);
+				} else{
+					selectedIdObj.put("selectedIds",selectedIds);
+				}
+				newChartState.put("selectedIdObj",selectedIdObj);
+			}
+			axisObject.put("subDimension",newSubDimension);
+		}
+		axisObject.put("dimension",dimensionObject);
+		return axisObject;
+	}
+
+	public static void  pivotDataSerialize(JSONObject data) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		JSONObject field = (JSONObject) data.get("field");
+		if(field!=null){
+			field.put("module",new JSONObject());
+			String moduleName = (String) data.get("moduleName");
+			Long moduleId = (Long) field.get("moduleId");
+			if(moduleName==null && moduleId > 0){
+				FacilioModule module = modBean.getModule(moduleId);
+				field.put("moduleName",module.getName());
+			}
+			data.put("field",field);
+		}
+		Long dateField = (Long) data.get("dateFieldId");
+		if(dateField!=null && dateField>0){
+			FacilioField dateFieldObj = modBean.getField(dateField);
+			data.put("dateFieldName",dateFieldObj.getName());
+			data.put("dateModuleName",dateFieldObj.getModule().getName());
+		}
+		if(data.containsKey("lookupFieldId")){
+			Long lookupFieldId = (Long) data.get("lookupFieldId");
+			if(lookupFieldId>0){
+				FacilioField lookupField = modBean.getField(lookupFieldId);
+				data.put("lookupFieldName",lookupField.getName());
+				data.put("lookupModuleName",lookupField.getModule().getName());
+			}
+		}
+	}
+
+	public static List<JSONObject> dataPointSerialize(JSONObject chartStateJson, JSONObject newChartState) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<JSONObject> dataPoints = (List<JSONObject>) chartStateJson.get("dataPoints");
+		for(JSONObject dataPoint : dataPoints){
+			if(dataPoint.containsKey("groupBy")){
+				List<JSONObject> groupByList = (List<JSONObject>) dataPoint.get("groupBy");
+				for(JSONObject groupBy : groupByList) {
+					Long fieldId = (Long) groupBy.get("id");
+					if (fieldId > -1) {
+						FacilioField field = modBean.getField(fieldId);
+						String moduleName = field.getModule().getName();
+						groupBy.put("moduleName",moduleName);
+						int fieldType = field.getDataType();
+						groupBy.put("fieldType",fieldType);
+						int lookUpType =  FieldType.LOOKUP.getTypeAsInt();
+						int multiLookUpType = FieldType.MULTI_LOOKUP.getTypeAsInt();
+						if(fieldType == lookUpType || fieldType == multiLookUpType){
+							FacilioModule lookUpModule = ((LookupField)field).getLookupModule();
+							groupBy.put("lookUpName",lookUpModule.getName());
+							Integer moduleType = lookUpModule.getType();
+							JSONObject groupByLabel = (JSONObject) dataPoint.get("groupByLabelValues");
+							JSONObject groupByLabelObj = (JSONObject) groupByLabel.get(String.valueOf(fieldId));
+							Set<String> keys = groupByLabelObj.keySet();
+							int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
+							if(moduleType == pickListModule && lookUpModule.getName().equals("ticketstatus")&& keys.size()>0){
+								groupBy.put("isPickList", true);
+								newChartState.put("groupByPickListIds",keys);
+								newChartState.put("groupByParentModule",moduleName);
+							} else if (moduleType == pickListModule && keys.size()>0) {
+								List<JSONObject> children = (List<JSONObject>) groupBy.get("children");
+								groupBy.put("isPickList", true);
+								Map<String,String> pickListIdVsName = PackageUtil.getRecordIdVsNameForPicklistModule(lookUpModule.getName());
+								List<String> keyList = new ArrayList<>(keys);
+								Map<String,String> pickListMap = new HashMap<>();
+								for(String key : keyList){
+									pickListMap.put(pickListIdVsName.get(key), (String) groupByLabelObj.get(key));
+								}
+								if(CollectionUtils.isNotEmpty(children)){
+									for(JSONObject child : children){
+										child.put("fieldId",pickListIdVsName.get(child.get("fieldId")));
+									}
+								}
+								groupByLabel.put(fieldId,pickListMap);
+								dataPoint.put("groupByLabelValues",groupByLabel);
+								dataPoint.put("children", children);
+							}else{
+								groupBy.put("isPickList", false);
+							}
+						}
+					}
+				}
+				dataPoint.put("groupBy",groupByList);
+			}
+		}
+		return dataPoints;
+	}
+
+	public static void serializeUserFilter(JSONObject initialConfig) throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(JSONObject userFilter : (List<JSONObject>) initialConfig.get("userFilters")){
+			FacilioField field = modBean.getField((Long) userFilter.get("fieldId"));
+			userFilter.put("fieldName",field.getName());
+			userFilter.put("moduleName",field.getModule().getName());
+			JSONObject chooseValue = (JSONObject) userFilter.get("chooseValue");
+			List<String> chosenValues = (List<String>) chooseValue.get("values");
+			List<String> defaultValues = (List<String>) userFilter.get("defaultValues");
+			List<Map<String,String>> allValues = (List<Map<String,String>>) userFilter.get("allValues");
+			List<String> allValuesId = new ArrayList<>();
+			Map<String,String> allValueAsMap = new HashMap<>();
+			for(Map<String,String> value : allValues){
+				for(Map.Entry<String,String> innerMap : value.entrySet()){
+					allValueAsMap.put(innerMap.getKey(),innerMap.getValue());
+					allValuesId.add(innerMap.getKey());
+				}
+			}
+			String lookupModuleName = (String) userFilter.get("lookupModuleName");
+			FacilioModule lookUpModule = ((LookupField) field).getLookupModule();
+			int moduleType = lookUpModule.getType();
+			int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
+			if(moduleType == pickListModule && lookupModuleName.equals("ticketstatus")){
+				if(!chosenValues.isEmpty()){
+					userFilter.put("userFilterChosenValues",chosenValues);
+				}
+				if(!defaultValues.isEmpty()){
+					userFilter.put("userFilterDefaultValues",defaultValues);
+				}
+				if(!allValuesId.isEmpty()){
+					userFilter.put("userFilterAllValues", allValuesId);
+					userFilter.put("allValues",allValueAsMap);
+				}
+			} else if(moduleType == pickListModule){
+				Map<String,String> lookupMap = PackageUtil.getRecordIdVsNameForPicklistModule(lookupModuleName);
+				if(!chosenValues.isEmpty()){
+					List<String> pickList = chosenValues.stream().map(id->lookupMap.get(id)).collect(Collectors.toList());
+					chooseValue.put("values",pickList);
+					userFilter.put("chooseValue",chooseValue);
+				}
+				if(!defaultValues.isEmpty()){
+					List<String> pickList = defaultValues.stream().map(id -> lookupMap.get(id)).collect(Collectors.toList());
+                   userFilter.put("defaultValues",pickList);
+				}
+				if(!allValuesId.isEmpty()){
+					Map<String,String> allValuesMap  = new HashMap<>();
+					for(String value : allValuesId){
+						allValuesMap.put(value,lookupMap.get(value));
+					}
+					userFilter.put("allValues",allValuesMap);
+				}
+			}
+			else{
+				userFilter.put("allValues",allValueAsMap);
+			}
+		}
+	}
+ }

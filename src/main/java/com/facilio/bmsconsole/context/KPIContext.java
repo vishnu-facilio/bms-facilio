@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import java.io.Serializable;
+import java.util.Map;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,7 +15,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-@Getter@Setter
+
+@Getter @Setter
 public class KPIContext implements Serializable {
 	/**
 	 * 
@@ -306,5 +308,9 @@ public class KPIContext implements Serializable {
 		return builder.toString();
 	}
 
+	private Map<String,String> metricFieldObj;
+	private Map<String,String> dateFieldObj;
+	private String workFlowString;
 	private String linkName;
+
 }

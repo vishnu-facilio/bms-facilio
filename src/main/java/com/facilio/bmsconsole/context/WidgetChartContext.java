@@ -3,9 +3,11 @@ package com.facilio.bmsconsole.context;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import com.facilio.report.util.ReportUtil;
-
+@Getter @Setter
 public class WidgetChartContext extends DashboardWidgetContext {
 
 	/**
@@ -60,6 +62,9 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	}
 
 	public String reportType;
+	private String reportName;
+	private  String newReportName;
+
 	@Override
 	public JSONObject widgetJsonObject(boolean optimize) {
 		JSONObject resultJson = new JSONObject();

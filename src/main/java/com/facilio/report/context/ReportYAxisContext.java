@@ -1,7 +1,10 @@
 package com.facilio.report.context;
 
 import com.facilio.modules.AggregateOperator;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter @Setter
 public class ReportYAxisContext extends ReportFieldContext {
 	private AggregateOperator aggr;
 	public AggregateOperator getAggrEnum() {
@@ -42,4 +45,5 @@ public class ReportYAxisContext extends ReportFieldContext {
 		// TODO Auto-generated method stub
 		return getField()+"";
 	}
+	private String kpiLinkName;
 }

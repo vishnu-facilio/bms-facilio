@@ -1835,6 +1835,11 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain getAddOrUpdateModuleReportChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateReportCommand());
+        return c;
+    }
     public static FacilioChain getreportShareChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new ReportSharePermission());
@@ -2516,7 +2521,16 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new V3UpdateDashboardTabWidgetCommand());
         return c;
     }
-
+    public static FacilioChain getAddOrUpdateDashboardAndTabChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateDashboardAndTabCommand());
+        return c;
+    }
+    public static FacilioChain addOrUpdateWidgetChain(){
+        FacilioChain c =  getDefaultChain();
+        c.addCommand(new AddOrUpdateWidgetCommand());
+        return c;
+    }
     public static FacilioChain getDashboardTabListChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new GetDashboardTabListCommand());

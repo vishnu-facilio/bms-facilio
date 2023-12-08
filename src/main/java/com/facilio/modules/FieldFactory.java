@@ -7699,7 +7699,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSiteIdField(module));
         fields.add(getNameField(module));
         fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
-        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
         fields.add(getField("moduleId", "MODULE_ID", module, FieldType.LOOKUP));
         fields.add(getField("metricId", "METRIC_FIELD_ID", module, FieldType.LOOKUP));
         fields.add(getField("metricName", "METRIC_NAME", module, FieldType.STRING));

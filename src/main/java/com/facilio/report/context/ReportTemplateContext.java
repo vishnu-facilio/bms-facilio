@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -17,6 +19,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
+@Getter @Setter
 public class ReportTemplateContext {
 	private Long templateType;
 	private Boolean show;
@@ -146,4 +149,5 @@ public class ReportTemplateContext {
 	public void setCategoryFillter1(List<ReportTemplateCategoryFilterContext> categoryFillter1) {
 		this.categoryFillter1 = categoryFillter1;
 	}
+	private String categoryName;
 }

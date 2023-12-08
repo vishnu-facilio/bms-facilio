@@ -6,11 +6,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
+@Getter @Setter
 public class DashboardContext extends ModuleBaseWithCustomFields implements Cloneable {
 
 	/**
@@ -157,7 +160,9 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setBuildingExcludeList(List<Long> buildingExcludeList) {
 		this.buildingExcludeList = buildingExcludeList;
 	}
-	
+
+	private SharingContext<SingleSharingContext> newSharingContext;
+
 	List<DashboardSharingContext> dashboardSharingContext;
 
 	public List<DashboardSharingContext> getDashboardSharingContext() {
@@ -240,6 +245,8 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public Long modifiedTime;
 	public Long createdBy;
 	public Long modifiedBy;
+
+	private String folderLinkName;
 
 	public Boolean getIsTabPresent() {
 		return isTabPresent;

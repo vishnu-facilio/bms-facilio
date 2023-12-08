@@ -7,8 +7,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.componentpackage.constants.PackageConstants;
+import com.facilio.componentpackage.interfaces.PackageBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -494,4 +500,53 @@ public class KPIUtil {
 		
 		return obj;
 	}
+	public static Map<Long,KPIContext> getModuleKpiWithId(List<Long> kpiIds,Map<Long,Map<String,String>> metricIdVsField,Map<Long,Map<String,String>> dateFieldIdVsField) throws Exception{
+		Map<Long, KPIContext> kpiIdVsMap = new HashMap<>();
+
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getKPIFields());
+		String tableName = ModuleFactory.getKpiModule().getTableName();
+		Map<Long,Criteria> criteriaMap = DashboardUtil.getIdVsCriteria(tableName,fieldMap.get(PackageConstants.DashboardConstants.CRITERIA_ID));
+		Map<String,FacilioField> kpiFieldAsMap = FieldFactory.getAsMap(FieldFactory.getKPIFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getKPIFields())
+				.table(ModuleFactory.getKpiModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(kpiFieldAsMap.get(PackageConstants.DashboardConstants.ID), StringUtils.join(kpiIds,","), StringOperators.IS));
+		List<Map<String,Object>> props = selectBuilder.get();
+
+		if(CollectionUtils.isNotEmpty(props)) {
+			for(Map<String,Object> prop : props){
+				KPIContext kpiContext = FieldUtil.getAsBeanFromMap(prop, KPIContext.class);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(kpiContext.getModuleId());
+				kpiContext.setModuleName(module.getName());
+				if(kpiContext.getWorkflowId()>0){
+					WorkflowContext workflow = WorkflowUtil.getWorkflowContext(kpiContext.getWorkflowId());
+					kpiContext.setWorkFlowString(workflow.getWorkflowString());
+				}
+				Long metricId = kpiContext.getMetricId();
+				if(metricId>0){
+                   kpiContext.setMetricFieldObj(metricIdVsField.get(metricId));
+				}
+				if(kpiContext.getCriteriaId()>0){
+					kpiContext.setCriteria(criteriaMap.get(kpiContext.getCriteriaId()));
+				}
+				Long dateFieldId = kpiContext.getDateFieldId();
+				if(dateFieldId!=null){
+					kpiContext.setDateFieldObj(dateFieldIdVsField.get(dateFieldId));
+				}
+				kpiIdVsMap.put(kpiContext.getId(),kpiContext);
+			}
+		}
+		return kpiIdVsMap;
+	}
+	public static List<Map<String,Object>> getFieldIds(FacilioModule module, FacilioField field) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(field))
+				.table(module.getTableName());
+		List<Map<String,Object>> props = selectBuilder.get();
+		return props;
+	}
+
+
 }

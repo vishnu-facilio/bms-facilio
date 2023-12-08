@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.facilio.modules.fields.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.modules.FacilioModule;
@@ -16,6 +18,7 @@ import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+@Getter @Setter
 public class ReportFieldContext {
 
 	private long id = -1;
@@ -290,6 +293,9 @@ public class ReportFieldContext {
 	public boolean isOuterJoin() {
 		return CollectionUtils.isNotEmpty(selectValuesOnly);
 	}
+
+	private String lookUpFieldName;
+	private String lookUpFieldModuleName;
 
 	@Override
 	public boolean equals(Object obj) {

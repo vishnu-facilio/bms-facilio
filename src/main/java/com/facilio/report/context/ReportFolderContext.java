@@ -148,4 +148,6 @@ public class ReportFolderContext extends ModuleBaseWithCustomFields {
 
 	public Long appId;
 	private String linkName;
+	private String appName;
+	private String moduleName;
 }

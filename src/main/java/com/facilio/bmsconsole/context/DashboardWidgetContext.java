@@ -9,6 +9,8 @@ import java.util.Map;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -17,6 +19,7 @@ import org.json.simple.parser.ParseException;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
 
+@Getter @Setter
 public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 
 	/**
@@ -179,6 +182,10 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		this.widgetSettingsJsonString = widgetSettingsJsonString;
 	}
 
+	//for sandbox
+	public String getWidgetSettingJsonAsString(){
+		return this.widgetSettingsJsonString;
+	}
 
 
 	JSONObject widgetSettings;
@@ -520,4 +527,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 			return nameMap;
 		}
 	}
+
+	private String dashboardLinkName;
+
+	private String tabLinkName;
 }

@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.context.dashboard;
 
 import com.facilio.bmsconsole.context.DashboardFieldMappingContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
+import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioIntEnum;
@@ -16,6 +17,7 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Setter
 @Getter
@@ -196,6 +198,28 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
     List<String> selectedDayOrHourValues;
     ComponentType componentType;
     FilterDisplayType filterDisplayType;
+    Boolean isAllOptionEnabled;
+    Boolean isOthersOptionEnabled;
+    Boolean showOnlyRelevantValues;
+    private String filterLinkName;
+    private String widgetLinkName;
+    private Map<String,String> linkNameMap;
+    OptionType optionType;
+
+    public int getOptionType()
+    {
+        if(this.optionType!=null)
+        {
+            return this.optionType.getIndex();
+        }
+        else {
+            return -1;
+        }
+    }
+    public void setOptionType(int optionType) {
+        this.optionType = OptionType.valueOf(optionType);
+    }
+
     public void setFilterDisplayType(Integer filterDisplayType) {
         this.filterPojo.setDisplayType(filterDisplayType);
         this.filterDisplayType = WidgetDashboardFilterContext.FilterDisplayType.valueOf(filterDisplayType);

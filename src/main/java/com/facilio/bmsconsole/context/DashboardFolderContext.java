@@ -71,6 +71,7 @@ public class DashboardFolderContext {
 	public long getAppId() {
 		return appId;
 	}
+	private String appName;
 
 	public void setAppId(long appId) {
 		this.appId = appId;
