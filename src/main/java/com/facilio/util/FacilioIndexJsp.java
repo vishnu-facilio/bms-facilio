@@ -1,19 +1,16 @@
 package com.facilio.util;
 
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.util.DBConf;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import lombok.SneakyThrows;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpRequest;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 public class FacilioIndexJsp {
@@ -47,7 +44,7 @@ public class FacilioIndexJsp {
         }
     }
 
-    private static final String X_ORG_GROUP_HEADER = "X-Org-Group", X_ORG_ID_HEADER = "X-Org-Id", X_VERSION_HEADER = "X-Version";
+    private static final String X_ORG_GROUP_HEADER = "X-Org-Group", X_ORG_ID_HEADER = "X-Org-Id", X_VERSION_HEADER = "X-Version", X_CSRF_Token="X-CSRF-Token";
     public static String constructRequestHeaders (HttpServletRequest request) {
         Organization org = (Organization) request.getAttribute(RequestUtil.REQUEST_CURRENT_ORG);
         JSONObject headers = new JSONObject();
@@ -56,6 +53,7 @@ public class FacilioIndexJsp {
                 headers.put(X_ORG_GROUP_HEADER, org.getGroupName());
             }
             headers.put(X_ORG_ID_HEADER, org.getOrgId());
+            headers.put(X_CSRF_Token, FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE));
         }
         if (DBConf.getInstance().isNewVersion()) {
             headers.put(X_VERSION_HEADER, NEW_SERVER_QUERY_PARAM_VAL);
