@@ -543,31 +543,34 @@ public class TriggerUtil {
 
 	public static void addTriggersForWorkflowRule(WorkflowRuleContext rule) throws Exception {
 
-		if (!((rule.getActivityTypeEnum().equals(EventType.CREATE)) || (rule.getActivityTypeEnum().equals(EventType.EDIT)) ||
-				(rule.getActivityTypeEnum().equals(EventType.CREATE_OR_EDIT)) || (rule.getActivityTypeEnum().equals(EventType.FIELD_CHANGE)) ||
-				(rule.getActivityTypeEnum().equals(EventType.SCHEDULED)))){
-			return;
-		}
+		if (rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.MODULE_RULE) || rule.getRuleTypeEnum().equals(WorkflowRuleContext.RuleType.MODULE_RULE_NOTIFICATION)) {
 
-		List<BaseTriggerContext> triggers = CollectionUtils.isNotEmpty(rule.getTriggers()) ? rule.getTriggers() : getTriggers(rule.getModuleName(),rule.getActivityTypeEnum(),rule.getFields(),rule.getDateFieldId(),rule.getScheduleTypeEnum(),rule.getInterval(),rule.getTimeObj());
-		boolean flag = false;
-		Set<EventType> eventTypes = triggers.stream().map(BaseTriggerContext::getEventTypeEnum).collect(Collectors.toSet());
-
-		if ( rule.getActivityTypeEnum().equals(EventType.CREATE_OR_EDIT) && CollectionUtils.isNotEmpty(triggers)){
-			if (eventTypes.contains(EventType.CREATE) && !(eventTypes.contains(EventType.EDIT))){
-				rule.setActivityType(EventType.EDIT);
-				flag = true;
-			}else if (eventTypes.contains(EventType.EDIT) && !(eventTypes.contains(EventType.CREATE))){
-				rule.setActivityType(EventType.CREATE);
-				flag = true;
+			if (!((rule.getActivityTypeEnum().equals(EventType.CREATE)) || (rule.getActivityTypeEnum().equals(EventType.EDIT)) ||
+					(rule.getActivityTypeEnum().equals(EventType.CREATE_OR_EDIT)) || (rule.getActivityTypeEnum().equals(EventType.FIELD_CHANGE)) ||
+					(rule.getActivityTypeEnum().equals(EventType.SCHEDULED)))) {
+				return;
 			}
-		}
 
-		if (flag || CollectionUtils.isEmpty(triggers)){
-			triggers.addAll(addTriggerForRule(rule));
-		}
+			List<BaseTriggerContext> triggers = CollectionUtils.isNotEmpty(rule.getTriggers()) ? rule.getTriggers() : getTriggers(rule.getModuleName(), rule.getActivityTypeEnum(), rule.getFields(), rule.getDateFieldId(), rule.getScheduleTypeEnum(), rule.getInterval(), rule.getTimeObj());
+			boolean flag = false;
+			Set<EventType> eventTypes = triggers.stream().map(BaseTriggerContext::getEventTypeEnum).collect(Collectors.toSet());
 
-		addTriggersForWorkflowRule(rule,triggers);
+			if (rule.getActivityTypeEnum().equals(EventType.CREATE_OR_EDIT) && CollectionUtils.isNotEmpty(triggers)) {
+				if (eventTypes.contains(EventType.CREATE) && !(eventTypes.contains(EventType.EDIT))) {
+					rule.setActivityType(EventType.EDIT);
+					flag = true;
+				} else if (eventTypes.contains(EventType.EDIT) && !(eventTypes.contains(EventType.CREATE))) {
+					rule.setActivityType(EventType.CREATE);
+					flag = true;
+				}
+			}
+
+			if (flag || CollectionUtils.isEmpty(triggers)) {
+				triggers.addAll(addTriggerForRule(rule));
+			}
+
+			addTriggersForWorkflowRule(rule, triggers);
+		}
 	}
 
 	public static List<BaseTriggerContext> getTriggers(String moduleName, EventType eventType, List<FieldChangeFieldContext> fields, Long dateFieldId, WorkflowRuleContext.ScheduledRuleType scheduledRuleType, Long timeInterval, LocalTime timeValue) throws Exception{
