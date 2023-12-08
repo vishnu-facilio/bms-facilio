@@ -21,7 +21,6 @@ public class AddNamespaceCommand extends FacilioCommand {
         V3Util.throwRestException(ns.getParentRuleId() == null, ErrorCode.VALIDATION_ERROR, "Parent rule id cannot be null.");
 
         Long categoryId = getCategoryOrIUtilityId(context);
-        V3Util.throwRestException(categoryId==null,ErrorCode.VALIDATION_ERROR,"CategoryId cannot be null in Base Rule");
 
         ns.setCategoryId(categoryId);
         ns.setResourceType(resourceType.getIndex());
@@ -33,7 +32,7 @@ public class AddNamespaceCommand extends FacilioCommand {
 
     private static Long getCategoryOrIUtilityId(Context context) {
         return (Long) (context.containsKey(FacilioConstants.ContextNames.PARENT_CATEGORY_ID) ?
-                context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID) :
+                context.getOrDefault(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,null) :
                 context.get(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID));
     }
 }

@@ -25,7 +25,7 @@ public class GetCategoryModuleCommand extends FacilioCommand {
         LOGGER.info("Inside GetCategoryModuleCommand");
         String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
         FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
-        long categoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
+        long categoryId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_CATEGORY_ID,-1l);
         if (categoryId > 0) {
             if (ModuleFactory.getAssetCategoryReadingRelModule().equals(categoryReadingRelModule)) { //spl handling for asset category
                 handleAssetCategoryChain(categoryId, context);

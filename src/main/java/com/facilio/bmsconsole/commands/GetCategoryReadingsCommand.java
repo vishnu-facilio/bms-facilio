@@ -24,36 +24,29 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-;
 
 public class GetCategoryReadingsCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		FacilioModule categoryReadingRelModule = (FacilioModule) context.getOrDefault(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,null);
+		FacilioModule categoryReadingRelModule = (FacilioModule) context.getOrDefault(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, null);
 
 		if (categoryReadingRelModule == null) {
 			return false;
 		}
 
-		Boolean onlyReading = (Boolean) context.get(FacilioConstants.ContextNames.ONLY_READING);
-		if (onlyReading == null) {
-			onlyReading = false;
-		}
-
 		long parentCategoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		List<FacilioModule> childReadingModuleList = new ArrayList<>();
 
-		if(parentCategoryId != -1) {
+		if (parentCategoryId != -1) {
 			if (categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {
-				childReadingModuleList=assetCategoryRel(context, parentCategoryId);
+				childReadingModuleList = assetCategoryRel(context, parentCategoryId);
 			} else {
 				List<FacilioField> fields = FieldFactory.getCategoryReadingsFields(categoryReadingRelModule);
-				childReadingModuleList=relModuleImplementation(context, categoryReadingRelModule, fields, parentCategoryId);
+				childReadingModuleList = relModuleImplementation(context, categoryReadingRelModule, fields, parentCategoryId);
 			}
-		}
-		else if (categoryReadingRelModule.equals(ModuleFactory.getSpaceCategoryReadingRelModule())) {
+		} else if (categoryReadingRelModule.equals(ModuleFactory.getSpaceCategoryReadingRelModule())) {
 			//Assuming if parentId is passed, it will be handled in space specific readings command.
 			long parentId = (long) context.getOrDefault(FacilioConstants.ContextNames.PARENT_ID, -1l);
 			if (parentId == -1) {
@@ -63,35 +56,14 @@ public class GetCategoryReadingsCommand extends FacilioCommand {
 			}
 		}
 
-		List<FacilioModule> existingReadings = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
-		if (existingReadings == null) {
-			context.put(FacilioConstants.ContextNames.MODULE_LIST, childReadingModuleList);
-		} else {
-			existingReadings.addAll(childReadingModuleList);
-		}
+		List<FacilioModule> existingReadings = (List<FacilioModule>) context.getOrDefault(FacilioConstants.ContextNames.MODULE_LIST, new ArrayList<>());
+		existingReadings.addAll(childReadingModuleList);
+
+		context.put(FacilioConstants.ContextNames.MODULE_LIST, existingReadings);
 		return false;
 	}
 
-	private List<FacilioModule> assetCategoryRel(Context context, long parentCategoryId) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
-		SelectRecordsBuilder<AssetCategoryContext> builder = new SelectRecordsBuilder<AssetCategoryContext>()
-				.beanClass(AssetCategoryContext.class)
-				.module(assetCategoryModule)
-				.select(modBean.getAllFields("assetcategory"))
-				.andCondition(CriteriaAPI.getIdCondition(parentCategoryId, assetCategoryModule));
-		List<AssetCategoryContext> list = builder.get();
-
-
-		if (CollectionUtils.isNotEmpty(list)) {
-			AssetCategoryContext assetCategoryContext = list.get(0);
-			return getReadingModulesFromSubModuleRel(assetCategoryContext.getAssetModuleID(),context);
-		}
-		return new ArrayList<>();
-	}
-
-	private static List<FacilioModule> getReadingModulesFromSubModuleRel(Long parentModuleId,Context context) throws Exception {
+	private static List<FacilioModule> getReadingModulesFromSubModuleRel(Long parentModuleId, Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> readings = new ArrayList<>();
 
@@ -114,6 +86,25 @@ public class GetCategoryReadingsCommand extends FacilioCommand {
 
 		return readings;
 
+	}
+
+	private List<FacilioModule> assetCategoryRel(Context context, long parentCategoryId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
+		SelectRecordsBuilder<AssetCategoryContext> builder = new SelectRecordsBuilder<AssetCategoryContext>()
+				.beanClass(AssetCategoryContext.class)
+				.module(assetCategoryModule)
+				.select(modBean.getAllFields("assetcategory"))
+				.andCondition(CriteriaAPI.getIdCondition(parentCategoryId, assetCategoryModule));
+		List<AssetCategoryContext> list = builder.get();
+
+
+		if (CollectionUtils.isNotEmpty(list)) {
+			AssetCategoryContext assetCategoryContext = list.get(0);
+			return getReadingModulesFromSubModuleRel(assetCategoryContext.getAssetModuleID(), context);
+		}
+		return new ArrayList<>();
 	}
 
 	private List<FacilioModule> relModuleImplementation(Context context, FacilioModule categoryReadingRelModule, List<FacilioField> fields, long parentCategoryId) throws Exception {

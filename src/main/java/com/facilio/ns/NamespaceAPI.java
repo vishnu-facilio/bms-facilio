@@ -100,14 +100,8 @@ public class NamespaceAPI {
 
     @FacilioDataProcessing
     private static void setNsStatusNdResourceType(NameSpaceContext ns) throws Exception {
-        Map<String, Object> connectedProp = CommonConnectedUtil.getConnectedData(ns);
 
-        Long categoryId = (Long) connectedProp.get("categoryId");
-        Boolean categoryLevelStatus = AssetCategoryFeatureStatusUtil.validateFldWithNs(categoryId, ns.getTypeEnum());
-        int resourceType = connectedProp.containsKey("resourceType") ? (Integer) connectedProp.get("resourceType") : ResourceType.ASSET_CATEGORY.getIndex(); //TODO:remove impact check once resourceType supported in impact
-
-        ns.setResourceType(ns.getTypeEnum().equals(NSType.VIRTUAL_METER) ? ResourceType.METER_CATEGORY.getIndex() : resourceType);
-        ns.setCategoryId(categoryId);
+        Boolean categoryLevelStatus = AssetCategoryFeatureStatusUtil.validateFldWithNs(ns.getCategoryId(), ns.getTypeEnum());
         ns.setStatus(ns.getStatus() && categoryLevelStatus);
     }
 

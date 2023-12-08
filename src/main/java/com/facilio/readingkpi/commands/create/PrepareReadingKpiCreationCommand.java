@@ -111,7 +111,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 ModuleBean moduleBean=Constants.getModBean();
                 FacilioModule siteModule=moduleBean.getModule(FacilioConstants.ContextNames.SITE);
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
-                context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, siteModule.getModuleId());
                 break;
         }
     }

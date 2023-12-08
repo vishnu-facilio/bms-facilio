@@ -132,10 +132,10 @@ public class ReadingAction extends FacilioAction {
 				addMeterReading();
 				break;
 		case "Building":
-			addSpaceTypeReading(ContextNames.BUILDING,null);
+			addSpaceTypeReading(ContextNames.BUILDING);
 			break;
 		case "floor":
-			addSpaceTypeReading(ContextNames.FLOOR,null);
+			addSpaceTypeReading(ContextNames.FLOOR);
 			break;
 		case "site":
 			addSpaceTypeReading(ContextNames.SITE,FacilioConstants.TableNames.SITE_READINGS);
@@ -144,8 +144,11 @@ public class ReadingAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
-	public String addSpaceTypeReading(String parentModuleName,String readingsTableName) throws Exception {
+
+	public void addSpaceTypeReading(String parentModuleName) throws Exception {
+		addSpaceTypeReading(parentModuleName, null);
+	}
+	public void addSpaceTypeReading(String parentModuleName,String readingsTableName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
@@ -154,8 +157,6 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		FacilioChain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
-		
-		return SUCCESS;
 	}
 
 	public String addSpaceCategoryReading() throws Exception {
