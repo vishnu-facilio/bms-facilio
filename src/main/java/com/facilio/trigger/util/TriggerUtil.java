@@ -563,7 +563,7 @@ public class TriggerUtil {
 			}
 		}
 
-		if (CollectionUtils.isEmpty(triggers) || flag){
+		if (flag || CollectionUtils.isEmpty(triggers)){
 			triggers.addAll(addTriggerForRule(rule));
 		}
 
