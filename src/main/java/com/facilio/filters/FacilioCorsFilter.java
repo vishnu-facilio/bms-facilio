@@ -126,6 +126,8 @@ public class FacilioCorsFilter implements Filter {
             }
             if(!(StringUtils.isNotEmpty(request.getRequestURI()) && request.getRequestURI().contains(UriFilter.URL_PATTERN))) {
                 csp = String.format(csp,"'unsafe-inline' 'unsafe-eval'");
+            } else {
+                csp = String.format(csp,StringUtils.EMPTY);
             }
             response.setHeader(CONTENT_SECURITY_POLICY , csp);
         }
