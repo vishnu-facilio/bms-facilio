@@ -1,12 +1,10 @@
 package com.facilio.readingkpi.commands.list;
 
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.command.FacilioCommand;
-import com.facilio.connected.CommonConnectedUtil;
-import com.facilio.connected.ResourceType;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingkpi.ReadingKpiLoggerAPI;
 import com.facilio.readingkpi.context.KpiResourceLoggerContext;
@@ -42,13 +40,12 @@ public class FetchResourceNamesForKpiLogger extends FacilioCommand {
     private static String getKpiLoggerResourceName(KpiResourceLoggerContext resourceLogger) throws Exception {
         ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi(Collections.singletonList(resourceLogger.getKpiId())).get(0);
         switch (kpi.getResourceTypeEnum()) {
-            case ASSET_CATEGORY:
-                AssetContext asset = AssetsAPI.getAssetInfo(resourceLogger.getResourceId());
-                return asset != null ? asset.getName() : null;
             case METER_CATEGORY:
                 V3MeterContext meterContext = MetersAPI.getMeters(Collections.singletonList(resourceLogger.getResourceId())).get(0);
                 return meterContext.getName();
+            default:
+                ResourceContext resourceContext = ResourceAPI.getResource(resourceLogger.getResourceId());
+                return resourceContext != null ? resourceContext.getName() : null;
         }
-        return null;
     }
 }

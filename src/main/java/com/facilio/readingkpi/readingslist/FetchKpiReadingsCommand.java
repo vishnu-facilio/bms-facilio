@@ -131,7 +131,7 @@ public class FetchKpiReadingsCommand extends FacilioCommand {
 
     private static void setCategoryModuleName(Map<String, Object> record) throws Exception {
         int resourceType = (int) record.get("resourceType");
-        long categoryId = (long) record.get("categoryId");
+        Long categoryId = (Long) record.getOrDefault("categoryId",null);
         ResourceType resourceType1 = ResourceType.valueOf(resourceType);
         String moduleNameFromCategory = CommonConnectedUtil.getModuleNameFromCategory(resourceType1, categoryId);
         record.put("parentModuleName", moduleNameFromCategory);

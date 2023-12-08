@@ -465,8 +465,8 @@ public class CommonConnectedUtil {
             return null;
             //TODO: hack, need to remove this return check. added for backward compatibility
         }
-        FacilioContext resultCtx = V3Util.getSummary(type.getCategoryModuleName(), Lists.newArrayList(categoryId));
-        List<T> categories = Constants.getRecordListFromContext(resultCtx, type.getCategoryModuleName());
+        FacilioContext resultCtx = V3Util.getSummary(type.getParentModuleName(), Lists.newArrayList(categoryId));
+        List<T> categories = Constants.getRecordListFromContext(resultCtx, type.getParentModuleName());
         if (CollectionUtils.isEmpty(categories)) {
             throw new IllegalArgumentException("Invalid Category Id");
         }

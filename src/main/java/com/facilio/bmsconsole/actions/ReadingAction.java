@@ -132,19 +132,25 @@ public class ReadingAction extends FacilioAction {
 				addMeterReading();
 				break;
 		case "Building":
+			addSpaceTypeReading(ContextNames.BUILDING,null);
+			break;
 		case "floor":
+			addSpaceTypeReading(ContextNames.FLOOR,null);
+			break;
 		case "site":
-			addSpaceTypeReading();
+			addSpaceTypeReading(ContextNames.SITE,FacilioConstants.TableNames.SITE_READINGS);
+			break;
 		}
 		
 		return SUCCESS;
 	}
 	
-	public String addSpaceTypeReading() throws Exception {
+	public String addSpaceTypeReading(String parentModuleName,String readingsTableName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.READING_NAME, getReadingName());
 		context.put(FacilioConstants.ContextNames.PARENT_ID, getParentCategoryId());
-		context.put(FacilioConstants.ContextNames.PARENT_MODULE, ContextNames.SITE);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE,parentModuleName);
+		context.put(ContextNames.MODULE_DATA_TABLE_NAME,readingsTableName);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		FacilioChain addReadingChain = TransactionChainFactory.addResourceReadingChain();
 		addReadingChain.execute(context);
@@ -343,7 +349,8 @@ public class ReadingAction extends FacilioAction {
 	public String getAssetReadings() throws Exception {
 		return getCategoryReadings(ModuleFactory.getAssetCategoryReadingRelModule());
 	}
-	
+	/** ParentId required in entities come under basespace and parentId denotes parentModuleId of the entity
+	 */
 	private String getCategoryReadings(FacilioModule module) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);

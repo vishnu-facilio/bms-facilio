@@ -2,6 +2,7 @@ package com.facilio.connected;
 
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.connected.scopeHandler.AssetCommissioningHandler;
@@ -24,7 +25,7 @@ import java.util.List;
 public enum ResourceType implements FacilioIntEnum {
     ASSET_CATEGORY(FacilioConstants.ContextNames.ASSET, new AssetCommissioningHandler(), "Asset") {
         @Override
-        public String getCategoryModuleName() {
+        public String getParentModuleName() {
             return FacilioConstants.ContextNames.ASSET_CATEGORY;
         }
 
@@ -41,7 +42,7 @@ public enum ResourceType implements FacilioIntEnum {
     },
     SPACE_CATEGORY(FacilioConstants.ContextNames.SPACE, new SpaceCommissioningHandler(), "Space") {
         @Override
-        public String getCategoryModuleName() {
+        public String getParentModuleName() {
             throw new IllegalArgumentException("Not Supported Yet");
         }
 
@@ -57,7 +58,7 @@ public enum ResourceType implements FacilioIntEnum {
     },
     METER_CATEGORY(FacilioConstants.Meter.METER, new MeterCommissioningHandler(), "Meter") {
         @Override
-        public String getCategoryModuleName() {
+        public String getParentModuleName() {
             return FacilioConstants.Meter.UTILITY_TYPE;
         }
 
@@ -73,7 +74,7 @@ public enum ResourceType implements FacilioIntEnum {
     },
     SITE(FacilioConstants.ContextNames.SITE, null, "Site") {
         @Override
-        public String getCategoryModuleName() {
+        public String getParentModuleName() {
             throw new IllegalArgumentException("Not Supported Yet");
         }
 
@@ -85,7 +86,7 @@ public enum ResourceType implements FacilioIntEnum {
 
         @Override
         public <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception {
-            return new ArrayList<>();
+            return (List<T>) SpaceAPI.getAllSites();
         }
 
     };
@@ -108,7 +109,7 @@ public enum ResourceType implements FacilioIntEnum {
         this.name = name;
     }
 
-    public abstract String getCategoryModuleName() throws Exception;
+    public abstract String getParentModuleName() throws Exception;
     public abstract Long getModuleId(V3Context category) throws Exception;
     public abstract <T extends ModuleBaseWithCustomFields> List<T> getResources(Long categoryId) throws Exception;
 

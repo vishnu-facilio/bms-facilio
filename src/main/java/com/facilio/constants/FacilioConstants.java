@@ -4105,6 +4105,7 @@ public class FacilioConstants {
 		public static final String TICKET = "Tickets";
 		public static final String WORK_ORDER_REQUEST = "WorkOrderRequests";
 		public static final String SPACE = "Space";
+		public static final String SITE_READINGS = "Site_Readings";
 	}
 
 	public static class LinkNamePrefix {
