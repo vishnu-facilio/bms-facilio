@@ -7,10 +7,12 @@ import java.util.Map;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class AddItemCommandV3 extends FacilioCommand {
 
@@ -19,7 +21,7 @@ public class AddItemCommandV3 extends FacilioCommand {
 		String moduleName = Constants.getModuleName(context);
 		Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
 		List<V3ItemContext> itemRecords = recordMap.get(moduleName);
-		if (itemRecords != null && !itemRecords.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(itemRecords)) {
 			List<V3PurchasedItemContext> purchasedItems = new ArrayList<>();
 			for (V3ItemContext item : itemRecords) {
 				if (item.getPurchasedItems() != null && !item.getPurchasedItems().isEmpty()) {

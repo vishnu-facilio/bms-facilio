@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.inventoryrequest;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
@@ -8,7 +9,10 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -105,5 +109,69 @@ public class PurchasedToolsQuantityRollupCommandV3 extends FacilioCommand {
         }
         return false;
     }
+    public static Map<String, Double> rollupAllTransactions(long inventoryCostId, String fieldName, String moduleName) throws Exception {
 
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule consumableModule = modBean.getModule(moduleName);
+        List<FacilioField> consumableFields = modBean.getAllFields(moduleName);
+        Map<String, FacilioField> consumableFieldMap = FieldFactory.getAsMap(consumableFields);
+
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(consumableModule.getTableName())
+                .andCustomWhere(consumableModule.getTableName() + ".ORGID = " + AccountUtil.getCurrentOrg().getOrgId())
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(consumableModule),String.valueOf(consumableModule.getModuleId()), NumberOperators.EQUALS));
+//                .andCustomWhere("APPROVED_STATE = ? OR APPROVED_STATE = ? ", 1, 3);
+        // builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"),
+        // String.valueOf(1), NumberOperators.EQUALS))
+        // .orCondition(CriteriaAPI.getCondition(consumableFieldMap.get("approvedState"),
+        // String.valueOf(3), NumberOperators.EQUALS));
+
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(FieldFactory.getField("addition", "sum(case WHEN TRANSACTION_STATE = 1 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("issues", "sum(case WHEN TRANSACTION_STATE = 2 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND (PARENT_TRANSACTION_ID <= 0 OR PARENT_TRANSACTION_ID IS NULL) THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("adjustments_increase", "sum(case WHEN TRANSACTION_STATE = 7 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("adjustments_decrease", "sum(case WHEN TRANSACTION_STATE = 8 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("transferredFrom", "sum(case WHEN TRANSACTION_STATE = 9 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("transferredTo", "sum(case WHEN TRANSACTION_STATE = 10 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        fields.add(FieldFactory.getField("hardReserve", "sum(case WHEN TRANSACTION_STATE = 11 THEN QUANTITY ELSE 0 END)",
+                FieldType.DECIMAL));
+        builder.select(fields);
+
+        builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get(fieldName),
+                String.valueOf(inventoryCostId), PickListOperators.IS));
+
+        List<Map<String, Object>> rs = builder.get();
+
+        Double currentQuantity = 0.0;
+        Double adjustments_decrease = 0.0;
+        if (rs != null && rs.size() > 0) {
+            double addition = 0, issues = 0, returns = 0, used = 0 , adjustments_increase = 0, transferredFrom=0, transferredTo=0, hardReserve=0;
+            addition = rs.get(0).get("addition") != null ? (double) rs.get(0).get("addition") : 0;
+            issues = rs.get(0).get("issues") != null ? (double) rs.get(0).get("issues") : 0;
+            returns = rs.get(0).get("returns") != null ? (double) rs.get(0).get("returns") : 0;
+            used = rs.get(0).get("used") != null ? (double) rs.get(0).get("used") : 0;
+            adjustments_decrease = rs.get(0).get("adjustments_decrease") != null ? (double) rs.get(0).get("adjustments_decrease") : 0;
+            adjustments_increase = rs.get(0).get("adjustments_increase") != null ? (double) rs.get(0).get("adjustments_increase") : 0;
+            transferredFrom= rs.get(0).get("transferredFrom") != null ? (double) rs.get(0).get("transferredFrom") : 0;
+            transferredTo= rs.get(0).get("transferredTo") != null ? (double) rs.get(0).get("transferredTo") : 0;
+            hardReserve = rs.get(0).get("hardReserve") != null ? (double) rs.get(0).get("hardReserve") : 0;
+            issues += used;
+            issues +=transferredFrom;
+
+            currentQuantity = ((addition + returns + adjustments_increase + transferredTo) - issues - adjustments_decrease - hardReserve);
+        }
+        Map<String,Double> rollupQuantity = new HashMap<>();
+        rollupQuantity.put(FacilioConstants.ContextNames.CURRENT_QUANTITY,currentQuantity);
+        rollupQuantity.put(FacilioConstants.ContextNames.ADJUSTMENT_DECREASE,adjustments_decrease);
+        return rollupQuantity;
+    }
 }

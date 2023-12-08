@@ -316,6 +316,8 @@ public class ItemTypesModule extends BaseModuleConfig{
         FormField currentQuantity = new FormField("currentQuantity", FacilioField.FieldDisplayType.NUMBER, "Current Quantity", FormField.Required.OPTIONAL, 9, 2);
         currentQuantity.setHideField(true);
         itemTypesFormFields.add(currentQuantity);
+        itemTypesFormFields.add(new FormField("costType", FacilioField.FieldDisplayType.SELECTBOX, "Cost Type", FormField.Required.OPTIONAL, 10, 2));
+
 
 //        itemTypesForm.setFields(itemTypesFormFields);
 

@@ -121,10 +121,10 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     if(workorderItem.getAsset()==null){
                                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Rotating Asset cannot be empty");
                                     }
-                                    wItem = setWorkorderItemObj(purchasedItem, 1, item, parentId, approvalState, wo, workorderItem.getAsset(), workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
+                                    wItem = setWorkorderItemObj(purchasedItem, 1, item, parentId, approvalState, wo, workorderItem.getAsset(), workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,false);
                                 } else {
                                     wItem = setWorkorderItemObj(purchasedItem, workorderItem.getQuantity(), item,
-                                            parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
+                                            parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,false);
                                 }
                                 // updatePurchasedItem(purchaseditem);
                                 wItem.setId(workorderItem.getId());
@@ -176,22 +176,28 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                         assetRecord.setSpace(assetSpace);
                                     }
                                     assetRecord.setCanUpdateRotatingAsset(true);
-                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, assetRecord, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
+                                    woItem = setWorkorderItemObj(null, 1, item, parentId, approvalState, wo, assetRecord, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,false);
                                     updateAsset(assetRecord);
                                     workorderItemslist.add(woItem);
                                     itemToBeAdded.add(woItem);
                             }
                         } else {
                             List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
-
                             if (purchasedItems != null && !purchasedItems.isEmpty()) {
                                 V3PurchasedItemContext pItem = purchasedItems.get(0);
+                                if(item.getCostType().equals(CostType.WEIGHTED_AVERAGE.getIndex())){
+                                    V3WorkorderItemContext woItem = new V3WorkorderItemContext();
+                                    woItem = setWorkorderItemObj(pItem, workorderItem.getQuantity(), item, parentId,
+                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,true);
+                                    itemToBeAdded.add(woItem);
+                                    context.put(FacilioConstants.ContextNames.IS_WEIGHTED_AVERAGE,true);
+                                }
                                 if (workorderItem.getQuantity() <= pItem.getCurrentQuantity()) {
                                     V3WorkorderItemContext woItem = new V3WorkorderItemContext();
                                     woItem = setWorkorderItemObj(pItem, workorderItem.getQuantity(), item, parentId,
-                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
+                                            approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,false);
                                     workorderItemslist.add(woItem);
-                                    if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE)){
+                                    if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE.getIndex())){
                                         itemToBeAdded.add(woItem);
                                     }
                                 } else {
@@ -205,10 +211,10 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                             quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
                                         }
                                         woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-                                                parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap);
+                                                parentId, approvalState, wo, null, workorderItem.getRequestedLineItem(), parentTransactionId, context, workorderItem, baseCurrency, currencyMap,false);
                                         requiredQuantity -= quantityUsedForTheCost;
                                         workorderItemslist.add(woItem);
-                                        if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE)){
+                                        if(!item.getCostType().equals(CostType.WEIGHTED_AVERAGE.getIndex())){
                                             itemToBeAdded.add(woItem);
                                         }
                                         if (requiredQuantity <= 0) {
@@ -251,7 +257,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
     }
     private V3WorkorderItemContext setWorkorderItemObj(V3PurchasedItemContext purchasedItem, double quantity,
                                                        V3ItemContext item, long parentId, ApprovalState approvalState, V3WorkOrderContext wo, V3AssetContext asset, V3InventoryRequestLineItemContext lineItem, long parentTransactionId, Context context, V3WorkorderItemContext workOrderItem,
-                                                       CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap) throws Exception{
+                                                       CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyMap,Boolean isWeightedAverage) throws Exception{
         V3WorkorderItemContext woItem = new V3WorkorderItemContext();
         woItem.setTransactionType(TransactionType.WORKORDER);
         woItem.setIsReturnable(false);
@@ -262,13 +268,17 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
             User requestedFor = V3InventoryRequestAPI.getUserToIssueFromReservation(workOrderItem.getInventoryReservation());
             woItem.setIssuedTo(requestedFor);
         }
-        if (purchasedItem != null) {
+        if (purchasedItem != null && !isWeightedAverage) {
             woItem.setPurchasedItem(purchasedItem);
             CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woItem, baseCurrency, currencyMap, purchasedItem.getCurrencyCode(), purchasedItem.getExchangeRate());
             if (purchasedItem.getUnitcost() >= 0) {
                 costOccured = purchasedItem.getUnitcost() * quantity;
                 unitPrice = purchasedItem.getUnitcost();
             }
+        }else if(isWeightedAverage){
+            CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(woItem, baseCurrency, currencyMap, purchasedItem.getCurrencyCode(), purchasedItem.getExchangeRate());
+            unitPrice = item.getWeightedAverageCost()!=null ? item.getWeightedAverageCost() : 0;
+            costOccured = unitPrice * quantity;
         }
         woItem.setStoreRoom(item.getStoreRoom());
         woItem.setQuantity(quantity);

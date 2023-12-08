@@ -19,7 +19,7 @@ public class SetItemTypesCommandV3 extends FacilioCommand {
         if(CollectionUtils.isNotEmpty(itemTypes)) {
             for (V3ItemTypesContext itemType : itemTypes) {
                 if(itemType.getCostType()==null){
-                    itemType.setCostType(CostType.FIFO);
+                    itemType.setCostType(CostType.FIFO.getIndex());
                 }
             }
         }

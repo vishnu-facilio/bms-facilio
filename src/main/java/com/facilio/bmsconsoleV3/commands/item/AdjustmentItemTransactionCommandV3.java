@@ -15,10 +15,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
@@ -106,7 +103,8 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
 
                     } else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_INCREASE
                             && !itemType.isRotating()) {
-                        item.setPurchasedItems(Collections.singletonList(itemTransaction.getPurchasedItem()));
+                        V3PurchasedItemContext purchasedItemClone = FieldUtil.cloneBean(itemTransaction.getPurchasedItem(),V3PurchasedItemContext.class);
+                        item.setPurchasedItems(Collections.singletonList(purchasedItemClone));
                         items.add(item);
                         V3PurchasedItemContext pi = itemTransaction.getPurchasedItem();
                         pi.setItem(item);

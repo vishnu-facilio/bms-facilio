@@ -51,13 +51,14 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
 
         List<? extends V3ItemTransactionsContext> itemTransactions = (List<V3ItemTransactionsContext>) context
                 .get(FacilioConstants.ContextNames.RECORD_LIST);
+        Boolean isWeightedAverage = (Boolean) context.get(FacilioConstants.ContextNames.IS_WEIGHTED_AVERAGE);
         Set<Long> uniquepurchasedItemsIds = new HashSet<Long>();
         Set<Long> uniqueAssetId = new HashSet<Long>();
         Set<Long> uniqueItemIds = new HashSet<Long>();
         int totalQuantityConsumed = 0;
         if (itemTransactions != null && !itemTransactions.isEmpty()) {
             for (V3ItemTransactionsContext consumable : itemTransactions) {
-                if(consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0) {
+                if(consumable.getTransactionStateEnum() != TransactionState.USE || consumable.getParentTransactionId() <= 0 || (isWeightedAverage!=null && isWeightedAverage)) {
                     if (consumable.getPurchasedItem() != null) {
                         uniquepurchasedItemsIds.add(consumable.getPurchasedItem().getId());
                     } else if (consumable.getAsset() != null) {
@@ -72,7 +73,7 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             FacilioModule purchasedItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
             List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
             for (Long id : uniquepurchasedItemsIds) {
-                Map<String, Double> quantityRollup = rollupAllTransactions(id, "purchasedItem", FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+                Map<String, Double> quantityRollup = rollupAllTransactions(id, "purchasedItem", FacilioConstants.ContextNames.ITEM_TRANSACTIONS,isWeightedAverage);
                 double currentQuantity = quantityRollup.get(FacilioConstants.ContextNames.CURRENT_QUANTITY);
                 double adjustmentDecrease = quantityRollup.get(FacilioConstants.ContextNames.ADJUSTMENT_DECREASE);
                 V3PurchasedItemContext purchasedItem = new V3PurchasedItemContext();
@@ -100,7 +101,7 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
             Set<Long> uniqueItemTypeIds = new HashSet<Long>();
             FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
             for (Long id : uniqueItemIds) {
-                Map<String, Double> quantityRollup = rollupAllTransactions(id, "item",FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+                Map<String, Double> quantityRollup = rollupAllTransactions(id, "item",FacilioConstants.ContextNames.ITEM_TRANSACTIONS,isWeightedAverage);
                 double totalConsumed = quantityRollup.get(FacilioConstants.ContextNames.CURRENT_QUANTITY);
                 V3ItemContext item = V3ItemsApi.getItems(id);
                 item.setQuantity(totalConsumed);
@@ -119,7 +120,7 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
         return false;
     }
 
-    public static Map<String, Double> rollupAllTransactions(long inventoryCostId, String fieldName, String moduleName) throws Exception {
+    public static Map<String, Double> rollupAllTransactions(long inventoryCostId, String fieldName, String moduleName,Boolean isWeightedAverage) throws Exception {
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule consumableModule = modBean.getModule(moduleName);
@@ -142,8 +143,6 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
                 FieldType.DECIMAL));
         fields.add(FieldFactory.getField("returns", "sum(case WHEN TRANSACTION_STATE = 3 THEN QUANTITY ELSE 0 END)",
                 FieldType.DECIMAL));
-        fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND (PARENT_TRANSACTION_ID <= 0 OR PARENT_TRANSACTION_ID IS NULL) THEN QUANTITY ELSE 0 END)",
-                FieldType.DECIMAL));
         fields.add(FieldFactory.getField("adjustments_increase", "sum(case WHEN TRANSACTION_STATE = 7 THEN QUANTITY ELSE 0 END)",
                 FieldType.DECIMAL));
         fields.add(FieldFactory.getField("adjustments_decrease", "sum(case WHEN TRANSACTION_STATE = 8 THEN QUANTITY ELSE 0 END)",
@@ -154,7 +153,13 @@ public class PurchasedItemsQuantityRollUpCommandV3 extends FacilioCommand {
                 FieldType.DECIMAL));
         fields.add(FieldFactory.getField("hardReserve", "sum(case WHEN TRANSACTION_STATE = 11 THEN QUANTITY ELSE 0 END)",
                 FieldType.DECIMAL));
-
+        if(isWeightedAverage!=null && isWeightedAverage){
+            fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 THEN QUANTITY ELSE 0 END)",
+                    FieldType.DECIMAL));
+        }else{
+            fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND (PARENT_TRANSACTION_ID <= 0 OR PARENT_TRANSACTION_ID IS NULL) THEN QUANTITY ELSE 0 END)",
+                    FieldType.DECIMAL));
+        }
         builder.select(fields);
 
         builder.andCondition(CriteriaAPI.getCondition(consumableFieldMap.get(fieldName),

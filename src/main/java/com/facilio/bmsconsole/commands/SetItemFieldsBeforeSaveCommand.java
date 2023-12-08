@@ -2,7 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
+import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.enums.CostType;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -27,8 +30,15 @@ public class SetItemFieldsBeforeSaveCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(items)) {
             for (V3ItemContext item : items) {
-                if(item.getItemType()!=null && item.getItemType().getCostType()!=null){
-                    item.setCostType(item.getItemType().getCostType().getIndex());
+                if(item.getItemType()!=null){
+                    V3ItemTypesContext itemType = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM_TYPES,item.getItemType().getId(),V3ItemTypesContext.class);
+                    if(item.getCostType()==null){
+                        if(itemType.getCostType()!=null){
+                            item.setCostType(itemType.getCostType());
+                        }else{
+                            item.setCostType(CostType.FIFO.getIndex());
+                        }
+                    }
                 }
                 List<V3PurchasedItemContext> purchasedItems = item.getPurchasedItems();
                 if (CollectionUtils.isNotEmpty(purchasedItems)) {
@@ -43,7 +53,6 @@ public class SetItemFieldsBeforeSaveCommand extends FacilioCommand {
         }
 
         context.put(Constants.RECORD_MAP, recordMap);
-        context.put(FacilioConstants.ContextNames.ITEMS,items);
         return false;
     }
 }

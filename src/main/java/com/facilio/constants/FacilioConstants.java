@@ -2101,6 +2101,8 @@ public class FacilioConstants {
 		public static final String ITEM_IDS = "itemIds";
 		public static final String PURCHASED_ITEM = "purchasedItem";
 		public static final String ITEM_ACTIVITY = "itemtypeactivity";
+		public static final String IS_WEIGHTED_AVERAGE = "isWeightedAverage";
+
 
 		public static final String WORKORDER_ITEMS = "workorderItem";
 		public static final String WORKORDER_ITEM_RECORD = "workorderItemRecord";

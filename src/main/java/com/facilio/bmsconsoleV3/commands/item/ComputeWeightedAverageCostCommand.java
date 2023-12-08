@@ -3,12 +3,10 @@ package com.facilio.bmsconsoleV3.commands.item;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
-import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -21,8 +19,9 @@ public class ComputeWeightedAverageCostCommand extends FacilioCommand {
         List<V3ItemContext> items = (List<V3ItemContext>) context.get(FacilioConstants.ContextNames.ITEMS);
         if(CollectionUtils.isNotEmpty(items)){
             for(V3ItemContext item : items){
-                Double weightedAverageCost = item.getWeightedAverageCost()!=null ? item.getWeightedAverageCost() : 0;
-                Double availableQuantity = item.getQuantity()!=null ? item.getQuantity() : 0;
+                V3ItemContext itemRecord = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM,item.getId(),V3ItemContext.class);
+                Double weightedAverageCost = itemRecord.getWeightedAverageCost()!=null ? itemRecord.getWeightedAverageCost() : 0;
+                Double availableQuantity = itemRecord.getQuantity()!=null ? itemRecord.getQuantity() : 0;
                 Double weightedAverage = weightedAverageCost * availableQuantity;
                 Double totalQuantity= availableQuantity;
                 if(CollectionUtils.isNotEmpty(item.getPurchasedItems())){
@@ -34,9 +33,10 @@ public class ComputeWeightedAverageCostCommand extends FacilioCommand {
                     }
                 }
                 weightedAverageCost = weightedAverage/totalQuantity;
+                weightedAverageCost = Math.floor(weightedAverageCost * 100)/ 100;
                 item.setWeightedAverageCost(weightedAverageCost);
+                V3RecordAPI.updateRecord(item,modBean.getModule(FacilioConstants.ContextNames.ITEM),modBean.getAllFields(FacilioConstants.ContextNames.ITEM));
             }
-            V3Util.processAndUpdateBulkRecords(modBean.getModule(FacilioConstants.ContextNames.ITEM), (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.ITEMS),  FieldUtil.getAsMapList(items, V3ItemContext.class)  ,null,null,null,null,null,null,null,null,false,false,null);
         }
         return false;
     }
