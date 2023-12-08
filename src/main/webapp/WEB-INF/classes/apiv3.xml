@@ -2586,6 +2586,12 @@
             <param name="permission">GET:VIEW,READ</param>
         </action>
     </package>
+    <package name="v2DashboardCommonApis" namespace="/api/v3/dashboard/common" extends="v3Api">
+        <action name="lookupData/*" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="lookupData">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
+    </package>
     <package name="remotemonitor" extends="v3Api" namespace="/api/v3/alarms">
         <action name="generateRawAlarms" class="com.facilio.remotemonitoring.action.RawAlarmAction" method="generateRawAlarms">
 			<param name="deprecated">true</param>

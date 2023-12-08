@@ -31,12 +31,19 @@ public class ValidateRelatedModuleDataAndSetParamsCommand extends FacilioCommand
         String relatedFieldName = (String) context.get(ContextNames.RELATED_FIELD_NAME);
         String relatedModuleName = (String) context.get(ContextNames.RELATED_MODULE_NAME);
         String extendedModuleName = (String) context.get(ContextNames.EXTENDED_MODULE_NAME);
-
+        Boolean isFromDashboard = (Boolean) context.get(ContextNames.IS_FROM_DASHBOARD);
         if(StringUtils.isEmpty(relatedModuleName)) {
             throw new IllegalArgumentException("Related Module Name cannot be null");
         }
+        /**
+         * below code is used for handling specail case for dashboard , So don't remove this
+         */
+        if(isFromDashboard != null && isFromDashboard){
+            context.put(ContextNames.MODULE_NAME, relatedModuleName);
+            return false;
+        }
 
-        if (StringUtils.isEmpty(relatedFieldName)) {
+        if ( isFromDashboard == null && StringUtils.isEmpty(relatedFieldName)) {
             throw new IllegalArgumentException("Related Field Name cannot be null");
         }
 

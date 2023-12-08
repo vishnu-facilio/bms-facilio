@@ -1092,6 +1092,7 @@ public class FacilioConstants {
 		public static final String OFFLINE_STATE_TRANSITION = "offlineStateTransition";
 
 		public static final String DASHBOARD = "dashboard";
+		public static final String IS_FROM_DASHBOARD = "isFromDashboard";
 		public static final String IS_FROM_REPORT = "isFromReport";
 		public static final String DASHBOARD_TAB = "dashboardTab";
 		public static final String DASHBOARD_TABS_LIST = "dashboardTabsList";

@@ -594,4 +594,9 @@
             <property name="alarmId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/common/lookupData/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

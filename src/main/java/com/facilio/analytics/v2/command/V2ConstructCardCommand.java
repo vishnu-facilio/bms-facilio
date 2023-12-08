@@ -82,14 +82,23 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 if(timeFilter != null)
                 {
                     DateRange range = null;
+                    long startTime = timeFilter.getStartTime();
+                    long endTime = timeFilter.getEndTime();
                     if(db_filter != null && db_filter.getTimeFilter() != null) {
-                        range =  new DateRange(db_filter.getTimeFilter().getStartTime(), db_filter.getTimeFilter().getEndTime());
-                        timeFilter.setDateLabel(db_filter.getTimeFilter().getDateLabel());
+                        V2TimeFilterContext dbTimeFilter = db_filter.getTimeFilter();
+                        range =  new DateRange(dbTimeFilter.getStartTime(), dbTimeFilter.getEndTime());
+                        timeFilter.setDateLabel(dbTimeFilter.getDateLabel());
+                        timeFilter.setDateOperator(dbTimeFilter.getDateOperator());
+                        timeFilter.setDateOperatorEnum(dbTimeFilter.getDateOperatorEnum());
                     }
                     else if(timeFilter.getDateOperator() > 0){
                         range = timeFilter.getOffset() != null &&  timeFilter.getOffset() > 0 ? ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(timeFilter.getOffset().toString()) : ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(String.valueOf(timeFilter.getStartTime()));
                     }else{
                         range = new DateRange(timeFilter.getStartTime(), timeFilter.getEndTime());
+                    }
+                    if(startTime == -1 && endTime == -1 && range !=null){
+                        timeFilter.setStartTime(range.getStartTime());
+                        timeFilter.setEndTime(range.getEndTime());
                     }
                     FacilioField child_field = fieldMap.get("parentId");
                     AggregateOperator aggr = AggregateOperator.getAggregateOperator(cardContext.getAggr());
@@ -333,11 +342,27 @@ public class V2ConstructCardCommand extends FacilioCommand {
             FacilioChain chain = V2TransactionChainFactory.getKpiDataChain();
             FacilioContext context = chain.getContext();
             context.put(FacilioConstants.ContextNames.REPORT_ID,cardParams.getReportId());
-            if(cardParams.getTimeFilter()!=null){
+            V2TimeFilterContext timeFilter = cardParams.getTimeFilter();
+            DateRange range = null;
+            if(timeFilter!=null){
                 if(db_filter != null && db_filter.getTimeFilter() != null) {
-                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,db_filter.getTimeFilter().dateOperator);
+                    V2TimeFilterContext dbTimeFilter = db_filter.getTimeFilter();
+                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,dbTimeFilter.dateOperator);
+                    range =  new DateRange(dbTimeFilter.getStartTime(), dbTimeFilter.getEndTime());
+                    timeFilter.setDateLabel(dbTimeFilter.getDateLabel());
+                    timeFilter.setDateOperator(dbTimeFilter.getDateOperator());
+                    timeFilter.setDateOperatorEnum(dbTimeFilter.getDateOperatorEnum());
                 }else {
-                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,cardParams.getTimeFilter().getDateOperatorEnum());
+                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,timeFilter.getDateOperatorEnum());
+                }
+
+                long dateOperator = timeFilter.getDateOperator();
+                if( dateOperator > 0 && dateOperator!=20){
+                    range = ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(String.valueOf(timeFilter.getStartTime()));
+                }
+                if(range!=null){
+                    timeFilter.setStartTime(range.getStartTime());
+                    timeFilter.setEndTime(range.getEndTime());
                 }
             }
             if(db_filter != null) {
@@ -387,13 +412,22 @@ public class V2ConstructCardCommand extends FacilioCommand {
         DateRange range = null;
         if(timeFilter != null)
         {
+            long startTime = timeFilter.getStartTime();
+            long endTime = timeFilter.getEndTime();
             if (db_filter != null && db_filter.getTimeFilter() != null) {
-                range = new DateRange(db_filter.getTimeFilter().getStartTime(), db_filter.getTimeFilter().getEndTime());
-                timeFilter.setDateLabel(db_filter.getTimeFilter().getDateLabel());
+                V2TimeFilterContext dbTimeFilter = db_filter.getTimeFilter();
+                range = new DateRange(dbTimeFilter.getStartTime(), dbTimeFilter.getEndTime());
+                timeFilter.setDateLabel(dbTimeFilter.getDateLabel());
+                timeFilter.setDateOperator(dbTimeFilter.getDateOperator());
+                timeFilter.setDateOperatorEnum(dbTimeFilter.getDateOperatorEnum());
             } else if (timeFilter.getDateOperator() > 0) {
                 range = timeFilter.getOffset() != null && timeFilter.getOffset() > 0 ? ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(timeFilter.getOffset().toString()) : ((DateOperators) Operator.getOperator(timeFilter.getDateOperator())).getRange(String.valueOf(timeFilter.getStartTime()));
             } else {
                 range = new DateRange(timeFilter.getStartTime(), timeFilter.getEndTime());
+            }
+            if(startTime == -1 && endTime == -1 && range !=null){
+                timeFilter.setStartTime(range.getStartTime());
+                timeFilter.setEndTime(range.getEndTime());
             }
         }
         return range;

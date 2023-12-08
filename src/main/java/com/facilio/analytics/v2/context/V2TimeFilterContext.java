@@ -29,5 +29,8 @@ public class V2TimeFilterContext {
     public DateOperators getDateOperatorEnum(){
         return dateOperator;
     }
+    public void setDateOperatorEnum(DateOperators operator){
+        this.dateOperator = operator;
+    }
 
 }
