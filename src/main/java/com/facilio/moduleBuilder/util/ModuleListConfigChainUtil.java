@@ -94,8 +94,13 @@ public class ModuleListConfigChainUtil {
         ApplicationContext app = appId > 0 ? ApplicationApi.getApplicationForId(appId) : AccountUtil.getCurrentApp();
         FacilioUtil.throwIllegalArgumentException(app == null, "App can't be null for fetching modulesList of - " + feature);
 
+        //domainBasedModuleConfig
         fetchModuleList.addAll(getDomainBasedModulesToAdd(AppDomain.AppDomainType.valueOf(app.getDomainType()), moduleListHandler.getDomainBasedAddModules()));
+        fetchModuleList.removeAll(getDomainBasedModulesToRemove(AppDomain.AppDomainType.valueOf(app.getDomainType()), moduleListHandler.getDomainBasedSkipModules()));
+
+        //appBasedModuleConfig
         fetchModuleList.addAll(getAppBasedModulesToAdd(app.getLinkName(), moduleListHandler.getAppBasedAddModules()));
+        fetchModuleList.removeAll(getAppBasedModulesToRemove(app.getLinkName(), moduleListHandler.getAppBasedSkipModules()));
 
         addIfNotNull(context, FacilioConstants.ModuleListConfig.MODULES_TO_FETCH, fetchModuleList);
 
@@ -123,11 +128,31 @@ public class ModuleListConfigChainUtil {
         return Collections.emptyList();
     }
 
+    private static List<String> getDomainBasedModulesToRemove(AppDomain.AppDomainType currentAppDomain, Map<AppDomain.AppDomainType, List<String>> domainBasedSkipModulesMap) {
+        if(MapUtils.isNotEmpty(domainBasedSkipModulesMap)) {
+            List<String> domainBasedModulesToSkip = domainBasedSkipModulesMap.get(currentAppDomain);
+            if(CollectionUtils.isNotEmpty(domainBasedModulesToSkip)) {
+                return domainBasedModulesToSkip;
+            }
+        }
+        return Collections.emptyList();
+    }
+
     private static List<String> getAppBasedModulesToAdd(String currentAppName, Map<String, List<String>> appBasedAddModulesMap) {
         if(MapUtils.isNotEmpty(appBasedAddModulesMap)) {
             List<String> appBasedModulesToAdd = appBasedAddModulesMap.get(currentAppName);
             if(CollectionUtils.isNotEmpty(appBasedModulesToAdd)) {
                 return appBasedModulesToAdd;
+            }
+        }
+        return Collections.emptyList();
+    }
+
+    private static List<String> getAppBasedModulesToRemove(String currentAppName, Map<String, List<String>> appBasedSkipModulesMap) {
+        if(MapUtils.isNotEmpty(appBasedSkipModulesMap)) {
+            List<String> appBasedModulesToSkip = appBasedSkipModulesMap.get(currentAppName);
+            if(CollectionUtils.isNotEmpty(appBasedModulesToSkip)) {
+                return appBasedModulesToSkip;
             }
         }
         return Collections.emptyList();

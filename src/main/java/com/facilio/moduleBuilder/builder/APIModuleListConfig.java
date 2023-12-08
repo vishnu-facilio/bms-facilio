@@ -4,7 +4,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.moduleBuilder.command.AddAutomationModuleBasedOnTabType;
 import com.facilio.moduleBuilder.command.GetSubModulesForTransactionRuleCommand;
-import com.facilio.moduleBuilder.util.ModuleListConfigChainUtil;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.v3.annotation.Config;
 
@@ -41,9 +40,9 @@ public class APIModuleListConfig {
         return () -> new ModuleListHandler()
                 .addLicenseEnabledAndDisabledModulesToFetch(AccountUtil.FeatureLicense.NEW_ALARMS,Arrays.asList(FacilioConstants.ContextNames.NEW_READING_ALARM,
                         FacilioConstants.ContextNames.BMS_ALARM),Arrays.asList(FacilioConstants.ContextNames.ALARM) )
-                .addLicenseBasedModules(AccountUtil.FeatureLicense.VISITOR, Arrays.asList(FacilioConstants.ContextNames.GROUP_VISITOR_INVITE)) //TODO check MODULELIST the module license is actually GROUP_INVITES but here VISITOR is used
-                .addLicenseBasedModules(AccountUtil.FeatureLicense.PURCHASE, Arrays.asList(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, FacilioConstants.ContextNames.VENDOR_QUOTES))
-                .addLicenseBasedModules(AccountUtil.FeatureLicense.INVENTORY, Arrays.asList(FacilioConstants.ContextNames.TRANSFER_REQUEST))
+                .additionalLicenseToCheckForModules(AccountUtil.FeatureLicense.VISITOR, Arrays.asList(FacilioConstants.ContextNames.GROUP_VISITOR_INVITE)) //TODO check MODULELIST the module license is actually GROUP_INVITES but here VISITOR is used
+                .additionalLicenseToCheckForModules(AccountUtil.FeatureLicense.PURCHASE, Arrays.asList(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION, FacilioConstants.ContextNames.VENDOR_QUOTES))
+                .additionalLicenseToCheckForModules(AccountUtil.FeatureLicense.INVENTORY, Arrays.asList(FacilioConstants.ContextNames.TRANSFER_REQUEST))
 
                 .add(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SITE,
                         FacilioConstants.ContextNames.FLOOR, FacilioConstants.ContextNames.BUILDING,
