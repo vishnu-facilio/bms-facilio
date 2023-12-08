@@ -114,7 +114,7 @@ public class ControlActionAPI {
             controlActionContext.setSiteCriteria(CriteriaAPI.getCriteria(controlActionContext.getSiteCriteriaId()));
         }
         if(controlActionContext.getAssetCriteriaId() != null) {
-            controlActionContext.setSiteCriteria(CriteriaAPI.getCriteria(controlActionContext.getAssetCriteriaId()));
+            controlActionContext.setAssetCriteria(CriteriaAPI.getCriteria(controlActionContext.getAssetCriteriaId()));
         }
         if(controlActionContext.getControllerCriteriaId() != null){
             controlActionContext.setControllerCriteria(CriteriaAPI.getCriteria(controlActionContext.getControllerCriteriaId()));
