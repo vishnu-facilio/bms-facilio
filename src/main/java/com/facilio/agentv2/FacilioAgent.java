@@ -67,6 +67,8 @@ public class FacilioAgent implements Serializable {
     private ResourceType readingScope;
     @JsonInclude
     private boolean allowAutoMapping;
+    @JsonInclude
+    private Integer setPointPriority;
 
     public boolean isAllowAutoMapping() {
         return allowAutoMapping;

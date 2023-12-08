@@ -45,6 +45,7 @@ public class AddAgentAction extends AgentActionV2 {
     private String type;
     private String displayName;
     private int agentType = -1;
+    private Integer setPointPriority;
     private String userName;
     private String password;
     private String url;
@@ -108,6 +109,9 @@ public class AddAgentAction extends AgentActionV2 {
                 agent.setPort(getPort());
                 agent.setIpAddress(getIpAddress());
                 agent.setControllerAlarmIntervalInMins(getControllerAlarmIntervalInMins());
+                break;
+            case FACILIO:
+                agent.setSetPointPriority(getSetPointPriority());
                 break;
         }
         return agent;

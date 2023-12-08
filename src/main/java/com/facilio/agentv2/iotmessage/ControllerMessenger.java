@@ -141,6 +141,10 @@ public class ControllerMessenger {
                             }
                             if (actionName != null) {
                                 pointdatum.put(AgentConstants.ACTION_NAME, actionName);
+                            } else if (agent.getAgentTypeEnum() == AgentType.FACILIO
+                                    && controller.getControllerType() == FacilioControllerType.BACNET_IP.asInt() &&
+                                    agent.getSetPointPriority() != null && agent.getSetPointPriority() > 0) {
+                                pointdatum.put(AgentConstants.PRIORITY, agent.getSetPointPriority());
                             }
                             if (pointdatum.containsKey(AgentConstants.DEVICE_ID)) {
                                 pointdatum.remove(AgentConstants.DEVICE_ID);

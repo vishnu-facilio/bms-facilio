@@ -959,6 +959,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getDefaultField("autoMappingParentFieldId", "Auto Mapping Parent Field Id", "AUTO_MAPPING_PARENT_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getDefaultField("allowAutoMapping", "Allow Auto Mapping", "ALLOW_AUTO_MAPPING", module, FieldType.BOOLEAN));
         fields.add(getDefaultField(AgentConstants.READING_SCOPE, "Scope", "SCOPE", module, FieldType.SYSTEM_ENUM));
+        fields.add(getDefaultField(AgentConstants.SET_POINT_PRIORITY, "Set Point Priority", "SET_POINT_PRIORITY", module, FieldType.NUMBER));
 
         SystemEnumField agentType = (SystemEnumField) getDefaultField("agentType", "Agent type", "AGENT_TYPE", module, FieldType.SYSTEM_ENUM);
         agentType.setEnumName("AgentType");

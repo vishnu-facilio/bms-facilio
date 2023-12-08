@@ -170,6 +170,14 @@ public class AgentBeanImpl implements AgentBean {
             }
         }
 
+        if (containsValueCheck(AgentConstants.SET_POINT_PRIORITY, jsonObject)) {
+            Integer newPriority = Integer.parseInt(jsonObject.get(AgentConstants.SET_POINT_PRIORITY).toString());
+            if (agent.getSetPointPriority() != newPriority) {
+                agent.setSetPointPriority(newPriority);
+                agent.setLastModifiedTime(currTime);
+            }
+        }
+
         if (containsValueCheck(AgentConstants.WRITABLE, jsonObject)) {
             boolean currWriteble = Boolean.parseBoolean(jsonObject.get(AgentConstants.WRITABLE).toString());
             if (agent.getWritable() != currWriteble) {

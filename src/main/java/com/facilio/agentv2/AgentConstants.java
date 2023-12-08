@@ -49,6 +49,8 @@ public class AgentConstants
     public static final String COMMAND_WORKFLOW = "commandWorkflow";
     public static final String IS_ACTIVE_UPDATE_VALUE = "isActiveUpdateValue";
     public static final String READING_SCOPE = "readingScope";
+    public static final String SET_POINT_PRIORITY = "setPointPriority";
+    public static final String PRIORITY = "priority";
 
     //modbus constants
     public static final String SLAVE_ID = "slaveId";
