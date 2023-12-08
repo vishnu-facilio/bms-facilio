@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.signup.fsmApp.FSMDefaultTabsAndTabGroups;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.DefaultTabsAndTabGroups;
+
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.chain.FacilioChain;
@@ -2351,6 +2352,18 @@ public class ApplicationApi {
         return appDomainName;
     }
 
+
+    public static String getApplicationLinkName(long appId) throws Exception {
+        if (appId > 0) {
+            ApplicationContext app = getApplicationForId(appId);
+            if (app != null) {
+                return app.getLinkName();
+            }
+        }
+        return null;
+    }
+
+
     public static String getPushNotificationKeyForApp(int appType) throws Exception {
         if (appType <= 0 || appType == 1) {
             return FacilioProperties.getPushNotificationKey();
@@ -4237,5 +4250,27 @@ public class ApplicationApi {
             }
         }
         return false;
+    }
+
+    public static Long getDefaultAppForPeople(Long peopleId) throws Exception {
+        List<Map<String, Object>> orgUserMap = PeopleAPI.getOrgUserAndApplicationMap(peopleId);
+        if(CollectionUtils.isEmpty(orgUserMap)){
+            return null;
+        }
+        Long appId = null;
+        for(Map<String, Object> orgUser: orgUserMap){
+            Long currentAppId = (Long) orgUser.get(FacilioConstants.ContextNames.APPLICATION_ID);
+            if(currentAppId == null){
+                continue;
+            }
+            ApplicationContext app = getApplicationForId(currentAppId);
+            if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)){
+                return currentAppId;
+            }
+            if(appId == null){
+                appId = currentAppId;
+            }
+        }
+        return appId;
     }
 }

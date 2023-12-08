@@ -123,7 +123,8 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
     private void sendEmailNotification(Set<Long> pplIds, Map<String, String> notificationContent, NoteContext note, FacilioModule parentModule) throws Exception {
         List<V3PeopleContext> ppl = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.PEOPLE, pplIds, V3PeopleContext.class);
         for (V3PeopleContext person: ppl) {
-            String message = getEmailHtml(parentModule.getDisplayName(),note,person.getName());
+            String summaryURL = V3RecordAPI.getRecordUrlForPeople(person.getId(),parentModule.getName(),note.getId());
+            String message = getEmailHtml(parentModule.getDisplayName(),note,person.getName(),summaryURL);
             if (message == null){
                 continue;
             }
@@ -189,12 +190,11 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
         return user != null && user.getUserStatus();
     }
 
-    private static String getEmailHtml(String moduleName, NoteContext note, String recipientName){
+    private static String getEmailHtml(String moduleName, NoteContext note, String recipientName, String summaryURL){
         Long recordId = note.getParentId();
         String sender = note.getCreatedBy().getName();
         String noteContent = note.getBodyHTML() != null && note.getBodyHTML().isEmpty() ? note.getBodyHTML() : note.getBody();
-        String redirectUrl = "https://app.facilio.com";
-        if(isNull(recordId,sender,noteContent,redirectUrl)){
+        if(isNull(recordId,sender,noteContent,summaryURL)){
             return null;
         }
         String message = "<!DOCTYPE html>\n" +
@@ -252,9 +252,11 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
                 "  \"\n" +
                 "      >\n" +
                 "        "+noteContent+"\n" +
-                "      </div>\n" +
-                "      <div class=\"links\"><a href=\""+redirectUrl+"\"></a></div>\n" +
-                "      <div class=\"yj6qo\"></div>\n" +
+                "    </div>\n" +
+                "    <div>" +
+                "    <a href="+summaryURL+"> To view "+moduleName+" summary, click here</a>" +
+                "    </div>\n" +
+                "    <div class=\"yj6qo\"></div>\n" +
                 "    </div>\n" +
                 "  </body>\n" +
                 "</html>\n";

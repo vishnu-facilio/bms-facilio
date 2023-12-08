@@ -1,8 +1,11 @@
 package com.facilio.bmsconsoleV3.util;
 
+import com.facilio.accounts.dto.AppDomain;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsoleV3.context.V3TransactionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
@@ -490,5 +493,26 @@ public class V3RecordAPI {
             e.printStackTrace();
         }
         return false;
+    }
+    public static String getRecordUrlForPeople(Long peopleId, String moduleName, Long recordId) throws Exception {
+        Long appId = ApplicationApi.getDefaultAppForPeople(peopleId);
+        String defaultURL = FacilioProperties.getClientAppUrl();
+        AppDomain appDomain = ApplicationApi.getAppDomainForApplication(appId);
+        String baseURL = AccountUtil.getAppLink(appDomain);
+        String redirectionPath = "goto/summary";
+        String appLinkName = ApplicationApi.getApplicationLinkName(appId);
+
+        if(baseURL != null && appLinkName != null && recordId != null){
+            StringJoiner joiner = new StringJoiner("/");
+            joiner.add(baseURL)
+                    .add(appLinkName)
+                    .add(redirectionPath)
+                    .add(moduleName)
+                    .add(recordId.toString());
+
+            String summaryURL = joiner.toString();
+            return summaryURL;
+        }
+        return defaultURL;
     }
 }
