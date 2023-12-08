@@ -12258,6 +12258,7 @@ public class FieldFactory extends BaseFieldFactory {
         List<FacilioField> fields=new ArrayList<>();
         FacilioModule module=ModuleFactory.getPageRelatedListWidgetsModule();
         fields.add(getIdField(module));
+        fields.add(getStringField("displayName","DISPLAY_NAME",module));
         fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.DECIMAL));
         fields.add(getNumberField("widgetId","WIDGETID",module));
         fields.add(getNumberField("widgetGroupWidgetId", "WIDGETGROUP_WIDGET_ID", module));

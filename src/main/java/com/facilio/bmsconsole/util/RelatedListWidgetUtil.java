@@ -338,7 +338,7 @@ public class RelatedListWidgetUtil {
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
                 .table(pageRelListModule.getTableName())
-                .select(FieldFactory.getPageRelatedListWidgetsFields())
+                .select(fields)
                 .orderBy(fieldsMap.get("sequenceNumber").getCompleteColumnName()+","+fieldsMap.get("id").getColumnName())
                 .andCondition(CriteriaAPI.getEqualsCondition(widgetIdField, String.valueOf(widgetId)));
 
@@ -376,10 +376,12 @@ public class RelatedListWidgetUtil {
                             f.setField(field);
                             setRelatedListEnum(f);
                             f.setModule(field.getModule());
-                            if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
-                                f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
-                            } else {
-                                f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                            if(StringUtils.isBlank(f.getDisplayName())) {
+                                if (StringUtils.isNotEmpty(((LookupField) field).getRelatedListDisplayName())) {
+                                    f.setDisplayName(((LookupField) field).getRelatedListDisplayName());
+                                } else {
+                                    f.setDisplayName(relListSubModules.get(f.getSubModuleId()));
+                                }
                             }
                         } else if(f.getConnectedAppWidgetId() > 0) {
                             try {
