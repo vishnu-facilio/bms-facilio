@@ -1566,6 +1566,13 @@
             <param name="permission">GET:VIEW,READ</param>
             <param name="tabType">DASHBOARD</param>
         </action>
+        <action name="widget/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="getWebViewWidget">
+            <param name="widgetId">{1}</param>
+            <param name="permission">GET:VIEW,READ</param>
+            <param name="tabType">DASHBOARD</param>
+        </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="getMobileDashboard">

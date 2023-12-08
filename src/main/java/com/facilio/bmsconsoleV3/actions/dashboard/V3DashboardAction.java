@@ -1,10 +1,9 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardTabContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.commands.GetDashboardThumbnailCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -16,9 +15,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.module.v2.chain.V2TransactionChainFactory;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -53,6 +56,7 @@ public class V3DashboardAction extends V3Action {
     private boolean onlySelected;
     private boolean onlyFolders;
     private boolean withTabs;
+    private Long widgetId;
     /**
      variables for recieving props for dashboard list api ends here
      */
@@ -499,6 +503,93 @@ public class V3DashboardAction extends V3Action {
         }catch (Exception e)
         {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);
+        }
+        return SUCCESS;
+    }
+    public String getWebViewWidget() throws Exception {
+        if(widgetId != null && widgetId < 0){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "WidgetId can not be empty");
+        }
+        try {
+            DashboardWidgetContext widgetContext = DashboardUtil.getWidget(widgetId);
+            switch (widgetContext.getWidgetType().getName()) {
+                case "card":
+                    WidgetCardContext widgetCardContext = (WidgetCardContext) widgetContext;
+                    setData("widgetType",widgetContext.getWidgetType());
+                    setData("cardType",widgetCardContext.getCardLayout());
+                    setData("widgetData",widgetCardContext);
+                    break;
+                case "chart":
+                    WidgetChartContext widgetChartContext = (WidgetChartContext) widgetContext;
+                    int reportType = ReportUtil.getReportType(widgetChartContext.getNewReportId());
+                    if(ReportContext.ReportType.READING_REPORT.getValue() == reportType){
+                        FacilioChain chain = V2AnalyticsTransactionChain.getReportWithDataChain(true);
+                        FacilioContext context = chain.getContext();
+                        context.put("reportId", widgetChartContext.getNewReportId());
+                        chain.execute();
+                        setData("widgetType",widgetContext.getWidgetType());
+                        setData("reportType",reportType);
+                        setReportResult(context);
+                    }
+                    else{
+                        FacilioChain chain = V2TransactionChainFactory.getReportDataChain(null);
+                        FacilioContext context = chain.getContext();
+                        context.put("reportId", widgetChartContext.getNewReportId());
+                        chain.execute();
+                        setData("widgetType",widgetContext.getWidgetType());
+                        setData("reportType",reportType);
+                        setData("report", context.get(FacilioConstants.ContextNames.REPORT));
+                        setData("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
+                        if(context.get("v2_report") != null){
+                            setData("v2_report", context.get("v2_report"));
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting widget info"+e);
+        }
+        return SUCCESS;
+    }
+    private String setReportResult(FacilioContext context)
+    {
+        if (context.get(FacilioConstants.ContextNames.REPORT) != null) {
+
+            ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+            setData("report", reportContext);
+        }
+        if(context.get("v2_report") != null){
+            setData("v2_report", context.get("v2_report"));
+        }
+        setData("reportXValues", context.get(FacilioConstants.ContextNames.REPORT_X_VALUES)); // This can be removed
+        // from new format
+        if(context.get(FacilioConstants.ContextNames.REPORT_DATA) != null)
+        {
+            JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+            if(data != null && data.containsKey("heatMapData")){
+                data.put("data", data.get("heatMapData"));
+                data.remove("heatMapData");
+            }
+        }
+        setData("reportData", context.get(FacilioConstants.ContextNames.REPORT_DATA));
+        setData("safeLimits", context.get(FacilioConstants.ContextNames.REPORT_SAFE_LIMIT));
+
+        FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+        if (module != null) {
+            setData("module", module);
+        }
+        if (context.containsKey("criteriaData")) {
+            setData("criteriaData", context.get("criteriaData"));
+        }
+
+        if (context.containsKey("baselineData")) {
+            setData("baselineData", context.get("baselineData"));
+        }
+        if (context.containsKey("baselineDataColors")) {
+            setData("baselineDataColors", context.get("baselineDataColors"));
         }
         return SUCCESS;
     }

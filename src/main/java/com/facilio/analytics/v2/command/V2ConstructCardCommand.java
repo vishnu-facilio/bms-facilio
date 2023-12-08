@@ -236,7 +236,44 @@ public class V2ConstructCardCommand extends FacilioCommand {
         {
             DateRange dateRange = this.constructDateRange(cardParams.getTimeFilter(), db_filter);
             AggregateOperator aggr = AggregateOperator.getAggregateOperator(cardParams.getAggr());
-            List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria(cardParams.getParentModuleName(), cardParams.getCriteria());
+            Criteria criteria = new Criteria();
+            if (cardParams.getCriteria() != null) {
+                criteria = cardParams.getCriteria();
+            }
+            if (db_filter != null && db_filter.getDb_user_filter() != null) {
+                ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                JSONObject userFilter = db_filter.getDb_user_filter();
+                for (Object field : userFilter.keySet()) {
+                    List<Map<String, JSONObject>> filterMappings = (List<Map<String, JSONObject>>) userFilter.get(field);
+                    for (Map<String, JSONObject> filterMap : filterMappings) {
+                        for (String alias : filterMap.keySet()) {
+                            HashMap selected_dp_map = (HashMap) filterMap.get(String.valueOf(alias));
+                            Condition condition = new Condition();
+                            if (selected_dp_map.get("moduleName") != null) {
+                                ReportDataPointContext dataPoint = new ReportDataPointContext();
+                                dataPoint.setParentReadingModule(modBean.getModule(cardParams.getParentModuleName()));
+                                dataPoint.setModuleName(cardParams.getType());
+                                FacilioField filterField = V2AnalyticsOldUtil.isFilterApplicable(modBean, dataPoint, (String) selected_dp_map.get("moduleName"));
+                                if (filterField == null) {
+                                    continue;
+                                }
+                                condition.setField(filterField);
+                            }
+                            else{
+                                condition.setField(modBean.getField(alias, cardParams.getParentModuleName()));
+                            }
+                            condition.setOperatorId(((Long) selected_dp_map.get("operatorId")).intValue());
+                            List<String> value = (List<String>) selected_dp_map.get("value");
+                            StringJoiner joiner = new StringJoiner(",");
+                            value.forEach(val -> joiner.add(val));
+                            condition.setValue(String.valueOf(joiner));
+                            condition.setModuleName(cardParams.getParentModuleName());
+                            criteria.addAndCondition(condition);
+                        }
+                    }
+                }
+            }
+            List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria(cardParams.getParentModuleName(), criteria);
             if(parentIds != null && parentIds.size() > 0)
             {
                 Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, aggr, dynKpi.getNs());
@@ -254,6 +291,17 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 Map<String, Object> parentIdMap = new HashMap<>();
                 parentIdMap.put("parentId", parentIds.get(0));
                 cardParams.getResult().put("parentIds", parentIdMap);
+            }
+            else {
+                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, null));
+                if (cardParams.getBaseline() != null) {
+                    BaseLineContext baseline = BaseLineAPI.getBaseLine(cardParams.getBaseline());
+                    baseline.setAdjustType(BaseLineContext.AdjustType.NONE);
+                    DateRange baseline_range = baseline.calculateBaseLineRange(dateRange, baseline.getAdjustTypeEnum());
+                    cardParams.getTimeFilter().setBaselineRange(baseline_range);
+                    cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
+                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, cardParams.getBaselineTrend()));
+                }
             }
         }
     }

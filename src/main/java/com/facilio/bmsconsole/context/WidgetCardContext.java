@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -268,6 +269,10 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("link_name", getLinkName());
 		widgetJson.put("sequence", index);
+		widgetJson.put("cardLayout", getCardLayout());
+		if(getCardLayout().contains("web")){
+			widgetJson.put("web_url", "dashboard/"+ AccountUtil.getCurrentApp().getLinkName() + "/widget/" + getId());
+		}
 		return widgetJson;
 	}
 	

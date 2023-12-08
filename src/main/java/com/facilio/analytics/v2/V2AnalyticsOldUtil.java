@@ -987,7 +987,7 @@ public class V2AnalyticsOldUtil {
                 .select(Collections.singleton(FieldFactory.getIdField(module)))
                 .module(module);
 
-        if(criteria != null) {
+        if(criteria != null && criteria.getConditions() != null) {
             Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(criteria, module);
             if(parent_criteria != null)
             {

@@ -45,6 +45,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     @Override
     public boolean executeCommand(Context context)throws Exception
     {
+        context.put("isV2Analytics",true);
         report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         dashboard_user_filter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE);
         isClickHouseEnabled = (Boolean) context.get("isClickHouseEnabled");

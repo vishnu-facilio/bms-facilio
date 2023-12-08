@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import lombok.Getter;
 import lombok.Setter;
+import com.facilio.accounts.util.AccountUtil;
 import org.json.simple.JSONObject;
 import com.facilio.report.util.ReportUtil;
 @Getter @Setter
@@ -153,6 +154,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("title", getHeaderText());
 		widgetJson.put("sequence", index);
+		widgetJson.put("web_url", "dashboard/"+ AccountUtil.getCurrentApp().getLinkName() + "/widget/" + getId());
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {
 				widgetJson.put("reportType", ReportUtil.getReportType(getNewReportId()));

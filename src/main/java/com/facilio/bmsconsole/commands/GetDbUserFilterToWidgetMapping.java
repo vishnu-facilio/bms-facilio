@@ -238,8 +238,8 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						   String moduleName = (String) cardParams.get("type");
 						   if(filter.getFieldId() < 0 && filter.getModuleName() != null) {
 							   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
-							   FacilioField field = modBean.getField((Long) cardParams.get("fieldId"));
-							   FacilioModule baseModule = field.getModule();
+							   FacilioField field = cardParams.get("dynamicKpiId") != null && (Long) cardParams.get("dynamicKpiId") > 0 ? null : modBean.getField((Long) cardParams.get("fieldId"));
+							   FacilioModule baseModule = field != null ? field.getModule() : modBean.getModule((String) cardParams.get("parentModuleName"));
 							   filter.getReadingWidgetModuleMap().put(widgetId,Collections.singletonList(moduleName));
 							   FacilioModule parentModule = modBean.getModule(moduleName);
 							   parentModule.setFields(modBean.getAllFields(moduleName));

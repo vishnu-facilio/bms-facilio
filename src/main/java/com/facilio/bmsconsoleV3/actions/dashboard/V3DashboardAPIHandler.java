@@ -762,7 +762,13 @@ public class V3DashboardAPIHandler {
                     rangeValue = dashboard_filter.getDateLabel().split(" ")[1];
                 }
                 DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);
-                DateRange dateRange = date_operator.getRange(rangeValue);
+                DateRange dateRange = new DateRange();
+                if(operatorId != 20) {
+                    dateRange = date_operator.getRange(rangeValue);
+                }else{
+                    String[] range = dashboard_filter.getDateValue().split(",");
+                    dateRange = new DateRange(Long.parseLong(range[0]),Long.parseLong(range[1]));
+                }
                 JSONObject timeline_filter = new JSONObject();
                 timeline_filter.put("startTime", placeHolders.containsKey("startTime") ? placeHolders.get("startTime") : dateRange.getStartTime());
                 timeline_filter.put("endTime", placeHolders.containsKey("endTime") ? placeHolders.get("endTime") : dateRange.getEndTime());

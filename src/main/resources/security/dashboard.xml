@@ -599,4 +599,9 @@
             <property name="moduleName" type="string" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/mobile/widget/:widgetId" method="GET">
+        <urlparams>
+            <property name="widgetId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>
