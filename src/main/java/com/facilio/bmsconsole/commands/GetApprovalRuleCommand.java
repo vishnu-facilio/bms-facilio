@@ -62,7 +62,7 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                     JSONObject parse = (JSONObject) parser.parse(configJson);
                     JSONArray relatedModules = (JSONArray) parse.get("relatedModules");
                     List<Long> extendedModuleIds = module.getExtendedModuleIds();
-                    List<Map<Long,Object>> relatedList = new ArrayList<>();
+                    Map<Long,Object> relatedMap = new HashMap<>();
                     for (Object relatedModuleId: relatedModules) {
                         if (relatedModuleId instanceof Long) {
                             FacilioModule subModule = modBean.getModule((Long) relatedModuleId);
@@ -70,25 +70,18 @@ public class GetApprovalRuleCommand extends FacilioCommand {
                             List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && (extendedModuleIds.contains(((LookupField) field).getLookupModuleId())))).collect(Collectors.toList());
                             if (CollectionUtils.isNotEmpty(fields)) {
                                 for (FacilioField field : fields) {
-                                    Map<Long,Object> relatedMap = new HashMap<>();
                                     JSONObject relatedJson = new JSONObject();
                                     relatedJson.put("module", subModule);
                                     relatedJson.put("field", field);
                                     relatedMap.put(subModule.getModuleId(),relatedJson);
-                                    relatedList.add(relatedMap);
                                 }
                             }
                         }
                     }
-                    approvalMeta.setReleatedList(relatedList);
+                    approvalMeta.setRelatedList(relatedMap);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-            }
-
-            List<RelationRequestContext> relations = RelationUtil.getAllRelations(module);
-            if (CollectionUtils.isNotEmpty(relations)) {
-                approvalMeta.setRelations(relations);
             }
 
             List<WorkflowRuleContext> allStateTransitionList = StateFlowRulesAPI.getAllStateTransitionList(stateFlowContext.getId());

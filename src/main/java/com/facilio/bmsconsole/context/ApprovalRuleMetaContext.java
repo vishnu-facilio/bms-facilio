@@ -263,9 +263,5 @@ public class ApprovalRuleMetaContext implements Serializable {
 
     @Setter
     @Getter
-    List<Map<Long,Object>> releatedList;
-
-    @Getter
-    @Setter
-    List<RelationRequestContext> relations;
+   Map<Long,Object> relatedList;
 }
