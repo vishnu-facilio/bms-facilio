@@ -240,28 +240,6 @@ public class APIFieldsConfig {
                 .addFixedSelectableFields(Arrays.asList("severity", "acknowledgedBy", "noOfEvents"))
                 .done();
     }
-    @Module(FacilioConstants.ContextNames.SPACE)
-    public static Supplier<FieldConfig> getSpaceFieldConfig(){
-        return () -> new FieldConfig()
-
-                .sortFields()
-                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
-                .done()
-
-                .advancedFields()
-                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
-                .skipOnelevelFields(FieldsConfigList.SPACE_FILTER_FIELDS_EXCLUDE)
-                .done()
-
-                .summaryWidgetFields()
-                .add(FieldsConfigList.SPACE_SUMMARY_FIELDS_INCLUDE)
-                .done()
-
-                .viewFields()
-                .addFixedFields(FieldsConfigList.SPACE_VIEW_FIXED_FIELDS)
-                .add(FieldsConfigList.SPACE_VIEW_FIELDS_INCLUDE)
-                .done();
-    }
 
     @Module(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)
     public static Supplier<FieldConfig> getTenantUnitSpaceFieldConfig(){
@@ -788,7 +766,6 @@ public class APIFieldsConfig {
     @Module(FacilioConstants.ContextNames.SITE)
     public static Supplier<FieldConfig> getSiteFieldsConfig(){
         return () -> new FieldConfig()
-
                 .addLicenseBasedFields(AccountUtil.FeatureLicense.FSM, Arrays.asList("territory"))
                 .addLicenseBasedFields(AccountUtil.FeatureLicense.CLIENT, Arrays.asList("client"))
 
@@ -813,7 +790,7 @@ public class APIFieldsConfig {
                 .skipFields(Arrays.asList("territory"))
                 .appFieldConfigDone()
 
-                .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
+                .addConfigForApp(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)
                 .skipFields(Arrays.asList("territory"))
                 .appFieldConfigDone()
 
@@ -844,10 +821,31 @@ public class APIFieldsConfig {
                 .done();
     }
 
+    @Module(FacilioConstants.ContextNames.BUILDING)
+    public static Supplier<FieldConfig> getBuidingFieldsConfig(){
+        return () -> new FieldConfig()
+                .sortFields()
+                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.BUILDING_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
+                .advancedFields()
+                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.BUILDING_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .viewFields()
+                .addFixedFields(FieldsConfigList.BUILDING_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.BUILDING_VIEW_FIELDS_INCLUDE)
+                .done();
+    }
+
     @Module(FacilioConstants.ContextNames.FLOOR)
     public static Supplier<FieldConfig> getFloorFieldsConfig(){
         return () -> new FieldConfig()
-
                 .sortFields()
                 .add(FieldsConfigList.FLOOR_FIELDS_INCLUDE)
                 .done()
@@ -867,26 +865,25 @@ public class APIFieldsConfig {
                 .done();
     }
 
-    @Module(FacilioConstants.ContextNames.BUILDING)
-    public static Supplier<FieldConfig> getBuidingFieldsConfig(){
+    @Module(FacilioConstants.ContextNames.SPACE)
+    public static Supplier<FieldConfig> getSpaceFieldConfig(){
         return () -> new FieldConfig()
-
                 .sortFields()
-                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
-                .done()
-
-                .summaryWidgetFields()
-                .add(FieldsConfigList.BUILDING_SUMMARY_FIELDS_INCLUDE)
+                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
                 .done()
 
                 .advancedFields()
-                .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
-                .skipOnelevelFields(FieldsConfigList.BUILDING_FILTER_FIELDS_EXCLUDE)
+                .add(FieldsConfigList.SPACE_FIELDS_INCLUDE)
+                .skipOnelevelFields(FieldsConfigList.SPACE_FILTER_FIELDS_EXCLUDE)
+                .done()
+
+                .summaryWidgetFields()
+                .add(FieldsConfigList.SPACE_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()
-                .addFixedFields(FieldsConfigList.BUILDING_VIEW_FIXED_FIELDS)
-                .add(FieldsConfigList.BUILDING_VIEW_FIELDS_INCLUDE)
+                .addFixedFields(FieldsConfigList.SPACE_VIEW_FIXED_FIELDS)
+                .add(FieldsConfigList.SPACE_VIEW_FIELDS_INCLUDE)
                 .done();
     }
 

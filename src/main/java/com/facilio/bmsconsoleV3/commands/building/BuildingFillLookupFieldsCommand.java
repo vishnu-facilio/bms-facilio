@@ -23,6 +23,7 @@ public class BuildingFillLookupFieldsCommand extends FacilioCommand {
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("site"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("location"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("failureClass"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("decommissionedBy"));

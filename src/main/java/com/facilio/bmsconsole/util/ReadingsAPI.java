@@ -426,19 +426,19 @@ public class ReadingsAPI {
 	}
 	
 	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean unused, boolean fetchCount, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
-		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
-		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
-		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
+		FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
+		List<FacilioField> readingFields = FieldFactory.getReadingDataMetaFields();
+		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(readingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(module.getTableName())
+				.table(rdmModule.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		;
 		
 		if (fetchCount) {
-			builder.select(FieldFactory.getCountField(module, readingFieldsMap.get("resourceId")));
+			builder.select(FieldFactory.getCountField(rdmModule, readingFieldsMap.get("resourceId")));
 		}
 		else {
-			builder.select(redingFields);
+			builder.select(readingFields);
 		}
 				
 		if (fieldMap != null) {
@@ -493,8 +493,11 @@ public class ReadingsAPI {
 				builder.limit(perPage);
 			}
 		}
-		if (search != null) {
-			// TODO
+		if (StringUtils.isNotEmpty(search)) {
+			Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(FieldFactory.getFieldFields());
+			builder.innerJoin(ModuleFactory.getFieldsModule().getTableName())
+					.on( rdmModule.getTableName()+".FIELD_ID = " +ModuleFactory.getFieldsModule().getTableName()+".FIELDID")
+					.andCondition(CriteriaAPI.getCondition(fieldsMap.get("name"), search, StringOperators.CONTAINS));
 		}
 		return builder.get();
 	}

@@ -1633,11 +1633,9 @@ public static long getSitesCount() throws Exception {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Building")
-				.innerJoin("BaseSpace")
-				.on("Building.ID = BaseSpace.ID")
-				.andCustomWhere("Building.ORGID=? AND BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, orgId, buildingId, BaseSpaceContext.SpaceType.SPACE.getIntVal());
-		
+				.table("BaseSpace")
+				.andCustomWhere("BaseSpace.ORGID = ? AND BaseSpace.BUILDING_ID = ? AND BaseSpace.SPACE_TYPE = ?", orgId, buildingId, BaseSpaceContext.SpaceType.SPACE.getIntVal());
+
 		List<Map<String, Object>> rs = builder.get();
 		if (rs == null || rs.isEmpty()) {
 			return 0;
