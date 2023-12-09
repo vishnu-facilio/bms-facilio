@@ -1824,6 +1824,7 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getAddBulkItemChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new BulkItemAdditionCommandV3());
+        c.addCommand(new ComputeWeightedAverageCostCommand());
         c.addCommand(getAddBulkPurchasedItemChain());
         c.addCommand(getUpdateItemQuantityRollupChain());
         c.addCommand(getSetItemAndToolTypeForStoreRoomChain());

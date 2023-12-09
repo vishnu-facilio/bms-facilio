@@ -11,6 +11,7 @@ import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderContext;
 import com.facilio.bmsconsoleV3.context.purchaseorder.V3PurchaseOrderLineItemContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.modules.*;
 import com.facilio.util.CurrencyUtil;
@@ -174,8 +175,14 @@ public class PurchaseOrderCompleteCommand extends FacilioCommand {
 		V3ItemContext item = new V3ItemContext();
 		item.setStoreRoom(purchaseOrder.getStoreRoom());
 		item.setItemType(lineItem.getItemType());
-		item.setCostType(CostType.FIFO.getIndex());
-
+		if(lineItem.getItemType()!=null){
+			V3ItemTypesContext itemType = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM_TYPES,lineItem.getItemType().getId(),V3ItemTypesContext.class);
+				if(itemType.getCostType()!=null){
+					item.setCostType(itemType.getCostType());
+				}else{
+					item.setCostType(CostType.FIFO.getIndex());
+				}
+		}
 		ModuleBean modBean = Constants.getModBean();
 		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		List<FacilioField> purchasedItemMultiCurrencyFields = CurrencyUtil

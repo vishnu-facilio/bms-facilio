@@ -63,8 +63,10 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
             if (itemToBeAdded != null && !itemToBeAdded.isEmpty()) {
                 addItem(itemModule, itemFields, itemToBeAdded);
             }
-
+            List<V3ItemContext> itemCloneList = new ArrayList<>();
             for (V3ItemContext item : itemsList) {
+                V3ItemContext itemClone = FieldUtil.cloneBean(item,V3ItemContext.class);
+                itemCloneList.add(itemClone);
                 if (item.getPurchasedItems() != null && !item.getPurchasedItems().isEmpty()) {
                     for (V3PurchasedItemContext pItem : item.getPurchasedItems()) {
                         pItem.setItem(item);
@@ -76,6 +78,7 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
             }
             context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
             context.put(FacilioConstants.ContextNames.RECORD_LIST, itemsList);
+            context.put(FacilioConstants.ContextNames.ITEMS, itemCloneList);
         }
         return false;
     }
