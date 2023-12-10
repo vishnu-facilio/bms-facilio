@@ -49,7 +49,7 @@ public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
     }
 
     @Override
-    public void addValueGenerators(List<ValueGeneratorContext> valueGenerators) throws Exception {
+    public List<Map<String, Object>> addValueGenerators(List<ValueGeneratorContext> valueGenerators) throws Exception {
         if (CollectionUtils.isNotEmpty(valueGenerators)) {
             List<Map<String, Object>> props = FieldUtil.getAsMapList(valueGenerators, ValueGenerator.class);
             GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
@@ -57,7 +57,10 @@ public class ValueGeneratorBeanImpl implements ValueGeneratorBean {
                     .fields(FieldFactory.getValueGeneratorFields());
             insertBuilder.addRecords(props);
             insertBuilder.save();
+
+            return props;
         }
+        return null;
     }
 
     @Override

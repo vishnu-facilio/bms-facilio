@@ -707,6 +707,27 @@ public class PackageConstants {
         public static final String CONTENT_TYPE = "Content_Type";
     }
 
+    public static class ValueGeneratorConstants{
+        public static final String ID = "Id";
+        public static final String SPECIAL_MODULE_NAME = "Special_Module_Name";
+        public static final String MODULE_NAME = "Module_Name";
+        public static final String LINK_NAME = "Link_Name";
+        public static final String DISPLAY_NAME = "Display_Name";
+        public static final String IS_CONSTANT = "Is_Constant";
+        public static final String IS_HIDDEN = "Is_Hidden";
+        public static final String IS_SYSTEM = "Is_System";
+        public static final String OPERATOR_ID = "Operator_Id";
+        public static final String VALUE_GENERATOR_TYPE = "Value_Generator_Type";
+        public static final List<String> DEFAULT_CREATED_VALUE_GENERATOR = Arrays.asList(
+                "com.facilio.modules.AccessibleBasespaceValueGenerator",
+                "com.facilio.modules.AudienceValueGenerator",
+                "com.facilio.modules.TenantValueGenerator",
+                "com.facilio.modules.VendorValueGenerator",
+                "com.facilio.modules.ClientValueGenerator",
+                "com.facilio.modules.TerritoryBasedOnPeopleValueGenerator"
+        );
+    }
+
     public static class GlobalScopeVariableConstants{
         public static final String LINK_NAME = "Link_Name";
         public static final String DISPLAY_NAME = "Display_Name";

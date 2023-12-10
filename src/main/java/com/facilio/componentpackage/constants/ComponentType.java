@@ -67,6 +67,7 @@ public enum ComponentType implements FacilioIntEnum {
     READING_KPI(ReadingKpiPackageBeanImpl.class, MODULE,Boolean.FALSE),
     ASSET_READINGS(ReadingsPackageBeanImpl.class,MODULE,Boolean.FALSE),
     CONNECTOR(ConnectorPackageBeanImpl.class,null,false),
+    VALUE_GENERATOR(ValueGeneratorPackageBeanImpl.class,MODULE,false),
     GLOBAL_SCOPE_VARIABLE(GlobalScopingPackageImpl.class,MODULE,false),
     USER_SCOPING(UserScopingPackageImpl.class,MODULE, false),
     USER_SCOPING_CONFIG(UserScopingConfigPackageBeanImpl.class,MODULE, false),
@@ -144,6 +145,7 @@ public enum ComponentType implements FacilioIntEnum {
             add(READING_RULE);
             add(READING_KPI);
             add(CONNECTOR);
+            add(VALUE_GENERATOR);
             add(GLOBAL_SCOPE_VARIABLE);
             add(USER_SCOPING);
             add(USER_SCOPING_CONFIG);

@@ -101,5 +101,7 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         energySiteScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
         energySiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AccessibleBasespaceValueGenerator").getId());
         scopeBean.addScopeVariable(energySiteScopeVariable);
+
+        //if you default GlobalScopeVariable Please add linkName in PackageConstants.GlobalScopeVariableConstants.DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE also
     }
 }

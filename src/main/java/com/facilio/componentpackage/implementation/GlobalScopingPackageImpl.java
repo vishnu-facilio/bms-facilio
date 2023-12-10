@@ -125,13 +125,13 @@ public class GlobalScopingPackageImpl implements PackageBean<GlobalScopeVariable
     public Map<String, Long> getExistingIdsByXMLData(Map<String, XMLBuilder> uniqueIdVsXMLData) throws Exception {
         GlobalScopeBean globalScopeBean = (GlobalScopeBean) BeanFactory.lookup("ScopeBean");
         Map<String, Long> uniqueIdentifierVsGlobalScopeVariableId = new HashMap<>();
+        List<String> defaultGlobalScopeVariable = PackageConstants.GlobalScopeVariableConstants.DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE;
 
         for (Map.Entry<String, XMLBuilder> idVsData : uniqueIdVsXMLData.entrySet()) {
             String uniqueIdentifier = idVsData.getKey();
             XMLBuilder globalScopeVariableElement = idVsData.getValue();
             String linkName = globalScopeVariableElement.getElement(PackageConstants.GlobalScopeVariableConstants.LINK_NAME).getText();
 
-            List<String> defaultGlobalScopeVariable = PackageConstants.GlobalScopeVariableConstants.DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE;
             if (CollectionUtils.isNotEmpty(defaultGlobalScopeVariable) && defaultGlobalScopeVariable.contains(linkName)) {
                 GlobalScopeVariableContext scopeVariable = globalScopeBean.getScopeVariable(linkName);
                 if (scopeVariable != null) {

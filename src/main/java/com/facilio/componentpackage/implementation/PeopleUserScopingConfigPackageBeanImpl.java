@@ -143,6 +143,10 @@ public class PeopleUserScopingConfigPackageBeanImpl implements PackageBean<Map<S
             ScopingContext scope = userScopeBean.getScopingForLinkname(scopeLinkName);
             Long scopeId = scope !=null? scope.getId() : -1L;
 
+            if(peopleId < 0 || scopeId < 0){
+                LOGGER.info("####Sandbox - Skipping add PeopleUser Scoping Config since peopleId or scopeId is null for peopleMail "+peopleMail+ " scopeLinkName "+scopeLinkName);
+                continue;
+            }
             long recordId = userScopeBean.updatePeopleScoping(peopleId, scopeId);
 
             uniqueIdentifierVsPeopleUserScopingConfigIds.put(uniqueIdentifier, recordId);
