@@ -32,7 +32,8 @@ public class ValidateTriggerCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(oldTriggers)) {
             for (BaseTriggerContext oldTrigger : oldTriggers) {
                 if (oldTrigger.equals(trigger)) {
-                    throw new IllegalArgumentException(eventType + " event type trigger already exists");
+                    context.put(TriggerUtil.TRIGGER_CONTEXT, oldTrigger);
+                    break;
                 }
             }
         }

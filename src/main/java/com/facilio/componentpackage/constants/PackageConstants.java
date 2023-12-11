@@ -13,6 +13,8 @@ public class PackageConstants {
     public static final String LOOKUP_FIELD_NAME="Lookup_Field_Name";
     public static final String LOOKUP_MODULE_NAME="Lookup_Module_Name";
     public static final String USER_NAME="User_Name";
+    public static final String PACKAGE_ID="packageId";
+    public static final String PATCH_INSTALL="patchInstall";
     public static final String APPROVERS="Approvers";
     public static final String APPROVER_LIST="Approver_List";
     public static final String APPROVER_TYPE="Approver_Type";

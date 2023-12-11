@@ -27,9 +27,24 @@
     <td class="table-head"><h4>Target OrgId</h4></td>
     <td><input type="text" id="targetOrgId" required class="input-field"></td>
   </tr>
+  <tr id="packageIdRow">
+      <td class="table-head"><h4>Package Id</h4></td>
+      <td><input type="text" id="packageId" required class="input-field"></td>
+  </tr>
   <tr id="oldVsNewMailRow">
     <td class="table-head"><h4>Old vs New Mail</h4></td>
     <td><textarea id="oldVsNewMail" placeholder="{'1':2, '3':4}" rows="10" cols="30"></textarea></td>
+  </tr>
+  <tr id="patchInstallRow">
+      <td class="table-head"><h4>Patch Install</h4></td>
+      <td>
+          <label class="radio-text">
+              <input class="radio-label" type="radio" name="patchInstall" id="isPatchInstall"> Yes
+          </label>
+          <label class="radio-text">
+              <input class="radio-label" type="radio" name="patchInstall" id="isNotPatchInstall" checked="checked"> No
+          </label>
+      </td>
   </tr>
   <tr id="fileRow">
     <td class="table-head"><h4>File Upload</h4></td>
@@ -58,6 +73,8 @@
     $("#targetOrgIdRow").toggle(!showFileRadioChecked);
     $("#fileRow").toggle(!showFileRadioChecked);
     $("#oldVsNewMailRow").toggle(!showFileRadioChecked);
+    $("#packageIdRow").toggle(!showFileRadioChecked);
+    $("#patchInstallRow").toggle(!showFileRadioChecked);
   }
 
   function sendAjax() {
@@ -88,12 +105,15 @@
         }
       });
     } else {
+      const isPatchInstall = $("#isPatchInstall").is(":checked");
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];
 
       const formData = new FormData();
       formData.append('file', file);
       formData.append('fromAdminTool', true);
+      formData.append('patchInstall', isPatchInstall);
+      formData.append('packageId', $('#packageId').val());
       formData.append('targetOrgId', $('#targetOrgId').val());
       formData.append('oldVsNewPeopleMail', $('#oldVsNewMail').val());
 

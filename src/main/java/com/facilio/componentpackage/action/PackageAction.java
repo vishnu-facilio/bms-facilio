@@ -32,11 +32,13 @@ public class PackageAction extends FacilioAction {
     private Map<String, String> oldVsNewPeopleMailMap;
     private String oldVsNewPeopleMail;
     private boolean fromAdminTool = false;
+    private boolean patchInstall = false;
     private List<Integer> skipComponents;
     private int packageType = 1;
     private String displayName;
     private Long sourceOrgId;
     private Long targetOrgId;
+    private long packageId;
     private File file;
 
     private Long orgId;
@@ -132,6 +134,8 @@ public class PackageAction extends FacilioAction {
         FacilioContext deployContext = deployPackageChain.getContext();
         try {
             deployContext.put(PackageConstants.FILE, file);
+            deployContext.put(PackageConstants.PACKAGE_ID, packageId);
+            deployContext.put(PackageConstants.PATCH_INSTALL, patchInstall);
             deployContext.put(PackageConstants.TARGET_ORG_ID, targetOrgId);
             deployContext.put(PackageConstants.FROM_ADMIN_TOOL, fromAdminTool);
             deployPackageChain.execute();
