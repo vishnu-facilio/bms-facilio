@@ -190,7 +190,11 @@ public class FieldsConfigChain {
 
     private static <T extends FieldListHandler<T>> T getFieldHandlerForType(FieldConfig fieldConfig, FieldListType fieldListType) {
         if(fieldConfig != null && fieldListType != null) {
-            return (T) fieldConfig.getFieldListTypeHandlerMap().get(fieldListType.getName());
+            T fieldListHandler = (T) fieldConfig.getFieldListTypeHandlerMap().get(fieldListType.getName());
+            if(fieldListHandler == null && fieldListType.getFieldListTypeConfig() != null) {
+                fieldListHandler = (T) fieldConfig.getFieldListTypeHandlerMap().get(fieldListType.getFieldListTypeConfig().getName());
+            }
+            return fieldListHandler;
         }
         return null;
     }

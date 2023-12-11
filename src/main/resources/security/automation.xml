@@ -104,10 +104,11 @@
     </request>
 
     <!-- Relation - start -->
-    <request path="/api/v2/relation/addOrUpdate">
+    <request path="/api/v2/relation/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="moduleName" type="string"/>
             <property name="relation" type="object">
+                <property name="id" type="number" />
                 <property name="name" type="string" />
                 <property name="relationType" type="number" />
                 <property name="fromModuleId" type="number" />
@@ -131,8 +132,9 @@
             <property name="moduleName" type="string"/>
         </urlparams>
         <requestbody type="object">
-            <property name="moduleName" type="string" />
+            <property name="moduleName" type="string"/>
             <property name="relation" type="object">
+                <property name="id" type="number" />
                 <property name="name" type="string" />
                 <property name="relationType" type="number" />
                 <property name="fromModuleId" type="number" />

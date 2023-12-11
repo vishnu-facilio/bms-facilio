@@ -10,6 +10,22 @@
 <!--        </requestbody>-->
 <!--    </request>-->
 
+    <request path="/api/v2/views/:moduleName/viewList" method="GET">
+        <urlparams>
+            <property name="groupType" type="number"  mandatory="true"/>
+            <property name="viewType" type="number"  mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="fromBuilder" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/views/:moduleName/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/customPage/:moduleName/fetchForRecord" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
