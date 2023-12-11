@@ -4115,19 +4115,28 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Data Sharing", "datasharing", WebTabContext.Type.DATA_SHARING, null, appId, null,AccountUtil.FeatureLicense.PEOPLE_USER_SCOPING.getFeatureId()));
             groupNameVsWebTabsMap.put("usersandaccess", webTabs);
 
+            webTabGroups.add(new WebTabGroupContext("Resources", "resources", layout.getId(), 201, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("People", "people", WebTabContext.Type.PEOPLE, null, appId, null));
+            webTabs.add(new WebTabContext("Teams", "teams", WebTabContext.Type.TEAMS, null, appId, null));
+            groupNameVsWebTabsMap.put("resources", webTabs);
+
             webTabGroups.add(new WebTabGroupContext("Customization", "customization", layout.getId(), 1, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Modules", "modules", WebTabContext.Type.MODULES, null, appId, null));
+            webTabs.add(new WebTabContext("Connectors", "connections", WebTabContext.Type.CONNECTORS, null, appId, null));
             webTabs.add(new WebTabContext("Connected Apps", "connectedapps", WebTabContext.Type.CONNECTED_APPS, null, appId, null,AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId()));
             webTabs.add(new WebTabContext("Functions", "functions", WebTabContext.Type.FUNCTIONS, null, appId, null));
             webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
+            webTabs.add(new WebTabContext("Pdf Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null));
             groupNameVsWebTabsMap.put("customization", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Automation", "automation", layout.getId(), 205, groupOrder++));
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Workflows", "workflows", WebTabContext.Type.WORKFLOWS, null, appId, null));
             webTabs.add(new WebTabContext("Notifications", "notifications", WebTabContext.Type.NOTIFICATIONS, null, appId, null));
+            webTabs.add(new WebTabContext("Condition Manager", "conditionmanager", WebTabContext.Type.CONDITION_MANAGER, null, appId, null));
             webTabs.add(new WebTabContext("Scheduler", "scheduler", WebTabContext.Type.SCHEDULER, null, appId, null));
             webTabs.add(new WebTabContext("Variables", "variables", WebTabContext.Type.VARIABLES, null, appId, null));
             webTabs.add(new WebTabContext("Weave", "weave", WebTabContext.Type.WEAVE, null, appId, null,AccountUtil.FeatureLicense.WEAVE.getFeatureId()));
@@ -4158,6 +4167,9 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Script Logs","scriptlogs", WebTabContext.Type.SCRIPT_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_LOG.getFeatureId()));
             webTabs.add(new WebTabContext("KPI Execution Logs", "readingkpilogs", WebTabContext.Type.KPI_EXEC_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_KPI.getFeatureId()));
             webTabs.add(new WebTabContext("Rule Logs", "readingrulelogs", WebTabContext.Type.RULE_LOGS, null, appId, null, AccountUtil.FeatureLicense.NEW_READING_RULE.getFeatureId()));
+            webTabs.add(new WebTabContext("Workflow Logs","workflowrulelogs", WebTabContext.Type.WORKFLOW_RULE_LOGS,null,appId,null,AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG.getFeatureId()));
+            webTabs.add(new WebTabContext("Background Activity","backgroundactivity", WebTabContext.Type.BACKGROUND_ACTIVITY,null,appId,null,AccountUtil.FeatureLicense.BACKGROUND_ACTIVITY.getFeatureId()));
+            webTabs.add(new WebTabContext("Inbound Mail Conversion", "inboundmailconversion", WebTabContext.Type.INBOUND_MAIL_CONVERSION, null, appId, null));
             groupNameVsWebTabsMap.put("logs", webTabs);
 
 

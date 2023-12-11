@@ -18,7 +18,9 @@ public class AddEnergyAppLayout extends FacilioCommand {
         //Energy App SetUp Layout
         ApplicationLayoutContext energySetupLayout = new ApplicationLayoutContext(energyApp.getId(), ApplicationLayoutContext.AppLayoutType.SINGLE, ApplicationLayoutContext.LayoutDeviceType.SETUP, FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         ApplicationApi.addApplicationLayout(energySetupLayout);
-
+        //Energy App Mobile Layout
+        ApplicationLayoutContext energyAppMobileLayout = new ApplicationLayoutContext(energyApp.getId(),ApplicationLayoutContext.AppLayoutType.SINGLE,ApplicationLayoutContext.LayoutDeviceType.MOBILE,FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        ApplicationApi.addApplicationLayout(energyAppMobileLayout);
         return false;
     }
 }
