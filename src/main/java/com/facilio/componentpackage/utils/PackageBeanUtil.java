@@ -1893,6 +1893,7 @@ public class PackageBeanUtil {
         fieldElement.element(PackageConstants.FieldXMLConstants.DATA_TYPE).text(String.valueOf(facilioField.getDataType()));
         fieldElement.element(PackageConstants.FieldXMLConstants.MAIN_FIELD).text(String.valueOf(facilioField.isMainField()));
         fieldElement.element(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).text(String.valueOf(facilioField.getDisplayTypeInt()));
+        fieldElement.element("tableName").text(facilioField.getModule().getTableName());
 
         Map<String, Object> additionalFieldProps = fetchAdditionalFieldProps(facilioField);
         for (Map.Entry<String, Object> entry : additionalFieldProps.entrySet()) {
@@ -2044,6 +2045,7 @@ public class PackageBeanUtil {
         fieldProp.put("isDefault", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.IS_DEFAULT).getText()));
         fieldProp.put("displayType", Integer.parseInt(fieldElement.getElement(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).getText()));
         fieldProp.put("isMainField", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.MAIN_FIELD).getText()));
+        fieldProp.put("tableName",fieldElement.getElement(fieldElement.getElement("tableName").getText()));
 
         FacilioField facilioField = setAdditionalFieldProps(fieldProp, fieldElement);
         return facilioField;
