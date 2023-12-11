@@ -196,6 +196,8 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         if(addedModules.size() == 1){
             V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(selectBuilder, addedModules, baseModule);
+        }else{
+            V2AnalyticsOldUtil.addDeletedCriteria(addedModules , selectBuilder);
         }
         selectBuilder.limit(50);
         return selectBuilder;

@@ -2,6 +2,7 @@ package com.facilio.analytics.v2.command;
 
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
+import com.facilio.analytics.v2.context.V2DimensionContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
@@ -281,20 +282,21 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
         if(addedModules != null && addedModules.size() == 1) {
             V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(newSelectBuilder, addedModules, baseModule);
+        }else{
+            V2AnalyticsOldUtil.addDeletedCriteria(addedModules, newSelectBuilder);
         }
+
         List<Map<String, Object>> props = null;
         if(isClickHouseEnabled) {
             props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
                     () -> newSelectBuilder.getAsProps());
             LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
-//            throw new Exception();
         } else {
             props = newSelectBuilder.getAsProps();
             LOGGER.debug("SELECT BUILDER EXECUTED IN MYSQL--- " + newSelectBuilder);
         }
         return props;
     }
-
     private ReportDataContext fetchLiveKpiDataForAnalytics(ReportContext report, List<ReportDataPointContext> dataPointList)throws Exception
     {
         ReportDynamicKpiContext dynamicKpi = dataPointList.get(0).getDynamicKpi();

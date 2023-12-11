@@ -1202,8 +1202,6 @@ public class V2AnalyticsOldUtil {
             selectBuilder.innerJoin(resourceModule.getTableName())
                     .on(join_criteria.toString());
             addedModules.add(resourceModule);
-
-            selectBuilder.andCustomWhere("( Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = false) ");
         }
         FacilioModule baseSpaceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE);
         selectBuilder.addJoinModules(Collections.singletonList(baseSpaceModule));
@@ -1576,5 +1574,18 @@ public class V2AnalyticsOldUtil {
         kpi_context.put("type", type);
         chain.execute();
         return (String) kpi_context.get("moduleName");
+    }
+
+    public static void addDeletedCriteria(Set<FacilioModule> modules, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    {
+        for(FacilioModule module : modules)
+        {
+            if(module != null && (module.getName().equals(FacilioConstants.ContextNames.RESOURCE) || module.getName().equals(FacilioConstants.Meter.METER))){
+                if(module.isTrashEnabled()){
+                    FacilioField deletedField = FieldFactory.getIsDeletedField(module);
+                    selectBuilder.andCondition(CriteriaAPI.getCondition(deletedField, "false", BooleanOperators.IS));
+                }
+            }
+        }
     }
 }
