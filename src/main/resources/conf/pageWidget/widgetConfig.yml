@@ -3,26 +3,35 @@ version: 1.0
 widgets:
 #  SUMMARY_FIELDS_WIDGET :
 #    WEB:
-#      - name: flexiblewebsummaryfieldswidget_5
-#        displayName: Summary Fields Widget - 5
+#      - name: flexiblewebsummaryfieldswidget_2
+#        displayName: Summary Fields Widget - 2
 #        configType: FLEXIBLE
-#        minHeight: 5
+#        minHeight: SMALL
+#        minWidth: ONE_FOURTH
 #    MOBILE:
-#      - name: flexiblemobilesummaryfieldswidget_14
-#        displayName: Summary Fields Widget - 14
+#      - name: flexiblemobilesummaryfieldswidget_2
+#        displayName: Summary Fields Widget - 2
 #        configType: FLEXIBLE
-#        minHeight: 14
+#        minHeight: SMALL
+#        minWidth: HALF
 #
 #  COMMENT:
 #    WEB:
-#    - name: flexiblewebcomment_5
-#      displayName: Comment - 5
+#    - name: flexiblewebcomment_2
+#      displayName: Comment - 2
 #      configType: FLEXIBLE
-#      minHeight: 5
+#      minHeight: SMALL
 #    MOBILE:
-#      - name: flexiblemobilecomment_8
-#        displayName: Comment - 8
+#      - name: flexiblemobilecomment_2
+#        displayName: Comment - 2
 #        configType: FLEXIBLE
-#        minHeight: 8
+#        minHeight: LARGE
+  CONNNECTED_APP:
+      WEB:
+      - name: flexibleWebConnectedApp_6
+        displayName: Connected App - 6
+        configType: SINGLE_PAGE_WIDGET
+        minHeight: LARGE
+
 
 

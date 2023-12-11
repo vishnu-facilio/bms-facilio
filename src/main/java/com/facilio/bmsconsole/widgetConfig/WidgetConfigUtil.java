@@ -106,8 +106,17 @@ public class WidgetConfigUtil {
         widgetConfigContext.setConfigType(configType);
         widgetConfigContext.setLayoutType(layoutType);
 
-        widgetConfigContext.setMinHeight((int) widgetConfigMap.getOrDefault("minHeight", -1));
-        widgetConfigContext.setMinWidth((int) widgetConfigMap.getOrDefault("minWidth", -1));
+        String height = (String) widgetConfigMap.get("minHeight");
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(height), "Height should be defined for widget -- "+name);
+        WidgetConfigContext.WidgetHeight heightEnum = WidgetConfigContext.WidgetHeight.valueOf(height);
+        widgetConfigContext.setMinHeight(heightEnum.getHeight());
+
+        String width = (String) widgetConfigMap.get("minWidth");
+        FacilioUtil.throwIllegalArgumentException(configType == WidgetConfigContext.ConfigType.FIXED && StringUtils.isEmpty(width), "Height should be defined for widgets -- "+name);
+        if(StringUtils.isNotEmpty(width)) {
+            WidgetConfigContext.WidgetWidth widthEnum = WidgetConfigContext.WidgetWidth.valueOf(width);
+            widgetConfigContext.setMinWidth(widthEnum.getWidth());
+        }
 
         widgetConfigs.put(name, widgetConfigContext);
     }

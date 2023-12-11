@@ -353,8 +353,8 @@ public class PagesUtil {
                     PageConnectedAppWidgetContext pageConnectedAppWidgetContext = new PageConnectedAppWidgetContext(-1, connectedAppSummaryWidget.getId());
                     PageTabContext tab = new PageTabContext(connectedAppSummaryWidget.getLinkName() + "tab", connectedAppSummaryWidget.getWidgetName(), sequenceNumber+=10, PageTabContext.TabType.CONNECTED_TAB, true, AccountUtil.FeatureLicense.CONNECTEDAPPS.getFeatureId())
                             .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                            .addSection("section", null, null)
-                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexiblewebconnectedapp_6", 0, 0, null, FieldUtil.getAsJSON(pageConnectedAppWidgetContext))
+                            .addSection("section", "", null)
+                            .addWidget(connectedAppSummaryWidget.getLinkName(), connectedAppSummaryWidget.getWidgetName(), PageWidget.WidgetType.CONNNECTED_APP, "flexibleWebConnectedApp_6", 0, 0, null, FieldUtil.getAsJSON(pageConnectedAppWidgetContext))
                             .widgetDone()
                             .sectionDone()
                             .columnDone();

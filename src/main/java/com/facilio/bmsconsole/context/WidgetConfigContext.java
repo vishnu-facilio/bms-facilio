@@ -61,4 +61,30 @@ public class WidgetConfigContext {
             return null;
         }
     }
+
+    @Getter
+    public enum WidgetHeight implements FacilioIntEnum {
+        SMALL(2),
+        MEDIUM(4),
+        LARGE(6);
+
+        private final long height;
+
+        WidgetHeight(long height) {
+            this.height = height;
+        }
+    }
+
+    @Getter
+    public enum WidgetWidth implements FacilioIntEnum {
+        ONE_FOURTH(3),
+        HALF(6),
+        THREE_FOURTH(9),
+        FULL(12);
+        private final long width;
+
+        WidgetWidth(long width) {
+            this.width = width;
+        }
+    }
 }

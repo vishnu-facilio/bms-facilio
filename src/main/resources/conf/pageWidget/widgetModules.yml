@@ -8,3 +8,6 @@ widgetModules:
 #    - asset
 #  COMMENT:
 #    - all
+
+  CONNNECTED_APP:
+    - all
