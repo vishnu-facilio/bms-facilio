@@ -104,7 +104,7 @@ public class BeforeAuthInputFilter implements Filter {
             NodeError nodeError = executor.validatePreAuth();
             if (nodeError != null) {
                 log(securityRequestWrapper, nodeError.getErrorMessage());
-                if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                if (isAllowed()) {
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put("message", nodeError.getErrorMessage());
                     write(errorMap, 400, servletResponse);
@@ -153,7 +153,7 @@ public class BeforeAuthInputFilter implements Filter {
     }
 
     private boolean isAllowed() {
-        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) && FacilioProperties.isCheckPrivilegeAccess();
+        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise() || FacilioProperties.getEnvironment().equalsIgnoreCase("stage2"))) && FacilioProperties.isCheckPrivilegeAccess();
     }
     @Override
     public void destroy() {
