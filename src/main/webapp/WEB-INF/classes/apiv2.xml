@@ -244,7 +244,7 @@
 				<param name="excludeNullProperties">true</param>
 			</result>
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 
 		<action name="attachments"
@@ -8699,7 +8699,7 @@
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getBaseSpaceDirectChildren">
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 	</package>
 	<package name="portfolioApiV2" namespace="/api/v2/portfolio" extends="v2Api">
@@ -8707,25 +8707,25 @@
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getPortfolioCardData">
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="search"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getSearchResult">
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="tree"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="fetchParentNodes">
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="boundedSpaces"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getBoundedSpaces">
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 	</package>
 
@@ -8735,11 +8735,11 @@
 		</action>
 		<action name="totalArea" class="com.facilio.bmsconsole.actions.CampusAction" method="getSitesTotalArea" >
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="siteInfo" class="com.facilio.bmsconsole.actions.CampusAction" method="getSiteDetails" >
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 	</package>
 
@@ -8747,7 +8747,7 @@
 	<package name="baseSpaceTreeApiV2" namespace="/api/v2/basespace/tree" extends="v2Api">
 		<action name="fetchParentNodes" class="com.facilio.bmsconsole.actions.BaseSpaceAction" method="fetchParentNodes" >
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 	</package>
 

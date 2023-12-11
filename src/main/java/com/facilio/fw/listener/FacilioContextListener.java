@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.monitoring.MonitoringMXBean;
 import com.facilio.bmsconsole.monitoring.MonitoringMXBeanImp;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
@@ -140,6 +141,7 @@ public class FacilioContextListener implements ServletContextListener {
 			timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
 			ValueGeneratorUtil.initialize();
+			WebTabUtil.initialize();
 			Operator.getOperator(1);
 			registerMBeans();
 			registerMonitoringMBeans();

@@ -172,6 +172,17 @@ public class V3PermissionUtil {
         return false;
     }
 
+    public static boolean isSpecialModule(String moduleName) {
+        List<String> SPECIAL_MODULE_LIST = Arrays.asList(
+                FacilioConstants.ContextNames.USER_NOTIFICATION
+        );
+
+        if(StringUtils.isNotEmpty(moduleName) && SPECIAL_MODULE_LIST.contains(moduleName)) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean currentUserHasPermission(long tabId, String action) {
         try {
             long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, AccountUtil.getCurrentUser().getRole().getRoleId());
@@ -183,7 +194,7 @@ public class V3PermissionUtil {
     }
 
     public static boolean isAllowedEnvironment(){
-        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) && FacilioProperties.isCheckPrivilegeAccess();
+        return (!FacilioProperties.isOnpremise()) && FacilioProperties.isCheckPrivilegeAccess();
     }
 
     public static boolean isModuleAccessible(String moduleName, Long tabId) throws Exception {

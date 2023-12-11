@@ -2543,7 +2543,7 @@
 	<package name="baseSpaceApi" namespace="/api/basespace" extends="homeApi">
 		<action name="children" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="childrenList">
-				<param name="tabType">PORTFOLIO</param>
+				<param name="tabType">Portfolio</param>
 				<param name="permission">READ</param>
 				<result name="success" type="json">
 				<param name="includeProperties">basespaces,basespaces\[\d+\],basespaces\[\d+\].*</param>
@@ -2622,7 +2622,7 @@
 
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.CampusAction"
 				method="getSiteInsights">
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2688,7 +2688,7 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.BuildingAction"
 				method="getSpaceInsights">
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2744,7 +2744,7 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.FloorAction"
 				method="getSpaceInsights">
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2827,7 +2827,7 @@
 		</action>
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.SpaceAction"
 				method="getSpaceInsights">
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -3742,7 +3742,7 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 			<param name="permission">GET:VIEW,READ</param>
-			<param name="tabType">DASHBOARD</param>
+			<param name="tabType">Dashboard</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<param name="permission">POST:EDIT</param>
@@ -3849,7 +3849,7 @@
 				<param name="includeProperties">^cardResult.*</param>
 			</result>
 			<param name="permission">GET:READ</param>
-			<param name="tabType">PORTFOLIO</param>
+			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="getReadingReportData" class="com.facilio.bmsconsole.actions.DashboardAction" method="getReadingReportData">
 			<result name="success" type="json">

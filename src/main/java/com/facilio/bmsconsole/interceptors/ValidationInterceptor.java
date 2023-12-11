@@ -38,7 +38,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
             NodeError nodeError = AccountUtil.getSecurityBean().validate(executor);
             if (nodeError != null) {
                 LOGGER.error(nodeError.getErrorMessage());
-                if(!(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equalsIgnoreCase("stage2") || FacilioProperties.isOnpremise())) {
+                if (isAllowed()) {
                     HttpServletResponse response = ServletActionContext.getResponse();
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put("message", nodeError.getErrorMessage());
@@ -46,8 +46,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
                     return null;
                 }
             }
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             LOGGER.error(FacilioUtil.constructMessageFromException(ex));
         }
 
@@ -66,5 +65,9 @@ public class ValidationInterceptor extends AbstractInterceptor {
         PrintWriter out = httpServletResponse.getWriter();
         out.println(new JSONObject(messageMap).toString());
         out.flush();
+    }
+
+    private boolean isAllowed() {
+        return (!FacilioProperties.isOnpremise()) && FacilioProperties.isCheckPrivilegeAccess();
     }
 }

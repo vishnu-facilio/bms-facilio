@@ -32,21 +32,37 @@ import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.HttpParameters;
 import org.apache.struts2.dispatcher.Parameter;
+import org.reflections.Reflections;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class WebTabUtil {
+
+    private static final Map<String, Class<? extends WebTabHandler>> webTabHandlerMap = new HashMap<>();
+
+    public static void initialize() throws IOException {
+        try {
+            Reflections reflections = new Reflections("com.facilio.bmsconsole.context.webtab");
+            Set<Class<? extends WebTabHandler>> webTabHandlerClasses = reflections.getSubTypesOf(WebTabHandler.class);
+            if (CollectionUtils.isNotEmpty(webTabHandlerClasses)) {
+                for (Class<? extends WebTabHandler> vg : webTabHandlerClasses) {
+                    webTabHandlerMap.put(vg.getSimpleName(), vg);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.info(e);
+        }
+    }
+
     public static WebTabHandler getWebTabHandler(WebTabContext tab) {
         return tab.getTypeEnum().getHandler();
     }
 
-    public static boolean checkPermission(HttpParameters parameters, String action, long tabId,Map<String,String> extraParameters) throws Exception {
+    public static boolean checkPermission(HttpParameters parameters, String action, long tabId, Map<String, String> extraParameters) throws Exception {
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
         WebTabContext tab = tabBean.getWebTab(tabId);
         if (tab == null || StringUtils.isEmpty(action)) {
@@ -62,20 +78,21 @@ public class WebTabUtil {
                 }
             }
         }
-        if(MapUtils.isNotEmpty(extraParameters)) {
+        if (MapUtils.isNotEmpty(extraParameters)) {
             params.putAll(extraParameters);
         }
 
         boolean isMatchedTabType = true;
-        if(params.containsKey("skipPermission") && Boolean.parseBoolean(params.get("skipPermission"))){
+        if (params.containsKey("skipPermission") && Boolean.parseBoolean(params.get("skipPermission"))) {
             return true;
-        }else if(params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))){
-            String tabType = params.get("tabType");
-            if(!(handler instanceof ModuleTypeHandler)){
-                isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tab.getTypeEnum().getName().equalsIgnoreCase(tabType)) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
-            }else {
-                isMatchedTabType = true;
+        } else if (params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))) {
+            List<String> tabType = Arrays.asList(params.get("tabType").split(","));
+            if (!(handler instanceof ModuleTypeHandler)) {
+                isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tabType.contains(tab.getTypeEnum().getName())) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
             }
+        } else if (params.containsKey("handler") && StringUtils.isNotEmpty(params.get("handler"))) {
+            WebTabHandler formTypeHandler = webTabHandlerMap.get(params.get("handler")).newInstance();
+            return formTypeHandler.hasPermission(tab, params, action);
         }
 
         if (handler != null && isMatchedTabType) {
@@ -111,27 +128,27 @@ public class WebTabUtil {
     }
 
     public static boolean isPortfolioTab(WebTabContext webTabContext) {
-        if(webTabContext != null && webTabContext.getConfig() != null && webTabContext.getConfig().contains("portfolio")) {
+        if (webTabContext != null && webTabContext.getConfig() != null && webTabContext.getConfig().contains("portfolio")) {
             return true;
         }
         return false;
     }
 
     public static boolean isNewPortfolioTab(WebTabContext webTabContext) {
-        if(webTabContext != null && webTabContext.getTypeEnum().equals(WebTabContext.Type.PORTFOLIO)) {
+        if (webTabContext != null && webTabContext.getTypeEnum().equals(WebTabContext.Type.PORTFOLIO)) {
             return true;
         }
         return false;
     }
 
-    public static boolean currentUserHasPermission(long tabId,String action){
-        return currentUserHasPermission(tabId,action,AccountUtil.getCurrentUser().getRole());
+    public static boolean currentUserHasPermission(long tabId, String action) {
+        return currentUserHasPermission(tabId, action, AccountUtil.getCurrentUser().getRole());
     }
 
     public static boolean currentUserHasPermission(long tabId, String action, Role role) {
 
         try {
-            if (role.isPrevileged()){
+            if (role.isPrevileged()) {
                 return true;
             }
             long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, role.getRoleId());
@@ -160,43 +177,44 @@ public class WebTabUtil {
         }
         return action;
     }
+
     public static boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
-        return isAuthorizedAccess(moduleName,action,null,null);
+        return isAuthorizedAccess(moduleName, action, null, null);
     }
 
-    public static boolean isAuthorizedAccess(String moduleName, String action, Map<String,String> parameters,Long webTabId) throws Exception {
+    public static boolean isAuthorizedAccess(String moduleName, String action, Map<String, String> parameters, Long webTabId) throws Exception {
 
         if (AccountUtil.getCurrentUser() == null) {
             return false;
         }
 
-        if(AccountUtil.getCurrentUser().getRoleId() <= 0 || AccountUtil.getCurrentUser().getRole() == null) {
+        if (AccountUtil.getCurrentUser().getRoleId() <= 0 || AccountUtil.getCurrentUser().getRole() == null) {
             return true;
         }
 
         Role role = AccountUtil.getCurrentUser().getRole();
 
         //allowing all access to privileged roles of all apps
-        if(role.isPrevileged()){
+        if (role.isPrevileged()) {
             return true;
         }
 
-        if(V3PermissionUtil.isWhitelistedModule(moduleName)) {
+        if (V3PermissionUtil.isWhitelistedModule(moduleName)) {
             return true;
         }
         HttpServletRequest request = ServletActionContext.getRequest();
-        if(request.getRequestURI() != null && !APIPermissionUtil.shouldCheckPermission(request.getRequestURI())) {
+        if (request.getRequestURI() != null && !APIPermissionUtil.shouldCheckPermission(request.getRequestURI())) {
             return true;
         }
         try {
             long tabId = V3PermissionUtil.getCurrentTabId();
 
-            if(webTabId != null &&  webTabId > 0) {
+            if (webTabId != null && webTabId > 0) {
                 tabId = webTabId;
             }
 
             if (tabId > 0) {
-                if(!WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters)) {
+                if (!WebTabUtil.checkPermission(ActionContext.getContext().getParameters(), action, tabId, parameters)) {
                     permissionLogsForModule();
                     return false;
                 }
@@ -209,15 +227,13 @@ public class WebTabUtil {
     }
 
 
-
-    private static void permissionLogsForTabs(Long tabId,String moduleName,String action) throws Exception {
+    private static void permissionLogsForTabs(Long tabId, String moduleName, String action) throws Exception {
         try {
             WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
             WebTabContext tab = tabBean.getWebTab(tabId);
-            if(tabId == -1) {
+            if (tabId == -1) {
                 LOGGER.info("Tab id is -1");
-            }
-            else if (tab != null) {
+            } else if (tab != null) {
                 ApplicationContext app = ApplicationApi.getApplicationForId(tab.getApplicationId());
                 List<String> modulesList = ApplicationApi.getModulesForTab(tabId);
                 String roleName = AccountUtil.getCurrentUser().getRole().getName();
@@ -246,10 +262,10 @@ public class WebTabUtil {
         try {
             WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
             WebTabContext tab = tabBean.getWebTab(V3PermissionUtil.getCurrentTabId());
-            String tabName = tab!=null? tab.getName() : null;
+            String tabName = tab != null ? tab.getName() : null;
 
             //Handled in client - need to check after logs
-            LOGGER.info("Permission interceptor Tab permission missing for : Tab - " +tabName+ " reqURI - " +ServletActionContext.getRequest().getRequestURI()+ " referrerURI - " + getReferrerUri());
+            LOGGER.info("Permission interceptor Tab permission missing for : Tab - " + tabName + " reqURI - " + ServletActionContext.getRequest().getRequestURI() + " referrerURI - " + getReferrerUri());
         } catch (Exception e) {
             LOGGER.info("Exception in module permission logs - " + e);
         }
@@ -260,7 +276,7 @@ public class WebTabUtil {
         String referrer = request.getHeader(HttpHeaders.REFERER);
         if (referrer != null && !"".equals(referrer.trim())) {
             URL url = new URL(referrer);
-            if(url != null) {
+            if (url != null) {
                 return url.getPath();
             }
         }
@@ -268,14 +284,14 @@ public class WebTabUtil {
     }
 
     private static Parameter getActionParam(String action) {
-        return new Parameter.Request(FacilioConstants.ContextNames.ACTION,action);
+        return new Parameter.Request(FacilioConstants.ContextNames.ACTION, action);
     }
 
     public static Long getTabForTabType(String tabTypeEnum) throws Exception {
-        if(StringUtils.isNotEmpty(tabTypeEnum)) {
+        if (StringUtils.isNotEmpty(tabTypeEnum)) {
             WebTabContext.Type type = WebTabContext.Type.valueOf(tabTypeEnum.toUpperCase());
-            if(type != null && AccountUtil.getCurrentApp() != null) {
-                return getTabIdForType(type,AccountUtil.getCurrentApp());
+            if (type != null && AccountUtil.getCurrentApp() != null) {
+                return getTabIdForType(type, AccountUtil.getCurrentApp());
             }
         }
         return null;
@@ -301,18 +317,18 @@ public class WebTabUtil {
         long currentTabId = V3PermissionUtil.getCurrentTabId();
         ApplicationContext currentApp = AccountUtil.getCurrentApp();
 
-        if(currentTabId > 0 && currentApp != null){
+        if (currentTabId > 0 && currentApp != null) {
             String token = request.getHeader("q");
             Map<String, String> decodedClaims = FileJWTUtil.validateJWT(token);
 
-            if(MapUtils.isNotEmpty(decodedClaims) && decodedClaims.containsKey("moduleId")) {
+            if (MapUtils.isNotEmpty(decodedClaims) && decodedClaims.containsKey("moduleId")) {
                 Long moduleId = Long.valueOf(decodedClaims.get("moduleId"));
                 ModuleBean modBean = Constants.getModBean();
                 FacilioModule module = modBean.getModule(moduleId);
                 List<Long> tabIds = ApplicationApi.getTabForModules(currentApp.getId(), module.getModuleId());
 
-                if(CollectionUtils.isNotEmpty(tabIds) && tabIds.contains(currentTabId)){
-                    return V3PermissionUtil.currentUserHasPermission(currentTabId,FacilioConstants.ContextNames.READ_PERMISSIONS);
+                if (CollectionUtils.isNotEmpty(tabIds) && tabIds.contains(currentTabId)) {
+                    return V3PermissionUtil.currentUserHasPermission(currentTabId, FacilioConstants.ContextNames.READ_PERMISSIONS);
                 }
             }
         }
@@ -323,7 +339,7 @@ public class WebTabUtil {
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
 
         long tabId = V3PermissionUtil.getCurrentTabId();
-        if(tabId > 0){
+        if (tabId > 0) {
             WebTabContext tab = tabBean.getWebTab(tabId);
             WebTabHandler handler = WebTabUtil.getWebTabHandler(tab);
 

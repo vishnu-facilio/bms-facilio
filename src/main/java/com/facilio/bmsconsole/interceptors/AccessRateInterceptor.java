@@ -21,7 +21,7 @@ public class AccessRateInterceptor extends AbstractInterceptor {
     public String intercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
 
-        if (FacilioProperties.isApiRateLimiterEnabled() && !FacilioProperties.isDevelopment()) {
+        if (FacilioProperties.isApiRateLimiterEnabled()) {
             IAMAccount iamAccount = (IAMAccount) ServletActionContext.getRequest().getAttribute("iamAccount");
             Organization org = iamAccount != null ? iamAccount.getOrg() : null;
             IAMUser user = iamAccount != null ? iamAccount.getUser() : null;
