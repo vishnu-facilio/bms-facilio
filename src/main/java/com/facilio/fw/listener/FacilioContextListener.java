@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigChain;
 import com.facilio.bmsconsole.widgetConfig.WidgetConfigUtil;
-import com.facilio.fields.util.FieldsConfigChain;
 import com.facilio.bmsconsoleV3.commands.AddSignupDataCommandV3;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.client.app.beans.ClientAppBean;
@@ -212,7 +211,7 @@ public class FacilioContextListener implements ServletContextListener {
 		TypeFactory.registerType("date_time", DateTime::new);
 		TypeFactory.registerType("formData", FormData::new);
 		TypeFactory.registerType("lookup",LookUpDataType::new);
-
+		TypeFactory.registerType("filters",FiltersDataType::new);
 	}
 
 	private void initClientAppConfig() throws Exception {

@@ -32,6 +32,9 @@
 			<result name="resourcenotfound" type="httpheader">
 				<param name="status">404</param>
 			</result>
+			<result name="toomanyrequest" type="httpheader">
+				<param name="status">429</param>
+			</result>
 			<result name="orgsetup" type="httpheader">
 				<param name="status">202</param>
 			</result>
@@ -80,18 +83,20 @@
 			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
 			<interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
+			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="exceptionHandlingInterceptor" />
 				<interceptor-ref name="apiKeyInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="accessRateInterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
-				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="validationinterceptor" />
+				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -399,18 +404,20 @@
 			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
 			<interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
+			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="exceptionHandlingInterceptor" />
 				<interceptor-ref name="apiKeyInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="accessRateInterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
-				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="validationinterceptor" />
+				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>

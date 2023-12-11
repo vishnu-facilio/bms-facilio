@@ -10,9 +10,7 @@ import com.facilio.security.requestvalidator.ValidatorBase;
 import com.facilio.security.requestvalidator.config.Property;
 import com.facilio.security.requestvalidator.config.RequestConfig;
 import com.facilio.security.requestvalidator.context.RequestContext;
-import com.facilio.security.requestvalidator.type.StringType;
 import lombok.SneakyThrows;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,11 +35,11 @@ public class V3fields extends ValidatorBase {
     @SneakyThrows
     @Override
     public  NodeError validateAfterAuth(RequestContext requestContext, Object node) {
-        Map<String, List<Object>> paramMap = requestContext.getParamMap();
-        List<Object> moduleNames = paramMap.get("moduleName");
+        Map<String, Object> paramMap = requestContext.getParamMap();
+        Object moduleNameObj = paramMap.get("moduleName");
         String moduleName = null;
-        if (CollectionUtils.isNotEmpty(moduleNames)) {
-            moduleName = (String) moduleNames.get(0);
+        if (moduleNameObj != null) {
+            moduleName = (String) moduleNameObj;
         }
 
         Map val = (Map) node;

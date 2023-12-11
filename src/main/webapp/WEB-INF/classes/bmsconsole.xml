@@ -169,7 +169,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="notification" class="com.facilio.bmsconsole.actions.NotificationAction"
 			method="notificationList">

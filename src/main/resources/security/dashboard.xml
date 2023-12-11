@@ -404,6 +404,7 @@
             <property name="onlySelected" type="boolean" />
             <property name="onlyFolders" type="boolean" />
             <property name="withTabs" type="boolean" />
+            <property name="newFlow" type="boolean" />
         </urlparams>
     </request>
     <request path="/api/v3/report/foldersNew" method="GET">

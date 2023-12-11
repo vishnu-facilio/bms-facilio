@@ -2,17 +2,12 @@ package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.WebTabBean;
-import com.facilio.bmsconsole.context.WebTabContext;
-import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
-import com.facilio.bmsconsole.context.webtab.WebTabHandler;
 import com.facilio.bmsconsole.util.ModuleAPI;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.v3.context.Constants;
@@ -106,7 +101,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         if(setupTab != null && setupTab.getValue() != null) {
             moduleNameParam = getModuleNameParam("setup");
         }
-        if(isSetupAPI()){
+        if(WebTabUtil.isSetupAPI()){
             return true;
         }
         if(throwDeprecatedApiError(deprecated)) {
@@ -155,20 +150,5 @@ public class PermissionInterceptor extends AbstractInterceptor {
 
     private static Parameter getModuleNameParam(String moduleName) {
         return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-    }
-
-    private static boolean isSetupAPI() throws Exception {
-        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
-
-        long tabId = V3PermissionUtil.getCurrentTabId();
-        if(tabId > 0){
-            WebTabContext tab = tabBean.getWebTab(tabId);
-            WebTabHandler handler = WebTabUtil.getWebTabHandler(tab);
-
-            if (handler instanceof SetupTypeHandler) {
-                return true;
-            }
-        }
-        return false;
     }
 }

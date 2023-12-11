@@ -25,11 +25,13 @@
 						 class="com.facilio.bmsconsole.interceptors.PermissionSetInterceptor" />
 			<interceptor name="malwareInterceptor" class="com.facilio.security.MalwareInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
+			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="exceptionHandlingInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="accessRateInterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
@@ -262,11 +264,12 @@
 			<interceptor name="authinterceptor"
 				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
-			<interceptor-stack name="defaultInterceptor">
+			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" /><interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="exceptionHandlingInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="accessRateInterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -1777,11 +1780,13 @@
 			<interceptor name="globalscopevariableinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.GlobalScopeVariableInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
+			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
 				<interceptor-ref name="exceptionHandlingInterceptor" />
 				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="accessRateInterceptor" />
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
 				<interceptor-ref name="json">

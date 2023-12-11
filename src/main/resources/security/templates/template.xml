@@ -1,0 +1,174 @@
+<templates>
+    <template name="conditions">
+        <property name="1" type="object" mandatory="true">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+        <property name="2" type="object">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+        <property name="3" type="object">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+        <property name="4" type="object">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+        <property name="5" type="object">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+        <property name="6" type="object">
+            <property name="operatorId" type="number"/>
+            <property name="parentCriteriaId" type="number"/>
+            <property name="sequence" type="number"/>
+            <property name="conditionId" type="number"/>
+            <property name="criteriaValueId" type="number"/>
+            <property name="value" type="string"/>
+            <property name="criteriaValue" type="string"/>
+            <property name="expressionValue" type="string"/>
+            <property name="computedWhereClause" type="string"/>
+            <property name="fieldName" type="string"/>
+            <property name="jsonValue" type="string"/>
+            <property name="jsonValueStr" type="string"/>
+            <property name="operator" type="string"/>
+            <property name="prevOperator" type="boolean"/>
+            <property name="isExpressionValue" type="boolean"/>
+            <property name="columnName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="isResourceOperator" type="boolean"/>
+            <property name="valueNeeded" type="boolean"/>
+            <property name="active" type="boolean"/>
+            <property name="isSpacePicker" type="boolean"/>
+        </property>
+    </template>
+
+    <template name="newPermissions">
+        <items type="object">
+            <property name="permission" type="number" mandatory="true"/>
+            <property name="permission2" type="number"/>
+            <property name="roleId" type="number" mandatory="true"/>
+            <property name="tabId" type="number" mandatory="true"/>
+        </items>
+    </template>
+
+    <template name="criteria">
+            <property name="pattern" type="string"/>
+            <property name="conditions" type="object" key-type="number" value-type="object" value-template="template.xml#conditions"/>     <!--conditions is Object of objects type [template]-->
+            <property name="resourceOperator" type="boolean"/>
+    </template>
+
+    <template name="filters">
+            <property name="subject" type="object">
+                <property name="operatorId" type="number"/>
+                <property name="value" type="array">
+                    <items type="string"/>
+                </property>
+                <property name="operatorLookupModule" type="number"/>       <!--what is operatorLookupModule-->
+            </property>
+        <property name="oneLevelLookup" type="object">                      <!--How to define  oneLevelLookup in PostAuth-->
+        </property>
+    </template>
+
+    <template name="role">
+        <property name="name" type="string"/>
+        <property name="description" type="string" maxLength="500"/>
+    </template>
+</templates>

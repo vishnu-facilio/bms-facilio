@@ -34,7 +34,7 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="formId" type="number" mandatory="true"/>
-            <property name="formName" type="string" mandatory="true"/>
+            <property name="formName" type="string" />
             <property name="fetchFormRuleFields" type="boolean"/>
             <property name="formSourceType" type="object"/>
             <property name="forCreate" type="boolean"/>

@@ -8,6 +8,7 @@ import com.facilio.beans.WebTabBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.WebTabContext;
 import com.facilio.bmsconsole.context.webtab.ModuleTypeHandler;
+import com.facilio.bmsconsole.context.webtab.SetupTypeHandler;
 import com.facilio.bmsconsole.context.webtab.WebTabHandler;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
 import com.facilio.bmsconsoleV3.util.V3PermissionUtil;
@@ -71,7 +72,7 @@ public class WebTabUtil {
         }else if(params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))){
             String tabType = params.get("tabType");
             if(!(handler instanceof ModuleTypeHandler)){
-                isMatchedTabType = tab.getTypeEnum().getName().equalsIgnoreCase(tabType);
+                isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tab.getTypeEnum().getName().equalsIgnoreCase(tabType)) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
             }else {
                 isMatchedTabType = true;
             }
@@ -142,7 +143,7 @@ public class WebTabUtil {
         return false;
     }
 
-    public static Parameter getActions(Parameter action, String method) {
+    public static Parameter getActions(Parameter action, String method) throws Exception {
         Parameter v3PermissionActions = action;
         action = null;
         String actions = v3PermissionActions.toString();
@@ -151,6 +152,9 @@ public class WebTabUtil {
             String[] actList = act.split(":");
             if (actList[0].equals(method)) {
                 action = getActionParam(actList[1]);
+                break;
+            } else if (isSetupAPI() && actList[0].equals("ALL")) {
+                action = getActionParam(actList[0]);
                 break;
             }
         }
@@ -310,6 +314,21 @@ public class WebTabUtil {
                 if(CollectionUtils.isNotEmpty(tabIds) && tabIds.contains(currentTabId)){
                     return V3PermissionUtil.currentUserHasPermission(currentTabId,FacilioConstants.ContextNames.READ_PERMISSIONS);
                 }
+            }
+        }
+        return false;
+    }
+
+    public static boolean isSetupAPI() throws Exception {
+        WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
+
+        long tabId = V3PermissionUtil.getCurrentTabId();
+        if(tabId > 0){
+            WebTabContext tab = tabBean.getWebTab(tabId);
+            WebTabHandler handler = WebTabUtil.getWebTabHandler(tab);
+
+            if (handler instanceof SetupTypeHandler) {
+                return true;
             }
         }
         return false;

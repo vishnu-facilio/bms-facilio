@@ -15,7 +15,10 @@ public class ModuleTypeHandler implements WebTabHandler {
         boolean isAttachmentAPI = Boolean.parseBoolean(parameters.get("isAttachmentApi"));
         String moduleName = StringUtils.isNotEmpty(parameters.get("parentModuleName"))?  parameters.get("parentModuleName") : parameters.get("moduleName");;
 
-        if(StringUtils.isNotEmpty(moduleName) && !V3PermissionUtil.isModuleAccessible(moduleName, webtab.getId())){
+        if(StringUtils.isEmpty(moduleName)){
+            LOGGER.info("Can't get moduleName for this Tab");
+            return false;
+        } else if(StringUtils.isNotEmpty(moduleName) && !V3PermissionUtil.isModuleAccessible(moduleName, webtab.getId())){
             LOGGER.info(moduleName+" is not accessible in this Tab");
             return false;
         }

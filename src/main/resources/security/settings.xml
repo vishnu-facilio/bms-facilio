@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <request path="/api/setup/adduser">
+    <request path="/api/setup/adduser" allowedRequest="5">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="emailVerificationNeeded" type="boolean"/>
@@ -788,11 +788,15 @@
     <request path="/api/v3/modules/:moduleName/view/:viewName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewname" type="string" mandatory="true"/>
             <property name="viewName" type="string" mandatory="true"/>
             <property name="page" type="number"/>
             <property name="filters" type="string"/>
+            <property name="search" type="string"/>
             <property name="includeParentFilter" type="boolean"/>
             <property name="withCount" type="boolean"/>
+            <property name="withoutCustomButtons" type="boolean"/>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"/>
             <property name="perPage" type="number"/>
         </urlparams>
     </request>
@@ -1462,9 +1466,11 @@
             <property name="search" type="string" mandatory="false"/>
             <property name="orderBy" type="string" mandatory="false"/>
             <property name="orderType" type="string" mandatory="false"/>
-            <property name="filters" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
             <property name="includeParentFilter" type="boolean" mandatory="false"/>
             <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string" />
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
         </urlparams>
     </request>
 
@@ -2690,7 +2696,7 @@
     </request>
 
 
-    <request path="/api/v1/setup/iamuser/:addorupdateuser" method="POST">
+    <request path="/api/v1/setup/iamuser/:addorupdateuser" method="POST" allowedRequest="5">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="sendInvitation" type="boolean"/>
@@ -3660,6 +3666,15 @@
         </requestbody>
     </request>
 
+    <request path="/api/v3/scopeVariable/options/site" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" />
+            <property name="perPage" type="number" />
+            <property name="page" type="number" />
+            <property name="isToFetchDecommissionedResource" type="boolean" />
+        </urlparams>
+    </request>
+
     <request path="/api/v3/myApps/listMyAppsForUser" method="GET">
         <urlparams>
             <property name="ouId" type="number" mandatory="true" />
@@ -4462,7 +4477,6 @@
         </urlparams>
     </request>
 
-    
     <request path="/api/v3/virtualMeterTemplate/history" method="POST">
         <property name="vmTemplateId" type="number"/>
         <property name="startTime" type="number"/>
@@ -4475,6 +4489,23 @@
     <request path="/api/v3/ControlAction/cancelV3ControlAction" method="POST">
         <requestbody type="object">
             <property name="controlActionId" type="number"></property>
+        </requestbody>
+    </request>
+
+<!--    TemplateType declaration test-->
+    <request path="/api/v2/modules/rules/add" method="POST">
+        <requestbody type="object">
+            <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/modules/rules/update" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="workflowRule" type="object">
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+<!--                <property name="conditions" type="object" key-type="number" value-type="object" value-template="template.xml#conditions"/>-->
+            </property>
         </requestbody>
     </request>
 </config>

@@ -30,6 +30,7 @@ public class ErrorUtil {
 
     public static final String RESOURCE_NOT_FOUND = "resourcenotfound";
     public static final String UNAUTHORIZED = "unauthorized";
+    public static final String TOO_MANY_REQUEST = "toomanyrequest";
 
     @AllArgsConstructor
     @Getter
@@ -38,7 +39,9 @@ public class ErrorUtil {
         NO_PERMISSION(HttpURLConnection.HTTP_FORBIDDEN,2,"Sorry, you do not have access to this page. Please contact your admin",UNAUTHORIZED),
         PAGE_NOT_FOUND(HttpURLConnection.HTTP_NOT_FOUND,3,"Sorry, the page you have been looking for does not exist. The link you followed maybe broken, or the page may have been moved",RESOURCE_NOT_FOUND),
         BUTTON_VALIDATION(HttpURLConnection.HTTP_BAD_REQUEST,4,"Invalid Button Action for the current Record",RESOURCE_NOT_FOUND),
-        PERMISSION_NOT_HANDLED(430,5,"Permission is not handled for:",UNAUTHORIZED);
+        PERMISSION_NOT_HANDLED(430,5,"Permission is not handled for:",UNAUTHORIZED),
+        RATE_LIMIT_FOR_API_EXCEED(429,6,"You have reached the maximum number of allowed requests for this API. Please wait and try again later.", TOO_MANY_REQUEST);
+
         private int httpStatus;
         private long errorCode;
         private String errorMessage;

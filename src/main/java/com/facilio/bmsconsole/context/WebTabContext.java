@@ -218,7 +218,7 @@ public class WebTabContext implements Serializable {
         MODULE ("Module", false, TabType.NORMAL,new ModuleTypeHandler()), // 1
         APPROVAL ("Approval", false, TabType.NORMAL,null), // 2
         CALENDAR ("Calendar", false, TabType.NORMAL,null), // 3
-        REPORT ("Report", false, TabType.NORMAL,new DashboardHandler()), // 4
+        REPORT ("Report", false, TabType.NORMAL,new ReportTypeHandler()), // 4
         ANALYTICS ("Analytics", true, TabType.NORMAL,null), // 5
         KPI ("Kpi", false,TabType.NORMAL,null), // 6
         DASHBOARD ("Dashboard", false,TabType.NORMAL,new DashboardHandler()), // 7
@@ -293,7 +293,7 @@ public class WebTabContext implements Serializable {
         EMAIL_LOGS("Email Logs",false,TabType.SETUP,new SetupTypeHandler()), // 75
         AUDIT_LOGS("Audit Logs",false,TabType.SETUP,new SetupTypeHandler()), // 76
         BOOKING_POLICY("Booking Policy",false,TabType.SETUP,new SetupTypeHandler()), // 77
-        PIVOT("Pivot",false,TabType.NORMAL, new DashboardHandler()), // 78
+        PIVOT("Pivot",false,TabType.NORMAL, new PivotTypeHandler()), // 78
         SCOPING("Scoping",false,TabType.SETUP,new SetupTypeHandler()), // 79
         ORGANIZATION_SETTINGS("Organization", false, TabType.SETUP,new SetupTypeHandler()), // 80
         CLASSIFICATIONS("Classifications",false,TabType.SETUP), // 81

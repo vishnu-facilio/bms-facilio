@@ -29,7 +29,7 @@ public class FormData extends ValidatorBase {
     @Override
     public NodeError validateAfterAuth(RequestContext requestContext, Object node) {
 
-        Map<String, List<Object>> paramMap = requestContext.getParamMap();
+        Map<String, Object> paramMap = requestContext.getParamMap();
         Map<String, Object> nodeVal = (Map<String, Object>) node;
 
         Map<String, Object> requestContextVal = requestContext.getRequestBodyMap();

@@ -2,8 +2,6 @@ package com.facilio.fw.filter;
 
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.SecurityRequestWrapper;
-import com.facilio.security.ratelimiter.APIRateLimiter;
-import com.facilio.security.ratelimiter.RateLimiterAPI;
 import com.facilio.security.requestvalidator.Executor;
 import com.facilio.security.requestvalidator.NodeError;
 import com.facilio.security.requestvalidator.config.Config;
@@ -26,8 +24,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.time.Instant;
-import java.time.ZoneId;
 import java.util.*;
 
 
@@ -75,32 +71,7 @@ public class BeforeAuthInputFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        HttpServletResponse httpServletResponse = (HttpServletResponse) servletResponse;
         SecurityRequestWrapper securityRequestWrapper = new SecurityRequestWrapper((HttpServletRequest) servletRequest);
-
-        if(FacilioProperties.isApiRateLimiterEnabled() && rateLimitUrlSet.contains(httpServletRequest.getRequestURI())){
-            try {
-                if (StringUtils.isNotEmpty(httpServletRequest.getRequestURI()) && StringUtils.isNotEmpty(httpServletRequest.getRemoteHost()) && httpServletRequest.getRemotePort() != -1) {
-                    APIRateLimiter ratelimit = RateLimiterAPI.getRateLimiter();
-                    if (!(ratelimit.allow(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost()))) {
-                        log(securityRequestWrapper, "Rate Limiter Strike: API strike limit was reached");
-                        Map<String, String> errorMap = new HashMap<>();
-                        errorMap.put("errorMessage", "Too Many Request your limit is crossed, Try again after a minute");
-                        write(errorMap, 429, servletResponse);
-                        return;
-                    }
-                    long expiryTime = ratelimit.getKeyExpiryTime(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost());
-                    httpServletResponse.setHeader("X-Rate-Limit-Limit", String.valueOf(FacilioProperties.getRateLimiterAllowedRequest()));
-                    httpServletResponse.setHeader("X-Rate-Limit-Remaining", String.valueOf(ratelimit.getAvailableRequests(httpServletRequest.getRequestURI(), httpServletRequest.getRemoteHost())));
-                    httpServletResponse.setHeader("X-Rate-Limit-Reset", String.valueOf(Instant.ofEpochMilli(expiryTime).atZone(ZoneId.systemDefault()).toLocalDateTime()));
-                }
-            } catch (Exception e) {
-                log(securityRequestWrapper, "APILimiter exception thrown: "+e);
-                if (!FacilioProperties.isProduction()) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
 
         Matcher matcher = this.urlReTree.matcher(httpServletRequest.getRequestURI());
         Matcher exclution = this.execlutionUrlReTree.matcher(httpServletRequest.getRequestURI());
@@ -127,17 +98,17 @@ public class BeforeAuthInputFilter implements Filter {
             RequestContext requestContext = new RequestContext(securityRequestWrapper, matcher.getMatchMap());
             String matchedPattern = matcher.getMatchedPattern();
             RequestConfig requestConfig = config.getRequestConfig(requestContext.getMethod(), matchedPattern);
+
             Executor executor = new Executor(requestConfig, requestContext);
 
             NodeError nodeError = executor.validatePreAuth();
             if (nodeError != null) {
-                if (isAllowed()) {
+                log(securityRequestWrapper, nodeError.getErrorMessage());
+                if (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put("message", nodeError.getErrorMessage());
                     write(errorMap, 400, servletResponse);
                     return;
-                } else {
-                    log(securityRequestWrapper, nodeError.getErrorMessage());
                 }
             }
             securityRequestWrapper.setAttribute("executor", executor);
@@ -163,7 +134,7 @@ public class BeforeAuthInputFilter implements Filter {
         if (referrer != null && !"".equals(referrer.trim())) {
             URL url = new URL(referrer);
             if(url != null) {
-                message = message.concat(" referrerURI - "+url.getPath());
+                message = message.concat(" Tab - "+securityRequestWrapper.getHeader("X-Tab-Id")+" reqURI - " +securityRequestWrapper.getRequestURI()+" referrerURI - "+url.getPath());
             }
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
