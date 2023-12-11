@@ -1829,19 +1829,19 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/moduleSetting/pageBuilder">
+    <request path="/api/v2/moduleSetting/pageBuilder" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 
-    <request path="/api/v2/form/getFromId">
+    <request path="/api/v2/form/getFromId" method="GET">
         <requestbody type="object">
             <property name="formId" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/clone">
+    <request path="/api/v1/setup/customPage/clone" method="POST">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -1849,7 +1849,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/create">
+    <request path="/api/v1/setup/customPage/create" method="POST">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
@@ -1863,23 +1863,29 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/patch">
+    <request path="/api/v1/setup/customPage/patch" method="POST">
         <requestbody type="object">
+            <property name="appId" type="number" mandatory="true"/>
             <property name="customPage" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
                 <property name="displayName" type="string"/>
+                <property name="pageSharing" type="array">
+                    <items type="number"/>
+                </property>
             </property>
+            <property name="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/changeStatus">
+    <request path="/api/v1/setup/customPage/changeStatus" method="POST">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/reorder">
+    <request path="/api/v1/setup/customPage/reorder" method="POST">
         <requestbody type="object">
             <property name="previousId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -1887,7 +1893,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/widget/widgetDetail/get">
+    <request path="/api/v1/setup/customPage/widget/widgetDetail/get" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="id" type="number"/>
@@ -1896,13 +1902,11 @@
             <property name="widgetType" type="string"/>
             <property name="widgetWrapperType" type="string"/>
             <property name="isBuilderRequest" type="boolean"/>
+            <property name="recordId" type="number"/>
         </urlparams>
-        <requestbody type="object">
-            <property name="recordId" type="number" mandatory="true"/>
-        </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/fetch" >
+    <request path="/api/v1/setup/customPage/fetch" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="tabName" type="string"/>
@@ -1913,7 +1917,7 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/customPage/fetchForRecord">
+    <request path="/api/v2/customPage/fetchForRecord" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -1959,21 +1963,19 @@
             <property name="appId" type="number"/>
             <property name="widgetType" type="string"/>
             <property name="widgetWrapperType" type="string"/>
+            <property name="recordId" type="number" mandatory="true"/>
             <property name="isBuilderRequest" type="boolean"/>
         </urlparams>
-        <requestbody type="object">
-            <property name="recordId" type="number" mandatory="true"/>
-        </requestbody>
     </request>
 
-    <request path="/api/v2/customPage/relation/summaryWidget/get">
+    <request path="/api/v2/customPage/relation/summaryWidget/get" method="GET">
         <urlparams>
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>\
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/customPage/list">
+    <request path="/api/v1/setup/customPage/list" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -1981,13 +1983,13 @@
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/customPage/delete">
+    <request path="/api/v1/setup/customPage/delete" method="DELETE">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/add">
+    <request path="/api/v1/setup/customPage/tabs/add" method="POST">
         <requestbody type="object">
             <property name="layoutId" type="number" mandatory="true"/>
             <property name ="tab" type="object" mandatory="true">
@@ -1996,7 +1998,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/connectedAppTab/add">
+    <request path="/api/v1/setup/customPage/tabs/connectedAppTab/add" method="POST">
         <requestbody type="object">
             <property name="pageId" type="number" mandatory="true"/>
             <property name ="moduleName" type="string" mandatory="true"/>
@@ -2004,14 +2006,14 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/connectedAppTabs/add">
+    <request path="/api/v1/setup/customPage/tabs/connectedAppTabs/add" method="POST">
         <requestbody type="object">
             <property name="pageId" type="number" mandatory="true"/>
             <property name ="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/patch">
+    <request path="/api/v1/setup/customPage/tabs/patch" method="POST">
         <requestbody type="object">
             <property name="tab" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
@@ -2020,21 +2022,21 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/changeStatus">
+    <request path="/api/v1/setup/customPage/tabs/changeStatus" method="POST">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="status" type="boolean" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v2/fields/config/:fieldListType/:moduleName">
+    <request path="/api/v2/fields/config/:fieldListType/:moduleName" method="GET">
         <urlparams>
             <property name="fieldListType" type="string" mandatory="true"/>
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/reorder">
+    <request path="/api/v1/setup/customPage/tabs/reorder"  method="POST">
         <requestbody type="object">
             <property name="previousId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -2042,7 +2044,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/fetch" >
+    <request path="/api/v1/setup/customPage/tabs/fetch"  method="GET">
         <urlparams type="object">
             <property name="tabName" type="string"/>
             <property name="moduleName" type="string"/>
@@ -2064,7 +2066,19 @@
         </urlparams>
     </request>
 
-    <request path="/api/v1/setup/customPage/tabs/delete">
+    <request path="/api/v2/customPage/tabs/:moduleName/fetch" method="GET">
+        <urlparams type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="appId" type="number"/>
+            <property name="layoutType" type="string"/>
+            <property name="excludeColumns" type="boolean"/>
+            <property name="tabName" type="string"/>
+            <property name="pageId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/customPage/tabs/delete"  method="POST">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
         </requestbody>
@@ -2272,14 +2286,14 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/summaryWidget/addOrUpdate">
+    <request path="/api/v1/setup/summaryWidget/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/summaryWidget/get">
+    <request path="/api/v1/setup/summaryWidget/get" method="GET">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="id" type="number" mandatory="true"/>

@@ -13,9 +13,11 @@
     <request path="/api/v2/customPage/:moduleName/fetchForRecord" method="GET">
         <urlparams>
             <property name="layoutType" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
-            <property name="recordId" type="number" mandatory="true"/>
+            <property name="recordId" type="number"/>
             <property name="tabName" type="string"/>
+            <property name="showNewPageBuilder" type="boolean"/>
         </urlparams>
     </request>
 
@@ -135,10 +137,11 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/customPage/:moduleName/widget/widgetDetail/get" method="GET">
+    <request path="/api/v2/customPage/widget/widgetDetail/:moduleName/get" method="GET">
         <urlparams>
             <property name="layoutType" type="string" mandatory="true"/>
             <property name="id" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
             <property name="widgetType" type="string" mandatory="true"/>
             <property name="widgetWrapperType" type="string" mandatory="true"/>
@@ -150,6 +153,7 @@
     <request path="/api/v2/customPage/relation/summaryWidget/:moduleName/get" method="GET">
         <urlparams>
             <property name="id" type="number"/>
+            <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 
@@ -466,7 +470,9 @@
     </request>
     <request path="/api/v1/setup/modules/lists/:moduleType/count" method="GET">
         <urlparams>
+            <property name="page" type="number" mandatory="false"/>
             <property name="moduleType" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="false"/>
             <property name="search" type="string" mandatory="false"/>
         </urlparams>
     </request>
