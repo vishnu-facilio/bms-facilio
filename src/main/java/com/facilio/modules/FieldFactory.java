@@ -6688,6 +6688,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("deletedBy", "SYS_DELETED_BY", module, FieldType.NUMBER));
         fields.add(getField("deletedTime", "SYS_DELETED_TIME", module, FieldType.NUMBER));
 
+        fields.add(getField("isV3Crud", "IS_V3_CRUD", module, FieldType.BOOLEAN));
+
         fields.addAll(FieldFactory.getSystemPointFields(module, true));
 
         return fields;

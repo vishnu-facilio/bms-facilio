@@ -205,8 +205,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		else {
 			
 			boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
-			
-			if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
+
+			if(isV3SupportedModule && (AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3) || (scriptContext.getIsV3Crud() != null && scriptContext.getIsV3Crud()))) {
 				
 				List<Map<String, Object>> dataList = new ArrayList<>();
 				
@@ -317,8 +317,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);
 		
 		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
-		
-		if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
+
+		if(isV3SupportedModule && (AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3) || (scriptContext.getIsV3Crud() != null && scriptContext.getIsV3Crud()))) {
 			
 			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 			
@@ -419,8 +419,8 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		ScriptUtil.fillCriteriaField(criteria, module.getName());
 		
 		boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
-		
-		if(isV3SupportedModule && AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
+
+		if(isV3SupportedModule && (AccountUtil.isFeatureEnabled(FeatureLicense.SCRIPT_CRUD_FROM_V3) || (scriptContext.getIsV3Crud() != null && scriptContext.getIsV3Crud()))) {
 			
 			List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 			

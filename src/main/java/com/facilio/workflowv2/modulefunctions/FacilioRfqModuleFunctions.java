@@ -57,7 +57,7 @@ public class FacilioRfqModuleFunctions  extends FacilioModuleFunctionImpl {
 
         boolean isV3SupportedModule = ChainUtil.isV3Enabled(module);
 
-        if(isV3SupportedModule && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCRIPT_CRUD_FROM_V3)) {
+        if(isV3SupportedModule && (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCRIPT_CRUD_FROM_V3) || (scriptContext.getIsV3Crud() != null && scriptContext.getIsV3Crud()))) {
 
             List<FacilioField> fields = Collections.singletonList(FieldFactory.getIdField(module));
 
