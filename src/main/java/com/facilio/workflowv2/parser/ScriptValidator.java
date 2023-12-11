@@ -2,6 +2,7 @@ package com.facilio.workflowv2.parser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -246,6 +247,7 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("controlAction");
         scriptWhiteListedModules.add("controlActionTemplate");
         scriptWhiteListedModules.add(FlaggedEventRuleModule.MODULE_NAME);
+        scriptWhiteListedModules.add(FacilioConstants.ContextNames.ATTENDANCE);
     }
 
     @Override
