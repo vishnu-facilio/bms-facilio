@@ -45,10 +45,6 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
         else if(type != null && type.equals("weather")){
             context.put("fields", this.getWeatherFields((List<FacilioField>) context.get("fields"), searchText, category));
         }
-        else if(type != null && type.equals("fault"))
-        {
-            context.put("fields",this.getReadingsList(modules, searchText , category, Boolean.FALSE));
-        }
         return false;
     }
 

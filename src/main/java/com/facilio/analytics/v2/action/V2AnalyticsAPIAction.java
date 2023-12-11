@@ -48,6 +48,7 @@ public class V2AnalyticsAPIAction extends V3Action {
 
     public String readings()throws Exception
     {
+        validateInput();
         FacilioChain chain = V2AnalyticsTransactionChain.getReadingsFromCategoryChain(type);
         FacilioContext context = chain.getContext();
         context.put("category", categoryId);

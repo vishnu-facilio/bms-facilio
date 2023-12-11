@@ -486,6 +486,7 @@
     <request path="/api/v3/analytics/edit/:reportId" method="GET">
         <urlparams>
             <property name="reportId" type="number" mandatory="true"></property>
+            <property name="isDataNeeded" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/analytics/edit/:reportId" method="PUT">
@@ -498,11 +499,13 @@
     </request>
     <request path="/api/v3/analytics/list" method="GET">
         <urlparams>
+            <property name="appId" type="number"></property>
             <property name="withCount" type="boolean"></property>
             <property name="orderType" type="string"></property>
             <property name="page" type="number"></property>
             <property name="perPage" type="number"></property>
             <property name="folderId" type="number"></property>
+            <property name="fetchOnlyKpi" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/module/report/folder/list" method="GET">
@@ -537,6 +540,7 @@
     <request path="/api/v3/analytics/readings/:categoryId" method="GET">
         <urlparams>
             <property name="categoryId" type="number" mandatory="true"></property>
+            <property name="type" type="string"></property>
         </urlparams>
     </request>
     <request path="/api/v3/analytics/weather/readings" method="GET">
@@ -588,6 +592,7 @@
     <request path="/api/v3/analytics/kpis/:categoryId" method="GET">
         <urlparams>
             <property name="categoryId" type="number" mandatory="true"></property>
+            <property name="type" type="string"></property>
         </urlparams>
     </request>
     <request path="/api/v3/analytics/faults/:alarmId" method="GET">

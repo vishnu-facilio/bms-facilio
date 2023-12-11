@@ -84,12 +84,14 @@ public class V2AnalyticsTransactionChain
     public static FacilioChain getReadingsFromCategoryChain(String type)throws Exception
     {
         FacilioChain chain = FacilioChain.getNonTransactionChain();
-        if(type != null && (type.equals("asset") || type.equals("fault"))) {
+        if(type != null && (type.equals("asset"))) {
             chain.addCommand(new GetCategoryReadingsCommand());
         }else if(type != null && type.equals("meter")) {
             chain.addCommand(new GetUtilityTypeReadingsCommand());
         }else if(type != null && type.equals("weather")){
             chain.addCommand(new GetWeatherReadingFieldsCommand());
+        } else if(type != null && (type.equals("fault"))){
+            chain.addCommand(new V2GetFaultReadingsCommand());
         }
         chain.addCommand(new V2GetReadingsFromCategoryCommand());
         return chain;
