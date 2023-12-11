@@ -48,7 +48,7 @@ public class FSMDefaultTabsAndTabGroups {
                 new WebTabContext("Shift Planner","shiftplanner",WebTabContext.Type.SHIFT_PLANNER,null, null, 61,null,appId),
                 new WebTabContext("Attendance","attendance",WebTabContext.Type.ATTENDANCE,null, null, 120,null,appId),
                 new WebTabContext("My Attendance", "myAttendance", WebTabContext.Type.MY_ATTENDANCE,null,null,null,null,appId),
-                new WebTabContext("Time-off","timeOff",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeOff.TIME_OFF)), null, null,null,appId),
+                new WebTabContext("Time Off","timeOff",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.TimeOff.TIME_OFF)), null, null,null,appId),
                 new WebTabContext("Vendor","vendors",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VENDORS)), null, 57,null,appId),
                 new WebTabContext("Vendor Contact","vendorcontact",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.VENDOR_CONTACT)), null, 57,null,appId),
                 new WebTabContext("Client","client",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT)), null, 33,null,appId),

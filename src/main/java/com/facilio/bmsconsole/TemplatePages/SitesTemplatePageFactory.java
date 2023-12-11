@@ -484,6 +484,10 @@ public class SitesTemplatePageFactory implements TemplatePageFactory{
         addSummaryFieldInWidgetGroup(widgetGroup,grossFloorAreaField,2,3,1);
         addSummaryFieldInWidgetGroup(widgetGroup,areaField,2,4,1);
 
+        if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FSM_APP)) {
+            FacilioField territoryField = moduleBean.getField("territory", moduleName);
+            addSummaryFieldInWidgetGroup(widgetGroup, territoryField, 3, 1, 1);
+        }
         widgetGroup.setColumns(4);
 
         FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);

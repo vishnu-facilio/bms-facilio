@@ -54,7 +54,7 @@ public class TripContext extends V3Context {
 
 
     public static enum Type implements FacilioIntEnum {
-        APPOINTMENT ("Appointment"),
+        SYSTEM ("System"),
         MANUAL ("Manual");
 
         String name;

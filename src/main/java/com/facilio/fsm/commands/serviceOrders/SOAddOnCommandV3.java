@@ -1,7 +1,9 @@
 package com.facilio.fsm.commands.serviceOrders;
 
+import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -9,6 +11,7 @@ import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.TerritoryContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
+import com.facilio.modules.FieldUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -31,6 +34,11 @@ public class SOAddOnCommandV3 extends FacilioCommand {
             V3SiteContext site = order.getSite();
             if(site != null){
                 SiteContext siteData = V3RecordAPI.getRecord(FacilioConstants.ContextNames.SITE,site.getId());
+                LocationContext location = siteData.getLocation();
+                if (location != null) {
+                    order.setLocation(FieldUtil.getAsBeanFromMap(FieldUtil.getAsProperties(location), LocationContextV3.class));
+                }
+
                 if(siteData.getTerritory() != null){
                     order.setTerritory(siteData.getTerritory());
                 }

@@ -201,12 +201,17 @@ public class EmployeeModule extends BaseModuleConfig{
         Map<String,List<PagesContext>> appNameVsPage = new HashMap<>();
         for (String appName : appNames) {
             ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
-            appNameVsPage.put(appName,createEmployeePage(app, module, false,true));
+            if (appName.equalsIgnoreCase(FacilioConstants.ApplicationLinkNames.FSM_APP)) {
+                appNameVsPage.put(appName, createEmployeePageForFsm(app, module, false, true));
+            } else {
+                appNameVsPage.put(appName, createDefaultEmployeePage(app, module, false, true));
+            }
         }
         return appNameVsPage;
 
     }
-    private static List<PagesContext> createEmployeePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+
+    private static List<PagesContext> createEmployeePageForFsm(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
         ModuleBean bean = Constants.getModBean();
         return new ModulePages()
                 .addPage("employee", "Default Employee Page","", null, isTemplate, isDefault, true)
@@ -272,6 +277,46 @@ public class EmployeeModule extends BaseModuleConfig{
                 .layoutDone()
                 .pageDone().getCustomPages();
     }
+
+    private static List<PagesContext> createDefaultEmployeePage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        ModuleBean bean = Constants.getModBean();
+        return new ModulePages()
+                .addPage("employee", "Default Employee Page", "", null, isTemplate, isDefault, true)
+                .addWebLayout()
+                .addTab("employeeSummary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("employeeSummaryFields", null, null)
+                .addWidget("employeeSummaryFieldsWidget", "Employee Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(app, FacilioConstants.ContextNames.EMPLOYEE))
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getSummaryWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("employeeRelated", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("employeeRelatedList", "Related List", "List of related records across modules")
+                .addWidget("employeeBulkRelatedList", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(bean.getModule(FacilioConstants.ContextNames.EMPLOYEE)))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("employeeHistory", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_10", 0, 0, null, getHistoryWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone()
+                .pageDone().getCustomPages();
+    }
+
     private static JSONObject getSummaryWidgetDetails(ApplicationContext app, String moduleName) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
@@ -282,6 +327,12 @@ public class EmployeeModule extends BaseModuleConfig{
         FacilioField designationField = moduleBean.getField("designation", moduleName);
         FacilioField dispatchableField = moduleBean.getField("dispatchable", moduleName);
         FacilioField trackGeoLocationField = moduleBean.getField("trackGeoLocation", moduleName);
+        FacilioField territoriesField = moduleBean.getField("territories", moduleName);
+
+        FacilioField sysCreatedBy = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedBy = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -289,17 +340,33 @@ public class EmployeeModule extends BaseModuleConfig{
         addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, phoneField, 1, 2, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, designationField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, dispatchableField, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, trackGeoLocationField, 2, 2, 1);
 
+
+        if (app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.FSM_APP)) {
+            addSummaryFieldInWidgetGroup(widgetGroup, designationField, 1, 4, 1);
+            addSummaryFieldInWidgetGroup(widgetGroup, dispatchableField, 2, 1, 1);
+            addSummaryFieldInWidgetGroup(widgetGroup, trackGeoLocationField, 2, 2, 1);
+            addSummaryFieldInWidgetGroup(widgetGroup, territoriesField, 2, 3, 1);
+        }
+        SummaryWidgetGroup systemDetailsWidgetGroup=new SummaryWidgetGroup();
+
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysCreatedBy, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysCreatedTime, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysModifiedBy, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemDetailsWidgetGroup, sysModifiedTime, 1, 4, 1);
 
         widgetGroup.setName("moduleDetails");
         widgetGroup.setDisplayName("General Information");
         widgetGroup.setColumns(4);
 
+        systemDetailsWidgetGroup.setName("systemDetails");
+        systemDetailsWidgetGroup.setDisplayName("System Details");
+        systemDetailsWidgetGroup.setColumns(4);
+
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(systemDetailsWidgetGroup);
+
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());

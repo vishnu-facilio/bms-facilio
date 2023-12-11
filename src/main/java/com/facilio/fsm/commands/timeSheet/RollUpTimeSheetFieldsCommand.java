@@ -10,9 +10,11 @@ import com.facilio.fsm.exception.FSMException;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RollUpTimeSheetFieldsCommand extends FacilioCommand {
     @Override
@@ -25,6 +27,16 @@ public class RollUpTimeSheetFieldsCommand extends FacilioCommand {
                 if(timeSheet.getServiceAppointment() != null) {
                     ServiceAppointmentContext appointment = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, timeSheet.getServiceAppointment().getId(), ServiceAppointmentContext.class);
                     timeSheet.setServiceOrder(appointment.getServiceOrder());
+                    Map< String, Object > bodyParams = Constants.getBodyParams(context);
+
+                    if (!MapUtils.isEmpty(bodyParams) && bodyParams.containsKey("system")) {
+                        if ((boolean) bodyParams.get("system")) {
+                            timeSheet.setType(TimeSheetContext.Type.SYSTEM);
+                        }
+                        else{
+                            timeSheet.setType(TimeSheetContext.Type.MANUAL);
+                        }
+                    }
                 } else{
                     throw new FSMException(FSMErrorCode.TIME_SHEET_SA_MANDATORY);
                 }

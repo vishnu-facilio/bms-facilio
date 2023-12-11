@@ -1,5 +1,6 @@
 package com.facilio.fsm.util;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -194,6 +195,13 @@ public class ServiceAppointmentUtil {
                     if(skipValidation != null && !skipValidation){
                         bodyParams.put(FacilioConstants.ServiceAppointment.SKIP_VALIDATION,false);
                     }
+                    User user = AccountUtil.getCurrentAccount().getUser();
+                    if(user != null){
+                        V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                        updateSAProps.put("dispatchedBy",people);
+                        updateSAProps.put("dispatched",true);
+                        updateSAProps.put("dispatchedTime",DateTimeUtil.getCurrenTime());
+                    }
                     updateSARecordList.add(updateSAProps);
                     V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false,null);
                     V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
@@ -288,8 +296,10 @@ public class ServiceAppointmentUtil {
                                         tasks.add(newTask);
                                     }
                                 }
+                                JSONObject bodyParams = new JSONObject();
+                                bodyParams.put("system",true);
                                 recordProps.put("serviceTasks", FieldUtil.getAsMapList(tasks, TimeSheetTaskContext.class));
-                                V3Util.createRecord(timeSheetModule, recordProps);
+                                V3Util.createRecord(timeSheetModule, recordProps,bodyParams,null);
                             }
 
                             //updating agent status to on-site on work start
@@ -608,7 +618,9 @@ public class ServiceAppointmentUtil {
                             }
                         }
                         //Creating new trip record
-                        FacilioContext tripContext = V3Util.createRecord(tripModule,FieldUtil.getAsProperties(newTrip));;
+                        JSONObject bodyParams = new JSONObject();
+                        bodyParams.put("system",true);
+                        FacilioContext tripContext = V3Util.createRecord(tripModule,FieldUtil.getAsProperties(newTrip),bodyParams,null);;
                         Map<String, List> recordMap = (Map<String, List>) tripContext.get(Constants.RECORD_MAP);
                         trip = (TripContext) recordMap.get(FacilioConstants.Trip.TRIP).get(0);
                     }

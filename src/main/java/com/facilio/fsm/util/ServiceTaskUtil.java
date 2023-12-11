@@ -57,8 +57,9 @@ public class ServiceTaskUtil {
                 timeSheetContext.setStatus(ServiceAppointmentUtil.getTimeSheetStatus(FacilioConstants.TimeSheet.IN_PROGRESS));
 
                 FacilioModule timeSheet = moduleBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET);
-
-                V3Util.createRecord(timeSheet,FieldUtil.getAsProperties(timeSheetContext));
+                JSONObject bodyParams = new JSONObject();
+                bodyParams.put("system",true);
+                V3Util.createRecord(timeSheet,FieldUtil.getAsProperties(timeSheetContext),bodyParams,null);
                 updateTaskAndSA(taskId,currentTime,serviceAppointmentContext);
 
             } else {

@@ -156,6 +156,11 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
         FacilioField emailField = moduleBean.getField("email", moduleName);
         FacilioField dispatchableField = moduleBean.getField("dispatchable", moduleName);
         FacilioField trackGeoLocationField = moduleBean.getField("trackGeoLocation", moduleName);
+        FacilioField territoriesField = moduleBean.getField("territories", moduleName);
+        FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -165,6 +170,17 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
         addSummaryFieldInWidgetGroup(widgetGroup, emailField, 1, 3, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, dispatchableField, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, trackGeoLocationField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, territoriesField, 2, 2, 1);
+
+        SummaryWidgetGroup systemInformationWidgetGroup = new SummaryWidgetGroup();
+        systemInformationWidgetGroup.setName("systemInformation");
+        systemInformationWidgetGroup.setDisplayName("System Information");
+        systemInformationWidgetGroup.setColumns(4);
+
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysCreatedByField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysCreatedTimeField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysModifiedByField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(systemInformationWidgetGroup, sysModifiedTimeField, 1, 4, 1);
 
 
         widgetGroup.setName("moduleDetails");
@@ -173,6 +189,7 @@ public class VendorContactModuleTemplatePage implements TemplatePageFactory {
 
         List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
         widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(systemInformationWidgetGroup);
 
         pageWidget.setDisplayName("");
         pageWidget.setModuleId(module.getModuleId());
