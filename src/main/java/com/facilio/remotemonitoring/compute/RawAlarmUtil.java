@@ -484,16 +484,20 @@ public class RawAlarmUtil {
         } else {
             criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
         }
-        if(rawAlarm.getId() > -1) {
-            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(rawAlarmModule), String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
-        }
+
 //        if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {
 //            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getClearedTime()), NumberOperators.LESS_THAN_EQUAL));
 //        } else {
 //            criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(rawAlarm.getOccurredTime()), NumberOperators.LESS_THAN_EQUAL));
 //        }
-        List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
+        List<FacilioField> fetchFields = new ArrayList<>();
+        fetchFields.add(modBean.getField("id", RawAlarmModule.MODULE_NAME));
+        fetchFields.add(modBean.getField("parentAlarm", RawAlarmModule.MODULE_NAME));
+        List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, fetchFields, criteria, null);
         if (CollectionUtils.isNotEmpty(rawAlarms)) {
+            if(rawAlarm.getId() > -1) {
+                rawAlarms = rawAlarms.stream().filter(r -> r.getId() != rawAlarm.getId()).collect(Collectors.toList());
+            }
             List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
             Long clearTime = System.currentTimeMillis();
             if(rawAlarm.getClearedTime() != null && rawAlarm.getClearedTime() > -1) {

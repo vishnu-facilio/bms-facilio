@@ -8,6 +8,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.compute.FilterAlarmUtil;
 import com.facilio.remotemonitoring.compute.RawAlarmUtil;
@@ -21,6 +22,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +41,6 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(rawAlarm.getClient().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_EMPTY));
-            criteria.addAndCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(rawAlarm.getId()), NumberOperators.LESS_THAN));
 
             if(rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", String.valueOf(rawAlarm.getAsset().getId()), NumberOperators.EQUALS));
@@ -47,8 +48,14 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
                 criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID", "asset", StringUtils.EMPTY, CommonOperators.IS_EMPTY));
             }
 
-            List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, criteria, null);
+            List<FacilioField> fetchFields = new ArrayList<>();
+            fetchFields.add(modBean.getField("id", RawAlarmModule.MODULE_NAME));
+
+            List<RawAlarmContext> rawAlarms = V3RecordAPI.getRecordsListWithSupplements(RawAlarmModule.MODULE_NAME, null, RawAlarmContext.class, fetchFields, criteria, null);
             if(CollectionUtils.isNotEmpty(rawAlarms)) {
+                if(rawAlarm.getId() > -1) {
+                    rawAlarms = rawAlarms.stream().filter(r -> r.getId() != rawAlarm.getId()).collect(Collectors.toList());
+                }
                 List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
                 Map<String,Object> map = new HashMap<>();
                 map.put("clearedTime",System.currentTimeMillis());
