@@ -248,6 +248,26 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("controlActionTemplate");
         scriptWhiteListedModules.add(FlaggedEventRuleModule.MODULE_NAME);
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.ATTENDANCE);
+        scriptWhiteListedModules.add("misccontroller");
+        scriptWhiteListedModules.add("bacnetipcontroller");
+        scriptWhiteListedModules.add("e2controller");
+        scriptWhiteListedModules.add("rdmcontroller");
+        scriptWhiteListedModules.add("lonworkscontroller");
+        scriptWhiteListedModules.add("opcuacontroller");
+        scriptWhiteListedModules.add("niagaracontroller");
+        scriptWhiteListedModules.add("modbustcpcontroller");
+        scriptWhiteListedModules.add("modbusrtucontroller");
+        scriptWhiteListedModules.add("opcxmldacontroller");
+        scriptWhiteListedModules.add("miscPoint");
+        scriptWhiteListedModules.add("bacnetIpPoint");
+        scriptWhiteListedModules.add("e2Point");
+        scriptWhiteListedModules.add("rdmPoint");
+        scriptWhiteListedModules.add("lonworksPoint");
+        scriptWhiteListedModules.add("opcUAPoint");
+        scriptWhiteListedModules.add("niagaraPoint");
+        scriptWhiteListedModules.add("modbusTcpPoint");
+        scriptWhiteListedModules.add("modbusRtuPoint");
+        scriptWhiteListedModules.add("opcXmlDAPoint");
     }
 
     @Override
