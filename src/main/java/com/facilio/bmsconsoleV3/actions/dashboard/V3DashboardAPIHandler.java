@@ -49,6 +49,9 @@ public class V3DashboardAPIHandler {
         if(dashboardMeta.get("dashboardFolderId") != null) {
             dashboard.setDashboardFolderId((Long) dashboardMeta.get("dashboardFolderId"));
         }
+        if(dashboardMeta.get("description") != null) {
+            dashboard.setDescription((String) dashboardMeta.get("description"));
+        }
         if (dashboardMeta.get("dashboardTabPlacement") != null) {
             int dashboardTabPlacement  = ((Long) dashboardMeta.get("dashboardTabPlacement")).intValue();
             dashboard.setDashboardTabPlacement(dashboardTabPlacement);

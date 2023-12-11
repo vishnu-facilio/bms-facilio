@@ -64,16 +64,8 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
         reportContext.setKpi(isKpi);
         if(reportContext.getFilters() != null && reportContext.getFilters().getGlobalCriteria() != null){
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Criteria criteria = reportContext.getFilters().getGlobalCriteria();
             FacilioModule module = modBean.getModule(reportContext.getModuleName());
-                for (String key : criteria.getConditions().keySet())
-                {
-                    Condition condition = criteria.getConditions().get(key);
-                    if (module == null || condition == null || condition.getFieldName() == null) continue;
-                    FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
-                    if(field == null) continue;
-                    condition.setField(field);
-                }
+            Criteria criteria = V2AnalyticsOldUtil.setFieldInCriteria(reportContext.getFilters().getGlobalCriteria(),module);
             long globalCriteriaId = CriteriaAPI.addCriteria(criteria);
             reportContext.setCriteriaId(globalCriteriaId);
         }
@@ -94,13 +86,27 @@ public class V2AddNewModuleReportCommand extends FacilioCommand {
     private void updateNewReportV2(V2ModuleReportContext reportContext, boolean isKpi) throws Exception
     {
         reportContext.setKpi(isKpi);
+        Long presentCriteriaId = reportContext.getCriteriaId();
+        if(reportContext.getFilters() != null && reportContext.getFilters().getGlobalCriteria() != null){
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(reportContext.getModuleName());
+            Criteria criteria = V2AnalyticsOldUtil.setFieldInCriteria(reportContext.getFilters().getGlobalCriteria(),module);
+            long globalCriteriaId = CriteriaAPI.addCriteria(criteria);
+            reportContext.setCriteriaId(globalCriteriaId);
+        }
+        else if((reportContext.getFilters() == null || reportContext.getFilters() != null && reportContext.getFilters().getGlobalCriteria() == null) && reportContext.getCriteriaId() != null) {
+            reportContext.setCriteriaId(null);
+        }
         GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
                 .table(ModuleFactory.getV2ReportModule().getTableName())
                 .fields(FieldFactory.getV2ReportModuleFields())
-                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportContext.getReportId()+"", NumberOperators.EQUALS));
-        Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
+                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", reportContext.getReportId()+"", NumberOperators.EQUALS))
+                .ignoreSplNullHandling();
+        Map<String, Object> props = FieldUtil.getAsProperties(reportContext,true);
         updateBuilder.update(props);
-
+        if(presentCriteriaId != null && presentCriteriaId > 0) {
+            CriteriaAPI.deleteCriteria(presentCriteriaId);
+        }
         if (reportContext.getReportId() > 0){
             V2AnalyticsOldUtil.updateModuleReportMeasures(reportContext);
         }
