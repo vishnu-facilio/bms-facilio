@@ -22,6 +22,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,11 +55,14 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 
 		Map<Long, FieldType> columnIdVsFieldType = columns.stream().collect(Collectors.toMap(column->column.getId(), column->column.getField().getDataTypeEnum()));
 		List<MatrixAnswerContext.ColumnAnswer> columnAnswers= (answer.getAnswer().getRowAnswer().stream().map(row->row.getColumnAnswer()).collect(Collectors.toList())).stream().flatMap(collist->collist.stream()).collect(Collectors.toList());
-
 		for(MatrixAnswerContext.ColumnAnswer columnAnswer:columnAnswers) {
 			if(columnAnswer.getAnswer()!=null) {
 				String columnName = columnIdVsName.get(columnAnswer.getColumn());
 				FieldType fieldType = columnIdVsFieldType.get(columnAnswer.getColumn());
+				if(fieldType==FieldType.NUMBER && columnAnswer.getAnswer().equals("")){
+					columnAnswer.setAnswer(-99);
+					continue;
+				}
 				switch (fieldType) {
 					case STRING:
 						V3Util.throwRestException(columnAnswer.getAnswer().toString().length() > CommonStringQuestionHandler.SHORT_STRING_MAX_LENGTH, ErrorCode.VALIDATION_ERROR, MessageFormat.format("{0} - answer length ({1}) is greater than the max length 255 allowed",columnName,columnAnswer.getAnswer().toString().length()));
@@ -74,10 +78,8 @@ public class MatrixAnswerHandler extends AnswerHandler<MatrixAnswerContext> {
 				}
 			}
 		}
-
 		return answerContext;
 	}
-
 	@Override
 	public boolean checkIfAnswerIsNull(AnswerContext answer) throws Exception {
 		// TODO Auto-generated method stub

@@ -185,13 +185,13 @@ public class InductionResponseModule extends BaseModuleConfig{
 
     public static void addSystemButtons() throws Exception {
 
-        SystemButtonRuleContext conductInspectionSystemButton = new SystemButtonRuleContext();
-        conductInspectionSystemButton.setName(FacilioConstants.Induction.ATTEND_INDUCTION_BUTTON);
-        conductInspectionSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        conductInspectionSystemButton.setIdentifier(FacilioConstants.Induction.ATTEND_INDUCTION_IDENTIFIER);
-        conductInspectionSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        conductInspectionSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
-        conductInspectionSystemButton.setPermissionRequired(true);
+        SystemButtonRuleContext conductInductionSystemButton = new SystemButtonRuleContext();
+        conductInductionSystemButton.setName(FacilioConstants.Induction.ATTEND_INDUCTION_BUTTON);
+        conductInductionSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        conductInductionSystemButton.setIdentifier(FacilioConstants.Induction.ATTEND_INDUCTION_IDENTIFIER);
+        conductInductionSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        conductInductionSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
+        conductInductionSystemButton.setPermissionRequired(true);
 
         SystemButtonRuleContext downloadPdfSystemButton = new SystemButtonRuleContext();
         downloadPdfSystemButton.setName(FacilioConstants.Inspection.DOWNLOAD_PDF_BUTTON_TEXT);
@@ -209,7 +209,7 @@ public class InductionResponseModule extends BaseModuleConfig{
         printSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
         printSystemButton.setPermissionRequired(true);
 
-        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_RESPONSE,conductInspectionSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_RESPONSE,conductInductionSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_RESPONSE,downloadPdfSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_RESPONSE,printSystemButton);
 

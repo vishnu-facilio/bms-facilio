@@ -27,4 +27,7 @@ public class MatrixQuestionColumn extends V3Context{
 	public void setFieldJSON(JSONObject fieldJson) throws Exception {
 		field = FieldUtil.parseFieldJson(fieldJson);
 	}
+
+	// only for clone
+	Long clonedFieldId;
 }

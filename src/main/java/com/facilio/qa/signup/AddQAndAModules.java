@@ -116,6 +116,8 @@ public class AddQAndAModules extends SignUpData {
         fields.add(FieldFactory.getDefaultField("totalPages", "Total Pages", "TOTAL_PAGES", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("totalQuestions", "Total Questions", "TOTAL_QUESTIONS", FieldType.NUMBER));
         fields.add(FieldFactory.getDefaultField("totalResponses", "Total Responses", "TOTAL_RESPONSES", FieldType.NUMBER));
+        BooleanField isPublished = (BooleanField) FieldFactory.getDefaultField("isPublished", "Published", "IS_PUBLISHED", FieldType.BOOLEAN);
+        fields.add(isPublished);
         fields.add(FieldFactory.getBaseModuleSystemField("formId",module));
 
         module.setFields(fields);

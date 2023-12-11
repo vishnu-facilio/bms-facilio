@@ -81,7 +81,7 @@ public class ServiceRequestPageFactory extends PageFactory {
                     page.addTab(tab3);
                 }
             }
-            if (!AccountUtil.getCurrentUser().isPortalUser()) {
+            if (!AccountUtil.getCurrentUser().isPortalUser() && isSurveyAvailable(record.getId(),module.getModuleId())) {
                 addMetricandTimelogTab(page, record.getId(), module.getModuleId());
             }
             if (!AccountUtil.getCurrentUser().isPortalUser()) {

@@ -238,6 +238,19 @@ public class QAndATransactionChainFactory {
         return c;
     }
 
+    public static FacilioChain cloneTemplateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CloneQAndAExtendedTemplateCommand());
+        c.addCommand(new CloneQandAPagesCommand());
+        return c;
+    }
+
+    public static FacilioChain publishTemplateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PublishTemplateCommand());
+        return c;
+    }
+
 	public static FacilioChain addOrUpdateMatrixAnswersChain() {
 		FacilioChain c = getDefaultChain();
         c.addCommand(new AddOrUpdateMatrixAnswersCommand());
@@ -279,4 +292,18 @@ public class QAndATransactionChainFactory {
 		c.addCommand(new UpdateResponseRetakeExpiryCommand());
 		return c;
 	}
+
+    public static FacilioChain inspectionResponseBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InspectionSupplementSupplyCommand());
+        c.addCommand(new LoadInspectionOrInductionResponseExtraFieldsCommand());
+        return c;
+    }
+
+    public static FacilioChain inductionResponseBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InductionSupplementSupplyCommand());
+        c.addCommand(new LoadInspectionOrInductionResponseExtraFieldsCommand());
+        return c;
+    }
 }

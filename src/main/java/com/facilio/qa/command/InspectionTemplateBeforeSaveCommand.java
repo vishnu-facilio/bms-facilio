@@ -58,6 +58,10 @@ public class InspectionTemplateBeforeSaveCommand extends FacilioCommand {
 					inspection.getBuildings().removeAll(buildingToBeRemoved);
 				}
 			}
+
+			if(inspection.getIsPublished() == null){
+				inspection.setIsPublished(false);
+			}
 		}
 		return false;
 	}

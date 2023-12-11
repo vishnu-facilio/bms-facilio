@@ -24,6 +24,10 @@ public class InductionTemplateBeforeSaveCommand extends FacilioCommand {
 		
 		for(InductionTemplateContext induction : inductions) {
 			induction.setStatus(Boolean.TRUE);
+
+			if(induction.getIsPublished() == null){
+				induction.setIsPublished(false);
+			}
 		}
 		return false;
 	}

@@ -5,8 +5,10 @@ import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
 import com.facilio.qa.context.client.answers.MatrixAnswerContext;
+import com.facilio.qa.context.questions.MatrixQuestionColumn;
 import com.facilio.qa.context.questions.MatrixQuestionContext;
 import com.facilio.qa.context.questions.MatrixQuestionRow;
+import com.facilio.qa.context.questions.MultiQuestionContext;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.util.V3Util;
@@ -99,5 +101,12 @@ public enum MatrixRuleHandler implements RuleHandler{
 			return (rowId !=null && columnId != null ) && (ruleCondition.getRowId() == rowId && ruleCondition.getColumnId() == columnId);
 		}
 		return false;
+	}
+
+	@Override
+	public void beforeQuestionClone(QuestionContext question) throws Exception {
+	}
+
+	public void constructConditionsForClone(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception {
 	}
 }

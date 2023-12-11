@@ -13,6 +13,7 @@ import com.facilio.bmsconsoleV3.context.survey.SurveyTemplateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioIntEnum;
 
+import com.facilio.plannedmaintenance.ExecutorBase;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -53,5 +54,9 @@ public enum QAndAType implements FacilioIntEnum {
             return values()[value - 1];
         }
         return null;
+    }
+
+    public QAndATemplateContext getQAndATemplateClass() throws Exception {
+        return templateClass.getConstructor().newInstance();
     }
 }

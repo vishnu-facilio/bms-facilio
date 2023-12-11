@@ -144,4 +144,22 @@ public class QAndAAction extends RESTAPIHandler {
     }
     
     List<ResourceContext> resources;
+
+    String templateName;
+    public String cloneTemplate() throws Exception {
+        FacilioChain cloneTemplate = QAndATransactionChainFactory.cloneTemplateChain();
+        cloneTemplate.getContext().put(FacilioConstants.QAndA.OLD_TEMPLATE_ID, this.getId());
+        cloneTemplate.getContext().put(FacilioConstants.QAndA.CLONED_TEMPLATE_NAME, this.getTemplateName());
+        cloneTemplate.execute();
+
+        this.setData(FacilioConstants.QAndA.CLONED_Q_AND_A_TEMPLATE, cloneTemplate.getContext().get(FacilioConstants.QAndA.CLONED_Q_AND_A_TEMPLATE));
+        return SUCCESS;
+    }
+
+    public String publishTemplate() throws Exception {
+        FacilioChain publishTemplate = QAndATransactionChainFactory.publishTemplateChain();
+        publishTemplate.getContext().put(FacilioConstants.QAndA.TEMPLATE_ID, this.getId());
+        publishTemplate.execute();
+        return SUCCESS;
+    }
 }

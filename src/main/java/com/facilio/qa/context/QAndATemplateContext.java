@@ -39,6 +39,7 @@ public abstract class QAndATemplateContext <R extends ResponseContext> extends V
     private String description;
     private QAndAType qAndAType;
     private Integer totalPages, totalQuestions, totalResponses;
+    private Boolean isPublished;
 
     private List<PageContext> pages;
 

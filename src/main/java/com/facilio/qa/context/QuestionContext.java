@@ -55,6 +55,9 @@ public class QuestionContext extends V3Context {
     private ClientAnswerContext answer;
     private List<ClientAnswerContext> answers;
 
+    //only for server use not in DB
+    private long clonedQuestionId;
+
     //Only for client use
     private Boolean showResponses;
     private Integer answered;

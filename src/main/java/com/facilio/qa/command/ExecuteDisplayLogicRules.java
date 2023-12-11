@@ -74,7 +74,7 @@ public class ExecuteDisplayLogicRules extends FacilioCommand {
 
 				if(criteria !=null && mainRecordMap != null) {
 					 criteriaFlag = criteria.computePredicate(mainRecordMap).evaluate(mainRecordMap);
-					 if(criteria.getConditions()!=null && !criteria.getConditions().isEmpty() && criteria.getConditions().size()>0 && booleanQuestionIds!=null){
+					 if(criteria.getConditions()!=null && !criteria.getConditions().isEmpty() && criteria.getConditions().size()>0 && booleanQuestionIds!=null && booleanQuestionIds.size()>0 && displayLogic.getDisplayLogicTypeEnum()!= DisplayLogicContext.DisplayLogicType.ANSWER_DISPLAY){
 						 for (Map.Entry<String, Condition> entry : criteria.getConditions().entrySet()) {
 							 if(booleanQuestionIds.contains(Long.parseLong(entry.getValue().getFieldName())) && entry.getValue().getOperator() == BooleanOperators.IS && mainRecordMap.get(entry.getValue().getFieldName())==null){
 								 criteriaFlag = false;

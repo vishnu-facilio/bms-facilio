@@ -1,6 +1,11 @@
 package com.facilio.qa.rules.pojo;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
 import com.facilio.qa.context.RuleHandler;
@@ -9,6 +14,7 @@ import com.facilio.qa.context.questions.MatrixQuestionColumn;
 import com.facilio.qa.context.questions.MatrixQuestionRow;
 import com.facilio.qa.context.questions.MultiQuestionContext;
 import com.facilio.util.FacilioUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
@@ -46,12 +52,50 @@ public enum MultiQuestionRuleHandler implements RuleHandler {
     }
 
     @Override
+    public void beforeQuestionClone(QuestionContext question) throws Exception{
+        if(question!=null){
+            MultiQuestionContext mq = (MultiQuestionContext) question;
+            List<MatrixQuestionColumn> mqColumns = mq.getColumns();
+            mqColumns.stream().forEach(column -> {
+                column.setClonedFieldId(column.getFieldId());
+            });
+        }
+    }
+
+    public void constructConditionsForClone(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception {
+        MultiQuestionContext mq = (MultiQuestionContext) question;
+        SelectRecordsBuilder<MatrixQuestionColumn> selectBuilder = new SelectRecordsBuilder<MatrixQuestionColumn>()
+                .moduleName(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN)
+                .beanClass(MatrixQuestionColumn.class)
+                .select(Constants.getModBean().getAllFields(FacilioConstants.QAndA.Questions.MATRIX_QUESTION_COLUMN))
+                .andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", question.getClonedQuestionId()+"" , NumberOperators.EQUALS));
+        List<MatrixQuestionColumn> oldQuestionColumns= selectBuilder.get();
+        Map<Long,Long> oldQuestionColumnIDVsFieldId = oldQuestionColumns.stream()
+                .collect(Collectors.toMap(MatrixQuestionColumn::getId, MatrixQuestionColumn::getFieldId));
+        Map<Long,Long> newQuestionFieldIdVsID = mq.getColumns().stream()
+                .collect(Collectors.toMap(MatrixQuestionColumn::getClonedFieldId, MatrixQuestionColumn::getId));
+        for(Map<String, Object> condition:conditionProps) {
+            condition.put("id", null);
+            if(oldQuestionColumnIDVsFieldId.containsKey(condition.get("columnId"))){
+                if(newQuestionFieldIdVsID.containsKey(oldQuestionColumnIDVsFieldId.get(condition.get("columnId")))){
+                    condition.put("columnId",newQuestionFieldIdVsID.get(oldQuestionColumnIDVsFieldId.get(condition.get("columnId"))));
+                }
+            }
+        }
+    }
+
+    @Override
     public List<RuleCondition> deserializeConditions(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception{
 
         List<RuleCondition> conditions = new ArrayList<>();
         for (Map<String, Object> prop : conditionProps) {
+            String operatorId=null;
             String value = prop.remove("value").toString();
-            String operatorId = (String) prop.remove("operatorId");
+            if(prop.containsKey("operatorId")) {
+                operatorId = (String) prop.remove("operatorId");
+            } if(prop.containsKey("operator")){
+                operatorId =  prop.remove("operator")+"";
+            }
             RuleCondition condition = FieldUtil.getAsBeanFromMap(prop, type.getRuleConditionClass());
             condition.setOperator(Integer.parseInt(operatorId));
             condition.setValue(value);

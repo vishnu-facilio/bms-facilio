@@ -60,8 +60,8 @@ public class InspectionTemplateContext extends QAndATemplateContext <InspectionR
     private User assignedTo;
     
     private Boolean status;
-    
-    public Integer getCreationType() { // Everything is wrapper in V3 for null handling
+
+	public Integer getCreationType() { // Everything is wrapper in V3 for null handling
     	if(creationType != null) {
     		return creationType.getIndex();
     	}

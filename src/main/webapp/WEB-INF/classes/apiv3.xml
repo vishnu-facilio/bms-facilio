@@ -735,6 +735,14 @@
                 method="executeTemplate">
             <param name="deprecated">true</param>
         </action>
+        <action name="clone"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="cloneTemplate">
+        </action>
+        <action name="publish"
+                class="com.facilio.qa.actions.QAndAAction"
+                method="publishTemplate">
+        </action>
     </package>
 
     <package name="qandaPageClone" namespace="/api/v3/qanda/pages/clone" extends="v3Api">

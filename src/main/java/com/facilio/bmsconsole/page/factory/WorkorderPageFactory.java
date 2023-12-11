@@ -424,7 +424,7 @@ public class WorkorderPageFactory extends PageFactory {
         }
     }
 
-    private static boolean isSurveyAvailable(long workOrderId,long moduleId) throws Exception{
+    public static boolean isSurveyAvailable(long workOrderId,long moduleId) throws Exception{
 
         ModuleBean bean = Constants.getModBean();
         FacilioModule module = bean.getModule(FacilioConstants.Survey.SURVEY_RESPONSE);

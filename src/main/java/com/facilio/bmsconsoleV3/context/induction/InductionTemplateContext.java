@@ -56,7 +56,7 @@ public class InductionTemplateContext extends QAndATemplateContext <InductionRes
     private ResourceContext resource;
     
     private Boolean status;
-    
+
     private Boolean siteApplyTo; 
     
     private PeopleContext people;

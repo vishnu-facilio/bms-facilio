@@ -3651,6 +3651,11 @@ public class FacilioConstants {
 		public static final String EDIT_BUTTON_IDENTIFIER = "edit";
 		public static final String EXECUTE_NOW_BUTTON_TEXT = "Execute Now";
 		public static final String EXECUTE_NOW_BUTTON_IDENTIFIER = "executeNow";
+		public static final String PUBLISH_BUTTON_TEXT = "Publish";
+		public static final String PUBLISH_BUTTON_IDENTIFIER = "publish";
+		public static final String CLONE_BUTTON_TEXT = "Clone";
+		public static final String CLONE_BUTTON_IDENTIFIER = "clone";
+		public static final String INSPECTION_TEMPLATE_ID = "inspectionTemplateId";
 	}
 
 	public static class Survey {
@@ -3705,6 +3710,13 @@ public class FacilioConstants {
 		public static final String QUESTION = "qandaQuestion";
 		public static final String RESPONSE = "qandaResponse";
 		public static final String ANSWER = "qandaAnswer";
+		public static final String TEMPLATE_ID="templateId";
+		public static final String OLD_TEMPLATE_ID="oldTemplateId";
+		public static final String CLONED_Q_AND_A_TEMPLATE="clonedTemplate";
+		public static final String CLONED_Q_AND_A_TEMPLATE_ID="clonedTemplateId";
+		public static final String CLONED_Q_AND_A_OLD_PAGE_ID_LIST="clonedPageIdList";
+		public static final String CLONED_PAGE="clonedPage";
+		public static final String CLONED_TEMPLATE_NAME="clonedTemplateName";
 
 		public static class Questions {
 			public static final String HEADING_QUESTION = "qandaHeadingQuestion";

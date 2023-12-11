@@ -92,10 +92,8 @@ public class InspectionTemplateModuleTemplatePage implements TemplatePageFactory
         FacilioField scopeField = moduleBean.getField("creationType", moduleName);
         FacilioField siteIdField = moduleBean.getField("siteId", moduleName);
         FacilioField spaceAssetField = moduleBean.getField("resource", moduleName);
-        FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
-        FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
-        FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
-        FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
+        FacilioField categoryField = moduleBean.getField("category", moduleName);
+        FacilioField priorityField = moduleBean.getField("priority", moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -103,28 +101,29 @@ public class InspectionTemplateModuleTemplatePage implements TemplatePageFactory
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, scopeField, 1, 1, 1);
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, siteIdField, 1, 2, 1);
         SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, spaceAssetField, 1, 3, 1);
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField, 1, 4, 1);
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedTimeField, 2, 1, 1);
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedByField, 2, 2, 1);
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, sysModifiedTimeField, 2, 3, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, categoryField, 1, 4, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup, priorityField, 2, 1, 1);
 
 
         widgetGroup.setName("configurationinformation");
-        widgetGroup.setDisplayName("Configuration Information");
+//        widgetGroup.setDisplayName("Configuration Information");
         widgetGroup.setColumns(4);
         widgetGroup.setSequenceNumber(1);
 
-        FacilioField categoryField = moduleBean.getField("category", moduleName);
-        FacilioField priorityField = moduleBean.getField("priority", moduleName);
-
         SummaryWidgetGroup widgetGroup2 = new SummaryWidgetGroup();
 
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, categoryField, 1, 1, 1);
-        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, priorityField, 1, 2, 1);
+        FacilioField sysCreatedByField = moduleBean.getField("sysCreatedBy", moduleName);
+        FacilioField sysCreatedTimeField = moduleBean.getField("sysCreatedTime", moduleName);
+        FacilioField sysModifiedByField = moduleBean.getField("sysModifiedBy", moduleName);
+        FacilioField sysModifiedTimeField = moduleBean.getField("sysModifiedTime", moduleName);
 
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, sysCreatedByField, 1, 1, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, sysCreatedTimeField, 1, 2, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, sysModifiedByField, 1, 3, 1);
+        SummaryWidgetUtil.addSummaryFieldInWidgetGroup(widgetGroup2, sysModifiedTimeField, 1, 4, 1);
 
         widgetGroup2.setName("fieldinformation");
-        widgetGroup2.setDisplayName("Field Information");
+        widgetGroup2.setDisplayName("System Information");
         widgetGroup2.setColumns(4);
         widgetGroup2.setSequenceNumber(2);
 

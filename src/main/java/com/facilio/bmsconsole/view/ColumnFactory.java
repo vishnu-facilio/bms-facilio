@@ -977,7 +977,8 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultInspectionTemplateColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("siteId", "Site"));
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("category", "Category"));
@@ -1047,7 +1048,8 @@ public class ColumnFactory {
 	
 	private static List<ViewField> getDefaultInductionTemplateColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
+		columns.add(new ViewField("name", "Name"));
 		columns.add(new ViewField("siteApplyTo", "Apply To"));
 		columns.add(new ViewField("sites", "Sites"));
 		columns.add(new ViewField("totalPages", "Total Pages"));

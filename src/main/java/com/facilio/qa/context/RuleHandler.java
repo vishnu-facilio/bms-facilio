@@ -23,6 +23,8 @@ public interface RuleHandler {
 
     public List<RuleCondition> deserializeConditions(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception;
 
+    public void constructConditionsForClone(QAndARuleType type, QuestionContext question, List<Map<String, Object>> conditionProps) throws Exception;
+
     public List<Map<String, Object>> constructAnswersForEval(QAndARuleType type, QuestionContext question, AnswerContext answer) throws Exception;
 
 	default boolean evalMisc(RuleCondition condition,Map<String,Object> props){
@@ -33,4 +35,6 @@ public interface RuleHandler {
         FacilioUtil.throwIllegalArgumentException(answer == null, MessageFormat.format("Answer cannot be null during rule evaluation of question : {0}", question.getId()));
         return Collections.singletonList(Collections.singletonMap(RuleCondition.ANSWER_FIELD_NAME, answer));
     }
+
+    public void beforeQuestionClone(QuestionContext question) throws Exception;
 }
