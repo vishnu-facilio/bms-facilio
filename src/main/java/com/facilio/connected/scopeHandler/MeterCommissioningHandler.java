@@ -65,11 +65,12 @@ public class MeterCommissioningHandler implements ScopeCommissioningHandler {
     }
 
     @Override
-    public Map<String, FacilioField> getReadings(Long utilityType) throws Exception {
+    public Map<String, FacilioField> getReadings(Long utilityType, Long parentId) throws Exception {
         FacilioContext context = new FacilioContext();
-        context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, false);
         context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, utilityType);
         context.put(FacilioConstants.ContextNames.FILTER, "available");
+        context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_ID, true);
+        context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 
         FacilioChain getCategoryReadingChain = FacilioChainFactory.getUtilityTypeReadingsChain();
         getCategoryReadingChain.execute(context);

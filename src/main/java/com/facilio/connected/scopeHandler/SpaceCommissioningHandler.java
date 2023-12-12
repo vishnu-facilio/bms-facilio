@@ -55,7 +55,7 @@ public class SpaceCommissioningHandler implements ScopeCommissioningHandler {
     }
 
     @Override
-    public Map<String, FacilioField> getReadings(Long id) throws Exception {
+    public Map<String, FacilioField> getReadings(Long id, Long parentId) throws Exception {
         throw new RuntimeException("Not implemented");
     }
 

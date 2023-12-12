@@ -1970,6 +1970,7 @@ public class FacilioConstants {
 		public static final String EXCLUDE_EMPTY_FIELDS = "exludeEmptyFields";
 		public static final String EXCLUDE_FORECAST = "excludeForecast";
 		public static final String FETCH_CONTROLLABLE_FIELDS = "fetchControllableFields";
+		public static final String INCLUDE_PARENT_ID = "includeParentId";
 		public static final String WITH_READINGS = "withReadings";
 		public static final String DEFAULT_FIELD_IDS = "sortFieldId";
 		public static final String WITH_WRITABLE_READINGS = "withWritableReadings";

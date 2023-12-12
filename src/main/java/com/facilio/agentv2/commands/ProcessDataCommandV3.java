@@ -134,7 +134,7 @@ public class ProcessDataCommandV3 extends FacilioCommand {
                 if (categoryIdAndParentId != null) {
                     categoryId = categoryIdAndParentId.getKey();
                     parentId = categoryIdAndParentId.getValue();
-                    nameVsField = ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId);
+                    nameVsField = ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId, parentId);
                 }
                 LOGGER.info("Category/UtilityType Id " + categoryId + ", Parent Id : " + parentId);
             }
@@ -160,6 +160,7 @@ public class ProcessDataCommandV3 extends FacilioCommand {
                                           Long categoryId, Long parentId, FacilioField field, List<ReadingDataMeta> rdmList, Integer unitId) {
         MiscPoint point = new MiscPoint(agent.getId(), controller.getControllerId());
         point.setName(name);
+        point.setDisplayName(name);
         point.setDeviceName(controller.getName());
         point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
         point.setControllerId(controller.getId());
@@ -178,7 +179,7 @@ public class ProcessDataCommandV3 extends FacilioCommand {
             point.setResourceId(parentId);
             point.setReadingScope(scope);
             if (field != null) {
-                LOGGER.debug("Mapping " + point.getName() + " with field " + field.getName() + ", fieldId " + field.getFieldId());
+                LOGGER.info("Mapping " + point.getName() + " with field " + field.getName() + ", fieldId " + field.getFieldId());
                 point.setFieldId(field.getFieldId());
                 if(unitId!=null && unitId > 0){
                     point.setUnit(unitId);

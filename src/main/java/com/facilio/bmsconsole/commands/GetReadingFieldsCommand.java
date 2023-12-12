@@ -49,8 +49,8 @@ public class GetReadingFieldsCommand extends FacilioCommand {
 			Boolean excludeEmptyFields = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, false);
 			Boolean fetchControlableFields = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_CONTROLLABLE_FIELDS, false);
 			fetchControlableFields = fetchControlableFields == null ? false : fetchControlableFields; 
-			Long parentId = excludeEmptyFields != null && excludeEmptyFields ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
-			
+			Boolean includeParentId = (Boolean) context.getOrDefault(FacilioConstants.ContextNames.INCLUDE_PARENT_ID, false);
+			Long parentId = (excludeEmptyFields != null && excludeEmptyFields) || includeParentId ? (Long) context.get(FacilioConstants.ContextNames.PARENT_ID) : null;
 			String filter = (String) context.get(FacilioConstants.ContextNames.FILTER);
 			dataPoints = ReadingsAPI.excludeDefaultAndEmptyReadingFields(dataPoints,parentId, filter, excludeEmptyFields,fetchControlableFields);
 			

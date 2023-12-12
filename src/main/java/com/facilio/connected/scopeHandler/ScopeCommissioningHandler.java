@@ -26,7 +26,7 @@ public interface ScopeCommissioningHandler {
 
     Map<Long, String> getChildTypes(Set<Long> ids) throws Exception;
 
-    Map<String, FacilioField> getReadings(Long id) throws Exception;
+    Map<String, FacilioField> getReadings(Long id, Long parentId) throws Exception;
 
     Pair<Long, Long> getParentIdAndCategoryId(V3Context parent);
 
