@@ -1,11 +1,11 @@
 package com.facilio.emailtemplate.context;
 
-import com.facilio.bmsconsole.templates.BaseMailTemplate;
+import com.facilio.bmsconsole.templates.Template;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import org.json.simple.JSONObject;
 
 // need to check the merits of extending Template
-public class EMailStructure extends BaseMailTemplate {
+public class EMailStructure extends Template {
 
     private long moduleId = -1l;
     public long getModuleId() {
