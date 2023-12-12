@@ -10,6 +10,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public abstract class BaseMailTemplate extends Template{
@@ -24,7 +25,7 @@ public abstract class BaseMailTemplate extends Template{
                 for (Object key : json.keySet()) {
                     Object value = json.get(key);
                     if (value != null) {
-                      if (value instanceof JSONArray) {
+                        if (value instanceof JSONArray) {
                             JSONArray newArray = new JSONArray();
                             for (Object arrayVal : (JSONArray) value) {
                                 newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
@@ -38,8 +39,10 @@ public abstract class BaseMailTemplate extends Template{
                 parameters.put("mailType", "html");
             } else {
                 String emailMessage = (String) json.remove("message");
-                String jsonStr = json.toJSONString();
+                String jsonStr = null;
                 try {
+                    String messageStr = StringSubstitutor.replace(emailMessage, encodeHtmlValueForEmailMessage(params));
+                    json.put("message",messageStr);
                     for (String key : params.keySet()) {
                         Object value = params.get(key);
                         if (value != null) {
@@ -47,11 +50,12 @@ public abstract class BaseMailTemplate extends Template{
                             params.put(key, value);
                         }
                     }
-                    jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+
+                    jsonStr = json.toJSONString();
+
+                    jsonStr = StringSubstitutor.replace(jsonStr, params);
                     JSONParser parser = new JSONParser();
                     parsedJson = (JSONObject) parser.parse(jsonStr);
-                    String messageStr = StringSubstitutor.replace(StringEscapeUtils.escapeJava(emailMessage), encodeHtmlValueForEmailMessage(params));
-                    parsedJson.put("message",messageStr);
                 } catch (Exception e) {
                     LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
                             .append("JSON : ")
@@ -70,12 +74,13 @@ public abstract class BaseMailTemplate extends Template{
         return parsedJson;
     }
     protected Map encodeHtmlValueForEmailMessage(Map<String, Object> params){
+        Map<String, Object>  cloneParams = new HashMap();
         for(String key:params.keySet()){
             Object value=params.get(key);
             if(value instanceof String) {
-                    params.put(key,StringEscapeUtils.escapeHtml4(value.toString()));
-                }
+                cloneParams.put(key,StringEscapeUtils.escapeHtml4(value.toString()));
             }
-        return params;
+        }
+        return cloneParams;
     }
 }
