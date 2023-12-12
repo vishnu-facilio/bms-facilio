@@ -19,6 +19,7 @@ public class V2TimeFilterContext {
     public String baselinePeriod;
     public String dateValueString;
     public DateRange baselineRange;
+    public String label;
     public int getDateOperator() {
         return dateOperator != null ? ((DateOperators)dateOperator).getOperatorId() : -1;
     }

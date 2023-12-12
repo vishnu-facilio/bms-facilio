@@ -10,10 +10,13 @@ import java.util.Map;
 import java.util.TimeZone;
 import java.util.logging.Logger;
 
+import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.xpath.operations.Bool;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -28,10 +31,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -66,20 +65,39 @@ public class FormatHeatMapDataCommand extends FacilioCommand {
 			Long startTime=range.getStartTime();
 			Long endTime=range.getEndTime();
 			List<Map<String, Object>>  violatedReadings = new ArrayList<>();
-			V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
-			if(report_v2 == null && (reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4))) {
-				violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
-			}
 			List<Map<String, Object>> heatMapData = new ArrayList<>();
 			long timeStep = endTime-startTime;
-			if(reportContext.getxAggr() == 20) {
-				timeStep = 3600000;
+
+			Boolean isV2Analytics = (Boolean) context.get("isV2Analytics");
+			if(isV2Analytics)
+			{
+				V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
+				if(report_v2 != null && report_v2.getMeasures().size() == 1)
+				{
+					V2MeasuresContext measure = report_v2.getMeasures().get(0);
+					if(measure.getHmAggr().equals("hours"))
+					{
+						timeStep = 3600000;
+					}
+					else if(measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")){
+						timeStep = 86400000;
+					}
+				}
 			}
-			else if(reportContext.getxAggr() == 12 || reportContext.getxAggr() == 11) {
-				sdf = new java.text.SimpleDateFormat("yyyy MM dd");
-				timeStep = 86400000;
+			else
+			{
+				if((reportContext.getAnalyticsType() == 3 && (reportContext.getType() == 1 || reportContext.getType() == 4))) {
+					violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
+				}
+				if(reportContext.getxAggr() == 20) {
+					timeStep = 3600000;
+				}
+				else if(reportContext.getxAggr() == 12 || reportContext.getxAggr() == 11) {
+					sdf = new java.text.SimpleDateFormat("yyyy MM dd");
+					timeStep = 86400000;
+				}
 			}
-			
+
 			HashMap reportDataMap= new HashMap();
 			for(Map<String, Object> record : data) {
 				Date recordDate = new java.util.Date(((long) record.get(FacilioConstants.ContextNames.REPORT_DEFAULT_X_ALIAS)));

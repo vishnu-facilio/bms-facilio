@@ -3,6 +3,7 @@ package com.facilio.analytics.v2.command;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2DimensionContext;
+import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
@@ -52,6 +53,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         isClickHouseEnabled = (Boolean) context.get("isClickHouseEnabled");
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+        this.setXAggrForHeatMap(report_v2, report);
         V2AnalyticsOldUtil.calculateBaseLineRange(report);
         List<ReportDataContext> reportData = new ArrayList<>();
         List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
@@ -409,5 +411,23 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             }
         }
       return enum_field_list;
+    }
+    private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
+    {
+        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1)
+        {
+            V2MeasuresContext measure = v2_report.getMeasures().get(0);
+            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
+            {
+                if(measure.getHmAggr().equals("hours"))
+                {
+                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY);
+                }
+                else if((measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")))
+                {
+                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE);
+                }
+            }
+        }
     }
 }
