@@ -3683,4 +3683,21 @@
             <param name="permission">GET:READ</param>
         </action>
     </package>
+    <package name="modulemappingconfiguration" namespace="/api/v3/modulemapping" extends="v3Api">
+        <action name="fetchRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="fetchTargetModuleContext">
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="permissionModuleName">{2}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+        <action name="addRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addContextToTargetModule">
+            <param name="permission">POST:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="permissionModuleName">{2}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+
+    </package>
 </struts>

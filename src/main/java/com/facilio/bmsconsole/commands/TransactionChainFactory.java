@@ -122,8 +122,8 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateAppSuperAdminCommand());
 			c.addCommand(new AddCommonModuleWidgetsCommand());
 			c.addCommand(addRemoteMonitoringApplication());
-			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddEmployeeTypePeopleForUserAdditionCommand());
+			c.addCommand(new AddSignupDataCommandV3());
 			c.addCommand(new AddDefaultBundleCommand());
 			c.addCommand(new AddDefaultWoTimelineCommand());
 //			c.addCommand(new AddMaintenanceAppConfigCommand());

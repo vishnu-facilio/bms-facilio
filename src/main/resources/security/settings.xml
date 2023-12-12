@@ -6333,4 +6333,20 @@
             <property name="fromBuilder" type="boolean"/>
         </urlparams>
     </request>
+    <request path="/api/v3/modulemapping/fetchRecord/:moduleName/:targetModule" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+            <property name="targetModule" type="string" mandatory="true" />
+            <property name="templateId" type="number" />
+            <property name="recordId" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/modulemapping/addRecord/:moduleName/:targetModule" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+            <property name="targetModule" type="string" mandatory="true" />
+            <property name="templateId" type="number" />
+            <property name="recordId" type="number" mandatory="true" />
+        </urlparams>
+    </request>
 </config>

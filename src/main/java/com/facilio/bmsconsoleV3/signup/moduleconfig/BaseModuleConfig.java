@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
 import com.facilio.bmsconsole.ModuleWidget.ModuleWidgetsUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.context.ModuleMappingContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.context.WidgetContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.bmsconsoleV3.signup.util.ModuleMappingsUtil;
 import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.bmsconsoleV3.signup.util.AddModuleViewsAndGroups;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -30,6 +32,7 @@ import com.facilio.trigger.util.TriggerUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.owasp.esapi.util.CollectionsUtil;
 
 /**
  * <p>As a framework, there are lot of functionalities are added, and that will affect all the modules. For
@@ -122,6 +125,10 @@ public abstract class BaseModuleConfig extends SignUpData {
         if(MapUtils.isNotEmpty(appNameVsSystemPages)) {
             PagesUtil.addSystemPages(getModuleName(), appNameVsSystemPages);
         }
+    }
+
+    public void addModuleMappingConfig() throws Exception {
+        ModuleMappingsUtil.addModuleMapping(getModuleName());
     }
     private BaseTriggerContext addTrigger(String name, EventType eventType) throws Exception {
         BaseTriggerContext trigger = new BaseTriggerContext();

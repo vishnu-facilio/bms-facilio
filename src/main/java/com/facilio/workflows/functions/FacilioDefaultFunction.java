@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.modulemapping.ModuleMappingConfigUtil;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -1160,4 +1161,67 @@ public class FacilioDefaultFunction  {
 		String data = objects[0].toString();
 		return CryptoUtils.hash256(data);
 	}
+
+    public Object getTargetModuleRecordObj(ScriptContext scriptContext, Map<String, Object> map, Object... objects) throws Exception {
+
+        String sourceModule = null;
+        String targetModule = null;
+
+        if (objects[0] != null) {
+            sourceModule = String.valueOf(objects[0]);
+        }
+
+        if (objects[1] != null) {
+            targetModule = String.valueOf(objects[1]);
+        }
+
+        long templateId = -1l;
+
+
+        long recordId = FacilioUtil.parseLong(objects[2]);
+
+        if (objects.length > 3 && objects[3] != null) {
+            templateId = FacilioUtil.parseLong(objects[3]);
+        }
+
+        ModuleMappingConfigUtil moduleMappingConfigUtil = new ModuleMappingConfigUtil();
+
+        Object result = moduleMappingConfigUtil.getTargetModuleRecordObj(sourceModule, targetModule, recordId, templateId);
+
+        return FieldUtil.getAsProperties(result);
+
+
+    }
+
+    public Object createTargetModuleRecord(ScriptContext scriptContext, Map<String, Object> map, Object... objects) throws Exception {
+
+        String sourceModule = null;
+        String targetModule = null;
+
+        if (objects[0] != null) {
+            sourceModule = String.valueOf(objects[0]);
+        }
+
+        if (objects[1] != null) {
+            targetModule = String.valueOf(objects[1]);
+        }
+
+        long templateId = -1l;
+
+
+        long recordId = FacilioUtil.parseLong(objects[2]);
+
+        if (objects.length > 3 && objects[3] != null) {
+            templateId = FacilioUtil.parseLong(objects[3]);
+        }
+
+
+        ModuleMappingConfigUtil moduleMappingConfigUtil = new ModuleMappingConfigUtil();
+
+        Object result = moduleMappingConfigUtil.createTargetModuleRecord(sourceModule, targetModule, recordId, templateId);
+
+        return FieldUtil.getAsProperties(result);
+
+    }
+
 }

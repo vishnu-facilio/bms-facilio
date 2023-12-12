@@ -4412,4 +4412,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CalendarSlotCreationCommand());
         return c;
     }
+    public static FacilioChain fetchModuleMappingConfig() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchModuleMappingCommand());
+        return c;
+    }
+    public static FacilioChain addModuleMappingConfig() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddModuleMappingCommand());
+        return c;
+    }
 }

@@ -1182,7 +1182,21 @@ public class ModuleFactory {
 		alarmFollowersModule.setTableName("AlarmFollowers");
 		return alarmFollowersModule;
 	}
-	
+	public static FacilioModule getModuleMappingModule(){
+		return constructModule("moduleMapping","Module Mapping","Module_Mapping");
+	}
+	public static FacilioModule getModuleMappingTemplateModule(){
+		return constructModule("moduleMappingTemplate","Module Mapping Template","Module_Mapping_Template");
+	}
+	public static FacilioModule getSubModuleMappingModule(){
+		return constructModule("subModuleMapping","Sub Module Mapping","Sub_Module_Mapping");
+	}
+	public static FacilioModule getFieldMappingModule(){
+		return constructModule("fieldMapping","Field Mapping","Field_Mapping_Config");
+	}
+	public static FacilioModule getSubFieldMappingModule(){
+		return constructModule("SubFieldMapping","Sub Field Mapping","Sub_Field_Mapping_Config");
+	}
 	public static FacilioModule getEnergyStarCustomerModule() {
 		return constructModule("energyStarCustomer", "Energy Star Customer", "Energy_Star_Customer");
 	}

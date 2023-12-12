@@ -111,6 +111,11 @@ public class AddSignupDataCommandV3 extends FacilioCommand {
                     ((BaseModuleConfig) signUpData).addTemplateAndDefaultPage();
                 }
             }
+            for (SignUpData signUpData : SIGN_UP_CHAIN) {
+                if (signUpData instanceof BaseModuleConfig) {
+                    ((BaseModuleConfig) signUpData).addModuleMappingConfig();
+                }
+            }
         }
         return false;
     }

@@ -12655,6 +12655,155 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getModuleMappingFields() throws Exception {
+        List<FacilioField> fields=new ArrayList<>();
+
+        FacilioModule module= ModuleFactory.getModuleMappingModule();
+
+        ModuleBean modBean = Constants.getModBean();
+
+        fields.add(getIdField(module));
+        fields.add(getField("name", "Name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "Display Name", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("sourceModuleId", "Source Module ID", "SOURCE_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("targetModuleId", "Target Module ID", "TARGET_MODULE_ID", module, FieldType.NUMBER));
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+        LookupField deletedByPeople = FieldFactory.getDefaultField("sysDeletedByPeople","Deleted By","SYS_DELETED_BY_PEOPLE",FieldType.LOOKUP);
+        deletedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(deletedByPeople);
+
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysDeletedTime", "Deleted Time", "SYS_DELETED_TIME", module, FieldType.DATE_TIME));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getFieldMappingFields() throws Exception {
+        List<FacilioField> fields=new ArrayList<>();
+
+        FacilioModule module= ModuleFactory.getFieldMappingModule();
+
+        ModuleBean modBean = Constants.getModBean();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "Parent ID", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("subModuleMappingId", "Sub Module Mapping ID", "SUB_MODULE_MAPPING_ID", module, FieldType.NUMBER));
+
+        fields.add(getField("sourceFieldId", "Source Field ID", "SOURCE_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("targetFieldId", "Target Field ID", "TARGET_FIELD_ID", module, FieldType.NUMBER));
+
+        fields.add(getField("sourceField", "Source Field ", "SOURCE_FIELD", module, FieldType.STRING));
+        fields.add(getField("targetField", "Target Field ", "TARGET_FIELD", module, FieldType.STRING));
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+        LookupField deletedByPeople = FieldFactory.getDefaultField("sysDeletedByPeople","Deleted By","SYS_DELETED_BY_PEOPLE",FieldType.LOOKUP);
+        deletedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(deletedByPeople);
+
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysDeletedTime", "Deleted Time", "SYS_DELETED_TIME", module, FieldType.DATE_TIME));
+
+        return fields;
+    }
+    public static List<FacilioField> getSubFieldMappingFields(){
+        List<FacilioField> fields=new ArrayList<>();
+
+        FacilioModule module= ModuleFactory.getSubFieldMappingModule();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "Parent ID", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("sourceFieldId", "Source Field ID", "SOURCE_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("targetFieldId", "Target Field ID", "TARGET_FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("sourceField","Source Field","SOURCE_FIELD",module,FieldType.STRING));
+        fields.add(getField("targetField","Target Field","TARGET_FIELD",module,FieldType.STRING));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getModuleMappingTemplateFields() throws Exception {
+        List<FacilioField> fields=new ArrayList<>();
+
+        FacilioModule module= ModuleFactory.getModuleMappingTemplateModule();
+
+        ModuleBean modBean = Constants.getModBean();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "Parent ID", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("name", "Name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "Display Name", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("isCustom", "Is Custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
+        fields.add(getField("isDefault", "Is Default", "IS_DEFAULT", module, FieldType.BOOLEAN));
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+        LookupField deletedByPeople = FieldFactory.getDefaultField("sysDeletedByPeople","Deleted By","SYS_DELETED_BY_PEOPLE",FieldType.LOOKUP);
+        deletedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(deletedByPeople);
+
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysDeletedTime", "Deleted Time", "SYS_DELETED_TIME", module, FieldType.DATE_TIME));
+
+        return fields;
+    }
+
+    public static List<FacilioField> getSubModuleMappingFields() throws Exception {
+        List<FacilioField> fields=new ArrayList<>();
+
+        FacilioModule module= ModuleFactory.getSubModuleMappingModule();
+
+        ModuleBean modBean = Constants.getModBean();
+
+        fields.add(getIdField(module));
+        fields.add(getField("parentId", "Parent ID", "PARENT_ID", module, FieldType.NUMBER));
+        fields.add(getField("sourceModuleId", "Source Module ID", "SOURCE_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("targetModuleId", "Target Module ID", "TARGET_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("sourceContextName", "Source Context Name", "SOURCE_CONTEXT_NAME", module, FieldType.STRING));
+        fields.add(getField("targetContextName", "Target Context Name", "TARGET_CONTEXT_NAME", module, FieldType.STRING));
+        fields.add(getField("extendsId", "Extends ID", "EXTENDS_ID", module, FieldType.NUMBER));
+
+        LookupField createdByPeople = FieldFactory.getDefaultField("sysCreatedByPeople","Created By","SYS_CREATED_BY_PEOPLE",FieldType.LOOKUP);
+        createdByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(createdByPeople);
+
+        LookupField modifiedByPeople = FieldFactory.getDefaultField("sysModifiedByPeople","Modified By","SYS_MODIFIED_BY_PEOPLE",FieldType.LOOKUP);
+        modifiedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(modifiedByPeople);
+
+        LookupField deletedByPeople = FieldFactory.getDefaultField("sysDeletedByPeople","Deleted By","SYS_DELETED_BY_PEOPLE",FieldType.LOOKUP);
+        deletedByPeople.setLookupModule(Objects.requireNonNull(modBean.getModule(FacilioConstants.ContextNames.PEOPLE),"People module doesn't exists."));
+        fields.add(deletedByPeople);
+
+        fields.add(getField("sysCreatedTime", "Created Time", "SYS_CREATED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysModifiedTime", "Modified Time", "SYS_MODIFIED_TIME", module, FieldType.DATE_TIME));
+        fields.add(getField("sysDeletedTime", "Deleted Time", "SYS_DELETED_TIME", module, FieldType.DATE_TIME));
+
+        return fields;
+    }
+
     public static List<FacilioField> getAggregationReadingInfoFields() {
         FacilioModule module = ModuleFactory.getAggregationReadingInfoModule();
         List<FacilioField> fields = new ArrayList<>();

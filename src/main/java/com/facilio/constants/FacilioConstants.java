@@ -2992,6 +2992,20 @@ public class FacilioConstants {
 			public static final String PARENT_MODULE_NAME = "parentModuleName";
 		}
 
+		public static class ModuleMapping{
+			public static final String SOURCE_MODULE = "sourceModule";
+			public static final String TARGET_MODULE = "targetModule";
+			public static final String TEMPLATE_ID = "templateId";
+			public static final String RECORD_ID = "recordId";
+			public static final String RECORD = "record";
+			public static final String DATA = "data";
+
+		}
+		public static class BooleanMapping{
+			public static final String TRUE = "true";
+			public static final String FALSE = "false";
+		}
+
 		public static class SpaceCategoryFormRelation {
 			public static final String SPACE_CATEGORY_FORM_RELATION = "spaceCategoryFormRelation";
 			public static final String MODULE_FORM_ID = "moduleFormId";
