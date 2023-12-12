@@ -38,7 +38,7 @@ public class ValidationInterceptor extends AbstractInterceptor {
             NodeError nodeError = AccountUtil.getSecurityBean().validate(executor);
             if (nodeError != null) {
                 LOGGER.error(nodeError.getErrorMessage());
-                if(!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise())) {
+                if(!(FacilioProperties.isProduction() || FacilioProperties.getEnvironment().equalsIgnoreCase("stage2") || FacilioProperties.isOnpremise())) {
                     HttpServletResponse response = ServletActionContext.getResponse();
                     Map<String, String> errorMap = new HashMap<>();
                     errorMap.put("message", nodeError.getErrorMessage());
