@@ -531,14 +531,16 @@ public class TriggerUtil {
 					break;
 			}
 
+			List<BaseTriggerContext> updatedTriggerList = new ArrayList<>();
 			for (BaseTriggerContext trigger : triggerList) {
 				FacilioChain triggerChain = TriggerChainUtil.getTriggerCreateChain(trigger.getEventTypeEnum());
 				FacilioContext triggerContext = triggerChain.getContext();
 				triggerContext.put(TriggerUtil.TRIGGER_CONTEXT, trigger);
 				triggerContext.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getModuleName());
 				triggerChain.execute();
+				updatedTriggerList.add((BaseTriggerContext)triggerContext.get(TriggerUtil.TRIGGER_CONTEXT));
 			}
-			return triggerList;
+			return updatedTriggerList;
 	}
 
 	public static void addTriggersForWorkflowRule(WorkflowRuleContext rule) throws Exception {
@@ -566,6 +568,7 @@ public class TriggerUtil {
 			}
 
 			if (flag || CollectionUtils.isEmpty(triggers)) {
+				triggers = new ArrayList<>();
 				triggers.addAll(addTriggerForRule(rule));
 			}
 

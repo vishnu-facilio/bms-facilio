@@ -33,7 +33,7 @@ public class ValidateTriggerCommand extends FacilioCommand {
             for (BaseTriggerContext oldTrigger : oldTriggers) {
                 if (oldTrigger.equals(trigger)) {
                     context.put(TriggerUtil.TRIGGER_CONTEXT, oldTrigger);
-                    break;
+                    return true;
                 }
             }
         }
