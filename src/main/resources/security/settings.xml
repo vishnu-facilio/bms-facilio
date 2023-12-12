@@ -2631,7 +2631,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/people/addAppAccess">
+    <request path="/api/v1/setup/people/addAppAccess" allowedRequest="5">
         <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="roleId" type="number" mandatory="true"/>
@@ -2794,7 +2794,7 @@
             <property name="appLinkName" type="string"/>
         </urlparams>
     </request>
-    <request path="/api/v1/setup/iamuser/addorupdateportaluser" method="POST">
+    <request path="/api/v1/setup/iamuser/addorupdateportaluser" method="POST" allowedRequest="5">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="appLinkName" type="string"/>
