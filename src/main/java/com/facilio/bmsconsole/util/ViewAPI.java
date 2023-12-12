@@ -1080,15 +1080,19 @@ public class ViewAPI {
 		return columns;
 	}
 
-	public static void updateViewCriteria(long viewId, Criteria criteria) throws Exception {
-		if(viewId > 0 && criteria != null) {
-			FacilioView view = getView(viewId);
+	public static void appendFilterCriteriaWithViewCriteria(FacilioView view, Criteria filterCriteria) throws Exception {
+		if(view != null && filterCriteria != null) {
 			FacilioUtil.throwIllegalArgumentException(view.isDefault(), "SystemView's criteria can't be updated");
 
-			long criteriaId = CriteriaAPI.addCriteria(criteria);
+			Criteria viewCriteria = view.getCriteria();
+			if (viewCriteria != null) {
+				filterCriteria.andCriteria(viewCriteria);
+			}
+
+			long criteriaId = CriteriaAPI.addCriteria(filterCriteria);
 			if(criteriaId > -1) {
 				Map<String, Object> props = new HashMap<>();
-				props.put("id", viewId);
+				props.put("id", view.getId());
 				props.put("criteriaId", criteriaId);
 
 				FacilioModule viewModule = ModuleFactory.getViewsModule();
@@ -1097,7 +1101,7 @@ public class ViewAPI {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(viewModule.getTableName())
 						.fields(Arrays.asList(crieriaField))
-						.andCondition(CriteriaAPI.getIdCondition(viewId, viewModule));
+						.andCondition(CriteriaAPI.getIdCondition(view.getId(), viewModule));
 				updateBuilder.update(props);
 			}
 		}

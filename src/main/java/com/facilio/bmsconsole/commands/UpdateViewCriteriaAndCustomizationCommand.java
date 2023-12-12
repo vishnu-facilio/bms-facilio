@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.ViewAPI;
+import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -14,11 +15,12 @@ public class UpdateViewCriteriaAndCustomizationCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long viewId = (long) context.get(FacilioConstants.ContextNames.VIEWID);
-        Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
+        Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
         List<ViewField> viewFields = (List<ViewField>) context.get(FacilioConstants.ContextNames.VIEWCOLUMNS);
 
-        if(viewId > 0 && criteria != null) {
-            ViewAPI.updateViewCriteria(viewId, criteria);
+        if(filterCriteria != null) {
+            FacilioView view = ViewAPI.getView(viewId);
+            ViewAPI.appendFilterCriteriaWithViewCriteria(view, filterCriteria);
         }
 
         if(CollectionUtils.isNotEmpty(viewFields)) {

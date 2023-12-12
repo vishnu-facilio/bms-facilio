@@ -29,11 +29,13 @@ import com.facilio.ims.handler.AuditLogHandler;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.List;
 import java.util.Map;
@@ -109,6 +111,8 @@ public class ViewAction extends FacilioAction {
 	}
 	@Getter @Setter
 	private Criteria criteria;
+	@Getter @Setter
+	private String filtersJson;
 	
 	public void setScheduledReports(List<ReportInfo> scheduledReports) {
 		this.scheduledReports = scheduledReports;
@@ -694,6 +698,11 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 		context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+		if (StringUtils.isNotEmpty(filtersJson)) {
+			JSONObject filters = (JSONObject) new JSONParser().parse(filtersJson);
+			context.put(FacilioConstants.ContextNames.FILTERS, filters);
+		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, getFields());
 		chain.execute();
 

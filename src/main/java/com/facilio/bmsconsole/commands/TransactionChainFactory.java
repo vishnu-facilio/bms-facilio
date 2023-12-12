@@ -916,6 +916,7 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getCustomizeViewColumnWidthChain() {
 		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new UpdateViewCriteriaAndCustomizationCommand());
 		return c;
 	}

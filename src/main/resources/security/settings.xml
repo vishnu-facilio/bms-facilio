@@ -3015,7 +3015,7 @@
         </urlparams>
         <requestbody type="object">
             <property name="viewId" type="number"/>
-            <property name="criteria" type="object"/>
+            <property name="filtersJson" type="object"/>
             <property name="fields" type="array" mandatory="true">
                 <items type="object">
                     <property name="id" type="number" mandatory="true"/>
