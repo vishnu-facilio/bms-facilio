@@ -653,13 +653,6 @@ public class AddJobPlanModule extends BaseModuleConfig{
         jobPlanModuleForm.setIsSystemForm(true);
         jobPlanModuleForm.setType(FacilioForm.Type.FORM);
 
-        FacilioForm jobPlanModuleSFGForm = new FacilioForm();
-        jobPlanModuleForm.setDisplayName("Job Plan");
-        jobPlanModuleForm.setName("sfg__jobplan_web");
-        jobPlanModuleForm.setModule(jobPlanModule);
-        jobPlanModuleForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
-        jobPlanModuleForm.setAppLinkNamesForForm(jobPlanSupportedApps);
-
         return Collections.singletonList(jobPlanModuleForm);
 
         //FormsAPI.createForm(jobPlanModuleForm, jobPlanModule);

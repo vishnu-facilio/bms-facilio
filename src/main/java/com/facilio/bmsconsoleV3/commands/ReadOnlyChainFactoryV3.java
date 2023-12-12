@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.commands.page.GetSummaryFieldsCommand;
 import com.facilio.bmsconsoleV3.commands.formrelation.GetFormRelationListCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageCommand;
 import com.facilio.bmsconsoleV3.commands.homepage.getHomePageWidgetDataCommand;
+import com.facilio.bmsconsoleV3.commands.invoice.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddPlannerIdFilterCriteriaCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchExtraFieldsForJobPlanCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.FetchJobPlanLookupCommand;
@@ -139,6 +140,14 @@ public class ReadOnlyChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddDefaultCriteriaForQuoteFetchCommandV3());
         c.addCommand(new QuotationFillLookupFields());
+        return c;
+    }
+
+    public static FacilioChain getInvoiceBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddDefaultCriteriaForInvoiceFetchCommand());
+        c.addCommand(new FillInvoiceLookupFieldCommand());
+        c.addCommand(new AddFixedFieldsForInvoiceCommand());
         return c;
     }
 
@@ -616,11 +625,25 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new FetchQuotationSetting());
         return c;
     }
+    public static  FacilioChain getInvoiceSettingData() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInvoiceSetting());
+        return c;
+    }
 
     public static  FacilioChain getNumberFormatData() {
 
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchNumberFormat());
+         return c;
+    }
+    
+    public static FacilioChain getInvoiceAfterFetchSummaryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new HandlePortalInvoiceSettingCommand());
+        c.addCommand(new InvoiceFillDetailsCommand());
+        c.addCommand(new HandlePortalInvoiceMarkupCommand());
         return c;
     }
 

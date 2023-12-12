@@ -3283,7 +3283,6 @@ public class ApplicationApi {
             webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Email Settings", "emailsettings", WebTabContext.Type.EMAIL_SETTINGS, null, appId, null));
             webTabs.add(new WebTabContext("Customization", "customization", WebTabContext.Type.WORKORDER_CUSTOMIZATION, null, appId, null));
-            webTabs.add(new WebTabContext("Survey", "survey", WebTabContext.Type.SETUP_SURVEY, null, appId, null,AccountUtil.FeatureLicense.SURVEY.getFeatureId()));
             webTabs.add(new WebTabContext("SFG 20", "sfg", WebTabContext.Type.SFG_20, null, appId, null,AccountUtil.FeatureLicense.SFG_20.getFeatureId()));
             groupNameVsWebTabsMap.put("workordersettings", webTabs);
 

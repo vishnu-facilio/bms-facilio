@@ -1202,4 +1202,10 @@ public class APIModuleWidgets {
                 ;
     }
 
+    @WidgetsForModule(FacilioConstants.ContextNames.INVOICE)
+    public static Supplier<ModuleWidgets> getInvoiceWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done();
+    }
 }

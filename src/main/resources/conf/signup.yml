@@ -422,7 +422,7 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AgentDataProcessingLoggerModule
 
   #Adding Meter Modules
-  
+
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddVirtualMeterTemplateModules
   - com.facilio.bmsconsoleV3.signup.moduleconfig.MeterModule
   - com.facilio.bmsconsoleV3.signup.moduleconfig.GasMeterModule
@@ -584,7 +584,9 @@ classes:
   - com.facilio.fsm.signup.ServicePlanToolsModule
   - com.facilio.fsm.signup.ServicePlanServicesModule
   - com.facilio.fsm.signup.ServicePMTemplateModule
-  
+
   - com.facilio.bmsconsoleV3.signup.moduleconfig.VMTemplateLogsModule
   #  Add Feature Limits
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFeatureLimit
+  #Invoice Module
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.InvoiceModule

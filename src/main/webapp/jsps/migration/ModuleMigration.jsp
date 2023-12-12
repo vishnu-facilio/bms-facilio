@@ -39,7 +39,7 @@
 
             // Have migration commands for each org
             // Transaction is only org level. If failed, have to continue from the last failed org and not from first
-            
+
             FacilioChain chain = TransactionChainFactory.runModuleMigrationMigration();
             chain.execute();
 
@@ -55,7 +55,7 @@
         List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
         if (CollectionUtils.isNotEmpty(orgs)) {
             for (Organization org : orgs) {
-            	
+
                 AccountUtil.setCurrentAccount(org.getOrgId());
                 FacilioChain c = FacilioChain.getTransactionChain();
                 c.addCommand(new OrgLevelMigrationCommand());

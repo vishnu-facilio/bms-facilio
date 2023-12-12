@@ -204,6 +204,14 @@ public class FacilioConstants {
 		public static final String IS_CLONING = "isCloning";
 	}
 
+	public static class INVOICE {
+		public static final String INVOICE_ID = "invoiceId";
+		public static final String INVOICE_STATUS = "invoiceStatus";
+		public static final String IS_CLONING = "isCloning";
+		public static final String INVOICE_LIST = "invoiceList";
+		public static final String IS_CONVERSION = "isConversion";
+	}
+
 	public static class TicketActivity {
 		public static final String TICKET_ACTIVITIES = "ticketActivities";
 		public static final String OLD_TICKETS = "oldTickets";
@@ -479,6 +487,8 @@ public class FacilioConstants {
 		public static final String QUOTATIONSETTING = "quotationsetting";
 		public static final String NUMBER_FORMAT = "numberformat";
 
+
+		public static final String INVOICE_SETTING = "invoiceSetting";
 
 		public static final String GLIMPSE_META_DATA = "glimpseMetaData";
 		public static final String GLIMPSE_RECORD = "glimpseRecord";
@@ -2639,6 +2649,22 @@ public class FacilioConstants {
 
 		public static final String QUOTE = "quote";
 		public static final String QUOTE_LINE_ITEMS = "quotelineitems";
+
+		public static final String INVOICE = "invoice";
+
+		public static final String INVOICE_LINE_ITEMS = "invoicelineitems";
+
+		public static final String INVOICE_ACTIVITY = "invoiceActivity";
+		public static final String INVOICE_ASSOCIATED_TERMS = "invoiceTerms";
+
+		public static final String INVOICE_APPROVERS_REL = "invoiceApprovers";
+
+		public static final String INVOICE_MAIL_ATTACHMENTS = "invoiceMailAttachments";
+		public static final String INVOICE_PDF_URL = "invoicePdfUrl";
+
+		public static final String INVOICE_NOTES = "invoiceNotes";
+
+		public static final String INVOICE_ATTACHMENTS = "invoiceAttachments";
 		public static final String TAX = "tax";
 		public static final String DO_FIELD_PERMISSIONS_VALIDATION = "doFieldPermissionValidation";
 
@@ -3560,6 +3586,8 @@ public class FacilioConstants {
 			classMap.put(ServicePlannedMaintenance.SERVICE_TASK_TEMPLATE_SKILLS, ServiceTaskTemplateSkillsContext.class);
 			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, ServicePMTemplateContext.class);
 			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY,ActivityContext.class);
+			classMap.put(ContextNames.INVOICE_ACTIVITY,ActivityContext.class);
+
 
 			for (QuestionType type : QuestionType.values()) {
 				classMap.put(type.getSubModuleName(), type.getSubClass());

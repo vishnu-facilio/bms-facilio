@@ -75,6 +75,13 @@ public class PurchaseOrderModule extends BaseModuleConfig{
         gotoReceivables.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,gotoReceivables);
 
+        SystemButtonRuleContext convertToInvoice = new SystemButtonRuleContext();
+        convertToInvoice.setName("Generate Invoice");
+        convertToInvoice.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        convertToInvoice.setIdentifier("generateInvoice");
+        convertToInvoice.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_ORDER,convertToInvoice);
+
         SystemButtonRuleContext completePo = new SystemButtonRuleContext();
         completePo.setName("Complete PO");
         completePo.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());

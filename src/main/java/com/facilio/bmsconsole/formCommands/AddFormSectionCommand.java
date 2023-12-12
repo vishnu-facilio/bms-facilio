@@ -207,6 +207,56 @@ public class AddFormSectionCommand extends FacilioCommand {
                 sections.add(lineItemSection);
                 sections.add(notesSection);
                 break;
+
+
+            case FacilioConstants.ContextNames.INVOICE:
+
+                form.setSections(sections);
+
+                defaultSection.setName("INVOICE INFORMATION");
+                defaultSection.setSequenceNumber(i++);
+                defaultSection.setFields(defaultFields);
+                defaultSection.setShowLabel(true);
+
+                billingSection.setName("Billing Address");
+                billingSection.setSequenceNumber(i++);
+                billingSection.setFields(billingAddressFields);
+                billingSection.setShowLabel(false);
+
+                billingSection.setName("Shipping Address");
+                billingSection.setSequenceNumber(i++);
+                billingSection.setFields(shippingAddressFields);
+                billingSection.setShowLabel(false);
+
+                lineItemSection.setName("INVOICE ITEMS");
+                lineItemSection.setSequenceNumber(i++);
+                lineItemSection.setFields(lineItemFields);
+                lineItemSection.setShowLabel(true);
+
+                notesSection.setName("NOTES");
+                notesSection.setSequenceNumber(i++);
+                notesSection.setFields(signatureFields);
+                notesSection.setShowLabel(false);
+
+                form.getFields().forEach(field -> {
+                    if (field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.LINEITEMS) {
+                        lineItemFields.add(field);
+                    } else if (field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.SADDRESS && field.getName().equals("billToAddress")) {
+                        billingAddressFields.add(field);
+                    }else if (field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.SADDRESS && field.getName().equals("shipToAddress")) {
+                        shippingAddressFields.add(field);
+                    } else if (Arrays.asList("notes").contains(field.getName())) {
+                        signatureFields.add(field);
+                    } else {
+                        defaultFields.add(field);
+                    }
+                });
+
+                sections.add(defaultSection);
+                sections.add(billingSection);
+                sections.add(lineItemSection);
+                sections.add(notesSection);
+                break;
             case FacilioConstants.ContextNames.WorkPermit.WORKPERMIT:
 
                 form.setSections(sections);

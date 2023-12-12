@@ -626,7 +626,8 @@ public class AccountUtil {
 		CLICKHOUSE(159,getExponentValue(32),LicenseMapping.GROUP3LICENSE),//2^32
 		PRE_COMMIT_WORKFLOW_RULES(160,getExponentValue(33),LicenseMapping.GROUP3LICENSE),//2^33
 		DISABLE_DATA_DOG(161,getExponentValue(34),LicenseMapping.GROUP3LICENSE),
-		TRIGGER_MAP(162,getExponentValue(35),LicenseMapping.GROUP3LICENSE);//2^34
+		TRIGGER_MAP(162,getExponentValue(35),LicenseMapping.GROUP3LICENSE),//2^35
+		INVOICE(163,getExponentValue(36),new String[]{ContextNames.INVOICE},LicenseMapping.GROUP3LICENSE);//2^36
 
 		public int featureId;
 		private long license;

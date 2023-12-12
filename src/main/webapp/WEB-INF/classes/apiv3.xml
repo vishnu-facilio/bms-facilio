@@ -2834,6 +2834,47 @@
         <action name="getNextExecutionDates"
                 class="com.facilio.fsm.actions.ServicePlannedMaintenanceAction"
                 method="getNextExecutionDates">
+            <param name="checkPermission">true</param> 
+        </action>
+    </package>
+    
+    <package name="invoice" namespace="/api/v3/invoice" extends="v3Api">
+        <action name="clone" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="cloneInvoice">
+            <param name="permission">POST:UPDATE</param>
+        </action>
+        <action name="revise" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="reviseInvoice">
+            <param name="permission">POST:UPDATE</param>
+        </action>
+        <action name="versionHistory" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="fetchVersionHistory">
+            <param name="permission">GET:READ</param>
+        </action>
+        <action name="associateTerms" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="associateTerms">
+            <param name="permission">ALL</param>
+        </action>
+        <action name="convertInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertInvoice">
+            <param name="permission">ALL</param>
+        </action>
+        <action name="poToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertPOtoInvoice">
+            <param name="permission">ALL</param>
+        </action>
+        <action name="woToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertWorkOrderToInvoice">
+            <param name="permission">ALL</param>
+        </action>
+        <action name="quoteToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertQuoteToInvoice">
+            <param name="permission">ALL</param>
+        </action>
+        <action name="sendMail" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="sendMail">
+            <param name="permission">ALL</param>
+        </action>
+    </package>
+    <package name="pdfTemplate" namespace="/api/v3/pdftemplates" extends="v3Api">
+        <action name="preview" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="preview">
+            <param name="permission">ALL</param>
+            <param name="moduleName">{1}</param>
+        </action>
+        <action name="download" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="download">
+            <param name="permission">ALL</param>
+            <param name="moduleName">{1}</param>
         </action>
     </package>
     <package name="calendarWizardSpecialApi" namespace="/api/v3/bulkPatch" extends="v3Api">

@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.bmsconsoleV3.context.BaseLineItemsParentModuleContext;
 import com.facilio.bmsconsoleV3.context.V3TenantContext;
+import com.facilio.bmsconsoleV3.context.invoice.InvoiceAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.quotation.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -141,7 +142,7 @@ public class QuotationAPI {
                 else if(quotation != null && quotation.getCustomerType() != null && (quotation.getCustomerType() == 1 || quotation.getCustomerType() == 2)) {
                     return quotationSetting.getEnduserquote();
                 }
-                else if(quotationSetting.getVendorquote() || quotationSetting.getEnduserquote()) {
+                else if((quotationSetting.getVendorquote() !=null && quotationSetting.getVendorquote()) || (quotationSetting.getEnduserquote() !=null &&quotationSetting.getEnduserquote())) {
                     return true;
                 }
             }

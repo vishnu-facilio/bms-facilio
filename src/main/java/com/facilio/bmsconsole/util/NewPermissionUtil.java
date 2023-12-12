@@ -365,7 +365,6 @@ public class NewPermissionUtil {
         permissions.add(new PermissionGroup("Delete", deleteGroup));
         permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
         permissions.add(new Permission("MANAGE_INVENTORY","Manage Inventory",moduleTabType.get("MANAGE_INVENTORY"), null));
-
         permissionMap.put("workorder", permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 

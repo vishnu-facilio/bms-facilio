@@ -80,9 +80,12 @@ public interface ActivityType {
 			activityMap.put(type.getValue(), type);
 		}
 		for(ActivityType type: ImportActivityType.values()) {
+				activityMap.put(type.getValue(), type);
+		}
+		for (ActivityType type: InvoiceActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		// Last number = 154
+		// Last number = 161
 
 		return activityMap;
 	}

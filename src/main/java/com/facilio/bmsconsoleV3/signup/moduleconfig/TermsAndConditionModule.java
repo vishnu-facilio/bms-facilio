@@ -82,6 +82,7 @@ public class TermsAndConditionModule extends BaseModuleConfig{
         termsAndConditionFormFields.add(descField);
         termsAndConditionFormFields.add(new FormField("defaultOnPo", FacilioField.FieldDisplayType.DECISION_BOX, "Default On PO", FormField.Required.OPTIONAL, 5, 2));
         termsAndConditionFormFields.add(new FormField("defaultOnQuotation", FacilioField.FieldDisplayType.DECISION_BOX, "Default On Quotation", FormField.Required.OPTIONAL, 6, 2));
+        termsAndConditionFormFields.add(new FormField("defaultOnInvoice", FacilioField.FieldDisplayType.DECISION_BOX, "Default On Invoice", FormField.Required.OPTIONAL, 7, 2));
 
         FormSection section = new FormSection("Default", 1, termsAndConditionFormFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);

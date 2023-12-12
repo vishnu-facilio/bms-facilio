@@ -39,6 +39,7 @@ public class GetAllModulesCommand extends FacilioCommand {
 			ContextNames.FacilityBooking.FACILITY,
 			ContextNames.FacilityBooking.FACILITY_BOOKING,
 			ContextNames.QUOTE,
+			ContextNames.INVOICE,
 			ContextNames.WorkPermit.WORKPERMIT,
 			ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME,
 			ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME,

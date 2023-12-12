@@ -32,6 +32,9 @@ public enum MultiCurrencyParentVsSubModule {
     QUOTE(FacilioConstants.ContextNames.QUOTE, new ArrayList<SubModule>(){{
         add(new SubModule(FacilioConstants.ContextNames.QUOTE_LINE_ITEMS, FieldFactory.getField("quote", "QUOTATION_ID", FieldType.LOOKUP)));
     }}),
+    INVOICE(FacilioConstants.ContextNames.INVOICE, new ArrayList<SubModule>(){{
+        add(new SubModule(FacilioConstants.ContextNames.INVOICE_LINE_ITEMS, FieldFactory.getField("invoice", "INVOICE_ID", FieldType.LOOKUP)));
+    }}),
     BUDGET(FacilioConstants.ContextNames.Budget.BUDGET, new ArrayList<SubModule>(){{
         add(new SubModule(FacilioConstants.ContextNames.Budget.BUDGET_AMOUNT, FieldFactory.getField("budget", "BUDGET_ID", FieldType.LOOKUP)));
     }}),

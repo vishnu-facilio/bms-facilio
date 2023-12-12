@@ -12517,6 +12517,20 @@ public class FieldFactory extends BaseFieldFactory {
         fieldList.add(getNumberField("globalMarkupValue","GLOBAL_MARKUP_VALUE",module));
         return fieldList;
     }
+
+    public static List<FacilioField> getInvoicSettingFields(){
+        FacilioModule module = ModuleFactory.getInvoiceSettingModule();
+        List<FacilioField> fieldList = new ArrayList<>();
+        fieldList.add(getBooleanField("vendorInvoice","VENDOR_INVOICE",module));
+        fieldList.add(getNumberField("id","ID",module));
+        fieldList.add(getBooleanField("enduserInvoice","END_USER_INVOICE",module));
+        fieldList.add(getBooleanField("allowUserSeeMarkup","ALLOW_USER_SEE_MARKUP",module));
+        fieldList.add(getBooleanField("canShowMarkupDefaultValue","SHOW_DEFAULT_MARKUP_VALUE",module));
+        fieldList.add(getNumberField("markupDefaultValue","DEFAULT_MARKUP_VALUE",module));
+        fieldList.add(getNumberField("markupdisplayMode","MARKUP_DISPLAY_MODE",module));
+        fieldList.add(getNumberField("globalMarkupValue","GLOBAL_MARKUP_VALUE",module));
+        return fieldList;
+    }
     public static List<FacilioField> getFlaggedEventWorkorderTemplateFieldMappingField(){
         FacilioModule module = ModuleFactory.getflaggedEventWorkorderTemplateFieldMappingModule();
         List<FacilioField> fieldList = new ArrayList<>();

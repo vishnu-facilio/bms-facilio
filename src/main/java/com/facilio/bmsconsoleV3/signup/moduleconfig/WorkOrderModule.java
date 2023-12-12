@@ -43,6 +43,7 @@ public class WorkOrderModule extends BaseModuleConfig {
     public WorkOrderModule() throws Exception {
         setModuleName(FacilioConstants.ContextNames.WORK_ORDER);
     }
+
     public void addData() throws Exception {
         addSystemButtons();
         addListSystemButtons();
@@ -84,6 +85,13 @@ public class WorkOrderModule extends BaseModuleConfig {
         prerequisiteApprove.setIdentifier("prerequisiteApprove");
         prerequisiteApprove.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,prerequisiteApprove);
+        
+        SystemButtonRuleContext createInvoice = new SystemButtonRuleContext();
+        createInvoice.setName("Generate Invoice");
+        createInvoice.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        createInvoice.setIdentifier("generateInvoice");
+        createInvoice.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,createInvoice);
     }
 
     public static void addListSystemButtons() throws Exception {

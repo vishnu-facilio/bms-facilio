@@ -43,7 +43,8 @@ public class DefaultTabsAndTabGroups {
             new WebTabContext("Tenants", "tenants", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT)), null, 16,null,appId),
             new WebTabContext("Tenant Contact", "tenantcontact", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT_CONTACT)), null, 16,null,appId),
             new WebTabContext("Tenant Units", "tenantunit", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT_UNIT_SPACE)), null, 16,null,appId),
-            new WebTabContext("Quote", "quote", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.QUOTE)), null, 16,null,appId),
+            new WebTabContext("Invoice", "invoice", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.INVOICE)), null, 163,null,appId),
+            new WebTabContext("Quote", "quote", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.QUOTE)), null, 42,null,appId),
 //            new WebTabContext("Reports", "tenantreports", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.TENANT,FacilioConstants.ContextNames.TENANT_CONTACT,FacilioConstants.ContextNames.TENANT_UNIT_SPACE,FacilioConstants.ContextNames.QUOTE)), "{\"type\": \"module_reports\"}", 16,null,appId),
             new WebTabContext("Workorder", "workorder", WebTabContext.Type.MODULE, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER)), null, 1,null,appId),
             new WebTabContext("Approval", "approval", WebTabContext.Type.APPROVAL, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER,FacilioConstants.ContextNames.ASSET)), null, 11,null,appId),
@@ -138,11 +139,12 @@ public class DefaultTabsAndTabGroups {
             new WebTabGroupContext(Arrays.asList(tabsMap.get("inspection"),tabsMap.get("inspectiontemplates")), "Inspection", "inspection", 34, 7, 54l,layoutId,IconType.inspection),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("purchaserequest"),tabsMap.get("rfq"),tabsMap.get("purchaseorder"),tabsMap.get("receivables"),tabsMap.get("termsandconditions")), "Procurement", "procurement", 25, 8, 56l,layoutId,IconType.procurement),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("vendors"),tabsMap.get("vendorcontact"),tabsMap.get("certificateofinsurance")), "Vendor", "vendor", 26, 9, 57l,layoutId,IconType.vendor),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit"),tabsMap.get("quote")), "Tenant", "tenant", 12, 10, 16l,layoutId,IconType.tenant),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit")), "Tenant", "tenant", 12, 10, 16l,layoutId,IconType.tenant),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact")), "Client", "client", 17, 11, 33l,layoutId,IconType.client),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("shift"),tabsMap.get("shiftplanner")), "Shift & Planner", "shiftplanner", 17, 12, 61L,layoutId,IconType.client),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("break"),tabsMap.get("attendance")), "Attendance", "attendance", 17, 13, 120L,layoutId,IconType.people),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("analytics")),"Analytics","analytics",IconType.analytics.ordinal(),14,null,layoutId,IconType.analytics)
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("analytics")),"Analytics","analytics",IconType.analytics.ordinal(),14,null,layoutId,IconType.analytics),
+            new WebTabGroupContext(Arrays.asList(tabsMap.get("quote"),tabsMap.get("invoice")), "Financials", "financials", 17, 14, null,layoutId,IconType.invoice)
 
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("purchase"),tabsMap.get("leaserental"),tabsMap.get("warranty"),tabsMap.get("labourcontracts"),tabsMap.get("termsandconditions"),tabsMap.get("contractreports")), "Contracts", "contracts", 18, 4, 21l,layoutId),
 //            new WebTabGroupContext(Arrays.asList(tabsMap.get("announcement"),tabsMap.get("newsandinformation"),tabsMap.get("neighbourhood"),tabsMap.get("dealsandoffers"),tabsMap.get("audience")), "Community", "community", 21, 8, 16l,layoutId),

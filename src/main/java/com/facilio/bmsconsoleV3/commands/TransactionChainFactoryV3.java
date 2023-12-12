@@ -17,6 +17,7 @@ import com.facilio.bmsconsoleV3.commands.controlActions.*;
 import com.facilio.bmsconsoleV3.commands.dashboard.*;
 import com.facilio.bmsconsoleV3.commands.decommission.*;
 import com.facilio.bmsconsoleV3.commands.employee.GetOldEmployeeRecordMap;
+import com.facilio.bmsconsoleV3.commands.invoice.*;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.lineitems.LoadExtraFieldsCommandV3;
 import com.facilio.bmsconsoleV3.commands.item.FilterItemTransactionsCommandV3;
@@ -565,6 +566,37 @@ public class TransactionChainFactoryV3 {
         FacilioChain c = getDefaultChain();
         c.addCommand(new HandleQuoteSettingCommand());
         c.addCommand(new QuotationValidationAndCostCalculationCommand());
+        return c;
+    }
+
+
+    public static FacilioChain getInvoiceBeforeSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ReviseInvoiceCommand());
+        c.addCommand(new HandleInvoiceSettingCommand());
+        c.addCommand(new InvoiceValidationAndCostCalculationCommand());
+        return c;
+    }
+
+    public static FacilioChain getInvoiceBeforeUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new HandleInvoiceSettingCommand());
+        c.addCommand(new InvoiceValidationAndCostCalculationCommand());
+        return c;
+    }
+    public static FacilioChain getInvoiceAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdateInvoiceParentIdCommand());
+        c.addCommand(new InsertInvoiceLineItemsAndActivitiesCommand());
+        c.addCommand(new UpdateInvoiceTermsAndConditionCommand());
+        c.addCommand(new AddInvoiceGroupCommand());
+        return c;
+    }
+
+    public static FacilioChain getInvoiceAfterUpdateChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new InsertInvoiceLineItemsAndActivitiesCommand());
+        c.addCommand(new UpdateInvoiceStatusFieldsCommand());
         return c;
     }
 
@@ -3518,6 +3550,72 @@ public class TransactionChainFactoryV3 {
         return c;
     }
 
+    public static FacilioChain reviseInvoice() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInvoiceDetailsCommand());
+        c.addCommand(new AddInvoiceGroupCommand());
+        c.addCommand(new InvoiceContextCloneCommand());
+        c.addCommand(new CreateInvoiceAfterCloningCommand());
+        c.addCommand(new ReviseStatusInvoiceDetailsCommand());
+        c.addCommand(new AddActivitiesCommandV3());
+
+        return c;
+    }
+
+    public static FacilioChain cloneInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInvoiceDetailsCommand());
+        c.addCommand(new InvoiceContextCloneCommand());
+        c.addCommand(new CreateInvoiceAfterCloningCommand());
+        c.addCommand(new AddInvoiceCloneActivityType());
+        c.addCommand(new AddActivitiesCommandV3());
+        return c;
+    }
+
+    public static FacilioChain convertInvoiceTypeChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInvoiceDetailsCommand());
+        c.addCommand(new InvoiceContextCloneCommand());
+        c.addCommand(new InvoiceConversionTypeCommand());
+        c.addCommand(new GetInvoiceDefaultFormCommand());
+        return c;
+    }
+
+    public static FacilioChain convertPOtoInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertPOtoInvoiceCommand());
+        c.addCommand(new GetInvoiceDefaultFormCommand());
+        return c;
+    }
+
+    public static FacilioChain convertQuoteToInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertQuoteToInvoiceCommand());
+        c.addCommand(new GetInvoiceDefaultFormCommand());
+        return c;
+    }
+
+    public static FacilioChain convertWorkOrderToInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new ConvertWorkOrderToInvoiceCommand());
+        c.addCommand(new GetInvoiceDefaultFormCommand());
+        return c;
+    }
+
+
+
+    public static FacilioChain associateTermsInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AssociateInvoiceTermsCommand());
+        return c;
+    }
+
+    public static FacilioChain getSendInvoiceMailChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SendInvoiceEmailCommand());
+        c.addCommand(new AddActivitiesCommandV3());
+        return c;
+    }
     public static FacilioChain getPublishJobPlanChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new FetchJobPlanDetails());
@@ -3534,6 +3632,14 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchVersionHistoryCommand());
         return c;
     }
+
+    public static FacilioChain fetchInvoiceVersionHistoryChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchInvoiceDetailsCommand());
+        c.addCommand(new FetchInvoiceVersionHistoryCommand());
+        return c;
+    }
+
 
     public static FacilioChain getJobPlanCloneChain() {
         FacilioChain c = getDefaultChain();
@@ -4218,6 +4324,19 @@ public class TransactionChainFactoryV3 {
 
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteNumberFormatCommand());
+        return c;
+    }
+
+    public static FacilioChain addOrUpdateInvoiceSettingChain(){
+        FacilioChain c=getDefaultChain();
+        c.addCommand(new AddOrUpdateInvoiceSettingCommand());
+        return c;
+    }
+
+    public static  FacilioChain getDeleteInvoiceSettingChain() {
+
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteInvoiceSettingCommand());
         return c;
     }
 

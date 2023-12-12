@@ -75,6 +75,7 @@ import com.facilio.bmsconsoleV3.commands.imap.UpdateLatestMessageUIDCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.LoadInsuranceLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.insurance.ValidateDateCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.*;
+import com.facilio.bmsconsoleV3.commands.invoice.FillInvoiceLookupFieldCommand;
 import com.facilio.bmsconsoleV3.commands.item.*;
 import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.itemtypes.ValidateItemTypeCommandV3;
@@ -153,6 +154,7 @@ import com.facilio.bmsconsoleV3.context.facilitybooking.V3ExternalAttendeeContex
 import com.facilio.bmsconsoleV3.context.failurecode.*;
 import com.facilio.bmsconsoleV3.context.floorplan.*;
 import com.facilio.bmsconsoleV3.context.inventory.*;
+import com.facilio.bmsconsoleV3.context.invoice.InvoiceContextV3;
 import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
 import com.facilio.bmsconsoleV3.context.jobplan.*;
 import com.facilio.bmsconsoleV3.context.labour.LabourContextV3;
@@ -411,6 +413,30 @@ public class APIv3Config {
                 .list()
                 .beforeFetch(ReadOnlyChainFactoryV3.getQuoteBeforeFetchChain())
                 .afterFetch(new HandleQuoteDecimalValuesCommand())
+
+                .build();
+    }
+
+    @Module(FacilioConstants.ContextNames.INVOICE)
+    public static Supplier<V3Config> getInvoice() {
+        return () -> new V3Config(InvoiceContextV3.class, new ModuleCustomFieldCount30_BS2())
+
+                .create()
+                .beforeSave(TransactionChainFactoryV3.getInvoiceBeforeSaveChain())
+                .afterSave(TransactionChainFactoryV3.getInvoiceAfterSaveChain())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.INVOICE_ACTIVITY))
+
+                .update()
+                .beforeSave(TransactionChainFactoryV3.getInvoiceBeforeUpdateChain())
+                .afterSave(TransactionChainFactoryV3.getInvoiceAfterUpdateChain())
+                .afterTransaction(new AddActivitiesCommandV3(FacilioConstants.ContextNames.INVOICE_ACTIVITY))
+
+                .summary()
+                .beforeFetch(new FillInvoiceLookupFieldCommand())
+                .afterFetch(ReadOnlyChainFactoryV3.getInvoiceAfterFetchSummaryChain())
+
+                .list()
+                .beforeFetch(ReadOnlyChainFactoryV3.getInvoiceBeforeFetchChain())
 
                 .build();
     }

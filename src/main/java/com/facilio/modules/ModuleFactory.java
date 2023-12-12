@@ -5619,6 +5619,14 @@ public class ModuleFactory {
 		numberformatModule.setTableName("Number_Format");
 		return numberformatModule;
 	}
+	
+	public static FacilioModule getInvoiceSettingModule() {
+		FacilioModule invoiceSettingModule = new FacilioModule();
+		invoiceSettingModule.setName("invoiceSetting");
+		invoiceSettingModule.setDisplayName("Invoice Setting");
+		invoiceSettingModule.setTableName("Invoice_Setting");
+		return invoiceSettingModule;
+	}
 
 public static FacilioModule getSpaceBookingFormRelationModule(){
 		FacilioModule spaceBookingFormRelationModule = new FacilioModule();

@@ -147,6 +147,12 @@ public class QuoteModule extends BaseModuleConfig{
         listEditButton.setPermission("UPDATE");
         listEditButton.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE, listEditButton);
+        SystemButtonRuleContext invoiceButton = new SystemButtonRuleContext();
+        invoiceButton.setName("Invoice the Customer");
+        invoiceButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        invoiceButton.setIdentifier("invoiceCustomer");
+        invoiceButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.QUOTE,invoiceButton);
 
 
     }

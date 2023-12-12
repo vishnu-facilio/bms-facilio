@@ -33,6 +33,7 @@ public class V3ModuleAPI {
         FACILITY(FacilioConstants.ContextNames.FacilityBooking.FACILITY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         FACILITY_BOOKING(FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.EMPLOYEE_PORTAL_APP,FacilioConstants.ApplicationLinkNames.IWMS_APP)),
         QUOTE(FacilioConstants.ContextNames.QUOTE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
+        INVOICE(FacilioConstants.ContextNames.INVOICE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         WORKPERMIT(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT,Arrays.asList()),
         CONTROL_SCHEDULE_MODULE_NAME(ControlScheduleUtil.CONTROL_SCHEDULE_MODULE_NAME,Arrays.asList()),
         CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME(ControlScheduleUtil.CONTROL_SCHEDULE_EXCEPTION_MODULE_NAME,Arrays.asList()),

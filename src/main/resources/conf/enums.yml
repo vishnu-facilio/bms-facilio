@@ -572,3 +572,9 @@ enums:
 
   - name: FacilioMetric
     enumClassName: com.facilio.unitconversion.Metric
+
+  - name: InvoiceType
+    enumClassName: com.facilio.bmsconsoleV3.context.invoice.InvoiceContextV3$InvoiceType
+
+  - name: InvoiceStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.invoice.InvoiceContextV3$InvoiceStatus

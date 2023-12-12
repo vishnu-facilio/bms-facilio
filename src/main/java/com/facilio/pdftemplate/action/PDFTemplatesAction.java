@@ -74,6 +74,7 @@ public class PDFTemplatesAction extends V3Action {
 
         validateParameters();
 
+
         FacilioChain chain = ReadOnlyChainFactory.getPreviewPDFTemplateChain();
         FacilioContext context = chain.getContext();
         context.put(FacilioConstants.ContextNames.ID, getId());

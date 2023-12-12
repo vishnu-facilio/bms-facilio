@@ -57,6 +57,15 @@ public class GetTransactionRuleModulesCommand extends FacilioCommand {
 
         }
 
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVOICE)) {
+            modules.add(modBean.getModule(FacilioConstants.ContextNames.INVOICE));
+            List<FacilioModule> otherInvoiceSubMod = modBean.getSubModules(FacilioConstants.ContextNames.INVOICE);
+            if(CollectionUtils.isNotEmpty(otherInvoiceSubMod)) {
+                subModules.put(FacilioConstants.ContextNames.INVOICE, otherInvoiceSubMod);
+            }
+
+        }
+
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);

@@ -4069,6 +4069,20 @@
     <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="moduleName" type="string"></property>
+             </requestbody>
+    </request>
+
+
+    <request path="/api/v1/setup/invoiceSetting/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="vendorInvoice" type="boolean" />
+            <property name="enduserInvoice" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
         </requestbody>
     </request>
 
@@ -4350,6 +4364,43 @@
     </request>
 
     <request path="/api/v1/setup/numberformat/delete" method="POST">
+     <requestbody type="object">
+            <property name="delete" type="boolean" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="id" type="number"></property>
+            <property name="recordId" type="number"></property>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/invoiceSetting/fetch" method="GET">
+        <requestbody type="object">
+            <property name="vendorInvoice" type="boolean" />
+            <property name="enduserInvoice" type="boolean" />
+            <property name="showMarkupValue" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/invoiceSetting/delete" method="POST">
         <requestbody type="object">
             <property name="delete" type="boolean" />
         </requestbody>
@@ -4514,4 +4565,65 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/invoice/clone" method="POST">
+        <requestbody type="object">
+            <property name="invoiceId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoice/revise" method="POST">
+        <requestbody type="object">
+            <property name="invoiceId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoice/versionHistory" method="GET">
+        <requestbody type="object">
+            <property name="invoiceId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoice/associateTerms" method="POST">
+        <requestbody type="object">
+            <property name="invoiceId" type="number"></property>
+            <property name="termsAssociated" type="array">
+                <items type="number"></items>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoice/convertInvoice" method="POST">
+        <requestbody type="object">
+            <property name="invoiceId" type="number"></property>
+            <property name="invoiceType" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/invoice/woToInvoice" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number"></property>
+            <property name="invoiceType" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/invoice/poToInvoice" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number"></property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/invoice/quoteToInvoice" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number"></property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoice/sendMail" method="POST">
+        <requestbody type="object">
+            <property name="emailTemplate" type="object"></property>
+            <property name="mailAttachments" type="array"></property>
+            <property name="pdfUrl" type="string"></property>
+            <property name="invoice" type="object"></property>
+        </requestbody>
+    </request>
+
+
+
 </config>

@@ -67,6 +67,11 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.QUOTE));
         }
 
+        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.INVOICE))
+        {
+            modules.add(modBean.getModule(ContextNames.INVOICE));
+        }
+
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.TENANT));
             modules.add(modBean.getModule(ContextNames.TENANT_CONTACT));

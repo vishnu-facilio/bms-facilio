@@ -1795,7 +1795,12 @@
                 <param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
             </result>
         </action>
+    </package>
 
+    <package name="invoiceSetting" namespace="/api/v1/setup/invoiceSetting" extends="v3Api">
+        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="addOrUpdateInvoiceSetting"/>
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="fetchInvoiceSetting"/>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="deleteInvoiceSetting"/>
     </package>
 
     <package name="virtualRelationSetupV1" namespace="/api/v1/setup/virtualRelation" extends="v2Api">

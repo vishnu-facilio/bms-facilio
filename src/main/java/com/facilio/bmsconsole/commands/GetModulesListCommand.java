@@ -82,7 +82,9 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.VENDOR_CONTACT,
 			ContextNames.TENANT_CONTACT,
 			ContextNames.CLIENT_CONTACT,
-			FacilioConstants.Trip.TRIP);
+			FacilioConstants.Trip.TRIP,
+			ContextNames.INVOICE,
+			ContextNames.CLIENT);
 
 	
 	@Override

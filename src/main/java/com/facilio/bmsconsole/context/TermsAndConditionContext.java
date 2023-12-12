@@ -16,6 +16,16 @@ public class TermsAndConditionContext extends ModuleBaseWithCustomFields{
 	public Boolean defaultOnPo;
 	public Boolean defaultOnQuotation;
 
+	public Boolean getDefaultOnInvoice() {
+		return defaultOnInvoice;
+	}
+
+	public void setDefaultOnInvoice(Boolean defaultOnInvoice) {
+		this.defaultOnInvoice = defaultOnInvoice;
+	}
+
+	public Boolean defaultOnInvoice;
+
 	public void setIsEditable(Boolean isEditable) {
 		this.isEditable = isEditable;
 	}
