@@ -1,6 +1,9 @@
 package com.facilio.fsm.actions;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -16,6 +19,7 @@ import com.facilio.fsm.util.ServicePlannedMaintenanceAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -90,6 +94,12 @@ public class ServiceOrderAction extends V3Action {
                     return V3Action.SUCCESS;
                 }
                 serviceOrderInfo.setStatus(newStatus);
+                User user = AccountUtil.getCurrentAccount().getUser();
+                if(user != null){
+                    V3PeopleContext cancelledBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                    serviceOrderInfo.setCancelledBy(cancelledBy);
+                }
+                serviceOrderInfo.setCancelledTime(DateTimeUtil.getCurrenTime());
                 updateServiceOrder(serviceOrderInfo);
                 successMsg.put("message","Work Order Cancelled Successfully");
             }
@@ -110,6 +120,12 @@ public class ServiceOrderAction extends V3Action {
                 Long endDuration = System.currentTimeMillis();
                 serviceOrderInfo.setActualEndTime(endDuration);
                 serviceOrderInfo.setActualDuration(endDuration - startDuration);
+                User user = AccountUtil.getCurrentAccount().getUser();
+                if(user != null){
+                    V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                    serviceOrderInfo.setCompletedBy(completedBy);
+                }
+                serviceOrderInfo.setCompletedTime(endDuration);
                 updateServiceOrder(serviceOrderInfo);
                 successMsg.put("message","Work Order Completed Successfully");
             }
@@ -119,6 +135,12 @@ public class ServiceOrderAction extends V3Action {
                     throw new FSMException(FSMErrorCode.SO_CLOSE_WARNING);
                 }
                 serviceOrderInfo.setStatus(closedState);
+                User user = AccountUtil.getCurrentAccount().getUser();
+                if(user != null){
+                    V3PeopleContext closedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                    serviceOrderInfo.setClosedBy(closedBy);
+                }
+                serviceOrderInfo.setClosedTime(DateTimeUtil.getCurrenTime());
                 updateServiceOrder(serviceOrderInfo);
                 successMsg.put("message","Work Order Closed Successfully");
             }

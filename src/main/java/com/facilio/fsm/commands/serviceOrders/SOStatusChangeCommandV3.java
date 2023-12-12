@@ -1,5 +1,7 @@
 package com.facilio.fsm.commands.serviceOrders;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -10,6 +12,7 @@ import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
 import com.facilio.fsm.util.ServiceOrderAPI;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -52,6 +55,12 @@ public class SOStatusChangeCommandV3 extends FacilioCommand {
                     }
 
                     order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.SCHEDULED));
+                    User user = AccountUtil.getCurrentAccount().getUser();
+                    if(user != null){
+                        V3PeopleContext scheduledBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                        order.setScheduledBy(scheduledBy);
+                    }
+                    order.setScheduledTime(DateTimeUtil.getCurrenTime());
                 }
                 else {
                     order.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.NEW));

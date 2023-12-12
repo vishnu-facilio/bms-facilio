@@ -18,6 +18,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.integrations.GoogleMapsAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -30,9 +31,6 @@ import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.kafka.common.protocol.types.Field;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -192,6 +190,56 @@ public class TripUtil {
             }
         }
         return OngoingTrips;
+    }
+
+    public static List<Object> fetchTripLocationDetails(long tripId) throws Exception {
+        if(tripId >0) {
+            int count = getCount(tripId);
+            if (count > 0) {
+                FacilioModule tripLocationModule = Constants.getModBean().getModule(FacilioConstants.Trip.TRIP_LOCATION_HISTORY);
+                FacilioField locationField = Constants.getModBean().getField("location", FacilioConstants.Trip.TRIP_LOCATION_HISTORY);
+                SelectRecordsBuilder<TripLocationHistoryContext> locationsBuilder = new SelectRecordsBuilder<TripLocationHistoryContext>()
+                        .select(Collections.singletonList(locationField))
+                        .module(tripLocationModule)
+                        .beanClass(TripLocationHistoryContext.class)
+                        .andCondition(CriteriaAPI.getCondition("TRIP_ID", "trip", String.valueOf(tripId), NumberOperators.EQUALS))
+                        .limit(count);
+                List<TripLocationHistoryContext> locations = locationsBuilder.get();
+                if (CollectionUtils.isNotEmpty(locations)) {
+
+                    List<Object> coordinates = locations.stream().map((history -> {
+                        if (history != null) {
+                            try {
+                                JSONObject latLng = (JSONObject) new JSONParser().parse(history.getLocation());
+                                return latLng;
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        return null;
+                    })).filter(Objects::nonNull).collect(Collectors.toList());
+                    return coordinates;
+                }
+            }
+        }
+        return null;
+    }
+    public static int getCount(long tripId) throws Exception{
+        FacilioModule tripLocationModule = Constants.getModBean().getModule(FacilioConstants.Trip.TRIP_LOCATION_HISTORY);
+
+        SelectRecordsBuilder builder = new SelectRecordsBuilder()
+                .select(new HashSet<>())
+                .module(tripLocationModule)
+                .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(tripLocationModule))
+                .andCondition(CriteriaAPI.getCondition("TRIP_ID", "trip", String.valueOf(tripId), NumberOperators.EQUALS));
+
+        List<Map<String, Object>> props = builder.getAsProps();
+        int count = 0;
+        if (CollectionUtils.isNotEmpty(props)) {
+            count = ((Number) props.get(0).get("id")).intValue();
+        }
+        return count;
+
     }
 
 }

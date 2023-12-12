@@ -231,6 +231,13 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         dispatchedBy.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
         serviceAppointmentFields.add(dispatchedBy);
 
+        FacilioField cancelledTime = FieldFactory.getDefaultField("cancelledTime","Cancelled Time","CANCELLED_TIME", FieldType.DATE_TIME);
+        serviceAppointmentFields.add(cancelledTime);
+
+        LookupField cancelledBy = FieldFactory.getDefaultField("cancelledBy","Cancelled By","CANCELLED_BY",FieldType.LOOKUP);
+        cancelledBy.setLookupModule(moduleBean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceAppointmentFields.add(cancelledBy);
+
         serviceAppointmentModule.setFields(serviceAppointmentFields);
         modules.add(serviceAppointmentModule);
 

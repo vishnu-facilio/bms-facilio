@@ -1,6 +1,9 @@
 package com.facilio.fsm.commands.serviceOrders;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -9,6 +12,7 @@ import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fsm.context.ServiceTaskContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -61,6 +65,12 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                         List<ServiceTaskContext> serviceTasks = getServiceTasksByServiceOrder(orderId);
                         if(serviceOrderInfo.getStatus() != null && serviceOrderInfo.getStatus().getId() == newStatus.getId() && task.getStatus()!=null && task.getStatus().getName().equals(scheduledTask)){
                             serviceOrderInfo.setStatus(scheduledStatus);
+                            User user = AccountUtil.getCurrentAccount().getUser();
+                            if(user != null){
+                                V3PeopleContext scheduledBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                                serviceOrderInfo.setScheduledBy(scheduledBy);
+                            }
+                            serviceOrderInfo.setScheduledTime(DateTimeUtil.getCurrenTime());
                             updateServiceOrder(serviceOrderInfo);
                         } else if ( task.getStatus()!=null && task.getStatus().getName().equals(inProgressTask) &&  (serviceOrderInfo.getStatus() != null && (serviceOrderInfo.getStatus().getId() == newStatus.getId() ||  serviceOrderInfo.getStatus().getId() == scheduledStatus.getId()))){
                             serviceOrderInfo.setStatus(inProgressStatus);
@@ -84,6 +94,13 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                                 Long endDuration = System.currentTimeMillis();
                                 serviceOrderInfo.setActualEndTime(endDuration);
                                 serviceOrderInfo.setActualDuration(endDuration - startDuration);
+                                User user = AccountUtil.getCurrentAccount().getUser();
+                                if(user != null){
+                                    V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                                    serviceOrderInfo.setCompletedBy(completedBy);
+                                }
+                                serviceOrderInfo.setCompletedTime(endDuration);
+
                                 updateServiceOrder(serviceOrderInfo);
                             }
 

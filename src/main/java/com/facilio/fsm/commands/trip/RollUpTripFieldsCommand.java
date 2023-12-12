@@ -26,15 +26,12 @@ public class RollUpTripFieldsCommand extends FacilioCommand {
                     ServiceAppointmentContext appointment = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, trip.getServiceAppointment().getId(), ServiceAppointmentContext.class);
                     trip.setServiceOrder(appointment.getServiceOrder());
                     Map < String, Object > bodyParams = Constants.getBodyParams(context);
-
+                    trip.setType(TripContext.Type.MANUAL);
                     if (!MapUtils.isEmpty(bodyParams) && bodyParams.containsKey("system")) {
                         if ((boolean) bodyParams.get("system")) {
                             trip.setType(TripContext.Type.SYSTEM);
                         }
-                        else{
-                            trip.setType(TripContext.Type.MANUAL);
-                        }
-                        }
+                    }
                 } else{
                     throw new FSMException(FSMErrorCode.TRIP_NOT_ENOUGH_DETAILS);
                 }

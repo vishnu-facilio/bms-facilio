@@ -28,13 +28,10 @@ public class RollUpTimeSheetFieldsCommand extends FacilioCommand {
                     ServiceAppointmentContext appointment = V3RecordAPI.getRecord(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT, timeSheet.getServiceAppointment().getId(), ServiceAppointmentContext.class);
                     timeSheet.setServiceOrder(appointment.getServiceOrder());
                     Map< String, Object > bodyParams = Constants.getBodyParams(context);
-
+                    timeSheet.setType(TimeSheetContext.Type.MANUAL);
                     if (!MapUtils.isEmpty(bodyParams) && bodyParams.containsKey("system")) {
                         if ((boolean) bodyParams.get("system")) {
                             timeSheet.setType(TimeSheetContext.Type.SYSTEM);
-                        }
-                        else{
-                            timeSheet.setType(TimeSheetContext.Type.MANUAL);
                         }
                     }
                 } else{

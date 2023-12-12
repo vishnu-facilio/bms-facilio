@@ -416,7 +416,35 @@ public class ServiceOrderModule extends BaseModuleConfig {
                 FacilioField.FieldDisplayType.LOOKUP_SIMPLE, false, false, true, orgId);
         serviceOrderFieldsList.add(approvalStateField);
 
-        // Total no. of Fields = 34
+        FacilioField cancelledTime = FieldFactory.getDefaultField("cancelledTime","Cancelled Time","CANCELLED_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(cancelledTime);
+
+        LookupField cancelledBy = FieldFactory.getDefaultField("cancelledBy","Cancelled By","CANCELLED_BY",FieldType.LOOKUP);
+        cancelledBy.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceOrderFieldsList.add(cancelledBy);
+
+        FacilioField completedTime = FieldFactory.getDefaultField("completedTime","Completed Time","COMPLETED_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(completedTime);
+
+        LookupField completedBy = FieldFactory.getDefaultField("completedBy","Completed By","COMPLETED_BY",FieldType.LOOKUP);
+        completedBy.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceOrderFieldsList.add(completedBy);
+
+        FacilioField closedTime = FieldFactory.getDefaultField("closedTime","Closed Time","CLOSED_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(closedTime);
+
+        LookupField closedBy = FieldFactory.getDefaultField("closedBy","Closed By","CLOSED_BY",FieldType.LOOKUP);
+        closedBy.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceOrderFieldsList.add(closedBy);
+
+        FacilioField scheduledTime = FieldFactory.getDefaultField("scheduledTime","Scheduled Time","SCHEDULED_TIME", FieldType.DATE_TIME);
+        serviceOrderFieldsList.add(scheduledTime);
+
+        LookupField scheduledBy = FieldFactory.getDefaultField("scheduledBy","Scheduled By","SCHEDULED_BY",FieldType.LOOKUP);
+        scheduledBy.setLookupModule(bean.getModule(FacilioConstants.ContextNames.PEOPLE));
+        serviceOrderFieldsList.add(scheduledBy);
+
+
         serviceOrderModule.setFields(serviceOrderFieldsList);
 
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();

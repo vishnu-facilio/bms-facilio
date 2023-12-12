@@ -379,4 +379,17 @@ public class ServiceOrderContext extends V3Context {
     public void setAsset(V3AssetContext asset) {
         this.asset = asset;
     }
+
+    private long cancelledTime;
+    private V3PeopleContext cancelledBy;
+
+    private long completedTime;
+    private V3PeopleContext completedBy;
+
+    private long closedTime;
+    private V3PeopleContext closedBy;
+
+    private long scheduledTime;
+    private V3PeopleContext scheduledBy;
+
 }

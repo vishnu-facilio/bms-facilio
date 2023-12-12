@@ -2812,6 +2812,12 @@
             <param name="deprecated">true</param>
         </action>
     </package>
+    <package name="trip" namespace="/api/v3/trip" extends="v3Api">
+        <action name="getTripLocationDetails" class="com.facilio.fsm.actions.fsmAction" method="fetchTripLocation">
+            <param name="moduleName">trip</param>
+            <param name="permission">GET:READ</param>
+        </action>
+    </package>
     <package name="employeeWorkschedule" namespace="/api/v3/employee"
              extends="v3Api">
         <action name="workschedule"

@@ -194,4 +194,6 @@ public class ServiceAppointmentContext extends V3Context {
     private boolean dispatched;
     private long dispatchedTime;
     private V3PeopleContext dispatchedBy;
+    private long cancelledTime;
+    private V3PeopleContext cancelledBy;
 }

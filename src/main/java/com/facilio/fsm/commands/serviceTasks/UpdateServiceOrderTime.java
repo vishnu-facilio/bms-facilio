@@ -1,5 +1,8 @@
 package com.facilio.fsm.commands.serviceTasks;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
@@ -66,8 +69,15 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                     //for initiated state we update the actual end time and the duration
                     if (completeOrder){
                         serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
-                        serviceOrderInfo.setActualEndTime(System.currentTimeMillis());
-                        serviceOrderInfo.setActualDuration(System.currentTimeMillis() - serviceOrderInfo.getActualStartTime());
+                        long currentTime = System.currentTimeMillis();
+                        serviceOrderInfo.setActualEndTime(currentTime);
+                        serviceOrderInfo.setActualDuration(currentTime - serviceOrderInfo.getActualStartTime());
+                        User user = AccountUtil.getCurrentAccount().getUser();
+                        if(user != null){
+                            V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                            serviceOrderInfo.setCompletedBy(completedBy);
+                        }
+                        serviceOrderInfo.setCompletedTime(currentTime);
                     }
                     //if the service order is not in initiated or closed state we skip the update
                     if(initOrder || completeOrder){

@@ -19,10 +19,7 @@ import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
 import com.facilio.fsm.context.*;
 import com.facilio.fsm.exception.FSMErrorCode;
 import com.facilio.fsm.exception.FSMException;
-import com.facilio.fsm.util.HomePageUtil;
-import com.facilio.fsm.util.ServiceAppointmentUtil;
-import com.facilio.fsm.util.ServiceOrderAPI;
-import com.facilio.fsm.util.ServiceTaskUtil;
+import com.facilio.fsm.util.*;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -70,6 +67,7 @@ public class fsmAction extends V3Action {
     private LocationContext endLocation;
     private long peopleId;
     private Long timeSheetId;
+    private Long tripId;
     private JSONArray serviceTasks;
 
     public String getViewName() {
@@ -478,6 +476,13 @@ public class fsmAction extends V3Action {
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getRecordIds());
         FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
         stopTimeSheetChain.execute(context);
+        return SUCCESS;
+    }
+
+    public String fetchTripLocation() throws Exception{
+        if(tripId != null && tripId >0){
+            setData(FacilioConstants.Trip.TRIP_LOCATION_HISTORY, TripUtil.fetchTripLocationDetails(tripId));
+        }
         return SUCCESS;
     }
 

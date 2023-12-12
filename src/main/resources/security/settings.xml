@@ -4645,4 +4645,9 @@
 
 
 
+    <request path="/api/v3/trip/getTripLocationDetails" method="GET">
+        <urlparams>
+            <property name="tripId" type="number"/>
+        </urlparams>
+    </request>
 </config>

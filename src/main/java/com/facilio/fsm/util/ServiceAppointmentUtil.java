@@ -199,9 +199,9 @@ public class ServiceAppointmentUtil {
                     if(user != null){
                         V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
                         updateSAProps.put("dispatchedBy",people);
-                        updateSAProps.put("dispatched",true);
-                        updateSAProps.put("dispatchedTime",DateTimeUtil.getCurrenTime());
                     }
+                    updateSAProps.put("dispatched",true);
+                    updateSAProps.put("dispatchedTime",DateTimeUtil.getCurrenTime());
                     updateSARecordList.add(updateSAProps);
                     V3Util.processAndUpdateBulkRecords(serviceAppointment, oldSARecords, updateSARecordList, bodyParams, null, null, null, null, null, null, null, true,false,null);
                     V3PeopleContext people = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,peopleId,V3PeopleContext.class);
@@ -499,6 +499,13 @@ public class ServiceAppointmentUtil {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Missing cancelled state");
                         }
                         existingAppointment.setStatus(appointmentStatus);
+                        User user = AccountUtil.getCurrentAccount().getUser();
+                        if(user != null){
+                            V3PeopleContext cancelledBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+                            existingAppointment.setCancelledBy(cancelledBy);
+                        }
+
+                        existingAppointment.setCancelledTime(DateTimeUtil.getCurrenTime());
                         V3RecordAPI.updateRecord(existingAppointment, serviceAppointment, updateFields);
 
                         if(CollectionUtils.isNotEmpty(existingServiceTasks)){
