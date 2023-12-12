@@ -64,6 +64,7 @@ import java.util.stream.Collectors;
 
 import static com.facilio.connected.CommonConnectedUtil.getDependencyMapForConnectedRules;
 import static com.facilio.connected.CommonConnectedUtil.postConRuleHistoryInstructionToStorm;
+import static com.facilio.constants.FacilioConstants.ReadingKpi.DEFAULT_RES_ID;
 import static com.facilio.modules.BaseFieldFactory.getIdField;
 
 @Log4j
@@ -526,7 +527,9 @@ public class ReadingKpiAPI {
             List<NameSpaceField> flattenedNsFields = resolveRelatedFieldsAndSetResourceId(ns.getFields(), parentId);
             LOGGER.info("Dynamic KPI : Flattened Ns Fields : " + flattenedNsFields + " for resource : " + parentId + " for kpi : " + ns.getParentRuleId());
             for (NameSpaceField nsField : flattenedNsFields) {
-                fetchReadingsForNsField(dateRange, aggr, resReadingsMap, nsField);
+                if (!Objects.equals(nsField.getResourceId(), DEFAULT_RES_ID)) {
+                    fetchReadingsForNsField(dateRange, aggr, resReadingsMap, nsField);
+                }
             }
             readingsMap.put(parentId, resReadingsMap);
         }
@@ -571,8 +574,12 @@ public class ReadingKpiAPI {
             return true;
         } else {
             // if relatedResIds are zero then this related nsField will never be populated so,
-            // this execution can be skipped (Note this case is possible when,
+            // this execution can be skipped or default handling is done (Note this case is possible when,
             // exec flow comes here from PRIMARY or DIRECT) or via historicalExecutor initiation
+            if (fld.getDefaultExecutionMode() == NameSpaceField.DefaultExecutionMode.DEFAULT) {
+                flattenedNsFields.add(getNsFieldClone(DEFAULT_RES_ID, fld));
+                return true;
+            }
             LOGGER.debug("For nsId: " + fld.getNsId() + " the resource " + resourceId + " doesn't have any related resource, returning empty fields list");
             return false;
         }
@@ -616,24 +623,22 @@ public class ReadingKpiAPI {
                 .groupBy(groupBy)
                 .limit(20000);
 
-        List<Map<String, Object>> props = null;
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
-        {
-            try {
-                props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
-                        () -> selectRecordBuilder.get());
-            }catch (Exception e){
-                LOGGER.error("Error while execution dynamic kpi--- " , e);
-            }
-        }
-        else
-        {
-            props = selectRecordBuilder.get();
-        }
-        LOGGER.debug("SELECT BUILDER EXECUTED FOR DYNAMICK KPI" + selectRecordBuilder);
+        List<Map<String, Object>> props = getPropsBasedOnClickHouseLicense(selectRecordBuilder);
+        LOGGER.debug("Select Builder Executed for Dynamic KPI " + selectRecordBuilder);
         if (CollectionUtils.isNotEmpty(props)) {
             populateReadingsMapFromProps(aggr, readingsMap, nsField.getVarName(), field, props);
         }
+    }
+
+    private static List<Map<String, Object>> getPropsBasedOnClickHouseLicense(GenericSelectRecordBuilder selectRecordBuilder) throws Exception {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE)) {
+            try {
+                return FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE, selectRecordBuilder::get);
+            } catch (Exception e) {
+                LOGGER.error("Dynamic KPI --- Error while fetching clickhouse data, ", e);
+            }
+        }
+        return selectRecordBuilder.get();
     }
 
     // returns aggregated result field and ttime field
@@ -655,12 +660,7 @@ public class ReadingKpiAPI {
 
     private static FacilioField getAggregatedField(NameSpaceField nsField, FacilioField field) throws Exception {
         FacilioField aggrField = getAggrOperatorForAggrType(nsField.getAggregationType()).getSelectField(field);
-
-        String columnName = "ROUND(" + aggrField.getCompleteColumnName() + ",3)";
-        if (nsField.getDefaultExecutionMode() == NameSpaceField.DefaultExecutionMode.DEFAULT) {
-            columnName = "COALESCE(" + columnName + ", " + nsField.getDefaultValue() + ")";
-        }
-        aggrField.setColumnName(columnName);
+        aggrField.setColumnName("ROUND(" + aggrField.getCompleteColumnName() + ",3)");
         return aggrField;
     }
 
@@ -682,12 +682,11 @@ public class ReadingKpiAPI {
     private static String getGroupByString(AggregateOperator aggr, AggregationType nsAggrType, FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
         if (aggr instanceof BmsAggregateOperators.DateAggregateOperator) { // normal
             FacilioField groupBy = aggr.getSelectField(fieldMap.get("ttime"));
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
-            {
+            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE)) {
                 groupBy = BmsAggregateOperators.getCHAggregateOperator(aggr.getValue()).getSelectField(fieldMap.get("ttime")).clone();
             }
-            FacilioField groupByField = adjustGroupByOptionBasedOnDayOfWeek(aggr , fieldMap.get("ttime"));
-            if(groupByField != null){
+            FacilioField groupByField = adjustGroupByOptionBasedOnDayOfWeek(aggr, fieldMap.get("ttime"));
+            if (groupByField != null) {
                 groupBy = groupByField.clone();
             }
             return groupBy.getCompleteColumnName();
@@ -699,7 +698,7 @@ public class ReadingKpiAPI {
         return null; // high res
     }
 
-    private static FacilioField adjustGroupByOptionBasedOnDayOfWeek(AggregateOperator aggr, FacilioField xField) throws Exception{
+    private static FacilioField adjustGroupByOptionBasedOnDayOfWeek(AggregateOperator aggr, FacilioField xField) throws Exception {
         // edge case handled in reports (FetchReportDataCommand:1336), copied here
         if (aggr == BmsAggregateOperators.DateAggregateOperator.WEEKANDYEAR) {
             DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
@@ -760,7 +759,7 @@ public class ReadingKpiAPI {
         Map<String, Object> groupedVarNameVsValueMap = new HashMap<>();
 
         for (NameSpaceField fld : ns.getFields()) {
-            List<Double> values = varNameVsValues.get(fld.getVarName());
+            List<Double> values = getDefaultOnNullData(fld, varNameVsValues.get(fld.getVarName()));
             if (values == null) {
                 return Optional.empty();
             }
@@ -773,6 +772,22 @@ public class ReadingKpiAPI {
             groupedVarNameVsValueMap.put(fld.getVarName(), value);
         }
         return Optional.of(groupedVarNameVsValueMap);
+    }
+
+    private static List<Double> getDefaultOnNullData(NameSpaceField fld, List<Double> values) {
+        if (CollectionUtils.isNotEmpty(values)) {
+            return values;
+        }
+        if (Objects.equals(fld.getResourceId(), DEFAULT_RES_ID)) {
+            return Collections.singletonList(Double.valueOf(fld.getDefaultValue()));
+        }
+
+        switch (fld.getDefaultExecutionMode()) {
+            case DEFAULT:
+                return Collections.singletonList(Double.valueOf(fld.getDefaultValue()));
+            default:
+                return null;
+        }
     }
 
     @SneakyThrows
@@ -1012,11 +1027,11 @@ public class ReadingKpiAPI {
         Map<Long, Set<Long>> nsIdVsResIds = new HashMap<>();
         for (Map<String, Object> map : maps) {
             Long resId = (Long) map.get("resourceId");
-            if(resId == null){
+            if (resId == null) {
                 return new HashSet<>();
             }
             Long nsId = (Long) map.get("id");
-            if(nsIdVsResIds.containsKey(nsId)){
+            if (nsIdVsResIds.containsKey(nsId)) {
                 Set<Long> resIds = nsIdVsResIds.get(nsId);
                 resIds.add(resId);
             } else {
@@ -1030,7 +1045,7 @@ public class ReadingKpiAPI {
 
     public static void setKpiCategoryStr(ReadingKPIContext kpi) throws Exception {
         KPICategoryContext kpiCategoryContext = KPIUtil.getKPICategoryContext(kpi.getKpiCategory());
-        if(kpiCategoryContext != null) {
+        if (kpiCategoryContext != null) {
             kpi.setKpiCategoryStr(kpiCategoryContext.getName());
         }
     }
