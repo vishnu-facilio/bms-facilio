@@ -9,11 +9,16 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.jobs.DataPendingAlertJob;
 import com.facilio.bmsconsole.jobs.DataProcessingAlertJob;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.V3SpaceCategoryContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
+import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTaskSectionContext;
 import com.facilio.flowLog.moduleFlowLog.context.FlowLogContext;
 import com.facilio.flowLog.moduleFlowLog.util.FlowLogUtil;
 import com.facilio.fsm.commands.FsmTransactionChainFactoryV3;
@@ -21,11 +26,13 @@ import com.facilio.fsm.util.ServicePlannedMaintenanceAPI;
 import com.facilio.modules.*;
 import com.facilio.plannedmaintenance.PlannedMaintenanceAPI;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.ims.handler.AuditLogHandler;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.mail.util.MimeMessageParser;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -1471,6 +1478,129 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioChain chain = FsmTransactionChainFactoryV3.preCreateServiceOrder();
 		chain.setContext(context);
 		chain.execute();
+	}
+
+	@Override
+	public void pmTaskToJobplanConverion(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId, V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
+		if(targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() != targetOrgId) {
+			// TODO: set the required IDs
+			setJobPlanFormID(jobPlanContext);
+			updateRequiredIds(jobPlanContext, pmv1,ac,sc);
+		}
+
+		FacilioContext jobPlanCreationContext = V3Util.createRecord(jobPlanModule, FieldUtil.getAsProperties(jobPlanContext));
+
+		Map<String, Object> changeSetMap = (Map<String, Object>) jobPlanCreationContext.get("changeSetMap");
+		if (MapUtils.isNotEmpty(changeSetMap)) {
+			Map<Number, Object> jobPlanMap = (Map<Number, Object>) changeSetMap.get("jobplan");
+			if (MapUtils.isNotEmpty(jobPlanMap)) {
+				Long jobPlanId = (Long) new ArrayList<>(jobPlanMap.keySet()).get(0);
+				if(jobPlanId != null) {
+					LOGGER.info("JobPlan created for Pmv1: " + pmv1 + " with ID #" + jobPlanId);
+				}else{
+					LOGGER.error("2. JobPlan created for Pmv1: " + pmv1);
+				}
+			} else {
+				LOGGER.error("3. JobPlan created for Pmv1: " + pmv1);
+			}
+		} else {
+			LOGGER.info("JobPlan created for Pmv1: " + pmv1);
+		}
+
+	}
+
+	private static boolean setJobPlanFormID(JobPlanContext jobPlanContext) throws Exception {
+		FacilioForm jobPlanDefaultForm = FormsAPI.getFormsFromDB("jobplan", "default_jobplan_web_maintenance"); // TODO: Target Org change
+		if (jobPlanDefaultForm == null) {
+			LOGGER.error("Process failed as the jobPlan form is null");
+			return true;
+		}
+		jobPlanContext.setFormId(jobPlanDefaultForm.getId());
+		LOGGER.info("Setting JobPlan Form ID: " + jobPlanDefaultForm.getId());
+		return false;
+	}
+
+	private static void updateRequiredIds(JobPlanContext jobPlanContext, PreventiveMaintenance pmv1,  V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
+		// update jobplan category
+		V3AssetCategoryContext assetCategoryContext;
+		V3SpaceCategoryContext spaceCategoryContext;
+
+		switch (jobPlanContext.getJobPlanCategoryEnum()) {
+			case ASSETCATEGORY:
+				assetCategoryContext = getV3AssetCategoryContext(jobPlanContext,ac);
+				jobPlanContext.setAssetCategory(assetCategoryContext); // TODO: update in targeted org
+				break;
+			case SPACECATEGORY:
+				spaceCategoryContext = getV3SpaceCategoryContext(jobPlanContext,sc);
+				jobPlanContext.setSpaceCategory(spaceCategoryContext); // TODO: update in targeted org
+				break;
+		}
+
+		List<JobPlanTaskSectionContext> jobPlanTaskSectionContextList = jobPlanContext.getJobplansection();
+
+		for(JobPlanTaskSectionContext jobPlanTaskSectionContext: jobPlanTaskSectionContextList){
+
+			PreventiveMaintenance.PMAssignmentType sectionAssignmentType = jobPlanTaskSectionContext.getJobPlanSectionCategoryEnum();
+			// update jobplan task section category
+			switch (jobPlanContext.getJobPlanCategoryEnum()) {
+				case SITES:
+				case BUILDINGS:
+				case FLOORS:
+					switch (sectionAssignmentType) {
+						case ASSET_CATEGORY:
+							jobPlanTaskSectionContext.setAssetCategory(getV3AssetCategoryContext(jobPlanContext,ac));
+							break;
+						case SPACE_CATEGORY:
+							jobPlanTaskSectionContext.setSpaceCategory(getV3SpaceCategoryContext(jobPlanContext,sc));
+							break;
+					}
+					break;
+				case SPACECATEGORY:
+					switch (sectionAssignmentType) {
+						case ASSET_CATEGORY:
+							jobPlanTaskSectionContext.setAssetCategory(getV3AssetCategoryContext(jobPlanContext,ac));
+							break;
+					}
+					break;
+			}
+		}
+	}
+
+	private static V3SpaceCategoryContext getV3SpaceCategoryContext(JobPlanContext jobPlanContext, V3SpaceCategoryContext sc) throws Exception {
+		return getSpaceRecord(sc);
+	}
+
+	private static V3AssetCategoryContext getV3AssetCategoryContext(JobPlanContext jobPlanContext, V3AssetCategoryContext ac) throws Exception {
+
+		return getAssetRecord(ac);
+	}
+
+	private static V3AssetCategoryContext getAssetRecord (V3AssetCategoryContext ac) throws Exception {
+
+		ModuleBean bean = Constants.getModBean();
+		FacilioModule module = bean.getModule("assetcategory");
+		List<FacilioField> fields = bean.getAllFields("assetcategory");
+		fields.add(FieldFactory.getIdField(module));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("NAME","name", ac.getName(), StringOperators.IS));
+		Map<String,Object> map = builder.fetchFirst();
+		return FieldUtil.getAsBeanFromMap(map,V3AssetCategoryContext.class);
+	}
+
+	private static V3SpaceCategoryContext getSpaceRecord (V3SpaceCategoryContext ac) throws Exception {
+
+		ModuleBean bean = Constants.getModBean();
+		FacilioModule module = bean.getModule("spacecategory");
+		List<FacilioField> fields = bean.getAllFields("spacecategory");
+		fields.add(FieldFactory.getIdField(module));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition("NAME","name", ac.getName(), StringOperators.IS));
+		Map<String,Object> map = builder.fetchFirst();
+		return FieldUtil.getAsBeanFromMap(map,V3SpaceCategoryContext.class);
 	}
 
 //	@Override

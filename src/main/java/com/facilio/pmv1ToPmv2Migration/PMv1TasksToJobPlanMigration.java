@@ -1,9 +1,8 @@
 package com.facilio.pmv1ToPmv2Migration;
 
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
@@ -21,11 +20,19 @@ import com.facilio.bmsconsoleV3.context.jobplan.JobPlanTasksContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
@@ -49,6 +56,7 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
     Long targetOrgId;
     Long orgId;
     public static final int JOB_PLAN_NAME_LENGTH = 100;
+    static String jobPlanFormName = "default_jobplan_web_maintenance";
 
     public PMv1TasksToJobPlanMigration(List<Long> pmV1Ids) {
         this.pmV1Ids = pmV1Ids;
@@ -84,8 +92,10 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
             targetOrgId = (Long) context.getOrDefault("targetOrgId",null);
         }
         //long pmId = 14;
-        String jobPlanFormName = "default_jobplan_web_maintenance";
+        V3AssetCategoryContext ac = null;
+        V3SpaceCategoryContext sc = null;
         for (Long pmId : pmV1Ids) {
+
             PreventiveMaintenance pmv1 = PreventiveMaintenanceAPI.getPM(pmId, true);
             if (pmv1 != null) {
                 LOGGER.info("Migrating from pmv1 #" + pmv1.getId() + ": " + pmv1.getName());
@@ -93,9 +103,6 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                 if (workorderTemplate != null) {
 
                     // Create JobPlan
-                    if(targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() != targetOrgId) {
-                        AccountUtil.setCurrentAccount(targetOrgId);
-                    }
                     JobPlanContext jobPlanContext = new JobPlanContext();
                     jobPlanContext.setName("JP - " + pmv1.getName());
                     if(jobPlanContext.getName().length() > 100){
@@ -106,12 +113,14 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                         case ASSET_CATEGORY:
                             jobPlanContext.setJobPlanCategory(JobPlanContext.JPScopeAssignmentType.ASSETCATEGORY.getVal());
                             V3AssetCategoryContext assetCategoryContext = V3RecordAPI.getRecord("assetcategory", pmv1.getAssetCategoryId(), V3AssetCategoryContext.class);
-                            jobPlanContext.setAssetCategory(assetCategoryContext);
+                            jobPlanContext.setAssetCategory(assetCategoryContext); // TODO: update in targeted org
+                            ac = (V3AssetCategoryContext) V3RecordAPI.getRecordsMap("assetcategory", Collections.singletonList(pmv1.getAssetCategoryId()), V3AssetCategoryContext.class).get(pmv1.getAssetCategoryId());
                             break;
                         case SPACE_CATEGORY:
                             jobPlanContext.setJobPlanCategory(JobPlanContext.JPScopeAssignmentType.SPACECATEGORY.getVal());
                             V3SpaceCategoryContext spaceCategoryContext = V3RecordAPI.getRecord("spacecategory", pmv1.getSpaceCategoryId(), V3SpaceCategoryContext.class);
-                            jobPlanContext.setSpaceCategory(spaceCategoryContext);
+                            jobPlanContext.setSpaceCategory(spaceCategoryContext); // TODO: update in targeted org
+                            sc =  (V3SpaceCategoryContext) V3RecordAPI.getRecordsMap("spacecategory", Collections.singletonList(pmv1.getSpaceCategoryId()), V3SpaceCategoryContext.class).get(pmv1.getSpaceCategoryId());
                             break;
                         case ALL_BUILDINGS:
                             jobPlanContext.setJobPlanCategory(JobPlanContext.JPScopeAssignmentType.BUILDINGS.getVal());
@@ -129,14 +138,10 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                     }
 
                     // Set the default formId
-                    FacilioForm jobPlanDefaultForm = FormsAPI.getFormsFromDB("jobplan", jobPlanFormName);
-                    if (jobPlanDefaultForm == null) {
-                        isFailed = true;
-                        LOGGER.error("Process failed as the jobPlan form is null");
+                    isFailed = setJobPlanFormID(jobPlanContext); // TODO: update in targeted org
+                    if (isFailed){
                         break;
                     }
-                    jobPlanContext.setFormId(jobPlanDefaultForm.getId());
-                    LOGGER.info("Setting JobPlan Form ID: " + jobPlanDefaultForm.getId());
 
                     // Construct JobPlanSection/JobPlanTask
                     List<JobPlanTaskSectionContext> jobPlanTaskSectionContextList = new ArrayList<>();
@@ -225,14 +230,16 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                     case ASSET_CATEGORY:
                                         jobPlanTaskSectionContext.setJobPlanSectionCategory(PreventiveMaintenance.PMAssignmentType.ASSET_CATEGORY.getVal());
                                         V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
-                                        assetCategoryContext.setId(sectionTemplate.getAssetCategoryId());
+                                        assetCategoryContext.setId(sectionTemplate.getAssetCategoryId()); // TODO: update in targeted org
                                         jobPlanTaskSectionContext.setAssetCategory(assetCategoryContext);
+                                        ac = (V3AssetCategoryContext) V3RecordAPI.getRecordsMap("assetcategory", Collections.singletonList(sectionTemplate.getAssetCategoryId()), V3AssetCategoryContext.class).get(sectionTemplate.getAssetCategoryId());
                                         break;
                                     case SPACE_CATEGORY:
                                         jobPlanTaskSectionContext.setJobPlanSectionCategory(PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal());
                                         V3SpaceCategoryContext spaceCategoryContext = new V3SpaceCategoryContext();
-                                        spaceCategoryContext.setId(sectionTemplate.getSpaceCategoryId());
+                                        spaceCategoryContext.setId(sectionTemplate.getSpaceCategoryId()); // TODO: update in targeted org
                                         jobPlanTaskSectionContext.setSpaceCategory(spaceCategoryContext);
+                                        sc = (V3SpaceCategoryContext) V3RecordAPI.getRecordsMap("spacecategory", Collections.singletonList(pmv1.getSpaceCategoryId()), V3SpaceCategoryContext.class).get(pmv1.getSpaceCategoryId());
                                         break;
                                     case ALL_BUILDINGS:
                                         jobPlanTaskSectionContext.setJobPlanSectionCategory(PreventiveMaintenance.PMAssignmentType.ALL_BUILDINGS.getVal());
@@ -257,6 +264,7 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                         V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
                                         assetCategoryContext.setId(sectionTemplate.getAssetCategoryId());
                                         jobPlanTaskSectionContext.setAssetCategory(assetCategoryContext);
+                                        ac = (V3AssetCategoryContext) V3RecordAPI.getRecordsMap("assetcategory", Collections.singletonList(sectionTemplate.getAssetCategoryId()), V3AssetCategoryContext.class).get(sectionTemplate.getAssetCategoryId());
                                         break;
                                     case CURRENT_ASSET:
                                     default:
@@ -275,12 +283,14 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                         V3AssetCategoryContext assetCategoryContext = new V3AssetCategoryContext();
                                         assetCategoryContext.setId(sectionTemplate.getAssetCategoryId());
                                         jobPlanTaskSectionContext.setAssetCategory(assetCategoryContext);
+                                        ac = (V3AssetCategoryContext) V3RecordAPI.getRecordsMap("assetcategory", Collections.singletonList(sectionTemplate.getAssetCategoryId()), V3AssetCategoryContext.class).get(sectionTemplate.getAssetCategoryId());
                                         break;
                                     case SPACE_CATEGORY:
                                         jobPlanTaskSectionContext.setJobPlanSectionCategory(PreventiveMaintenance.PMAssignmentType.SPACE_CATEGORY.getVal());
                                         V3SpaceCategoryContext spaceCategoryContext = new V3SpaceCategoryContext();
                                         spaceCategoryContext.setId(sectionTemplate.getSpaceCategoryId());
                                         jobPlanTaskSectionContext.setSpaceCategory(spaceCategoryContext);
+                                        sc = (V3SpaceCategoryContext) V3RecordAPI.getRecordsMap("spacecategory",Collections.singletonList(sectionTemplate.getSpaceCategoryId()), V3SpaceCategoryContext.class).get(sectionTemplate.getSpaceCategoryId());
                                         break;
                                 }
                                 break;
@@ -371,7 +381,7 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                                         jobPlanTasksContext.setInputOptions(inputOptions);
                                         break;
                                     case READING:
-                                        //TODO: Special Handling for ReadingField can be done here
+                                        //TODO: Special Handling for ReadingField can be done here, also handle for targeted org
                                         break;
                                 }
                             }
@@ -407,7 +417,7 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                     jobPlanContext.setJobplansection(jobPlanTaskSectionContextList);
                     if (!isFailed) {
 
-                        addJobplan(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId);
+                        addJobplan(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId,ac,sc);
                     } else {
                         LOGGER.error("JobPlan not created as the process has failed.");
                     }
@@ -421,30 +431,22 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
         return false;
     }
 
-    private static void addJobplan(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId) throws Exception {
-
-
-        FacilioContext jobPlanCreationContext = V3Util.createRecord(jobPlanModule, FieldUtil.getAsProperties(jobPlanContext));
-
-        Map<String, Object> changeSetMap = (Map<String, Object>) jobPlanCreationContext.get("changeSetMap");
-        if (MapUtils.isNotEmpty(changeSetMap)) {
-            Map<Number, Object> jobPlanMap = (Map<Number, Object>) changeSetMap.get("jobplan");
-            if (MapUtils.isNotEmpty(jobPlanMap)) {
-                Long jobPlanId = (Long) new ArrayList<>(jobPlanMap.keySet()).get(0);
-                if(jobPlanId != null) {
-                    LOGGER.info("JobPlan created for Pmv1: " + pmv1 + " with ID #" + jobPlanId);
-                }else{
-                    LOGGER.error("2. JobPlan created for Pmv1: " + pmv1);
-                }
-            } else {
-                LOGGER.error("3. JobPlan created for Pmv1: " + pmv1);
-            }
-        } else {
-            LOGGER.info("JobPlan created for Pmv1: " + pmv1);
+    private static boolean setJobPlanFormID(JobPlanContext jobPlanContext) throws Exception {
+        FacilioForm jobPlanDefaultForm = FormsAPI.getFormsFromDB("jobplan", jobPlanFormName); // TODO: Target Org change
+        if (jobPlanDefaultForm == null) {
+            LOGGER.error("Process failed as the jobPlan form is null");
+            return true;
         }
-        if (targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() == targetOrgId) {
-            AccountUtil.cleanCurrentAccount();
-        }
+        jobPlanContext.setFormId(jobPlanDefaultForm.getId());
+        LOGGER.info("Setting JobPlan Form ID: " + jobPlanDefaultForm.getId());
+        return false;
+    }
+
+    private static void addJobplan(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId, V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
+
+        ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", targetOrgId);
+        moduleCRUD.pmTaskToJobplanConverion(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId,ac,sc);
+
     }
 
 }
