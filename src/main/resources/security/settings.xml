@@ -4738,6 +4738,151 @@
         </requestbody>
     </request>
 
+
+
+    <request path="/api/v3/resourceAllocation/:moduleName/getModuleAndCrtieriaFromConfig" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="assignmentTypeId" type="number" mandatory="true"/>
+            <property name="vmTemplateId" type="number"/>
+            <property name="spaceCategoryId" type="number"/>
+            <property name="assetCategoryId" type="number"/>
+            <property name="siteIds" type="array">
+                <items type="number">
+                </items>
+            </property>
+            <property name="baseSpaceIds" type="array">
+                <items type="number">
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/meterReading/:permissionModuleName/utilitytype" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+            <property name="permissionModuleName" type="string"/>
+            <property name="excludeEmptyFields" type="boolean"/>
+            <property name="fetchValidationRules" type="boolean"/>
+            <property name="fetchControllableFields" type="boolean"/>
+            <property name="readingType" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/readings/meter/latestdata/:parentId" method="GET">
+        <urlparams>
+            <property name="parentId" type="number"/>
+            <property name="readingType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="search" type="string"/>
+            <property name="fetchCount" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/relation/:moduleName/fetchMeterRelations/:ModuleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="ModuleName" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/unrelated/:permissionModuleName/fetchAll/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string"/>
+            <property name="viewname" type="string" />
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="clientCriteria" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/module/data/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/reading/assetcategory" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+            <property name="permissionModuleName" type="string"/>
+            <property name="excludeEmptyFields" type="boolean"/>
+            <property name="fetchValidationRules" type="boolean"/>
+            <property name="fetchControllableFields" type="boolean"/>
+            <property name="readingType" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/reading/utilitytype" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+            <property name="permissionModuleName" type="string"/>
+            <property name="excludeEmptyFields" type="boolean"/>
+            <property name="fetchValidationRules" type="boolean"/>
+            <property name="fetchControllableFields" type="boolean"/>
+            <property name="readingType" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/relation/list">
+        <urlparams>
+            <property name="moduleName" type="string" />
+            <property name="permissionModuleName" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/relation/addOrUpdate">
+        <urlparams type="object">
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="relation" type="object">
+                <property name="name" type="string" />
+                <property name="relationType" type="number" />
+                <property name="fromModuleId" type="number" />
+                <property name="toModuleId" type="number" />
+                <property name="relationName" type="string" />
+                <property name="reverseRelationName" type="string" />
+                <property name="relationCategory" type="number" />
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/relation/fetchRelations" method="GET">
+        <urlparams>
+            <property name="permissionModuleName" type="string"/>
+            <property name="fromModuleId" type="number"/>
+            <property name="toModuleId" type="number"/>
+            <property name="relationType" type="number"/>
+            <property name="relationCategory" type="number"/>
+            <property name="search" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/module/meta/:moduleName" method="GET">
+        <urlparams>
+            <property name="permissionModuleName" type="string"/>
+            <property name="moduleName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/formulaBuilder/:permissionModuleName/module/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/trip/getTripLocationDetails" method="GET">
         <urlparams>
             <property name="tripId" type="number"/>

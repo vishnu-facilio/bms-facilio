@@ -305,6 +305,43 @@
 <!--        </requestbody>-->
     </request>
 
+    <request path="/api/v3/modules/:moduleName/:id/:permissionModuleName/relationship/:relationName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="unAssociated" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id/:permissionModuleName/relationship/:relationName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+        </urlparams>
+        <!--        <requestbody type="object">-->
+        <!--            <property name="data" type="object" mandatory="false"/>-->
+        <!--        </requestbody>-->
+    </request>
+    <request path="/api/v3/modules/:moduleName/:id/:permissionModuleName/relationship/:relationName" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="relationName" type="string" mandatory="true"/>
+        </urlparams>
+        <!--        <requestbody type="object">-->
+        <!--            <property name="data" type="object" mandatory="false"/>-->
+        <!--        </requestbody>-->
+    </request>
 
     <request path="/api/v2/relationship/getRelationshipForRecord" method="GET">
         <urlparams>
@@ -319,6 +356,17 @@
     <request path="/api/v2/relationship/:moduleName/getRelationshipForRecord" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="relationCategory" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/relationship/:moduleName/:ModuleName/getRelationshipForRecord" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="ModuleName" type="string" mandatory="true"/>
             <property name="recordId" type="number" mandatory="true"/>
             <property name="relationCategory" type="number"/>
             <property name="page" type="number"/>

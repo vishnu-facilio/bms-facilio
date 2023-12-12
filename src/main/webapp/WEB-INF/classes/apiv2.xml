@@ -934,6 +934,12 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ</param>
 		</action>
+		<action name="*/fetchMeterRelations/*"
+				class="com.facilio.relation.action.RelationAction" method="fetchMeterRelations" >
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">GET:READ</param>
+		</action>
 	</package>
 
 	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
@@ -4344,6 +4350,13 @@
 				class="com.facilio.bmsconsole.actions.RelationshipAction"
 				method="getRelationshipsWithDataAssociated">
 			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/*/getRelationshipForRecord"
+				class="com.facilio.bmsconsole.actions.RelationshipAction"
+				method="getRelationshipsWithDataAssociated">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*/getUnUsedRelationships"
@@ -9437,6 +9450,13 @@
 			<param name="moduleName">meter</param>
 			<param name="permission">POST:UPDATE</param>
 		</action>
+		<action name="latestdata/*"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="v2GetLatestReadingData">
+			<param name="parentId">{1}</param>
+			<param name="moduleName">meter</param>
+			<param name="permission">GET:READ</param>
+		</action>
 	</package>
 	<package name="ruleCriteria" namespace="/api/v2/criteria" extends="v2Api">
 		<action name="getConditions" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getCondition">
@@ -9444,6 +9464,75 @@
 		</action>
 		<action name="getRecordValue" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getRecordValue">
 			<param name="deprecated">true</param>
+		</action>
+	</package>
+	<package name="meterReading" namespace="/api/v2/meterReading" extends="v2Api">
+		<action name="*/utilitytype" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getUtilityTypeReadings">
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+			</result>
+		</action>
+	</package>
+	<package name="formulaBuilderApiV2" namespace="/api/v2/formulaBuilder" extends="v2Api">
+		<action name="*/reading/utilitytype" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getUtilityTypeReadings">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+			</result>
+		</action>
+		<action name="*/reading/assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+			</result>
+		</action>
+		<action name="*/relation/list" class="com.facilio.relation.action.RelationAction" method="list">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/relation/addOrUpdate"
+				class="com.facilio.relation.action.RelationAction" method="addOrUpdateRelation">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">POST:CREATE</param>
+		</action>
+		<action name="*/relation/fetchRelations"
+				class="com.facilio.relation.action.RelationAction" method="fetchRelations">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/module/data/list" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="getModuleDataList">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="translationImpl">V2ListApiTranslation</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/module/meta/*"
+				class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="v2metadata">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="translationImpl">FieldTranslationV2</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
