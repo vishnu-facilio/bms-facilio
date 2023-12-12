@@ -46,6 +46,8 @@ import java.util.*;
 public class PMv1TasksToJobPlanMigration extends FacilioCommand {
 
     List<Long> pmV1Ids;
+    Long targetOrgId;
+    Long orgId;
     public static final int JOB_PLAN_NAME_LENGTH = 100;
 
     public PMv1TasksToJobPlanMigration(List<Long> pmV1Ids) {
@@ -78,6 +80,9 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
         if(CollectionUtils.isEmpty(pmV1Ids)){
             pmV1Ids = (ArrayList<Long>)context.getOrDefault("pmV1Ids", new ArrayList<>());
         }
+        if (targetOrgId == null) {
+            targetOrgId = (Long) context.getOrDefault("targetOrgId",null);
+        }
         //long pmId = 14;
         String jobPlanFormName = "default_jobplan_web_maintenance";
         for (Long pmId : pmV1Ids) {
@@ -88,6 +93,9 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                 if (workorderTemplate != null) {
 
                     // Create JobPlan
+                    if(targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() != targetOrgId) {
+                        AccountUtil.setCurrentAccount(targetOrgId);
+                    }
                     JobPlanContext jobPlanContext = new JobPlanContext();
                     jobPlanContext.setName("JP - " + pmv1.getName());
                     if(jobPlanContext.getName().length() > 100){
@@ -398,24 +406,8 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
                     // Set JobPlanTaskSection to JobPlan
                     jobPlanContext.setJobplansection(jobPlanTaskSectionContextList);
                     if (!isFailed) {
-                        FacilioContext jobPlanCreationContext = V3Util.createRecord(jobPlanModule, FieldUtil.getAsProperties(jobPlanContext));
 
-                        Map<String, Object> changeSetMap = (Map<String, Object>) jobPlanCreationContext.get("changeSetMap");
-                        if (MapUtils.isNotEmpty(changeSetMap)) {
-                            Map<Number, Object> jobPlanMap = (Map<Number, Object>) changeSetMap.get("jobplan");
-                            if (MapUtils.isNotEmpty(jobPlanMap)) {
-                                Long jobPlanId = (Long) new ArrayList<>(jobPlanMap.keySet()).get(0);
-                                if(jobPlanId != null) {
-                                    LOGGER.info("JobPlan created for Pmv1: " + pmv1 + " with ID #" + jobPlanId);
-                                }else{
-                                    LOGGER.error("2. JobPlan created for Pmv1: " + pmv1);
-                                }
-                            } else {
-                                LOGGER.error("3. JobPlan created for Pmv1: " + pmv1);
-                            }
-                        } else {
-                            LOGGER.info("JobPlan created for Pmv1: " + pmv1);
-                        }
+                        addJobplan(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId);
                     } else {
                         LOGGER.error("JobPlan not created as the process has failed.");
                     }
@@ -427,6 +419,32 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
             }
         }
         return false;
+    }
+
+    private static void addJobplan(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId) throws Exception {
+
+
+        FacilioContext jobPlanCreationContext = V3Util.createRecord(jobPlanModule, FieldUtil.getAsProperties(jobPlanContext));
+
+        Map<String, Object> changeSetMap = (Map<String, Object>) jobPlanCreationContext.get("changeSetMap");
+        if (MapUtils.isNotEmpty(changeSetMap)) {
+            Map<Number, Object> jobPlanMap = (Map<Number, Object>) changeSetMap.get("jobplan");
+            if (MapUtils.isNotEmpty(jobPlanMap)) {
+                Long jobPlanId = (Long) new ArrayList<>(jobPlanMap.keySet()).get(0);
+                if(jobPlanId != null) {
+                    LOGGER.info("JobPlan created for Pmv1: " + pmv1 + " with ID #" + jobPlanId);
+                }else{
+                    LOGGER.error("2. JobPlan created for Pmv1: " + pmv1);
+                }
+            } else {
+                LOGGER.error("3. JobPlan created for Pmv1: " + pmv1);
+            }
+        } else {
+            LOGGER.info("JobPlan created for Pmv1: " + pmv1);
+        }
+        if (targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() == targetOrgId) {
+            AccountUtil.cleanCurrentAccount();
+        }
     }
 
 }

@@ -76,6 +76,7 @@
 <%
     String orgid = request.getParameter("orgid");
     String pmv1Id = request.getParameter("pmv1Id");
+    String targetOrgId = request.getParameter("targetOrgId");
     StringBuilder errorMessageBuilder = new StringBuilder();
 
     if (orgid != null && !orgid.equals("")) {
@@ -102,6 +103,7 @@
                 try {
                     FacilioChain chain = FacilioChain.getTransactionChain();
                     chain.getContext().put("pmV1Ids", pmV1Ids);
+                    chain.getContext().put("targetOrgId",Long.parseLong(targetOrgId));
                     chain.addCommand(new PMv1TasksToJobPlanMigration(pmV1Ids));
                     chain.execute();
                 } catch (Exception e) {
@@ -123,6 +125,11 @@
         <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
         <input id="pmv1Id" type="text" value="<%= pmv1Id %>" class="form-control" name="pmv1Id" />
     </div>
+    <div style="margin-top:15px;" class="input-group col-lg-8 col-md-8 col-sm-8	">
+            <p>Target ORGID:</p>
+            <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+            <input id="targetOrgId" type="text" value="<%= targetOrgId %>" class="form-control" name="targetOrgId" />
+        </div>
     <div style="margin-top:30px;">
         <button  id="show" type="submit"  >Submit</button>
         <br>
