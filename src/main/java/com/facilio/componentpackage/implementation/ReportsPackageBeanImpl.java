@@ -140,8 +140,11 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             if(chartState.containsKey("groupByPickListIds")){
                 XMLBuilder groupByPickListElement = reportElement.element(PackageConstants.ReportsConstants.GROUP_BY_PICK_LIST);
                 String parentModule = (String) chartState.get("groupByParentModule");
-                Set<String> keys = (Set<String>) chartState.get("groupByPickListIds");
-                String[] oldPickListIds = keys.toArray(new String[keys.size()]);
+                JSONArray keys = (JSONArray) chartState.get("groupByPickListIds");
+                String[] oldPickListIds = new String[keys.size()];
+                for (int i = 0; i < keys.size(); i++) {
+                    oldPickListIds[i] = keys.get(i).toString();
+                }
                 PackageBeanUtil.pickListXMLBuilder(groupByPickListElement,parentModule, oldPickListIds,true);
             }
             if(chartState.containsKey("dimensionSelectedId")){
