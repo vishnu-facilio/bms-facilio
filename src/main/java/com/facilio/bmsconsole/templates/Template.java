@@ -21,14 +21,6 @@ import org.json.simple.parser.ParseException;
 import java.io.Serializable;
 import java.util.*;
 
-import com.facilio.bmsconsole.context.TemplateUrlContext;
-import com.facilio.bmsconsole.util.FreeMarkerAPI;
-import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
-
-import lombok.Getter;
-
 
 public abstract class Template implements Serializable {
 
@@ -156,56 +148,9 @@ public abstract class Template implements Serializable {
 		if (json != null) {
 
 			Map<String, Object> params = new HashMap<>();
-			JSONObject parsedJson = new JSONObject();
 			executeWorkflow(params, parameters);
 			executeUserWorkflow(params, parameters);
-			if (MapUtils.isNotEmpty(params)) {
-				if (isFtl()) {
-					// StrSubstitutor.replace(jsonStr, params);
-					for (Object key : json.keySet()) {
-						Object value = json.get(key);
-						if (value != null) {
-							if (value instanceof JSONArray) {
-								JSONArray newArray = new JSONArray();
-								for (Object arrayVal : (JSONArray) value) {
-									newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
-								}
-								parsedJson.put(key, newArray);
-							} else {
-								parsedJson.put(key, FreeMarkerAPI.processTemplate(value.toString(), params));
-							}
-						}
-					}
-					parameters.put("mailType", "html");
-				} else {
-					String jsonStr = json.toJSONString();
-					try {
-						for (String key : params.keySet()) {
-							Object value = params.get(key);
-							if (value != null) {
-								value = StringEscapeUtils.escapeJava(value.toString());
-								params.put(key, value);
-							}
-						}
-						jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
-					} catch (Exception e) {
-						LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
-								.append("JSON : ")
-								.append(jsonStr)
-								.append("\nParams : ")
-								.append(params)
-								.append("\nParameters : ")
-								.append(parameters)
-								.toString(), e);
-						throw e;
-					}
-					JSONParser parser = new JSONParser();
-					parsedJson = (JSONObject) parser.parse(jsonStr);
-				}
-			} else {
-				parsedJson.putAll(json);
-			}
-
+			JSONObject parsedJson = getParsedJson(json,params,parameters);
 			if (getIsAttachmentAdded()) {
 				fetchAttachments();
 				if (CollectionUtils.isNotEmpty(getAttachments())) {
@@ -219,6 +164,56 @@ public abstract class Template implements Serializable {
 			return parsedJson;
 		}
 		return json;
+	}
+	protected JSONObject getParsedJson(JSONObject json, Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		JSONObject parsedJson = new JSONObject();
+		if (MapUtils.isNotEmpty(params)) {
+			if (isFtl()) {
+				// StrSubstitutor.replace(jsonStr, params);
+				for (Object key : json.keySet()) {
+					Object value = json.get(key);
+					if (value != null) {
+						if (value instanceof JSONArray) {
+							JSONArray newArray = new JSONArray();
+							for (Object arrayVal : (JSONArray) value) {
+								newArray.add(FreeMarkerAPI.processTemplate(arrayVal.toString(), params));
+							}
+							parsedJson.put(key, newArray);
+						} else {
+							parsedJson.put(key, FreeMarkerAPI.processTemplate(value.toString(), params));
+						}
+					}
+				}
+				parameters.put("mailType", "html");
+			} else {
+				String jsonStr = json.toJSONString();
+				try {
+					for (String key : params.keySet()) {
+						Object value = params.get(key);
+						if (value != null) {
+							value = StringEscapeUtils.escapeJava(value.toString());
+							params.put(key, value);
+						}
+					}
+					jsonStr = StringSubstitutor.replace(jsonStr, params);// StrSubstitutor.replace(jsonStr, params);
+				} catch (Exception e) {
+					LOGGER.error(new StringBuilder("Error occurred during replacing of place holders \n")
+							.append("JSON : ")
+							.append(jsonStr)
+							.append("\nParams : ")
+							.append(params)
+							.append("\nParameters : ")
+							.append(parameters)
+							.toString(), e);
+					throw e;
+				}
+				JSONParser parser = new JSONParser();
+				parsedJson = (JSONObject) parser.parse(jsonStr);
+			}
+		} else {
+			parsedJson.putAll(json);
+		}
+		return parsedJson;
 	}
 
 	protected void executeWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {

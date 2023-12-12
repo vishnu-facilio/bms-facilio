@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import java.util.Map;
 
-public class EMailTemplate extends Template {
+public class EMailTemplate extends BaseMailTemplate {
 	/**
 	 *
 	 */
