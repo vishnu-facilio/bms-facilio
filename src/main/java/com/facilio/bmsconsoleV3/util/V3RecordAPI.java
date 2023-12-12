@@ -38,7 +38,12 @@ public class V3RecordAPI {
     public static void addRecord(boolean isLocalIdNeeded, List<? extends V3Context> list, FacilioModule module, List<FacilioField> fields) throws Exception {
         addRecord(isLocalIdNeeded, list, module, fields, false);
     }
-
+    public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends V3Context> list, String moduleName, Boolean isChangeSetNeeded) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+        List<FacilioField> allFields = modBean.getAllFields(moduleName);
+        return addRecord(isLocalIdNeeded, list,module , allFields,isChangeSetNeeded);
+    }
     public static Map<Long, List<UpdateChangeSet>> addRecord(boolean isLocalIdNeeded, List<? extends V3Context> list, FacilioModule module, List<FacilioField> fields, Boolean isChangeSetNeeded) throws Exception {
 
         InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()

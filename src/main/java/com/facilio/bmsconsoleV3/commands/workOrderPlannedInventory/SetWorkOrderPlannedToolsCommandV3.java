@@ -44,7 +44,7 @@ public class SetWorkOrderPlannedToolsCommandV3 extends FacilioCommand {
                     if (tool == null) {
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tool is not present in the given storeroom");
                     }
-                    List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                    List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,null,true);
                     if (CollectionUtils.isNotEmpty(purchasedTools)){
                         workOrderPlannedTool.setRate(purchasedTools.get(0).getRate());
                     }

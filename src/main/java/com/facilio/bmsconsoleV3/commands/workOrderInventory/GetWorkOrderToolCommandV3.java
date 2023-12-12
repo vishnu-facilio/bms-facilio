@@ -33,6 +33,7 @@ public class GetWorkOrderToolCommandV3 extends FacilioCommand {
                     workorderTool.setTool(tool);
                     workorderTool.setRate(tool.getToolType().getSellingPrice());
                     workorderTool.setStoreRoom(tool.getStoreRoom());
+                    workorderTool.setBin(tool.getDefaultBin());
                 }
             }
          

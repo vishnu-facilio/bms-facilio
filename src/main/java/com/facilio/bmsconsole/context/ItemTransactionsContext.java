@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3InventoryRequestLineItemContext;
 import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlannedItemsContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -24,6 +25,15 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	}
 
 	private ItemContext item;
+	private V3BinContext bin;
+
+	public V3BinContext getBin() {
+		return bin;
+	}
+
+	public void setBin(V3BinContext bin) {
+		this.bin = bin;
+	}
 
 	public ItemContext getItem() {
 		return item;
@@ -271,4 +281,5 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setWorkOrderPlannedItem(WorkOrderPlannedItemsContext workOrderPlannedItem) {
 		this.workOrderPlannedItem = workOrderPlannedItem;
 	}
+
 }

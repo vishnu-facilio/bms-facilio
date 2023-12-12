@@ -32,6 +32,7 @@ public class GetWorkOrderItemCommandV3 extends FacilioCommand {
                 itemRec.setId(itemId);
                 workOrderItem.setItem(itemRec);
                 workOrderItem.setStoreRoom(item.getStoreRoom());
+                workOrderItem.setBin(item.getDefaultBin());
                 if (item.getItemType() != null && item.getItemType().isRotating()) {
                     workOrderItem.setQuantity(1);
                     workOrderItem.setItemType(item.getItemType());

@@ -1,15 +1,18 @@
 package com.facilio.bmsconsoleV3.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommandV3;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -23,12 +26,12 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.facilio.bmsconsole.commands.AddOrUpdateItemQuantityCommandV3.updateBinQuantityForRotatingType;
 
 public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
 
@@ -56,6 +59,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setTransactionState(TransactionState.ADDITION.getValue());
                 transaction.setPurchasedItem(ic);
                 transaction.setItem(ic.getItem());
+                transaction.setBin(ic.getBin());
                 transaction.setStoreRoom(item.getStoreRoom());
                 transaction.setItemType(item.getItemType());
                 transaction.setQuantity(ic.getQuantity());
@@ -102,6 +106,8 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 cq+=1;
                 items.setQuantity(q);
                 items.setCurrentQuantity(cq);
+                asset.setBin(getBin(asset,item));
+                updateBinQuantityForRotatingType(Collections.singletonList(asset.getBin()));
 
                 V3ItemTransactionsContext transaction = new V3ItemTransactionsContext();
                 transaction.setIsReturnable(false);
@@ -110,6 +116,7 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setTransactionState(TransactionState.ADDITION.getValue());
                 transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
                 transaction.setItem(items);
+                transaction.setBin(asset.getBin());
                 transaction.setStoreRoom(items.getStoreRoom());
                 transaction.setItemType(items.getItemType());
                 transaction.setQuantity(1);
@@ -119,11 +126,56 @@ public class AddOrUpdateItemStockTransactionsCommandV3 extends FacilioCommand {
                 updateItemQty(items);
 
                 V3Util.createRecord(module,FacilioUtil.getAsMap(FieldUtil.getAsJSON(transaction)),null,null);
+                context.put(FacilioConstants.ContextNames.BIN, Collections.singletonList(asset.getBin()));
 
                 context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, Collections.singletonList(items.getItemType().getId()));
             }
         }
         return false;
+    }
+
+    private V3BinContext getBin(V3AssetContext asset, V3ItemContext item) throws Exception {
+        V3BinContext bin = asset.getBin();
+        if(bin != null && bin.getId() > 0) {
+            V3ItemsApi.validateBin(Collections.singleton(bin.getId()),item);
+            return bin;
+        }
+        bin =  prepareNewBinForAsset(bin, item);
+        updateAsset(bin,asset);
+        return bin;
+    }
+
+    private void updateAsset(V3BinContext bin, V3AssetContext asset) throws Exception {
+        asset.setBin(bin);
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+        FacilioField binField = modBean.getField("bin", FacilioConstants.ContextNames.ASSET);
+        V3RecordAPI.updateRecord(asset, module ,Collections.singletonList(binField));
+    }
+
+    private static V3BinContext prepareNewBinForAsset(V3BinContext bin, V3ItemContext item) throws Exception {
+        Boolean isFirstBin = !V3ItemsApi.itemHasBin(item);
+        if(bin != null && bin.getId() <= 0 && bin.getName() != null) {
+            Map<String, Long> newlyAddedBins = V3ItemsApi.quickAddBin(Collections.singleton(bin.getName()), item);
+            if(MapUtils.isNotEmpty(newlyAddedBins) && newlyAddedBins.containsKey(bin.getName())){
+                Long id = newlyAddedBins.get(bin.getName());
+                bin.setId(id);
+                if(isFirstBin){
+                    V3ItemsApi.makeBinDefault(item, bin);
+                }
+                return bin;
+            } else {
+                throw new RuntimeException("Unable To Create Bin");
+            }
+        }
+
+        if (item.getDefaultBin() != null) {
+            return item.getDefaultBin();
+        } else {
+            bin = V3ItemsApi.addVirtualBin(item);
+            V3ItemsApi.makeBinDefault(item, bin);
+            return bin;
+        }
     }
 
     private void updateItemQty (V3ItemContext item) throws Exception {

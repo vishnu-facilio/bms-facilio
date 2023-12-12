@@ -21,6 +21,8 @@ public class V3ToolTransactionContext extends V3Context {
     private static final long serialVersionUID = 1L;
 
     private V3ToolTypesContext toolType;
+    private V3BinContext bin;
+
 
     public V3ToolTypesContext getToolType() {
         return toolType;
@@ -293,5 +295,13 @@ public class V3ToolTransactionContext extends V3Context {
     public void setInventoryReservation(InventoryReservationContext inventoryReservation) {
         this.inventoryReservation = inventoryReservation;
     }
+    public V3BinContext getBin() {
+        return bin;
+    }
+
+    public void setBin(V3BinContext bin) {
+        this.bin = bin;
+    }
+
 }
 

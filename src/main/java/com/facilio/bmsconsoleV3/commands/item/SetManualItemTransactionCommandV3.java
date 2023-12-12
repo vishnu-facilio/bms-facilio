@@ -9,13 +9,13 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
-import com.facilio.bmsconsoleV3.util.V3AssetAPI;
-import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
+import com.facilio.bmsconsoleV3.util.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -25,13 +25,17 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SetManualItemTransactionCommandV3  extends FacilioCommand {
 
@@ -44,7 +48,10 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
         Map<String, Object> bodyParams = Constants.getBodyParams(context);
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         List<V3ItemTransactionsContext> itemTransactions = recordMap.get(moduleName);
-        if(CollectionUtils.isNotEmpty(itemTransactions) && MapUtils.isNotEmpty(bodyParams) && ((bodyParams.containsKey("issue") && (boolean) bodyParams.get("issue")) || (bodyParams.containsKey("return") && (boolean) bodyParams.get("return")))) {
+        Boolean issueTransaction = MapUtils.isNotEmpty(bodyParams) && (bodyParams.containsKey("issue") && (boolean) bodyParams.get("issue"));
+        Boolean returnTransaction = MapUtils.isNotEmpty(bodyParams) && (bodyParams.containsKey("return") && (boolean) bodyParams.get("return"));
+
+        if(CollectionUtils.isNotEmpty(itemTransactions) && (issueTransaction || returnTransaction)) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
             FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
@@ -55,15 +62,31 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
             long itemTypeId = -1;
             ApprovalState approvalState = null;
             if (itemTransactions != null && !itemTransactions.isEmpty()) {
+                Map<Long, V3BinContext> allBins = V3InventoryAPI.getBinFromItemTransaction(itemTransactions);
+
                 for (V3ItemTransactionsContext itemTransaction : itemTransactions) {
                     V3ItemContext item = getItem(itemTransaction.getItem().getId());
                     itemTypeId = item.getItemType().getId();
+                    V3BinContext bin = null;
+                    if(itemTransaction.getBin() != null){
+                         bin = allBins.get(itemTransaction.getBin().getId());
+                    }
+                    if( bin == null || bin.getId() <= 0 ){
+                        if(item.getDefaultBin() != null){
+                            bin = item.getDefaultBin();
+                            itemTransaction.setBin(bin);
+                            allBins.put(bin.getId(),bin);
+                        } else {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Bin should not be empty");
+                        }
+                    } else {
+                        V3ItemsApi.validateBin(Collections.singleton(bin.getId()),item);
+                    }
                     V3ItemTypesContext itemType = getItemType(itemTypeId);
                     long parentId = itemTransaction.getParentId();
-
                     if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE
-                            && item.getQuantity() < itemTransaction.getQuantity()) {
-                        throw new IllegalArgumentException("Insufficient quantity in inventory!");
+                            && bin.getQuantity() < itemTransaction.getQuantity()) {
+                            throw new IllegalArgumentException("Insufficient quantity in selected Bin!");
                     } else {
                         approvalState = ApprovalState.YET_TO_BE_REQUESTED;
                         if (itemTransaction.getRequestedLineItem() != null && itemTransaction.getRequestedLineItem().getId() > 0) {
@@ -95,42 +118,71 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
                                 }
                             }
                         } else {
-
-                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
-
-                            if (purchasedItems != null && !purchasedItems.isEmpty()) {
-                                V3PurchasedItemContext pItem = purchasedItems.get(0);
-                                if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
-                                    V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
-                                    woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
+                            if(returnTransaction){
+                                SupplementRecord purchasedToolField = (SupplementRecord) Constants.getModBean().getField("purchasedItem", FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+                                V3ItemTransactionsContext parentTransaction = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, itemTransaction.getParentTransactionId(),V3ItemTransactionsContext.class, Collections.singletonList(purchasedToolField));
+                                if(itemTransaction.getBin() != null && parentTransaction.getBin() != null && itemTransaction.getBin().getId() == parentTransaction.getBin().getId()){
+                                    V3PurchasedItemContext pItem = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PURCHASED_ITEM, parentTransaction.getPurchasedItem().getId(),V3PurchasedItemContext.class);
+                                    V3ItemTransactionsContext woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
                                             itemTransaction, itemType, approvalState, null, context);
                                     itemTransactionsList.add(woItem);
                                     itemTransactionsToBeAdded.add(woItem);
                                 } else {
-                                    double requiredQuantity = itemTransaction.getQuantity();
-                                    for (V3PurchasedItemContext purchaseitem : purchasedItems) {
+                                    V3PurchasedItemContext pItem = new V3PurchasedItemContext();
+                                    pItem.setItem(item);
+                                    pItem.setBin(itemTransaction.getBin());
+                                    pItem.setQuantity(itemTransaction.getQuantity());
+                                    pItem.setUnitcost(parentTransaction.getPurchasedItem().getUnitcost());
+                                    Map<Long, List<UpdateChangeSet>> resultSet = V3RecordAPI.addRecord(false, Collections.singletonList(pItem), FacilioConstants.ContextNames.PURCHASED_ITEM, true);
+                                    if(MapUtils.isNotEmpty(resultSet)){
+                                        List<Long> recordIds = resultSet.keySet().stream().collect(Collectors.toList());
+                                        pItem.setId(recordIds.get(0));
+                                    }
+                                    V3ItemTransactionsContext woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
+                                            itemTransaction, itemType, approvalState, null, context);
+                                    itemTransactionsList.add(woItem);
+                                    itemTransactionsToBeAdded.add(woItem);
+                                }
+
+                            } else {
+
+                                List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,bin);
+
+                                if (purchasedItems != null && !purchasedItems.isEmpty()) {
+                                    V3PurchasedItemContext pItem = purchasedItems.get(0);
+                                    if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
                                         V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
-                                        double quantityUsedForTheCost = 0;
-                                        if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
-                                            quantityUsedForTheCost = requiredQuantity;
-                                        }
-                                        else if(purchaseitem.getCurrentQuantity()==0 && itemTransaction.getTransactionState()==TransactionState.RETURN.getValue()){
-                                            quantityUsedForTheCost = requiredQuantity;
-                                        }
-                                        else {
-                                            quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
-                                        }
-                                        woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-                                                parentId, itemTransaction, itemType, approvalState, null, context);
-                                        requiredQuantity -= quantityUsedForTheCost;
+                                        woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
+                                                itemTransaction, itemType, approvalState, null, context);
                                         itemTransactionsList.add(woItem);
                                         itemTransactionsToBeAdded.add(woItem);
-                                        if (requiredQuantity <= 0) {
-                                            break;
+                                    } else {
+                                        double requiredQuantity = itemTransaction.getQuantity();
+                                        for (V3PurchasedItemContext purchaseitem : purchasedItems) {
+                                            V3ItemTransactionsContext woItem = new V3ItemTransactionsContext();
+                                            double quantityUsedForTheCost = 0;
+                                            if (requiredQuantity <= purchaseitem.getCurrentQuantity()) {
+                                                quantityUsedForTheCost = requiredQuantity;
+                                            }
+                                            else if(purchaseitem.getCurrentQuantity()==0 && itemTransaction.getTransactionState()==TransactionState.RETURN.getValue()){
+                                                quantityUsedForTheCost = requiredQuantity;
+                                            }
+                                            else {
+                                                quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
+                                            }
+                                            woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
+                                                    parentId, itemTransaction, itemType, approvalState, null, context);
+                                            requiredQuantity -= quantityUsedForTheCost;
+                                            itemTransactionsList.add(woItem);
+                                            itemTransactionsToBeAdded.add(woItem);
+                                            if (requiredQuantity <= 0) {
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
+
                         }
                     }
 
@@ -139,6 +191,7 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
                 if(CollectionUtils.isNotEmpty(itemTransactionsToBeAdded)){
                     recordMap.put(moduleName, itemTransactionsToBeAdded);
                 }
+                context.put(FacilioConstants.ContextNames.BIN,allBins.values().stream().collect(Collectors.toList()));
                 context.put(FacilioConstants.ContextNames.PARENT_ID, itemTransactions.get(0).getParentId());
                 context.put(FacilioConstants.ContextNames.ITEM_ID, itemTransactions.get(0).getItem().getId());
                 context.put(FacilioConstants.ContextNames.ITEM_IDS,
@@ -177,6 +230,7 @@ public class SetManualItemTransactionCommandV3  extends FacilioCommand {
             woItem.setTransactionCost(quantity* purchasedItem.getUnitcost());
         }
         woItem.setItem(item);
+        woItem.setBin(itemTransactions.getBin());
         woItem.setStoreRoom(item.getStoreRoom());
         woItem.setItemType(itemTypes);
         woItem.setSysModifiedTime(System.currentTimeMillis());

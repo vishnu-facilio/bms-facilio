@@ -2,30 +2,18 @@ package com.facilio.bmsconsoleV3.commands.asset;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
-import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
-import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3AssetAPI;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -56,7 +44,6 @@ public class AddRotatingItemToolCommandV3 extends FacilioCommand {
                     if(item!=null){
                         //item stocking
                         V3AssetAPI.stockRotatingItem(item,asset);
-
                         //update rotating item value in asset
                         V3AssetAPI.updateRotatingItem(item,asset);
                     }else{

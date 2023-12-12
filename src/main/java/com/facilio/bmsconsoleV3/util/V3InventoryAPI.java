@@ -1,7 +1,10 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
+import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.V3VendorContext;
+import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -14,6 +17,8 @@ import com.facilio.modules.fields.LookupField;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class V3InventoryAPI {
     public static V3VendorContext getVendor(long id) throws Exception {
@@ -46,5 +51,14 @@ public class V3InventoryAPI {
                 .module(module).fields(fields).addRecords(tool);
         readingBuilder.save();
         return readingBuilder.getRecords();
+    }
+
+    public static Map<Long, V3BinContext> getBinFromItemTransaction(List<V3ItemTransactionsContext> itemTransactions) throws Exception {
+        Set<Long> binIds = itemTransactions.stream().map(i -> i.getBin().getId()).collect(Collectors.toSet());
+        return V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class);
+    }
+    public static Map<Long, V3BinContext> getBinFromToolTransactions(List<V3ToolTransactionContext> toolTransactions) throws Exception {
+        Set<Long> binIds = toolTransactions.stream().map(i -> i.getBin().getId()).collect(Collectors.toSet());
+        return V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class);
     }
 }

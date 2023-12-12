@@ -13,7 +13,7 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.util.List;
 import java.util.Map;
-
+@Deprecated
 public class IssueInvRequestCommandV3 extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {

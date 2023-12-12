@@ -58,7 +58,7 @@ public class SetServiceOrderPlannedItemsCommand extends FacilioCommand {
                         if (item == null) {
                             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not present in the given storeroom");
                         }
-                        List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                        List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,null);
                         if (CollectionUtils.isNotEmpty(purchasedItems)) {
                             serviceOrderPlannedItem.setUnitPrice(purchasedItems.get(0).getUnitcost());
                         }

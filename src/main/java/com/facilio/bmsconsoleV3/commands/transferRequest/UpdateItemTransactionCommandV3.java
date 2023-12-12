@@ -51,7 +51,7 @@ public class UpdateItemTransactionCommandV3 extends FacilioCommand {
                 V3StoreRoomContext storeRoom = V3StoreroomApi.getStoreRoom(storeroomId);
                 V3ItemContext item = V3ItemsApi.getItem(itemType,storeRoom);
 
-                List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,null);
 
                 if (purchasedItems != null && !purchasedItems.isEmpty()) {
                         V3PurchasedItemContext pItem = purchasedItems.get(0);

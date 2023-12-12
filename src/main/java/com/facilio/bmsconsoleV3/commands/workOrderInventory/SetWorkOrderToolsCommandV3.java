@@ -5,23 +5,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderServiceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkorderToolsContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
-import com.facilio.bmsconsoleV3.util.V3InventoryRequestAPI;
-import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
-import com.facilio.bmsconsoleV3.util.V3ToolsApi;
+import com.facilio.bmsconsoleV3.util.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -36,6 +30,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
 
@@ -62,6 +57,8 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         List<V3WorkorderToolsContext> workorderToolslist = new ArrayList<>();
         List<V3WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
         long toolTypesId = -1;
+        Set<Long> binIds = workOrderTools.stream().map(i -> i.getBin().getId()).collect(Collectors.toSet());
+        Map<Long, V3BinContext> allBins = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class);
         if (CollectionUtils.isNotEmpty(workOrderTools)) {
             for (V3WorkorderToolsContext workorderTool : workOrderTools) {
                 workorderTool.setIssueTime(System.currentTimeMillis());
@@ -71,11 +68,26 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                     workorderTool.setParentId(parentId);
                 }
                 long parentTransactionId = workorderTool.getParentTransactionId();
-                if(parentTransactionId < 0){
-                    validateIssuedQuantity(workorderTool);
-                }
+
                 V3WorkOrderContext workorder = getWorkorder(parentId);
                 V3ToolContext tool = getStockedTools(workorderTool.getTool().getId());
+                V3BinContext bin = null;
+                if(workorderTool != null){
+                    bin = allBins.get(workorderTool.getBin().getId());
+                }
+                if( bin == null || bin.getId() <= 0 ){
+                    if(tool.getDefaultBin() != null){
+                        bin = tool.getDefaultBin();
+                        workorderTool.setBin(bin);
+                    } else {
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Bin should not be empty");
+                    }
+                } else {
+                    V3ToolsApi.validateBin(Collections.singleton(bin.getId()),tool);
+                }
+                if(parentTransactionId < 0){
+                    validateIssuedQuantity(workorderTool,bin);
+                }
                 toolTypesId = tool.getToolType().getId();
                 V3ToolTypesContext toolTypes = getToolType(toolTypesId);
                 if(workorderTool.getReturnTime()!=null && workorderTool.getIssueTime()!=null &&  workorderTool.getIssueTime() > workorderTool.getReturnTime()){
@@ -157,7 +169,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,bin,true);
                             if (purchasedTools != null && !purchasedTools.isEmpty()){
                                 V3PurchasedToolContext pTool = purchasedTools.get(0);
                                 if(workorderTool.getQuantity() <= pTool.getCurrentQuantity()){
@@ -208,6 +220,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_TOOLS);
             }
+            context.put(FacilioConstants.ContextNames.BIN,allBins.values().stream().collect(Collectors.toList()));
             context.put(FacilioConstants.ContextNames.PARENT_ID, workOrderTools.get(0).getParentId());
             context.put(FacilioConstants.ContextNames.PARENT_ID_LIST,
                     Collections.singletonList(workOrderTools.get(0).getParentId()));
@@ -224,12 +237,12 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         return false;
     }
 
-    private void validateIssuedQuantity(V3WorkorderToolsContext workorderTool) throws Exception {
+    private void validateIssuedQuantity(V3WorkorderToolsContext workorderTool, V3BinContext bin) throws Exception {
         User issuedTo = workorderTool.getIssuedTo();
         if(issuedTo == null){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "tool must be issued to a person before adding it to a workorder");
         }
-        Double issuedQuantity = V3ToolsApi.getIssuedToolsQuantityForUser(workorderTool.getTool(),issuedTo);
+        Double issuedQuantity = V3ToolsApi.getIssuedToolsQuantityForUser(workorderTool.getTool(),issuedTo,bin);
         if(workorderTool.getQuantity() > issuedQuantity){
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "The entered quantity exceeds what has been issued to the User.");
         }
@@ -283,6 +296,7 @@ public class SetWorkOrderToolsCommandV3 extends FacilioCommand {
         woTool.setQuantity(quantity);
         woTool.setTool(tool);
         woTool.setStoreRoom(tool.getStoreRoom());
+        woTool.setBin(workorderTools.getBin());
         woTool.setToolType(tool.getToolType());
         woTool.setSysModifiedTime(System.currentTimeMillis());
         woTool.setParentId(parentId);

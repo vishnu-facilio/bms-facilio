@@ -96,11 +96,7 @@ public class ToolTemplatePage implements TemplatePageFactory {
                     .widgetDone()
                     .sectionDone();
         }
-        page = currentColumn.addSection("whereUsed", null, null)
-                .addWidget("whereUsed", "Where used", PageWidget.WidgetType.WHERE_USED, "flexiblewebtoolwhereused_6", 0, 0, null, null)
-                .widgetDone()
-                .sectionDone()
-                .addSection("PurchasedOrder", null, null)
+        page = currentColumn.addSection("PurchasedOrder", null, null)
                 .addWidget("PurchasedOrder", "Purchased Order", PageWidget.WidgetType.PURCHASE_ORDER, "flexiblewebpurchaseordertool_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()

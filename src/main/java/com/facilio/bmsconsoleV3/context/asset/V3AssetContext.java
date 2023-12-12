@@ -62,6 +62,7 @@ public class V3AssetContext extends V3ResourceContext {
     private V3ItemContext rotatingItem;
     private V3ItemTypesContext rotatingItemType;
     private V3StoreRoomContext storeRoom;
+    private V3BinContext bin;
     private Boolean canUpdateRotatingAsset;
     private V3CalendarContext calendar;
 
@@ -475,6 +476,14 @@ public class V3AssetContext extends V3ResourceContext {
 
     public void setRotatingItemType(V3ItemTypesContext rotatingItemType) {
         this.rotatingItemType = rotatingItemType;
+    }
+
+    public V3BinContext getBin() {
+        return bin;
+    }
+
+    public void setBin(V3BinContext bin) {
+        this.bin = bin;
     }
 
     public V3StoreRoomContext getStoreRoom() {

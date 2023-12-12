@@ -133,7 +133,7 @@ public class StoreRoomModule extends BaseModuleConfig{
         addSystemButton();
     }
 
-    private static void addSystemButton() throws Exception{
+    private static void addSystemButton() throws Exception {
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -272,5 +272,18 @@ public class StoreRoomModule extends BaseModuleConfig{
         exportAsExcelButton.setPermissionRequired(true);
         exportAsExcelButton.setPermission("EXPORT");
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,exportAsExcelButton);
+        SystemButtonRuleContext issueItemsToPerson = new SystemButtonRuleContext();
+        issueItemsToPerson.setName("Issue Items to Person");
+        issueItemsToPerson.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        issueItemsToPerson.setIdentifier(FacilioConstants.ContextNames.STOREROOM_ISSUE_ITEMS_TO_PERSON);
+        issueItemsToPerson.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,issueItemsToPerson);
+
+        SystemButtonRuleContext returnItemsToPerson = new SystemButtonRuleContext();
+        returnItemsToPerson.setName("Return Items to Person");
+        returnItemsToPerson.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        returnItemsToPerson.setIdentifier(FacilioConstants.ContextNames.STOREROOM_RETURN_ITEMS_TO_PERSON);
+        returnItemsToPerson.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,returnItemsToPerson);
     }
 }

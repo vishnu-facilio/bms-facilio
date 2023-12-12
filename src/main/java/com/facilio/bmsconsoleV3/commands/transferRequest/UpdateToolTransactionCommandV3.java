@@ -49,7 +49,7 @@ public class UpdateToolTransactionCommandV3 extends FacilioCommand {
                 V3StoreRoomContext storeRoom = V3StoreroomApi.getStoreRoom(storeroomId);
                 V3ToolContext tool = V3ToolsApi.getTool(toolType,storeRoom);
 
-                List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,null,true);
 
                 if (purchasedTools != null && !purchasedTools.isEmpty()) {
                     V3PurchasedToolContext pTool = purchasedTools.get(0);

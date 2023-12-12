@@ -4,10 +4,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3InventoryAPI;
 import com.facilio.bmsconsoleV3.util.V3InventoryUtil;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
@@ -19,6 +21,8 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -27,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
     @SuppressWarnings("unchecked")
@@ -55,10 +60,23 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
             List<V3ItemContext> items = new ArrayList<>();
             long itemTypeId = -1;
             if (CollectionUtils.isNotEmpty(itemTransactions)) {
+                Map<Long, V3BinContext> binMap = V3InventoryAPI.getBinFromItemTransaction(itemTransactions);
                 for (V3ItemTransactionsContext itemTransaction : itemTransactions) {
                     V3ItemContext item = V3ItemsApi.getItems(itemTransaction.getItem().getId());
                     itemTypeId = item.getItemType().getId();
                     V3ItemTypesContext itemType = V3ItemsApi.getItemTypes(itemTypeId);
+                    V3BinContext bin = binMap.get(itemTransaction.getBin().getId());
+                    if( bin == null || bin.getId() <= 0 ){
+                        if(item.getDefaultBin() != null){
+                            bin = item.getDefaultBin();
+                            itemTransaction.setBin(bin);
+                            binMap.put(bin.getId(),bin);
+                        } else {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Bin should not be empty");
+                        }
+                    } else {
+                        V3ItemsApi.validateBin(Collections.singleton(bin.getId()),item);
+                    }
                     if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
                             && itemType.isRotating()) {
                         throw new IllegalArgumentException("Not Applicable for Rotating Items!");
@@ -66,12 +84,12 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                             && itemType.isRotating()) {
                         throw new IllegalArgumentException("Not Applicable for Rotating Items!");
                     } else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
-                            && item.getQuantity() < itemTransaction.getQuantity()) {
+                            && bin.getQuantity() < itemTransaction.getQuantity()) {
                         throw new IllegalArgumentException("Invalid Adjustment Quantity!");
                     } else if (itemTransaction.getTransactionStateEnum() == TransactionState.ADJUSTMENT_DECREASE
                             && !itemType.isRotating()) {
                         if (itemTransaction.getQuantity() <= item.getQuantity()) {
-                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,bin);
                             if (purchasedItems != null && !purchasedItems.isEmpty()) {
                                 V3PurchasedItemContext pItem = purchasedItems.get(0);
                                 double requiredQuantity = -(itemTransaction.getQuantity());
@@ -110,6 +128,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                         pi.setItem(item);
                         pi.setItemType(itemType);
                         pi.setCostDate(System.currentTimeMillis());
+                        pi.setBin(itemTransaction.getBin());
                         itemType.setLastPurchasedDate(pi.getCostDate());
                         item.setLastPurchasedDate(pi.getCostDate());
                         itemType.setLastPurchasedPrice(pi.getUnitcost());
@@ -123,7 +142,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
                 }
 
                 recordMap.put(moduleName, itemTransactionsToBeAdded);
-
+                context.put(FacilioConstants.ContextNames.BIN,binMap.values().stream().collect(Collectors.toList()));
                 context.put(FacilioConstants.ContextNames.PARENT_ID, itemTransactions.get(0).getParentId());
                 context.put(FacilioConstants.ContextNames.ITEM_ID, itemTransactions.get(0).getItem().getId());
                 context.put(FacilioConstants.ContextNames.ITEM_IDS,
@@ -155,6 +174,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
         woItem.setTransactionType(TransactionType.STOCK.getValue());
         woItem.setItem(item);
         woItem.setStoreRoom(item.getStoreRoom());
+        woItem.setBin(itemTransactions.getBin());
         woItem.setItemType(itemTypes);
         woItem.setSysModifiedTime(System.currentTimeMillis());
         woItem.setParentId(purchasedItem.getId());

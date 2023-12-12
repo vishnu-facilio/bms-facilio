@@ -1582,7 +1582,6 @@ public class TransactionChainFactoryV3 {
 
     public static FacilioChain getIRAfterSaveChain() {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(new IssueInvRequestCommandV3());
         chain.addCommand(new SetStoreRoomAndReservationTypeForInventoryRequestLineItems());
         return chain;
     }

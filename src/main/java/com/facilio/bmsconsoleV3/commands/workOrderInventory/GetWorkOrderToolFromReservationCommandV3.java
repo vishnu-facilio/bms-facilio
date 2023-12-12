@@ -42,6 +42,7 @@ public class GetWorkOrderToolFromReservationCommandV3 extends FacilioCommand {
                     toolRec.setId(tool.getId());
                     workOrderTool.setTool(toolRec);
                     workOrderTool.setStoreRoom(tool.getStoreRoom());
+                    workOrderTool.setBin(tool.getDefaultBin());
                     if (tool.getToolType() != null && tool.getToolType().isRotating()) {
                         workOrderTool.setQuantity(1.0);
                         workOrderTool.setToolType(tool.getToolType());

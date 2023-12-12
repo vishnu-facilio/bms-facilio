@@ -24,6 +24,7 @@ public class GetWorkOrderToolFromIssuedToolCommandV3 extends FacilioCommand {
                 workOrderTool.setWorkorder(workOrder);
                 workOrderTool.setTool(toolTransaction.getTool());
                 workOrderTool.setStoreRoom(toolTransaction.getStoreRoom());
+                workOrderTool.setBin(toolTransaction.getBin());
                 workOrderTool.setQuantity(toolTransaction.getRemainingQuantity());
                 workOrderTool.setRemainingQuantity(toolTransaction.getRemainingQuantity());
                 workOrderTool.setIssuedTo(toolTransaction.getIssuedTo());

@@ -40,6 +40,7 @@ public class AddBulkToolStockTransactionsCommandV3 extends FacilioCommand {
                 transaction.setQuantity(purchasedTool.getQuantity());
                 transaction.setTransactionState(TransactionState.ADDITION.getValue());
                 transaction.setTool(purchasedTool.getTool());
+                transaction.setBin(purchasedTool.getBin());
                 transaction.setParentId(purchasedTool.getId());
                 transaction.setPurchasedTool(purchasedTool);
                 transaction.setIsReturnable(false);

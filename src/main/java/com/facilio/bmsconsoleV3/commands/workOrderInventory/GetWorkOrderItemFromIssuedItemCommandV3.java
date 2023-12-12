@@ -24,6 +24,7 @@ public class GetWorkOrderItemFromIssuedItemCommandV3 extends FacilioCommand {
                 workOrderItem.setStoreRoom(itemTransaction.getStoreRoom());
                 workOrderItem.setQuantity(itemTransaction.getRemainingQuantity());
                 workOrderItem.setRemainingQuantity(itemTransaction.getRemainingQuantity());
+                workOrderItem.setBin(itemTransaction.getBin());
                 if(workOrderItem.getRequestedLineItem()!=null){
                     workOrderItem.setRequestedLineItem(itemTransaction.getRequestedLineItem());
                 }

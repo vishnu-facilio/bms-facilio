@@ -6,19 +6,22 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections.CollectionUtils;
+import org.owasp.esapi.util.CollectionsUtil;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class V3StoreroomApi {
     public static Map<Long, V3StoreRoomContext> getStoreRoomMap(long id) throws Exception
@@ -119,5 +122,63 @@ public class V3StoreroomApi {
             }
         }
         return storeIds;
+    }
+
+    public static void checkIfBinNameAlreadyExists(String name, V3StoreRoomContext storeRoom) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        Criteria criteria = new Criteria();
+        Condition nameCondition = CriteriaAPI.getCondition(modBean.getField("name",FacilioConstants.ContextNames.BIN), name, StringOperators.CONTAINS);
+        Condition isVirtual = CriteriaAPI.getCondition(modBean.getField("isVirtualBin",FacilioConstants.ContextNames.BIN), String.valueOf(false), BooleanOperators.IS);
+        criteria.addAndCondition(nameCondition);
+        criteria.addAndCondition(isVirtual);
+
+        Criteria oneLevelLookup = new Criteria();
+        Condition storeRoomItemCondition = storeRoomItemCondition(storeRoom.getId());
+        Condition storeRoomToolCondition = storeRoomToolCondition(storeRoom.getId());
+        oneLevelLookup.addAndCondition(storeRoomItemCondition);
+        oneLevelLookup.addOrCondition(storeRoomToolCondition);
+        criteria.andCriteria(oneLevelLookup);
+
+
+        FacilioField aggregateField = Constants.getModBean().getField("id", FacilioConstants.ContextNames.BIN);
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,null,null,criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
+
+        if(props != null) {
+            Long count = (Long) props.get(0).get(aggregateField.getName());
+            if(count != null && count > 0) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Bin with this name already exists in Store room, kindly create one with a new name.");
+            }
+        }
+    }
+
+    private static Condition storeRoomItemCondition(Long id) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        Criteria criteriaValue = new Criteria();
+        Condition storeRoomCondition = CriteriaAPI.getCondition(modBean.getField("storeRoom",FacilioConstants.ContextNames.ITEM), String.valueOf(id), PickListOperators.IS);
+        criteriaValue.addAndCondition(storeRoomCondition);
+
+        LookupField itemField = (LookupField) modBean.getField("item", FacilioConstants.ContextNames.BIN);
+        itemField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ITEM));
+        Condition itemCondition = new Condition();
+        itemCondition.setField(itemField);
+        itemCondition.setOperator(LookupOperator.LOOKUP);
+        itemCondition.setCriteriaValue(criteriaValue);
+        return itemCondition;
+    }
+
+    private static Condition storeRoomToolCondition(Long id) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        Criteria criteriaValue = new Criteria();
+        Condition storeRoomCondition = CriteriaAPI.getCondition(modBean.getField("storeRoom",FacilioConstants.ContextNames.TOOL), String.valueOf(id), PickListOperators.IS);
+        criteriaValue.addAndCondition(storeRoomCondition);
+
+        LookupField toolField = (LookupField) modBean.getField("tool", FacilioConstants.ContextNames.BIN);
+        toolField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.TOOL));
+
+        Condition toolCondition = new Condition();
+        toolCondition.setField(toolField);
+        toolCondition.setOperator(LookupOperator.LOOKUP);
+        toolCondition.setCriteriaValue(criteriaValue);
+        return toolCondition;
     }
 }

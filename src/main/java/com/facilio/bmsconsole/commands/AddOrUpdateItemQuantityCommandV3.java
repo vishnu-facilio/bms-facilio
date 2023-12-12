@@ -1,31 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -51,9 +49,9 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> itemMultiCurrencyFields = CurrencyUtil.getMultiCurrencyFieldsFromFields(itemFields);
 		CurrencyUtil.addMultiCurrencyFieldsToFields(itemFields, itemModule);
-		// long inventoryId = (long)
-		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
+ 		// context.get(FacilioConstants.ContextNames.INVENTORY_ID);
 		List<Long> itemIds = (List<Long>) context.get(FacilioConstants.ContextNames.ITEM_IDS);
+		List<V3BinContext> bins = (List<V3BinContext>) context.get(FacilioConstants.ContextNames.BIN);
 		if (itemIds != null && !itemIds.isEmpty()) {
 			long itemTypesId = -1;
 			List<Long> itemTypesIds = new ArrayList<>();
@@ -70,6 +68,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 										String.valueOf(itemId), PickListOperators.IS));
 
 						List<V3PurchasedItemContext> purchasedItems = selectBuilder.get();
+						updateBinQuantityForNonRotatingType(purchasedItems,bins);
 						double quantity = 0;
 						long lastPurchasedDate = -1;
 						double lastPurchasedPrice = -1;
@@ -148,6 +147,7 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 						itemRecords.add(itemContext);
 						changes.put(itemContext.getId(), recordChanges.get(itemContext.getId()));
+						updateBinQuantityForRotatingType(bins);
 
 					}
 				}
@@ -160,6 +160,36 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 	
 		}
 		return false;
+	}
+
+	private void updateBinQuantityForNonRotatingType(List<V3PurchasedItemContext> purchasedItems, List<V3BinContext> bins) throws Exception {
+		if(CollectionUtils.isEmpty(purchasedItems) || CollectionUtils.isEmpty(bins)){
+			return;
+		}
+		for (V3BinContext bin:bins) {
+			Double totalQuantity = Double.valueOf(0);
+			for (V3PurchasedItemContext purchasedItem: purchasedItems) {
+				if(purchasedItem.getBin() == null || purchasedItem.getBin().getId() != bin.getId()){
+					continue;
+				}
+				totalQuantity += purchasedItem.getCurrentQuantity();
+			}
+			updateBinQuantity(bin, totalQuantity);
+		}
+	}
+
+	public static void updateBinQuantityForRotatingType(List<V3BinContext> bins) throws Exception {
+		for (V3BinContext bin: bins) {
+			double quantity = getTotalQuantityConsumed(bin.getId(), "bin");
+			updateBinQuantity(bin,quantity);
+		}
+	}
+
+	private static void updateBinQuantity(V3BinContext bin, Double totalQuantity) throws Exception {
+		bin.setQuantity(Math.round(totalQuantity));
+		ModuleBean modBean = Constants.getModBean();
+		FacilioField updateField = modBean.getField("quantity", FacilioConstants.ContextNames.BIN);
+		V3RecordAPI.updateRecord(bin,modBean.getModule(FacilioConstants.ContextNames.BIN),Collections.singletonList(updateField));
 	}
 
 	private void notifyItemOutOfStock(List<V3ItemContext> itemRecords, Map<Long, List<UpdateChangeSet>> changes) throws Exception {
@@ -175,7 +205,6 @@ public class AddOrUpdateItemQuantityCommandV3 extends FacilioCommand {
 
 		c.execute();
 	}
-
 	public static double getTotalQuantityConsumed(long inventoryCostId, String fieldName) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

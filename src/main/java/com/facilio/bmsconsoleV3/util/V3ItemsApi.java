@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.util;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.util.StoreroomApi;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.asset.V3ItemTransactionsContext;
@@ -10,14 +11,20 @@ import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.util.CurrencyUtil;
 
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -393,4 +400,94 @@ public class V3ItemsApi {
         return null;
     }
 
+    public static void validateBin(Set<Long> binIds, V3ItemContext item) throws Exception {
+        Condition itemCondition = CriteriaAPI.getCondition("item",String.valueOf(item.getId()), NumberOperators.NOT_EQUALS);
+        Condition idCondition = CriteriaAPI.getIdCondition(binIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.BIN));
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(itemCondition);
+        criteria.addAndCondition(idCondition);
+        FacilioField aggregateField = Constants.getModBean().getField("id", FacilioConstants.ContextNames.BIN);
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
+        if(props != null) {
+            Long count = (Long) props.get(0).get(aggregateField.getName());
+            if(count != null && count > 0) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please Select Bins which belongs to the item");
+            }
+        }
+    }
+
+    public static boolean itemHasBin(V3ItemContext item) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioField binField = modBean.getField("item", FacilioConstants.ContextNames.BIN);
+        FacilioField aggregateField = modBean.getField("id", FacilioConstants.ContextNames.BIN);
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(binField, Collections.singleton(item.getId()), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN, null, null, criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
+        if(props != null) {
+            Long count = (Long) props.get(0).get(aggregateField.getName());
+            if(count != null && count > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Map<String, Long> quickAddBin(Set<String> newBinNames, V3ItemContext item) throws Exception {
+        if(CollectionUtils.isEmpty(newBinNames)){
+            return null;
+        }
+        List<V3BinContext> binList = new ArrayList<>();
+        for (String name: newBinNames) {
+            V3StoreroomApi.checkIfBinNameAlreadyExists(name, item.getStoreRoom());
+            V3BinContext bin = new V3BinContext();
+            bin.setName(name);
+            bin.setQuantity(0L);
+            bin.setItem(item);
+            binList.add(bin);
+        }
+        Map<Long, List<UpdateChangeSet>> changeSet = V3RecordAPI.addRecord(false, binList, FacilioConstants.ContextNames.BIN, true);
+        if(MapUtils.isNotEmpty(changeSet)){
+            Map<String,Long> nameVsId = new HashMap<>();
+            FacilioField nameField = Constants.getModBean().getField("name", FacilioConstants.ContextNames.BIN);
+            for (Long id :changeSet.keySet()) {
+                List<UpdateChangeSet> change = changeSet.get(id);
+                UpdateChangeSet nameChange = change.stream().filter(c -> c.getFieldId() == nameField.getId()).findFirst().orElse(null);
+                if(nameChange == null){
+                    continue;
+                }
+                nameVsId.put((String) nameChange.getNewValue(),id);
+            }
+            return nameVsId;
+        }
+        return null;
+    }
+
+    public static V3BinContext addVirtualBin(V3ItemContext item) throws Exception {
+        V3BinContext bin;
+        V3ItemContext binItem = new V3ItemContext();
+        binItem.setId(item.getId());
+        bin = new V3BinContext();
+        bin.setName("Virtual");
+        bin.setItem(binItem);
+        bin.setIsVirtualBin(true);
+        Map<Long, List<UpdateChangeSet>> changeSet = V3RecordAPI.addRecord(false, Collections.singletonList(bin), FacilioConstants.ContextNames.BIN, true);
+        if(MapUtils.isEmpty(changeSet)){
+            return null;
+        }
+        for (Long id :changeSet.keySet()) {
+            bin.setId(id);
+        }
+        return bin;
+    }
+
+    public static void makeBinDefault(V3ItemContext item, V3BinContext bin) throws Exception {
+		//cloning the existing bin to avoid circular reference
+		item.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		FacilioField binField = modBean.getField("defaultBin", FacilioConstants.ContextNames.ITEM);
+		if(module != null && binField != null){
+			V3RecordAPI.updateRecord(item, module,Arrays.asList(binField));
+		}
+	}
 }

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3PurchasedToolContext extends V3Context {
@@ -17,6 +18,7 @@ public class V3PurchasedToolContext extends V3Context {
     private Long costDate;
     public Boolean isUsed;
     private String serialNumber;
+    private V3BinContext bin;
 
     public V3ToolTypesContext getToolType() {
         return toolType;
@@ -87,5 +89,13 @@ public class V3PurchasedToolContext extends V3Context {
 
     public void setUnitPrice(Double unitPrice) {
         this.unitPrice = unitPrice;
+    }
+
+    public V3BinContext getBin() {
+        return bin;
+    }
+
+    public void setBin(V3BinContext bin) {
+        this.bin = bin;
     }
 }

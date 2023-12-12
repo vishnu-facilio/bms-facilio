@@ -120,7 +120,7 @@ public class SetServiceOrderItemsCommand extends FacilioCommand {
                 }
                 //non rotating item
                 else{
-                    List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                    List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,null);
 
                     if (CollectionUtils.isNotEmpty(purchasedItems)) {
                         V3PurchasedItemContext pItem = purchasedItems.get(0);

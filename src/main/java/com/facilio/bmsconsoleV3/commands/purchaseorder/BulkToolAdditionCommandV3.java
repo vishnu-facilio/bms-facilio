@@ -5,10 +5,12 @@ import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedToolContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.bmsconsoleV3.util.V3InventoryAPI;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.bmsconsoleV3.util.V3ToolsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BulkToolAdditionCommandV3 extends FacilioCommand {
 
@@ -87,17 +90,30 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
                 toolIds.add(tool.getId());
                 toolTypesIds.add(tool.getToolType().getId());
                 List<V3PurchasedToolContext> pTools = new ArrayList<>();
+                Map<Long, V3BinContext> binMap = new HashMap<>();
                 if (tool.getPurchasedTools() != null && !tool.getPurchasedTools().isEmpty()) {
                     for (V3PurchasedToolContext pTool : tool.getPurchasedTools()) {
                         pTool.setTool(tool);
                         pTool.setToolType(tool.getToolType());
                         pTool.setCostDate(System.currentTimeMillis());
+                        if(pTool.getBin() == null){
+                            if(tool.getDefaultBin() != null){
+                                pTool.setBin(tool.getDefaultBin());
+                            } else {
+                                V3BinContext bin = V3ToolsApi.addVirtualBin(tool);
+                                pTool.setBin(bin);
+                                V3ToolsApi.makeBinDefault(tool,bin);
+                                tool.setDefaultBin(bin);
+                            }
+                        }
+                        binMap.put(pTool.getBin().getId(),pTool.getBin());
                         pTools.add(pTool);
                         purchasedTools.add(pTool);
                     }
                     tool.setPurchasedTools(null);
                     toolVsPurchaseTool.put(tool.getId(), pTools);
                 }
+                context.put(FacilioConstants.ContextNames.BIN,binMap.values().stream().collect(Collectors.toList()));
             }
             if (purchasedTools != null && !purchasedTools.isEmpty()) {
                 List<V3PurchasedToolContext> addedRecords = V3InventoryAPI.addPurchasedTool(purchasedTools);
@@ -105,7 +121,6 @@ public class BulkToolAdditionCommandV3 extends FacilioCommand {
             }
 
             setImportProcessContext(context, size);
-
             context.put(FacilioConstants.ContextNames.RECORD_LIST, toolsList);
             context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
             context.put(FacilioConstants.ContextNames.TRANSACTION_TYPE, TransactionType.STOCK);

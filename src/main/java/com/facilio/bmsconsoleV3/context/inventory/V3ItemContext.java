@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.modules.FacilioIntEnum;
@@ -10,7 +11,7 @@ import java.util.List;
 
 public class V3ItemContext extends V3Context {
     private static final long serialVersionUID = 1L;
-
+    private V3BinContext defaultBin;
     private V3ItemTypesContext itemType;
     private V3StoreRoomContext storeRoom;
     private V3ItemStatusContext status;
@@ -19,6 +20,7 @@ public class V3ItemContext extends V3Context {
     private Double quantity;//available quantity
     private Double currentQuantity;
     private Double reservedQuantity;
+    private Double quantityWithoutBin;
     private List<V3PurchasedItemContext> purchasedItems;
     private Long lastPurchasedDate;
     private Double lastPurchasedPrice;
@@ -168,4 +170,12 @@ public class V3ItemContext extends V3Context {
     public void setWeightedAverageCost(Double weightedAverageCost) {
         this.weightedAverageCost = weightedAverageCost;
     }
+    public V3BinContext getDefaultBin() {
+        return defaultBin;
+    }
+
+    public void setDefaultBin(V3BinContext defaultBin) {
+        this.defaultBin = defaultBin;
+    }
+
 }

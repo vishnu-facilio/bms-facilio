@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -26,7 +27,6 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
     public WorkOrderItemsModule() throws Exception{
         setModuleName(FacilioConstants.ContextNames.WORKORDER_ITEMS);
     }
-
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -187,6 +187,9 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         int seqNum = 0;
         List<FormField> workOrderItemFormFields = new ArrayList<>();
         workOrderItemFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum, 1));
+        FormField binField = new FormField("bin", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Bin", FormField.Required.REQUIRED, "bin", ++seqNum, 1);
+        binField.setVersion(Version.V2.getVersionId());
+        workOrderItemFormFields.add(binField);
         workOrderItemFormFields.add(new FormField("item", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Item", FormField.Required.REQUIRED, "item", ++seqNum, 1));
         workOrderItemFormFields.add(new FormField("quantity", FacilioField.FieldDisplayType.DECIMAL, "Quantity", FormField.Required.REQUIRED, ++seqNum, 1));
         workOrderItemFormFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Rotating Asset", FormField.Required.OPTIONAL, "asset", ++seqNum, 1));
@@ -203,6 +206,7 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         FormRuleContext assetFormRule = addRotatingAssetFilterRule();
         workOrderItemFormRules.add(itemFilterRule);
         workOrderItemFormRules.add(assetFormRule);
+        workOrderItemFormRules.add(addBinFilterRule());
         workOrderItemForm.setDefaultFormRules(workOrderItemFormRules);
 
         return Collections.singletonList(workOrderItemForm);
@@ -233,6 +237,43 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         Criteria criteria = new Criteria();
 
         criteria.addAndCondition(CriteriaAPI.getCondition("Item.STORE_ROOM_ID","storeRoom", "${workorderItem.storeRoom.id}", StringOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
+    }
+
+    private FormRuleContext addBinFilterRule() {
+        // TODO Auto-generated method stub
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Set Bin Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Item");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Bin");
+
+        Criteria criteria = new Criteria();
+
+        criteria.addAndCondition(CriteriaAPI.getCondition("Bin.ITEM_ID","item", "${workorderItem.item.id}", StringOperators.IS));
 
         actionField.setCriteria(criteria);
 

@@ -148,8 +148,7 @@ public class AddOrUpdateManualItemTransactionCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-
-                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,null);
 
                             if (purchasedItems != null && !purchasedItems.isEmpty()) {
                                 V3PurchasedItemContext pItem = purchasedItems.get(0);

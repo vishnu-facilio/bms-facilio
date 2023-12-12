@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
 import com.facilio.modules.FacilioIntEnum;
@@ -11,7 +12,7 @@ import java.util.List;
 public class V3ToolContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
-
+    private V3BinContext defaultBin;
     private V3ToolTypesContext toolType;
     private V3StoreRoomContext storeRoom;
     private V3ToolStatusContext status;
@@ -164,4 +165,11 @@ public class V3ToolContext extends V3Context {
         this.reservedQuantity = reservedQuantity;
     }
 
+    public V3BinContext getDefaultBin() {
+        return defaultBin;
+    }
+
+    public void setDefaultBin(V3BinContext defaultBin) {
+        this.defaultBin = defaultBin;
+    }
 }

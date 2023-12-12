@@ -761,6 +761,17 @@ public class APIv3Config {
                 .beforeFetch(new LoadStoreRoomLookUpCommandV3())
                 .build();
     }
+    @Module("bin")
+    public static Supplier<V3Config> getBin() {
+        return () -> new V3Config(V3BinContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
+                .beforeFetch(new BinLookupCommandV3())
+                .summary()
+                .build();
+    }
+
 
     @Module("watchlist")
     public static Supplier<V3Config> getWatchList() {

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context.inventory;
 
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.v3.context.V3Context;
 
 public class V3PurchasedItemContext extends V3Context {
@@ -7,6 +8,7 @@ public class V3PurchasedItemContext extends V3Context {
 
     private V3ItemTypesContext itemType;
     private V3ItemContext item;
+    private V3BinContext bin;
     private Double unitcost;
     private Double quantity;
     private Double currentQuantity;
@@ -79,4 +81,11 @@ public class V3PurchasedItemContext extends V3Context {
         isUsed = used;
     }
 
+    public V3BinContext getBin() {
+        return bin;
+    }
+
+    public void setBin(V3BinContext bin) {
+        this.bin = bin;
+    }
 }

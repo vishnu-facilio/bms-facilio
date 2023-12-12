@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonAppRelContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.*;
 import com.facilio.relation.util.RelationshipWidgetUtil;
@@ -1881,7 +1880,6 @@ public class AssetModule extends BaseModuleConfig{
         assetForm.setSections(Collections.singletonList(section));
         assetForm.setIsSystemForm(true);
         assetForm.setType(FacilioForm.Type.FORM);
-
         FormRuleContext singleRule = addRotatingItemTypeFilterRule();
         assetForm.setDefaultFormRules(Arrays.asList(singleRule));
 
@@ -1922,6 +1920,7 @@ public class AssetModule extends BaseModuleConfig{
 
         return assetModuleForms;
     }
+
     private FormRuleContext addRotatingItemTypeFilterRule() {
 
         FormRuleContext singleRule = new FormRuleContext();
@@ -1956,6 +1955,83 @@ public class AssetModule extends BaseModuleConfig{
         singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
         return singleRule;
     }
+
+
+    private FormRuleContext addBinFilterRule() throws Exception {
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Bin Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext itemField = new FormRuleTriggerFieldContext();
+        itemField.setFieldName("Rotating - Item Type");
+
+        FormRuleTriggerFieldContext storeRoom = new FormRuleTriggerFieldContext();
+        storeRoom.setFieldName("Storeroom");
+        singleRule.setTriggerFields(Arrays.asList(itemField,storeRoom));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Bin");
+
+        actionField.setCriteria(binItemCriteria());
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+        actions.add(filterAction);
+        singleRule.setActions(actions);
+
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP, FacilioConstants.ApplicationLinkNames.ENERGY_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        return singleRule;
+    }
+    private static Criteria binItemCriteria() throws Exception {
+        Criteria rotatingItemTypeCriteria = new Criteria();
+        rotatingItemTypeCriteria.addAndCondition(getStoreRoomCondition());
+        rotatingItemTypeCriteria.addAndCondition(getItemTypeCondition());
+        return rotatingItemTypeCriteria;
+    }
+
+    private static Condition getStoreRoomCondition() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+
+        Criteria criteriaValue = new Criteria();
+        Condition storeRoomCondition = CriteriaAPI.getCondition(modBean.getField("storeRoom","item"),"${asset.storeRoom.id}",StringOperators.IS);
+        criteriaValue.addAndCondition(storeRoomCondition);
+
+        LookupField itemField = (LookupField) modBean.getField("item", "bin");
+        itemField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ITEM));
+
+        Condition storeRoomParentCondition = new Condition();
+        storeRoomParentCondition.setField(itemField);
+        storeRoomParentCondition.setOperator(LookupOperator.LOOKUP);
+        storeRoomParentCondition.setCriteriaValue(criteriaValue);
+
+        return storeRoomParentCondition;
+    }
+    private static Condition getItemTypeCondition() throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+
+        Criteria criteriaValue = new Criteria();
+        Condition itemTypeCondition = CriteriaAPI.getCondition(modBean.getField("itemType","item"),"${asset.rotatingItemType.id}",StringOperators.IS);
+        criteriaValue.addAndCondition(itemTypeCondition);
+
+        LookupField itemField = (LookupField) modBean.getField("item", "bin");
+        itemField.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ITEM));
+
+        Condition itemTypeParentCondition = new Condition();
+        itemTypeParentCondition.setField(itemField);
+        itemTypeParentCondition.setOperator(LookupOperator.LOOKUP);
+        itemTypeParentCondition.setCriteriaValue(criteriaValue);
+
+        return itemTypeParentCondition;
+    }
+
 
     @Override
     public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {

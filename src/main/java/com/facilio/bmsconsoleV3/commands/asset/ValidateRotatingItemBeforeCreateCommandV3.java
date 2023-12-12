@@ -33,6 +33,10 @@ public class ValidateRotatingItemBeforeCreateCommandV3 extends FacilioCommand {
                     if(asset.getSpace()!=null && asset.getSpace().getId() != asset.getSiteId()){
                         throw new RESTException(ErrorCode.VALIDATION_ERROR, "Location cannot be entered for a Rotating Item");
                     }
+                } else {
+                    if(asset.getBin() != null && asset.getBin().getId() > 0){
+                        throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please Select StoreRoom to choose bin");
+                    }
                 }
             }
         }

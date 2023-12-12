@@ -8,10 +8,7 @@ import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
-import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
-import com.facilio.bmsconsoleV3.context.V3SiteContext;
-import com.facilio.bmsconsoleV3.context.V3SpaceContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.inventory.*;
 import com.facilio.bmsconsoleV3.enums.CostType;
@@ -34,6 +31,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import javax.xml.bind.ValidationException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,6 +58,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
         List<Long> parentIds = new ArrayList<>();
         Map<Long,V3WorkOrderContext> workOrderMap = new HashMap<>();
         V3WorkOrderContext wo = new V3WorkOrderContext();
+        Set<Long> binIds = workOrderItems.stream().map(i -> i.getBin().getId()).collect(Collectors.toSet());
+        Map<Long, V3BinContext> allBins = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class);
         if (CollectionUtils.isNotEmpty(workOrderItems)) {
             for (V3WorkorderItemContext workorderItem : workOrderItems) {
                 long parentId = workorderItem.getParentId()>0 ? workorderItem.getParentId() : -1;
@@ -135,8 +135,23 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                     }
                 }
                 else{
-                    if (workorderItem.getRequestedLineItem() == null && workorderItem.getParentTransactionId() <= 0 && item.getQuantity() < workorderItem.getQuantity()) {
-                        throw new IllegalArgumentException("Insufficient quantity in inventory!");
+                    V3BinContext bin = null;
+                    if(workorderItem != null){
+                        bin = allBins.get(workorderItem.getBin().getId());
+                    }
+                    if( bin == null || bin.getId() <= 0 ){
+                        if(item.getDefaultBin() != null){
+                            bin = item.getDefaultBin();
+                            workorderItem.setBin(bin);
+                        } else {
+                            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Bin should not be empty");
+                        }
+                    } else {
+                        V3ItemsApi.validateBin(Collections.singleton(bin.getId()),item);
+                    }
+
+                    if (workorderItem.getRequestedLineItem() == null && workorderItem.getParentTransactionId() <= 0 && bin.getQuantity() < workorderItem.getQuantity()) {
+                        throw new IllegalArgumentException("Insufficient quantity in selected Bin!");
                     } else {
                         approvalState = ApprovalState.YET_TO_BE_REQUESTED;
                         if (workorderItem.getRequestedLineItem() != null && workorderItem.getRequestedLineItem().getId() > 0) {
@@ -182,7 +197,8 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                                     itemToBeAdded.add(woItem);
                             }
                         } else {
-                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item);
+                            List<V3PurchasedItemContext> purchasedItems = V3InventoryUtil.getPurchasedItemsBasedOnCostType(item,bin);
+
                             if (purchasedItems != null && !purchasedItems.isEmpty()) {
                                 V3PurchasedItemContext pItem = purchasedItems.get(0);
                                 if(item.getCostType().equals(CostType.WEIGHTED_AVERAGE.getIndex())){
@@ -242,6 +258,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
                 context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORKORDER_ITEMS);
             }
+            context.put(FacilioConstants.ContextNames.BIN,allBins.values().stream().collect(Collectors.toList()));
             context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, parentIds);
             context.put(FacilioConstants.ContextNames.ITEM_ID, workOrderItems.get(0).getItem().getId());
             context.put(FacilioConstants.ContextNames.ITEM_IDS,
@@ -281,6 +298,7 @@ public class SetWorkOrderItemsCommandV3 extends FacilioCommand {
             costOccured = unitPrice * quantity;
         }
         woItem.setStoreRoom(item.getStoreRoom());
+        woItem.setBin(workOrderItem.getBin());
         woItem.setQuantity(quantity);
         woItem.setTransactionState(TransactionState.USE);
         if(parentTransactionId != -1) {

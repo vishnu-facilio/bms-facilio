@@ -1463,7 +1463,7 @@ public class FacilioConstants {
 
 
 		public static final String RETURN_ITEMS_BUTTON = "returnItems";
-		public static final String RETURN_TOOLS_BUTTON = "returnItems";
+		public static final String RETURN_TOOLS_BUTTON = "returnTools";
 
 		public static final String ADJUST_ITEM_BALANCE_BUTTON = "adjustItemBalance";
 		public static final String ADJUST_TOOL_BALANCE_BUTTON = "adjustToolBalance";
@@ -1479,6 +1479,8 @@ public class FacilioConstants {
 		public static final String STOREROOM_ISSUE_TOOLS = "storeRoomIssueTools";
 		public static final String STOREROOM_ISSUE_RESERVED_ITEMS = "storeRoomIssueReservedItems";
 		public static final String STOREROOM_ISSUE_RESERVED_TOOLS = "storeRoomIssueReservedTools";
+		public static final String STOREROOM_ISSUE_ITEMS_TO_PERSON = "storeRoomIssueItemsToPerson";
+		public static final String STOREROOM_RETURN_ITEMS_TO_PERSON = "StoreRoomReturnItemsToPerson";
 		public static final String STOREROOM_ISSUE_TOOLS_TO_PERSON = "storeRoomIssueToolsToPerson";
 		public static final String STOREROOM_RETURN_TOOLS_TO_PERSON = "StoreRoomReturnToolsToPerson";
 		public static final String ADD_INVENTORY_REQUEST_ITEMS = "addInventoryRequestItems";

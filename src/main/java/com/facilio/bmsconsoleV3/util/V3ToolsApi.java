@@ -2,9 +2,9 @@ package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3ToolTransactionContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
@@ -20,7 +20,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -326,7 +330,7 @@ public class V3ToolsApi {
     }
 
 
-    public static Double getIssuedToolsQuantityForUser( V3ToolContext tool, User issuedTo) throws Exception {
+    public static Double getIssuedToolsQuantityForUser( V3ToolContext tool, User issuedTo,V3BinContext bin) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> toolTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(toolTransactionFields);
@@ -335,10 +339,11 @@ public class V3ToolsApi {
         Condition toolCondition = CriteriaAPI.getCondition(fieldsMap.get("tool"), Collections.singleton(tool.getId()), NumberOperators.EQUALS);
         Condition transactionStateCondition = CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(TransactionState.ISSUE.getValue()), NumberOperators.EQUALS);
         Condition issuedUserCondition = CriteriaAPI.getCondition(fieldsMap.get("issuedTo"), String.valueOf(issuedTo.getId()), NumberOperators.EQUALS);
-
+        Condition binCondition = CriteriaAPI.getCondition(fieldsMap.get("bin"), Collections.singleton(bin.getId()), NumberOperators.EQUALS);
         criteria.addAndCondition(toolCondition);
         criteria.addAndCondition(transactionStateCondition);
         criteria.addAndCondition(issuedUserCondition);
+        criteria.addAndCondition(binCondition);
 
         Map<Long, V3ToolTransactionContext> props = V3RecordAPI.getRecordsMap(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, null,V3ToolTransactionContext.class, criteria);
         Double availableQuantity = 0.00;
@@ -354,5 +359,96 @@ public class V3ToolsApi {
             }
         }
         return availableQuantity;
+    }
+
+    public static boolean toolHasBin(V3ToolContext tool) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioField binField = modBean.getField("tool", FacilioConstants.ContextNames.BIN);
+        FacilioField aggregateField = modBean.getField("id", FacilioConstants.ContextNames.BIN);
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(binField, Collections.singleton(tool.getId()), NumberOperators.EQUALS));
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN, null, null, criteria, BmsAggregateOperators.CommonAggregateOperator.COUNT, aggregateField, null);
+        if(props != null) {
+            Long count = (Long) props.get(0).get(aggregateField.getName());
+            if(count != null && count > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static void validateBin(Set<Long> binIds, V3ToolContext tool) throws Exception {
+        Condition toolCondition = CriteriaAPI.getCondition("tool",String.valueOf(tool.getId()), NumberOperators.NOT_EQUALS);
+        Condition idCondition = CriteriaAPI.getIdCondition(binIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.BIN));
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(toolCondition);
+        criteria.addAndCondition(idCondition);
+        FacilioField aggregateField = Constants.getModBean().getField("id", FacilioConstants.ContextNames.BIN);
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,binIds, V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
+        if(props != null) {
+            Long count = (Long) props.get(0).get(aggregateField.getName());
+            if(count != null && count > 0) {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please Select Bins which belongs to the tool");
+            }
+        }
+    }
+
+
+    public static Map<String, Long> quickAddBin(Set<String> newBinNames, V3ToolContext tool) throws Exception {
+        if(CollectionUtils.isEmpty(newBinNames)){
+            return null;
+        }
+        List<V3BinContext> binList = new ArrayList<>();
+        for (String name: newBinNames) {
+            V3StoreroomApi.checkIfBinNameAlreadyExists(name,tool.getStoreRoom());
+            V3BinContext bin = new V3BinContext();
+            bin.setName(name);
+            bin.setQuantity(0L);
+            bin.setTool(tool);
+            binList.add(bin);
+        }
+        Map<Long, List<UpdateChangeSet>> changeSet = V3RecordAPI.addRecord(false, binList, FacilioConstants.ContextNames.BIN, true);
+        if(MapUtils.isNotEmpty(changeSet)){
+            Map<String,Long> nameVsId = new HashMap<>();
+            FacilioField nameField = Constants.getModBean().getField("name", FacilioConstants.ContextNames.BIN);
+            for (Long id :changeSet.keySet()) {
+                List<UpdateChangeSet> change = changeSet.get(id);
+                UpdateChangeSet nameChange = change.stream().filter(c -> c.getFieldId() == nameField.getId()).findFirst().orElse(null);
+                if(nameChange == null){
+                    continue;
+                }
+                nameVsId.put((String) nameChange.getNewValue(),id);
+            }
+            return nameVsId;
+        }
+        return null;
+    }
+    public static V3BinContext addVirtualBin(V3ToolContext tool) throws Exception {
+        V3BinContext bin;
+        V3ToolContext binTool = new V3ToolContext();
+        binTool.setId(tool.getId());
+        bin = new V3BinContext();
+        bin.setName("Virtual");
+        bin.setTool(binTool);
+        bin.setIsVirtualBin(true);
+        Map<Long, List<UpdateChangeSet>> changeSet = V3RecordAPI.addRecord(false, Collections.singletonList(bin), FacilioConstants.ContextNames.BIN, true);
+        if(MapUtils.isEmpty(changeSet)){
+            return null;
+        }
+        for (Long id :changeSet.keySet()) {
+            bin.setId(id);
+        }
+        return bin;
+    }
+
+    public static void makeBinDefault(V3ToolContext tool, V3BinContext bin) throws Exception {
+        //cloning the existing bin to avoid circular reference
+        tool.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+        FacilioField binField = modBean.getField("defaultBin", FacilioConstants.ContextNames.TOOL);
+        if(module != null && binField != null){
+            V3RecordAPI.updateRecord(tool, module,Arrays.asList(binField));
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -312,7 +313,9 @@ public class ItemTypesModule extends BaseModuleConfig{
         itemTypesFormFields.add(new FormField("minimumQuantity", FacilioField.FieldDisplayType.NUMBER, "Minimum Quantity", FormField.Required.OPTIONAL, 5, 3));
         itemTypesFormFields.add(new FormField("isRotating", FacilioField.FieldDisplayType.DECISION_BOX, "Is Rotating", FormField.Required.OPTIONAL, 6, 2));
         itemTypesFormFields.add(new FormField("isApprovalNeeded", FacilioField.FieldDisplayType.DECISION_BOX, "Approval Needed", FormField.Required.OPTIONAL, 7, 3));
-        itemTypesFormFields.add(new FormField("isConsumable", FacilioField.FieldDisplayType.DECISION_BOX, "To Be Issued", FormField.Required.OPTIONAL, 8, 2));
+        FormField toBeIssued = new FormField("isConsumable", FacilioField.FieldDisplayType.DECISION_BOX, "To Be Issued", FormField.Required.OPTIONAL, 8, 2);
+        toBeIssued.setVersion(Version.V1.getVersionId());
+        itemTypesFormFields.add(toBeIssued);
         FormField currentQuantity = new FormField("currentQuantity", FacilioField.FieldDisplayType.NUMBER, "Current Quantity", FormField.Required.OPTIONAL, 9, 2);
         currentQuantity.setHideField(true);
         itemTypesFormFields.add(currentQuantity);

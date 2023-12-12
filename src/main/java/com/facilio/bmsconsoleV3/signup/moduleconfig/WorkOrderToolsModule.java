@@ -5,14 +5,16 @@ import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
 import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.enums.Version;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
@@ -189,6 +191,9 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         List<FormField> workOrderToolsModuleFormFields = new ArrayList<>();
         int seqNum = 0;
         workOrderToolsModuleFormFields.add(new FormField("storeRoom", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Storeroom", FormField.Required.OPTIONAL, "storeRoom", ++seqNum,1));
+        FormField binField = new FormField("bin", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Bin", FormField.Required.REQUIRED, "bin", ++seqNum, 1);
+        binField.setVersion(Version.V2.getVersionId());
+        workOrderToolsModuleFormFields.add(binField);
         workOrderToolsModuleFormFields.add(new FormField("tool", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tool", FormField.Required.REQUIRED, "tool", ++seqNum, 1));
         workOrderToolsModuleFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.OPTIONAL, "ticket", ++seqNum, 1));
         workOrderToolsModuleFormFields.add(new FormField("issuedTo", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Issue To", FormField.Required.REQUIRED, "users", ++seqNum, 1));
@@ -201,6 +206,86 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         workOrderToolsModuleForm.setIsSystemForm(true);
         workOrderToolsModuleForm.setType(FacilioForm.Type.FORM);
 
+        List<FormRuleContext> workOrderToolFormRules = new ArrayList<>();
+        workOrderToolFormRules.add(addToolFilterRule());
+        workOrderToolFormRules.add(addBinFilterRule());
+
+
         return Collections.singletonList(workOrderToolsModuleForm);
+    }
+
+    private FormRuleContext addToolFilterRule() {
+        // TODO Auto-generated method stub
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Set Tool Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Storeroom");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Tool");
+
+        Criteria criteria = new Criteria();
+
+        criteria.addAndCondition(CriteriaAPI.getCondition("Tool.STORE_ROOM_ID","storeRoom", "${workorderTools.storeRoom.id}", StringOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
+    }
+
+
+    private FormRuleContext addBinFilterRule() {
+        // TODO Auto-generated method stub
+
+        FormRuleContext singleRule = new FormRuleContext();
+        singleRule.setName("Set Bin Filter Rule");
+        singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Tool");
+        singleRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+
+        FormRuleActionContext filterAction = new FormRuleActionContext();
+        filterAction.setActionType(FormActionType.APPLY_FILTER.getVal());
+
+        FormRuleActionFieldsContext actionField = new FormRuleActionFieldsContext();
+
+        actionField.setFormFieldName("Bin");
+
+        Criteria criteria = new Criteria();
+
+        criteria.addAndCondition(CriteriaAPI.getCondition("Bin.TOOL_ID","tool", "${workorderTools.tool.id}", StringOperators.IS));
+
+        actionField.setCriteria(criteria);
+
+        filterAction.setFormRuleActionFieldsContext(Collections.singletonList(actionField));
+
+        actions.add(filterAction);
+
+        singleRule.setActions(actions);
+        singleRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+        return singleRule;
     }
 }

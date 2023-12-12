@@ -146,7 +146,7 @@ public class AddOrUpdateManualToolTransactionsCommandV3 extends FacilioCommand {
                                 }
                             }
                         } else {
-                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,true);
+                            List<V3PurchasedToolContext> purchasedTools = V3InventoryUtil.getPurchasedToolsBasedOnCostType(tool,null,true);
                             if(CollectionUtils.isNotEmpty(purchasedTools)) {
                                 V3PurchasedToolContext pTool = purchasedTools.get(0);
                                 if(toolTransaction.getQuantity() <= pTool.getCurrentQuantity()){

@@ -2,9 +2,11 @@ package com.facilio.bmsconsoleV3.commands.purchaseorder;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3PurchasedItemContext;
 import com.facilio.bmsconsoleV3.enums.CostType;
+import com.facilio.bmsconsoleV3.util.V3ItemsApi;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class BulkItemAdditionCommandV3 extends FacilioCommand {
 
@@ -64,6 +67,7 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
                 addItem(itemModule, itemFields, itemToBeAdded);
             }
             List<V3ItemContext> itemCloneList = new ArrayList<>();
+            Map<Long, V3BinContext> binMap = new HashMap<>();
             for (V3ItemContext item : itemsList) {
                 V3ItemContext itemClone = FieldUtil.cloneBean(item,V3ItemContext.class);
                 itemCloneList.add(itemClone);
@@ -71,11 +75,24 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
                     for (V3PurchasedItemContext pItem : item.getPurchasedItems()) {
                         pItem.setItem(item);
                         pItem.setItemType(item.getItemType());
+                        if(pItem.getBin() == null){
+                            if(item.getDefaultBin() != null){
+                                pItem.setBin(item.getDefaultBin());
+                            } else {
+                                V3BinContext bin = V3ItemsApi.addVirtualBin(item);
+                                pItem.setBin(bin);
+                                V3ItemsApi.makeBinDefault(item,bin);
+                                item.setDefaultBin(bin);
+                            }
+                        }
+                        binMap.put(pItem.getBin().getId(),pItem.getBin());
+
                         purchasedItems.add(pItem);
                     }
                     item.setPurchasedItems(null);
                 }
             }
+            context.put(FacilioConstants.ContextNames.BIN,binMap.values().stream().collect(Collectors.toList()));
             context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
             context.put(FacilioConstants.ContextNames.RECORD_LIST, itemsList);
             context.put(FacilioConstants.ContextNames.ITEMS, itemCloneList);

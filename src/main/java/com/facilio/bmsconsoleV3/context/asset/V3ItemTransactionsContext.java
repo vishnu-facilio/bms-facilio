@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.bmsconsoleV3.context.V3BinContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3StoreRoomContext;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
@@ -52,6 +53,15 @@ public class V3ItemTransactionsContext extends V3Context {
 
     public void setPurchasedItem(V3PurchasedItemContext inventoryCost) {
         this.purchasedItem = inventoryCost;
+    }
+    private V3BinContext bin;
+
+    public V3BinContext getBin() {
+        return bin;
+    }
+
+    public void setBin(V3BinContext bin) {
+        this.bin = bin;
     }
 
     private double quantity = -1;
