@@ -2295,7 +2295,14 @@
             <param name="moduleName">{1}</param>
             <param name="recordId">{2}</param>
             <param name="glimpseFieldName">{3}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+
+    <package name="glimpseStatus" extends="v3Api" namespace="/api/v3/settings/glimpse">
+        <action name="*" class="com.facilio.bmsconsole.actions.ModuleSetupAction" method="getSettingConfigDetails">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 

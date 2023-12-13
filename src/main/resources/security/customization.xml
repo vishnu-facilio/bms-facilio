@@ -36,8 +36,14 @@
             <property name="formId" type="number" mandatory="true"/>
             <property name="formName" type="string"/>
             <property name="fetchFormRuleFields" type="boolean"/>
-            <property name="formSourceType" type="object"/>
+            <property name="formSourceType" type="number"/>
             <property name="forCreate" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path=" /api/v2/forms/subFormModules" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 

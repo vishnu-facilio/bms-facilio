@@ -6,7 +6,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -22,8 +21,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.facilio.bmsconsole.forms.FormSection.SectionType.SUB_FORM;
 
 @ScriptNameSpace(nameSpace = FacilioNameSpaceConstants.FORM_RULE)
 public class FacilioFormRuleFunctions {
@@ -386,7 +386,7 @@ public class FacilioFormRuleFunctions {
             return;
         }
 
-        formFields = FormsAPI.getFormFieldsFromSections(form.getSections());
+        formFields = getFormFieldsFromSections(form.getSections());
         formSections = form.getSections();
 
         for(FormField formField :formFields){
@@ -400,13 +400,6 @@ public class FacilioFormRuleFunctions {
 
         for (FormSection section : formSections) {
             formSectionMap.put(section.getLinkName(), section);
-            if (section.getSectionTypeEnum() == FormSection.SectionType.SUB_FORM) {
-                List<FormField> subFormFields = FormsAPI.getFormFieldsFromSections(section.getSubForm().getSections());
-                Map<String, FormField> subFormFieldMap = subFormFields.stream().collect(Collectors.toMap(FormField::getName, Function.identity(), (name1, name2) -> {
-                    return name1;
-                }));
-                formFieldMap.putAll(subFormFieldMap);
-            }
         }
 
     }
@@ -415,6 +408,10 @@ public class FacilioFormRuleFunctions {
         if (objects.length <= 0) {
             throw new FunctionParamException("Required Object is null");
         }
+    }
+
+    private static List<FormField> getFormFieldsFromSections(List<FormSection> sections) {
+        return sections.stream().map(section -> (section.getFields() != null && section.getSectionTypeEnum() != SUB_FORM) ? section.getFields() : new ArrayList<FormField>()).flatMap(List::stream).collect(Collectors.toList());
     }
 
     private List<Map<String, Object>> getResultListForAction(String actionName, List<Long> componentIds) {

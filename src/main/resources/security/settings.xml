@@ -759,6 +759,11 @@
             <property name="glimpseFieldName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/settings/glimpse/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <!--<request path="/api/v3/modules/:moduleName/view/:viewName/count" method="GET">
            <urlparams>
                <property name="moduleName" type="string" mandatory="true"/>

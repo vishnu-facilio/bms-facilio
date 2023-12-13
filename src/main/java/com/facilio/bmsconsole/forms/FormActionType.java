@@ -249,8 +249,11 @@ public enum FormActionType {
 			
 			Map<String,Object> formData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
 
-			FacilioForm form = formRuleActionContext.getRuleContext().getFormContext();
-			formData.put(ContextNames.FORM_RULE_FORM_OBJECT,form);
+			if(formRuleActionContext.getRuleContext().getSubFormContext()!=null){
+				formData.put(ContextNames.FORM_RULE_FORM_OBJECT,formRuleActionContext.getRuleContext().getSubFormContext());
+			}else{
+				formData.put(ContextNames.FORM_RULE_FORM_OBJECT,formRuleActionContext.getRuleContext().getFormContext());
+			}
 
 			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			

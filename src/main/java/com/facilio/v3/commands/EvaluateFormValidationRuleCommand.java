@@ -67,13 +67,16 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         }
         Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
+        if(MapUtils.isEmpty(recordMap)){
+            return false;
+        }
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
             if (record.getFormId() > 0) {
                 formIds.add(record.getFormId());
             }
         }
 
-        if ((CollectionUtils.isEmpty(formIds) && CollectionUtils.isEmpty(buttonFormIds)) || MapUtils.isEmpty(recordMap)) {
+        if ((CollectionUtils.isEmpty(formIds) && CollectionUtils.isEmpty(buttonFormIds))) {
             return false;
         }
 
@@ -83,12 +86,10 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         Map<String, CurrencyContext> currencyMap = Constants.getCurrencyMap(context);
         CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
 
-        if (MapUtils.isNotEmpty(buttonsFormValidationRule) && MapUtils.isNotEmpty(recordMap)) {
+        if (CollectionUtils.isNotEmpty(buttonIds)) {
             validateRecord(recordMap, buttonFormIds, buttonsFormValidationRule, moduleName, beanClass, currencyMap, baseCurrency);
-        }
-
-        if (MapUtils.isNotEmpty(formVsRuleMap) && MapUtils.isNotEmpty(recordMap)) {
-            validateRecordFormId(recordMap, formVsRuleMap, moduleName, buttonIds, beanClass, currencyMap, baseCurrency);
+        }else{
+            validateRecordFormId(recordMap, formVsRuleMap, moduleName, beanClass, currencyMap, baseCurrency);
         }
 
         return false;
@@ -129,6 +130,10 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
     private void validateRecord(Map<String, List<ModuleBaseWithCustomFields>> recordMap, List<Long> formIds, Map<Long, List<ValidationContext>> formVsRuleMap,
                                 String moduleName, Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
 
+        if (MapUtils.isEmpty(formVsRuleMap)) {
+            return;
+        }
+
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
             multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
@@ -150,10 +155,11 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
     }
 
     private void validateRecordFormId(Map<String, List<ModuleBaseWithCustomFields>> recordMap, Map<Long, List<ValidationContext>> formVsRuleMap,
-                                      String moduleName, List<Long> buttonIds, Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
+                                      String moduleName,Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
 
-        // TODO remove after tracking and use validateRecord....
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        if (MapUtils.isEmpty(formVsRuleMap)) {
+            return;
+        }
 
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
@@ -168,18 +174,9 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
                     CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyMap);
                     record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass);
                 }
-                if (CollectionUtils.isNotEmpty(buttonIds)) {
-                    try {
-                        ValidationRulesAPI.validateRecord(moduleName, record, formVsRuleMap.get(formId));
-                    } catch (Exception e) {
-                        LOGGER.info("Form Validation Executed For formId : " + formId + " and moduleName : " + moduleName + " and orgId : " + orgId);
-                        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DISABLE_FORM_VALIDATION_RULE)) {
-                            throw e;
-                        }
-                    }
-                } else {
-                    ValidationRulesAPI.validateRecord(moduleName, record, formVsRuleMap.get(formId));
-                }
+
+                ValidationRulesAPI.validateRecord(moduleName, record, formVsRuleMap.get(formId));
+
             }
         }
     }
