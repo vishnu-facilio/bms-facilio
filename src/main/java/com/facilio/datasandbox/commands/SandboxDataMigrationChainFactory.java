@@ -13,7 +13,6 @@ public class SandboxDataMigrationChainFactory {
         chain.addCommand(new ComputeModuleSequenceForPackageCreation());
         chain.addCommand(new CreateDataCSVFilesCommand());
         chain.addCommand(new UpdateDataCSVFilesCommand());
-//        chain.addCommand(new CreateDataCSVFilesForSubModulesCommand());
         chain.addCommand(new PackageCreationResponseCommand());
         return chain;
     }
@@ -24,9 +23,6 @@ public class SandboxDataMigrationChainFactory {
         c.addCommand(new ComputeModuleSequenceForPackageInstallation());
         c.addCommand(new SandboxDataInsertCommand());
         c.addCommand(new SandboxDataUpdateCommand());
-//        c.addCommand(new SandboxDataAddModuleAttachmentsCommand());
-//        c.addCommand(new SandboxDataAddModuleNotesCommand());
-
         return c;
     }
 }
