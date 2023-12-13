@@ -1,10 +1,10 @@
 package com.facilio.remotemonitoring.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.compute.FlaggedEventUtil;
 import com.facilio.remotemonitoring.context.FlaggedEventContext;
@@ -17,17 +17,16 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 import java.util.Map;
 
-public class FlaggedEventWorkorderCloseCommand extends FacilioCommand {
+public class FlaggedAlarmCloseFromServiceOrderCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         if (AccountUtil.getCurrentOrg() != null && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.REMOTE_MONITORING)) {
-
             String moduleName = Constants.getModuleName(context);
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
-            List<V3WorkOrderContext> workorders = recordMap.get(moduleName);
-            if (CollectionUtils.isNotEmpty(workorders)) {
-                for (V3WorkOrderContext workorder : workorders) {
-                    FlaggedEventContext flaggedEvent = workorder.getFlaggedEvent();
+            List<ServiceOrderContext> serviceOrders = recordMap.get(moduleName);
+            if (CollectionUtils.isNotEmpty(serviceOrders)) {
+                for (ServiceOrderContext serviceOrder : serviceOrders) {
+                    FlaggedEventContext flaggedEvent = serviceOrder.getFlaggedEvent();
                     if (flaggedEvent != null) {
                         FlaggedEventContext fetchedFlaggedEvent = FlaggedEventUtil.getFlaggedEvent(flaggedEvent.getId());
                         if (fetchedFlaggedEvent != null && fetchedFlaggedEvent.getFlaggedAlarmProcess() != null) {
@@ -36,8 +35,8 @@ public class FlaggedEventWorkorderCloseCommand extends FacilioCommand {
                             if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null) {
                                 FlaggedEventRuleClosureConfigContext closure = FlaggedEventUtil.getFlaggedEventClosureConfig(rule.getFlaggedEventRuleClosureConfig().getId());
                                 if (closure != null) {
-                                    List<FacilioStatus> workorderRuleStatuses = closure.getWorkorderStatuses();
-                                    if (matchingStatus(workorderRuleStatuses, workorder.getModuleState())) {
+                                    List<ServiceOrderTicketStatusContext> serviceOrderStatuses = closure.getServiceOrderStatuses();
+                                    if (matchingStatus(serviceOrderStatuses, serviceOrder.getStatus())) {
                                         FlaggedEventUtil.closeFlaggedEvent(fetchedFlaggedEvent.getId());
                                     }
                                 }
@@ -50,10 +49,10 @@ public class FlaggedEventWorkorderCloseCommand extends FacilioCommand {
         return false;
     }
 
-    private static boolean matchingStatus(List<FacilioStatus> statues, FacilioStatus currentWorkorderStatus) {
+    private static boolean matchingStatus(List<ServiceOrderTicketStatusContext> statues, ServiceOrderTicketStatusContext currentServiceOrderStatus) {
         if (CollectionUtils.isNotEmpty(statues)) {
-            for (FacilioStatus status : statues) {
-                if (status.getId() == currentWorkorderStatus.getId()) {
+            for (ServiceOrderTicketStatusContext status : statues) {
+                if (status.getId() == currentServiceOrderStatus.getId()) {
                     return true;
                 }
             }

@@ -2,6 +2,7 @@ package com.facilio.modules;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.context.FieldPermissionContext.CheckType;
 import com.facilio.bmsconsole.context.FieldPermissionContext.PermissionType;
@@ -18,6 +19,8 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.exception.FacilioObjectMapperException;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
@@ -34,6 +37,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -127,11 +131,15 @@ public class FieldUtil {
 		ObjectMapper mapper = getMapper(classObj);
 		return mapper.readValue(content.toJSONString(), classObj);
 	}
-	
+
 	public static <E> E getAsBeanFromMap(Map<String, Object> props, Class<E> classObj)
 	{
 		ObjectMapper mapper = getMapper(classObj);
-		return mapper.convertValue(props, classObj);
+		try {
+			return mapper.convertValue(props, classObj);
+		} catch (IllegalArgumentException e) {
+			throw new FacilioObjectMapperException(e.getCause());
+		}
 	}
 	public static <E> List<E> getAsBeanListFromJsonArray(JSONArray content, Class<E> classObj) throws JsonParseException, JsonMappingException, IOException
 	{
@@ -144,7 +152,11 @@ public class FieldUtil {
 	public static <E> List<E> getAsBeanListFromMapList(List<Map<String, Object>> props, Class<E> classObj) {
 		if (props != null) {
 			ObjectMapper mapper = getMapper(classObj);
-			return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+			try {
+				return mapper.convertValue(props, mapper.getTypeFactory().constructCollectionType(List.class, classObj));
+			} catch (IllegalArgumentException e) {
+				throw new FacilioObjectMapperException(e.getCause());
+			}
 		}
 		return null;
 	}
@@ -158,7 +170,11 @@ public class FieldUtil {
 		Map<String, Object> properties = null;
 		if(bean != null) {
 			ObjectMapper mapper = getMapper(bean.getClass(), includeDefaultValues);
-			properties = mapper.convertValue(bean, Map.class);
+			try {
+				properties = mapper.convertValue(bean, Map.class);
+			} catch (IllegalArgumentException e) {
+				throw new FacilioObjectMapperException(e.getCause());
+			}
 		}
 //		LOGGER.debug("######" + properties + "#####");
 		return properties;
@@ -184,8 +200,11 @@ public class FieldUtil {
 		JSONObject properties = null;
 		if(bean != null) {
 			ObjectMapper mapper = getMapper(bean.getClass(), includeDefaultValues);
-			properties = mapper.convertValue(bean, JSONObject.class);
-
+			try {
+				properties = mapper.convertValue(bean, JSONObject.class);
+			} catch (IllegalArgumentException e) {
+				throw new FacilioObjectMapperException(e.getCause());
+			}
 		}
 		return properties;
 	}
@@ -198,7 +217,11 @@ public class FieldUtil {
 		JSONArray array = null;
 		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass, includeDefaultValues);
-			array = mapper.convertValue(beans, JSONArray.class);
+			try {
+				array = mapper.convertValue(beans, JSONArray.class);
+			} catch (IllegalArgumentException e) {
+				throw new FacilioObjectMapperException(e.getCause());
+			}
 		}
 		return array;
 	}
@@ -212,7 +235,11 @@ public class FieldUtil {
 		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass, includeDefaultValues);
 //			array = mapper.convertValue(beans, List.class);
-			return mapper.convertValue(beans, mapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+			try {
+				return mapper.convertValue(beans, mapper.getTypeFactory().constructCollectionType(List.class, Map.class));
+			} catch (IllegalArgumentException e) {
+				throw new FacilioObjectMapperException(e.getCause());
+			}
 		}
 		return array;
 	}
@@ -363,8 +390,12 @@ public class FieldUtil {
 	
 	public static <E> E cloneBean(Object bean, Class<E> classObj) {
 		ObjectMapper mapper = getMapper(classObj);
-		Map<String, Object> properties = mapper.convertValue(bean, Map.class);
-		return mapper.convertValue(properties, classObj);
+		try {
+			Map<String, Object> properties = mapper.convertValue(bean, Map.class);
+			return mapper.convertValue(properties, classObj);
+		} catch (IllegalArgumentException e) {
+			throw new FacilioObjectMapperException(e.getCause());
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -1011,5 +1042,17 @@ public class FieldUtil {
 
 	public  static boolean isGeoLocationField(FacilioField field){
 		return field.getDisplayType()== FacilioField.FieldDisplayType.GEO_LOCATION && Objects.equals(((LookupField) field).getLookupModule().getName(), ContextNames.LOCATION);
+	}
+
+	public static String getSkipFieldNameForModule(String moduleName) throws Exception {
+		if(StringUtils.isNotEmpty(moduleName)){
+			String key = "skipField_" + moduleName;
+			Map<String, Object> skipFieldNameMap = CommonCommandUtil.getOrgInfo(AccountUtil.getCurrentOrg().getOrgId(), key);
+			if(skipFieldNameMap != null){
+				String skipFieldNameValue = (String) skipFieldNameMap.get("value");
+				return skipFieldNameValue;
+			}
+		}
+		return null;
 	}
 }

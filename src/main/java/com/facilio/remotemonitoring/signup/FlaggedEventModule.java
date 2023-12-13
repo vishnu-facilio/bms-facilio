@@ -135,7 +135,7 @@ public class FlaggedEventModule extends SignUpData {
         LookupField flaggedEventLookupInWorkorder = new LookupField();
         flaggedEventLookupInWorkorder.setDefault(true);
         flaggedEventLookupInWorkorder.setName("flaggedEvent");
-        flaggedEventLookupInWorkorder.setDisplayName("Flagged Event");
+        flaggedEventLookupInWorkorder.setDisplayName("Flagged Alarm");
         flaggedEventLookupInWorkorder.setModule(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER));
         flaggedEventLookupInWorkorder.setDataType(FieldType.LOOKUP);
         flaggedEventLookupInWorkorder.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
@@ -153,6 +153,29 @@ public class FlaggedEventModule extends SignUpData {
         asset.setColumnName("ASSET_ID");
         asset.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modBean.addField(asset);
+
+        LookupField controlAction = new LookupField();
+        controlAction.setDefault(true);
+        controlAction.setName("controlAction");
+        controlAction.setDisplayName("Control Action");
+        controlAction.setModule(mod);
+        controlAction.setDataType(FieldType.LOOKUP);
+        controlAction.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        controlAction.setColumnName("CONTROL_ACTION");
+        controlAction.setLookupModule(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME));
+        modBean.addField(controlAction);
+
+        //  add flagged event field in raw alarm module
+        LookupField rawAlarmFilterAlarmField = new LookupField();
+        rawAlarmFilterAlarmField.setDefault(true);
+        rawAlarmFilterAlarmField.setName("flaggedEvent");
+        rawAlarmFilterAlarmField.setDisplayName("Flagged Alarm");
+        rawAlarmFilterAlarmField.setModule(modBean.getModule(RawAlarmModule.MODULE_NAME));
+        rawAlarmFilterAlarmField.setDataType(FieldType.LOOKUP);
+        rawAlarmFilterAlarmField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        rawAlarmFilterAlarmField.setColumnName("FLAGGED_EVENT");
+        rawAlarmFilterAlarmField.setLookupModule(mod);
+        modBean.addField(rawAlarmFilterAlarmField);
 
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));

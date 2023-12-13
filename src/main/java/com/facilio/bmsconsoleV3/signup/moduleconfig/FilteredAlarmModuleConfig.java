@@ -126,14 +126,6 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
                 .sectionDone()
                 .columnDone()
                 .tabDone()
-                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
-                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                .addSection("relatedlist", "Related List", "List of related records across modules")
-                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 4, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
-                .widgetDone()
-                .sectionDone()
-                .columnDone()
-                .tabDone()
                 .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("history", null, null)
@@ -180,14 +172,14 @@ public class FilteredAlarmModuleConfig extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(alarmDetailsGroup, message, 1, 1, 1);
         addSummaryFieldInWidgetGroup(alarmDetailsGroup, alarmType, 1, 2, 1);
         addSummaryFieldInWidgetGroup(alarmDetailsGroup, alarmCategory, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(alarmDetailsGroup, occurredTime, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(alarmDetailsGroup, clearedTime, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(alarmDetailsGroup, rawAlarm, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(alarmDetailsGroup, occurredTime, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(alarmDetailsGroup, clearedTime, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(alarmDetailsGroup, rawAlarm, 2, 2, 1);
 
 
         alarmDetailsGroup.setName("alarmInformation");
         alarmDetailsGroup.setDisplayName("Alarm Information");
-        alarmDetailsGroup.setColumns(3);
+        alarmDetailsGroup.setColumns(4);
         widgetGroupList.add(alarmDetailsGroup);
 
 

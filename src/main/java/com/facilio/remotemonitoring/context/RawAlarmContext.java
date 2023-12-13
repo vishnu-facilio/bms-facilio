@@ -31,8 +31,8 @@ public class RawAlarmContext extends V3Context {
     private V3AssetContext asset;
     private RawAlarmContext parentAlarm;
     private List<Long> relatedAlarmIds;
+    private FlaggedEventContext flaggedEvent;
     private boolean clearEvent;
-
     public enum RawAlarmSourceType implements FacilioStringEnum {
         SCRIPT("Script"),
         CONTROLLER("Controller"),

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.exception.ErrorResponseUtil;
+import com.facilio.exception.FacilioObjectMapperException;
 import com.facilio.fsm.exception.FSMException;
 import com.facilio.i18n.util.ErrorsUtil;
 import com.facilio.util.FacilioUtil;
@@ -55,11 +56,13 @@ public class ExceptionHandlingInterceptor extends AbstractInterceptor  {
             Map<String, Object> errorMap = new HashMap<>();
             messageNull = FacilioUtil.constructMessageFromException(ex) == null || StringUtils.isEmpty(FacilioUtil.constructMessageFromException(ex));
             //Handling exception for Multiple transactions in a thread(New Transaction Service)
-            try {
-                errorMap.put("message", ((InvocationTargetException)ex).getTargetException().getMessage());
-            }catch(Exception e){
-                LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
-                errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :FacilioUtil.constructMessageFromException(ex));
+            if(!(ex instanceof FacilioObjectMapperException)) {
+                try {
+                    errorMap.put("message", ((InvocationTargetException)ex).getTargetException().getMessage());
+                }catch(Exception e){
+                    LOGGER.error("Exception Handling Inerceptor - " + FacilioUtil.constructMessageFromException(ex));
+                    errorMap.put("message", errorType ? values.getMessage() : messageNull ? "Error Occurred" :FacilioUtil.constructMessageFromException(ex));
+                }
             }
             errorMap.put("responseCode",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());
             errorMap.put("code",errorType ? values.getErrorCode().getCode() : messageNull ? ErrorCode.UNHANDLED_EXCEPTION.getCode() : ErrorCode.ERROR.getCode());

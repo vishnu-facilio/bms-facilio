@@ -1,20 +1,17 @@
 package com.facilio.remotemonitoring.compute;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agentv2.controller.Controller;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3ResourceContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -26,6 +23,8 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fms.message.Message;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.modules.*;
@@ -35,6 +34,7 @@ import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
+import com.facilio.remotemonitoring.handlers.ticketmodulecreate.TicketModuleRecordCreationHandler;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.services.messageQueue.MessageQueue;
@@ -182,103 +182,32 @@ public class FlaggedEventUtil {
             FlaggedEventContext flaggedEventContext = FieldUtil.getAsBeanFromJson(FieldUtil.getAsJSON(record), FlaggedEventContext.class);
             AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
             Map<String, Object> workorderProp = null;
-            boolean createWO = false;
             if (flaggedEventContext != null && flaggedEventContext.getFlaggedAlarmProcess() != null) {
                 if (!(flaggedEventContext.getStatus() == null || (flaggedEventContext.getStatus() != null && flaggedEventContext.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN))) {
                     return;
                 }
                 FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEventContext.getFlaggedAlarmProcess().getId());
                 if (flaggedEventRule != null && flaggedEventRule.shouldCreateWorkorder()) {
-                    createWO = true;
-                    List<FlaggedEventWorkorderFieldMappingContext> fieldMapping = flaggedEventRule.getFieldMapping();
-                    Map<String, Object> flaggedEventProp = FieldUtil.getAsProperties(flaggedEventContext);
-                    if (CollectionUtils.isNotEmpty(fieldMapping)) {
-                        workorderProp = new HashMap<>();
-                        for (FlaggedEventWorkorderFieldMappingContext mapping : fieldMapping) {
-                            FacilioField woField = modBean.getField(mapping.getLeftFieldId(), FacilioConstants.ContextNames.WORK_ORDER);
-                            if (
-                                    woField.getDataTypeEnum() == FieldType.STRING ||
-                                            woField.getDataTypeEnum() == FieldType.NUMBER ||
-                                            woField.getDataTypeEnum() == FieldType.BIG_STRING ||
-                                            woField.getDataTypeEnum() == FieldType.DECIMAL ||
-                                            woField.getDataTypeEnum() == FieldType.LARGE_TEXT) {
-                                String replacedString = WorkflowRuleAPI.replacePlaceholders(FlaggedEventModule.MODULE_NAME, flaggedEventContext, mapping.getValueText());
-                                workorderProp.put(woField.getName(), replacedString);
-                            } else {
-                                if (woField.getDataTypeEnum() == FieldType.LOOKUP) {
-                                    if (mapping.getValueText() != null) {
-                                        Map<String, Object> insertProp = new HashMap<>();
-                                        insertProp.put(RemoteMonitorConstants.ID, mapping.getValueText());
-                                        workorderProp.put(woField.getName(), insertProp);
-                                    } else if (mapping.getRightFieldId() != null) {
-                                        FacilioField flaggedEventField = modBean.getField(mapping.getRightFieldId(), FlaggedEventModule.MODULE_NAME);
-                                        if (flaggedEventField != null) {
-                                            Map<String, Object> prop = (Map<String, Object>) flaggedEventProp.get(flaggedEventField.getName());
-                                            if (MapUtils.isNotEmpty(prop) && prop.containsKey(RemoteMonitorConstants.ID)) {
-                                                Map<String, Object> insertProp = new HashMap<>();
-                                                insertProp.put(RemoteMonitorConstants.ID, prop.get(RemoteMonitorConstants.ID));
-                                                workorderProp.put(woField.getName(), insertProp);
-                                            }
-                                        }
+                    TicketModuleRecordCreationHandler handler = flaggedEventRule.getTicketModuleRecordCreationHandler();
+                    workorderProp = handler.consructRecordPropsFromFieldMapping(flaggedEventRule, flaggedEventContext);
+                    String ticketModuleName = RemoteMonitorUtils.getTicketModuleName(flaggedEventRule);
+                    FacilioContext context = V3Util.createRecord(modBean.getModule(ticketModuleName), workorderProp);
+                    if (context != null) {
+                        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
+                        if (MapUtils.isNotEmpty(recordMap)) {
+                            List<ModuleBaseWithCustomFields> records = recordMap.get(ticketModuleName);
+                            if (CollectionUtils.isNotEmpty(records)) {
+                                ModuleBaseWithCustomFields woRecord = records.get(0);
+                                Long workorderId = woRecord.getId();
+                                handler.updateInitialRecordStatus(workorderProp, woRecord);
+                                if (workorderId != null) {
+                                    Map<String, Object> updateMap = new HashMap<>();
+                                    updateMap.put(ticketModuleName, ImmutableMap.of(RemoteMonitorConstants.ID, workorderId));
+                                    updateMap.put(FacilioConstants.ContextNames.STATUS, FlaggedEventContext.FlaggedEventStatus.WORKORDER_CREATED.getIndex());
+                                    V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, updateMap, Collections.singletonList(flaggedEventId), false);
+                                    if (flaggedEventContext.getCurrentBureauActionDetail() != null && manualAction) {
+                                        changeFlaggedEventActionStatus(flaggedEventContext.getCurrentBureauActionDetail().getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.ACTION_TAKEN);
                                     }
-                                } else if (StringUtils.isNotEmpty(mapping.getValueText())) {
-                                    Long value = Long.parseLong(mapping.getValueText());
-                                    workorderProp.put(woField.getName(), value);
-                                }
-                            }
-                        }
-                    }
-                    if (flaggedEventRule.getWorkorderTemplateId() != null) {
-                        if (workorderProp == null) {
-                            workorderProp = new HashMap<>();
-                        }
-                        workorderProp.put(FacilioConstants.ContextNames.FORM_ID, flaggedEventRule.getWorkorderTemplateId());
-                    }
-                }
-            }
-            if (createWO) {
-                if (workorderProp == null) {
-                    workorderProp = new HashMap<>();
-                }
-                Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEventContext.getController().getId());
-                if (controller != null) {
-                    workorderProp.put(FacilioConstants.ContextNames.SITE_ID, controller.getSiteId());
-                    ResourceContext resource = new ResourceContext();
-                    resource.setId(controller.getSiteId());
-                    workorderProp.put(FacilioConstants.ContextNames.RESOURCE, FieldUtil.getAsProperties(resource));
-                }
-                if (!workorderProp.containsKey(RemoteMonitorConstants.SUBJECT)) {
-                    workorderProp.put(RemoteMonitorConstants.SUBJECT, flaggedEventContext.getName());
-                }
-
-                //compute site id from resource lookup field value
-                if (!workorderProp.containsKey(FacilioConstants.ContextNames.SITE_ID) && workorderProp.containsKey(FacilioConstants.ContextNames.RESOURCE)) {
-                    Map<String, Object> resourceProp = (Map<String, Object>) workorderProp.get(FacilioConstants.ContextNames.RESOURCE);
-                    if (MapUtils.isNotEmpty(resourceProp) && resourceProp.containsKey(RemoteMonitorConstants.ID)) {
-                        V3ResourceContext resource = V3RecordAPI.getRecord(FacilioConstants.ContextNames.RESOURCE, Long.valueOf((String) resourceProp.get("id")), V3ResourceContext.class);
-                        if (resource != null && resource.getSiteId() > -1) {
-                            workorderProp.put(FacilioConstants.ContextNames.SITE_ID, resource.getSiteId());
-                        }
-                    }
-                }
-
-                workorderProp.put(RemoteMonitorConstants.FlaggedEvent.FLAGGED_EVENT, ImmutableMap.of(RemoteMonitorConstants.ID, flaggedEventId));
-                FacilioContext context = V3Util.createRecord(modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER), workorderProp);
-                if (context != null) {
-                    Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(Constants.RECORD_MAP);
-                    if (MapUtils.isNotEmpty(recordMap)) {
-                        List<ModuleBaseWithCustomFields> records = recordMap.get(FacilioConstants.ContextNames.WORK_ORDER);
-                        if (CollectionUtils.isNotEmpty(records)) {
-                            ModuleBaseWithCustomFields woRecord = records.get(0);
-                            Long workorderId = woRecord.getId();
-                            updateInitialWorkorderStatus(workorderProp, woRecord);
-                            if (workorderId != null) {
-                                Map<String, Object> updateMap = new HashMap<>();
-                                updateMap.put(FacilioConstants.ContextNames.WORK_ORDER, ImmutableMap.of(RemoteMonitorConstants.ID, workorderId));
-                                updateMap.put(FacilioConstants.ContextNames.STATUS, FlaggedEventContext.FlaggedEventStatus.WORKORDER_CREATED.getIndex());
-                                V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, updateMap, Collections.singletonList(flaggedEventId), false);
-                                if (flaggedEventContext.getCurrentBureauActionDetail() != null && manualAction) {
-                                    changeFlaggedEventActionStatus(flaggedEventContext.getCurrentBureauActionDetail().getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.ACTION_TAKEN);
                                 }
                             }
                         }
@@ -288,26 +217,20 @@ public class FlaggedEventUtil {
         }
     }
 
-    private static void updateInitialWorkorderStatus(Map<String,Object> prop,ModuleBaseWithCustomFields workorder) throws Exception {
-        if(prop.containsKey(FacilioConstants.ContextNames.MODULE_STATE)) {
-            Map<String,Object> statusMap = (Map<String,Object>) prop.get(FacilioConstants.ContextNames.MODULE_STATE);
-            if(MapUtils.isNotEmpty(statusMap)) {
-                String statusId = (String) statusMap.get(RemoteMonitorConstants.ID);
-                if(statusId != null) {
-                    FacilioStatus status = TicketAPI.getStatus(Long.valueOf(statusId));
-                    if (status != null) {
-                        updateWorkorderStatus(workorder, status);
-                    }
-                }
-            }
-        }
-    }
-    private static void updateWorkorderStatus(ModuleBaseWithCustomFields workorder,FacilioStatus status) throws Exception {
+    public static void updateWorkorderStatus(ModuleBaseWithCustomFields workorder,FacilioStatus status) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioChain chain = TransactionChainFactory.getHistoryUpdateChain();
         FacilioContext facilioContext = chain.getContext();
         facilioContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
         StateFlowRulesAPI.updateState(workorder, modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER), status, false, facilioContext);
+    }
+
+    public static void updateServiceOrderStatus(ServiceOrderContext serviceOrder, ServiceOrderTicketStatusContext status) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        ServiceOrderTicketStatusContext updatedStatus = new ServiceOrderTicketStatusContext();
+        updatedStatus.setId(status.getId());
+        serviceOrder.setStatus(updatedStatus);
+        V3RecordAPI.updateRecord(serviceOrder, modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER), Collections.singletonList(modBean.getField("status", FacilioConstants.ContextNames.SERVICE_ORDER)));
     }
     private static void changeFlaggedEventActionStatus(Long actionId, FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus status) throws Exception {
         Map<String, Object> updateMap = new HashMap<>();
@@ -567,6 +490,8 @@ public class FlaggedEventUtil {
             List<SupplementRecord> supplementRecords = new ArrayList<>();
             supplementRecords.add((SupplementRecord) modBean.getField("workorderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecords.add((SupplementRecord) modBean.getField("workorderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
+            supplementRecords.add((SupplementRecord) modBean.getField("serviceOrderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
+            supplementRecords.add((SupplementRecord) modBean.getField("serviceOrderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             List<FlaggedEventRuleClosureConfigContext> closureConfigs = V3RecordAPI.getRecordsListWithSupplements(AddFlaggedEventClosureConfigModule.MODULE_NAME, Collections.singletonList(id), FlaggedEventRuleClosureConfigContext.class, null, supplementRecords, null, null);
             if (CollectionUtils.isNotEmpty(closureConfigs)) {
                 FlaggedEventRuleClosureConfigContext closure = closureConfigs.get(0);
@@ -608,26 +533,12 @@ public class FlaggedEventUtil {
     }
 
     public static void sendWorkorderClosureCommand(Long flaggedEventId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
         FlaggedEventContext flaggedEvent = FlaggedEventUtil.getFlaggedEvent(flaggedEventId);
-        if (flaggedEvent != null && flaggedEvent.getWorkorder() != null) {
-            V3WorkOrderContext workorder = V3RecordAPI.getRecord(FacilioConstants.ContextNames.WORK_ORDER, flaggedEvent.getWorkorder().getId(), V3WorkOrderContext.class);
-            if (workorder != null && workorder.getStatus() != null) {
-                if (flaggedEvent.getFlaggedAlarmProcess() != null) {
-                    FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
-                    if (rule != null && rule.getFlaggedEventRuleClosureConfig() != null && rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseStatus() != null) {
-                        List<FacilioStatus> workorderCloseCommandStatuses = rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseCommandCriteria();
-                        if (CollectionUtils.isNotEmpty(workorderCloseCommandStatuses)) {
-                            for (FacilioStatus criteriaStatus : workorderCloseCommandStatuses) {
-                                if (criteriaStatus != null && criteriaStatus.getId() == workorder.getStatus().getId()) {
-                                    updateWorkorderStatus(workorder,rule.getFlaggedEventRuleClosureConfig().getWorkorderCloseStatus());
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+        if (flaggedEvent != null && flaggedEvent.getFlaggedAlarmProcess() != null) {
+            FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
+            TicketModuleRecordCreationHandler handler = rule.getTicketModuleRecordCreationHandler();
+            handler.sendClosureCommandToTicketModuleRecord(rule, flaggedEvent);
         }
     }
     public static void closeFlaggedEvent(Long flaggedEventId,boolean isManualClose) throws Exception {
@@ -775,5 +686,11 @@ public class FlaggedEventUtil {
             }
         }
         return null;
+    }
+
+    public static void updateControlActionId(Long flaggedEventId,Long controlActionId) throws Exception {
+        Map<String, Object> updateMap = new HashMap<>();
+        updateMap.put("controlAction", ImmutableMap.of(RemoteMonitorConstants.ID, controlActionId));
+        V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, updateMap, Collections.singletonList(flaggedEventId), false);
     }
 }

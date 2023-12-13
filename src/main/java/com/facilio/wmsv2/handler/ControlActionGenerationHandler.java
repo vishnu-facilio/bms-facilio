@@ -21,6 +21,8 @@ public class ControlActionGenerationHandler extends ImsHandler {
             context.put(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_ID,controlActionId);
             context.put("startTime",getStartTime(message));
             context.put("endTime",getEndTime(message));
+            context.put("assetId",getProperty(message,"assetId"));
+            context.put("flaggedEventId",getProperty(message,"flaggedEventId"));
             FacilioChain chain = TransactionChainFactoryV3.getControlActionGenerationChain();
             chain.setContext(context);
             chain.execute();
@@ -40,5 +42,13 @@ public class ControlActionGenerationHandler extends ImsHandler {
     private Long getEndTime(Message message){
         JSONObject object = message.getContent();
         return Long.parseLong(String.valueOf(object.get("endTime")));
+    }
+
+    private Long getProperty(Message message,String propertyName) {
+        JSONObject object = message.getContent();
+        if(object != null && object.containsKey(propertyName)) {
+            return Long.parseLong(String.valueOf(object.get(propertyName)));
+        }
+        return null;
     }
 }

@@ -2619,6 +2619,8 @@ public class FacilioConstants {
 
 		public static final String SERVICE_ORDER = "serviceOrder";
 
+		public static final String  SERVICE_ORDER_TICKET_STATUS= "serviceOrderTicketStatus";
+
 		public static final String SERVICE_ORDER_ACTIVITY = "serviceOrderActivity";
 
 		public static final String CLIENT_CONTACT = "clientcontact";
@@ -3072,6 +3074,8 @@ public class FacilioConstants {
 			public static final String COLOR="color";
 			public static final String STATUS_TYPE="statusType";
 			public static final String FIELD_AGENT_SCOPING = "Field Agent Scoping";
+			public static final String PREFERRED_START_TIME = "preferredStartTime";
+			public static final String PREFERRED_END_TIME= "preferredEndTime";
 		}
 		public static class ServiceTaskStatus {
 			public static final String NEW = "new";

@@ -590,3 +590,6 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFeatureLimit
   #Invoice Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InvoiceModule
+
+  #add field you want to skip for module here(should be at last always)
+  - com.facilio.bmsconsoleV3.signup.moduleconfig.AddSkipFieldForModule

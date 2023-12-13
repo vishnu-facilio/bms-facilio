@@ -50,6 +50,7 @@ public class APIFieldsConfig {
                 .addLicenseBasedFields(AccountUtil.FeatureLicense.CLIENT, Arrays.asList("client"))
                 .addLicenseBasedFields(AccountUtil.FeatureLicense.TENANTS, Arrays.asList("tenant"))
                 .addLicenseBasedFields(AccountUtil.FeatureLicense.VENDOR, Arrays.asList("vendor"))
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.REMOTE_MONITORING, Arrays.asList("flaggedEvent"))
 
                 .sortFields()
                 .add(FieldsConfigList.WORK_ORDER_FIELDS_INCLUDE)
@@ -1297,6 +1298,7 @@ public class APIFieldsConfig {
     @Module(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER)
     public static Supplier<FieldConfig> getServiceOrderFieldConfig(){
         return () -> new FieldConfig()
+                .addLicenseBasedFields(AccountUtil.FeatureLicense.REMOTE_MONITORING, Arrays.asList("flaggedEvent"))
                 .sortFields()
                 .add(FieldsConfigList.SERVICE_ORDER_SORT_FIELDS_INCLUDE)
                 .done()

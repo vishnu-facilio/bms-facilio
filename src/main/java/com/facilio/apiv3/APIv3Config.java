@@ -3735,6 +3735,8 @@ public class APIv3Config {
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"asset")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"parentAlarm")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"filteredAlarm")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
                 .summary()
@@ -3747,6 +3749,8 @@ public class APIv3Config {
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"asset")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"controller")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"parentAlarm")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"flaggedEvent")
+                .fetchSupplement(RawAlarmModule.MODULE_NAME,"filteredAlarm")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(RawAlarmModule.MODULE_NAME,"sysModifiedByPeople")
                 .delete()
@@ -3926,14 +3930,14 @@ public class APIv3Config {
     public static Supplier<V3Config> getFlaggedEventRuleModule() {
         return () -> new V3Config(FlaggedEventRuleContext.class,null)
                 .create()
-                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand())
+                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand(), new SetFlaggedAlarmProcessTicketModuleIdCommand())
                 .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
                         new AddFlaggedEventRuleAlarmTypeCommand(), new DeleteFlaggedEventRuleJob(),
                         new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
                         new AddOrUpdateEmailRuleForFlaggedEventCommand(), new DeleteBureauEvaluationCommand(),new AddOrUpdateBureauConfigCommand(),
                         new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY))
                 .update()
-                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand())
+                .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand(), new SetFlaggedAlarmProcessTicketModuleIdCommand())
                 .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
                         new AddFlaggedEventRuleAlarmTypeCommand(),new DeleteFlaggedEventRuleJob(),
                         new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
@@ -3943,10 +3947,12 @@ public class APIv3Config {
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"client")
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"controlActionTemplate")
                 .summary()
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"client")
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysCreatedByPeople")
                 .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"sysModifiedByPeople")
+                .fetchSupplement(FlaggedEventRuleModule.MODULE_NAME,"controlActionTemplate")
                 .afterFetch(ReadOnlyChainFactoryV3.getFlaggedEventRuleSummaryAfterFetchChain())
                 .delete()
                 .markAsDeleteByPeople()
@@ -3971,7 +3977,8 @@ public class APIv3Config {
                 .postCreate()
                 .afterSave(new FlaggedEventBureauInformationCommand(),
                         new BureauEvaluationOrCreateWorkorder(),
-                        new FlaggedEventClosureCommand()
+                        new FlaggedEventClosureCommand(),
+                        new FlaggedAlarmControlActionTriggerCommand()
                 )
                 .afterTransaction(new ConstructAddCustomActivityCommandV3(),new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .list()
@@ -3988,6 +3995,7 @@ public class APIv3Config {
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"workorder")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"site")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controlAction")
                 .summary()
                 .afterFetch(ReadOnlyChainFactoryV3.flaggedEventAfterFetchChain())
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME)
@@ -4002,6 +4010,7 @@ public class APIv3Config {
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"workorder")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"site")
                 .fetchSupplement(FlaggedEventModule.MODULE_NAME,"bureauCloseIssues")
+                .fetchSupplement(FlaggedEventModule.MODULE_NAME,"controlAction")
                 .delete()
                 .markAsDeleteByPeople()
                 .build();

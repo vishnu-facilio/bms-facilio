@@ -59,7 +59,8 @@ public class V3ControlActionContext extends V3Context {
     public static enum ControlActionSourceTypeEnum implements FacilioIntEnum{
         MANUAL("Manual"),
         CONTROL_ACTION_TEMPLATE("Template"),
-        FDD("Fault Detection And Diagnostic");
+        FDD("Fault Detection And Diagnostic"),
+        FLAGGED_ALARM("Flagged Alarm");
 
         @Override
         public String getValue() {

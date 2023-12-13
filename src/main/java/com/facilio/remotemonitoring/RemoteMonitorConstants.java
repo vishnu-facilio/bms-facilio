@@ -17,6 +17,7 @@ public class RemoteMonitorConstants {
     public static final String CLOSE_VALUES = "FlaggedEventAutoClosureJob";
     public static final String ID = "id";
     public static final String SUBJECT = "subject";
+    public static final String PRIORITY = "priority";
 
     public static class FlaggedEvent {
         public static final String FLAGGED_EVENT = "flaggedEvent";

@@ -31,6 +31,8 @@ import com.facilio.fsm.util.ServiceOrderAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
+import com.facilio.remotemonitoring.signup.AddFlaggedEventClosureConfigModule;
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
@@ -62,6 +64,8 @@ public class ServiceOrderModule extends BaseModuleConfig {
         addServiceOrderFieldInItemTransactions();
 
         addSLA();
+
+        addFlaggedAlarmServiceOrderModuleRelAndFields();
     }
 
     private void addServiceOrderFieldInItemTransactions() throws Exception {
@@ -74,6 +78,70 @@ public class ServiceOrderModule extends BaseModuleConfig {
 
         modBean.addField(serviceOrder);
 
+    }
+
+    private void addFlaggedAlarmServiceOrderModuleRelAndFields() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule serviceOrderModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        long serviceOrderModuleId = serviceOrderModule.getModuleId();
+        FacilioModule flaggedAlarmModule = modBean.getModule(FlaggedEventModule.MODULE_NAME);
+        long flaggedAlarmModuleId = flaggedAlarmModule.getModuleId();
+        modBean.addSubModule(serviceOrderModuleId, flaggedAlarmModuleId, 1);
+
+        LookupField serviceOrderLookupInFlaggedAlarm = new LookupField();
+        serviceOrderLookupInFlaggedAlarm.setDefault(true);
+        serviceOrderLookupInFlaggedAlarm.setName("serviceOrder");
+        serviceOrderLookupInFlaggedAlarm.setDisplayName("Workorder");
+        serviceOrderLookupInFlaggedAlarm.setModule(flaggedAlarmModule);
+        serviceOrderLookupInFlaggedAlarm.setDataType(FieldType.LOOKUP);
+        serviceOrderLookupInFlaggedAlarm.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        serviceOrderLookupInFlaggedAlarm.setColumnName("SERVICEORDER");
+        serviceOrderLookupInFlaggedAlarm.setLookupModule(serviceOrderModule);
+        modBean.addField(serviceOrderLookupInFlaggedAlarm);
+
+        LookupField flaggedEvent = new LookupField();
+        flaggedEvent.setDefault(true);
+        flaggedEvent.setName("flaggedEvent");
+        flaggedEvent.setDisplayName("Flagged Alarm");
+        flaggedEvent.setModule(serviceOrderModule);
+        flaggedEvent.setDataType(FieldType.LOOKUP);
+        flaggedEvent.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        flaggedEvent.setColumnName("FLAGGED_EVENT");
+        flaggedEvent.setLookupModule(flaggedAlarmModule);
+        modBean.addField(flaggedEvent);
+
+        FacilioModule flaggedAlarmClosureConfigModule = modBean.getModule(AddFlaggedEventClosureConfigModule.MODULE_NAME);
+        FacilioModule serviceOrderTicketStatusModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER_TICKET_STATUS);
+        MultiLookupField serviceOrderStatuses = new MultiLookupField();
+        serviceOrderStatuses.setName("serviceOrderStatuses");
+        serviceOrderStatuses.setModule(flaggedAlarmClosureConfigModule);
+        serviceOrderStatuses.setDisplayName("Workorder Statuses");
+        serviceOrderStatuses.setDataType(FieldType.MULTI_LOOKUP);
+        serviceOrderStatuses.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        serviceOrderStatuses.setLookupModule(serviceOrderTicketStatusModule);
+        serviceOrderStatuses.setDefault(true);
+        modBean.addField(serviceOrderStatuses);
+
+        MultiLookupField serviceOrderCloseCommandCriteria = new MultiLookupField();
+        serviceOrderCloseCommandCriteria.setName("serviceOrderCloseCommandCriteria");
+        serviceOrderCloseCommandCriteria.setModule(flaggedAlarmClosureConfigModule);
+        serviceOrderCloseCommandCriteria.setDisplayName("Workorder Close Command Criteria");
+        serviceOrderCloseCommandCriteria.setDataType(FieldType.MULTI_LOOKUP);
+        serviceOrderCloseCommandCriteria.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        serviceOrderCloseCommandCriteria.setLookupModule(serviceOrderTicketStatusModule);
+        serviceOrderCloseCommandCriteria.setDefault(true);
+        modBean.addField(serviceOrderCloseCommandCriteria);
+
+        LookupField serviceOrderCloseStatus = new LookupField();
+        serviceOrderCloseStatus.setName("serviceOrderCloseStatus");
+        serviceOrderCloseStatus.setModule(flaggedAlarmClosureConfigModule);
+        serviceOrderCloseStatus.setDisplayName("Workorder Close Status");
+        serviceOrderCloseStatus.setDataType(FieldType.LOOKUP);
+        serviceOrderCloseStatus.setColumnName("SERVICE_ORDER_CLOSE_STATUS");
+        serviceOrderCloseStatus.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        serviceOrderCloseStatus.setLookupModule(serviceOrderTicketStatusModule);
+        serviceOrderCloseStatus.setDefault(true);
+        modBean.addField(serviceOrderCloseStatus);
     }
 
     public void addActivityModuleForServiceOrder() throws Exception {

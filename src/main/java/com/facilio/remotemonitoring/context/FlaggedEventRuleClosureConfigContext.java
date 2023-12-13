@@ -1,6 +1,8 @@
 package com.facilio.remotemonitoring.context;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.fsm.context.ServiceOrderTicketStatusContext;
+import com.facilio.fsm.signup.ServiceOrderTicketStatus;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
@@ -17,13 +19,16 @@ public class FlaggedEventRuleClosureConfigContext extends V3Context {
     private FlaggedEventRuleContext flaggedEventRule;
     private List<FlaggedEventContext.FlaggedEventStatus> flaggedEventStatuses;
     private List<FacilioStatus> workorderStatuses;
+    private List<ServiceOrderTicketStatusContext> serviceOrderStatuses;
     private Long autoClosureDuration;
     private WorkflowRuleContext closeEmailRule;
     private Long closeEmailNotificationRuleId;
     private ClosureRestriction closureRestriction;
     private Boolean sendWorkorderCloseCommand;
     private List<FacilioStatus> workorderCloseCommandCriteria;
+    private List<ServiceOrderTicketStatusContext> serviceOrderCloseCommandCriteria;
     private FacilioStatus workorderCloseStatus;
+    private ServiceOrderTicketStatusContext serviceOrderCloseStatus;
     private Long flaggedEventTriggerCriteriaReevaluationTime;
     private String warningMessage;
     private Boolean autoCloseOnClear;

@@ -1,17 +1,27 @@
 package com.facilio.remotemonitoring.context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsoleV3.context.V3ClientContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioStatus;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStringEnum;
+import com.facilio.remotemonitoring.handlers.ticketmodulecreate.ServiceOrderRecordCreationHandler;
+import com.facilio.remotemonitoring.handlers.ticketmodulecreate.TicketModuleRecordCreationHandler;
+import com.facilio.remotemonitoring.handlers.ticketmodulecreate.WorkOrderRecordCreationHandler;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.v3.context.V3Context;
 import com.facilio.workflows.context.WorkflowContext;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -28,6 +38,8 @@ public class FlaggedEventRuleContext extends V3Context {
     private V3ClientContext client;
     private FlaggedEventExecutionType executionType;
     private Boolean createWorkorder;
+    private Long ticketModuleId;
+    private String ticketModuleName;
     private Long workorderTemplateId;
     private Boolean sendEmailNotification;
     private WorkflowRuleContext emailRule;
@@ -43,6 +55,7 @@ public class FlaggedEventRuleContext extends V3Context {
     private FlaggedEventRuleClosureConfigContext flaggedEventRuleClosureConfig;
     private WorkflowContext workflowContext;
     private Long workflowId;
+    private List<V3ControlActionTemplateContext> controlActionTemplate;
     public boolean shouldSendEmailNotification() {
         if(sendEmailNotification == null) {
             return false;
@@ -79,5 +92,18 @@ public class FlaggedEventRuleContext extends V3Context {
             this.displayName = displayName;
             this.period = period;
         }
+    }
+
+    public TicketModuleRecordCreationHandler getTicketModuleRecordCreationHandler() throws Exception {
+        String ticketModuleName = RemoteMonitorUtils.getTicketModuleName(this);
+        if (StringUtils.isNotEmpty(ticketModuleName)) {
+            switch (ticketModuleName) {
+                case FacilioConstants.ContextNames.WORK_ORDER:
+                    return new WorkOrderRecordCreationHandler();
+                case FacilioConstants.ContextNames.SERVICE_ORDER:
+                    return new ServiceOrderRecordCreationHandler();
+            }
+        }
+        return null;
     }
 }

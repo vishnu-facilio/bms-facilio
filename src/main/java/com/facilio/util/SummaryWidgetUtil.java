@@ -3,6 +3,7 @@ package com.facilio.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.SummaryWidget;
 import com.facilio.bmsconsole.context.SummaryWidgetGroup;
@@ -60,7 +61,7 @@ public class SummaryWidgetUtil {
         if (summaryWidget != null) {
             long currWidgetId = summaryWidget.getId();
             List<SummaryWidgetGroup> widgetGroups = getSummaryWidgetGroups(currWidgetId);
-            List<SummaryWidgetGroupFields> allWidgetGroupFields = getSummaryWidgetGroupFields(currWidgetId);
+            List<SummaryWidgetGroupFields> allWidgetGroupFields = getSummaryWidgetGroupFields(currWidgetId, summaryWidget.getModuleId());
 
             if (CollectionUtils.isNotEmpty(allWidgetGroupFields)) {
                 getAllFieldDetails(allWidgetGroupFields);
@@ -564,7 +565,9 @@ public class SummaryWidgetUtil {
         return widgetGroups;
     }
 
-    public static List<SummaryWidgetGroupFields> getSummaryWidgetGroupFields(long widgetId) throws Exception{
+    public static List<SummaryWidgetGroupFields> getSummaryWidgetGroupFields(long widgetId, long moduleId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule widgetModule = modBean.getModule(moduleId);
         List<SummaryWidgetGroupFields> widgetGroupFields = null;
 
         List<FacilioField> fields = FieldFactory.getSummaryWidgetGroupFieldsFields();
@@ -575,6 +578,11 @@ public class SummaryWidgetUtil {
                 .table(ModuleFactory.getSummaryWidgetGroupFieldsModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("widgetId"), String.valueOf(widgetId), NumberOperators.EQUALS))
                 .orderBy("ROW_INDEX, COL_INDEX");
+
+        String skipFieldName = FieldUtil.getSkipFieldNameForModule(widgetModule.getName());
+        if(StringUtils.isNotEmpty(skipFieldName)){
+            selectBuilder.andCondition(CriteriaAPI.getCondition("NAME", "name", skipFieldName, StringOperators.ISN_T));
+        }
 
         widgetGroupFields = FieldUtil.getAsBeanListFromMapList(selectBuilder.get(), SummaryWidgetGroupFields.class);
         return widgetGroupFields;

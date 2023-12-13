@@ -7,6 +7,7 @@ import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.location.LocationContextV3;
 import com.facilio.modules.FacilioIntEnum;
+import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -76,6 +77,7 @@ public class ServiceOrderContext extends V3Context {
     private TerritoryContext territory;
     private ServicePMTriggerContext servicePMTrigger;
 //    private Long localId;
+    private FlaggedEventContext flaggedEvent;
 
     public int getPrerequeststatus() {
         if (prerequestStatus != null) {

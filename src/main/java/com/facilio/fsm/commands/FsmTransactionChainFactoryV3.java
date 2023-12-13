@@ -20,6 +20,7 @@ import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
 import com.facilio.fsm.commands.timeSheet.*;
 import com.facilio.fsm.commands.trip.*;
+import com.facilio.remotemonitoring.commands.FlaggedAlarmCloseFromServiceOrderCommand;
 import com.facilio.v3.commands.ConstructAddCustomActivityCommandV3;
 import com.facilio.v3.commands.ConstructUpdateCustomActivityCommandV3;
 import org.apache.commons.chain.Command;
@@ -114,6 +115,7 @@ public class FsmTransactionChainFactoryV3 {
 //        c.addCommand(new AddActivitiesCommandV3(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER_ACTIVITY));
         //for auto creating the Service appointment
 //        c.addCommand(new AutoCreateSA());
+        c.addCommand(new FlaggedAlarmCloseFromServiceOrderCommand());
         return c;
     }
 

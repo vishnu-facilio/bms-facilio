@@ -2,6 +2,7 @@ package com.facilio.beans;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -46,12 +47,12 @@ public class ModuleBeanImpl implements ModuleBean {
 	private static final String CUSTOM_MULTI_ENUM_TABLENAME = "Custom_Multi_Enum_Values";
 	private static final String CUSTOM_LARGE_TEXT_TABLENAME = "Large_Text_Values";
 	private static final String CUSTOM_LOOKUP_REL_RECORD_TABLENAME = "Custom_Rel_Records";
-	
+
 	private Connection getConnection() throws SQLException {
 	//	return BeanFactory.getConnection();
 		return FacilioConnectionPool.INSTANCE.getConnection();
 	}
-	
+
 	@Override
 	public long getOrgId() {
 		return DBConf.getInstance().getCurrentOrgId();
@@ -226,7 +227,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return Collections.unmodifiableList(subModules);
 	}
-	
+
 	private List<FacilioModule> getSubModulesFromRS(ResultSet rs, int permissionType) throws SQLException, Exception {
 		List<FacilioModule> subModules = new ArrayList<>();
 		List<Long> permittedSubModuleIds = new ArrayList<Long>();
@@ -241,7 +242,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return Collections.unmodifiableList(subModules);
 	}
-	
+
 	private List<FacilioModule> getSubModuleFromParent (FacilioModule parentModule, FacilioModule.ModuleType... types) throws Exception {
 		FacilioUtil.throwIllegalArgumentException(parentModule == null, "Invalid module while getting sub modules");
 		// We are getting only module id here and separate fetch for modules to handle sub modules that extend some other module
@@ -258,7 +259,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			rs = pstmt.executeQuery();
-			
+
 			while(rs.next()) {
 				childModuleIds.add(rs.getLong("CHILD_MODULE_ID"));
 			}
@@ -277,14 +278,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				}
 			}
 		}
-		
-		
+
+
 		List<FacilioModule> subModules = new ArrayList<>();
 		for(Long childModuleId : childModuleIds) {
 			subModules.add(getMod(childModuleId));
 		}
 		return Collections.unmodifiableList(subModules);
-		
+
 	}
 
 	@Override
@@ -292,7 +293,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioModule parentModule = getMod(moduleId);
 		return getSubModuleFromParent(parentModule);
 	}
-	
+
 	@Override
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception {
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -302,7 +303,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioModule parentModule = getMod(moduleName);
 		return getSubModuleFromParent(parentModule);
 	}
-	
+
 	private String getTypes(FacilioModule.ModuleType... types) {
 		StringJoiner joiner = new StringJoiner(",");
 		for (ModuleType type : types) {
@@ -310,7 +311,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return joiner.toString();
 	}
-	
+
 	@Override
 	public List<Pair<FacilioModule, Integer>> getSubModulesWithDeleteType(long moduleId, FacilioModule.ModuleType... types) throws Exception {
 		if (types == null || types.length == 0) {
@@ -342,7 +343,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 	}
-	
+
 	@Override
 	public List<FacilioModule> getSubModules(long moduleId, FacilioModule.ModuleType... types) throws Exception {
 		if (types == null || types.length == 0) {
@@ -356,7 +357,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	public List<FacilioModule> getSubModules(String moduleName, FacilioModule.ModuleType... types) throws Exception {
 		return getSubModules(moduleName, null, null, types);
 	}
-	
+
 	@Override
 	public FacilioModule getParentModule(long moduleId) throws Exception {
 		FacilioModule parentModule = null;
@@ -377,12 +378,12 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return parentModule;
 	}
-	
+
 	@Override //This doesn't fetch grand child and so on
 	public List<FacilioModule> getChildModules(FacilioModule parentModule) throws Exception {
 		return getChildModules(parentModule, null, null);
 	}
-	
+
 	private FacilioModule getMod(String moduleName) throws Exception {
 		return getModule(moduleName);
 	}
@@ -390,7 +391,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	private FacilioModule getMod(long moduleId) throws Exception {
 		return getModule(moduleId);
 	}
-	
+
 	private Map<Long, FacilioModule> splitModules(FacilioModule module) {
 		Map<Long, FacilioModule> modules = new HashMap<>();
 
@@ -433,7 +434,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return null;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public int updateModule (FacilioModule module) throws Exception {
 		if (module == null) {
@@ -650,7 +651,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		return field;
 	}
-	
+
 	private LargeTextField constructLargeTextField(Map<String, Object> props) throws Exception {
 		LargeTextField field = FieldUtil.getAsBeanFromMap(props, LargeTextField.class);
 		FacilioModule relModule = getModule(field.getRelModuleId());
@@ -658,7 +659,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		return field;
 	}
-	
+
 	private <T extends BaseSystemLookupField> T constructSystemLookupField (Map<String, Object> props, Class<T> fieldClass) throws Exception {
 		T field = FieldUtil.getAsBeanFromMap(props, fieldClass);
 		FacilioModule relModule = getModule(field.getLookupModuleName());
@@ -668,7 +669,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		return field;
 	}
-	
+
 	private MultiLookupField constructMultiLookupField(Map<String, Object> props) throws Exception {
 		MultiLookupField field = FieldUtil.getAsBeanFromMap(props, MultiLookupField.class);
 		FacilioModule relModule = getModule(field.getRelModuleId());
@@ -680,7 +681,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		return field;
 	}
-	
+
 	private Map<FieldType, Map<Long, Map<String, Object>>> getTypeWiseExtendedProps(Map<FieldType, List<Long>> extendedIdList) throws Exception {
 		Map<FieldType, Map<Long, Map<String, Object>>> extendedProps = new HashMap<>();
 		for(Map.Entry<FieldType, List<Long>> entry : extendedIdList.entrySet()) {
@@ -743,7 +744,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return extendedProps;
 	}
-	
+
 	private Map<Long, Map<String, Object>> getDateExtendedProps(List<Long> fieldIds) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -835,17 +836,17 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return propsMap;
 	}
-	
+
 	@Override
 	public List<FacilioField> getAllFields(String moduleName) throws Exception {
 		return getAllFields(moduleName, null, null, null);
 	}
-	
+
 	@Override
 	public List<FacilioField> getAllFieldsWithDeleted(String moduleName) throws Exception {
 		return null;
 	}
-	
+
 	@Override
 	public List<FacilioField> getModuleFields(String moduleName) throws Exception {
 
@@ -860,6 +861,11 @@ public class ModuleBeanImpl implements ModuleBean {
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+
+		String skipFieldName = FieldUtil.getSkipFieldNameForModule(moduleName);
+		if(StringUtils.isNotEmpty(skipFieldName)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME","name",skipFieldName,StringOperators.ISN_T));
+		}
 
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		List<FacilioField> fields = getFieldFromPropList(fieldProps, moduleMap);
@@ -886,12 +892,12 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public FacilioField getField(long fieldId, long moduleId) throws Exception {
 		return getField(getModule(moduleId), fieldId);
 	}
-	
+
 	private FacilioField getField(FacilioModule facilioModule, long fieldId) throws Exception {
 		List<Long> extendedModuleIds = facilioModule.getExtendedModuleIds();
 
@@ -900,8 +906,13 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table("Fields")
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS))
 														.andCustomWhere("Fields.ORGID = ? AND Fields.FIELDID = ?", getOrgId(), fieldId);
-		List<Map<String, Object>> fieldProps = selectBuilder.get();
 
+		String skipFieldName = FieldUtil.getSkipFieldNameForModule(facilioModule.getName());
+		if(StringUtils.isNotEmpty(skipFieldName)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME","name",skipFieldName,StringOperators.ISN_T));
+		}
+
+		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		if(fieldProps != null && !fieldProps.isEmpty()) {
 			Map<String, Object> fieldProp = fieldProps.get(0);
 			FacilioModule module = getMod((long)fieldProp.get("moduleId"));
@@ -916,7 +927,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	public FacilioField getField(long fieldId, String moduleName) throws Exception {
 		return getField(getModule(moduleName), fieldId);
 	}
-	
+
 	@Override
 	public FacilioField getReadingField(long fieldId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -991,6 +1002,11 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table("Fields")
 														.andCustomWhere("Fields.ORGID = ? AND Fields.NAME = ?", getOrgId(),fieldName)
 														.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", StringUtils.join(extendedModuleIds, ","), NumberOperators.EQUALS));
+
+		String skipFieldName = FieldUtil.getSkipFieldNameForModule(moduleName);
+		if(StringUtils.isNotEmpty(skipFieldName)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME","name",skipFieldName,StringOperators.ISN_T));
+		}
 
 		List<Map<String, Object>> fieldProps = selectBuilder.get();
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
@@ -1277,7 +1293,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			fieldProps.put("showAlt", false);
 		}
 	}
-	
+
 	private void validateLineItemField (LineItemField field, Map<String, Object> fieldProps) throws Exception {
 		long childModuleId = field.getChildModuleId() > 0 ? field.getChildModuleId()
 								: field.getChildModule() != null ? field.getChildModule().getModuleId()
@@ -1297,7 +1313,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		FacilioUtil.throwIllegalArgumentException(!lookupField.getLookupModule().equals(field.getModule()), MessageFormat.format("Child lookup field ({0}) is having a different module ({1}) as lookup instead of {2} for line item field : {3}", lookupField.getName(), lookupField.getLookupModule().getName(), field.getModule().getName(), field.getName()));
 		fieldProps.put("childLookupFieldId", fieldId);
 	}
-	
+
 	private long addMultiEnumModule(MultiEnumField field) throws Exception {
 		FacilioModule module = new FacilioModule();
 
@@ -1479,7 +1495,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Lookup module is not specified");
 		}
 	}
-	
+
 	private void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> props) throws SQLException, RuntimeException {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(module.getTableName())
@@ -1488,9 +1504,9 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		insertBuilder.save();
 	}
-	
+
 	private int updateExtendedProps(FacilioModule module, List<FacilioField> fields, FacilioField field) throws Exception {
-		
+
 		long fieldId = field.getFieldId();
 		field.setFieldId(-1);
 		Map<String, Object> props = FieldUtil.getAsProperties(field);
@@ -1499,12 +1515,12 @@ public class ModuleBeanImpl implements ModuleBean {
 				.fields(fields)
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("FIELDID = ?", fieldId);
-		
+
 		int count = updateBuilder.update(props);
 		field.setFieldId(fieldId);
 		return count;
 	}
-	
+
 	private int addEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
@@ -1561,7 +1577,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		valueField.setValues(field.getValues());
 		return updateField(valueField);
 	}
-	
+
 	private int updateEnumField(EnumField field) throws Exception {
 		if (CollectionUtils.isEmpty(field.getValues())) {
 			return 0;
@@ -1588,7 +1604,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					enumsValuesToBeUpdated.add(enumVal.getValue().toLowerCase());
 			}
 		}
-		
+
 		// To make sure the new items doesnt get presented in the older disabled items list.
 		if (enumsToBeAdded != null && !enumsToBeAdded.isEmpty()) {
 			List<EnumFieldValue<Integer>> itemsToBeRemoved = new ArrayList<>();
@@ -1604,8 +1620,8 @@ public class ModuleBeanImpl implements ModuleBean {
 				enumsToBeAdded.removeAll(itemsToBeRemoved);
 			}
 		}
-		
-		
+
+
 		if (!enumsToBeUpdated.isEmpty()) {
 			enumsToBeUpdated.sort(Comparator.<EnumFieldValue<Integer>>comparingInt(EnumFieldValue::getSequence).reversed());
 			for(EnumFieldValue<Integer> enumVal: enumsToBeUpdated) {
@@ -1616,7 +1632,7 @@ public class ModuleBeanImpl implements ModuleBean {
 //		deleteEnumValues(field);
 		return field.getValues().size();
 	}
-	
+
 	private void deleteEnumValues (EnumField field) throws Exception {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -1626,7 +1642,7 @@ public class ModuleBeanImpl implements ModuleBean {
 														;
 		deleteBuilder.delete();
 	}
-	
+
 	private int deleteEnumVal (EnumFieldValue enumVal) throws Exception {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
@@ -1636,7 +1652,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		return deleteBuilder.delete();
 
 	}
-	
+
 	@Override
 	public int updateField(FacilioField field) throws Exception {
 		if(field != null && field.getFieldId() != -1) {
@@ -1651,9 +1667,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
 			int count = updateBuilder.update(fieldProps);
 			field.setFieldId(fieldId);
-			
+
 			int extendendPropsCount = 0;
-			
+
 			if (field instanceof NumberField) {
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getNumberFieldModule(), FieldFactory.getNumberFieldFields(), field);
 			}
@@ -1735,14 +1751,14 @@ public class ModuleBeanImpl implements ModuleBean {
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table("Fields")
 															.andCustomWhere("ORGID = ? AND FIELDID = ?", getOrgId(), fieldId);
-			
+
 			return deleteBuilder.delete();
 		}
 		else {
 			throw new IllegalArgumentException("Invalid fieldId for Deletion");
 		}
 	}
-	
+
 	@Override
 	public int deleteFields(List<Long> fieldIds) throws Exception {
 		// TODO Auto-generated method stub
@@ -1752,18 +1768,18 @@ public class ModuleBeanImpl implements ModuleBean {
 			field.setDataType(FieldType.NUMBER);
 			field.setColumnName("FIELDID");
 			field.setModule(ModuleFactory.getFieldsModule());
-			
+
 			String ids = StringUtils.join(fieldIds, ",");
 			Condition idCondition = new Condition();
 			idCondition.setField(field);
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
-			
+
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 					.table("Fields")
 					.andCustomWhere("ORGID = ?", getOrgId())
 					.andCondition(idCondition);
-			
+
 
 			return deleteBuilder.delete();
 		}
@@ -1771,7 +1787,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Invalid fieldIds for Deletion");
 		}
 	}
-	
+
 	@Override
 	public int deleteModule(String moduleName) throws Exception {
 		// TODO Auto-generated method stub
@@ -1779,49 +1795,49 @@ public class ModuleBeanImpl implements ModuleBean {
 		List<FacilioField> fields = getAllFields(moduleName);
 		List<Long> fieldIds = fields.stream().map(FacilioField::getId).collect(Collectors.toList());
 		deleteFields(fieldIds);
-		
+
 		String sql = "DELETE FROM Modules WHERE ORGID = ? AND MODULEID = ?";
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, module.getModuleId());
-			
+
 			return pstmt.executeUpdate();
 		}
 		catch (Exception e) {
 			throw e;
 		}
 	}
-	
+
 	@Override
 	public long addModule(FacilioModule module) throws Exception {
-		
+
 		if(module == null) {
 			throw new IllegalArgumentException("Invalid Module for insertion");
 		}
-		
+
 		if(module.getName() == null || module.getName().isEmpty() || module.getName().equals(RESERVED_NULL_MODULE_NAME) || module.getTableName() == null || module.getTableName().isEmpty()) {
 			throw new IllegalArgumentException("Invalid Module Name/ Module table Name");
 		}
-		
+
 		if (module.getTypeEnum() == null) {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
-		
+
 		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, HIDE_FROM_PARENTS, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME, STATE_FLOW_ENABLED, IS_CUSTOM, IS_TRASH_ENABLED, MODIFIED_TIME, CRITERIA_ID, STATUS) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setString(2, module.getName());
-			
+
 			if (module.getDisplayName() != null && !module.getDisplayName().isEmpty()) {
 				pstmt.setString(3, module.getDisplayName());
 			}
 			else {
 				pstmt.setNull(3, Types.VARCHAR);
 			}
-			
+
 			pstmt.setString(4, module.getTableName());
-			
+
 			if (module.getExtendModule() != null) {
 				pstmt.setLong(5, module.getExtendModule().getModuleId());
 			}
@@ -1835,39 +1851,39 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(6, Types.BOOLEAN);
 			}
-			
+
 			pstmt.setInt(7, module.getType());
-			
+
 			if (module.getDataInterval() != -1) {
 				pstmt.setInt(8, module.getDataInterval());
 			}
 			else {
 				pstmt.setNull(8, Types.INTEGER);
 			}
-			
+
 			if (StringUtils.isNotEmpty(module.getDescription())) {
 				pstmt.setString(9, module.getDescription());
 			}
 			else {
 				pstmt.setNull(9, Types.VARCHAR);
 			}
-			
+
 			if (module.isCustom() && DBConf.getInstance().getCurrentUser() != null) {
 				pstmt.setLong(10, DBConf.getInstance().getCurrentUserId());
 			}
 			else {
 				pstmt.setNull(10, Types.BIGINT);
 			}
-			
+
 			long currentTime = System.currentTimeMillis();
-			
+
 			if(module.getCreatedTime() <= 0) {
 				module.setCreatedTime(currentTime);
 			}
 			if(module.getModifiedTime() <= 0) {
 				module.setModifiedTime(currentTime);
 			}
-			
+
 			pstmt.setLong(11, module.getCreatedTime());
 
 			pstmt.setBoolean(12, module.isStateFlowEnabled());
@@ -1879,9 +1895,9 @@ public class ModuleBeanImpl implements ModuleBean {
 			else {
 				pstmt.setNull(14, Types.BOOLEAN);
 			}
-			
+
 			pstmt.setLong(15, module.getModifiedTime());
-			
+
 			if (module.getCriteriaId() > 0) {
 				pstmt.setLong(16, module.getCriteriaId());
 			}
@@ -1919,7 +1935,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 		}
 	}
-	
+
 	@Override
 	public void addSubModule(long parentModuleId, long childModuleId) throws Exception {
 		addSubModule(parentModuleId, childModuleId, -1);
@@ -1966,27 +1982,27 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public JSONObject getStateFlow(String module) throws Exception {
 	//String query = "select STATE_ID,Ticke                                                                                                        tStatus.STATUS , GROUP_CONCAT(concat('{\"',NEXT_STATE_ID,'\":','\"',ts2.STATUS,'\"}')) from TicketStateFlow , TicketStatus, TicketStatus ts2 where TicketStatus.ID=TicketStateFlow.STATE_ID and TicketStateFlow.NEXT_STATE_ID=ts2.ID  group by STATE_ID";
-		
+
 		//FacilioModule fm = getModule("ticketstatus");
 		String nextstatequery =" select STATE_ID,group_concat(concat('{\"Activity\":\"',ACTIVITY_NAME,'\", \"state\":\"',NEXT_STATE_ID,'\", \"StatusDesc\":\" ',STATUS,'\"}')) from TicketStateFlow,TicketStatus  where TicketStatus.ID=NEXT_STATE_ID and TicketStatus.ORGID=" + getOrgId() +" group by STATE_ID ";
 
 		try(java.sql.Connection con = FacilioConnectionPool.getInstance().getConnection();
 				Statement stmt = con.createStatement();
 				ResultSet rs = stmt.executeQuery(nextstatequery);) {
-			
+
 			JSONObject stateflow =new JSONObject();
 			while (rs.next())
 			{
 				String oldstate = rs.getString(1);
 				String nextstates = rs.getString(2);
 				JSONArray nextstats =(JSONArray) new JSONParser().parse("["+ nextstates +"]");
-			
-	
+
+
 				stateflow.put(oldstate, nextstats);
 			}
 			return stateflow;
 		}
-		
+
 	}
 
 	@Override
@@ -1997,16 +2013,16 @@ public class ModuleBeanImpl implements ModuleBean {
 	@Override
 	public List<FacilioField> getAllCustomFields(String moduleName) throws Exception {
 		// TODO Auto-generated method stub
-		
+
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
 			return LookupSpecialTypeUtil.getAllFields(moduleName);
 		}
 
 		FacilioModule module = getMod(moduleName);
 		Map<Long, FacilioModule> moduleMap = splitModules(module);
-		
+
 		List<Long> extendedModuleIds = module.getExtendedModuleIds();
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getSelectFieldFields())
 														.table("Fields")
@@ -2247,6 +2263,11 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		if (StringUtils.isNotEmpty(searchString)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldsMap.get("displayName"), searchString, StringOperators.CONTAINS));
+		}
+
+		String skipFieldName = FieldUtil.getSkipFieldNameForModule(moduleName);
+		if(StringUtils.isNotEmpty(skipFieldName)){
+			selectBuilder.andCondition(CriteriaAPI.getCondition("NAME","name",skipFieldName,StringOperators.ISN_T));
 		}
 
 		if (pagination != null) {

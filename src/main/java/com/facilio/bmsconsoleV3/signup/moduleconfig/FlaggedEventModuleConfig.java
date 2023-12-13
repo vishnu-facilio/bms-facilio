@@ -437,8 +437,10 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         FacilioField controllerField = moduleBean.getField("controller",moduleName);
         FacilioField assetField = moduleBean.getField("asset", moduleName);
         FacilioField workorderField = moduleBean.getField("workorder",moduleName);
+        FacilioField serviceOrder = moduleBean.getField("serviceOrder",moduleName);
         FacilioField team = moduleBean.getField("team",moduleName);
         FacilioField people = moduleBean.getField("assignedPeople",moduleName);
+        FacilioField controlAction = moduleBean.getField("controlAction",moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
@@ -448,8 +450,10 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 4, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, assetField, 2, 1, 1);
         addSummaryFieldInWidgetGroup(widgetGroup, workorderField, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, team, 2, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, people, 2, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, serviceOrder, 2,3,1);
+        addSummaryFieldInWidgetGroup(widgetGroup, team, 2, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, people, 3, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controlAction, 3, 2, 1);
 
 
         widgetGroup.setName("generalInformation");

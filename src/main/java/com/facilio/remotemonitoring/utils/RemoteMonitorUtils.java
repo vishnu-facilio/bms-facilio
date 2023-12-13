@@ -130,9 +130,10 @@ public class RemoteMonitorUtils {
         return null;
     }
 
-    public static List<FlaggedEventWorkorderFieldMappingContext> getFlaggedEventRuleWOFieldMapping(Long parentId) throws Exception {
+    public static List<FlaggedEventWorkorderFieldMappingContext> getFlaggedEventRuleWOFieldMapping(Long parentId, String ticketModuleName) throws Exception {
         if(parentId != null && parentId > -1) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule ticketModule = modBean.getModule(ticketModuleName);
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .select(FieldFactory.getFlaggedEventWorkorderTemplateFieldMappingField())
                     .table(ModuleFactory.getflaggedEventWorkorderTemplateFieldMappingModule().getTableName())
@@ -141,7 +142,7 @@ public class RemoteMonitorUtils {
             if(CollectionUtils.isNotEmpty(propsList)) {
                 List<FlaggedEventWorkorderFieldMappingContext> fieldMappings = FieldUtil.getAsBeanListFromMapList(propsList,FlaggedEventWorkorderFieldMappingContext.class);
                 for(FlaggedEventWorkorderFieldMappingContext fieldMapping : fieldMappings){
-                    FacilioField facilioField = modBean.getField(fieldMapping.getLeftFieldId(), ModuleFactory.getWorkOrdersModule().getName());
+                    FacilioField facilioField = modBean.getField(fieldMapping.getLeftFieldId(), ticketModule.getName());
                     fieldMapping.setLeftFieldName(facilioField.getName());
                 }
                 return fieldMappings;
@@ -224,6 +225,8 @@ public class RemoteMonitorUtils {
             List<SupplementRecord> supplementRecord = new ArrayList<>();
             supplementRecord.add((SupplementRecord) modBean.getField("workorderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("workorderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
+            supplementRecord.add((SupplementRecord) modBean.getField("serviceOrderCloseCommandCriteria", AddFlaggedEventClosureConfigModule.MODULE_NAME));
+            supplementRecord.add((SupplementRecord) modBean.getField("serviceOrderStatuses", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             supplementRecord.add((SupplementRecord) modBean.getField("warningMessage", AddFlaggedEventClosureConfigModule.MODULE_NAME));
             List<FlaggedEventRuleClosureConfigContext> flaggedEventRuleClosureConfigList = V3RecordAPI.getRecordsListWithSupplements(AddFlaggedEventClosureConfigModule.MODULE_NAME,null,FlaggedEventRuleClosureConfigContext.class,flaggedEvenRuleCriteria,supplementRecord);
             if(CollectionUtils.isNotEmpty(flaggedEventRuleClosureConfigList)){
@@ -313,5 +316,16 @@ public class RemoteMonitorUtils {
         } else {
             FacilioTimer.deleteJob(orgId, RemoteMonitorConstants.ALARM_NOT_RECEIVED_JOB);
         }
+    }
+
+    public static String getTicketModuleName(FlaggedEventRuleContext flaggedEventRule)  throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String ticketModuleName = FacilioConstants.ContextNames.WORK_ORDER;
+        Long tickerModuleId = flaggedEventRule != null ? flaggedEventRule.getTicketModuleId() : null;
+        if (tickerModuleId != null && tickerModuleId > 0) {
+            FacilioModule ticketModule = modBean.getModule(tickerModuleId);
+            ticketModuleName = ticketModule.getName();
+        }
+        return ticketModuleName;
     }
 }

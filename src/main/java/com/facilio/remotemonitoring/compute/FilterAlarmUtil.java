@@ -25,6 +25,7 @@ import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.relation.context.RelationContext;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
+import com.facilio.remotemonitoring.RemoteMonitorConstants;
 import com.facilio.remotemonitoring.beans.AlarmRuleBean;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.handlers.AlarmCriteriaHandler;
@@ -212,7 +213,10 @@ public class FilterAlarmUtil {
     }
 
     private static List<Long> getRelatedAssets(Long childId,Long relationshipId,boolean isForward) throws Exception {
-        RelationContext relation = RelationUtil.getRelation(relationshipId,true);
+        V3AssetContext asset = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET, childId, V3AssetContext.class);
+        V3AssetCategoryContext categoryContext = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ASSET_CATEGORY, asset.getCategory().getId(),V3AssetCategoryContext.class);
+        RelationContext relationWithOriginalMappingOrder = RelationUtil.getRelation(relationshipId, true);
+        RelationContext relation = updateRelationMappingOrder(relationWithOriginalMappingOrder, categoryContext.getAssetModuleID(), isForward);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
         RelationMappingContext relationMapping = null;
@@ -308,7 +312,6 @@ public class FilterAlarmUtil {
 
     public static void clearAlarms(List<Long> rawAlarmIds,Long clearedTime) throws Exception {
         if(CollectionUtils.isNotEmpty(rawAlarmIds)) {
-
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FilteredAlarmContext updateFilteredAlarm = new FilteredAlarmContext();
             updateFilteredAlarm.setClearedTime(clearedTime);
@@ -368,4 +371,20 @@ public class FilterAlarmUtil {
         }
         return null;
     }
+
+    public static RelationContext updateRelationMappingOrder(RelationContext relationContext, long assetCategoryModuleId, boolean isForward) throws Exception {
+        RelationContext relationContextNew = new RelationContext();
+        RelationMappingContext mapping1 = relationContext.getMapping1();
+        if (mapping1 != null && ((isForward && mapping1.getFromModuleId() == assetCategoryModuleId) || (!isForward && mapping1.getToModuleId() == assetCategoryModuleId))) {
+            relationContextNew.addMapping(relationContext.getMapping1());
+            relationContextNew.addMapping(relationContext.getMapping2());
+        } else {
+            relationContextNew.addMapping(relationContext.getMapping2());
+            relationContextNew.addMapping(relationContext.getMapping1());
+        }
+        relationContextNew.setId(relationContext.getId());
+        relationContextNew.setName(relationContext.getName());
+        return relationContextNew;
+    }
+
 }

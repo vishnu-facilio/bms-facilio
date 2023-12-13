@@ -121,6 +121,18 @@ public class FlaggedEventRuleModule extends SignUpData {
         createWorkorderField.setColumnName("CREATE_WORKORDER");
         modBean.addField(createWorkorderField);
 
+        NumberField ticketModuleId = new NumberField();
+        ticketModuleId.setDefault(true);
+        ticketModuleId.setName("ticketModuleId");
+        ticketModuleId.setDisplayName("Ticket Module ID");
+        ticketModuleId.setModule(mod);
+        ticketModuleId.setDataType(FieldType.NUMBER);
+        ticketModuleId.setDisplayType(FacilioField.FieldDisplayType.NUMBER);
+        ticketModuleId.setColumnName("TICKET_MODULE_ID");
+        modBean.addField(ticketModuleId);
+
+
+
         NumberField workorderTemplateIdField = new NumberField();
         workorderTemplateIdField.setDefault(true);
         workorderTemplateIdField.setName("workorderTemplateId");
@@ -205,6 +217,16 @@ public class FlaggedEventRuleModule extends SignUpData {
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedByPeople", mod));
+
+        MultiLookupField controlActionTemplateField = new MultiLookupField();
+        controlActionTemplateField.setName("controlActionTemplate");
+        controlActionTemplateField.setDisplayName("Control Action Template");
+        controlActionTemplateField.setModule(mod);
+        controlActionTemplateField.setLookupModule(modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME));
+        controlActionTemplateField.setDataType(FieldType.MULTI_LOOKUP);
+        controlActionTemplateField.setDefault(true);
+        controlActionTemplateField.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
+        modBean.addField(controlActionTemplateField);
 
         addSystemButtons();
     }

@@ -126,10 +126,13 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
 
     @Override
     public FlaggedEventRuleContext getFlaggedEventRule(@NonNull Long id) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<SupplementRecord> supplements = new ArrayList<>();
+        supplements.add((SupplementRecord) modBean.getField("controlActionTemplate",FlaggedEventRuleModule.MODULE_NAME));
         Criteria clientCriteria = new Criteria();
         clientCriteria.addAndCondition(CriteriaAPI.getCondition("ID","id",String.valueOf(id), NumberOperators.EQUALS));
         clientCriteria.addAndCondition(CriteriaAPI.getCondition("STATUS","status",String.valueOf(Boolean.TRUE), BooleanOperators.IS));
-        List<FlaggedEventRuleContext> flaggedEventRuleList = V3RecordAPI.getRecordsListWithSupplements(FlaggedEventRuleModule.MODULE_NAME, null, FlaggedEventRuleContext.class, clientCriteria, null);
+        List<FlaggedEventRuleContext> flaggedEventRuleList = V3RecordAPI.getRecordsListWithSupplements(FlaggedEventRuleModule.MODULE_NAME, null, FlaggedEventRuleContext.class, clientCriteria, supplements);
         if(CollectionUtils.isNotEmpty(flaggedEventRuleList)) {
             for(FlaggedEventRuleContext flaggedEventRule : flaggedEventRuleList) {
                 Criteria flaggedEventAlarmTypeRelCriteria = new Criteria();
@@ -143,7 +146,7 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
                     flaggedEventRule.setControllerCriteria(CriteriaAPI.getCriteria(flaggedEventRule.getControllerCriteriaId()));
                 }
                 flaggedEventRule.setFlaggedEventRuleBureauEvaluationContexts(RemoteMonitorUtils.getFlaggedEventBureauEval(flaggedEventRule.getId(),true));
-                flaggedEventRule.setFieldMapping(RemoteMonitorUtils.getFlaggedEventRuleWOFieldMapping(flaggedEventRule.getId()));
+                flaggedEventRule.setFieldMapping(RemoteMonitorUtils.getFlaggedEventRuleWOFieldMapping(flaggedEventRule.getId(), RemoteMonitorUtils.getTicketModuleName(flaggedEventRule)));
                 flaggedEventRule.setFlaggedEventRuleClosureConfig(RemoteMonitorUtils.getFlaggedEventRuleClosureConfig(flaggedEventRule.getId()));
             }
             flaggedEventRuleList.sort(Comparator.comparing(rule -> rule.getPriority()));

@@ -2,7 +2,6 @@ package com.facilio.remotemonitoring.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -15,6 +14,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.context.FlaggedEventWorkorderFieldMappingContext;
 import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,9 +33,10 @@ public class AddOrUpdateFlaggedEventWorkorderFieldMappingCommand extends Facilio
         if(CollectionUtils.isNotEmpty(flaggedEventRules)) {
             for(FlaggedEventRuleContext flaggedEventRule : flaggedEventRules) {
                 if(CollectionUtils.isNotEmpty(flaggedEventRule.getFieldMapping())) {
+                    String ticketModuleName = RemoteMonitorUtils.getTicketModuleName(flaggedEventRule);
                     for(FlaggedEventWorkorderFieldMappingContext fieldMap : flaggedEventRule.getFieldMapping()) {
                         deleteFieldMappings(flaggedEventRule.getId());
-                        FacilioField woField = modBean.getField(fieldMap.getLeftFieldName(), FacilioConstants.ContextNames.WORK_ORDER);
+                        FacilioField woField = modBean.getField(fieldMap.getLeftFieldName(), ticketModuleName);
                         fieldMap.setLeftFieldId(woField.getId());
                         fieldMap.setParentId(flaggedEventRule.getId());
                         Map<String,Object> prop = FieldUtil.getAsProperties(fieldMap);

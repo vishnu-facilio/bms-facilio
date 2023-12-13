@@ -18,7 +18,7 @@ public class FieldsConfigList {
             "tenant", "client", "sendForApproval", "responseDueDate",
             "siteId", "serialNumber", "isQuotationNeeded", "id",
             "serviceRequest", "noOfNotes", "noOfAttachments", "estimatedEnd",
-            "description", "jobPlan", "pmV2", "parentWO"
+            "description", "jobPlan", "pmV2", "parentWO", "flaggedEvent"
     );
 
     public static final List<String> WORKORDER_VIEW_FIELDS_INCLUDE = Arrays.asList(
@@ -29,7 +29,7 @@ public class FieldsConfigList {
             "modifiedTime","actualWorkStart","actualWorkEnd","totalCost",
             "siteId","vendor", "requester", "tenant", "client",
             "noOfNotes","noOfTasks","noOfAttachments","attachmentPreview",
-            "jobPlan"
+            "jobPlan", "flaggedEvent"
     );
 
     public static final List<String> WORKORDER_VIEW_FIXED_FIELDS = Arrays.asList(
@@ -328,8 +328,8 @@ public class FieldsConfigList {
             "ticket", "approvalFlowId", "stateFlowId", "isRecurring",
             "recurringInfoId", "permitType");
     public static final List<String> RAW_ALARM_FIELDS_TO_INCLUDE = Arrays.asList(
-            "id", "message", "site", "client", "controller", "alarmDefinition",
-            "alarmCategory", "alarmType", "alarmApproach","asset", "parentAlarm", "occurredTime",
+            "id", "message", "site", "client", "controller", "alarmDefinition","flaggedEvent",
+            "alarmCategory", "alarmType", "alarmApproach","asset", "parentAlarm", "occurredTime","sourceType",
             "clearedTime", "filtered", "processed", "sysCreatedByPeople", "sysCreatedTime"
     );
 
@@ -378,7 +378,7 @@ public class FieldsConfigList {
 
     public static final List<String> FLAGGED_EVENT_FIELDS_TO_INCLUDE = Arrays.asList(
             "id", "site", "client", "controller", FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,
-            "status", "workorder", "assignedPeople", "team", "asset",
+            "status", "workorder", "serviceOrder", "assignedPeople", "team", "asset","controlAction",
             "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
             "sysModifiedByPeople"
     );
@@ -461,13 +461,13 @@ public class FieldsConfigList {
             "name","site","territory","client","category","priority","space","asset","fieldAgent","status","vendor","scheduledStartTime","scheduledEndTime","resolutionDueDuration","resolutionDueTime","resolutionDueStatus","estimatedCost","actualCost","actualStartTime","actualEndTime","actualDuration","mismatch","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
     );
     public static final List<String> SERVICE_ORDER_SORT_FIELDS_INCLUDE = Arrays.asList(
-            "name","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+            "name","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime", "flaggedEvent"
     );
     public static final List<String> SERVICE_ORDER_VIEW_FIELDS_INCLUDE = Arrays.asList(
-            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","autoCreateSa","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","autoCreateSa","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime", "flaggedEvent"
     );
     public static final List<String> SERVICE_ORDER_FILTER_FIELDS_INCLUDE = Arrays.asList(
-            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"
+            "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime", "flaggedEvent"
     );
     public static final List<String> TIME_SHEET_FIELDS_INCLUDE = Arrays.asList(
             "code","startTime","endTime","fieldAgent","serviceAppointment","serviceOrder"

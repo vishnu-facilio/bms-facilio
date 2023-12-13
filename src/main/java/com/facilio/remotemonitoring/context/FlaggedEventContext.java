@@ -7,6 +7,8 @@ import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
+import com.facilio.fsm.context.ServiceOrderContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
@@ -23,6 +25,7 @@ public class FlaggedEventContext extends V3Context {
     private Controller controller;
     private FlaggedEventStatus status;
     private V3WorkOrderContext workorder;
+    private ServiceOrderContext serviceOrder;
     private Group team;
     private V3PeopleContext assignedPeople;
     private FlaggedEventBureauActionsContext currentBureauActionDetail;
@@ -31,6 +34,7 @@ public class FlaggedEventContext extends V3Context {
     List<BureauCloseIssueReasonOptionContext> bureauCloseIssues;
     private V3SiteContext site;
     private V3AssetContext asset;
+    private V3ControlActionContext controlAction;
     public enum FlaggedEventStatus implements FacilioStringEnum {
         OPEN("Open"),
         WORKORDER_CREATED("Workorder Created"),
