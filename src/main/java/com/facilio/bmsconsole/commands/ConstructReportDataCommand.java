@@ -541,8 +541,8 @@ public class ConstructReportDataCommand extends FacilioCommand {
             Map<Integer, Object> enumMap = new HashMap<>();
             if(dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.BOOLEAN)
             {
-                enumMap.put(0, ((BooleanField) dataPoint.getyAxis().getField()).getFalseVal());
-                enumMap.put(1, ((BooleanField) dataPoint.getyAxis().getField()).getTrueVal());
+                enumMap.put(0, ((BooleanField) dataPoint.getyAxis().getField()).getFalseVal() != null ? ((BooleanField) dataPoint.getyAxis().getField()).getFalseVal() : "False");
+                enumMap.put(1, ((BooleanField) dataPoint.getyAxis().getField()).getTrueVal() != null ? ((BooleanField) dataPoint.getyAxis().getField()).getTrueVal() : "True");
             }
             else if(dataPoint.getyAxis().getField().getDataTypeEnum() == FieldType.ENUM )
             {
