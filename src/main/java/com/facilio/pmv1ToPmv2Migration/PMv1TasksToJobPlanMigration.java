@@ -1,5 +1,6 @@
 package com.facilio.pmv1ToPmv2Migration;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
@@ -68,7 +69,9 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-
+        if (orgId == null) {
+            orgId = AccountUtil.getCurrentOrg().getOrgId();
+        }
         // Have migration commands for each org
         // Transaction is only org level. If failed, have to continue from the last failed org and not from first
         // write code here
@@ -91,11 +94,13 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
         if (targetOrgId == null) {
             targetOrgId = (Long) context.getOrDefault("targetOrgId",null);
         }
+
+
         //long pmId = 14;
         V3AssetCategoryContext ac = null;
         V3SpaceCategoryContext sc = null;
         for (Long pmId : pmV1Ids) {
-
+            Account acc = AccountUtil.getCurrentAccount();
             PreventiveMaintenance pmv1 = PreventiveMaintenanceAPI.getPM(pmId, true);
             if (pmv1 != null) {
                 LOGGER.info("Migrating from pmv1 #" + pmv1.getId() + ": " + pmv1.getName());
@@ -443,9 +448,11 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
     }
 
     private static void addJobplan(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId, V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
-
-        ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", targetOrgId);
+        AccountUtil.setCurrentAccount(targetOrgId);
+        ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD");
         moduleCRUD.pmTaskToJobplanConverion(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId,ac,sc);
+        AccountUtil.cleanCurrentAccount();
+        AccountUtil.setCurrentAccount(orgId);
 
     }
 
