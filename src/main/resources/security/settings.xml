@@ -2353,6 +2353,13 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/modules/lists/all">
+        <urlparams type="object">
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="search" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/modules/updateSetting">
         <requestbody type="object">
             <property name="moduleName" type="string" mandatory="true"/>

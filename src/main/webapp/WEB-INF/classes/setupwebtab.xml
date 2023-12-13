@@ -127,6 +127,12 @@
             <param name="permission">ALL</param>
             <param name="setupTab">MODULES</param>
 		</action>
+        <action name="lists/all" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getAllModulesList">
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+		</action>
         <action name="lists/custom" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="getCustomModulesList">
             <param name="tabType">SETUP</param>
@@ -206,6 +212,12 @@
             <param name="permission">ALL</param>
             <param name="setupTab">MODULES</param>
 		</action>
+        <action name="lists/all/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+                method="getAllModulesCount">
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
         <action name="fields/count" class="com.facilio.bmsconsole.actions.ModuleSetupAction"
                 method="getModuleFieldsCount">
             <param name="tabType">SETUP</param>

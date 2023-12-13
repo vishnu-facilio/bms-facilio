@@ -7,10 +7,13 @@ import com.facilio.bmsconsole.context.ModuleSettingContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -63,6 +66,37 @@ public class ModuleSetupAction extends FacilioAction {
         chain.execute();
 
         setResult("modules", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+        return SUCCESS;
+    }
+
+    public String getAllModulesList() throws Exception {
+        FacilioChain customModulesListChain = ReadOnlyChainFactory.getCustomModulesListChain();
+
+        FacilioContext context = customModulesListChain.getContext();
+        context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+        context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        addPagination(context);
+        customModulesListChain.execute();
+
+        List<FacilioModule> custModules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
+
+        FacilioChain systemModulesListChain = ReadOnlyChainFactory.getSystemModulesListChain();
+        FacilioContext context1 = systemModulesListChain.getContext();
+        context1.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        addPagination(context1);
+        systemModulesListChain.execute();
+
+        List<FacilioModule> sysModules = (List<FacilioModule>) context1.get(FacilioConstants.ContextNames.MODULE_LIST);
+
+        List<FacilioModule> allModules = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(custModules)) {
+            allModules.addAll(custModules);
+        }
+        if(CollectionUtils.isNotEmpty(sysModules)) {
+            allModules.addAll(sysModules);
+        }
+
+        setResult("modules", allModules);
         return SUCCESS;
     }
 
@@ -193,6 +227,26 @@ public class ModuleSetupAction extends FacilioAction {
         chain.execute();
 
         setResult("count", context.get(FacilioConstants.ContextNames.COUNT));
+
+        return SUCCESS;
+    }
+
+    public String getAllModulesCount() throws Exception {
+        //sys modules count chain
+        FacilioChain systemModulesCountChain = ReadOnlyChainFactory.getSystemModulesCountChain();
+        FacilioContext systemModulesCountChainContext = systemModulesCountChain.getContext();
+        systemModulesCountChainContext.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        systemModulesCountChain.execute();
+
+        //custom modules count chain
+        FacilioChain customModulesCountChain = ReadOnlyChainFactory.getCustomModulesCountChain();
+        FacilioContext customModulesCountChainContext = customModulesCountChain.getContext();
+        customModulesCountChainContext.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+        customModulesCountChain.execute();
+
+        long sysCount = (long) systemModulesCountChainContext.get(FacilioConstants.ContextNames.COUNT);
+        long customCount = (long) customModulesCountChainContext.get(FacilioConstants.ContextNames.COUNT);
+        setResult("count", sysCount+customCount);
 
         return SUCCESS;
     }
