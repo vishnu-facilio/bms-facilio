@@ -74,9 +74,11 @@ public class UpdateAttendance extends FacilioCommand {
     }
 
     private boolean isPersonSignedInSincePreviousDay(List<AttendanceTransaction> previousDayTransactions) {
-        AttendanceTransaction lastTransaction = previousDayTransactions.get(previousDayTransactions.size() - 1);
-        if (lastTransaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN)){
-            return true;
+        if(CollectionUtils.isNotEmpty(previousDayTransactions)) {
+            AttendanceTransaction lastTransaction = previousDayTransactions.get(previousDayTransactions.size() - 1);
+            if (lastTransaction.getTransactionType().equals(AttendanceTransaction.Type.CHECK_IN)) {
+                return true;
+            }
         }
         return false;
     }
