@@ -31,6 +31,8 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.sandbox.context.SandboxConfigContext;
 import com.facilio.util.RequestUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.ActionContext;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -378,5 +380,27 @@ public class SandboxAPI {
             return new ArrayList<>();
         }
         return new ArrayList<>();
+    }
+    public static Map<Integer, List<Long>> getSkippedComponentIdsFromOrgInfo(long orgId) throws Exception {
+        Map<Integer, List<Long>> skipComponentVsIds = new HashMap<>();
+        Map<String, Object> skipComponentIdsFromOrgInfo = CommonCommandUtil.getOrgInfo(orgId,"skipComponentIds");
+        if (skipComponentIdsFromOrgInfo != null && !skipComponentIdsFromOrgInfo.isEmpty()) {
+            String skipComponentVsIdsString = (String) skipComponentIdsFromOrgInfo.get("value");
+            if (skipComponentVsIdsString != null && !skipComponentVsIdsString.isEmpty()) {
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    skipComponentVsIds = objectMapper.readValue(
+                            skipComponentVsIdsString,
+                            new TypeReference<Map<Integer, List<Long>>>() {
+                            }
+                    );
+                } catch (Exception e) {
+                    LOGGER.info("Error while parsing skipComponentVsIds");
+                    return new HashMap<>();
+                }
+                return skipComponentVsIds;
+            }
+        }
+        return new HashMap<>();
     }
 }
