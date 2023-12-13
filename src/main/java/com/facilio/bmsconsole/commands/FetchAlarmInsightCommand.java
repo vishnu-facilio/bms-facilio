@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.db.criteria.Condition;
@@ -12,6 +13,7 @@ import com.facilio.modules.*;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.readingrule.context.NewReadingRuleContext;
+import com.facilio.readingrule.rca.util.ReadingRuleRcaAPI;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -21,10 +23,6 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -41,6 +39,8 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarms;
 
 public class FetchAlarmInsightCommand extends FacilioCommand {
 
@@ -76,7 +76,8 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = null;
 		if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-				props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator, alarmId, assetIds, parentAlarmId);
+			List<ReadingAlarm> readingAlarms = getReadingAlarms(readingRuleId);
+			props = ReadingRuleRcaAPI.getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), dateRange.getStartTime(), dateRange.getEndTime());
 		}
 		else {
 			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator, assetIds);
