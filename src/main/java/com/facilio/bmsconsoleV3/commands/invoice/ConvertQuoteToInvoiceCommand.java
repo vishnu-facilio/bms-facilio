@@ -58,11 +58,7 @@ public class ConvertQuoteToInvoiceCommand extends FacilioCommand {
                 throw new IllegalArgumentException("Quote can not be converted into Invoice with out Customer Type");
             }
 
-            if(quoteContext.getCustomerType().equals(QuotationContext.CustomerType.OTHERS.getIndex()))
-            {
-                throw new IllegalArgumentException("Other Type Quote can not be converted into Invoice.");
-            }
-            else if(quoteContext.getCustomerType().equals(QuotationContext.CustomerType.VENDOR.getIndex()))
+            if(quoteContext.getCustomerType().equals(QuotationContext.CustomerType.VENDOR.getIndex()))
             {
                 invoiceContextV3.setInvoiceType(InvoiceContextV3.InvoiceType.VENDOR.getIndex());
                 invoiceContextV3.setVendor(quoteContext.getVendor());

@@ -4,21 +4,15 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.TemplatePages.QuoteTemplatePage;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.forms.FormField;
-import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.enums.Version;
+import com.facilio.bmsconsole.forms.*;
 import com.facilio.bmsconsole.page.PageWidget;
-import com.facilio.bmsconsole.util.ApplicationApi;
-import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
-import com.facilio.bmsconsole.util.SystemButtonApi;
-import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.context.jobplan.JobPlanContext;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -27,6 +21,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.relation.util.RelationshipWidgetUtil;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -255,19 +250,44 @@ public class QuoteModule extends BaseModuleConfig{
         FacilioModule quoteModule = modBean.getModule(FacilioConstants.ContextNames.QUOTE);
 
         FacilioForm quotationForm = new FacilioForm();
-        quotationForm.setDisplayName("Quote");
-        quotationForm.setName("default_quote_web");
+        quotationForm.setDisplayName("Standard Quotation Form");
+        quotationForm.setName("standard_quotation_type_form");
         quotationForm.setModule(quoteModule);
         quotationForm.setLabelPosition(FacilioForm.LabelPosition.LEFT);
         quotationForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
 
         List<FormField> quotationFormFields = new ArrayList<>();
-        quotationFormFields.add(new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1));
-        quotationFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
-        quotationFormFields.add(new FormField("billDate", FacilioField.FieldDisplayType.DATE, "Bill Date", FormField.Required.OPTIONAL, 3, 2));
-        quotationFormFields.add(new FormField("expiryDate", FacilioField.FieldDisplayType.DATE, "Expiry Date", FormField.Required.REQUIRED, 3, 3));
-        quotationFormFields.add(new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 4, 2));
-        quotationFormFields.add(new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.REQUIRED,"tenant", 4, 3));
+
+        FormField subjectField = new FormField("subject", FacilioField.FieldDisplayType.TEXTBOX, "Subject", FormField.Required.REQUIRED, 1, 1);
+        quotationFormFields.add(subjectField);
+
+        FormField descField = new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1);
+        quotationFormFields.add(descField);
+
+        FormField siteField = new FormField("siteId", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,"site", 3, 2);
+        quotationFormFields.add(siteField);
+
+        FormField typeField = new FormField("customerType", FacilioField.FieldDisplayType.SELECTBOX, "Quotation Type", FormField.Required.REQUIRED, 3, 2);
+        quotationFormFields.add(typeField);
+
+        FormField billField = new FormField("billDate", FacilioField.FieldDisplayType.DATE, "Bill Date", FormField.Required.OPTIONAL, 4, 2);
+        quotationFormFields.add(billField);
+
+        FormField expiryDateField = new FormField("expiryDate", FacilioField.FieldDisplayType.DATE, "Expiry Date", FormField.Required.REQUIRED, 4, 3);
+        quotationFormFields.add(expiryDateField);
+
+        FormField vendorField = new FormField("vendor", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Vendor", FormField.Required.OPTIONAL,"vendor", 5, 2);
+        vendorField.setHideField(true);
+        quotationFormFields.add(vendorField);
+
+        FormField tenantField = new FormField("tenant", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Tenant", FormField.Required.OPTIONAL,"tenant", 5, 2);
+        tenantField.setHideField(true);
+        quotationFormFields.add(tenantField);
+
+        FormField clientField = new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.OPTIONAL,"client", 5, 2);
+        clientField.setHideField(true);
+        quotationFormFields.add(clientField);
+
         quotationFormFields.add(new FormField("contact", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Contact", FormField.Required.OPTIONAL,"people", 5, 3));
         quotationFormFields.add(new FormField("workorder", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Workorder", FormField.Required.OPTIONAL,"workorder", 6, 1));
         quotationFormFields.add(new FormField("signature", FacilioField.FieldDisplayType.SIGNATURE, "Signature", FormField.Required.OPTIONAL, 14, 1));
@@ -293,13 +313,13 @@ public class QuoteModule extends BaseModuleConfig{
         FormSection defaultSection = new FormSection("QUOTE INFORMATION", 1, quotationFormFields, true);
         defaultSection.setSectionType(FormSection.SectionType.FIELDS);
 
-        FormSection billingSection = new FormSection("Billing Address", 2, billingAddressFields, false);
+        FormSection billingSection = new FormSection("ADDRESS", 2, billingAddressFields, true);
         billingSection.setSectionType(FormSection.SectionType.FIELDS);
 
         FormSection lineItemSection = new FormSection("QUOTE ITEMS", 3, lineItemFields, true);
         lineItemSection.setSectionType(FormSection.SectionType.FIELDS);
 
-        FormSection notesSection = new FormSection("NOTES", 4, signatureFields, false);
+        FormSection notesSection = new FormSection("NOTES", 4, signatureFields, true);
         notesSection.setSectionType(FormSection.SectionType.FIELDS);
 
         List<FormSection> sections = new ArrayList<>();
@@ -307,11 +327,78 @@ public class QuoteModule extends BaseModuleConfig{
         sections.add(billingSection);
         sections.add(lineItemSection);
         sections.add(notesSection);
-
         quotationForm.setSections(sections);
         quotationForm.setIsSystemForm(true);
+        quotationForm.setDefaultFormRules(getQuotationFormRules());
         quotationForm.setType(FacilioForm.Type.FORM);
-
         return Collections.singletonList(quotationForm);
     }
+
+    private List<FormRuleContext> getQuotationFormRules() throws Exception {
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(Constants.getModBean().getAllFields(FacilioConstants.ContextNames.QUOTE));
+        List<FormRuleContext> formRuleContexts = new ArrayList<>();
+        formRuleContexts.add(getQuotationTypeFormRule("Quotation Type Form Tenant field visibility Rule",fieldMap, QuotationContext.CustomerType.TENANT.getIndex(),"Tenant",Arrays.asList("Vendor","Client")));
+        formRuleContexts.add(getQuotationTypeFormRule("Quotation Type Form Vendor field visibility Rule",fieldMap, QuotationContext.CustomerType.VENDOR.getIndex(),"Vendor",Arrays.asList("Tenant","Client")));
+        formRuleContexts.add(getQuotationTypeFormRule("Quotation Type Form Client field visibility Rule",fieldMap, QuotationContext.CustomerType.CLIENT.getIndex(),"Client",Arrays.asList("Vendor","Tenant")));
+        return formRuleContexts;
+    }
+
+    private FormRuleContext getQuotationTypeFormRule(String ruleName, Map<String,FacilioField> fieldMap, Integer index,String showFieldName,List<String> hideFieldName){
+        FormRuleContext quotesTypeFormRule = new FormRuleContext();
+        quotesTypeFormRule.setName(ruleName);
+        quotesTypeFormRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
+        quotesTypeFormRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
+        quotesTypeFormRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
+        quotesTypeFormRule.setExecuteType(FormRuleContext.ExecuteType.CREATE_AND_EDIT.getIntVal());
+
+        //criteria
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("customerType"),""+ index, NumberOperators.EQUALS));
+        quotesTypeFormRule.setCriteria(criteria);
+
+        // trigger field
+        FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
+        triggerField.setFieldName("Quotation Type");
+        quotesTypeFormRule.setTriggerFields(Collections.singletonList(triggerField));
+
+        // form rule actions
+        List<FormRuleActionContext> actions = new ArrayList<FormRuleActionContext>();
+        //fields to be shown configuration
+        FormRuleActionContext showFieldAction = new FormRuleActionContext();
+        showFieldAction.setActionType(FormActionType.SHOW_FIELD.getVal());
+        List<FormRuleActionFieldsContext> actionFieldsContexts = new ArrayList<>();
+        FormRuleActionFieldsContext showField = new FormRuleActionFieldsContext();
+        showField.setFormFieldName(showFieldName);
+        actionFieldsContexts.add(showField);
+        showFieldAction.setFormRuleActionFieldsContext(actionFieldsContexts);
+
+        //fields to be hidden configuration
+        FormRuleActionContext hideFieldAction = new FormRuleActionContext();
+        hideFieldAction.setActionType(FormActionType.HIDE_FIELD.getVal());
+        List<FormRuleActionFieldsContext> hideActionFieldsContexts = new ArrayList<>();
+        FormRuleActionFieldsContext hideField1 = new FormRuleActionFieldsContext();
+        hideField1.setFormFieldName(hideFieldName.get(0));
+        FormRuleActionFieldsContext hideField2 = new FormRuleActionFieldsContext();
+        hideField2.setFormFieldName(hideFieldName.get(1));
+        hideActionFieldsContexts.add(hideField1);
+        hideActionFieldsContexts.add(hideField2);
+        hideFieldAction.setFormRuleActionFieldsContext(hideActionFieldsContexts);
+
+        //show field as mandatory field configuration
+        FormRuleActionContext mandatoryFieldAction = new FormRuleActionContext();
+        mandatoryFieldAction.setActionType(FormActionType.SET_MANDATORY.getVal());
+        List<FormRuleActionFieldsContext> mandatoryFieldsContexts = new ArrayList<>();
+        FormRuleActionFieldsContext mandatoryField = new FormRuleActionFieldsContext();
+        mandatoryField.setFormFieldName(showFieldName);
+        mandatoryFieldsContexts.add(mandatoryField);
+        mandatoryFieldAction.setFormRuleActionFieldsContext(mandatoryFieldsContexts);
+
+        actions.add(showFieldAction);
+        actions.add(hideFieldAction);
+        actions.add(mandatoryFieldAction);
+        quotesTypeFormRule.setActions(actions);
+        quotesTypeFormRule.setAppLinkNamesForRule(Arrays.asList(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP));
+        return quotesTypeFormRule;
+    }
+
 }

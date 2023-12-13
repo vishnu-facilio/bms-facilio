@@ -299,7 +299,6 @@ public class QuotationContext extends BaseLineItemsParentModuleContext {
     public enum CustomerType implements FacilioIntEnum {
         TENANT("Tenant"),
         CLIENT("Client"),
-        OTHERS("Others"),
         VENDOR("Vendor");
 
         private String name;
