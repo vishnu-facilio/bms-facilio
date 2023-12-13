@@ -191,7 +191,7 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
     }
 
     private static String getEmailHtml(String moduleName, NoteContext note, String recipientName, String summaryURL){
-        Long recordId = note.getParentId();
+        Long recordId = note.getParent() != null ? note.getParent().getId() : note.getParentId();
         String sender = note.getCreatedBy().getName();
         String noteContent = note.getBodyHTML() != null && note.getBodyHTML().isEmpty() ? note.getBodyHTML() : note.getBody();
         if(isNull(recordId,sender,noteContent,summaryURL)){
