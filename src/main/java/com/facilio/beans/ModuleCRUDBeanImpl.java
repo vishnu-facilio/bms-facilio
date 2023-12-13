@@ -1482,11 +1482,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	@Override
 	public void pmTaskToJobplanConverion(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId, V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
-		if(targetOrgId != null && AccountUtil.getCurrentOrg().getOrgId() != targetOrgId) {
-			// TODO: set the required IDs
-			setJobPlanFormID(jobPlanContext);
-			updateRequiredIds(jobPlanContext, pmv1,ac,sc);
-		}
+		setJobPlanFormID(jobPlanContext);
+		updateRequiredIds(jobPlanContext, pmv1, ac, sc);
 
 		FacilioContext jobPlanCreationContext = V3Util.createRecord(jobPlanModule, FieldUtil.getAsProperties(jobPlanContext));
 
