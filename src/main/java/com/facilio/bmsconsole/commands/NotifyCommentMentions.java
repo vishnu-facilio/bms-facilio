@@ -110,8 +110,9 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
 
 
     private static Map<String, String> constructMessage(FacilioModule parentModule, String name, NoteContext note) {
+        long recordId = note.getParent() != null ? note.getParent().getId() : note.getParentId();
         String title = "You have been mentioned in a "+ name;
-        String body = "#" + note.getParentId() + ", " + parentModule.getDisplayName() + " " +name+ " : \n" +
+        String body = "#" + recordId + ", " + parentModule.getDisplayName() + " " +name+ " : \n" +
                 note.getBody();
         Map<String,String> notificationContent = new HashMap<>();
         notificationContent.put(TITLE, title);
@@ -122,8 +123,9 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
 
     private void sendEmailNotification(Set<Long> pplIds, Map<String, String> notificationContent, NoteContext note, FacilioModule parentModule) throws Exception {
         List<V3PeopleContext> ppl = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.PEOPLE, pplIds, V3PeopleContext.class);
+        long recordId = note.getParent() != null ? note.getParent().getId() : note.getParentId();
         for (V3PeopleContext person: ppl) {
-            String summaryURL = V3RecordAPI.getRecordUrlForPeople(person.getId(),parentModule.getName(),note.getId());
+            String summaryURL = V3RecordAPI.getRecordUrlForPeople(person.getId(),parentModule.getName(),recordId);
             String message = getEmailHtml(parentModule.getDisplayName(),note,person.getName(),summaryURL);
             if (message == null){
                 continue;
