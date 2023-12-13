@@ -128,10 +128,10 @@ public class ServiceOrderRecordCreationHandler implements TicketModuleRecordCrea
         if (recordAsProp.containsKey(FacilioConstants.ContextNames.STATUS)) {
             Map<String, Object> statusMap = (Map<String, Object>) recordAsProp.get(FacilioConstants.ContextNames.STATUS);
             if (MapUtils.isNotEmpty(statusMap)) {
-                String statusId = (String) statusMap.get(RemoteMonitorConstants.ID);
+                Long statusId = (Long) statusMap.get(RemoteMonitorConstants.ID);
                 if (statusId != null) {
                     ServiceOrderTicketStatusContext status = new ServiceOrderTicketStatusContext();
-                    status.setId(Long.parseLong(statusId));
+                    status.setId(statusId);
                     FlaggedEventUtil.updateServiceOrderStatus((ServiceOrderContext) record, status);
                 }
             }

@@ -112,7 +112,7 @@ public class WorkOrderRecordCreationHandler implements TicketModuleRecordCreatio
         if (recordAsProp.containsKey(FacilioConstants.ContextNames.MODULE_STATE)) {
             Map<String, Object> statusMap = (Map<String, Object>) recordAsProp.get(FacilioConstants.ContextNames.MODULE_STATE);
             if (MapUtils.isNotEmpty(statusMap)) {
-                String statusId = (String) statusMap.get(RemoteMonitorConstants.ID);
+                Long statusId = (Long) statusMap.get(RemoteMonitorConstants.ID);
                 if (statusId != null) {
                     FacilioStatus status = TicketAPI.getStatus(Long.valueOf(statusId));
                     if (status != null) {
