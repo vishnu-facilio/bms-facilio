@@ -262,7 +262,11 @@ public class V2ConstructCardCommand extends FacilioCommand {
                                 condition.setField(filterField);
                             }
                             else{
-                                condition.setField(modBean.getField(alias, cardParams.getParentModuleName()));
+                                if(alias.equals("parentId")) {
+                                   condition.setField(FieldFactory.getIdField(modBean.getModule(cardParams.getParentModuleName())));
+                                }else {
+                                    condition.setField(modBean.getField(alias, cardParams.getParentModuleName()));
+                                }
                             }
                             condition.setOperatorId(((Long) selected_dp_map.get("operatorId")).intValue());
                             List<String> value = (List<String>) selected_dp_map.get("value");

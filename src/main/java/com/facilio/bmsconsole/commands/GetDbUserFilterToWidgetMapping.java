@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.cards.util.CardLayout;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.FieldType;
+import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.context.ReportYAxisContext;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -27,6 +28,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.util.ReportUtil;
 
+import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpi;
 
 public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(GetDbTimeLineFilterToWidgetMapping.class.getName());
@@ -238,8 +240,17 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 						   String moduleName = (String) cardParams.get("type");
 						   if(filter.getFieldId() < 0 && filter.getModuleName() != null) {
 							   Map<String, DashboardReadingWidgetFilterContext> customMapping = DashboardFilterUtil.getReadingFilterMappingsForFilterId(filter.getId(),widgetId);
-							   FacilioField field = cardParams.get("dynamicKpiId") != null && (Long) cardParams.get("dynamicKpiId") > 0 ? null : modBean.getField((Long) cardParams.get("fieldId"));
-							   FacilioModule baseModule = field != null ? field.getModule() : modBean.getModule((String) cardParams.get("parentModuleName"));
+							   FacilioField field = new FacilioField();
+							   if(cardParams.get("dynamicKpiId") != null && (Long) cardParams.get("dynamicKpiId") > 0){
+								   ReadingKPIContext dynamicKpi = getReadingKpi((Long) cardParams.get("dynamicKpiId"));
+								   if(dynamicKpi.getNs().getFields().size() > 0){
+									   field = dynamicKpi.getNs().getFields().get(0).getField();
+								   }
+							   }
+							   else{
+								  field = modBean.getField((Long) cardParams.get("fieldId"));
+							   }
+							   FacilioModule baseModule = field.getModule();
 							   filter.getReadingWidgetModuleMap().put(widgetId,Collections.singletonList(moduleName));
 							   FacilioModule parentModule = modBean.getModule(moduleName);
 							   parentModule.setFields(modBean.getAllFields(moduleName));

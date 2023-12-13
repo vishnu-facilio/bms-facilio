@@ -2541,7 +2541,7 @@
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:VIEW,READ;PUT:READ</param>
             <param name="tabType">DASHBOARD</param>
         </action>
     </package>
