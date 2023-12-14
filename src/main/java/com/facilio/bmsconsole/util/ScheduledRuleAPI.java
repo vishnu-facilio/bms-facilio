@@ -70,8 +70,8 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 					if (rule.getTimeObj() != null) {
 						throw new IllegalArgumentException("Time is not required for DATE_TIME field");
 					}
-					if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
-						throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
+					if (rule.getInterval() % (DATE_TIME_INTERVAL * 60) != 0) {
+						throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_INTERVAL+" min for DATE_TIME field");
 					}
 					break;
 				default:
@@ -135,6 +135,7 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30
+	private static final int DATE_TIME_INTERVAL = 5; // 5 min interval for module rule;
 	private static ScheduleInfo getDateSchedule(WorkflowRuleContext rule) {
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
