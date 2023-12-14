@@ -25,6 +25,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -42,6 +43,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.concurrent.Callable;
 
 /**
  * This command converts the PMv1 Tasks to a JobPlan/JobPlan Task Section/JobPlan Task
@@ -448,11 +450,11 @@ public class PMv1TasksToJobPlanMigration extends FacilioCommand {
     }
 
     private static void addJobplan(FacilioModule jobPlanModule, PreventiveMaintenance pmv1, JobPlanContext jobPlanContext, Long targetOrgId, Long orgId, V3AssetCategoryContext ac , V3SpaceCategoryContext sc) throws Exception {
-        AccountUtil.setCurrentAccount(targetOrgId);
-        ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD");
-        moduleCRUD.pmTaskToJobplanConverion(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId,ac,sc);
-        AccountUtil.cleanCurrentAccount();
-        AccountUtil.setCurrentAccount(orgId);
+        NewTransactionService.newTransactionWithReturn((Callable<String>) () -> {
+            ModuleCRUDBean moduleCRUD = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD", targetOrgId);
+            moduleCRUD.pmTaskToJobplanConverion(jobPlanModule, pmv1, jobPlanContext,targetOrgId,orgId,ac,sc);
+            return null;
+        }, true);
 
     }
 
