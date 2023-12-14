@@ -4294,7 +4294,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/iot/data/push" method="POST">
+    <request path="/api/v3/timeseries/push" method="POST">
         <requestbody type="object">
             <property name="payload" type="object"  mandatory="true">
                 <property name="agent" type="string" mandatory="true"/>
@@ -4304,15 +4304,33 @@
                 <property name="controllerType" type="number"/>
                 <property name="uniqueId" type="string"/>
                 <property name="publishType" type="number"/>
+                <property name="publish_ts_sec" type="number"/>
+                <property name="ts_sec" type="number"/>
+                <property name="version" type="number"/>
+                <property name="values" type="object"/> <!--  for custom payload -->
                 <property name="time_series" type="array">
-                    <items type="object"/>
+                    <items type="object">
+                        <property name="ts_sec" type="number"/>
+                        <property name="data" type="array">
+                            <items type="object">
+                                <property name="name" type="string"/>
+                                <property name="value" type="string"/> <!-- Multi type needed -->
+                                <property name="unit" type="string"/>
+                            </items>
+                        </property>
+                    </items>
                 </property>
                 <property name="data" type="array">
-                    <items type="object"/>
+                    <items type="object">
+                        <property name="name" type="string"/>
+                        <property name="value" type="string"/> <!-- Multi type needed -->
+                        <property name="unit" type="string"/>
+                    </items>
                 </property>
             </property>
         </requestbody>
     </request>
+
     <request path="/api/v1/setup/sfgSetting/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="customerKey" type="string"></property>

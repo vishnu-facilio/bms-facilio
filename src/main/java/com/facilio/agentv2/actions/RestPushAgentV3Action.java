@@ -35,6 +35,14 @@ public class RestPushAgentV3Action extends V3Action {
 
     @Getter @Setter
     private JSONObject payload;
+    @Getter
+    private PublishType publishType;
+
+    private void setPublishType(Integer publishTypeInt) {
+        if (publishTypeInt != null) {
+            publishType = PublishType.valueOf(publishTypeInt);
+        }
+    }
 
     public String push() throws Exception {
         JSONObject originalPayload = (JSONObject) payload.clone();
@@ -54,18 +62,12 @@ public class RestPushAgentV3Action extends V3Action {
             MessageSource ms = AgentUtilV2.getMessageSource(agent);
             MessageQueue mq = MessageQueueFactory.getMessageQueue(ms);
 
-            List<FacilioRecord> records = new ArrayList<>();
-            // 3.1 version supports multiple timestamp payloads
-            // Splitting timestamp payloads and pushing to kafka as multiple payloads - converting to v3
-            double actualVersion = FacilioUtil.parseDouble(payload.getOrDefault(AgentConstants.VERSION, 3));
+            if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
+                payload.put(AgentConstants.PUBLISH_TYPE, publishType.asInt());
+            }
 
-            addPayloadDefaultValues();
-            if (actualVersion ==  3.1) {
-                convertToV3payloads(agentName, records);
-            }
-            else {
-                records.add(new FacilioRecord(agentName, payload));
-            }
+            List<FacilioRecord> records = new ArrayList<>();
+            records.add(new FacilioRecord(agentName, payload));
 
             String topic = AccountUtil.getCurrentOrg().getDomain();
             mq.put(topic, records);
@@ -85,6 +87,7 @@ public class RestPushAgentV3Action extends V3Action {
         return SUCCESS;
     }
 
+    // TODO delete if not needed later
     private void convertToV3payloads(String agentName, List<FacilioRecord> records) throws FacilioException {
         List<Map<String, Object>> trendArr = (ArrayList<Map<String, Object>>) payload.remove(AgentConstants.TIMESERIES);
         if(CollectionUtils.isEmpty(trendArr)) {
@@ -103,7 +106,7 @@ public class RestPushAgentV3Action extends V3Action {
 
     private void addPayloadDefaultValues() {
         if (!payload.containsKey(AgentConstants.PUBLISH_TYPE)) {
-            payload.put(AgentConstants.PUBLISH_TYPE, PublishType.TIMESERIES.asInt());
+            payload.put(AgentConstants.PUBLISH_TYPE, publishType.asInt());
         }
         if (!payload.containsKey(AgentConstants.CONTROLLER_TYPE)) {
             payload.put(AgentConstants.CONTROLLER_TYPE, ControllerType.MISC.getKey());
@@ -112,7 +115,7 @@ public class RestPushAgentV3Action extends V3Action {
             String parentUniqueNum = (String) payload.get(AgentConstants.UNIQUE_ID);
             Map<String, String> controller =  Collections.singletonMap(FacilioConstants.ContextNames.NAME, parentUniqueNum);
             payload.put(FacilioConstants.ContextNames.CONTROLLER, controller);
-            // Controller must be misc in this case
+            // Controller can be empty in payload only for misc type
             payload.put(AgentConstants.CONTROLLER_TYPE, ControllerType.MISC.getKey());
         }
     }

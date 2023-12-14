@@ -5,36 +5,17 @@
 
 
 <struts>
-    <package name="iotPush" namespace="/api/v3/iot/olddata"
-             extends="struts-default,json-default">
-        <interceptors>
-            <interceptor name="agentApiKeyInterceptor"
-                         class="com.facilio.bmsconsole.interceptors.AgentApiKeyInterceptor">
-            </interceptor>
-            <interceptor name="validationinterceptor"
-                         class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
-            <interceptor-stack name="agentApiInterceptorStack">
-                <interceptor-ref name="agentApiKeyInterceptor"/>
-                <interceptor-ref name="defaultStack"/>
-                <interceptor-ref name="json">
-                    <param name="enableSMD">true</param>
-                </interceptor-ref>
-                <interceptor-ref name="validationinterceptor"/>
-            </interceptor-stack>
-        </interceptors>
-        <default-interceptor-ref name="agentApiInterceptorStack"/>
-        <action name="push"
-                class="com.facilio.agentv2.actions.RestAgentPushAction"
-                method="push">
-            <result name="success" type="json">
-                <param name="statusCode">200</param>
-            </result>
+
+    <!--TODO  Delete later  -->
+    <package name="iotPushOldV3" namespace="/api/v3/iot/data" extends="v3Api">
+        <action name="push" class="com.facilio.agentv2.actions.RestPushAgentV3Action" method="push">
             <param name="deprecated">true</param>
         </action>
     </package>
 
-    <package name="iotPushV3" namespace="/api/v3/iot/data" extends="v3Api">
+    <package name="iotTsPushV3" namespace="/api/v3/timeseries" extends="v3Api">
         <action name="push" class="com.facilio.agentv2.actions.RestPushAgentV3Action" method="push">
+            <param name="publishType">6</param>      <!-- For Timeseries-->
             <param name="deprecated">true</param>
         </action>
     </package>
