@@ -12044,6 +12044,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sourceOrgId", "SOURCE_ORGID", module, FieldType.NUMBER));
         fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
         fields.add(getField("lastModuleId", "LAST_MODULE_ID", module, FieldType.NUMBER));
+        fields.add(getField("lastModuleName", "LAST_MODULENAME", module, FieldType.STRING));
         fields.add(getField("migratedCount", "MIGRATED_COUNT", module, FieldType.NUMBER));
         fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
@@ -12056,6 +12057,7 @@ public class FieldFactory extends BaseFieldFactory {
         FacilioModule module = ModuleFactory.getDataMigrationMappingModule();
         fields.add(getIdField(module));
         fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("moduleName", "MODULENAME", module, FieldType.STRING));
         fields.add(getField("migrationId", "MIGRATIONID", module, FieldType.NUMBER));
         fields.add(getField("oldId", "OLDID", module, FieldType.NUMBER));
         fields.add(getField("newId", "NEWID", module, FieldType.NUMBER));

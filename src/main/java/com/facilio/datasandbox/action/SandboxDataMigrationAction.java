@@ -119,8 +119,9 @@ public class SandboxDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(DataMigrationConstants.PACKAGE_FILE_URL, packageFileURL);
         dataMigrationContext.put(DataMigrationConstants.MODULE_SEQUENCE, moduleSequenceList);
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_ID, getDataMigrationId());
-        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
+        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, Long.parseLong(transactionTimeout + ""));
         dataMigrationContext.put(DataMigrationConstants.LOG_MODULES_LIST, dataMigrationLogModulesList);
+        dataMigrationContext.put(DataMigrationConstants.TRANSACTION_START_TIME, System.currentTimeMillis());
         dataMigrationContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipDataMigrationLogModulesList);
 
         installDataMigrationChain.execute();

@@ -199,28 +199,28 @@ public class DataPackageFileUtil {
 
     public static List<String> getDataConfigModuleNames() throws Exception {
         List<String> moduleNames = new ArrayList<>();
-        InputStream dataConfigStream = getDataConfigStreamFromPackage();
-        if (dataConfigStream != null) {
-            XMLBuilder dataConfigXml = XMLBuilder.parse(dataConfigStream);
-            XMLBuilder moduleNamesXml = dataConfigXml.getElement(PackageConstants.MODULE_NAMES);
-            List<XMLBuilder> allModulesXml = moduleNamesXml.getFirstLevelElementListForTagName(PackageConstants.MODULE);
-            moduleNames = CollectionUtils.isNotEmpty(allModulesXml) ?
-                    allModulesXml.stream().map(xml -> xml.getAttribute(PackageConstants.NAME)).collect(Collectors.toList()) : new ArrayList<>();
-            dataConfigStream.close();
+        try (InputStream dataConfigStream = getDataConfigStreamFromPackage()) {
+            if (dataConfigStream != null) {
+                XMLBuilder dataConfigXml = XMLBuilder.parse(dataConfigStream);
+                XMLBuilder moduleNamesXml = dataConfigXml.getElement(PackageConstants.MODULES);
+                List<XMLBuilder> allModulesXml = moduleNamesXml.getFirstLevelElementListForTagName(PackageConstants.MODULE);
+                moduleNames = CollectionUtils.isNotEmpty(allModulesXml) ?
+                        allModulesXml.stream().map(xml -> xml.getAttribute(PackageConstants.NAME)).collect(Collectors.toList()) : new ArrayList<>();
+            }
         }
         return moduleNames;
     }
 
     public static Map<String, String> getModuleNameVsXmlFileName() throws Exception {
         Map<String, String> moduleNameVsXmlFileName = new HashMap<>();
-        InputStream dataConfigStream = getDataConfigStreamFromPackage();
-        if (dataConfigStream != null) {
-            XMLBuilder dataConfigXml = XMLBuilder.parse(dataConfigStream);
-            XMLBuilder moduleNamesXml = dataConfigXml.getElement(PackageConstants.MODULE_NAMES);
-            List<XMLBuilder> allModulesXml = moduleNamesXml.getFirstLevelElementListForTagName(PackageConstants.MODULE);
-            moduleNameVsXmlFileName = CollectionUtils.isEmpty(allModulesXml) ? moduleNameVsXmlFileName :
-                    allModulesXml.stream().collect(Collectors.toMap(xmlBuilder -> xmlBuilder.getAttribute(PackageConstants.NAME), XMLBuilder::getText, (a, b) -> b));
-            dataConfigStream.close();
+        try (InputStream dataConfigStream = getDataConfigStreamFromPackage()) {
+            if (dataConfigStream != null) {
+                XMLBuilder dataConfigXml = XMLBuilder.parse(dataConfigStream);
+                XMLBuilder moduleNamesXml = dataConfigXml.getElement(PackageConstants.MODULES);
+                List<XMLBuilder> allModulesXml = moduleNamesXml.getFirstLevelElementListForTagName(PackageConstants.MODULE);
+                moduleNameVsXmlFileName = CollectionUtils.isEmpty(allModulesXml) ? moduleNameVsXmlFileName :
+                        allModulesXml.stream().collect(Collectors.toMap(xmlBuilder -> xmlBuilder.getAttribute(PackageConstants.NAME), XMLBuilder::getText, (a, b) -> b));
+            }
         }
         return moduleNameVsXmlFileName;
     }

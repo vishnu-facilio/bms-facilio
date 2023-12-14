@@ -19,6 +19,8 @@ import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -218,7 +220,16 @@ public class DataMigrationUtil {
                 break;
             case "task":
                 addNumberLookupDetails("parentTicketId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                // "readingFieldId" - refers to FieldId in FacilioField
+                // "readingDataId" - refers to RecordId in the Reading Module table (Module that contains "readingFieldId")
+                addNumberLookupDetails("readingDataId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
 //                addNumberLookupDetails("statusNew", "ticketstatus", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "tasksection":
+                addNumberLookupDetails("parentTicketId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "taskInputOpyion":
+                addNumberLookupDetails("taskId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "workorderLabour":
                 addNumberLookupDetails("parentId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -1080,6 +1091,17 @@ public class DataMigrationUtil {
                     // put("parent", FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
                     // refers to the ModuleId with Notes Type
                     put("commentModuleId", FacilioConstants.ContextNames.COMMENT_ATTACHMENTS);
+                }});
+                put("tasksection", new HashMap<String,String>(){{
+                    put("parentTicketId",FacilioConstants.ContextNames.TICKET);
+                }});
+                put(FacilioConstants.ContextNames.ITEM, new HashMap<String,String>(){{
+                    put("itemType",FacilioConstants.ContextNames.ITEM_TYPES);
+                    put("storeRoom",FacilioConstants.ContextNames.STORE_ROOM);
+                }});
+                put(FacilioConstants.ContextNames.TOOL, new HashMap<String,String>(){{
+                    put("toolType",FacilioConstants.ContextNames.TOOL_TYPES);
+                    put("storeRoom",FacilioConstants.ContextNames.STORE_ROOM);
                 }});
             }}
     );

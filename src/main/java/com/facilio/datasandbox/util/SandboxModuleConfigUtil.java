@@ -5,19 +5,64 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import com.facilio.v3.context.Constants;
+import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class SandboxModuleConfigUtil {
+    // Handled Special V2 Modules like "taskSection", "taskInputOption" (associated with "task" module)
+    public static final Map<String, Map<String, Object>> SPECIAL_MODULENAME_VS_DETAILS = Collections.unmodifiableMap(initializeModuleDetails());
+
+    private static Map<String, Map<String, Object>> initializeModuleDetails() {
+        Map<String, Map<String, Object>> moduleNameVsModuleDetails = new LinkedHashMap<>();
+        try {
+            moduleNameVsModuleDetails.put(ModuleFactory.getTaskSectionModule().getName(), getModuleDetails(ModuleFactory.getTaskSectionModule(), FieldFactory.getTaskSectionFields()));
+            moduleNameVsModuleDetails.put(ModuleFactory.getTaskInputOptionModule().getName(), getModuleDetails(ModuleFactory.getTaskInputOptionModule(), FieldFactory.getTaskInputOptionsFields()));
+        } catch (Exception e) {
+            LOGGER.info("####Data Migration - Exception while fetching SPECIAL_MODULENAME_VS_DETAILS - " + e);
+            throw new RuntimeException(e);
+        }
+
+        return moduleNameVsModuleDetails;
+    }
+
+    private static Map<String, Object> getModuleDetails(FacilioModule module, List<FacilioField> fields) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        if (module.getTypeEnum() == null) {
+            module.setType(FacilioModule.ModuleType.SUB_ENTITY);
+        }
+        List<String> numberFileFields = DataMigrationUtil.getNumberFileFields(module);
+        Criteria moduleSpecificCriteria = DataMigrationUtil.getModuleSpecificCriteria(module);
+        Map<String, Map<String, Object>> numberLookUps = DataMigrationUtil.getNumberLookups(module, modBean, null);
+
+        Map<String, Object> moduleDetails = new HashMap<>();
+        moduleDetails.put("fields", fields);
+        moduleDetails.put("sourceModule", module);
+        moduleDetails.put("numberLookups", numberLookUps);
+        moduleDetails.put("fileFields", numberFileFields);
+        moduleDetails.put("criteria", moduleSpecificCriteria);
+
+        return moduleDetails;
+    }
+
+    // Modules copied in Meta are reUpdated in DataMigration flow
     public static List<String> updateOnlyModulesList() {
         return new ArrayList<String>(){{
             add(FacilioConstants.ContextNames.PEOPLE);
@@ -30,7 +75,12 @@ public class SandboxModuleConfigUtil {
             add(FacilioConstants.ContextNames.CLIENT_CONTACT);
             add(FacilioConstants.PeopleGroup.PEOPLE_GROUP);
             add(FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
-            add(FacilioConstants.ContextNames.ASSET_TYPE);
+        }};
+    }
+
+    // Picklist Modules copied in Meta (can be skipped in Data Migration)
+    public static List<String> pickListTypeModules() {
+        return new ArrayList<String>() {{
             add(FacilioConstants.ContextNames.SPACE_CATEGORY);
             add(FacilioConstants.ContextNames.ASSET_CATEGORY);
             add(FacilioConstants.ContextNames.ASSET_TYPE);
@@ -38,6 +88,25 @@ public class SandboxModuleConfigUtil {
             add(FacilioConstants.ContextNames.TICKET_CATEGORY);
             add(FacilioConstants.ContextNames.TICKET_STATUS);
             add(FacilioConstants.ContextNames.TICKET_PRIORITY);
+        }};
+    }
+
+    // Picklist Modules not copied in Meta (ModuleName Vs UniqueFieldName)
+    public static Map<String, String> unhandledPickListModuleNameVsFieldName() {
+        return new HashMap<String, String>() {{
+            put("alarmseverity", "severity");
+            put("energymeterpurpose", "name");
+            put("inspectionPriority", "priority");
+            put("itemStatus", "name");
+            put("readingalarmcategory", "name");
+            put("servicerequestpriority", "priority");
+            put("tickettype", "name");
+            put("toolStatus", "name");
+            put("weatherservice", "name");
+            put("weatherstation", "name");
+            put("workpermittype", "type");
+            put("alarmType", "linkName");
+            put("serviceTaskStatus", "name");
         }};
     }
 
@@ -201,6 +270,37 @@ public class SandboxModuleConfigUtil {
         }
     }
 
+    public static Map<String, FacilioField> getModuleFields(String moduleName, List<String> fieldsNames) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        FacilioModule module = modBean.getModule(moduleName);
+
+        Criteria fieldsCriteria = new Criteria();
+        fieldsCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
+        fieldsCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", StringUtils.join(fieldsNames, ","), StringOperators.IS));
+
+        List<FacilioField> fieldModuleFields = FieldFactory.getFieldFields();
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(fieldModuleFields)
+                .table("Fields");
+
+        if (!fieldsCriteria.isEmpty()) {
+            selectBuilder.andCriteria(fieldsCriteria);
+        }
+
+        List<Map<String, Object>> fieldProps = selectBuilder.get();
+        if (CollectionUtils.isNotEmpty(fieldProps)) {
+            Map<String, FacilioField> fieldNameVsField = new HashMap<>();
+            for (Map<String, Object> fieldProp : fieldProps) {
+                FacilioField field = FieldUtil.getAsBeanFromMap(fieldProp, FacilioField.class);
+                field.setModule(module);
+                fieldNameVsField.put(field.getName(), field);
+            }
+            return fieldNameVsField;
+        }
+        return null;
+    }
+
     public static Criteria computeRelatedFieldCriteriaForSubModules(List<LookupField> relatedFields, Map<String, List<Long>> fetchedRecords) {
         if (CollectionUtils.isNotEmpty(relatedFields)) {
             Criteria relatedCriteria = new Criteria();
@@ -214,5 +314,25 @@ public class SandboxModuleConfigUtil {
             return relatedCriteria;
         }
         return null;
+    }
+
+    public static void addSystemFields(FacilioModule module, Map<String, FacilioField> fieldsMap) {
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.SITE_ID)) {
+            FacilioField siteIdField = FieldFactory.getSiteIdField(module);
+            fieldsMap.put(siteIdField.getName(), siteIdField);
+        }
+
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.FORM_ID)) {
+            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, null, module);
+            fieldsMap.put(formIdField.getName(), formIdField);
+        }
+
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.STATE_FLOW_ID)) {
+            FacilioField stateFlowIdFields = FieldFactory.getNumberField(FacilioConstants.ContextNames.STATE_FLOW_ID, null, module);
+            fieldsMap.put(stateFlowIdFields.getName(), stateFlowIdFields);
+        }
+
+        FacilioField idField = FieldFactory.getIdField(module);
+        fieldsMap.put(idField.getName(), idField);
     }
 }

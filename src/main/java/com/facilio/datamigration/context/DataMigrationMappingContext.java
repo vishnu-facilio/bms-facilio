@@ -11,6 +11,7 @@ public class DataMigrationMappingContext {
     private long id = -1;
     private long orgId = -1;
     private long moduleId = -1;
+    private String moduleName;
     private long oldId = -1;
     private long newId = -1;
     private long migrationId;

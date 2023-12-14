@@ -110,7 +110,6 @@
     function hideOrShowFields() {
         const isPackageCreationAction = $("#createPackageAction").is(":checked");
         const partialPackageType = $("#partialPackageType").is(":checked");
-        $("#sourceOrgIdRow").toggle(isPackageCreationAction);
         $("#packageTypeRowId").toggle(isPackageCreationAction);
         $("#limitRow").toggle(isPackageCreationAction && partialPackageType);
         $("#dataMigrationModulesIdRow").toggle(isPackageCreationAction && partialPackageType);

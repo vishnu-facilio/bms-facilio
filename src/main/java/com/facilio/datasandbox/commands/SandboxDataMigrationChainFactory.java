@@ -13,6 +13,7 @@ public class SandboxDataMigrationChainFactory {
         chain.addCommand(new ComputeModuleSequenceForPackageCreation());
         chain.addCommand(new CreateDataCSVFilesCommand());
         chain.addCommand(new UpdateDataCSVFilesCommand());
+        chain.addCommand(new AddSpecialModuleCSVFilesCommand());
         chain.addCommand(new PackageCreationResponseCommand());
         return chain;
     }
@@ -21,8 +22,10 @@ public class SandboxDataMigrationChainFactory {
         FacilioChain c = getDefaultChain(-1);
         c.addCommand(new ValidateDataMigrationInstallationCommand());
         c.addCommand(new ComputeModuleSequenceForPackageInstallation());
+        c.addCommand(new HandlePickListTypeModulesCommand());
         c.addCommand(new SandboxDataInsertCommand());
         c.addCommand(new SandboxDataUpdateCommand());
+        c.addCommand(new AddSpecialModuleDataCommand());
         return c;
     }
 }

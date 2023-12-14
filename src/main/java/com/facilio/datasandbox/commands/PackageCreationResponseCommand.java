@@ -1,5 +1,6 @@
 package com.facilio.datasandbox.commands;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datasandbox.util.DataPackageFileUtil;
@@ -41,6 +42,7 @@ public class PackageCreationResponseCommand extends FacilioCommand {
         }
 
         String url = DataPackageFileUtil.getFileUrl(PackageUtil.getRootFolderPath());
+        CommonCommandUtil.insertOrgInfo(DataMigrationConstants.SANDBOX_DATA_PACKAGE_URL, url);
 
         // clean temp folder
         FileUtils.deleteDirectory(DataPackageFileUtil.getTempFolderRoot());

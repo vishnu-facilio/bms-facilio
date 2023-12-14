@@ -12,6 +12,7 @@ import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
+import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -44,6 +45,7 @@ public class SandboxDataInsertCommand extends FacilioCommand {
         long transactionStartTime = (long) context.get(DataMigrationConstants.TRANSACTION_START_TIME);
         long transactionTimeOut = (long) context.getOrDefault(DataMigrationConstants.TRANSACTION_TIME_OUT, 500000l);
         List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
+        Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
         List<String> updateOnlyModulesList = (List<String>) context.getOrDefault(DataMigrationConstants.UPDATE_ONLY_MODULES, new ArrayList<>());
         HashMap<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
@@ -60,8 +62,6 @@ public class SandboxDataInsertCommand extends FacilioCommand {
         } else {
             migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, null, 0);
         }
-
-        Map<String, String> moduleNameVsXmlFileName = DataPackageFileUtil.getModuleNameVsXmlFileName();
 
         Map<ComponentType, Map<Long, Long>> componentTypeVsOldVsNewId = new HashMap<>();
         Map<ComponentType, List<PackageChangeSetMappingContext>> allPackageChangesets = PackageUtil.getAllPackageChangsets(packageId);
@@ -138,9 +138,10 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             }
 
             boolean isModuleMigrated = false;
+            SandboxModuleConfigUtil.addSystemFields(module, fieldsMap);
 
             do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, fieldsMap, offset, limit + 1);
+                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
 
                 if (CollectionUtils.isEmpty(dataFromCSV)) {
                     LOGGER.info("####Data Migration - Insert - No Records obtained from CSV - " + moduleName);
@@ -186,7 +187,7 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                 }
             } while (!isModuleMigrated);
 
-            LOGGER.info("####Data Migration - Insert - Completed for ModuleName -" + moduleName);
+            LOGGER.info("####Data Migration - Insert - Completed for ModuleName - " + moduleName);
         }
 
         migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
@@ -253,6 +254,7 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                     if (value != null) {
                         if (nonNullableFieldNames.contains(fieldName) && fieldObj != null) {
                             SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
+                            continue;
                         }
 
                         if (numberLookUps.containsKey(fieldName)) {
@@ -260,17 +262,19 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                             continue;
                         }
 
-                        if ((fieldObj != null && fieldObj.getDataTypeEnum() == FieldType.FILE) || (CollectionUtils.isNotEmpty(numberFileFields) && numberFileFields.contains(fieldName))) {
-                            if (CollectionUtils.isNotEmpty(numberFileFields) && numberFileFields.contains(fieldName) && value instanceof String) {
-                                ObjectMapper objectMapper = new ObjectMapper();
-                                value = objectMapper.readValue(String.valueOf(value), Map.class);
-                            }
+                        if (fieldName.equals("orgId") || fieldName.equals("moduleId")) {
+                            updatedProp.remove(fieldName);
+                            continue;
+                        }
 
+                        // File Field
+                        if ((fieldObj != null && fieldObj.getDataTypeEnum() == FieldType.FILE) || (CollectionUtils.isNotEmpty(numberFileFields) && numberFileFields.contains(fieldName))) {
                             Map<String, Object> fileProp = (Map<String, Object>) value;
                             if (MapUtils.isNotEmpty(fileProp)) {
                                 long newFileId = DataPackageFileUtil.getNewFileId(fileProp);
                                 updatedProp.put(fieldName, newFileId);
                             }
+                            continue;
                         }
 
                         // Handle System Fields
@@ -297,6 +301,8 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                         } else if (fieldName.equals("approvalRuleId") || fieldName.equals("approvalFlowId")) {
                             Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ContextNames.STATE_FLOW_ID, (Long) value, componentTypeVsOldVsNewId);
                             updatedProp.put(fieldName, newId);
+                        } else {
+                            updatedProp.put(fieldName, value);
                         }
                     }
                 }

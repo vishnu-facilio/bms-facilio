@@ -14,7 +14,10 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public enum ComponentType implements FacilioIntEnum {
-
+    /**
+     * Do not add new Components in the middle of ComponentType Enum.
+     * The order of execution is determined by ORDERED_COMPONENT_TYPE_LIST, place your Component accordingly.
+     */
     MODULE(ModulePackageBeanImpl.class, null, false),
     FIELD(FieldPackageBeanImpl.class, MODULE, false),
     APP(AppPackageBeanImpl.class, null, false),

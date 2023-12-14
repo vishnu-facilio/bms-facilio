@@ -1,6 +1,5 @@
 package com.facilio.componentpackage.utils;
 
-import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -19,13 +18,14 @@ import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsoleV3.context.UserNotificationContext;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
-import com.facilio.bmsconsoleV3.context.asset.V3AssetTypeContext;
 import com.facilio.bmsconsoleV3.util.V3PeopleAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
+import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -40,12 +40,9 @@ import com.facilio.field.validation.date.DateValidatorType;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.emailtemplate.context.EMailStructure;
-import com.facilio.fs.FileInfo;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.ns.context.*;
-import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.scriptengine.context.ParameterContext;
 import com.facilio.scriptengine.context.WorkflowFieldType;
 import com.facilio.util.FacilioUtil;
@@ -55,18 +52,14 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.xml.builder.XMLBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.io.File;
 import java.time.DayOfWeek;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -2243,11 +2236,37 @@ public class PackageBeanUtil {
         }
         return attachmentList;
     }
+
+    public static Map<Long, Long> getNewRecordIds(long moduleId, List<Long> oldIds) throws Exception {
+        return getOldVsNewRecordIds(null, moduleId, oldIds);
+    }
+
     public static Map<Long,Long> getNewRecordIds(String moduleName,List<Long> oldIds) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(moduleName);
-        DataMigrationBean dataMigrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, AccountUtil.getCurrentOrg().getOrgId());
-        Map<Long,Long> idMap = dataMigrationBean.getOldVsNewId(-1l,module.getModuleId(),oldIds);
-        return idMap;
+        if (SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
+            return getOldVsNewRecordIds(moduleName, -1, oldIds);
+        } else {
+            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            FacilioModule module = modBean.getModule(moduleName);
+            return getOldVsNewRecordIds(null, module.getModuleId(), oldIds);
+        }
+    }
+
+    private static Map<Long, Long> getOldVsNewRecordIds(String moduleName, long moduleId, List<Long> oldIds) throws Exception {
+        Map<Long,Long> oldVsNewIdMap = null;
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        DataMigrationBean dataMigrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, orgId);
+        DataMigrationStatusContext dataMigrationContext = dataMigrationBean.getDataMigrationStatusForCurrentOrg();
+
+        if (dataMigrationContext == null) {
+            LOGGER.info("####Sandbox Tracking - DataMigrationStatusContext not found for OrgId - " + orgId);
+            return null;
+        }
+
+        if (moduleId > 0) {
+            oldVsNewIdMap = dataMigrationBean.getOldVsNewId(dataMigrationContext.getId(), moduleId, oldIds);
+        } else if (StringUtils.isNotEmpty(moduleName)) {
+            oldVsNewIdMap = dataMigrationBean.getOldVsNewId(dataMigrationContext.getId(), moduleName, oldIds);
+        }
+        return oldVsNewIdMap;
     }
 }

@@ -1,9 +1,8 @@
 package com.facilio.datasandbox.util;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.componentpackage.constants.ComponentType;
-import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
@@ -29,6 +28,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -54,6 +54,41 @@ public class SandboxDataMigrationUtil {
                     String commentModuleName = moduleIdVsModuleName.get(commentModuleId);
 
                     prop.put("parentCommentModuleName", commentModuleName);
+                }
+            }
+        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
+            Set<Long> readingFieldIds = new HashSet<>();
+            for (Map<String, Object> prop : propsList) {
+                Integer inputType = (Integer) prop.get("inputType");
+                Long readingFieldId = (Long) prop.get("readingFieldId");
+                if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal() && readingFieldId != null && readingFieldId > 0) {
+                    readingFieldIds.add(readingFieldId);
+                }
+            }
+
+            if (CollectionUtils.isEmpty(readingFieldIds)) {
+                return;
+            }
+
+            List<FacilioField> readingFieldsList = modBean.getFields(readingFieldIds);
+            if (CollectionUtils.isNotEmpty(readingFieldsList)) {
+                FacilioField readingFieldNameField = FieldFactory.getStringField("readingFieldName", null, module);
+                FacilioField readingFieldModuleNameNameField = FieldFactory.getStringField("readingFieldModuleNameName", null, module);
+                fields.add(readingFieldNameField);
+                fields.add(readingFieldModuleNameNameField);
+
+                Map<Long, FacilioField> fieldIdVsFieldObj = readingFieldsList.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
+
+                for (Map<String, Object> prop : propsList) {
+                    Integer inputType = (Integer) prop.get("inputType");
+                    Long readingFieldId = (Long) prop.get("readingFieldId");
+                    if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal() && readingFieldId != null && readingFieldId > 0 && fieldIdVsFieldObj.containsKey(readingFieldId)) {
+                        FacilioField readingField = fieldIdVsFieldObj.get(readingFieldId);
+                        String readingFieldModuleNameName = readingField.getModule() != null ? readingField.getModule().getName() : null;
+
+                        prop.put("readingFieldName", readingField.getName());
+                        prop.put("readingFieldModuleNameName", readingFieldModuleNameName);
+                    }
                 }
             }
         }
@@ -221,8 +256,8 @@ public class SandboxDataMigrationUtil {
                 StringJoiner urlBuilder = new StringJoiner(",");
                 Map<String, Object> urlValue = (Map<String, Object>) value;
                 urlBuilder.add(urlValue.get("href").toString());
+                urlBuilder.add(urlValue.get("target").toString());
                 if (urlValue.get("name") != null && urlValue.get("target") != null) {
-                    urlBuilder.add(urlValue.get("target").toString());
                     urlBuilder.add(urlValue.get("name").toString());
                 }
                 result = urlBuilder.toString();
@@ -253,10 +288,10 @@ public class SandboxDataMigrationUtil {
         }
     }
 
-    public static List<Map<String, Object>> getDataFromCSV(String moduleName, String moduleFileName, Map<String, FacilioField> fieldsMap, int offset, int limit) throws Exception {
+    public static List<Map<String, Object>> getDataFromCSV(String moduleName, String moduleFileName, Map<String, FacilioField> fieldsMap, List<String> numberFileFields, int offset, int limit) throws Exception {
         List<Map<String, String>> fieldNameVsValueList = parseCSVAndGetData(moduleName, moduleFileName, offset, limit);
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(fieldNameVsValueList)) {
-            List<Map<String, Object>> propsList = convertCSVDataToProps(fieldsMap, fieldNameVsValueList);
+            List<Map<String, Object>> propsList = convertCSVDataToProps(fieldsMap, fieldNameVsValueList, numberFileFields);
             // special handling
             moduleSpecialHandlingDuringImport(Constants.getModBean().getModule(moduleName), new ArrayList<>(fieldsMap.values()), propsList);
             return propsList;
@@ -273,13 +308,21 @@ public class SandboxDataMigrationUtil {
 
         List<Map<String, String>> fieldNameVsValueList = new ArrayList<>();
         try (CSVReader csvReader = new CSVReader(new InputStreamReader(moduleCSVStream, StandardCharsets.UTF_8))) {
-            List<String[]> csvData = csvReader.readAll();
-            String[] fieldNames = csvData.get(0);
-            for (int i = offset + 1; i < limit + 1; i++) {
-                String[] fieldValues = csvData.get(i);
+            int count = 0;
+            String[] fieldValues;
+            String[] fieldNames = csvReader.readNext();
 
+            // Skip the rows till offset is reached
+            while (count < offset && csvReader.readNext() != null) {
+                count++;
+            }
+
+            // Read and process rows starting from the specified offset
+            while ((fieldValues = csvReader.readNext()) != null && count < offset + limit) {
                 Map<String, String> fieldNameVsValueMap = getFieldNameVsValueMap(fieldNames, fieldValues);
                 fieldNameVsValueList.add(fieldNameVsValueMap);
+
+                count++;
             }
         } catch (Exception ex) {
             LOGGER.info("Data Migration - Insert - Error while parsing CSV for ModuleName - " + moduleName + "\nException - " + ex);
@@ -291,8 +334,9 @@ public class SandboxDataMigrationUtil {
     }
 
     private static Map<String, String> getFieldNameVsValueMap(String[] fieldNames, String[] values) {
+        // Size of fieldNames & values may not be same (if consecutive columns are empty, they were not parsed)
         Map<String, String> fieldNameVsValueMap = new HashMap<>();
-        for (int i = 0; i < fieldNames.length; i++) {
+        for (int i = 0; i < values.length; i++) {
             String fieldName = fieldNames[i];
             String value = values[i];
 
@@ -301,7 +345,7 @@ public class SandboxDataMigrationUtil {
         return fieldNameVsValueMap;
     }
 
-    private static List<Map<String, Object>> convertCSVDataToProps(Map<String, FacilioField> fieldsMap, List<Map<String, String>> fieldNameVsValueList) throws Exception {
+    private static List<Map<String, Object>> convertCSVDataToProps(Map<String, FacilioField> fieldsMap, List<Map<String, String>> fieldNameVsValueList, List<String> numberFileFields) throws Exception {
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(fieldNameVsValueList)) {
             return null;
         }
@@ -316,8 +360,16 @@ public class SandboxDataMigrationUtil {
 
                 FacilioField field = fieldsMap.get(fieldName);
 
-                if (field == null || org.apache.commons.lang3.StringUtils.isEmpty(value)) {
+                if (StringUtils.isEmpty(value)) {
+                    continue;
+                }
+
+                if (field == null) {
                     dataProp.put(fieldName, value);
+                } else if (CollectionUtils.isNotEmpty(numberFileFields) && numberFileFields.contains(fieldName)) {
+                    // NumberFileFields has similar parsing as like FileFields
+                    Map<String, Object> dataObjProp = parseStringToMap(value);
+                    dataProp.put(fieldName, dataObjProp);
                 } else {
                     switch (field.getDataTypeEnum()) {
                         case ID:
@@ -390,8 +442,7 @@ public class SandboxDataMigrationUtil {
                             break;
                         case FILE:
                         case CURRENCY_FIELD:
-                            ObjectMapper objectMapper = new ObjectMapper();
-                            Map<String, Object> dataObjProp = objectMapper.readValue(value, Map.class);
+                            Map<String, Object> dataObjProp = parseStringToMap(value);
                             dataProp.put(fieldName, dataObjProp);
                             break;
                         default:
@@ -403,6 +454,27 @@ public class SandboxDataMigrationUtil {
             propsList.add(dataProp);
         }
         return propsList;
+    }
+
+    private static Map<String, Object> parseStringToMap(String input) {
+        Map<String, Object> resultMap = new HashMap<>();
+
+        // Remove curly braces at the beginning and end
+        String cleanedInput = input.substring(1, input.length() - 1);
+
+        // Split the string into key-value pairs
+        String[] pairs = cleanedInput.split(", ");
+
+        for (String pair : pairs) {
+            int indexOfSeparator = pair.indexOf('=');
+            String key = pair.substring(0, indexOfSeparator);
+            String value = pair.substring(indexOfSeparator + 1);
+
+            // Add key-value pair to the map
+            resultMap.put(key, (Object) value);
+        }
+
+        return resultMap;
     }
 
     private static void moduleSpecialHandlingDuringImport(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList) throws Exception {
@@ -419,6 +491,53 @@ public class SandboxDataMigrationUtil {
                     long commentModuleId = StringUtils.isNotEmpty(commentModuleName) ? moduleNameVsModuleId.get(commentModuleName) : -1;
 
                     prop.put("commentModuleId", commentModuleId);
+                }
+            }
+        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
+            Map<String, Set<String>> moduleNameVsFieldsNames = new HashMap<>();
+            for (Map<String, Object> prop : propsList) {
+                Integer inputType = (Integer) prop.get("inputType");
+                if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
+                    String readingFieldName = (String) prop.get("readingFieldName");
+                    String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
+
+                    if (StringUtils.isNotEmpty(readingFieldName) && StringUtils.isNotEmpty(readingFieldModuleNameName)) {
+                        moduleNameVsFieldsNames.computeIfAbsent(readingFieldModuleNameName, k -> new HashSet<>());
+                        moduleNameVsFieldsNames.get(readingFieldModuleNameName).add(readingFieldName);
+                    }
+                }
+            }
+
+            if (MapUtils.isNotEmpty(moduleNameVsFieldsNames)) {
+                Map<String, FacilioModule> moduleNameVsModuleObj = new HashMap<>();
+                Map<String, Map<String, FacilioField>> moduleVsFieldsMap = new HashMap<>();
+                for (Map.Entry<String, Set<String>> entry : moduleNameVsFieldsNames.entrySet()) {
+                    String moduleName = entry.getKey();
+                    Set<String> fieldNames = entry.getValue();
+                    Map<String, FacilioField> moduleFieldsMap = SandboxModuleConfigUtil.getModuleFields(moduleName, new ArrayList<>(fieldNames));
+                    if (MapUtils.isNotEmpty(moduleFieldsMap)) {
+                        if (!moduleNameVsModuleObj.containsKey(moduleName)) {
+                            FacilioModule currModule = modBean.getModule(moduleName);
+                            moduleNameVsModuleObj.put(moduleName, currModule);
+                        }
+                        moduleVsFieldsMap.put(moduleName, moduleFieldsMap);
+                    }
+                }
+
+                for (Map<String, Object> prop : propsList) {
+                    Integer inputType = (Integer) prop.get("inputType");
+                    if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
+                        String readingFieldName = (String) prop.get("readingFieldName");
+                        String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
+
+                        if (moduleVsFieldsMap.containsKey(readingFieldModuleNameName) && moduleVsFieldsMap.get(readingFieldModuleNameName).containsKey(readingFieldName)) {
+                            FacilioModule readingModule = moduleNameVsModuleObj.get(readingFieldModuleNameName);
+                            FacilioField readingField = moduleVsFieldsMap.get(readingFieldModuleNameName).get(readingFieldModuleNameName);
+
+                            prop.put("readingFieldId", readingField.getFieldId());
+                            prop.put("##ReadingFieldModule##", readingModule);
+                        }
+                    }
                 }
             }
         }
@@ -504,14 +623,16 @@ public class SandboxDataMigrationUtil {
         switch (fieldObj.getDataTypeEnum()) {
             case LOOKUP:
                 FacilioModule lookupModule = ((LookupField) fieldObj).getLookupModule();
-                if (org.apache.commons.collections4.MapUtils.isNotEmpty(((Map<String, Object>) fieldValue))) {
-                    Long lookupDataId = (Long) ((Map<String, Object>) fieldValue).get("id");
+                Map<String, Object> lookUpData = (Map<String, Object>) fieldValue;
+                if (org.apache.commons.collections4.MapUtils.isNotEmpty(lookUpData)) {
+                    Long lookupDataId = (Long) (lookUpData).get("id");
                     if (PackageUtil.nameVsComponentType.containsKey(lookupModule.getName())) {
                         Long newId = getMetaConfNewId(lookupModule.getName(), lookupDataId, componentTypeVsOldVsNewId);
-                        dataProp.put("id", newId);
+                        lookUpData.put("id", newId);
                     } else {
-                        dataProp.put("id", moduleIdVsOldNewIdMapping.get(lookupModule.getModuleId()).get(lookupDataId));
+                        lookUpData.put("id", moduleIdVsOldNewIdMapping.get(lookupModule.getModuleId()).get(lookupDataId));
                     }
+                    dataProp.put(fieldName, lookUpData);
                 }
                 break;
 
@@ -529,6 +650,7 @@ public class SandboxDataMigrationUtil {
                         }
                         updatedMultiLookupData.add(lookupData);
                     }
+                    dataProp.put(fieldName, updatedMultiLookupData);
                 } else {
                     dataProp.put(fieldName, fieldValue);
                 }

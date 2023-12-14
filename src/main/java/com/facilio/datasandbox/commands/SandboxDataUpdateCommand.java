@@ -1,6 +1,7 @@
 package com.facilio.datasandbox.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.constants.FacilioConstants;
@@ -126,7 +127,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             Map<Long, Long> siteIdMapping = new HashMap<>();
 
             do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, lookupTypeFieldsMap, offset, limit + 1);
+                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, lookupTypeFieldsMap, numberFileFields, offset, limit + 1);
 
                 if (CollectionUtils.isEmpty(dataFromCSV)) {
                     LOGGER.info("####Data Migration - Update - No Records obtained from CSV - " + moduleName);
@@ -163,6 +164,8 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
 
             LOGGER.info("####Data Migration - Update - Completed for ModuleName -" + moduleName);
         }
+
+        migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, null, 0);
 
         return false;
     }
@@ -244,8 +247,8 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
     private static void updateLookUpIds(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList,
                                         long dataMigrationId, DataMigrationBean migrationBean) throws Exception {
         if (module.getName().equals(FacilioConstants.ContextNames.COMMENT_ATTACHMENTS)) {
-            Map<Long, List<Long>> moduleIdVsOldIds = new HashMap<>();
             if (CollectionUtils.isNotEmpty(propsList)) {
+                Map<Long, List<Long>> moduleIdVsOldIds = new HashMap<>();
                 for (Map<String, Object> prop : propsList) {
                     long commentModuleId = prop.containsKey("commentModuleId") ? (long) prop.get("commentModuleId") : -1;
                     long parentId = prop.containsKey("parent") ? (long) prop.get("parent") : -1;
@@ -255,15 +258,45 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                         moduleIdVsOldIds.get(commentModuleId).add(parentId);
                     }
                 }
+                if (MapUtils.isNotEmpty(moduleIdVsOldIds)) {
+                    Map<Long, Map<Long, Long>> oldIdVsNewIdMapping = SandboxDataMigrationUtil.getOldIdVsNewIdMapping(migrationBean, dataMigrationId, moduleIdVsOldIds);
+                    if (MapUtils.isNotEmpty(oldIdVsNewIdMapping)) {
+                        for (Map<String, Object> prop : propsList) {
+                            long commentModuleId = prop.containsKey("commentModuleId") ? (long) prop.get("commentModuleId") : -1;
+                            long oldId = prop.containsKey("parent") ? (long) prop.get("parent") : -1;
 
-                Map<Long, Map<Long, Long>> oldIdVsNewIdMapping = SandboxDataMigrationUtil.getOldIdVsNewIdMapping(migrationBean, dataMigrationId, moduleIdVsOldIds);
-                if (MapUtils.isNotEmpty(oldIdVsNewIdMapping)) {
-                    for (Map<String, Object> prop : propsList) {
-                        long commentModuleId = prop.containsKey("commentModuleId") ? (long) prop.get("commentModuleId") : -1;
-                        long oldId = prop.containsKey("parent") ? (long) prop.get("parent") : -1;
+                            if (oldIdVsNewIdMapping.containsKey(commentModuleId) && oldIdVsNewIdMapping.get(commentModuleId).containsKey(oldId)) {
+                                prop.put("parent", oldIdVsNewIdMapping.get(commentModuleId).get(oldId));
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
+            if (CollectionUtils.isNotEmpty(propsList)) {
+                Map<Long, List<Long>> moduleIdVsOldIds = new HashMap<>();
+                for (Map<String, Object> prop : propsList) {
+                    Integer inputType = (Integer) prop.get("inputType");
+                    if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
+                        long readingFieldModuleId = prop.containsKey("##ReadingFieldModule##") ? (long) prop.get("##ReadingFieldModule##") : -1;
+                        long readingDataId = prop.containsKey("readingDataId") ? (long) prop.get("readingDataId") : -1;
 
-                        if (oldIdVsNewIdMapping.containsKey(commentModuleId) && oldIdVsNewIdMapping.get(commentModuleId).containsKey(oldId)) {
-                            prop.put("parent", oldIdVsNewIdMapping.get(commentModuleId).get(oldId));
+                        if (readingDataId > 0 && readingFieldModuleId > 0) {
+                            moduleIdVsOldIds.computeIfAbsent(readingFieldModuleId, k -> new ArrayList<>());
+                            moduleIdVsOldIds.get(readingFieldModuleId).add(readingDataId);
+                        }
+                    }
+                }
+                if (MapUtils.isNotEmpty(moduleIdVsOldIds)) {
+                    Map<Long, Map<Long, Long>> oldIdVsNewIdMapping = SandboxDataMigrationUtil.getOldIdVsNewIdMapping(migrationBean, dataMigrationId, moduleIdVsOldIds);
+                    if (MapUtils.isNotEmpty(oldIdVsNewIdMapping)) {
+                        for (Map<String, Object> prop : propsList) {
+                            long readingFieldModuleId = prop.containsKey("##ReadingFieldModule##") ? (long) prop.get("##ReadingFieldModule##") : -1;
+                            long oldId = prop.containsKey("readingDataId") ? (long) prop.get("readingDataId") : -1;
+
+                            if (oldIdVsNewIdMapping.containsKey(readingFieldModuleId) && oldIdVsNewIdMapping.get(readingFieldModuleId).containsKey(oldId)) {
+                                prop.put("readingDataId", oldIdVsNewIdMapping.get(readingFieldModuleId).get(oldId));
+                            }
                         }
                     }
                 }

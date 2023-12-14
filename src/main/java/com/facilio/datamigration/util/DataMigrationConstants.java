@@ -68,6 +68,7 @@ public class DataMigrationConstants {
     public static final String SKIP_DATA_MIGRATION_MODULE_NAMES = "skipDataMigrationModuleNames";
     public static final String CREATE_FULL_PACKAGE = "createFullDataPackage";
     public static final String ROOT_FOLDER_PATH = "rootFolderPath";
+    public static final String SANDBOX_DATA_PACKAGE_URL = "sandboxDataPackageUrl";
     public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
     public static final String GET_DEPENDANT_MODULE_DATA = "getDependantModuleData";
     public static final String MODULENAME_VS_CSV_FILENAME = "moduleNameVsCsvFileName";

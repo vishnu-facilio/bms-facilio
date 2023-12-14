@@ -13,6 +13,7 @@ public class DataMigrationStatusContext {
     private long orgId = -1;
     private long sourceOrgId = -1;
     private long lastModuleId = -1;
+    private String lastModuleName;
     private long migratedCount = -1;
     private long sysCreatedTime = -1;
     private long sysCreatedBy = -1;
@@ -42,7 +43,8 @@ public class DataMigrationStatusContext {
         CUSTOMIZATION_MAPPING_IN_PROGRESS("customizationMapping"),
         CREATION_IN_PROGRESS("creationInProgress"),
         UPDATION_IN_PROGRESS("updateInProgress"),
-        COMPLETED("completed");
+        COMPLETED("completed"),
+        SPECIAL_MODULE_IN_PROGRESS("specialModuleInProgress");
 
         private String name;
 

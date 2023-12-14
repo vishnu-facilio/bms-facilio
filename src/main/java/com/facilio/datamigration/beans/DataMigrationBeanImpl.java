@@ -211,6 +211,24 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         return null;
     }
 
+    @Override
+    public DataMigrationStatusContext getDataMigrationStatusForCurrentOrg() throws Exception {
+        FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
+        List<FacilioField> dataMigrationStatusFields = FieldFactory.getDataMigrationStatusFields();
+        FacilioField idField = FieldFactory.getIdxField(dataMigrationModule);
+
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(dataMigrationStatusFields)
+                .table(dataMigrationModule.getTableName())
+                .orderBy(idField.getCompleteColumnName() + " DESC");
+
+        Map<String, Object> props = selectBuilder.fetchFirst();
+        if (MapUtils.isNotEmpty(props)) {
+            return FieldUtil.getAsBeanFromMap(props, DataMigrationStatusContext.class);
+        }
+        return null;
+    }
+
     public List<FacilioModule> getAllModules() throws Exception{
 
         FacilioModule moduleModule = ModuleFactory.getModuleModule();
@@ -294,6 +312,35 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
     }
 
     @Override
+    public Map<Long, Long> createModuleDataWithModuleName(FacilioModule module, List<FacilioField> targetFields, List<Map<String, Object>> props, boolean addLogger) throws Exception {
+        List<Long> oldIds =  new ArrayList<>();
+        List<Map<String, Object>> propToInsert = new ArrayList<>();
+
+        for(Map<String,Object> prop : props) {
+            oldIds.add(new Long((Long) prop.get("id")));
+            if(addLogger) {
+                LOGGER.info(module.getName()+" - Insert prop :::"+prop);
+            }
+        }
+
+        GenericInsertRecordBuilder insertRecordsBuilder = new GenericInsertRecordBuilder()
+                .fields(targetFields)
+                .table(module.getTableName())
+                .addRecords(propToInsert);
+
+        insertRecordsBuilder.save();
+
+        int index = 0;
+        Map<Long,Long> oldIdVsNewIds = new LinkedHashMap<>();
+        for(Map<String,Object> insertedProp : propToInsert) {
+            oldIdVsNewIds.put(oldIds.get(index), (Long) insertedProp.get("id"));
+            index++;
+        }
+
+        return oldIdVsNewIds;
+    }
+
+    @Override
     public void updateModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements, List<Map<String, Object>> props, Boolean addLogger) throws Exception {
 
         if(CollectionUtils.isNotEmpty(props)) {
@@ -317,15 +364,25 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
     @Override
     public void addIntoDataMappingTable(Long migrationId, Long moduleId, Map<Long,Long> oldIdsVsNewIds) throws Exception {
+        addOldVsNewIdsToDataMappingTable(migrationId, moduleId, null, oldIdsVsNewIds);
+    }
 
+    @Override
+    public void addIntoDataMappingTableWithModuleName(Long migrationId, String moduleName, Map<Long, Long> oldIdsVsNewIds) throws Exception {
+        addOldVsNewIdsToDataMappingTable(migrationId, -1L, moduleName, oldIdsVsNewIds);
+    }
+
+    private void addOldVsNewIdsToDataMappingTable(Long migrationId, Long moduleId, String moduleName, Map<Long, Long> oldIdsVsNewIds) throws Exception {
         List<DataMigrationMappingContext> props = new ArrayList<>();
         for(Map.Entry<Long,Long> entry : oldIdsVsNewIds.entrySet()) {
             DataMigrationMappingContext prop = new DataMigrationMappingContext();
-            prop.setModuleId(moduleId);
             prop.setMigrationId(migrationId);
             prop.setOldId(entry.getKey());
             prop.setNewId(entry.getValue());
             prop.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+            moduleId = (moduleId == null || moduleId < 0) ? -99L : moduleId;
+            prop.setModuleId(moduleId);
+            prop.setModuleName(moduleName);
             props.add(prop);
         }
 
@@ -335,10 +392,18 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                 .fields(FieldFactory.getDataMigrationMappingFields());
         insert.addRecords(FieldUtil.getAsMapList(props, DataMigrationMappingContext.class));
         insert.save();
-
     }
 
     public Map<Long,Long> getOldVsNewId(Long migrationId, Long moduleId, List<Long> oldIds) throws Exception {
+        return getOldVsNewIdMapping(migrationId, moduleId, null, oldIds);
+    }
+
+    @Override
+    public Map<Long, Long> getOldVsNewId(Long migrationId, String moduleName, List<Long> oldIds) throws Exception {
+        return getOldVsNewIdMapping(migrationId, -1, moduleName, oldIds);
+    }
+
+    private Map<Long,Long> getOldVsNewIdMapping(long migrationId, long moduleId, String moduleName, List<Long> oldIds) throws Exception {
         Map<Long,Long> oldVsNew = new HashMap();
 
         int offset = 0;
@@ -354,11 +419,19 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
             List<FacilioField> fields = FieldFactory.getDataMigrationMappingFields();
             GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
                     .table(dataMappingModule.getTableName())
-                    .select(fields)
-                    .andCondition(CriteriaAPI.getCondition("moduleId", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
-                    if(CollectionUtils.isNotEmpty(oldIds)){
-                        select.andCondition(CriteriaAPI.getCondition("OLDID", "oldId", StringUtils.join(oldIds.subList(offset, (offset+limit > oldIds.size()) ? oldIds.size() : offset+limit), ","), NumberOperators.EQUALS));
-                    }
+                    .select(fields);
+            if (migrationId > 0) {
+                select.andCondition(CriteriaAPI.getCondition("migrationId", "MIGRATIONID", String.valueOf(migrationId), NumberOperators.EQUALS));
+            }
+
+            if (moduleId > 0) {
+                select.andCondition(CriteriaAPI.getCondition("moduleId", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
+            } else if (StringUtils.isNotEmpty(moduleName)) {
+                select.andCondition(CriteriaAPI.getCondition("moduleName", "MODULENAME", moduleName, StringOperators.IS));
+            }
+            if(CollectionUtils.isNotEmpty(oldIds)){
+                select.andCondition(CriteriaAPI.getCondition("OLDID", "oldId", StringUtils.join(oldIds.subList(offset, (offset+limit > oldIds.size()) ? oldIds.size() : offset+limit), ","), NumberOperators.EQUALS));
+            }
             List<Map<String, Object>> props = select.get();
             if (CollectionUtils.isNotEmpty(props)) {
                 for (Map<String, Object> prop : props) {
@@ -450,9 +523,20 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
     @Override
     public void updateDataMigrationStatus(Long id, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, int count) throws Exception {
+        updateDataMigrationStatus(id, status, moduleId, null, count);
+
+    }
+
+    @Override
+    public void updateDataMigrationStatusWithModuleName(Long id, DataMigrationStatusContext.DataMigrationStatus status, String moduleName, int count) throws Exception {
+        updateDataMigrationStatus(id, status, null, moduleName, count);
+    }
+
+    private static void updateDataMigrationStatus(Long id, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, String moduleName, int count) throws Exception {
         DataMigrationStatusContext migrationStatus = new DataMigrationStatusContext();
         migrationStatus.setId(id);
         migrationStatus.setStatus(status);
+        migrationStatus.setLastModuleName(moduleName);
         migrationStatus.setSysModifiedTime(System.currentTimeMillis());
         if (moduleId == null) {
             migrationStatus.setLastModuleId(-99);
@@ -469,7 +553,6 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
                 .fields(FieldFactory.getDataMigrationStatusFields())
                 .andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(migrationStatus.getId()), NumberOperators.EQUALS));
         updateRecordBuilder.update(FieldUtil.getAsProperties(migrationStatus));
-
     }
 
     @Override

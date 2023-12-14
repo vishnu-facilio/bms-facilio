@@ -10,6 +10,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -18,6 +19,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Log4j
 public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -133,6 +135,7 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         }
 
         context.put(DataMigrationConstants.MODULES_VS_DETAILS, orderedModuleNameVsDetails);
+        LOGGER.info("####Data Package - Ordered Module Sequence - " + orderedModuleNameVsDetails.keySet());
 
         return false;
     }
