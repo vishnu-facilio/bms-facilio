@@ -1,0 +1,7 @@
+templates:
+  - name: "Default Quote Template"
+    description: "Create professional and polished quote documents with this default template. Customizable for a branded and clear presentation of quotes to clients."
+    moduleName: "quote"
+    html_path: "quote/template.html"
+    css_path: "quote/template.css"
+    settings_path: "quote/template.json"

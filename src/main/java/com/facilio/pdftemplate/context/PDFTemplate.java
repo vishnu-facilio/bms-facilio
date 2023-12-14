@@ -23,6 +23,7 @@ public class PDFTemplate {
     private String htmlContentCss;
     private long htmlContentCssId;
     private String templateSettings;
+    private Boolean isDefault;
     private long sysCreatedTime;
     private long sysCreatedBy;
     private long sysModifiedTime;

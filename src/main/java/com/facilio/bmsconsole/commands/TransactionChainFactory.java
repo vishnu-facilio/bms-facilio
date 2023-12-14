@@ -74,6 +74,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
+import com.facilio.pdftemplate.command.AddDefaultPDFTemplatesCommand;
 import com.facilio.pdftemplate.command.AddOrUpdatePDFTemplateCommand;
 import com.facilio.pdftemplate.command.DeletePDFTemplateCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
@@ -136,6 +137,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DefaultPermissionSetCommand());
 //			add field you want to skip for a module here(should be at last always)
 			c.addCommand(new AddSkipFieldForModule());
+			c.addCommand(new AddDefaultPDFTemplatesCommand());
 			return c;
 		}
 
