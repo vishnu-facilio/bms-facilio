@@ -712,6 +712,13 @@
 		<action name="getAvailableButtonsForRecords" class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtonsForRecords">
 			<param name="deprecated">true</param>
 		</action>
+		<action name="*/getAvailableButtonsForRecords"
+				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtonsForRecords" >
+			<param name="moduleName">{1}</param>
+			<param name="translationImpl">ButtonTranslation</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+			<param name="tabType">Approval</param>
+		</action>
 	</package>
 
 	<package name="systemButton" namespace="/api/v2/systemButton" extends="v2Api">
@@ -738,6 +745,11 @@
 		</action>
 		<action name="getAvailableButtonsForList"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/getAvailableButtonsForList"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		</package>
@@ -1118,31 +1130,39 @@
 		</action>
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" >
-			<param name="deprecated">true</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">APPROVALS</param>
 		</action>
 		<action name="availableTransitions"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" >
-			<param name="deprecated">true</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" >
-			<param name="deprecated">true</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="reorderApprovalRule" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="tabType">SETUP</param>
+			<param name="setupTab">APPROVALS</param>
 		</action>
 		<action name="approvalDetails"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalDetails" >
-			<param name="deprecated">true</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 		<action name="moduleList"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleDataList" >
-			<param name="deprecated">true</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 		<action name="activityList"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleActivityList" >
-			<param name="deprecated">true</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 		<action name="modules"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModules">
@@ -8229,6 +8249,11 @@
 			<param name="permission">ALL</param>
             <param name="tabType">SETUP</param>
 			<param name="setupTab">NOTIFICATIONS,APPROVALS</param>
+		</action>
+		<action name="*/fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getAllApplicationBasedOnModule">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="fetchListDashboard" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getAllApplicationBasedOnDashboard">

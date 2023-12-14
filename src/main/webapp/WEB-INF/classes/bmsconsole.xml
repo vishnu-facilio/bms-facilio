@@ -301,6 +301,14 @@
 			</result>
 			<param name="deprecated">true</param>
 		</action>
+		<action name="*/exportModule" class="com.facilio.bmsconsole.actions.CommonAction"
+				method="exportModule">
+			<param name="moduleName">{1}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">fileUrl</param>
+			</result>
+			<param name="deprecated">true</param>
+		</action>
 		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">
 			<param name="moduleName">alarm</param>

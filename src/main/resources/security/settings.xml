@@ -799,6 +799,12 @@
             <property name="fetchOnlyViewGroupColumn" type="boolean"/>
             <property name="perPage" type="number"/>
             <property name="force" type="boolean"/>
+            <property name="selectableFieldNames" type="string"/>
+            <property name="quickFilter" type="string"/>
+            <property name="orderBy" type="string" />
+            <property name="orderType" type="string" />
+            <property name="excludeParentFilter" type="boolean"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
         </urlparams>
     </request>
     <request path="/api/v3/modules/:moduleName/:id" method="GET">
@@ -3827,6 +3833,18 @@
          <property name="positionType" type="number"/>
        </requestbody>
     </request>
+    <request path="/api/v2/systemButton/:moduleName/getAvailableButtonsForList" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </requestbody>
+    </request>
 
     <request path="/api/v3/utilityIntegration/fetchUtilityCustomerAndMeter">
         <requestbody type="object">
@@ -4149,6 +4167,18 @@
          <property name="moduleName" type="string"/>
          <property name="positionType" type="number"/>
        </requestbody>
+    </request>
+    <request path="/api/v2/custombutton/:moduleName/getAvailableButtonsForRecords" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </requestbody>
     </request>
     <request path="/api/fsm/serviceappointment/list" method="GET">
         <urlparams>
@@ -4642,6 +4672,19 @@
             <property name="invoice" type="object"></property>
         </requestbody>
     </request>
+    <request path="/api/:moduleName/exportModule" method="POST">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="filters" type="string"></property>
+            <property name="moduleName" type="string"></property>
+            <property name="specialFields" type="boolean"></property>
+            <property name="type" type="number"></property>
+            <property name="viewName" type="string"></property>
+        </requestbody>
+    </request>
+
 
 
 

@@ -178,7 +178,7 @@ public class AddOrUpdateTriggerCommand extends FacilioCommand {
 
 		Map<String, Object> props = builder.fetchFirst();
 
-		triggerMaxExecutionOrder = (MapUtils.isNotEmpty(props) && props.get("executionOrder") != null) ? (Integer) props.get("executionOrder") : 0;
+		triggerMaxExecutionOrder = (MapUtils.isNotEmpty(props) && props.get("executionOrder") != null) ? ((Number) props.get("executionOrder")).intValue(): 0;
 
 		return triggerMaxExecutionOrder;
 	}

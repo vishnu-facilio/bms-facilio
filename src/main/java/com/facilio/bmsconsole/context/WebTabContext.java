@@ -216,7 +216,7 @@ public class WebTabContext implements Serializable {
     }
     public enum Type implements FacilioIntEnum {
         MODULE ("Module", false, TabType.NORMAL,new ModuleTypeHandler()), // 1
-        APPROVAL ("Approval", false, TabType.NORMAL,null), // 2
+        APPROVAL ("Approval", false, TabType.NORMAL,new ApprovalTypeHandler()), // 2
         CALENDAR ("Calendar", false, TabType.NORMAL,null), // 3
         REPORT ("Report", false, TabType.NORMAL,new ReportTypeHandler()), // 4
         ANALYTICS ("Analytics", true, TabType.NORMAL,null), // 5

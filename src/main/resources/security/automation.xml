@@ -5,6 +5,9 @@
         <requestbody type="object">
             <property name="moduleName" type="string" />
         </requestbody>
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v2/template/email/addOrUpdate">
         <requestbody type="object">
