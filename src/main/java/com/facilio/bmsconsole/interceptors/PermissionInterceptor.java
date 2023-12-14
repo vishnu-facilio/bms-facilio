@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.interceptors;
 
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ApplicationContext;
+import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.ModuleAPI;
 import com.facilio.bmsconsole.util.WebTabUtil;
 import com.facilio.bmsconsoleV3.util.APIPermissionUtil;
@@ -34,7 +38,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         if (AccountUtil.getCurrentOrg() != null) {
             try {
                 boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
-                if (V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
+                if ( checkAgentAdminRolePermission() && V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
                     return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
                 }
             } catch (Exception e) {
@@ -150,5 +154,12 @@ public class PermissionInterceptor extends AbstractInterceptor {
 
     private static Parameter getModuleNameParam(String moduleName) {
         return new Parameter.Request(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+    }
+    private static boolean checkAgentAdminRolePermission() {
+        ApplicationContext app = AccountUtil.getCurrentApp();
+        if ( app!= null && app.getName().equals("Agent")){
+            return !AccountUtil.isPrivilegedRole();
+        }
+        return true;
     }
 }
