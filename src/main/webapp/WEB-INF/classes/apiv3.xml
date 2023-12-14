@@ -201,6 +201,117 @@
 
     </package>
 
+    <!--  APIs for Planned Maintenance Modules  -->
+    <package name="plannedmaintenanceV2ModulesApi" namespace="/api/v3/modules" extends="v3Api">
+        <action name="pmPlanner" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
+        </action>
+
+        <action name="pmPlanner/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                PATCH:UPDATE;DELETE:DELETE
+            </param>
+            <param name="id">{1}</param>
+        </action>
+
+        <action name="pmResourcePlanner/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                GET:READ;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
+            <param name="id">{1}</param>
+        </action>
+
+        <action name="pmPlanner/*/relatedList/pmResourcePlanner/planner" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="moduleName">pmPlanner</param>
+            <param name="id">{1}</param>
+            <param name="relatedModuleName">pmResourcePlanner</param>
+            <param name="relatedFieldName">planner</param>
+            <param name="permission">
+                GET:READ
+            </param>
+        </action>
+    </package>
+
+    <!-- Can be incorporated into generic API by sending the permissionModuleName from client  -->
+    <package name="bulkCreateAPIPMv2" extends="v3Api" namespace="/api/v3/modules/bulkCreate">
+        <action name="pmResourcePlanner"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkCreate">
+            <param name="moduleName">pmResourcePlanner</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">POST:CREATE</param>
+        </action>
+    </package>
+
+    <!-- Can be incorporated into generic API by sending the permissionModuleName from client  -->
+    <package name="bulkPatchAPIPMv2" extends="v3Api" namespace="/api/v3/modules/bulkPatch">
+        <action name="pmResourcePlanner"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkPatch">
+            <param name="moduleName">pmResourcePlanner</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">PATCH:UPDATE</param>
+        </action>
+    </package>
+
+    <!-- Can be incorporated into generic API by sending the permissionModuleName from client  -->
+    <package name="timelineGroupPicklistPMv2" namespace="/api/v3/timelineGroupData" extends="v3Api">
+        <action name="fetch/plannedmaintenance"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="fetchTimelineGroupdata">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ</param>
+        </action>
+    </package>
+
+    <package name="lookupModuleAction" namespace="/api/v3/modules" extends="v3Api">
+        <action name="pmResourcePlanner/lookupData/*/*" class="com.facilio.bmsconsoleV3.actions.LookupModuleDataAction" method="getLookupListData">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="moduleName">pmResourcePlanner</param>
+            <param name="relatedFieldName">{1}</param>
+            <param name="extendedModuleName">{2}</param>
+            <param name="permission">GET:READ</param>
+        </action>
+    </package>
+
+    <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline/plannedmaintenance" extends="v3Api">
+        <action name="get"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineData">
+            <param name="permission">POST:READ;GET:READ</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+        </action>
+
+        <action name="list"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineSelectiveList">
+            <param name="permission">POST:READ;GET:READ</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+        </action>
+
+        <action name="update"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelinePatch">
+            <param name="permission">POST:UPDATE;PATCH:UPDATE</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+        </action>
+
+        <action name="unscheduled"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineUnScheduledList">
+            <param name="permission">POST:READ;GET:READ</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+        </action>
+    </package>
+
+
     <package name="relationv3api" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/associate" class="com.facilio.v3.action.RelationshipDataAction" method="associateRelation">
             <param name="moduleName">{1}</param>
@@ -652,6 +763,35 @@
             <param name="translationImpl">V3PickListTranslation</param>
             <param name="permission">GET:READ,VIEW</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
+    </package>
+
+    <package name="bulkActionCreatePermissionModuleName" namespace="/api/v3/bulkAction" extends="v3Api">
+        <action name="create/plannedmaintenance"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionCreate">
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">POST:CREATE</param>
+        </action>
+    </package>
+
+    <package name="bulkActionPatchPMv2" namespace="/api/v3/bulkActionPatch" extends="v3Api">
+        <action name="pmResourcePlanner"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionPatch">
+            <param name="moduleName">pmResourcePlanner</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">PATCH:UPDATE</param>
+        </action>
+    </package>
+
+    <package name="bulkActionDeletePMv2" namespace="/api/v3/bulkActionDelete" extends="v3Api">
+        <action name="pmResourcePlanner"
+                class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
+                method="bulkActionDelete">
+            <param name="moduleName">pmResourcePlanner</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">DELETE:DELETE</param>
         </action>
     </package>
 
@@ -1897,25 +2037,43 @@
 
     <package name="plannedMaintenance" namespace="/api/v3/plannedmaintenance" extends="v3Api">
         <action name="execute" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="executeNow">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                POST:CREATE;PATCH:UPDATE
+            </param>
         </action>
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="publishPM">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                POST:CREATE;PATCH:UPDATE
+            </param>
         </action>
         <action name="deactivate" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction" method="deactivate">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                POST:CREATE;PATCH:UPDATE
+            </param>
         </action>
         <action name="bulkpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
                 method="bulkPublish">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                POST:CREATE;PATCH:UPDATE
+            </param>
         </action>
         <action name="bulkunpublish" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
                 method="bulkUnPublishPM">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                POST:CREATE;PATCH:UPDATE
+            </param>
         </action>
         <action name="getTriggerFrequencyList" class="com.facilio.bmsconsoleV3.actions.PlannedMaintenanceAction"
                 method="getTriggerFrequencyList">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">plannedmaintenance</param>
+            <param name="permission">
+                GET:READ
+            </param>
         </action>
     </package>
     <package name="visitorTypeForm" namespace="/api/v3/visitorTypeForm" extends="v3Api">
@@ -2433,7 +2591,7 @@
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
         <action name="*/fetch/*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
-            <param name="parentModuleName">{1}</param>
+            <param name="permissionModuleName">{1}</param>
             <param name="moduleName">{2}</param>
             <param name="id">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>

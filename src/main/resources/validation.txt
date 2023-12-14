@@ -2790,3 +2790,8 @@
 /api/v2/readings/utilitytype
 /api/v3/qanda/template/clone
 /api/v3/qanda/template/publish
+/api/v3/scopeVariable/options/site
+/api/v2/forms/plannedmaintenance
+/api/v2/forms/:moduleName
+/api/v3/modules/pmPlanner/pmPlanner
+/api/v2/application/users/list
