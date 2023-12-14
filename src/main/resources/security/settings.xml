@@ -798,6 +798,7 @@
             <property name="withoutCustomButtons" type="boolean"/>
             <property name="fetchOnlyViewGroupColumn" type="boolean"/>
             <property name="perPage" type="number"/>
+            <property name="force" type="boolean"/>
         </urlparams>
     </request>
     <request path="/api/v3/modules/:moduleName/:id" method="GET">
@@ -1039,17 +1040,24 @@
             <property name="lng" type="number"/>
         </requestbody>
     </request>
-    <request path="/api/v3/weather/currentdata">
-        <requestbody type="object">
-            <property name="stationId" type="number"/>
+    <request path="/api/v3/weather/currentdata" method="GET">
+        <urlparams type="object">
             <property name="siteId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/weather/sitestationid" method="GET">
+        <urlparams type="object">
+            <property name="siteId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/people/util/recordPeople" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
         </requestbody>
     </request>
-    <request path="/api/v3/weather/sitestationid">
-        <requestbody type="object">
-            <property name="siteId" type="number"/>
-        </requestbody>
-    </request>
+
     <request path="/api/v3/weather/buildingSpecificWeatherFields">
         <requestbody type="object">
             <property name="buildingId" type="number"/>
@@ -1703,8 +1711,11 @@
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
             <property name ="customPage" type="object" mandatory="true">
-                <property name="displayName" type="string"/>
+                <property name="displayName" type="string"  mandatory="true"/>
+                <property name="name" type="string"/>
+                <property name="pageSharing" type="string"/>
                 <property name="description" type="string"/>
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"  mandatory="true"/>
             </property>
         </requestbody>
     </request>
@@ -1766,8 +1777,9 @@
             <property name="layoutType" type="string"/>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="appId" type="number"/>
+            <property name="recordId" type="number"/>
             <property name="tabName" type="string"/>
-            <property name="recordId" type="number" mandatory="true"/>
+            <property name="showNewPageBuilder" type="boolean"/>
         </urlparams>
     </request>
 
@@ -1863,14 +1875,12 @@
     </request>
 
     <request path="/api/v1/setup/customPage/tabs/fetch" >
-        <requestbody type="object">
-            <property name="id" type="number"/>
-            <property name="moduleName" type="string"/>
-            <property name="appId" type="number"/>
-            <property name="excludeColumns" type="boolean"/>
+        <urlparams type="object">
             <property name="tabName" type="string"/>
+            <property name="moduleName" type="string"/>
+            <property name="layoutType" type="string"/>
             <property name="pageId" type="number"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v2/customPage/tabs/fetch" >
@@ -3317,7 +3327,7 @@
             <property name="readingView" type="object">
                 <property name="aggregateOperator" type="number" mandatory="true"/>
                 <property name="categorymoduleId" type="number" mandatory="true"/>
-                <property name="criteria" type="object" />
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
                 <property name="dateOperator" type="number" mandatory="true"/>
                 <property name="dateRange" type="string" />
                 <property name="description" type="string"/>
@@ -3334,7 +3344,7 @@
             <property name="readingView" type="object" mandatory="true">
                 <property name="aggregateOperator" type="number" mandatory="true"/>
                 <property name="categorymoduleId" type="number" mandatory="true"/>
-                <property name="criteria" type="object" />
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
                 <property name="dateOperator" type="number" mandatory="true"/>
                 <property name="dateRange" type="string" />
                 <property name="description" type="string"/>

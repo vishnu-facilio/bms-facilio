@@ -1737,12 +1737,16 @@
         <action name="currentdata"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getCurrentWeather">
-			<param name="deprecated">true</param>
+			<param name="parentModuleName">site</param>
+			<param name="moduleName">weather</param>
+			<param name="permission">GET:READ</param>
 		</action>
         <action name="sitestationid"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAssociatedStationId">
-			<param name="deprecated">true</param>
+            <param name="moduleName">weatherstation</param>
+            <param name="parentModuleName">site</param>
+            <param name="permission">GET:READ</param>
 		</action>
         <action name="buildingSpecificWeatherFields"
                 class="com.facilio.weather.actions.WeatherAction"

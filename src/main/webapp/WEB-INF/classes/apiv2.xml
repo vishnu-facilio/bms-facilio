@@ -4328,7 +4328,7 @@
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">
 			<param name="moduleName">asset</param>
-			<param name="permission">READ</param>
+			<param name="permission">GET:READ</param>
 			<param name="assetId">{1}</param>
 		</action>
 		
@@ -8712,7 +8712,7 @@
 		<action name="search"
 				class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 				method="getSearchResult">
-			<param name="permission">GET:READ</param>
+			<param name="permission">POST:READ</param>
 			<param name="tabType">Portfolio</param>
 		</action>
 		<action name="tree"
