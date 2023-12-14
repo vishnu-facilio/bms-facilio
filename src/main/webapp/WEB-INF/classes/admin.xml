@@ -8,6 +8,7 @@
 	<package name="admin" namespace="/admin" extends="baseV1Api">
 		<action name="addJob" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="addJob">
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="runDataMigration" class="com.facilio.datamigration.action.DataMigrationAction">
 			<result name="success" type="json">
@@ -20,24 +21,29 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="statusCode">500</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="dataMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/datamigration.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteJob" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="deleteJob">
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="migrateAgent" class="com.facilio.agentv2.migration.AgentMigrationAction"
 				method="migrateAgent">
 			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="migrateReadingMeta" class="com.facilio.agentv2.migration.AgentMigrationAction"
 				method="migrateReadingMeta">
 			<result name="success" type="json">
 				<param name="root">result</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="updateFeatureLock" class="com.facilio.featureAccess.FeatureLockAction" method="updateFeatureLock">
@@ -51,199 +57,256 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="featureLock" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/featureLock.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="pageBuilder" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/pageBuilder.jsp</result>
 			<param name="permission">READ, CREATE, UPDATE</param>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="jobs" class="com.facilio.bmsconsole.actions.AdminAction"
 				method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result name="success">/jsps/admin/showCache.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
 			<result name="success" type="redirect">
 				<param name="location">buildInfo?showcache=true</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmMetaRefresh" class="com.facilio.bmsconsole.actions.AdminAction" method="pmMetaRefresh">
 			<result name="success" type="redirect">
 				<param name="location">pmv2monitoring</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmV1Monitoring" class="com.facilio.bmsconsole.actions.AdminAction" method="pmMetaRefresh">
 			<result name="success" type="redirect">
 				<param name="location">pmV1Monitoring</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmV1TasksToJobPlan" class="com.facilio.bmsconsole.actions.AdminAction" method="pmMetaRefresh">
 			<result name="success" type="redirect">
 				<param name="location">pmV1TasksToJobPlan</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="reloadbrowser" class="com.facilio.bmsconsole.actions.AdminAction" method="reloadBrowser">
 			<result name="success" type="redirect">
 				<param name="location">buildInfo</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="adminpage" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result name="success">/jsps/admin/adminlayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="buildInfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/buildinfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="changeUserEmail" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/changeUserEmail.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="usermanagement" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/usermanagement.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="clearsession" class="com.facilio.bmsconsole.actions.AdminAction" method = "clearSession">
 			<result name="success" type="tiles">adminpage/usermanagement.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="orginfo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/orginfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="wms" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/wms.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
 			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="statusLog" class="com.facilio.bmsconsole.actions.AdminAction" method= "statusLog" >
 			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
 			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="addOrUpdatePageBuilderModuleConfig" class="com.facilio.bmsconsole.actions.AdminAction" method = "addModulePageBuilderConfig">
 			<result name="success" type="tiles">adminpage/pageBuilder.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="anomalyconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/anomalyconsole.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="appstatus" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/appStatus.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="setappstatus" class="com.facilio.bmsconsole.actions.AdminAction" method="setApplicationStatus">
 			<result name="success" type="tiles">adminpage/appStatus.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="sqlconsole" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sqlconsole.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="copypm" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/copypm.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="closewo" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/closewo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmv2monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/pmv2Monitoring.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="srmonitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/srMonitoring.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="inspectionmonitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/inspectionMonitoring.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="userlicense" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/userlicense.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="updateCRM" class="com.facilio.bmsconsole.actions.AdminAction" method="updateCRM">
 			<result type="tiles">adminpage/orginfo.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="demorollup" class="com.facilio.bmsconsole.actions.AdminAction" >
 			<result type="tiles">adminpage/demorollup.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
 			<result type="tiles">adminpage/demorollup.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="adminreadingtools" class="com.facilio.bmsconsole.actions.AdminAction" >
 			<result type="tiles">adminpage/deltacalculation.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
 			<result  type="tiles">adminpage/deltacalculation.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="deleteReadings" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/deleteReadinglayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteReadingsAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteReadings">
 			<result   type="tiles">adminpage/deleteReadinglayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="mlService" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/MLServiceLayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="mlServiceAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "mlService">
 			<result name="success" type="redirect">
 				<param name="location">mlService</param></result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="moveReadings" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/movereadinglayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="moveReadingAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "moveReadings">
 			<result   type="tiles">adminpage/movereadinglayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="fieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="fieldMigrationAction" class="com.facilio.bmsconsole.actions.AdminAction" method = "fieldMigration">
 			<result   type="tiles">adminpage/fieldMigrationlayout.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/data.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
 			<result   type="tiles">adminpage/data.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deletemessagequeue" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteMessageQueue" class="com.facilio.bmsconsole.actions.AdminAction" method = "deleteMessageQueue">
 			<result   type="tiles">adminpage/deletemessagequeue.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="getinstance" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/awsinstances.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="demorollupyearly" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="demoRollUpYearly" class="com.facilio.bmsconsole.actions.AdminAction" method ="demoRollUpYearly">
 			<result   type="tiles">adminpage/demorollupyearly.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="agentversion" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/agentversion.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="addAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="addAgentVersion">
 			<result type="tiles">adminpage/agentversion.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="upgradeAgentVersion" class="com.facilio.bmsconsole.actions.AdminAction" method="upgradeAgentVersion">
 			<result type="tiles">adminpage/agentversion.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="uploadSecretFilesPage" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/upload.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmV1Monitoring" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/pmV1Monitoring.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="pmV1TasksToJobPlan" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result  type="tiles">adminpage/pmV1TasksToJobPlan.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="addSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="addSecretFile">
@@ -251,23 +314,28 @@
 			<result name ="success" type="json">
 				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="getSecretFiles" class="com.facilio.bmsconsole.actions.AdminAction" method ="getSecretFiles">
 			<result name ="success" type="json">
 				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteSecretFile" class="com.facilio.bmsconsole.actions.AdminAction" method ="deleteSecretFile">
 			<result name ="success" type="json">
 				<param name="includeProperties">^secretFilesList.*</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="disableagent" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/agentcontrol.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="disableAgent" class="com.facilio.bmsconsole.actions.AdminAction" method ="disableAgent">
 			<result type="tiles">adminpage/agentcontrol.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="createSandboxDataPackage" class="com.facilio.datasandbox.action.SandboxDataMigrationAction" method="createDataPackage">
@@ -306,6 +374,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="createDataPackage" class="com.facilio.datamigration.action.CopyDataMigrationAction">
 			<result name="success" type="json">
@@ -318,6 +387,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="installDataPackage" class="com.facilio.datamigration.action.InstallDataMigrationAction">
@@ -331,6 +401,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="createPackage" class="com.facilio.componentpackage.action.PackageAction" method="createPackage" >
@@ -344,6 +415,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 
 		<action name="installPackage" class="com.facilio.componentpackage.action.PackageAction" method="installPackage" >
@@ -357,21 +429,26 @@
 			<param name="excludeNullProperties">true</param>
 			<param name="includeProperties">responseCode, message, stackTrace</param>
 		</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="sandboxData" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sandboxData.jsp</result>
 		</action>
 		<action name="copyCustomization" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/copyCustomization.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="copyDataMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/copyDataMigration.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="metaMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/metaMigration.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="orgSetup" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/orgSetup.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="addOrgInfoData" class="com.facilio.componentpackage.action.PackageAction" method = "addOrgInfoData">
 			<result name="success" type="json">
@@ -384,9 +461,11 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="sandboxRerun" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sandboxRerun.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="sandboxCreation" class="com.facilio.sandbox.action.SandboxAction" method="sandboxCreation" >
 			<result name="success" type="json">
@@ -399,6 +478,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="reRunSandbox" class="com.facilio.sandbox.action.SandboxAction" method="rerun" >
 			<result name="success" type="json">
@@ -411,6 +491,7 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="doInstall" class="com.facilio.sandbox.action.SandboxAction" method="doInstall" >
 			<result name="success" type="json">
@@ -423,9 +504,11 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="multiCurrencyFieldMigration" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/multiCurrencyFieldMigration.jsp</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="migrateMultiCurrencyField" class="com.facilio.bmsconsole.actions.MultiCurrencyFieldMigrationAction" method="migrateMultiCurrencyField">
 			<result name="success" type="json">
@@ -438,22 +521,27 @@
 				<param name="excludeNullProperties">true</param>
 				<param name="includeProperties">responseCode, message, stackTrace</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="preCommitWorkflowRule" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/preCommitWorkflowRule.jsp</result>
 			<param name="permission">READ,UPDATE</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="updateRulesToPreCommit" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateRulesToPreCommit">
 			<result name="success" type="tiles">adminpage/preCommitWorkflowRule.jsp</result>
 			<param name="permission">READ,UPDATE</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="featureLimits" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/featureLimits.jsp</result>
 			<param name="permission">READ,UPDATE</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="updateFeatureLimits" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateFeatureLimits">
 			<result name="success" type="tiles">adminpage/featureLimits.jsp</result>
 			<param name="permission">READ,UPDATE</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 

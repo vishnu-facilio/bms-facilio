@@ -255,12 +255,12 @@
 		<action name="users" class="com.facilio.bmsconsole.actions.UserAction"
 			method="userPickList">
 			<param name="moduleName">setup</param>
-			<param name="permission">ALL,USER_MANAGEMENT</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">USERS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">users,users\[\d+\],users\[\d+\].*</param>
 			</result>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="groups" class="com.facilio.bmsconsole.actions.GroupAction"
 			method="groupList">
@@ -348,7 +348,8 @@
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		
 		<action name="dashboardTree" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -522,9 +523,7 @@
 		</action>
 		<action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction"
 			method="getPortalInfo">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,SERVICE_PORTAL,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">PORTALS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^protalInfo.*</param>
@@ -901,7 +900,8 @@
 		<action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetCount">
 <!-- 			<param name="moduleName">asset</param> -->		
-	<param name="permission">READ,READ_TEAM,READ_OWN</param>
+	<param name="permission">ALL;READ,READ_TEAM,READ_OWN</param>
+	<param name="setupTab">SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="includeProperties">assetCount</param>
 			</result>
@@ -1001,8 +1001,7 @@
 		<action name="addTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketCategory">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CATEGORY</param>
 			<result name="success" type="json">
 			</result>
@@ -1018,8 +1017,7 @@
 		<action name="deleteTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketCategory">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CATEGORY</param>
 			<result name="success" type="json">
 				<param name="root">ticketCategory</param>
@@ -1049,9 +1047,8 @@
 		<action name="addTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="addTicketType">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">TYPES</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">WORKORDER_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
@@ -1059,9 +1056,8 @@
 		<action name="updateTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketType">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">TYPES</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">WORKORDER_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
@@ -1069,9 +1065,8 @@
 		<action name="deleteTicketType" class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketType">
 			<param name="moduleName">setup</param>
-			<param name="permission">WORKORDER_SETTINGS,WORKORDER_CUSTOMIZATIONS,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">TYPES</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">WORKORDER_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="root">ticketType</param>
 			</result>
@@ -1316,9 +1311,8 @@
 		<action name="addsetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addReadings">
 				<param name="moduleName">setup</param>
-				<param name="permission">ASSET_SETTINGS,READINGS,ALL</param>
-				<param name="tabType">SETUP</param>
-				<param name="setupTab">READINGS</param>
+			<param name="permission">ALL</param>
+				<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="includeProperties">readingId</param>
 			</result>
@@ -1327,9 +1321,8 @@
 		<action name="updatesetupreading" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="updateReading">
 				<param name="moduleName">setup</param>
-				<param name="permission">ASSET_SETTINGS,READINGS,ALL</param>
-				<param name="tabType">SETUP</param>
-				<param name="setupTab">READINGS</param>
+			<param name="permission">ALL</param>
+				<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^field.*</param>
 			</result>
@@ -1393,8 +1386,7 @@
 		<action name="getallspacetypereadings" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getAllSpaceTypeReadings">
 			<param name="moduleName">setup</param>
-			<param name="permission">SPACE_SETTINGS,READINGS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">READINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">moduleMap.*,moduleMap\[\d+\],moduleMap\[\d+\].*,spaces.*,spaces\[\d+\],spaces\[\d+\].*</param>
@@ -1722,8 +1714,7 @@
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
 			 <param name="translationImpl">ModuleTranslation</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">ASSET_DEPRECIATION,WORKFLOWS,NOTIFICATIONS,APPROVALS,EMAIL_TEMPLATES</param>
+			<param name="setupTab">ASSET_DEPRECIATION,WORKFLOWS,NOTIFICATIONS,APPROVALS,EMAIL_TEMPLATES,PDF_TEMPLATES,MODULES,WEATHER_STATION,EMAIL_LOGS,INBOUND_MAIL_CONVERSION,FAULT_IMPACT_TEMPLATE</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -1733,8 +1724,7 @@
 		<action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metaFilterFields">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">USERS,EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS</param>
+			<param name="setupTab">USERS,EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS,TEAMS,MODULES</param>
 			<param name="translationImpl">FieldTranslation</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -1747,8 +1737,7 @@
 			<!-- <param name="moduleName">workorder</param>
 			<param name="permission">CREATE</param> -->
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS</param>
+			<param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,FAULT_IMPACT_TEMPLATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
@@ -2993,9 +2982,8 @@
 		<action name="company" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="orgSettings">
 			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">COMPANY_PROFILE</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">org,org.*</param>
 			</result>
@@ -3003,10 +2991,8 @@
 
 		<action name="updateCompanySettings" class="com.facilio.bmsconsole.actions.SetupActions"
 			method="updateOrgSettings">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,COMPANY_PROFILE,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">COMPANY_PROFILE</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS</param>
 			<result name="success" type="json">
 			</result>
 		</action>
@@ -4054,8 +4040,7 @@
 	<package name="units" namespace="/api/units" extends="homeApi">
 		<action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
-		<param name="setupTab">READINGS</param>
+		<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^metricWithUnits.*,^orgUnitsList.*,^metrics.*</param>

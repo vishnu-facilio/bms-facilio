@@ -102,9 +102,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         if(setupTab != null && setupTab.getValue() != null) {
             moduleNameParam = getModuleNameParam("setup");
         }
-        if(WebTabUtil.isSetupAPI()){
-            return true;
-        }
+
         if(throwDeprecatedApiError(deprecated)) {
             return false;
         }

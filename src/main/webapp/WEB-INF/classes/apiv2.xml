@@ -122,7 +122,6 @@
 			class="com.facilio.bmsconsole.actions.LoginAction"
 			method="fetchCurrentAccount">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,CONDITION_MANAGER,SLA_POLICIES</param>
 		</action>
 
@@ -162,14 +161,12 @@
 			method="getMySiteList">
 				<param name="shouldApplySwitchScope">false</param>
 				<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
+			<param name="setupTab">USERS,TEAMS,MODULES,ASSIGNMENT_RULES</param>
 		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,APPROVALS</param>
+			<param name="setupTab">SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,APPROVALS,EMAIL_SETTINGS</param>
 		</action>
 		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getOrgs">
@@ -177,20 +174,17 @@
 		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getRoles">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">SCHEDULER,ASSIGNMENT_RULES,API_SETUP,USERS</param>
+			<param name="setupTab">PORTALS,SCHEDULER,ASSIGNMENT_RULES,API_SETUP,USERS,ROLES,MODULES,BMS_EVENT_FILTERING</param>
 		</action>
 		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getGroups">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS</param>
+			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS,PORTALS,TEAMS,MODULES,EMAIL_TEMPLATES,SLA_POLICIES,BMS_EVENT_FILTERING</param>
 		</action>
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllBuildings">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">ASSIGNMENT_RULES</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS,TEAMS</param>
 		</action>
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
@@ -200,14 +194,12 @@
 		<action name="createSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="createSecurityPolicy">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SECURITY_POLICY</param>
 		</action>
 
 		<action name="updateSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="updateSecurityPolicy">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SECURITY_POLICY</param>
 		</action>
 
@@ -219,14 +211,12 @@
 		<action name="getAllSecurityPolicies" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="getAllSecurityPolicy">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">SECURITY_POLICY,USERS,PORTALS</param>
+			<param name="setupTab">SECURITY_POLICY,USERS,PORTALS,PEOPLE</param>
 		</action>
 
 		<action name="deleteSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="deleteSecurityPolicy">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SECURITY_POLICY</param>
 		</action>
 		
@@ -291,8 +281,7 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="translationImpl">FormTranslation</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS</param>
+			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS,MODULES</param>
 		</action>
 		<action name="*/forms"
 				class="com.facilio.bmsconsole.actions.FormAction" method="formList">
@@ -662,19 +651,16 @@
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
 			<param name="translationImpl">StateFlowTranslationV2</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,STATEFLOWS</param>
+			<param name="setupTab">USERS,TEAMS,STATEFLOWS,APPROVALS</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2AddStatus">
 		     <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 	</package>
@@ -728,11 +714,13 @@
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAllSystemButtons">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getSystemButton">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
@@ -802,9 +790,7 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateFlow">
-			<param name="moduleName">setup</param>
-			<param name="permission">STATEFLOWS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -812,39 +798,34 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="updateStateflowDiagram" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="rearrangeStateFlows" >
-			<param name="moduleName">setup</param>
-			<param name="permission">STATEFLOWS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="changeStatus"
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="changeStatus" >
-			<param name="moduleName">setup</param>
-			<param name="permission">STATEFLOWS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">STATEFLOWS,MODULES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateFlowList" >
 			<param name="translationImpl">StateFlowListTranslation</param>
-			<param name="moduleName">setup</param>
-			<param name="permission">STATEFLOWS,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">STATEFLOWS,MODULES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateFlow" >
-			<param name="moduleName">setup</param>
-			<param name="permission">STATEFLOWS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -857,14 +838,12 @@
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="publishStateFlow" >
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 
 		<action name="clone"
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="cloneStateFlow">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 	</package>
@@ -884,34 +863,32 @@
 		<action name="list"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="list">
 				<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+			<param name="setupTab">EMAIL_TEMPLATES,WORKFLOWS,NOTIFICATIONS,SLA_POLICIES,APPROVALS</param>
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="addOrUpdate">
 				<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 		<action name="view"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="viewEmailStructure" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="deleteEmailStructure">
 				<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 		<action name="publish"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="publishEmailStructure">
 				<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 		<action name="testMail"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="testMailTemplate" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 	</package>
 
@@ -920,31 +897,26 @@
 		<action name="addOrUpdate"
 				class="com.facilio.relation.action.RelationAction" method="addOrUpdateRelation" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="view"
 				class="com.facilio.relation.action.RelationAction" method="viewRelation" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="list"
 				class="com.facilio.relation.action.RelationAction" method="list" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">MODULES</param>
+			<param name="setupTab">MODULES,FAULT_IMPACT_TEMPLATE</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.relation.action.RelationAction" method="delete" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fetchRelations"
 				class="com.facilio.relation.action.RelationAction" method="fetchRelations" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="*/fetchRelations"
@@ -962,13 +934,11 @@
 	<package name="virtualRelation" namespace="/api/v2/virtualRelation" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.relation.action.VirtualRelationAction" method="addOrUpdateVirtualRelation" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fetchFilteredRelations"
 				class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
@@ -1008,14 +978,12 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateTransition" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="deleteStateTransition" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 
@@ -1023,7 +991,6 @@
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateTransitionList" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">STATEFLOWS</param>
 		</action>
 		<action name="view"
@@ -1089,7 +1056,6 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.AuditLogAction" method="getAuditLogs">
 				 <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">AUDIT_LOGS</param>
 		</action>
 	</package>
@@ -1125,12 +1091,11 @@
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="addOrUpdateApprovalRule">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">APPROVALS</param>
 		</action>
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" >
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">APPROVALS</param>
 		</action>
 		<action name="availableTransitions"
@@ -1174,7 +1139,6 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAEntity">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SLA_POLICIES</param>
 		</action>
 		<action name="addOrUpdate"
@@ -1191,19 +1155,16 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="getAllNamedCriteria" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONDITION_MANAGER</param>
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="addOrUpdateNamedCriteria" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONDITION_MANAGER</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="deleteNamedCriteria" >
             <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONDITION_MANAGER</param>
 		</action>
 		<action name="evaluate"
@@ -1239,21 +1200,17 @@
 	<package name="slaPolicy" namespace="/api/v2/slaPolicy" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAPolicy">
-			<param name="moduleName">setup</param>
 			<param name="permission">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAPolicy" >
-			<param name="moduleName">setup</param>
 			<param name="permission">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" >
-			<param name="moduleName">setup</param>
-			<param name="permission">SLA_POLICIES,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -1271,24 +1228,19 @@
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" >
-			<param name="moduleName">setup</param>
 			<param name="permission">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 
 		<action name="addOrUpdateWithChildren"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" >
-			<param name="moduleName">setup</param>
-			<param name="permission">SLA_POLICIES,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="getWithChildren"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyWithChildren" >
-			<param name="moduleName">setup</param>
-			<param name="permission">SLA_POLICIES,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SLA_POLICIES</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -1298,18 +1250,17 @@
 		<action name="list"
 				class="com.facilio.delegate.action.DelegateAction" method="list" >
                 <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">USERS</param>
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.delegate.action.DelegateAction" method="addOrUpdateDelegation" >
 				 <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">USERS</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.delegate.action.DelegateAction" method="delete" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">USERS</param>
 		</action>
 	</package>
 
@@ -1347,13 +1298,11 @@
 		<action name="module"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">WORKFLOWS,FUNCTIONS</param>
+			<param name="setupTab">MODULES,EMAIL_TEMPLATES,PDF_TEMPLATES,CONDITION_MANAGER,SCHEDULER,WORKFLOWS,STATEFLOWS,APPROVALS,FAULT_IMPACT_TEMPLATE</param>
 		</action>
 		<action name="slaModule"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SLA_POLICIES</param>
 		</action>
 	</package>
@@ -1378,7 +1327,8 @@
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="all" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">PORTALS,USERS</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="delete" >
@@ -1652,7 +1602,7 @@
 			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 	</package>
-	
+
 	<package name="KPIModule" namespace="/api/v2/kpi/module" extends="v2Api">
 	
 		<action name="add" class="com.facilio.bmsconsole.actions.KPIAction"
@@ -1860,7 +1810,6 @@
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="translationImpl">ViewTranslation</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_LOGS</param>
 		</action>
 		<action name="*/viewList"
@@ -1868,7 +1817,6 @@
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">ViewTranslation</param>
 			<param name= "permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_LOGS</param>
 		</action>
 		<action name="getViewFromId"
@@ -2633,32 +2581,28 @@
 	<package name="serviceCatalog" namespace="/api/v2/servicecatalog" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalog">
-			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
-			<param name="setup">GENERAL,SERVICE_CATALOGS</param>
+			<param name="permission">ALL</param>
+			<param name="setup">SERVICE_CATALOGS</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList">
-			<param name="permission">GENERAL,SERVICE_CATALOGS,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">ALL</param>
+			<param name="setup">SERVICE_CATALOGS</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails">
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">GENERAL,SERVICE_CATALOGS</param>
 			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="deleteServiceCatalog">
-			<param name="deprecated">true</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">GENERAL,SERVICE_CATALOGS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 
 		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getModules">
-			<param name="permission">GENERAL,SERVICE_CATALOGS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 	</package>
@@ -2666,27 +2610,23 @@
 	<package name="serviceCatalogGroup" namespace="/api/v2/servicecataloggroup" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalogGroup">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,SERVICE_CATALOGS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getAllServiceCatalogGroup">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,SERVICE_CATALOGS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetailGroup">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="deleteServiceCatalogGroup">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,SERVICE_CATALOGS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 	</package>
 
@@ -2703,19 +2643,16 @@
 	extends="v2Api">
 	<action name="addNew"
 		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetDowntime">
-		<param name="moduleName">setup</param>
 		<param name="permission">GENERAL</param>
 	</action>
 	<action name="add"
 			class="com.facilio.bmsconsole.actions.AssetBreakdownAction"
 			method="addAssetBreakDown">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL</param>
 	</action>
 	<action name="getlastbreakdown"
 			class="com.facilio.bmsconsole.actions.AssetBreakdownAction"
 			method="getLastBreakdown">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL</param>
 	</action>
 	</package>
@@ -2724,37 +2661,30 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="addBussinessHours">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">COMPANY_PROFILE,OPERATING_HOURS</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2updateBusinessHours">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2deleteBusinessHours">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2getBusinessHoursList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">COMPANY_PROFILE,OPERATING_HOURS</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS,OPERATING_HOURS</param>
 		</action>
 		<action name="updateresource"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="updateBusinessHourInResource">
-			<param name="moduleName">setup</param>
-			<param name="permission">GENERAL</param>
+			<param name="permission">ALL</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2965,29 +2895,25 @@
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="v2addTicketPriority">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">CATEGORY</param>
+			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
 		</action>
 		<action name="updateTicketPriorities"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="v2updateTicketPriorties">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">CATEGORY</param>
+			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
 		</action>
 		<action name="updateTicketPriority"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketPriority">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">CATEGORY</param>
+			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
 		</action>
 		<action name="deleteTicketPriority"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketPriority">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">CATEGORY</param>
+			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
 		</action>
 		<action name="addInventoryCategory"
 			class="com.facilio.bmsconsole.actions.PickListAction"
@@ -3003,7 +2929,6 @@
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateVisitorType">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">VISITOR_SETTINGS</param>
 		</action>
 		<action name="deleteInventoryCategory"
@@ -3125,14 +3050,12 @@
 				method="fetchFormFromDB">
 			<param name="formName">{1}</param>
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getFromId"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="fetchFormFromId">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="fields"
@@ -3140,7 +3063,6 @@
 			method="loadApprovalFormFields">
 			<param name="moduleName">{1}</param>
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -3150,31 +3072,26 @@
 		<action name="add"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="addOrUpdateRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRuleList">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="getRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.FormValidationRuleAction" method="deleteRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 	</package>
@@ -3184,31 +3101,26 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="addRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="updateRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="deleteRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRule">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="getRulesMap"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getFormRulesMap">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*/getRulesMap"
@@ -3219,7 +3131,6 @@
 		<action name="getRuleList"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRuleList">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*/getRuleList"
@@ -3230,12 +3141,10 @@
 		<action name="changeRuleStatus"
 			class="com.facilio.bmsconsole.actions.FormRuleAction" method="changeStatus">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
 		</action>
 		<action name="*/executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
@@ -3250,39 +3159,33 @@
 		extends="v2Api">
 		<action name="adddbform"
 				class="com.facilio.bmsconsole.actions.FormAction" method="addDBForm">
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
-			<param name="permission">POST:CREATE;ALL</param>
-            <param name="tabType">SETUP</param>
+			<param name="permission">ALL;POST:CREATE</param>
 			<param name="setupTab">SERVICE_CATALOGS,APPROVALS,MODULES</param>
 		</action>
 		<action name="clone" class="com.facilio.bmsconsole.actions.FormAction"
 				method="cloneFacilioForm">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderForms" >
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="addSubForm"
 				class="com.facilio.bmsconsole.actions.FormAction" method="addSubForm">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL</param>
 		</action>
 		<action name="subFormModules"
 				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">APPROVALS,MODULES</param>
 		</action>
 		<action name="*/subFormModules"
@@ -3294,29 +3197,24 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">MODULES</param>
+			<param name="setupTab">MODULES,APPROVALS</param>
 		</action>
 		<action name="*/fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
 			<param name="moduleName">{1}</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
 			<param name="setupTab">MODULES</param>
-			<param name="tabType">SETUP</param>
 			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="*/executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
@@ -3327,19 +3225,16 @@
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">FormFieldTranslation</param>
 			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
 	<package name="formSharing" namespace="/api/v2/forms/formSharing" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.FormAction" method="addOrUpdateFormSharingRoles">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getSharingList" class="com.facilio.bmsconsole.actions.FormAction" method="getFormSharingRolesForForms">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
@@ -3349,70 +3244,60 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormField">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="modify"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFieldAndFormField">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="init"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateFormFields">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="initForms"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="updateFormListFields">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="unusedlist"
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="formUnusedFieldList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="formFieldUsages"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="findFormFieldUsages">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getSupportedFieldTypes"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="getSupportedFieldTypes">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addFormField"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addCustomFormField">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="deleteFormField"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="deleteFormField">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorderFormFields"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderFormFields">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
@@ -3422,35 +3307,30 @@
 			class="com.facilio.bmsconsole.actions.FormAction"
 			method="updateSection">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addSection"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addFormSection">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="deleteSection"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="deleteFormSection">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addSubForm"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="addSubFormWithSection">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorderFormSections"
 				class="com.facilio.bmsconsole.actions.FormAction"
 				method="reorderFormSections">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
@@ -3512,7 +3392,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="runThroughRule">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
@@ -3562,7 +3441,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="historicalScheduledRule">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
@@ -3596,26 +3474,22 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getFormulaField">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
 		
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="addFormulaField">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="editFormula">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 		</action>
 		
 		<action name="delete" class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="deleteFormula">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 		</action>
 		
@@ -3625,7 +3499,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="getFormulaFromReadingField">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
@@ -3636,7 +3509,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="calculateHistoryForFormula">
-			<param name="moduleName">setup</param>
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<param name="id">{1}</param>
 		</action>
@@ -3764,13 +3636,15 @@
 				class="com.facilio.fields.actions.FieldsAction"
 				method="drilldownFieldList">
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,SCRIPT_LOGS</param>
 		</action>
 		<action name="advancedFilter/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="fetchFilterFields">
 		    <param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,SCRIPT_LOGS</param>
 		</action>
 		<action name="sortable/*"
 				class="com.facilio.fields.actions.FieldsAction"
@@ -3830,7 +3704,6 @@
 			<param name="permission">ADD_READING</param>
 		</action>
 		<action name="all" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAllAssetReadings">
-			<param name="moduleName">setup</param>
 			<param name="permission">ASSET_SETTINGS</param>
 		</action>
 		<action name="importreadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="addHistoryReadingData">
@@ -3844,8 +3717,7 @@
 		</action>
 		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
-			<param name="setupTab">READINGS</param>
+			<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>
@@ -3861,7 +3733,8 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">READINGS</param>
 		</action>
 		<action name="site" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
 			<param name="site">true</param>
@@ -3874,7 +3747,6 @@
 		</action>
 		<action name="utilitytype" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getUtilityTypeReadings">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">READINGS</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -4149,40 +4021,34 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2AddModule">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="addDB" class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2AddModuleDB">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="update" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2UpdateModule">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="recordsDuplication" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2RecordsDuplication">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModuleList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="lists" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModulesList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_SETTINGS,APPROVALS</param>
 		</action>
 		<action name="*"
@@ -4190,7 +4056,6 @@
 				method="v2GetModule">
 			<param name="moduleName">{1}</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 	</package>
@@ -4249,8 +4114,7 @@
 			method="getModuleDataList">
 			<param name="translationImpl">V2ListApiTranslation</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">VISITOR_SETTINGS,CATEGORY,PRIORITY,TYPES,READINGS,SCHEDULER,ASSIGNMENT_RULES</param>
+			<param name="setupTab">USERS,VISITOR_SETTINGS,CATEGORY,PRIORITY,TYPES,READINGS,SCHEDULER,ASSIGNMENT_RULES,TEAMS,WORKFLOWS,SLA_POLICIES,BMS_EVENT_FILTERING,SPACE_ASSET_CUSTOMIZATION,WORKORDER_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE</param>
 		</action>
 
 		<action name="*"
@@ -4431,7 +4295,6 @@
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="addOrUpdateRelationShip">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 
@@ -4439,14 +4302,12 @@
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="getRelationshipList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.RelationshipAction"
 			method="deleteRelationship">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getRelationshipForRecord"
@@ -4540,8 +4401,7 @@
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING</param>
+			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
 	</package>
 	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
@@ -4550,8 +4410,7 @@
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">DATA_SHARING</param>
+			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
 	</package>
 
@@ -4601,8 +4460,7 @@
 	</package>
 	<package name="lookupFields" namespace="/api/v2/lookupFields" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.LookupFieldAction" method="lookupFieldList">
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">DATA_SHARING</param>
+			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS</param>
 			<param name="permission">ALL;GET:READ</param>
 		</action>
 	</package>
@@ -4683,7 +4541,6 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FileAction" method="addFile">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 		</action>
 		<action name="*/addCommentAttachments/*"
@@ -4729,7 +4586,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getNameSpaceListWithFunctions">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4755,7 +4611,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteWorkflow">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4763,7 +4618,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="addNameSpace">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4777,7 +4631,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="deleteNameSpace">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4785,7 +4638,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="addUserFunction">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4793,7 +4645,6 @@
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="updateUserFunction">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">FUNCTIONS</param>
 		</action>
 
@@ -4806,7 +4657,6 @@
 		<action name="addScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="addOrUpdateScheduledWorkflow">
-			<param name="moduleName">setup</param>
 			<param name="permission">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -4815,7 +4665,6 @@
 				class="com.facilio.workflows.action.WorkflowAction"
 				method="addOrUpdateScheduledWorkflow" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 		</action>
 
@@ -4834,9 +4683,7 @@
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteScheduledWorkflow">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -4844,9 +4691,7 @@
 		<action name="getScheduledWorkflowList"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getScheduledWorkflowList">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SCHEDULER</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -4897,43 +4742,36 @@
 		<action name="configure"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="configureInstances">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="subscribe"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="subscribeInstances">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="unsubscribe"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="unsubscribeInstances">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="map"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="mapInstance">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="migrate"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="migrateUnmodelledData">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="mapped"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getMappedInstances">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="discover"
 			class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="discoverInstances">
-			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>
 		</action>
 		<action name="count"
@@ -6246,25 +6084,21 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="addLabour">
-			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="updateLabour">
-			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="deleteLabour">
-			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 		</action>
 		<action name="labourList"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourList">
-<!--			<param name="moduleName">setup</param>-->
 <!--			<param name="permission">LABOUR</param>-->
 			<param name="deprecated">true</param>
 		</action>
@@ -6272,13 +6106,11 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.LabourAction"
 			method="labourDetails">
-			<param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT,LABOUR</param>
 			<param name="labourId">{1}</param>
 		</action>
 		<action name="count"
 			class="com.facilio.bmsconsole.actions.ItemAction" method="itemCount">
-<!--			<param name="moduleName">setup</param>-->
 <!--			<param name="permission">USER_MANAGEMENT,LABOUR</param>-->
 			<param name="deprecated">true</param>
 		</action>
@@ -6392,9 +6224,7 @@
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addConnectedApp">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6402,9 +6232,7 @@
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="getConnectedAppDetails">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6412,9 +6240,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="updateConnectedApp">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALl</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6422,9 +6248,7 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedApp">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6432,9 +6256,7 @@
 		<action name="addOrUpdateSAML"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addOrUpdateConnectedAppSAML">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6442,9 +6264,7 @@
 		<action name="deleteSAML"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedAppSAML">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6452,9 +6272,7 @@
 		<action name="addOrUpdateWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addOrUpdateConnectedAppWidget">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6462,9 +6280,7 @@
 		<action name="addOrUpdateVariable"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addOrUpdateVariable">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6472,9 +6288,7 @@
 		<action name="addOrUpdateConnector"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="addOrUpdateConnectedAppConnector">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6506,17 +6320,14 @@
 		<action name="modules"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="getConnectedAppModules">
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 		</action>
 		
 		<action name="deleteWidget"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedAppWidget">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6524,9 +6335,7 @@
 		<action name="deleteVariable"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteVariable">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6534,9 +6343,7 @@
 		<action name="deleteConnector"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="deleteConnectedAppConnector">
-			<param name="moduleName">setup</param>
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6563,8 +6370,7 @@
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction"
 			method="connectedAppList">
-			<param name="permission">CONNECTED_APPS,ALL</param>
-			<param name="tabType">SETUP</param>
+			<param name="permission">ALL</param>
 			<param name="setupTab">CONNECTED_APPS</param>
 		</action>
 	</package>
@@ -6585,7 +6391,7 @@
 			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 	</package>
-	
+
 	<package name="connectedAppsDownload" namespace="/api/v2/connectedApps/download"
 		extends="v2Api">
 		<action name="certificate"
@@ -6617,45 +6423,35 @@
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addConnection">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="invalidateConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="invalidateConnection">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="getAllConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="getAllConnection">
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -6664,9 +6460,7 @@
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
 			<result name="success">/jsps/connection.jsp</result>
-			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">CONNECTORS</param>
 		</action>
 	</package>
@@ -6675,13 +6469,11 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2addCustomFields">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2getFieldsList">
 			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
-            <param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_TEMPLATES</param>
 <!--			<param name="translationImpl">FieldOptionTranslation</param>-->
 			<result name="success" type="json">
@@ -6695,14 +6487,12 @@
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="getFieldForms"
 				class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2getFieldUsageInForms">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="changeFieldTo" class="com.facilio.bmsconsole.actions.ModuleAction"
@@ -6720,8 +6510,7 @@
 			method="v2metadata">
 			<param name="translationImpl">FieldTranslationV2</param>
 			<param name="moduleName">{1}</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">MODULES</param>
+			<param name="setupTab">MODULES,WORKFLOWS,NOTIFICATIONS,WORKFLOWS</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -6750,25 +6539,21 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="fetchWorkflowRules" >
 		        <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES,APPROVALS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="addRule">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="updateRule">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">NOTIFICATIONS</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="deleteRule">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,TRANSACTION_RULES,APPROVALS</param>
 		</action>
 
@@ -6780,7 +6565,6 @@
 		<action name="getCount" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="getCountForWorkFlowRules">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES</param>
 		</action>
 	</package>
@@ -7597,25 +7381,21 @@
 		<action name="getAllPrefslist"
 			class="com.facilio.bmsconsole.actions.PreferenceAction" method="getAllPreferences" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">VISITOR_SETTINGS</param>
 		</action>
 		<action name="enable"
 			class="com.facilio.bmsconsole.actions.PreferenceAction" method="enablePreference" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">VISITOR_SETTINGS</param>
 		</action>
 		<action name="disable"
 			class="com.facilio.bmsconsole.actions.PreferenceAction" method="disablePreference" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">VISITOR_SETTINGS</param>
 		</action>
 		<action name="getEnabledPrefsList"
 			class="com.facilio.bmsconsole.actions.PreferenceAction" method="getAllEnabledPreferences" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">VISITOR_SETTINGS</param>
 		</action>
 	</package>
@@ -7729,59 +7509,45 @@
 	
 	<package name="deviceApi" namespace="/api/v2/devices" extends="v2Api">
 			<action name="add" class="com.facilio.bmsconsole.actions.DevicesAction" method="addDevice">
-				<param name="moduleName">setup</param>
 				<param name="permission">GENERAL,DEVICES</param>
 			</action>
 			<action name="connect" class="com.facilio.bmsconsole.actions.DevicesAction" method="connectDevice">
-				<param name="moduleName">setup</param>
-				<param name="permission">GENERAL,DEVICES,ALL</param>
-				<param name="tabType">SETUP</param>
+				<param name="permission">ALL</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.DevicesAction" method="updateDevice">
-				<param name="moduleName">setup</param>
 				<param name="permission">GENERAL,DEVICES</param>
 			</action>
 			<action name="list" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceList">
-				<param name="moduleName">setup</param>
 				<param name="permission">GENERAL,DEVICES</param>
 			</action>
 			<action name="getdetails" class="com.facilio.bmsconsole.actions.DevicesAction" method="fetchDeviceDetails">
-				<param name="moduleName">setup</param>
 				<param name="permission">GENERAL,DEVICES</param>
 			</action>
 			<action name="delete" class="com.facilio.bmsconsole.actions.DevicesAction" method="deleteDevice">
-				<param name="moduleName">setup</param>
-				<param name="permission">GENERAL,DEVICES,ALL</param>
-				<param name="tabType">SETUP</param>
+				<param name="permission">ALL</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">
-				<param name="moduleName">setup</param>
-				<param name="permission">GENERAL,DEVICES,ALL</param>
-				<param name="tabType">SETUP</param>
+				<param name="permission">ALL</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 	</package>
 	<package name="printerApi" namespace="/api/v2/printer" extends="v2Api">
 			<action name="add" class="com.facilio.bmsconsole.actions.PrinterAction" method="addOrUpdate">	
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.PrinterAction" method="addOrUpdate">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="list" class="com.facilio.bmsconsole.actions.PrinterAction" method="fetchPrinterList">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="delete" class="com.facilio.bmsconsole.actions.PrinterAction" method="deletePrinter">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			
@@ -7789,67 +7555,53 @@
 	<package name="visitorKiosk" namespace="/api/v2/visitorKiosk" extends="v2Api">
 			<action name="add" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="addOrUpdate">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="update" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="addOrUpdate">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 			<action name="list" class="com.facilio.bmsconsole.actions.VisitorKioskAction" method="list">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 				<param name="setupTab">VISITOR_SETTINGS</param>
 			</action>
 	</package>
 	<package name="feedbackKiosk" namespace="/api/v2/feedbackKiosk" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskList">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="get" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackKioskDetails">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackKiosk">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 	</package>
 	<package name="smartControlKiosk" namespace="/api/v2/smartControlKiosk" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskList">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="get" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="getSmartControlKioskDetails">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.SmartControlKioskAction" method="addOrUpdateSmartControlKiosk">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,SMART_CONTROLS</param>
 		</action>
 	</package>
 	<package name="feedbackType" namespace="/api/v2/feedbackType" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="getFeedbackTypeList">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.FeedbackKioskAction" method="addOrUpdateFeedbackType">
-			<param name="moduleName">setup</param>
 			<param name="permission">GENERAL,FEEDBACK_AND_COMPLAINTS</param>
 		</action>
 	</package>
@@ -8231,7 +7983,6 @@
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="addOrUpdateApplication">
 			 <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
@@ -8241,14 +7992,12 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" >
 			 <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">PORTALS,USERS,ROLES,CONNECTED_APPS,API_SETUP,AUDIT_LOGS</param>
+			<param name="setupTab">PORTALS,USERS,ROLES,CONNECTED_APPS,API_SETUP,AUDIT_LOGS,PEOPLE,MODULES</param>
 		</action>
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplicationBasedOnModule">
 			<param name="permission">ALL</param>
-            <param name="tabType">SETUP</param>
-			<param name="setupTab">NOTIFICATIONS,APPROVALS</param>
+			<param name="setupTab">NOTIFICATIONS,APPROVALS,MODULES,WORKFLOWS,SLA_POLICIES</param>
 		</action>
 		<action name="*/fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getAllApplicationBasedOnModule">
@@ -8267,13 +8016,11 @@
 			method="getApplicationDetails">
 			<param name="translationImpl">WebTabTranslation</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 		<action name="fetchDefaultApp" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getDefaultApplication">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 	</package>
@@ -8290,19 +8037,16 @@
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getAllApplicationRelatedApps" >
 		    <param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">USERS</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="deleteApplicationRelatedApps">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="addApplicationRelatedApps">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 
@@ -8312,7 +8056,6 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="addApplicationUsers">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">API_SETUP</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
@@ -8322,8 +8065,7 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationUsers">
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">PORTALS,USERS,API_SETUP,AUDIT_LOGS</param>
+			<param name="setupTab">PORTALS,USERS,API_SETUP,AUDIT_LOGS,SERVICE_CATALOGS</param>
 		</action>
 		<action name="getUserFromPeopleId" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getUserFromPeopleId">
 			<param name="permission">GET:MANAGE_ACCESS</param>
@@ -8343,7 +8085,6 @@
 		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getApplicationUserDetails">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">USERS</param>
 		</action>
 		<action name="addOrUpdateSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="addOrUpdateUserSignature">
@@ -8371,19 +8112,16 @@
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTabGroup" >
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS,TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTabGroup" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS,TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTabGroup" >
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 	</package>
@@ -8404,13 +8142,11 @@
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTab">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTab">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="list"
@@ -8420,29 +8156,24 @@
 		<action name="associate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="associateTabToGroupTab">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="addTabsToGroup"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addTabsToGroup">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="disassociate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab">
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 		<action name="listForApp"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication">
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">USERS</param>
+			<param name="setupTab">USERS,ROLES</param>
 			<param name="permission">ALL</param>
 			<param name="translationImpl">WebTabTranslation</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="setupTab">TABS_AND_LAYOUTS,PORTALS,ROLES</param>
 			<!--			<param name="translationImpl">WebTabTranslation</param>-->
 		</action>
 		<action name="reorder"
@@ -8944,7 +8675,6 @@
 			class="com.facilio.bmsconsole.actions.PeopleAction" method="peopleList">
 			<param name="viewName">{1}</param>
 			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
 		</action>
 		<action name="getUser" class="com.facilio.bmsconsole.actions.PeopleAction" method="getUserForPeopleId" >
@@ -9300,19 +9030,16 @@
 		<action name="module"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="transactionRuleModules" >
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
 			<param name="setupTab">TRANSACTION_RULES</param>
 		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="addTransactionRule">
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
 			<param name="setupTab">TRANSACTION_RULES</param>
 		</action>
 
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkflowRuleAction" method="updateTransactionRule">
 		<param name="permission">ALL</param>
-		<param name="tabType">SETUP</param>
 			<param name="setupTab">TRANSACTION_RULES</param>
 		</action>
 
@@ -9354,7 +9081,6 @@
 	<package name="translation" namespace="/api/v2/translation" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.localization.TranslationAction" method="addLanguage">
 		<param name="permission">ALL</param>
-        <param name="tabType">SETUP</param>
 			<param name="setupTab">LOCALIZATION</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationList">
@@ -9362,12 +9088,10 @@
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.localization.TranslationAction" method="save">
 		<param name="permission">ALL</param>
-        <param name="tabType">SETUP</param>
 			<param name="setupTab">LOCALIZATION</param>
 		</action>
 		<action name="getFields" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslationFields">
 		<param name="permission">ALL</param>
-        <param name="tabType">SETUP</param>
 			<param name="setupTab">LOCALIZATION</param>
 		</action>
 		<action name="fetchDetail" class="com.facilio.bmsconsole.localization.TranslationAction" method="fetchDetail">
@@ -9378,7 +9102,6 @@
 		</action>
 		<action name="listLang" class="com.facilio.bmsconsole.localization.TranslationAction" method="getTranslatedLang">
         <param name="permission">ALL</param>
-        <param name="tabType">SETUP</param>
 			<param name="setupTab">LOCALIZATION</param>
 		</action>
 		<action name="updateStatus" class="com.facilio.bmsconsole.localization.TranslationAction" method="updateStatus">
@@ -9417,7 +9140,6 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="getStateFlowList" >
-			<param name="moduleName">setup</param>
 			<param name="permission">STATEFLOWS</param>
 			<param name="isNewPermission">true</param>
 		</action>
@@ -9449,7 +9171,6 @@
 				class="com.facilio.bmsconsole.actions.ScopingAction"
 				method="listAppScoping" >
 				<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
 			<param name="setupTab">SECURITY_POLICY,USERS</param>
 		</action>
 		<action name="valueGenerators"

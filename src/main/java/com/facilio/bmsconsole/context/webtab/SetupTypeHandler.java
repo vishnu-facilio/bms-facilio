@@ -15,9 +15,9 @@ public class SetupTypeHandler implements WebTabHandler{
     public boolean hasPermission(WebTabContext webtab, Map<String, String> parameters, String action) {
         boolean isSetupTab = parameters.containsKey("setupTab");
         String setupTabType = parameters.get("setupTab");
-//        if(isSetupTab) {
-//            return currentUserHasPermission(webtab,setupTabType,action);
-//        }
+        if(isSetupTab) {
+            return currentUserHasPermission(webtab,setupTabType,action);
+        }
         return true;
     }
 

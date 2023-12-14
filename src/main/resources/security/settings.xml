@@ -402,10 +402,12 @@
                 <property name="formId" type="number"/>
 
                 <property name="groupId" type="number"/>
+                <property name="photoId" type="number"/>
 
                 <property name="moduleId" type="number"/>
 
                 <property name="name" type="string"/>
+                <property name="photoFileName" type="string"/>
 
                 <property name="type" type="number"/>
 
@@ -1496,8 +1498,9 @@
             <property name="filters" type="filters" mandatory="false"/>
             <property name="includeParentFilter" type="boolean" mandatory="false"/>
             <property name="default" type="string" mandatory="false"/>
-            <property name="viewName" type="string" />
-            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+            <property name="viewName" type="string"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object"
+                      value-template="template.xml#criteria"/>
         </urlparams>
     </request>
 
@@ -1596,7 +1599,7 @@
                 <property name="formSharing" type="array">
                     <items type="object">
                         <property name="roleId" type="number" mandatory="true"/>
-                        <property name="type" type="number" />
+                        <property name="type" type="number"/>
                     </items>
                 </property>
             </property>
@@ -1892,7 +1895,7 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/customPage/tabs/fetch" >
+    <request path="/api/v2/customPage/tabs/fetch">
         <requestbody type="object">
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
@@ -1978,7 +1981,7 @@
             <property name="appId" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="sectionId" type="number" mandatory="true"/>
-            <property name ="widget" type="object" mandatory="true">
+            <property name="widget" type="object" mandatory="true">
                 <property name="displayName" type="string"/>
                 <property name="positionX" type="number" mandatory="true"/>
                 <property name="positionY" type="number" mandatory="true"/>
@@ -2069,7 +2072,7 @@
         <requestbody type="object">
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
-            <property name ="widget" type="object" mandatory="true">
+            <property name="widget" type="object" mandatory="true">
                 <property name="id" type="number" mandatory="true"/>
                 <property name="displayName" type="string"/>
                 <property name="positionX" type="number" mandatory="true"/>
@@ -2118,7 +2121,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v1/setup/summaryWidget/get" >
+    <request path="/api/v1/setup/summaryWidget/get">
         <requestbody type="object">
             <property name="appId" type="number"/>
             <property name="id" type="number" mandatory="true"/>
@@ -2297,6 +2300,7 @@
             <property name="search" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="force" type="boolean"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/userScoping/userList" method="GET">
@@ -2436,12 +2440,14 @@
             <property name="search" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="myImport" type="boolean"/>
         </urlparams>
     </request>
     <request path="/api/v3/multiImport/count">
         <urlparams>
             <property name="filters" type="string"/>
             <property name="search" type="string"/>
+            <property name="myImport" type="boolean"/>
         </urlparams>
     </request>
     <request path="/api/v3/multiImport/downloadErrorRecords">
@@ -4705,9 +4711,6 @@
             <property name="viewName" type="string"></property>
         </requestbody>
     </request>
-
-
-
 
     <request path="/api/v3/trip/getTripLocationDetails" method="GET">
         <urlparams>
