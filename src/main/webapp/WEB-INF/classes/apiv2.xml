@@ -315,6 +315,14 @@
 		</action>
 	</package>
 
+	<package name="dashboardV2Api" namespace="/api/v2/dashboard" extends="v2Api">
+		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
+				method="getGroups">
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+	</package>
+
 	<package name="flows" namespace="/api/v2/flows" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.flows.action.FlowAction" method="addOrUpdateFlow">
 			<param name="deprecated">true</param>
@@ -1336,6 +1344,13 @@
 		</action>
 	</package>
 
+	<package name="dashboardAutomation" namespace="/api/v2/dashboard/automation" extends="v2Api">
+		<action name="module"
+				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules">
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+	</package>
 	<package name="shift" namespace="/api/v2/shift" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="add" >
@@ -1609,6 +1624,14 @@
 		</action>
 		
 	</package>
+
+	<package name="dashboardKPIModule" namespace="/api/v2/dashboard/kpi/module" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.KPIAction"
+				method="kpiList">
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi/module" extends="v2Api">
 	
@@ -1796,6 +1819,21 @@
 		</action>
 	</package>
 
+	<package name="dashboardViewApiV2" namespace="/api/v2/dashboard/views" extends="v2Api">
+		<action name="viewList"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			<param name="translationImpl">ViewTranslation</param>
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+			<param name="translationImpl">ViewColumnTranslation</param>
+			<param name="viewName">{1}</param>
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">DASHBOARD,New Dashboard</param>
+		</action>
+	</package>
 	<package name="viewApiV2" namespace="/api/v2/views"
 		extends="v2Api">
 		<action name="viewList"
@@ -3048,6 +3086,15 @@
 				class="com.facilio.bmsconsole.actions.PickListAction"
 				method="fetchLabels">
 			<param name="deprecated">true</param>
+		</action>
+	</package>
+
+	<package name="dashboardPicklistApiv2" namespace="/api/v2/dashboard/picklist">
+		<action name="label"
+				class="com.facilio.bmsconsole.actions.PickListAction"
+				method="fetchLabels">
+			<param name="permission">POST:CREATE,UPDATE</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
 		</action>
 	</package>
 
@@ -4487,6 +4534,22 @@
 			<param name="setupTab">DATA_SHARING</param>
 		</action>
 	</package>
+
+	<package name="dashboardFilterFieldsApiV2" namespace="/api/v2/dashboard/filter/advanced"
+			 extends="v2ApiNullIgnored">
+		<action name="operators"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="permission">ALL;GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+		</action>
+		<action name="fields/*"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
+			<param name="module">{1}</param>
+			<param name="permission">ALL;GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+		</action>
+	</package>
+
 	<package name="advancedFilterOperatorsApiv2" namespace="/api/v2/filter/advanced/operators"
 			 extends="v2ApiNullIgnored">
 		<action name="*"
@@ -6485,6 +6548,23 @@
 			<param name="setupTab">CONNECTED_APPS</param>
 		</action>
 	</package>
+
+	<package name="dashboardConnectedApps" namespace="/api/v2/dashboard/connectedApps"
+			 extends="v2Api">
+		<action name="viewWidget"
+				class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+				method="viewWidget">
+			<param name="permission">GET:VIEW,READ</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+
+		<action name="widgetList"
+				class="com.facilio.bmsconsole.actions.ConnectedAppAction"
+				method="connectedAppWidgetList">
+			<param name="permission">GET:VIEW,READ</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
+		</action>
+	</package>
 	
 	<package name="connectedAppsDownload" namespace="/api/v2/connectedApps/download"
 		extends="v2Api">
@@ -6623,6 +6703,22 @@
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">MODULES</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	<package name="dashboardModuleMetaApiV2" namespace="/api/v2/dashboard/modules/meta" extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="v2metadata">
+			<param name="translationImpl">FieldTranslationV2</param>
+			<param name="moduleName">{1}</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+			<param name="permission">GET:READ,VIEW</param>
+		</action>
+	</package>
+	<package name="dashboardRolesApi" namespace="/api/v2/dashboard/setup" extends="v2Api">
+		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 	</package>
 
@@ -8154,6 +8250,14 @@
 			<param name="permission">ALL</param>
 			<param name="tabType">SETUP</param>
 			<param name="setupTab">PORTALS</param>
+		</action>
+	</package>
+	<package name="dashboardApplicationsRelatedApps" namespace="/api/v2/dashboard/application/relatedApps"
+			 extends="v2Api">
+		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
+				method="getAllApplicationRelatedApps" >
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 	</package>
 	<package name="applicationsRelatedApps" namespace="/api/v2/application/relatedApps"

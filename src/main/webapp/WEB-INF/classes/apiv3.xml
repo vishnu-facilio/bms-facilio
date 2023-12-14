@@ -201,6 +201,15 @@
         </action>
     </package>
 
+    <package name="dashboardNewV3Api" extends="v3Api" namespace="/api/v3/dashboard/modules">
+        <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">{1}</param>
+            <param name="viewName">{2}</param>
+            <param name="permission">GET:READ,VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
+        </action>
+    </package>
+
     <package name="newV3Api" extends="v3Api" namespace="/api/v3/modules">
         <action name="*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -618,6 +627,18 @@
         </action>
     </package>
 
+    <package name="dashboardPicklistApiv3" namespace="/api/v3/dashboard/picklist"
+             extends="v3Api">
+        <action name="*"
+                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                method="pickList">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ,VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
+    </package>
+
     <package name="bulkActionPatch" namespace="/api/v3/bulkActionPatch" extends="v3Api">
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
@@ -695,6 +716,13 @@
             <param name="permission">ALL</param>
             <param name="tabType">SETUP</param>
             <param name="setupTab">TABS_AND_LAYOUTS</param>
+        </action>
+    </package>
+
+    <package name="dashboardModuleApiv3" namespace="/api/v3/dashboard/modules/list" extends="v3Api">
+        <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
+            <param name="permission">GET:READ,VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
     </package>
 
@@ -1525,13 +1553,13 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="list">
             <param name="permission">GET:CREATE,VIEW,EDIT,DELETE,SHARE</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
 		</action>
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="clone_dashboard">
             <param name="permission">POST:EDIT</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="moveto"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
@@ -1568,7 +1596,7 @@
                 method="get">
             <param name="linkName">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
     </package>
     <package name="v3MobileDashboard" namespace="/api/v3/dashboard/mobile" extends="v3Api">
@@ -1576,21 +1604,21 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="mobileList">
             <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="widget/*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="getWebViewWidget">
             <param name="widgetId">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="getMobileDashboard">
             <param name="linkName">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
     </package>
     <package name="v3DashboardTab" namespace="/api/v3/dashboard/tab" extends="v3Api">
@@ -1598,7 +1626,7 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="updateTab">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
 		</action>
         <action name="clone"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
@@ -1653,7 +1681,7 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
                 method="execute">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="newDashboardFilterRuleExecute"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardRuleAction"
@@ -2524,29 +2552,29 @@
     <package name="v2ModuleReport" namespace="/api/v3/module/report" extends="v3Api">
         <action name="folder/list" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="folders">
             <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="create" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="create">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="update" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="update">
             <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="fetch" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="fetch">
             <param name="permission">PUT:CREATE_EDIT</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="delete/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="delete">
             <param name="reportId">{1}</param>
             <param name="permission">DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
             <param name="permission">GET:VIEW,READ;PUT:READ</param>
-            <param name="tabType">Dashboard</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
     </package>
     <package name="v2ModuleKpi" namespace="/api/v3/module/kpi" extends="v3Api">

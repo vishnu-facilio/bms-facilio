@@ -862,6 +862,24 @@
 		</action>
 
 	</package>
+	<package name="dashboardAssetApi" namespace="/api/dashboard/asset" extends="homeApi">
+		<action name="getAssetCategoryWithReadings" class="com.facilio.bmsconsole.actions.AssetAction"
+				method="getAssetCategoryWithReadings">
+			<result name="success" type="json">
+				<param name="root">assetCategoriesWithReadings</param>
+			</result>
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+		</action>
+		<action name="getReadingsForSpecificAssetCategory" class="com.facilio.bmsconsole.actions.AssetAction"
+				method="getReadingsWithAssetsForSpecificCategories">
+			<result name="success" type="json">
+				<param name="root">assetsReadings</param>
+			</result>
+			<param name="permission">GET:READ,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+		</action>
+	</package>
 	<!-- Urjanet Packages  -->
 	<package name="assetApi" namespace="/api/asset" extends="homeApi">
 		<action name="layout" class="com.facilio.bmsconsole.actions.AssetAction"
@@ -2297,6 +2315,18 @@
 			<param name="permission">ENERGY_ANALYTICS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">result</param>
+			</result>
+		</action>
+	</package>
+
+	<package name="analyticsBaseline" namespace="/api/dashboard/baseline" extends="homeApi">
+		<action name="all" class="com.facilio.bmsconsole.actions.BaseLineAction"
+				method="getAllBaseLineList">
+			<param name="moduleName">setup</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
+			<param name="permission">GET:READ,VIEW</param>
+			<result name="success" type="json">
+				<param name="root">baseLines</param>
 			</result>
 		</action>
 	</package>
@@ -3742,7 +3772,7 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 			<param name="permission">GET:VIEW,READ</param>
-			<param name="tabType">Dashboard</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<param name="permission">POST:EDIT</param>

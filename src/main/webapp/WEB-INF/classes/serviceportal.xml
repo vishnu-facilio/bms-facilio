@@ -347,7 +347,7 @@
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
 			</result>
 			<param name="permission">GET:VIEW,READ</param>
-			<param name="tabType">Dashboard</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
         </action>
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboard">
 			<result name="success" type="json">

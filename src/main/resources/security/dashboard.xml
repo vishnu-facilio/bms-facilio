@@ -610,4 +610,89 @@
             <property name="widgetId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v2/dashboard/kpi/module" method="GET">
+        <urlparams>
+            <property name="filters" type="filters"></property>
+        </urlparams>
+    </request>
+    <request path="/api/dashboard/asset/getAssetCategoryWithReadings" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/dashboard/asset/getReadingsForSpecificAssetCategory" method="GET">
+        <urlparams>
+            <property name="fetchOnlyAlarmPoints" type="boolean"></property>
+            <property name="categoryIds" type="array">
+                <items type="number"></items>
+            </property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/filter/advanced/operators" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v2/dashboard/filter/advanced/fields/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/connectedApps/viewWidget" method="GET">
+        <urlparams>
+            <property name="widgetId" type="number"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/connectedApps/widgetList" method="GET">
+        <urlparams>
+            <property name="filters" type="filters"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/views/viewList" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/views/:viewName" method="GET">
+        <urlparams>
+            <property name="viewName" type="string" mandatory="true"></property>
+            <property name="moduleName" type="string"></property>
+        </urlparams>
+    </request>
+    <request path="/api/dashboard/baseline/all" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v2/dashboard/picklist/label" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v3/dashboard/picklist/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+            <property name="filters" type="filters"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/getGroups" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v2/dashboard/application/relatedApps/fetchList" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/automation/module" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v3/dashboard/modules/:moduleName/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+            <property name="viewName" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/modules/list/all" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v2/dashboard/modules/meta/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dashboard/setup/roles" method="GET">
+        <requestbody type="object"></requestbody>
+    </request>
 </config>
