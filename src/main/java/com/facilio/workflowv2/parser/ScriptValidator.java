@@ -268,6 +268,12 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("modbusTcpPoint");
         scriptWhiteListedModules.add("modbusRtuPoint");
         scriptWhiteListedModules.add("opcXmlDAPoint");
+        scriptWhiteListedModules.add(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT);
+        scriptWhiteListedModules.add(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER);
+        scriptWhiteListedModules.add(FacilioConstants.Trip.TRIP);
+        scriptWhiteListedModules.add(FacilioConstants.TimeSheet.TIME_SHEET);
+        scriptWhiteListedModules.add(FacilioConstants.TimeOff.TIME_OFF);
+        scriptWhiteListedModules.add(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
     }
 
     @Override
