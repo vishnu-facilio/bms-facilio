@@ -236,14 +236,6 @@ public class ViewAPI {
 			}
 			builder.andCriteria(appCriteria);
 
-			boolean calendarViewLicenseEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
-			if (!calendarViewLicenseEnabled) {
-				Criteria calendarViewCriteria = new Criteria();
-				calendarViewCriteria.addAndCondition(CriteriaAPI.getCondition(fieldsMap.get("isListView"), Boolean.TRUE.toString(), BooleanOperators.IS));
-				calendarViewCriteria.addOrCondition(CriteriaAPI.getCondition(fieldsMap.get("isCalendarView"), Boolean.FALSE.toString(), BooleanOperators.IS));
-				builder.andCriteria(calendarViewCriteria);
-			}
-
 			List<Map<String, Object>> viewProps = builder.get();
 			List<FacilioView> views = getAllViewDetails(viewProps, module.getOrgId(), getOnlyBasicValues);
 
@@ -348,14 +340,13 @@ public class ViewAPI {
 			}
 			List<FacilioView> views = new ArrayList<>();
 
-			boolean calendarViewLicenseEnabled = AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CALENDAR_VIEW);
 			Map<Long, CalendarViewContext> calendarViewContextMap = new HashMap<>();
 			Map<Long, TimelineScheduledViewContext> timelineScheduledViewContextMap = new HashMap<>();
 
-			if (calendarViewLicenseEnabled && CollectionUtils.isNotEmpty(calendarViewIds)) {
+			if (CollectionUtils.isNotEmpty(calendarViewIds)) {
 				calendarViewContextMap = CalendarViewUtil.getAllCalendarViews(calendarViewIds);
 			}
-			if (calendarViewLicenseEnabled && CollectionUtils.isNotEmpty(timelineViewIds)) {
+			if (CollectionUtils.isNotEmpty(timelineViewIds)) {
 				timelineScheduledViewContextMap = TimelineViewUtil.getAllTimelineViews(timelineViewIds);
 			}
 
@@ -389,13 +380,13 @@ public class ViewAPI {
 							}
 
 							// add calendar view context
-							if (calendarViewLicenseEnabled && view.isCalendarView()) {
+							if (view.isCalendarView()) {
 								if (MapUtils.isNotEmpty(calendarViewContextMap) && calendarViewContextMap.containsKey(viewId)) {
 									CalendarViewContext calendarViewContext = calendarViewContextMap.get(viewId);
 									setCommonCalendarViewObjects(calendarViewContext);
 									view.setCalendarViewContext(calendarViewContext);
 								}
-							} else if (calendarViewLicenseEnabled && view.isTimelineView()) {
+							} else if (view.isTimelineView()) {
 								if (MapUtils.isNotEmpty(timelineScheduledViewContextMap) && timelineScheduledViewContextMap.containsKey(viewId)) {
 									TimelineScheduledViewContext timelineScheduledViewContext = timelineScheduledViewContextMap.get(viewId);
 									setTimelineScheduledView(timelineScheduledViewContext, modBean, orgId);
