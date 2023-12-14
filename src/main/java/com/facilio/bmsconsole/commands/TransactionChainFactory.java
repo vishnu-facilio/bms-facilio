@@ -77,6 +77,7 @@ import com.facilio.pdftemplate.command.AddOrUpdatePDFTemplateCommand;
 import com.facilio.pdftemplate.command.DeletePDFTemplateCommand;
 import com.facilio.permission.commands.AddOrUpdatePermissionSetsForPeopleCommand;
 import com.facilio.permission.commands.DefaultPermissionSetCommand;
+import com.facilio.qa.command.PushInspectionGenerationToWMS;
 import com.facilio.readingrule.command.DeleteReadingRuleActionsCommand;
 import com.facilio.readingrule.command.DeleteReadingRuleCommand;
 import com.facilio.readingrule.command.FetchRuleRootCauseCommand;
@@ -7366,6 +7367,11 @@ public class TransactionChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getInspectionGenerationChain(){
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new PushInspectionGenerationToWMS());
+		return chain;
+	}
 }
 
 

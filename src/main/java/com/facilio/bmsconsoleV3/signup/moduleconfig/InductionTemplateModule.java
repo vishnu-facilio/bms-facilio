@@ -158,13 +158,6 @@ public class InductionTemplateModule extends BaseModuleConfig{
 
     public static void addSystemButtons() throws Exception {
 
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioField publishField = modBean.getField("isPublished", FacilioConstants.Induction.INDUCTION_TEMPLATE);
-        Criteria isNotPublishedCriteria = new Criteria();
-        isNotPublishedCriteria.addAndCondition(CriteriaAPI.getCondition(publishField,String.valueOf(false), BooleanOperators.IS));
-        Criteria isPublishedCriteria = new Criteria();
-        isPublishedCriteria.addAndCondition(CriteriaAPI.getCondition(publishField,String.valueOf(true), BooleanOperators.IS));
-
         SystemButtonRuleContext qAndABuilderSystemButton = new SystemButtonRuleContext();
         qAndABuilderSystemButton.setName(FacilioConstants.Inspection.Q_AND_A_BUILDER_BUTTON_TEXT);
         qAndABuilderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -172,7 +165,6 @@ public class InductionTemplateModule extends BaseModuleConfig{
         qAndABuilderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         qAndABuilderSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
         qAndABuilderSystemButton.setPermissionRequired(true);
-        qAndABuilderSystemButton.setCriteria(isNotPublishedCriteria);
 
         SystemButtonRuleContext editSystemButton = new SystemButtonRuleContext();
         editSystemButton.setName(FacilioConstants.Inspection.EDIT_BUTTON_TEXT);
@@ -181,7 +173,6 @@ public class InductionTemplateModule extends BaseModuleConfig{
         editSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         editSystemButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
         editSystemButton.setPermissionRequired(true);
-        editSystemButton.setCriteria(isNotPublishedCriteria);
 
         SystemButtonRuleContext executeNowSystemButton = new SystemButtonRuleContext();
         executeNowSystemButton.setName(FacilioConstants.Inspection.EXECUTE_NOW_BUTTON_TEXT);
@@ -190,32 +181,74 @@ public class InductionTemplateModule extends BaseModuleConfig{
         executeNowSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         executeNowSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
         executeNowSystemButton.setPermissionRequired(true);
-        executeNowSystemButton.setCriteria(isPublishedCriteria);
-
-        SystemButtonRuleContext publishSystemButton = new SystemButtonRuleContext();
-        publishSystemButton.setName(FacilioConstants.Inspection.PUBLISH_BUTTON_TEXT);
-        publishSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        publishSystemButton.setIdentifier(FacilioConstants.Inspection.PUBLISH_BUTTON_IDENTIFIER);
-        publishSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        publishSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
-        publishSystemButton.setPermissionRequired(true);
-        publishSystemButton.setCriteria(isNotPublishedCriteria);
-
-        SystemButtonRuleContext cloneSystemButton = new SystemButtonRuleContext();
-        cloneSystemButton.setName(FacilioConstants.Inspection.CLONE_BUTTON_TEXT);
-        cloneSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        cloneSystemButton.setIdentifier(FacilioConstants.Inspection.CLONE_BUTTON_IDENTIFIER);
-        cloneSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        cloneSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
-        cloneSystemButton.setPermissionRequired(true);
 
         SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,qAndABuilderSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,editSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,executeNowSystemButton);
-        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,publishSystemButton);
-        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,cloneSystemButton);
 
     }
+
+    // will enable this when publish and clone inspection is completed
+//    public static void addSystemButtons() throws Exception {
+//
+//        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//        FacilioField publishField = modBean.getField("isPublished", FacilioConstants.Induction.INDUCTION_TEMPLATE);
+//        Criteria isNotPublishedCriteria = new Criteria();
+//        isNotPublishedCriteria.addAndCondition(CriteriaAPI.getCondition(publishField,String.valueOf(false), BooleanOperators.IS));
+//        Criteria isPublishedCriteria = new Criteria();
+//        isPublishedCriteria.addAndCondition(CriteriaAPI.getCondition(publishField,String.valueOf(true), BooleanOperators.IS));
+//
+//        SystemButtonRuleContext qAndABuilderSystemButton = new SystemButtonRuleContext();
+//        qAndABuilderSystemButton.setName(FacilioConstants.Inspection.Q_AND_A_BUILDER_BUTTON_TEXT);
+//        qAndABuilderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        qAndABuilderSystemButton.setIdentifier(FacilioConstants.Inspection.Q_AND_A_BUILDER_BUTTON_IDENTIFIER);
+//        qAndABuilderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        qAndABuilderSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
+//        qAndABuilderSystemButton.setPermissionRequired(true);
+//        qAndABuilderSystemButton.setCriteria(isNotPublishedCriteria);
+//
+//        SystemButtonRuleContext editSystemButton = new SystemButtonRuleContext();
+//        editSystemButton.setName(FacilioConstants.Inspection.EDIT_BUTTON_TEXT);
+//        editSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
+//        editSystemButton.setIdentifier(FacilioConstants.Inspection.EDIT_BUTTON_IDENTIFIER);
+//        editSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        editSystemButton.setPermission(AccountConstants.ModulePermission.UPDATE.name());
+//        editSystemButton.setPermissionRequired(true);
+//        editSystemButton.setCriteria(isNotPublishedCriteria);
+//
+//        SystemButtonRuleContext executeNowSystemButton = new SystemButtonRuleContext();
+//        executeNowSystemButton.setName(FacilioConstants.Inspection.EXECUTE_NOW_BUTTON_TEXT);
+//        executeNowSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        executeNowSystemButton.setIdentifier(FacilioConstants.Inspection.EXECUTE_NOW_BUTTON_IDENTIFIER);
+//        executeNowSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        executeNowSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
+//        executeNowSystemButton.setPermissionRequired(true);
+//        executeNowSystemButton.setCriteria(isPublishedCriteria);
+//
+//        SystemButtonRuleContext publishSystemButton = new SystemButtonRuleContext();
+//        publishSystemButton.setName(FacilioConstants.Inspection.PUBLISH_BUTTON_TEXT);
+//        publishSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        publishSystemButton.setIdentifier(FacilioConstants.Inspection.PUBLISH_BUTTON_IDENTIFIER);
+//        publishSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        publishSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
+//        publishSystemButton.setPermissionRequired(true);
+//        publishSystemButton.setCriteria(isNotPublishedCriteria);
+//
+//        SystemButtonRuleContext cloneSystemButton = new SystemButtonRuleContext();
+//        cloneSystemButton.setName(FacilioConstants.Inspection.CLONE_BUTTON_TEXT);
+//        cloneSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+//        cloneSystemButton.setIdentifier(FacilioConstants.Inspection.CLONE_BUTTON_IDENTIFIER);
+//        cloneSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+//        cloneSystemButton.setPermission(AccountConstants.ModulePermission.READ.name());
+//        cloneSystemButton.setPermissionRequired(true);
+//
+//        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,qAndABuilderSystemButton);
+//        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,editSystemButton);
+//        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,executeNowSystemButton);
+//        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,publishSystemButton);
+//        SystemButtonApi.addSystemButton(FacilioConstants.Induction.INDUCTION_TEMPLATE,cloneSystemButton);
+//
+//    }
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {

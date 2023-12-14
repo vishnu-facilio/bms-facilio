@@ -1329,6 +1329,9 @@ public class ModuleBeanImpl implements ModuleBean {
 									.append(field.getDisplayName())
 									.append(" Multi")
 									.toString();
+
+		relDisplayName = relDisplayName.length() < 150 ? relDisplayName : relDisplayName.substring(0,149);
+
 		module.setDisplayName(relDisplayName);
 		module.setTableName(CUSTOM_MULTI_ENUM_TABLENAME);
 		module.setType(ModuleType.ENUM_REL_MODULE);

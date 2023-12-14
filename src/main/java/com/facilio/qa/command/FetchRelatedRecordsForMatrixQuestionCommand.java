@@ -4,8 +4,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -14,10 +17,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.qa.context.AnswerContext;
 import com.facilio.qa.context.QuestionContext;
@@ -50,11 +49,15 @@ public class FetchRelatedRecordsForMatrixQuestionCommand extends FacilioCommand{
 			FacilioModule answerModule = modBean.getModule(matrixQuestion.getAnswerModuleId());
 			List<FacilioField> answerModuleFields = modBean.getAllFields(answerModule.getName());
 
+			List<SupplementRecord> supplementFields = answerModuleFields.stream().filter((field)->field.getDataTypeEnum()== FieldType.MULTI_ENUM).map(SupplementRecord.class::cast).collect(Collectors.toList());
+
 			Map<String, FacilioField> answerModuleFieldsMap = FieldFactory.getAsMap(answerModuleFields);
 
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> select = new SelectRecordsBuilder<ModuleBaseWithCustomFields>().module(answerModule).select(answerModuleFields).beanClass(ModuleBaseWithCustomFields.class).andCondition(CriteriaAPI.getCondition(answerModuleFieldsMap.get("question"), matrixQuestion.getId() + "", NumberOperators.EQUALS)).andCondition(CriteriaAPI.getCondition(answerModuleFieldsMap.get("parent"), answer.getId() + "", NumberOperators.EQUALS));
 			;
-
+			if(!supplementFields.isEmpty()) {
+				select.fetchSupplements(supplementFields);
+			}
 			MatrixAnswer matrixAnswer = new MatrixAnswer();
 
 			List<Map<String, Object>> rows = select.getAsProps();

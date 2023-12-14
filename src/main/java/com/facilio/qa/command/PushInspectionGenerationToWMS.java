@@ -23,7 +23,9 @@ public class PushInspectionGenerationToWMS extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info("After Transaction Command for Inspection generation");
         List<InspectionTriggerContext> triggers = (List<InspectionTriggerContext>) context.get(FacilioConstants.Inspection.INSPECTION_TRIGGERS);
-        List<BaseScheduleContext> baseSchedules = triggers.stream().filter(trigger -> trigger.getParent().getIsPublished()).map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
+        List<BaseScheduleContext> baseSchedules = triggers.stream().map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
+        // will enable this while publish and clone inspection is made live
+//        List<BaseScheduleContext> baseSchedules = triggers.stream().filter(trigger -> trigger.getParent().getIsPublished()).map(InspectionTriggerContext::getSchedule).collect(Collectors.toList());
         if(baseSchedules!=null && !baseSchedules.isEmpty()) {
             LOGGER.info("Base Schedules Size : "+baseSchedules.size());
             for(BaseScheduleContext baseSchedule:baseSchedules) {

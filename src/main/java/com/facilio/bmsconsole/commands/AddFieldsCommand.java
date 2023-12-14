@@ -201,7 +201,11 @@ public class AddFieldsCommand extends FacilioCommand {
 				field.setName(field.getName() +"_"+moduleName + "_" + count);
 				field.setDisplayName(field.getDisplayName() + " " + count);
 			}else {
-				field.setName(field.getName()+"_"+moduleName);
+				if(appendModuleName){
+					field.setName(field.getName()+"_"+moduleName);
+				} else {
+					field.setName(field.getName());
+				}
 			}
 		}
 	}

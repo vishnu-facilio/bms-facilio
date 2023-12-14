@@ -1,10 +1,7 @@
 package com.facilio.qa.context.questions.handler;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.beans.ModuleBean;
@@ -15,13 +12,15 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.EnumFieldValue;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.*;
+import com.facilio.qa.context.QuestionContext;
+import com.facilio.qa.context.QuestionType;
 import com.facilio.qa.context.questions.BaseMatrixQuestionContext;
 import com.facilio.qa.context.questions.MatrixQuestionColumn;
 import com.facilio.qa.context.questions.MatrixQuestionContext;
@@ -32,6 +31,7 @@ import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 public class BaseMatrixQuestionHandler {
@@ -101,8 +101,7 @@ public class BaseMatrixQuestionHandler {
 	public void createAnswerModuleAndSetField(BaseMatrixQuestionContext question) throws Exception {
 		
 		V3Util.throwRestException(question.getQuestion() == null || question.getQuestion().trim().isEmpty(), ErrorCode.VALIDATION_ERROR, "Question cannot be empty");
-		
-		String questionName = question.getQuestion().length() <= 50 ? question.getQuestion() : question.getQuestion().substring(0, 49);  
+		String questionName = question.getQuestion().length() <= 50 ? question.getQuestion() : question.getQuestion().substring(0, 49);
 		
    	 	FacilioModule answerModule = new FacilioModule(FacilioConstants.QAndA.Answers.MATRIX_ANSWER +"_"+ questionName.replaceAll(" ", ""),
                 "Q And A Matrix Answer "+ questionName,
@@ -116,10 +115,13 @@ public class BaseMatrixQuestionHandler {
        		 
        		 V3Util.throwRestException(column.getField() == null, ErrorCode.VALIDATION_ERROR, "Field cannot be empty in matrix column");
        		 V3Util.throwRestException(column.getName() == null, ErrorCode.VALIDATION_ERROR, "Column name cannot be empty");
+			 if(column.getField() instanceof MultiEnumField){
+				 String name = column.getField().getDisplayName().length()<=20 ? column.getField().getDisplayName() : column.getField().getDisplayName().substring(0,20);
+				 column.getField().setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+			 }
        		 answerFields.add(column.getField());
        	 }
         }
-        
         answerModule.setFields(answerFields);
         
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
@@ -146,7 +148,22 @@ public class BaseMatrixQuestionHandler {
        	 }
         }
 	}
-	
+
+	public long getMultiQuestionCountInPage(BaseMatrixQuestionContext question) throws Exception{
+		long pageId = question.getPage().getId();
+		List<String> questionTypes = new ArrayList<>(Arrays.asList(QuestionType.MULTI_QUESTION.getValue(),QuestionType.MATRIX.getValue()));
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getCountField())
+				.table("Q_And_A_Questions")
+				.andCondition(CriteriaAPI.getCondition("PAGE_ID","page", String.valueOf(pageId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("QUESTION_TYPE", "questionType",StringUtils.join(questionTypes,',') , StringOperators.IS));
+
+		Map<String, Object> modulesMap = builder.fetchFirst();
+		long count = MapUtils.isNotEmpty(modulesMap) ? (long) modulesMap.get("count") : 0;
+
+		return count+1;
+	}
+
 	protected void updateColumns(List<? extends BaseMatrixQuestionContext> questions) throws Exception {
 		
 		ModuleBean modBean = Constants.getModBean();
@@ -158,12 +175,21 @@ public class BaseMatrixQuestionHandler {
 		Map<Long, List<MatrixQuestionColumn>> alreadyExistingColumns = getAlreadyExistingColumn(questions);
 		
 		for(BaseMatrixQuestionContext question : questions) {
-			
 			List<Long> currentlyAvailabeColumnIDs = new ArrayList<Long>();
 			
 			if(question.getColumns() != null) {
 				
 				for(MatrixQuestionColumn column : question.getColumns()) {
+					if(column.getField().getDataTypeEnum()==FieldType.MULTI_ENUM){
+						if(column.getId() > 0) {
+							MultiEnumField field = (MultiEnumField) column.getField();
+							MultiEnumField getRelDataForField = (MultiEnumField) modBean.getField(column.getField().getFieldId());
+							field.setRelModule(getRelDataForField.getRelModule());
+							field.setRelModuleId(getRelDataForField.getRelModuleId());
+						}
+						String name = column.getField().getDisplayName().length()<=20 ? column.getField().getDisplayName() : column.getField().getDisplayName().substring(0,20);
+						column.getField().setName(name.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+					}
 					if(column.getId() <= 0) {
 						column.setParentId(question.getId());
 						
@@ -175,6 +201,7 @@ public class BaseMatrixQuestionHandler {
 						
 						context.put(FacilioConstants.ContextNames.MODULE_NAME, modBean.getModule(question.getAnswerModuleId()).getName());
 						context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, Collections.singletonList(column.getField()));
+						context.put(ContextNames.APPEND_MODULE_NAME, false);
 						
 						addFieldsChain.execute();
 						
