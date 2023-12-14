@@ -37,9 +37,7 @@ public class UpdateNamespaceCommand extends FacilioCommand {
         if (ns != null) {
             List<Long> includedAssets = ns.getIncludedAssetIds();
             if (CollectionUtils.isNotEmpty(includedAssets)) {
-                List<ResourceContext> filteredAssets = ResourceAPI.getResources(includedAssets, false);
-                List<Long> filteredAssetIds = filteredAssets.stream().map(ResourceContext::getId).collect(Collectors.toList());
-                ns.setIncludedAssetIds(filteredAssetIds);
+                ns.setIncludedAssetIds(includedAssets);
             }
         }
     }

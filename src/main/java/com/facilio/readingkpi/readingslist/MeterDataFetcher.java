@@ -29,7 +29,7 @@ public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
     protected GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
 
         Long utilityType = (Long) context.get(FacilioConstants.ReadingKpi.RESOURCE_CATEGORY_ID);
-        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(utilityType, ResourceType.ASSET_CATEGORY);
+        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(utilityType, ResourceType.METER_CATEGORY);
         if (props == null || props.isEmpty()) {
             return null;
         }
