@@ -211,8 +211,12 @@ public class BmsDBConf extends DBConf {
     @SneakyThrows
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
-        String dbType = isClickHouse(password) ? "ch" : "mysql";
+        boolean isClickhouseDB = isClickHouse(password);
+        String dbType =  isClickhouseDB ? "ch" : "mysql";
         String url = String.format("jdbc:%s://%s:%s/", dbType, password.get("host"), password.get("port"));
+        if(isClickhouseDB) {
+            url = url + "?socket_timeout=180000";
+        }
         password.put("url", url);
         return password;
     }
