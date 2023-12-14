@@ -1588,4 +1588,46 @@ public class V2AnalyticsOldUtil {
             }
         }
     }
+    public static void setPaginationForReportSelectBuilder(V2ReportContext v2_report , SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder)throws Exception
+    {
+        int offset = V2AnalyticsOldUtil.setPaginationOffsetForReportData(v2_report.getPagination());
+        if(offset != -1 && v2_report.getPagination() != null)
+        {
+            selectBuilder.offset(offset);
+            Long perPage = (Long ) v2_report.getPagination().get("perPage");
+            selectBuilder.limit(perPage.intValue());
+        }
+    }
+    public static int setPaginationOffsetForReportData(JSONObject pagination)throws Exception
+    {
+        if(pagination != null && !pagination.isEmpty())
+        {
+            int perPage;
+            int page;
+            if (pagination != null) {
+                Long pageNo = (Long) (pagination.get("page") == null ? 1 : pagination.get("page"));
+                page =  pageNo.intValue();
+                Long perPageCount = (Long) (pagination.get("perPage") == null ? 20 : pagination.get("perPage"));
+                perPage = perPageCount.intValue();
+            } else {
+                page = 1;
+                perPage = 20;
+            }
+            int offset = ((page - 1) * perPage);
+            if (offset < 0) {
+                offset = 0;
+            }
+            return offset;
+        }
+        return -1;
+    }
+    public static boolean isWithCount(JSONObject pagination)throws Exception
+    {
+        if(pagination != null && !pagination.isEmpty() && pagination.containsKey("withCount"))
+        {
+            Boolean withCount = (Boolean) pagination.get("withCount");
+            return withCount != null && withCount ? true : false;
+        }
+        return false;
+    }
 }

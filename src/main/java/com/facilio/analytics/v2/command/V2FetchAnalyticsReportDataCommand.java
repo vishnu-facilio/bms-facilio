@@ -43,6 +43,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     private FacilioModule baseModule;
     private JSONObject dashboard_user_filter=null;
     private V2ReportContext report_v2;
+    private int totalRecordCount=0;
     private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
     @Override
     public boolean executeCommand(Context context)throws Exception
@@ -86,6 +87,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             report.setDataPoints(dataPoints);
         }
         context.put(FacilioConstants.ContextNames.REPORT_DATA, reportData);
+        context.put("totalRecordCount", totalRecordCount);
         return false;
     }
     private List<List<ReportDataPointContext>> groupSameModuleDataPointsAsList(List<ReportDataPointContext> dpList)throws Exception
@@ -290,10 +292,30 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
 
         List<Map<String, Object>> props = null;
         if(isClickHouseEnabled) {
+            if(V2AnalyticsOldUtil.isWithCount(report_v2.getPagination())){
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> countBuilder = new SelectRecordsBuilder<>(newSelectBuilder);
+                props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
+                        () -> countBuilder.getAsProps());
+                if(props != null && props.size() > 0){
+                    totalRecordCount = props.size();
+                }
+            }
+            V2AnalyticsOldUtil.setPaginationForReportSelectBuilder(report_v2, newSelectBuilder);
             props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
                     () -> newSelectBuilder.getAsProps());
             LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
-        } else {
+        }
+        else
+        {
+            if(V2AnalyticsOldUtil.isWithCount(report_v2.getPagination()))
+            {
+                SelectRecordsBuilder<ModuleBaseWithCustomFields> countBuilder = new SelectRecordsBuilder<>(newSelectBuilder);
+                props = countBuilder.getAsProps();
+                if(props != null && props.size() > 0){
+                    totalRecordCount = props.size();
+                }
+            }
+            V2AnalyticsOldUtil.setPaginationForReportSelectBuilder(report_v2, newSelectBuilder);
             props = newSelectBuilder.getAsProps();
             LOGGER.debug("SELECT BUILDER EXECUTED IN MYSQL--- " + newSelectBuilder);
         }

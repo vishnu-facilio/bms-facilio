@@ -43,6 +43,7 @@ public class V2ReportContext {
     private Long criteriaId;
     public ReadingAnalysisContext.ReportMode reportModeEnum;
     private boolean showAlarms;
+    private JSONObject pagination;
     public void setReportMode(int reportMode){
         this.reportMode = reportMode;
         this.setReportModeEnum(ReadingAnalysisContext.ReportMode.valueOf(reportMode));

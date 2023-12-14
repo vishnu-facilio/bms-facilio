@@ -131,6 +131,9 @@ public class V2AnalyticsReportAction extends V3Action {
 
     private String setReportResult(FacilioContext context)
     {
+        if(context.containsKey("totalRecordCount")) {
+            setData("totalRecordCount", context.get("totalRecordCount"));
+        }
         if (context.get(FacilioConstants.ContextNames.REPORT) != null) {
 
             ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

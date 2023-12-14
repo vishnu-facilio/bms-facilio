@@ -689,9 +689,11 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 FacilioModule module = modBean.getModule(moduleName);
                 if(fieldName !=null){
                     FacilioField xFieldContext = modBean.getField(fieldName,moduleName);
-                    xField.setFieldId(xFieldContext.getFieldId());
-                    xField.setModuleId(xFieldContext.getModuleId());
-                    xField.setField(module,xFieldContext);
+                    if(xFieldContext!=null){
+                        xField.setFieldId(xFieldContext.getFieldId());
+                        xField.setModuleId(xFieldContext.getModuleId());
+                        xField.setField(module,xFieldContext);
+                    }
                 }
                 xField.setModule(module);
             }
@@ -706,7 +708,9 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 JSONObject dimension =  initialConfig !=null ? (JSONObject) initialConfig.get("dimension") : null;
                 if(dimension!=null){
                     JSONObject subDimension = (JSONObject) dimension.get("subDimension");
-                    xField.setSelectValuesOnly((List<Long>) subDimension.get("selectedIds"));
+                    if(subDimension!=null){
+                        xField.setSelectValuesOnly((List<Long>) subDimension.get("selectedIds"));
+                    }
                 }
             }
             dataPoint.setxAxis(xField);
@@ -758,8 +762,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                     String fieldName = groupByField.getFieldName();
                     String moduleName = groupByField.getModuleName();
                     FacilioField groupByFieldContext = modBean.getField(fieldName,moduleName);
-                    groupByField.setFieldId(groupByFieldContext.getFieldId());
-                    groupByField.setModuleId(groupByFieldContext.getModuleId());
+                    if(groupByFieldContext!=null){
+                        groupByField.setFieldId(groupByFieldContext.getFieldId());
+                        groupByField.setModuleId(groupByFieldContext.getModuleId());
+                    }
                     if(groupByField !=null && groupByField.getLookupFieldId()>0){
                         String lookUpFieldName = groupByField.getLookUpFieldName();
                         String lookUpModuleName = groupByField.getLookUpFieldModuleName();
@@ -858,12 +864,13 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             chain.execute();
             JSONObject reportFields = (JSONObject) context.get("reportFields");
             Map<String,ArrayList> dimensionObj  = (Map<String, ArrayList>) reportFields.get("dimension");
-            String firstName = (dimensionName.substring(0,1)).toLowerCase();
-            StringBuilder dimensionNameNew = new StringBuilder();
-            dimensionNameNew.append(firstName)
-                    .append(dimensionName.substring(1));
+            Map<String,ArrayList> newDimensionObj = new HashMap<>();
+            for(Map.Entry<String,ArrayList> map : dimensionObj.entrySet()){
+                newDimensionObj.put(map.getKey().toLowerCase(),map.getValue());
+            }
+            dimensionName = dimensionName.toLowerCase();
             List<JSONObject> fieldsList = new ArrayList<>();
-            for(Object fields : dimensionObj.get(dimensionNameNew.toString())){
+            for(Object fields : newDimensionObj.get(dimensionName)){
                 JSONObject json = FacilioUtil.getAsJSON(fields);
                 fieldsList.add(json);
             }
@@ -1116,15 +1123,24 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                                if(lookupName.equals("ticketstatus")){
                                    XMLBuilder pickListElement = reportElement.getElement(PackageConstants.ReportsConstants.GROUP_BY_PICK_LIST);
                                    String values = PackageBeanUtil.pickListValueBuilder(pickListElement);
-                                   String[] valueArray = values.split(",");
-                                   List<String> valuesList = Arrays.asList(valueArray);
-                                   List<String> oldPickListIds = Arrays.asList((String[]) chartStateJson.get("groupByPickListIds"));
-                                   for(int i=0; i<valuesList.size();i++){
-                                       if(groupByLabelValue!=null){
-                                           newGroupByLabelValue.put(valuesList.get(i),groupByLabelValue.get(oldPickListIds.get(i)));
+                                   if(values!=null){
+                                       String[] valueArray = values.split(",");
+                                       List<String> valuesList = Arrays.asList(valueArray);
+                                       List<String> oldPickListIds = new ArrayList<>();
+                                       for(Object id: (JSONArray) chartStateJson.get("groupByPickListIds")){
+                                           oldPickListIds.add(id.toString());
                                        }
-                                       children.get(i).put("fieldId",Long.valueOf(valuesList.get(i)));
-
+                                       Map<String,String> oldIdVsNewId = new HashMap<>();
+                                       for(int i=0; i<valuesList.size();i++){
+                                           if(groupByLabelValue!=null){
+                                               newGroupByLabelValue.put(valuesList.get(i),groupByLabelValue.get(oldPickListIds.get(i)));
+                                           }
+                                           oldIdVsNewId.put(oldPickListIds.get(i),valuesList.get(i));
+                                       }
+                                       for (JSONObject child : children){
+                                           Long id = child.get("fieldId")!=null ? (Long)  child.get("fieldId") : -1;
+                                           child.put("fieldId",oldIdVsNewId.get(id));
+                                       }
                                    }
                                }
                                else{
@@ -1142,14 +1158,16 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                                    }
                                }
                            }else{
-                               Set<String> keys = groupByLabelValue.keySet();
-                               List<Long> oldRecordIds = keys.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
-                               Map<Long,Long> newRecordIds = PackageBeanUtil.getNewRecordIds(lookupName,oldRecordIds);
-                               for (Long id : oldRecordIds){
-                                   newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
-                               }
-                               for(JSONObject child : children){
-                                   child.put("fieldId", newRecordIds.get(child.get("fieldId")));
+                               if(groupByLabelValue!=null){
+                                   Set<String> keys = groupByLabelValue.keySet();
+                                   List<Long> oldRecordIds = keys.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
+                                   Map<Long,Long> newRecordIds = PackageBeanUtil.getNewRecordIds(lookupName,oldRecordIds);
+                                   for (Long id : oldRecordIds){
+                                       newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
+                                   }
+                                   for(JSONObject child : children){
+                                       child.put("fieldId", newRecordIds.get(child.get("fieldId")));
+                                   }
                                }
                            }
                             JSONObject newGroupByLabelObject = new JSONObject();

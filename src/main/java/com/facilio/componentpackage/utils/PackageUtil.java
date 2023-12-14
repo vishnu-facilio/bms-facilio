@@ -828,6 +828,7 @@ public class PackageUtil {
         componentNameVsTypes.put(FacilioConstants.ContextNames.VENDORS,ComponentType.VENDOR);
         componentNameVsTypes.put(FacilioConstants.ContextNames.CLIENT,ComponentType.CLIENT);
         componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,ComponentType.TENANT);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.MODULE_STATE,ComponentType.TICKET_STATUS);
 
         return componentNameVsTypes;
     }
