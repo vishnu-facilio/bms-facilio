@@ -31,9 +31,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.*;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
@@ -1371,10 +1369,31 @@ public class V2AnalyticsOldUtil {
 
     private static JSONObject getMeasureForField(Long readingFieldId, Long categoryId, String parentModuleName, Long parentId) throws Exception {
         JSONObject measureJson = new JSONObject();
-        measureJson.putAll(constructFieldObject(Constants.getModBean().getField(readingFieldId), categoryId));
-        measureJson.put("aggr", 0);
+        FacilioField field = Constants.getModBean().getField(readingFieldId);
+        measureJson.putAll(constructFieldObject(field, categoryId));
         measureJson.put("type", 1);
         measureJson.put("parentModuleName", parentModuleName);
+
+        if (Arrays.asList(FieldType.ENUM, FieldType.SYSTEM_ENUM, FieldType.BOOLEAN).contains(field.getDataTypeEnum())) {
+            measureJson.put("aggr", 1);
+
+            Map<Integer, Object> options = new HashMap<>();
+            switch (field.getDataTypeEnum()) {
+                case BOOLEAN:
+                    BooleanField booleanField = (BooleanField) field;
+                    options.put(0, booleanField.getFalseVal() == null ? "False" : booleanField.getFalseVal());
+                    options.put(1, booleanField.getTrueVal() == null ? "True" : booleanField.getTrueVal());
+                    options = serializeMap(options);
+                    break;
+                case ENUM:
+                case SYSTEM_ENUM:
+                    options = serializeMap(((EnumField) field).getEnumMap());
+                    break;
+            }
+            measureJson.put("options", options);
+        } else {
+            measureJson.put("aggr", 0);
+        }
 
         JSONArray parentIdsJson = FieldUtil.getAsJSONArray(Collections.singletonList(Long.toString(parentId)), String.class);
         JSONObject filterJson = new JSONObject();//getCriteriaFromFilters
@@ -1388,6 +1407,17 @@ public class V2AnalyticsOldUtil {
         measureJson.put("criteria", FilterUtil.getCriteriaFromQuickFilter(filterJson, parentModuleName));
 
         return measureJson;
+    }
+
+    private static Map<Integer, Object> serializeMap(Map<Integer, Object> enumMap) {
+        return enumMap.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                entry -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("label", entry.getValue());
+                    return map;
+                }
+        ));
     }
 
     private static Long getCategoryForField(NameSpaceField nsField, NewReadingRuleContext readingRule) throws Exception {
