@@ -163,7 +163,9 @@ public class TenantUnitSpaceModule extends BaseModuleConfig{
         String[] appNames=new String[]{
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
-                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP
+                FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
+                FacilioConstants.ApplicationLinkNames.ENERGY_APP
         };
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

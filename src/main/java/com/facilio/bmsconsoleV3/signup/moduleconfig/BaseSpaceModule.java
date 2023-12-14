@@ -63,6 +63,8 @@ public class BaseSpaceModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
         baseSpaceView.setAppLinkNames(appLinkNames);
         return baseSpaceView;
     }

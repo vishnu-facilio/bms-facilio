@@ -140,6 +140,8 @@ public class TenantModule extends BaseModuleConfig{
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
         tenantHistoryView.setAppLinkNames(appLinkNames);
         return tenantHistoryView;
     }
@@ -236,7 +238,8 @@ public class TenantModule extends BaseModuleConfig{
                 FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,
                 FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,
                 FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP,
-                FacilioConstants.ApplicationLinkNames.FSM_APP};
+                FacilioConstants.ApplicationLinkNames.FSM_APP,
+                FacilioConstants.ApplicationLinkNames.ENERGY_APP};
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());
