@@ -817,6 +817,13 @@ public class APIModuleWidgets {
 
     }
 
+    @WidgetsForModule(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS)
+    public static Supplier<ModuleWidgets> getTermsAndConditionsWidgets() {
+        return () -> new ModuleWidgets()
+                .addModuleWidget("termsAndConditions","Terms And Conditions",PageWidget.WidgetType.TERMS_CONDITIONS)
+                .addWidgetConfig("webTermsAndConditions_6_9","Terms And Conditions - 6 - 9", WidgetConfigContext.ConfigType.FIXED,6,9, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
     @WidgetsForModule("territory")
     public static Supplier<ModuleWidgets> getTerritoryWidgets() {
         return () -> new ModuleWidgets()

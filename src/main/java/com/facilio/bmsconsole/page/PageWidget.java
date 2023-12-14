@@ -639,6 +639,7 @@ public class PageWidget {
 		SPACE_LOCATION("spaceLocation"),
 		SPACE_INSIGHTS("spaceInsights"),
 		WEATHER_CARD("weatherCard", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
+		TERMS_CONDITIONS("termsAndConditions"),
 		DEPRECIATION_ANALYSIS("depreciationAnalysis", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
 		HOURLY_FORECAST("hourlyForecast", AccountUtil.FeatureLicense.WEATHER_INTEGRATION.getFeatureId()),
 		BUILDINGS("buildings"),
