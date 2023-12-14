@@ -863,7 +863,7 @@ public class ApplicationApi {
 
         ApplicationContext facilioAgentApplication = new ApplicationContext(orgId, "Agent", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.FACILIO_AGENT_APP,
-                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Agent App",
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Enable seamless virtual connectivity between edge devices and Facilio",
                 ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
 
         ApplicationContext maintenanceApplication = new ApplicationContext(orgId, "Maintenance", false,
