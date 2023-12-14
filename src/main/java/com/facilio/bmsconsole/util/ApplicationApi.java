@@ -897,7 +897,7 @@ public class ApplicationApi {
 
         ApplicationContext energyApplication = new ApplicationContext(orgId, "Energy", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.ENERGY_APP,
-                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Energy App",
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Drive your sustainability team with actionable energy data insights",
                 ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         energyApplication.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
 
