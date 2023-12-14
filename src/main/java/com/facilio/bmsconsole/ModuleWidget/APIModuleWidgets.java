@@ -95,6 +95,10 @@ public class APIModuleWidgets {
 
                 .addModuleWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY)
                 .addWidgetConfig("flexiblewebfailurehierarchy_5","Failure Hierarchy - 5",WidgetConfigContext.ConfigType.FLEXIBLE,5,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("jobplandetails", "Jobplan Details", PageWidget.WidgetType.JOBPLAN_DETAILS)
+                .addWidgetConfig("flexiblewebjobplandetails_3","Jobplan Details - 3",WidgetConfigContext.ConfigType.FLEXIBLE,3,-1, PagesContext.PageLayoutType.WEB)
                 .done();
 
 
