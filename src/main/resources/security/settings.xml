@@ -1912,16 +1912,16 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/customPage/tabs/fetch">
-        <requestbody type="object">
+    <request path="/api/v2/customPage/tabs/fetch" method="GET">
+        <urlparams type="object">
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
             <property name="excludeColumns" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
-        </requestbody>
-    </request>`
+        </urlparams>
+    </request>
 
     <request path="/api/v1/setup/customPage/tabs/delete">
         <requestbody type="object">
