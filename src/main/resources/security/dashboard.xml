@@ -506,6 +506,7 @@
             <property name="perPage" type="number"></property>
             <property name="folderId" type="number"></property>
             <property name="fetchOnlyKpi" type="boolean"></property>
+            <property name="fetchOnlyModule" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/module/report/folder/list" method="GET">
@@ -587,7 +588,10 @@
         </urlparams>
     </request>
     <request path="/api/v3/analytics/module/list" method="GET">
-        <requestbody type="object"></requestbody>
+        <urlparams>
+            <property name="moduleType" type="number"></property>
+            <property name="defaultModules" type="boolean"></property>
+        </urlparams>
     </request>
     <request path="/api/v3/analytics/kpis/:categoryId" method="GET">
         <urlparams>
@@ -618,7 +622,7 @@
     <request path="/api/dashboard/asset/getAssetCategoryWithReadings" method="GET">
         <requestbody type="object"></requestbody>
     </request>
-    <request path="/api/dashboard/asset/getReadingsForSpecificAssetCategory" method="GET">
+    <request path="/api/dashboard/asset/getReadingsForSpecificAssetCategory" method="POST">
         <urlparams>
             <property name="fetchOnlyAlarmPoints" type="boolean"></property>
             <property name="categoryIds" type="array">
@@ -678,10 +682,13 @@
     <request path="/api/v2/dashboard/automation/module" method="GET">
         <requestbody type="object"></requestbody>
     </request>
-    <request path="/api/v3/dashboard/modules/:moduleName/view/:viewName" method="GET">
+    <request path="/api/v3/dashboard/modules/:moduleName/view" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"></property>
-            <property name="viewName" type="string" mandatory="true"></property>
+            <property name="viewName" type="string"></property>
+            <property name="page" type="number"></property>
+            <property name="perPage" type="number"></property>
+            <property name="withoutCustomButtons" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/dashboard/modules/list/all" method="GET">

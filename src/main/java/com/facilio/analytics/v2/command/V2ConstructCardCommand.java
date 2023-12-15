@@ -282,7 +282,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria(cardParams.getParentModuleName(), criteria);
             if(parentIds != null && parentIds.size() > 0)
             {
-                Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, aggr, dynKpi.getNs());
+                Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs());
                 cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null));
                 if(cardParams.getBaseline() != null)
                 {
@@ -291,7 +291,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     DateRange baseline_range = baseline.calculateBaseLineRange(dateRange, baseline.getAdjustTypeEnum());
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
-                    Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, aggr, dynKpi.getNs());
+                    Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs());
                     cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend()));
                 }
                 Map<String, Object> parentIdMap = new HashMap<>();
