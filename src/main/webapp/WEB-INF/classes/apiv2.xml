@@ -1141,7 +1141,7 @@
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" >
 			<param name="tabType">Approval</param>
-			<param name="permission">GET:CAN_APPROVE</param>
+			<param name="permission">POST:CAN_APPROVE</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="reorderApprovalRule" >
@@ -1152,7 +1152,7 @@
 		<action name="approvalDetails"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalDetails" >
 			<param name="tabType">Approval</param>
-			<param name="permission">GET:CAN_APPROVE</param>
+			<param name="permission">POST:CAN_APPROVE</param>
 		</action>
 		<action name="moduleList"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalModuleDataList" >
