@@ -795,8 +795,8 @@
     <request path="/api/v3/modules/:moduleName/view/:viewName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
-            <property name="viewname" type="string" mandatory="true"/>
             <property name="viewName" type="string" mandatory="true"/>
+            <property name="viewname" type="string"/>
             <property name="page" type="number"/>
             <property name="filters" type="string"/>
             <property name="search" type="string"/>
@@ -831,6 +831,13 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/activity/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="parentId" type="number" mandatory="true"/>
+            <property name="occurrenceId"  type="number"/>
         </urlparams>
     </request>
     <request path="/api/v3/licensinginfo/add">
@@ -1552,6 +1559,14 @@
     </request>
 
     <request path="/api/v3/action/:moduleName/:id/:actionType" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="actionType" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/approval/action/:moduleName/:id/:actionType" method="PATCH">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="id" type="number" mandatory="true"/>
@@ -3063,7 +3078,12 @@
             </property>
         </requestbody>
     </request>
-
+    <request path="/api/v2/approvaltab/views/:viewName" method="GET">
+        <urlparams>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <!-- Flows -->
     <request path="/api/v2/flows/addOrUpdate" method="POST">
         <requestbody type="object">

@@ -2218,6 +2218,15 @@
             <param name="deprecated">true</param>
         </action>
     </package>
+    <package name="newApprovalAction" namespace="/api/v3/approval/action" extends="v3Api">
+        <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.Action">
+            <param name="moduleName">{1}</param>
+            <param name="id">{2}</param>
+            <param name="actionType">{3}</param>
+            <param name="tabType">Approval</param>
+            <param name="permission">PATCH:CAN_APPROVE</param>
+        </action>
+    </package>
     <package name="multiImportApi" namespace="/api/v3/multiImport" extends="v3Api">
 
         <action name="createImportDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="createImportDataDetails">

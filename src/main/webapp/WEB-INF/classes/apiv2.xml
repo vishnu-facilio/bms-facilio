@@ -653,6 +653,12 @@
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">USERS,TEAMS,STATEFLOWS,APPROVALS</param>
 		</action>
+		<action name="*/list"
+				class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
+			<param name="moduleName">{1}</param>
+			<param name="translationImpl">StateFlowTranslationV2</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2AddStatus">
 		     <param name="permission">ALL</param>
@@ -703,7 +709,6 @@
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">ButtonTranslation</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
-			<param name="tabType">Approval</param>
 		</action>
 	</package>
 
@@ -1101,7 +1106,7 @@
 		<action name="availableTransitions"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" >
 			<param name="tabType">Approval</param>
-			<param name="permission">GET:CAN_APPROVE</param>
+			<param name="permission">POST:CAN_APPROVE</param>
 		</action>
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" >
@@ -1896,6 +1901,16 @@
 		<action name="customizeViewGroups"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2customizeViewGroups">
 			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
+	</package>
+
+	<package name="approvalTabViewApi" namespace="/api/v2/approvaltab/views" extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+			<param name="translationImpl">ViewColumnTranslation</param>
+			<param name="viewName">{1}</param>
+			<param name="tabType">Approval</param>
+			<param name="permission">GET:CAN_APPROVE</param>
 		</action>
 	</package>
 
@@ -2859,6 +2874,12 @@
 
 	<package name="activityApiListv2" namespace="/api/v2/activity"
 			 extends="v2Api">
+		<action name="*/*"
+				class="com.facilio.bmsconsole.actions.ActivityAction" method="getActivityList">
+			<param name="moduleName">{1}</param>
+			<param name="activityModule">{2}</param>
+			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
+		</action>
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.ActivityAction" method="getActivityList">
 			<param name="activityModule">{1}</param>
