@@ -377,15 +377,16 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/servicecataloggroup/addOrUpdate">
+    <request path="/api/v2/servicecataloggroup/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="serviceCatalogGroup" type="object">
                 <property name="name" type="string"/>
                 <property name="description" type="string"/>
+                <property name="id" type="number"/>
             </property>
         </requestbody>
     </request>
-    <request path="/api/v2/servicecatalog/addOrUpdate">
+    <request path="/api/v2/servicecatalog/addOrUpdate" method="POST">
 
         <requestbody type="object">
 
@@ -411,11 +412,86 @@
 
                 <property name="type" type="number"/>
 
+                <property name="photoId" type="number"/>
+
+                <property name="id" type="number"/>
+
+
             </property>
 
         </requestbody>
 
     </request>
+
+
+    <request path="/api/v1/setup/servicecataloggroup/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="serviceCatalogGroup" type="object">
+                <property name="name" type="string"/>
+                <property name="description" type="string"/>
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/servicecatalog/addOrUpdate" method="POST">
+
+    <requestbody type="object">
+
+        <property name="moduleName" type="string"/>
+
+        <property name="serviceCatalog" type="object">
+
+            <property name="appId" type="number"/>
+
+            <property name="description" type="string"/>
+
+            <property name="externalURL" type="string"/>
+
+            <property name="formId" type="number"/>
+
+            <property name="groupId" type="number"/>
+
+            <property name="moduleId" type="number"/>
+
+            <property name="name" type="string"/>
+
+            <property name="type" type="number"/>
+
+            <property name="photoId" type="number"/>
+
+            <property name="id" type="number"/>
+
+
+        </property>
+
+    </requestbody>
+    </request>
+    <request path="/api/v1/setup/servicecataloggroup/list" method="GET"/>
+
+    <request path="/api/v1/setup/servicecatalog/list" method="GET">
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="appId" type="number"/>
+            <property name="groupId" type="number"/>
+            <property name="searchString" type="string"/>
+            <property name="fromSetup" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/servicecatalog/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/servicecataloggroup/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/servicecatalog/modules" method="GET"/>
 
     <request path="/api/setup/addemailsettings">
 
@@ -1809,6 +1885,33 @@
             <property name="recordId" type="number"/>
             <property name="tabName" type="string"/>
             <property name="showNewPageBuilder" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/serviceRequest/getPeopleList">
+        <requestbody type="object">
+            <property name="viewName" type="string"/>
+        </requestbody>
+        <urlparams>
+            <property name="genericSearch" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/serviceRequest/basespaces/:spaceId">
+        <requestbody type="object">
+            <property name="spaceId" type="number"/>
+        </requestbody>
+        <urlparams>
+            <property name="fetchDeleted" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/serviceRequest/basespaces/:assetId">
+        <requestbody type="object">
+            <property name="assetId" type="number"/>
+        </requestbody>
+        <urlparams>
+            <property name="fetchDeleted" type="boolean"/>
         </urlparams>
     </request>
 
@@ -3818,11 +3921,16 @@
        </requestbody>
     </request>
 
+    <request path="/api/v3/serviceRequest/emailConversationThreading" method="POST">
+        <requestbody type="object"/>
+    </request>
+
     <request path="/api/v3/serviceRequest/:id/site" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
+
     <request path="/api/v2/statetransition/reorder" method="POST">
         <requestbody type="object">
             <property name="stateTransitionId" type="number"/>
@@ -4142,7 +4250,6 @@
             <property name="force" type="boolean"/>
         </urlparams>
     </request>
-    <request path="/api/v3/unrelated/serviceRequest/fetchAll/emailConversationThreading" method="GET" />
 
     <!--    pdf Builder -->
     <request path="/api/v1/setup/pdftemplates/list" method="GET">
@@ -4739,6 +4846,8 @@
             <property name="withCount" type="boolean"/>
             <property name="perPage" type="number"/>
             <property name="parentModuleName" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="orderBy" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v3/alarmWorkorder/:moduleName" method="POST">
@@ -4912,13 +5021,15 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="permissionModuleName" type="string"/>
-            <property name="viewname" type="string" />
+            <property name="viewName" type="string" />
             <property name="page" type="number"/>
             <property name="filters" type="string"/>
             <property name="includeParentFilter" type="boolean"/>
             <property name="withCount" type="boolean"/>
             <property name="perPage" type="number"/>
             <property name="clientCriteria" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="orderBy" type="string"/>
         </urlparams>
     </request>
 
@@ -5021,6 +5132,11 @@
         <urlparams type="object">
             <property name="resourceId" type="number"/>
             <property name="readingRuleId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/setup/:moduleName/emailsettings" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
 </config>

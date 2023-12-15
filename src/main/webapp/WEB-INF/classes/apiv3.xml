@@ -536,7 +536,7 @@
                 method="assign">
 			<param name="deprecated">true</param>
 		</action>
-        
+
         <action name="features/*" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="featureSettings">
             <param name="moduleName">workorder</param>
             <param name="recordId">{1}</param>
@@ -703,7 +703,8 @@
         <action name="getfromEmailForEmailThreadingReply"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
                 method="getfromEmailForEmailThreadingReply">
-            <param name="deprecated">true</param>
+            <param name="moduleName">serviceRequest</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
 
     </package>
@@ -2671,12 +2672,17 @@
         </action>
     </package>
 
-    <package name="serviceRequestSiteApi" extends="v3Api" namespace="/api/v3/serviceRequest">
+    <package name="serviceRequestApi" extends="v3Api" namespace="/api/v3/serviceRequest">
         <action name="*/site"
                 class="com.facilio.bmsconsoleV3.actions.SiteWithoutScopingAction"
                 method="fetchSite">
             <param name="id">{1}</param>
             <param name="deprecated">true</param>
+        </action>
+        <action name="emailConversationThreading" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="permissionModuleName">serviceRequest</param>
+            <param name="moduleName">emailConversationThreading</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
     </package>
 
@@ -3098,7 +3104,7 @@
             <param name="checkPermission">true</param> 
         </action>
     </package>
-    
+
     <package name="invoice" namespace="/api/v3/invoice" extends="v3Api">
         <action name="clone" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="cloneInvoice">
             <param name="permission">POST:UPDATE</param>

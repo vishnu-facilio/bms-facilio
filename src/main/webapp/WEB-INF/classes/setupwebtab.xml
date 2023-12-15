@@ -1615,4 +1615,57 @@
         <action name="fetchFilteredRelations"
                 class="com.facilio.relation.action.VirtualRelationAction" method="fetchFilteredRelationList" />
     </package>
+
+    <package name="serviceCatalogGroupSetup" namespace="/api/v1/setup/servicecataloggroup" extends="v2Api">
+        <action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="addOrUpdateServiceCatalogGroup">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="getAllServiceCatalogGroup">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="getServiceCatalogDetailGroup">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="deleteServiceCatalogGroup">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+    </package>
+
+    <package name="serviceCatalogSetup" namespace="/api/v1/setup/servicecatalog" extends="v2Api">
+        <action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="addOrUpdateServiceCatalog">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="getServiceCatalogList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="getServiceCatalogDetails">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+        <action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="deleteServiceCatalog">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+
+        <action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
+                method="getModules">
+            <param name="permission">ALL</param>
+            <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+    </package>
+
 </struts>

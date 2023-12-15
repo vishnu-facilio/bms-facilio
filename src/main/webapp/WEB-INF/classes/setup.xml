@@ -486,6 +486,13 @@
 				<param name="includeProperties">emailSetting.*,supportEmails.*,supportMailRules.*</param>
 			</result>
 	 </action>
+	<action name="*/emailsettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showEmailSettings">
+		<param name="permission">GET:READ</param>
+		<param name="moduleName">{1}</param>
+		<result name="success" type="json">
+			<param name="includeProperties">emailSetting.*,supportEmails.*,supportMailRules.*</param>
+		</result>
+	</action>
 	<!-- <action name="notifications" class="com.facilio.bmsconsole.actions.SetupActions" method="showNotificationSettings">
 			<param name="permission">ORG_ACCESS_ADMINISTER</param>
 			<result name="success" type="json">

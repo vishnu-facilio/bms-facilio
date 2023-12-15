@@ -231,7 +231,7 @@ public class WebTabContext implements Serializable {
         NOTIFICATION("Notification", false,TabType.NORMAL,null), // 13
         INDOOR_FLOORPLAN("Indoor Floorplan", false, TabType.NORMAL,null), // 14
         HOMEPAGE("Home Page", false,TabType.NORMAL,null), // 15
-        SERVICE_CATALOG("Service Catalog", false,TabType.NORMAL,null), // 16
+        SERVICE_CATALOG("Service Catalog", false,TabType.NORMAL,new ServiceCatalogHandler()), // 16
         COMPANY_PROFILE("Company Profile", false,TabType.SETUP,new SetupTypeHandler()), // 17
         PORTALS("Portals", false,TabType.SETUP,new SetupTypeHandler()), // 18
         VISITOR_SETTINGS("Visitor Settings", false,TabType.SETUP,new SetupTypeHandler()), // 19

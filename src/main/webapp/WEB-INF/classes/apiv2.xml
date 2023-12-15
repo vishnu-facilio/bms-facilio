@@ -2638,52 +2638,52 @@
 	<package name="serviceCatalog" namespace="/api/v2/servicecatalog" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalog">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">POST:CREATE,UPDATE</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails">
-			<param name="setupTab">GENERAL,SERVICE_CATALOGS</param>
-			<param name="deprecated">true</param>
+			<param name="setupTab">GET:READ</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="deleteServiceCatalog">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">DELETE:DELETE</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 
 		<action name="modules" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getModules">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 	</package>
 
 	<package name="serviceCatalogGroup" namespace="/api/v2/servicecataloggroup" extends="v2Api">
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalogGroup">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">POST:CREATE,UPDATE</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getAllServiceCatalogGroup">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetailGroup">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">GET:READ</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="deleteServiceCatalogGroup">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SERVICE_CATALOGS</param>
+			<param name="permission">DELETE:DELETE</param>
+			<param name="tabType">Service Catalog</param>
 		</action>
 	</package>
 
@@ -8749,6 +8749,30 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
+	<package name="serviceRequest" namespace="/api/v2/serviceRequest" extends="v2Api">
+		<action name="getPeopleList"
+				class="com.facilio.bmsconsole.actions.PeopleAction" method="peopleList">
+			<param name="permissionModuleName">serviceRequest</param>
+			<param name="moduleName">people</param>
+			<param name="permission">GET:CREATE,UPDATE</param>
+		</action>
+		<action name="basespaces/*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="basespaceDetailsWithHierarchy" >
+			<param name="permissionModuleName">serviceRequest</param>
+			<param name="spaceId">{1}</param>
+			<param name="moduleName">basespace</param>
+			<param name="permission">GET:READ</param>
+		</action>
+		<action name="assets/*"
+				class="com.facilio.bmsconsole.actions.AssetAction"
+				method="assetDetails">
+			<param name="permissionModuleName">serviceRequest</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">GET:READ</param>
+			<param name="assetId">{1}</param>
+		</action>
+	</package>
+
 	<package name="vendorContactViews" namespace="/api/v2/vendorcontact/views"
 		extends="v2Api">
 		<action name="*"
