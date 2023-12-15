@@ -1514,9 +1514,11 @@
             <property name="search" type="string" mandatory="false"/>
             <property name="orderBy" type="string" mandatory="false"/>
             <property name="orderType" type="string" mandatory="false"/>
+            <property name="viewName" type="string" mandatory="false"/>
             <property name="filters" type="string" mandatory="false"/>
             <property name="includeParentFilter" type="boolean" mandatory="false"/>
             <property name="default" type="string" mandatory="false"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
         </urlparams>
     </request>
 
