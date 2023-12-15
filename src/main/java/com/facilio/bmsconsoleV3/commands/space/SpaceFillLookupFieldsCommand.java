@@ -26,6 +26,7 @@ public class SpaceFillLookupFieldsCommand extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("location"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("spaceCategory"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("building"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("site"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("floor"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space1"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("space2"));

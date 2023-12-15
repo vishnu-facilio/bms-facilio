@@ -47,6 +47,7 @@
             <property name="minLongitude" type="number" mandatory="false"/>
             <property name="maxLongitude" type="number" mandatory="false"/>
             <property name="defaultIds" type="string" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="false"/>
             <property name="filters" type="string" mandatory="false"/>
         </urlparams>
     </request>
@@ -740,6 +741,11 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v2/businesshours/:module/list">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v2/businesshours/add">
         <requestbody type="object">
             <property name="businessHour" type="object">
@@ -1141,13 +1147,35 @@
             <property name="siteId" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v3/weather/:module/currentdata" method="GET">
+        <urlparams type="object">
+            <property name="module" type="string" mandatory="true"/>
+            <property name="siteId" type="number"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/weather/sitestationid" method="GET">
         <urlparams type="object">
             <property name="siteId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/weather/:parentModule/sitestationid" method="GET">
+        <urlparams type="object">
+            <property name="siteId" type="number" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 
     <request path="/api/v3/people/util/recordPeople" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/people/util/:moduleName/recordPeople/:recordId" method="POST">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
         <requestbody type="object">
             <property name="recordId" type="number" mandatory="true"/>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -2028,6 +2056,7 @@
             <property name="id" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
+            <property name="layoutType" type="string"/>
             <property name="excludeColumns" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
@@ -4105,6 +4134,20 @@
         </requestbody>
      </request>
 
+    <request path="/api/v3/quotesetting/fetch" method="GET">
+        <requestbody type="object">
+            <property name="vendorquote" type="boolean" />
+            <property name="enduserquote" type="boolean" />
+            <property name="showMarkupValue" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+    </request>
+
     <request path="/api/v1/setup/quotesetting/delete" method="POST">
         <requestbody type="object">
             <property name="delete" type="boolean" />
@@ -4262,6 +4305,11 @@
 
     <!--    pdf Builder -->
     <request path="/api/v1/setup/pdftemplates/list" method="GET">
+        <urlparams>
+            <property name="fetchAll" type="boolean" />
+            <property name="moduleName" type="string" />
+            <property name="force" type="boolean"/>
+        </urlparams>
         <requestbody type="object">
             <property name="moduleName" type="string" />
         </requestbody>
@@ -4274,10 +4322,10 @@
     </request>
 
     <request path="/api/v1/setup/pdftemplates/view" method="GET">
-        <requestbody type="object">
+        <urlparams>
             <property name="moduleName" type="string" />
             <property name="id" type="number" />
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v1/setup/pdftemplates/preview" method="GET">
@@ -4289,9 +4337,20 @@
     </request>
 
     <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
         <requestbody type="object">
             <property name="moduleName" type="string"></property>
-             </requestbody>
+            <property name="pdfTemplate" type="object">
+                <property name="htmlContent" type="string"/>
+                <property name="htmlContentCss" type="string"/>
+                <property name="name" type="string"/>
+                <property name="id" type="number"/>
+                <property name="templateSettings" type="string"/>
+                <property name="templateSettingsJson" type="string"/>
+            </property>
+        </requestbody>
     </request>
 
 
@@ -4639,6 +4698,20 @@
     </request>
 
     <request path="/api/v1/setup/invoiceSetting/fetch" method="GET">
+        <requestbody type="object">
+            <property name="vendorInvoice" type="boolean" />
+            <property name="enduserInvoice" type="boolean" />
+            <property name="showMarkupValue" type="boolean" />
+            <property name="allowUserSeeMarkup" type="boolean" />
+            <property name="canShowMarkupDefaultValue" type="boolean"/>
+            <property name="markupDefaultValue" type="number" />
+            <property name="markupdisplayMode" type="number" />
+            <property name="id" type="number" />
+            <property name="globalMarkupValue" type="number" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/invoiceSetting/fetch" method="GET">
         <requestbody type="object">
             <property name="vendorInvoice" type="boolean" />
             <property name="enduserInvoice" type="boolean" />
@@ -5157,14 +5230,19 @@
         </urlparams>
     </request>
 
-    <request path="/api/attachment/:module/:parentModule/:action/:recordId" method="POST">
+    <request path="/api/attachment/:module/:parentModule/delete/:recordId" method="POST">
         <urlparams>
             <property name="module" type="string" mandatory="true"/>
             <property name="parentModule" type="string" mandatory="true"/>
             <property name="recordId" type="number" mandatory="true"/>
         </urlparams>
         <requestbody type="object">
-            <property name="attachment" type="object"/>
+            <property name="parentModuleName" type="string" />
+            <property name="module" type="string"/>
+            <property name="recordId" type="number"/>
+            <property name="attachmentId" type="array">
+                <items type="number"/>
+            </property>
         </requestbody>
     </request>
 
@@ -5176,29 +5254,55 @@
         </urlparams>
     </request>
 
-    <request path="/api/v2/note/:module/:parentModule/:action/:recordId" method="POST">
+    <request path="/api/v2/notes/:module/:parentModule/updateSharing/:noteId" method="POST">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="noteId" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="note" type="object">
+                <property name="commentSharing" type="array">
+                    <items type="object">
+                        <property name="appId" type="number"/>
+                    </items>
+                </property>
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/notes/:module/:parentModule/:action/:recordId" method="POST">
         <urlparams>
             <property name="module" type="string" mandatory="true"/>
             <property name="parentModule" type="string" mandatory="true"/>
             <property name="recordId" type="number" mandatory="true"/>
+            <property name="action" type="string" mandatory="true"/>
         </urlparams>
         <requestbody type="object">
             <property name="note" type="object"/>
+            <property name="note" type="object">
+                <property name="attachments" type="array"/>
+                <property name="body" type="string"/>
+                <property name="bodyText" type="string"/>
+                <property name="bodyHTML" type="string"/>
+                <property name="commentSharing" type="array"/>
+                <property name="mentions" type="array"/>
+                <property name="parentId" type="number"/>
+                <property name="parentModuleLinkName" type="string"/>
+                <property name="notifyRequester" type="boolean"/>
+                <property name="id" type="number"/>
+            </property>
+            <property name="noteId" type="number"/>
         </requestbody>
     </request>
 
-    <request path="/api/note/:module/:parentModule/:action/:parentId" method="GET">
+    <request path="/api/note/:parentModule/:action/:parentId" method="GET">
         <urlparams>
             <property name="module" type="string" mandatory="true"/>
+            <property name="action" type="string" mandatory="true"/>
             <property name="parentModule" type="string" mandatory="true"/>
             <property name="parentId" type="number" mandatory="true"/>
-        </urlparams>
-    </request>
-
-    <request path="/api/v3/people/util/:moduleName/recordPeople/:recordId" method="GET">
-        <urlparams>
-            <property name="moduleName" type="string" mandatory="true"/>
-            <property name="recordId" type="number" mandatory="true"/>
+            <property name="onlyFetchParentNotes" type="boolean"/>
         </urlparams>
     </request>
 </config>

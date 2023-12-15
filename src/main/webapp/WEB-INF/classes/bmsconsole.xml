@@ -3182,12 +3182,13 @@
 			<param name="deprecated">true</param>
 		</action>
 
-		<action name="*/*/get/*" class="com.facilio.bmsconsole.actions.NoteAction"
+		<action name="*/get/*" class="com.facilio.bmsconsole.actions.NoteAction"
 				method="getNotesList">
-			<param name="module">{1}</param>
+			<param name="permissionModuleName">{2}</param>
+			<param name="isAttachmentApi">true</param>
 			<param name="parentModuleName">{2}</param>
 			<param name="parentId">{3}</param>
-			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
+			<param name="permission">GET:READ,POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 			<result name="success" type="json">
 				<param name="root">notes</param>
 			</result>

@@ -24,6 +24,7 @@ public class FloorFillLookupFieldsCommand extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<LookupField> fetchLookupsList = new ArrayList<LookupField>();
         fetchLookupsList.add((LookupField) fieldsAsMap.get("building"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("site"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("decommissionedBy"));
 
 

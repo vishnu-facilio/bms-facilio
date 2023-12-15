@@ -1976,6 +1976,12 @@
 			<param name="moduleName">weather</param>
 			<param name="permission">GET:READ</param>
 		</action>
+        <action name="*/currentdata"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getCurrentWeather">
+            <param name="permissionModuleName">{1}</param>
+            <param name="permission">GET:READ</param>
+        </action>
         <action name="sitestationid"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAssociatedStationId">
@@ -1983,6 +1989,12 @@
             <param name="parentModuleName">site</param>
             <param name="permission">GET:READ</param>
 		</action>
+        <action name="*/sitestationid"
+                class="com.facilio.weather.actions.WeatherAction"
+                method="getAssociatedStationId">
+            <param name="permissionModuleName">{1}</param>
+            <param name="permission">GET:READ</param>
+        </action>
         <action name="buildingSpecificWeatherFields"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getBuildingSpecificWeatherFields">
@@ -2394,9 +2406,9 @@
 			<param name="deprecated">true</param>
 		</action>
         <action name="*/recordPeople/*" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields">
-            <param name="moduleName">{1}</param>
+            <param name="permissionModuleName">{1}</param>
             <param name="recordId">{2}</param>
-            <param name="permission">GET:RAED</param>
+            <param name="permission">POST:RAED</param>
         </action>
     </package>
 
@@ -2427,7 +2439,7 @@
     <package name="commentPreferences" namespace="/api/v3/commentPreferences" extends="v3Api">
         <action name="sharingOptions" class="com.facilio.bmsconsoleV3.actions.Comments"
                 method="getSharingOptions">
-            <param name="deprecated">true</param>
+            <param name="skipPermission">true</param>
         </action>
     </package>
 

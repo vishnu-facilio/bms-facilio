@@ -2212,7 +2212,7 @@
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2workOrderList">
 			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -2721,6 +2721,12 @@
 			<param name="permission">ALL</param>
 			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
+		<action name="*/add"
+				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
+				method="addBussinessHours">
+			<param name="permission">POST:CREATE</param>
+			<param name="moduleName">{1}</param>
+		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2updateBusinessHours">
@@ -2739,9 +2745,29 @@
 			<param name="permission">ALL</param>
 			<param name="setupTab">ORGANIZATION_SETTINGS,OPERATING_HOURS</param>
 		</action>
+		<action name="*/list"
+				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
+				method="v2getBusinessHoursList">
+			<param name="permission">GET:READ</param>
+			<param name="moduleName">{1}</param>
+		</action>
 		<action name="updateresource"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="updateBusinessHourInResource">
+			<param name="permission">ALL</param>
+			<param name="setupTab">OPERATING_HOURS</param>
+		</action>
+		<action name="*/updateresource"
+				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
+				method="updateBusinessHourInResource">
+			<param name="permission">POST:UPDATE</param>
+			<param name="moduleName">{1}</param>
+		</action>
+		<action name="*/*"
+				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
+				method="v2getBusinessHoursList">
+			<param name="id">{2}</param>
+			<param name="moduleName">{1}</param>
 			<param name="permission">ALL</param>
 			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
@@ -2888,6 +2914,7 @@
 			<param name="module">{1}</param>
 			<param name="parentModuleName">{2}</param>
 			<param name="noteId">{3}</param>
+			<param name="recordId">{3}</param>
 			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
 	</package>
@@ -4324,7 +4351,8 @@
 		<action name="downtimemetrics"
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetDowntimeMetrics">
-			<param name="deprecated">true</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">asset</param>
 		</action>
 		<action name="downtimehistory"
 				class="com.facilio.bmsconsole.actions.AssetAction"
@@ -4349,6 +4377,14 @@
 			method="assetDetails">
 			<param name="moduleName">asset</param>
 			<param name="permission">GET:READ</param>
+			<param name="assetId">{1}</param>
+		</action>
+		<action name="*/*"
+			class="com.facilio.bmsconsole.actions.AssetAction"
+			method="assetDetails">
+			<param name="moduleName">asset</param>
+			<param name="permission">GET:READ</param>
+			<param name="parentModuleName">{2}</param>
 			<param name="assetId">{1}</param>
 		</action>
 		
@@ -6672,6 +6708,12 @@
 			method="basespaceDetailsWithHierarchy" >
 			<param name="spaceId">{1}</param>
 			<param name="deprecated">true</param>
+		</action>
+		<action name="*/*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+				method="basespaceDetailsWithHierarchy" >
+			<param name="permission">GET:READ</param>
+			<param name="moduleName">{1}</param>
+			<param name="spaceId">{2}</param>
 		</action>
 	</package>
 

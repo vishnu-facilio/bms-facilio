@@ -942,38 +942,44 @@
         <action name="getodatamodules"
                 class="com.facilio.odataservice.action.ODataModuleAction"
                 method="fetchODataModules">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="updateodatamodules"
                 class="com.facilio.odataservice.action.ODataModuleAction"
                 method="updateODataModules">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>		</action>
         <action name="deleteselectedmodules"
                 class="com.facilio.odataservice.action.ODataModuleAction"
                 method="deleteODataModules">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="addodatamodules"
                 class="com.facilio.odataservice.action.ODataModuleAction"
                 method="addODataModules">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="fetchodatareadings"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="fetchODataReadings">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="changestatus"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="changeStatus">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="addodatareadings"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="addODataReadings">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="readingscount"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="readingsCount">
@@ -982,18 +988,21 @@
         <action name="modulescount"
                 class="com.facilio.odataservice.action.ODataModuleAction"
                 method="modulesCount">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="updateodatareadings"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="updateODataReadings">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
         <action name="deleteodatareading"
                 class="com.facilio.odataservice.action.ODataReadingViewsAction"
                 method="deleteODataReadings">
-			<param name="deprecated">true</param>
-		</action>
+            <param name="permission">ALL</param>
+            <param name="setupTab">ODATA_API</param>
+        </action>
    </package>
     <package name="womodulesetting" namespace="/api/v1/setup/womodulesetting" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate">
