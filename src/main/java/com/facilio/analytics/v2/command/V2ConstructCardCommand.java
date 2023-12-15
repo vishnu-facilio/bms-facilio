@@ -26,14 +26,19 @@ import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.formatter.DecimalFormatter;
 import com.facilio.report.module.v2.chain.V2TransactionChainFactory;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
+import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
+import com.facilio.report.module.v2.context.V2ModuleReportContext;
+import com.facilio.report.module.v2.context.V2ModuleTimeFilterContext;
 import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
@@ -437,19 +442,35 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 else if(cardParams.getTimeFilter()!=null){
                     period = cardParams.getTimeFilter().getDateLabel();
                 }
-                resultMap = setResultModuleCard(resultMap,cardValue,period,null);
+                V2ModuleReportContext reportContext = (V2ModuleReportContext) context.get("v2_report");
+                V2ModuleMeasureContext measureContext = reportContext.getMeasures()!=null ? reportContext.getMeasures().get(0) : null;
+                Criteria criteriaObj = null;
+                if(measureContext!=null){
+                    String criteria = measureContext.getCriteria();
+                    if(StringUtils.isNotEmpty(criteria)) {
+                        JSONParser parser = new JSONParser();
+                        JSONObject criteriaJson = (JSONObject) parser.parse(criteria);
+                        criteriaObj = FieldUtil.getAsBeanFromJson(criteriaJson,Criteria.class);
+                    }
+                }
+                V2ModuleTimeFilterContext timeFilterContext = reportContext.getTimeFilter();
+                String dateFieldName = null;
+                if(timeFilterContext!=null){
+                    dateFieldName = timeFilterContext.getFieldName();
+                }
+                resultMap = setResultModuleCard(resultMap,cardValue,period,criteriaObj,dateFieldName,null);
                 cardParams.getResult().put(FacilioConstants.ContextNames.CARD_VALUE,resultMap);
             }
             if(baseLineValue!=null){
                 Map<String,Object> resultMap = new HashMap<>();
                 String baseLinePeriod = cardParams.getBaseline();
                 String baseLineTrend = cardParams.getBaselineTrend();
-                resultMap = setResultModuleCard(resultMap,baseLineValue,baseLinePeriod,baseLineTrend);
+                resultMap = setResultModuleCard(resultMap,baseLineValue,baseLinePeriod,null,null,baseLineTrend);
                 cardParams.getResult().put("baseline_value",resultMap);
             }
         }
     }
-    private Map<String,Object> setResultModuleCard(Map<String,Object> resultMap, Object cardValue, String period, String baseLineTrend){
+    private Map<String,Object> setResultModuleCard(Map<String,Object> resultMap, Object cardValue, String period, Criteria criteria,String dateField, String baseLineTrend){
         resultMap.put(FacilioConstants.ContextNames.CARD_VALUE,cardValue);
         resultMap.put(FacilioConstants.ContextNames.ACTUAL_VALUE,cardValue);
         if(period!=null){
@@ -457,6 +478,12 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         if(baseLineTrend!=null && !baseLineTrend.isEmpty()){
             resultMap.put(FacilioConstants.ContextNames.BASE_LINE_TREND,baseLineTrend);
+        }
+        if(criteria!=null){
+            resultMap.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        }
+        if(dateField!=null){
+            resultMap.put(FacilioConstants.ContextNames.DATE_FIELD,dateField);
         }
         return resultMap;
     }
