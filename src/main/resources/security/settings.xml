@@ -1769,13 +1769,11 @@
         <urlparams>
             <property name="layoutType" type="string"/>
             <property name="tabName" type="string"/>
-        </urlparams>
-        <requestbody type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="excludeTabs" type="boolean"/>
             <property name="moduleName" type="string"/>
             <property name="appId" type="number"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v2/customPage/fetchForRecord">

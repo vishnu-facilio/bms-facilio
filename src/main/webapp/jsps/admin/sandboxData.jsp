@@ -163,7 +163,7 @@
                 packageId: $("#packageId").val(),
                 sourceOrgId: $("#sourceOrgId").val(),
                 targetOrgId: $("#targetOrgId").val(),
-                packageFileURL: $("#packageFileURL").val(),
+                packageFileURL: $("#dataPackageFileUrl").val(),
                 moduleSequence: $("#moduleSequence").val(),
                 dataMigrationId: $("#dataMigrationId").val(),
                 transactionTimeout: $('#transactionTimeout').val(),

@@ -404,10 +404,12 @@
             <property name="page" type="number" mandatory="false"/>
             <property name="perPage" type="number" mandatory="false"/>
             <property name="search" type="string" mandatory="false"/>
+            <property name="moduleType" type="string" mandatory="true"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/modules/lists/:moduleType/count" method="GET">
         <urlparams>
+            <property name="moduleType" type="string" mandatory="true"/>
             <property name="search" type="string" mandatory="false"/>
         </urlparams>
     </request>
@@ -427,6 +429,7 @@
             <property name="perPage" type="number" mandatory="false"/>
             <property name="search" type="string" mandatory="false"/>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="tabName" type="string" mandatory="true"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/modules/:tabName/count" method="GET">
@@ -435,6 +438,7 @@
             <property name="perPage" type="number" mandatory="false"/>
             <property name="search" type="string" mandatory="false"/>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="tabName" type="string" mandatory="true"/>
         </urlparams>
 
     </request>
