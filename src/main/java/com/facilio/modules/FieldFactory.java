@@ -12595,6 +12595,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("htmlContentId", "HTML_CONTENT_ID", module));
         fields.add(getNumberField("htmlContentCssId", "HTML_CONTENT_CSS_ID", module));
         fields.add(getStringField("templateSettings", "TEMPLATE_SETTINGS", module));
+        fields.add(getBooleanField("isDefault", "IS_DEFAULT", module));
+        fields.add(FieldFactory.getSystemField("sysCreatedTime", module));
         fields.add(FieldFactory.getSystemField("sysModifiedTime", module));
         fields.add(FieldFactory.getSystemField("sysCreatedBy", module));
         fields.add(FieldFactory.getSystemField("sysModifiedBy", module));
