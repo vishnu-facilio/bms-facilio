@@ -1,11 +1,11 @@
 package com.facilio.auth.cookie;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class FacilioCookie {
 	
@@ -59,7 +59,6 @@ public class FacilioCookie {
         if (!FacilioProperties.isDevelopment()) {
         	cookie.setSecure(true);
 		}
-        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
