@@ -748,9 +748,9 @@
         </requestbody>
     </request>
     <request path="/api/v2/pages/lookuprelatedlist">
-        <requestbody type="object">
+        <urlparams>
             <property name="moduleName" type="string"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v3/modules/list/all">
     </request>

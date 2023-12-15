@@ -4950,16 +4950,16 @@
 		extends="v2Api">
 		<action name="lookuprelatedlist"
 				class="com.facilio.bmsconsole.actions.PageAction" method="fetchLookupRelatedListData">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="relatedTabDetails"
 				class="com.facilio.bmsconsole.actions.PageAction" method="fetchRelatedTabMeta">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
