@@ -5148,4 +5148,57 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+
+    <request path="/api/v2/attachment/:module/:parentModule/:action/:recordId" method="POST">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/attachment/:module/:parentModule/:action/:recordId" method="POST">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="attachment" type="object"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/attachment/:module/:parentModule/list/:recordId" method="GET">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/note/:module/:parentModule/:action/:recordId" method="POST">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="note" type="object"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/note/:module/:parentModule/:action/:parentId" method="GET">
+        <urlparams>
+            <property name="module" type="string" mandatory="true"/>
+            <property name="parentModule" type="string" mandatory="true"/>
+            <property name="parentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/people/util/:moduleName/recordPeople/:recordId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
 </config>

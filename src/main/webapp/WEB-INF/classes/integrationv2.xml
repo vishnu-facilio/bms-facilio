@@ -55,6 +55,19 @@
 		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf">
 			<param name="deprecated">true</param>
 		</action>
+		<action name="*/create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:RAED</param>
+		</action>
+
+		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf">
+			<param name="deprecated">true</param>
+		</action>
+
+		<action name="*/generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:RAED</param>
+		</action>
 	</package>
 
 	<package name="screenshotApiV2" namespace="/api/v2/integ/screenshot" extends="v2Api">

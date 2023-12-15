@@ -1105,22 +1105,26 @@
         <action name="getFacilityDetails"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFacilityDetails">
-            <param name="deprecated">true</param>
+            <param name="tabType">INDOOR_FLOORPLAN</param>
+            <param name="permission">GET:EDIT,VIEW,ASSIGN,BOOKING,VIEW_ASSIGNMENT,VIEW_ASSIGNMENT_DEPARTMENT,VIEW_ASSIGNMENT_OWN,VIEW_BOOKING,VIEW_BOOKING_DEPARTMENT,VIEW_BOOKING_OWN</param>
         </action>
         <action name="getFloorplanDetailsByType"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getFloorplanDetailsByType">
-            <param name="deprecated">true</param>
+            <param name="tabType">INDOOR_FLOORPLAN</param>
+            <param name="permission">GET:EDIT,VIEW,ASSIGN,BOOKING,VIEW_ASSIGNMENT,VIEW_ASSIGNMENT_DEPARTMENT,VIEW_ASSIGNMENT_OWN,VIEW_BOOKING,VIEW_BOOKING_DEPARTMENT,VIEW_BOOKING_OWN</param>
         </action>
         <action name="viewerData"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getViewData">
-            <param name="deprecated">true</param>
+            <param name="tabType">INDOOR_FLOORPLAN</param>
+            <param name="permission">GET:EDIT,VIEW,ASSIGN,BOOKING,VIEW_ASSIGNMENT,VIEW_ASSIGNMENT_DEPARTMENT,VIEW_ASSIGNMENT_OWN,VIEW_BOOKING,VIEW_BOOKING_DEPARTMENT,VIEW_BOOKING_OWN</param>
         </action>
         <action name="propertiesdata"
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="getPropertiesData">
-            <param name="deprecated">true</param>
+            <param name="tabType">INDOOR_FLOORPLAN</param>
+            <param name="permission">GET:EDIT,VIEW,ASSIGN,BOOKING,VIEW_ASSIGNMENT,VIEW_ASSIGNMENT_DEPARTMENT,VIEW_ASSIGNMENT_OWN,VIEW_BOOKING,VIEW_BOOKING_DEPARTMENT,VIEW_BOOKING_OWN</param>
         </action>
 
     </package>
@@ -1129,7 +1133,8 @@
                 class="com.facilio.bmsconsoleV3.actions.FloorplanAction"
                 method="floorplanListSearch">
             <param name="floorPlanId">{1}</param>
-            <param name="deprecated">true</param>
+            <param name="tabType">INDOOR_FLOORPLAN</param>
+            <param name="permission">GET:EDIT,VIEW,ASSIGN,BOOKING,VIEW_ASSIGNMENT,VIEW_ASSIGNMENT_DEPARTMENT,VIEW_ASSIGNMENT_OWN,VIEW_BOOKING,VIEW_BOOKING_DEPARTMENT,VIEW_BOOKING_OWN</param>
         </action>
     </package>
 
@@ -2055,15 +2060,18 @@
     <package name="requestForQuotation" namespace="/api/v3/requestForQuotation" extends="v3Api">
         <action name="convertPrToRfq" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
                 method="convertPrToRfq">
-            <param name="deprecated">true</param>
+            <param name="moduleName">requestForQuotation</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
         </action>
         <action name="convertRfqToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
                 method="convertRfqToPo">
-            <param name="deprecated">true</param>
+            <param name="moduleName">purchaseorder</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
         </action>
         <action name="convertVendorQuoteToPo" class="com.facilio.bmsconsoleV3.actions.RequestForQuotationAction"
                 method="convertVendorQuoteToPo">
-            <param name="deprecated">true</param>
+            <param name="moduleName">purchaseorder</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
         </action>
     </package>
 
@@ -2385,6 +2393,11 @@
        <action name="shiftDetailsForCurrentDay" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="getShiftDetailsForCurrentDay">
 			<param name="deprecated">true</param>
 		</action>
+        <action name="*/recordPeople/*" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields">
+            <param name="moduleName">{1}</param>
+            <param name="recordId">{2}</param>
+            <param name="permission">GET:RAED</param>
+        </action>
     </package>
 
     <package name="group" namespace="/api/v3/group" extends="v3Api">
@@ -2423,12 +2436,14 @@
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
                 method="getList">
-			<param name="deprecated">true</param>
+            <param name="moduleName">spacebooking</param>
+            <param name="permission">GET:READ,CREATE,UPDATE</param>
 		</action>
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsoleV3.actions.formrelation.FormRelationAction"
                 method="addOrUpdateFormRelation">
-			<param name="deprecated">true</param>
+            <param name="moduleName">spacebooking</param>
+            <param name="permission">GET:READ,CREATE,UPDATE</param>
 		</action>
     </package>
 
@@ -2436,7 +2451,8 @@
         <action name="action"
                 class="com.facilio.bmsconsoleV3.actions.SpaceBookingAction"
                 method="updateBookingAction">
-			<param name="deprecated">true</param>
+            <param name="moduleName">spacebooking</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
 		</action>
     </package>
 
@@ -3138,31 +3154,40 @@
 
     <package name="invoice" namespace="/api/v3/invoice" extends="v3Api">
         <action name="clone" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="cloneInvoice">
-            <param name="permission">POST:UPDATE</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="revise" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="reviseInvoice">
-            <param name="permission">POST:UPDATE</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="versionHistory" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="fetchVersionHistory">
+            <param name="moduleName">invoice</param>
             <param name="permission">GET:READ</param>
         </action>
         <action name="associateTerms" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="associateTerms">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="convertInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertInvoice">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="poToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertPOtoInvoice">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="woToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertWorkOrderToInvoice">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="quoteToInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertQuoteToInvoice">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
         <action name="sendMail" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="sendMail">
-            <param name="permission">ALL</param>
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
         </action>
     </package>
     <package name="pdfTemplate" namespace="/api/v3/pdftemplates" extends="v3Api">

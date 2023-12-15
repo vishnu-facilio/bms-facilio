@@ -2281,6 +2281,39 @@
 			</result>
 			<param name="deprecated">true</param>
 		</action>
+
+		<action name="*/*/add/*" class="com.facilio.bmsconsole.actions.AttachmentAction"
+				method="addAttachment">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
+			<result name="success" type="json">
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="*/*/delete/*" class="com.facilio.bmsconsole.actions.AttachmentAction"
+				method="deleteAttachment">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">^attachmentId\[\d+\]</param>
+			</result>
+			<param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
+		</action>
+
+		<action name="*/*/list/*" class="com.facilio.bmsconsole.actions.AttachmentAction"
+				method="attachmentList">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="recordId">{3}</param>
+			<result name="success" type="json">
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
+			</result>
+			<param name="permission">GET:RAED</param>
+		</action>
 	</package>
 	
 	<package name="baseLineApi" namespace="/api/baseline" extends="homeApi">
@@ -3147,6 +3180,17 @@
 				<param name="root">notes</param>
 			</result>
 			<param name="deprecated">true</param>
+		</action>
+
+		<action name="*/*/get/*" class="com.facilio.bmsconsole.actions.NoteAction"
+				method="getNotesList">
+			<param name="module">{1}</param>
+			<param name="parentModuleName">{2}</param>
+			<param name="parentId">{3}</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
+			<result name="success" type="json">
+				<param name="root">notes</param>
+			</result>
 		</action>
 
 		<action name="getticketnotes" class="com.facilio.bmsconsole.actions.NoteAction"
