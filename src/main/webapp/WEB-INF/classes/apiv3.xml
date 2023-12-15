@@ -2101,28 +2101,36 @@
 
     <package name="jobPlan" namespace="/api/v3/jobPlan" extends="v3Api">
         <action name="revise" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="reviseJobPlan">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
         </action>
         <action name="publish" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="publishJobPlan">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
         </action>
         <action name="bulkPublish" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="bulkPublishJobPlan">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
         </action>
         <action name="versionHistory" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchVersionHistory">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">GET:READ</param>
         </action>
         <action name="cloneJobPlan" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="cloneJobPlan">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
         </action>
         <action name="fetchAssociatedRecords" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="fetchAssociatedRecords">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">GET:READ</param>
         </action>
         <action name="getGroupAndVersion" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="getJobPlanGroupAndVersion">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">GET:READ</param>
         </action>
         <action name="getJobPlanId" class="com.facilio.bmsconsoleV3.actions.JobPlanAction" method="getJobPlanIdFromGroupAndVersion">
-            <param name="deprecated">true</param>
+            <param name="moduleName">jobplan</param>
+            <param name="permission">GET:READ</param>
         </action>
     </package>
     <package name="jobPlanLabours" namespace="/api/v3/jobPlanLabours" extends="v3Api">
@@ -2543,7 +2551,7 @@
 
     <package name="pmv1Migration" extends="v3Api" namespace="/api/v3/pmv1Migration">
         <action name="tasks" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="tasksToJobPlan">
-            <param name="deprecated">true</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
         </action>
     </package>
 
