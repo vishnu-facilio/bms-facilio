@@ -1002,7 +1002,7 @@
 			method="addTicketCategory">
 			<param name="moduleName">setup</param>
 			<param name="permission">ALL</param>
-			<param name="setupTab">CATEGORY</param>
+			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION,EMAIL_SETTINGS</param>
 			<result name="success" type="json">
 			</result>
 		</action>

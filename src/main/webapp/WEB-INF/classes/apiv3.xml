@@ -122,7 +122,8 @@
         <action name="create"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="create">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">SPACE_CATEGORIES</param>
         </action>
 
         <action name="bulkCreate"
@@ -218,7 +219,7 @@
             <param name="permission">
                 ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
-            <param name="setupTab">INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,RULE_LOGS,EMAIL_LOGS,PEOPLE,TEAMS,LABOUR,CRAFTS,READINGS,SPACE_CATEGORIES,SPACE_ASSET_CUSTOMIZATION,ASSET_DEPRECIATION,WEATHER_STATION,METER_CUSTOMIZATION</param>
+            <param name="setupTab">INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,RULE_LOGS,EMAIL_LOGS,PEOPLE,TEAMS,LABOUR,CRAFTS,READINGS,SPACE_CATEGORIES,SPACE_ASSET_CUSTOMIZATION,ASSET_DEPRECIATION,WEATHER_STATION,METER_CUSTOMIZATION,SCRIPT_LOGS</param>
         </action>
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -627,7 +628,7 @@
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
             <param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="setupTab">TEAMS,LABOUR,USERS</param>
+            <param name="setupTab">TEAMS,LABOUR,USERS,FAULT_IMPACT_TEMPLATE</param>
         </action>
     </package>
 

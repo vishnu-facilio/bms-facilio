@@ -174,12 +174,12 @@
 		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getRoles">
 			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,SCHEDULER,ASSIGNMENT_RULES,API_SETUP,USERS,ROLES,MODULES,BMS_EVENT_FILTERING</param>
+			<param name="setupTab">PORTALS,SCHEDULER,ASSIGNMENT_RULES,API_SETUP,USERS,ROLES,MODULES,BMS_EVENT_FILTERING,APPROVALS</param>
 		</action>
 		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getGroups">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS,PORTALS,TEAMS,MODULES,EMAIL_TEMPLATES,SLA_POLICIES,BMS_EVENT_FILTERING</param>
+			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS,PORTALS,TEAMS,MODULES,EMAIL_TEMPLATES,SLA_POLICIES,BMS_EVENT_FILTERING,APPROVALS</param>
 		</action>
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllBuildings">
@@ -4118,7 +4118,7 @@
 			method="getModuleDataList">
 			<param name="translationImpl">V2ListApiTranslation</param>
 			<param name="permission">ALL</param>
-			<param name="setupTab">USERS,VISITOR_SETTINGS,CATEGORY,PRIORITY,TYPES,READINGS,SCHEDULER,ASSIGNMENT_RULES,TEAMS,WORKFLOWS,SLA_POLICIES,BMS_EVENT_FILTERING,SPACE_ASSET_CUSTOMIZATION,WORKORDER_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE</param>
+			<param name="setupTab">USERS,VISITOR_SETTINGS,CATEGORY,PRIORITY,TYPES,READINGS,SCHEDULER,ASSIGNMENT_RULES,TEAMS,WORKFLOWS,SLA_POLICIES,BMS_EVENT_FILTERING,SPACE_ASSET_CUSTOMIZATION,WORKORDER_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE,APPROVALS</param>
 		</action>
 
 		<action name="*"
@@ -4414,7 +4414,7 @@
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
 			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
+			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,STATEFLOWS,APPROVALS</param>
 		</action>
 	</package>
 
@@ -4464,7 +4464,7 @@
 	</package>
 	<package name="lookupFields" namespace="/api/v2/lookupFields" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.LookupFieldAction" method="lookupFieldList">
-			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS</param>
+			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,STATEFLOWS,APPROVALS</param>
 			<param name="permission">ALL;GET:READ</param>
 		</action>
 	</package>
