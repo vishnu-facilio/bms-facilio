@@ -71,9 +71,7 @@ public class PDFTemplatesAction extends V3Action {
     }
 
     public String preview() throws Exception {
-
-        validateParameters();
-
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "moduleName is empty");
 
         FacilioChain chain = ReadOnlyChainFactory.getPreviewPDFTemplateChain();
         FacilioContext context = chain.getContext();
@@ -87,8 +85,7 @@ public class PDFTemplatesAction extends V3Action {
     }
 
     public String download() throws Exception {
-
-        validateParameters();
+        FacilioUtil.throwIllegalArgumentException(StringUtils.isEmpty(moduleName), "moduleName is empty");
 
         FacilioChain chain = ReadOnlyChainFactory.getDownloadPDFTemplateChain();
         FacilioContext context = chain.getContext();
@@ -111,11 +108,5 @@ public class PDFTemplatesAction extends V3Action {
 
         setData(FacilioConstants.ContextNames.PDF_TEMPLATES, context.get(FacilioConstants.ContextNames.PDF_TEMPLATES));
         return SUCCESS;
-    }
-
-    private void validateParameters() throws RESTException {
-        if (getId() <= 0 || getRecordId() <= 0) {
-            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid templateId or recordId values.");
-        }
     }
 }

@@ -3218,13 +3218,15 @@
     </package>
 
     <package name="pdfTemplateV3" namespace="/api/v3/pdftemplates" extends="v3Api">
-        <action name="preview" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="preview">
-            <param name="permission">ALL</param>
-            <param name="deprecated">true</param>
+        <action name="preview/*/*" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="preview">
+            <param name="moduleName">{1}</param>
+            <param name="recordId">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
-        <action name="download" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="download">
-            <param name="permission">ALL</param>
-            <param name="deprecated">true</param>
+        <action name="download/*/*" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="download">
+            <param name="moduleName">{1}</param>
+            <param name="recordId">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
         <action name="customPage/*/*/*"
                     class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="getTemplatesForDownloadFromPage">
