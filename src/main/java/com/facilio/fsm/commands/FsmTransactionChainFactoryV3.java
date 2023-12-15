@@ -70,7 +70,7 @@ public class FsmTransactionChainFactoryV3 {
         //updating the service order duration/start/end time actuals
         c.addCommand(new UpdateServiceOrderTime());
         //updating the service order status based on service appointment status
-        c.addCommand(new UpdateServiceOrderStatus());
+//        c.addCommand(new UpdateServiceOrderStatus());
         //Change the status of Service Order to in progress or scheduled based on tasks
         c.addCommand(new SOStatusChangeViaSTCommandV3());
         c.addCommand(new UpdateServiceAppointmentOnTaskUpdate());

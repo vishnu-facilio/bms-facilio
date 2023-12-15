@@ -56,6 +56,8 @@ public enum FSMErrorCode {
     TIMESHEET_ALREADY_RUNNING(Severity.ERROR, "Work cannot be started", "You currently have an active work in progress. Please complete the ongoing work to start a new one."),
     TIMESHEET_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Time Sheet","Cannot edit or delete an ongoing Time Sheet."),
     TIMESHEET_TASK_STATUS_ERROR(Severity.ERROR,"Cannot Create/Edit Time Sheet","Please provide valid end time for the completed task."),
+    TIMESHEET_TASK_INVALID_STATE_TRANSITION(Severity.ERROR,"Cannot Stop Time Sheet","Task cannot be updated to the given state while closing timesheet"),
+    STOP_TIMESHEET_WARNING(Severity.WARNING,"Complete Time Sheet","Completing the timesheet requires action on associated tasks. You can either Pause or Complete all the associated tasks to complete time sheet."),
 
     // Trip error codes
     TRIP_NOT_ENOUGH_DETAILS(Severity.ERROR, "Mandatory field missing", "Not enough details to create a trip"),
@@ -65,6 +67,7 @@ public enum FSMErrorCode {
     TRIP_CANNOT_BE_CREATED(Severity.ERROR,"Trip cannot be created","Please make sure that trip created for a past or current moment."),
     //Service Task error codes
     TASK_RECORD_LOCKED(Severity.ERROR,"Cannot Edit/Delete Task","Cannot edit or delete task after starting work"),
+    TASK_COMPLETE_APPOINTMENT(Severity.WARNING,"Complete Task and Appointment","Selected task is the final task of the appointment. You can also mark the Appointment as completed. Do you want to proceed?"),
     UPDATE_PREVENT(Severity.ERROR, "Not Permitted", "You are not permitted to edit these details."),
     NOT_ENOUGH_TASK_IN_SA(Severity.ERROR, "Not Enough Task", "Not Enough Tasks in Appointment"),
     SO_ASSET_SPACE_DOESNT_MATCH_SPACE_FIELD(Severity.ERROR, "Space not matched","Asset Space doesn't match the selected Space"),

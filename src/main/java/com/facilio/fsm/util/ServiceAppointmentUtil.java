@@ -592,13 +592,9 @@ public class ServiceAppointmentUtil {
 
                     List<TripContext> ongoingTrips = getOngoingTrips(agentId,null);
                     if(CollectionUtils.isNotEmpty(ongoingTrips)){
-                        List<Long> ongoingServiceAppointments = new ArrayList<>();
-                        for (TripContext ongoingTrip : ongoingTrips){
-                            if(ongoingTrip.getServiceAppointment() != null){
-                                ongoingServiceAppointments.add(ongoingTrip.getServiceAppointment().getId());
-                            }
-                        }
-                        throw new FSMException(FSMErrorCode.TRIP_CANNOT_BE_STARTED,StringUtils.join(ongoingServiceAppointments,","));
+                        JSONObject errorData = new JSONObject();
+                        errorData.put(FacilioConstants.Trip.TRIP,ongoingTrips);
+                        throw new FSMException(FSMErrorCode.TRIP_CANNOT_BE_STARTED).setRelatedData(errorData);
                     } else {
                         TripContext newTrip = new TripContext();
                         newTrip.setServiceAppointment(existingAppointment);

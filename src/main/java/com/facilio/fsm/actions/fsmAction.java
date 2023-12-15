@@ -52,6 +52,8 @@ public class fsmAction extends V3Action {
 
     private long recordId;
     private List<Long> recordIds;
+    private String transitionToState;
+    private boolean validate;
     private String identifier;
     private String resourceIds;
     private Long appointmentId;
@@ -345,6 +347,7 @@ public class fsmAction extends V3Action {
         FacilioContext context = new FacilioContext();
         HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID, getRecordId());
+        context.put(FacilioConstants.ContextNames.DO_VALIDTION,isValidate());
         switch(getIdentifier()){
 
             case FacilioConstants.ServiceAppointment.START_WORK:
@@ -383,6 +386,9 @@ public class fsmAction extends V3Action {
         FacilioContext context = new FacilioContext();
         HashMap<String, String> successMsg = new HashMap<>();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(getRecordId()));
+        context.put(FacilioConstants.ContextNames.STATUS, getTransitionToState());
+        context.put(FacilioConstants.ContextNames.DO_VALIDTION,isValidate());
+
         switch (getIdentifier()){
             case FacilioConstants.TimeSheet.STOP_TIME_SHEET:
                 FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
@@ -477,6 +483,18 @@ public class fsmAction extends V3Action {
     public String bulkStopTimeSheet() throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getRecordIds());
+        context.put(FacilioConstants.ContextNames.STATUS, getTransitionToState());
+        context.put(FacilioConstants.ContextNames.DO_VALIDTION,isValidate());
+
+        FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
+        stopTimeSheetChain.execute(context);
+        return SUCCESS;
+    }
+
+    public String bulkStopTrip() throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getRecordIds());
+
         FacilioChain stopTimeSheetChain = FsmTransactionChainFactoryV3.stopTimeSheetChain();
         stopTimeSheetChain.execute(context);
         return SUCCESS;

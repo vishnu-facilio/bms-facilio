@@ -22,9 +22,17 @@ public class UpdateServiceOrderTime extends FacilioCommand {
 
         HashMap<String,Object> recordMap = (HashMap<String, Object>) context.get(Constants.RECORD_MAP);
         List<ServiceTaskContext> serviceTasks = (List<ServiceTaskContext>) recordMap.get(context.get("moduleName"));
-        String newStatus = FacilioConstants.ContextNames.ServiceTaskStatus.NEW;
+
+        List<String> openStatuses = new ArrayList<>();
+        openStatuses.add(FacilioConstants.ContextNames.ServiceTaskStatus.NEW);
+        openStatuses.add(FacilioConstants.ContextNames.ServiceTaskStatus.SCHEDULED);
+        openStatuses.add(FacilioConstants.ContextNames.ServiceTaskStatus.DISPATCHED);
+
         String inProgress = FacilioConstants.ContextNames.ServiceTaskStatus.IN_PROGRESS;
-        String completed = FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED;
+
+        List<String> closedStatuses = new ArrayList<>();
+        closedStatuses.add(FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
+        closedStatuses.add(FacilioConstants.ContextNames.ServiceTaskStatus.CANCELLED);
 
         for(ServiceTaskContext task : serviceTasks) {
             //fetching the service task info based on the service task id
@@ -35,25 +43,24 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                 Long serviceOrderId = serviceOrder.getId();
                 List<ServiceTaskContext> serviceTaskList = ServiceOrderAPI.getServiceTasksByServiceOrder(serviceOrderId);
                 ServiceOrderContext serviceOrderInfo = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,serviceOrderId);
-                Boolean initOrder;
-                Boolean completeOrder;
+                boolean initOrder,completeOrder = false;
                 if(CollectionUtils.isNotEmpty(serviceTaskList)) {
                     Long initCount = 0L;
                     Long completeCount = 0L;
                     for (ServiceTaskContext st : serviceTaskList) {
                         //if status of all other tasks are new and the status of current task is in progress we increase the initCount
-                        if(st.getStatus()!=null && (task.getId() != st.getId() && st.getStatus().getName().equals(newStatus)) || (task.getId() == st.getId() && st.getStatus().getName().equals(inProgress))){
-                            initCount= (long) serviceTaskList.size();
+                        if(st.getStatus()!=null && (task.getId() != st.getId() && openStatuses.contains(st.getStatus().getName())) || (task.getId() == st.getId() && st.getStatus().getName().equals(inProgress))){
+                            initCount++;
                         }
                         //if status of all tasks are in completed status then we increase the completeCount
-                        else if (st.getStatus()!=null && st.getStatus().getName().equals(completed)){
+                        else if (st.getStatus()!=null && closedStatuses.contains(st.getStatus().getName())){
                             completeCount++;
                         }
                     }
                     //Based on the count above we decide whether the service order has been initiated or in progress or closed
                     //we handle time/duration update for initiated and closed state, for in progress state we skip everything
                     initOrder = initCount == serviceTaskList.size() ? true : false;
-                    completeOrder = completeCount == serviceTaskList.size() ? true : false;
+//                    completeOrder = completeCount == serviceTaskList.size() ? true : false;
 
                     //for initiated state we update the actual start time
                     if(initOrder && serviceOrderInfo.getActualStartTime() == null){
@@ -67,18 +74,18 @@ public class UpdateServiceOrderTime extends FacilioCommand {
                         }
                     }
                     //for initiated state we update the actual end time and the duration
-                    if (completeOrder){
-                        serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
-                        long currentTime = System.currentTimeMillis();
-                        serviceOrderInfo.setActualEndTime(currentTime);
-                        serviceOrderInfo.setActualDuration(currentTime - serviceOrderInfo.getActualStartTime());
-                        User user = AccountUtil.getCurrentAccount().getUser();
-                        if(user != null){
-                            V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
-                            serviceOrderInfo.setCompletedBy(completedBy);
-                        }
-                        serviceOrderInfo.setCompletedTime(currentTime);
-                    }
+//                    if (completeOrder){
+//                        serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
+//                        long currentTime = System.currentTimeMillis();
+//                        serviceOrderInfo.setActualEndTime(currentTime);
+//                        serviceOrderInfo.setActualDuration(currentTime - serviceOrderInfo.getActualStartTime());
+//                        User user = AccountUtil.getCurrentAccount().getUser();
+//                        if(user != null){
+//                            V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+//                            serviceOrderInfo.setCompletedBy(completedBy);
+//                        }
+//                        serviceOrderInfo.setCompletedTime(currentTime);
+//                    }
                     //if the service order is not in initiated or closed state we skip the update
                     if(initOrder || completeOrder){
                         ServiceOrderAPI.updateServiceOrder(serviceOrderInfo);

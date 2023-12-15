@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ServiceOrderAPI {
@@ -123,6 +124,29 @@ public class ServiceOrderAPI {
                 .orderBy("ID");
         List<ServiceOrderTicketStatusContext> statuses = builder.get();
         return statuses;
+    }
+
+    public static List<ServiceTaskStatusContext> getTaskStatusList(List<String> statusList) throws Exception
+    {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        SelectRecordsBuilder<ServiceTaskStatusContext> builder = new SelectRecordsBuilder<ServiceTaskStatusContext>()
+                .moduleName(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS)
+                .beanClass(ServiceTaskStatusContext.class)
+                .select(modBean.getAllFields(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK_STATUS));
+        if(CollectionUtils.isNotEmpty(statusList)){
+            builder.andCondition(CriteriaAPI.getCondition("NAME","name",StringUtils.join(statusList,","),StringOperators.IS));
+        }
+
+        List<ServiceTaskStatusContext> statuses = builder.get();
+        return statuses;
+    }
+
+    public static Map<String,Long> getTaskStatusIdMap(List<String> statusList) throws Exception {
+        List<ServiceTaskStatusContext> statuses = getTaskStatusList(statusList);
+        if(CollectionUtils.isNotEmpty(statuses)) {
+            return statuses.stream().collect(Collectors.toMap(ServiceTaskStatusContext::getName, ServiceTaskStatusContext::getId));
+        }
+        return null;
     }
 
     public static List<ServiceOrderTicketStatusContext> getServiceOrderStatuses() throws Exception

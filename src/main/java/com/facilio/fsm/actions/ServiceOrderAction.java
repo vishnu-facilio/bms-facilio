@@ -110,7 +110,7 @@ public class ServiceOrderAction extends V3Action {
                 }
                 if(validate){
                     successMsg.put("title","Complete Work Order");
-                    successMsg.put("message","Completing Work Order will affect all its Appointments and Tasks, Do you still want to proceed?");
+                    successMsg.put("message","Proceeding with completing the Work Order will also mark all associated Appointments and Tasks as completed. Are you sure you want to proceed?");
                     setData(FacilioConstants.ServiceOrder.SERVICE_ORDER_STATUS_ACTIONS,successMsg);
                     return V3Action.SUCCESS;
                 }

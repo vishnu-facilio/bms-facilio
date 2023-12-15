@@ -9,7 +9,8 @@ public class CompleteTaskCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-        ServiceTaskUtil.moveToCloseState(recordId, FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED);
+        boolean validate = (boolean) context.getOrDefault(FacilioConstants.ContextNames.DO_VALIDTION,false);
+        ServiceTaskUtil.moveToCloseState(recordId, FacilioConstants.ContextNames.ServiceTaskStatus.COMPLETED,validate);
         return false;
     }
 }

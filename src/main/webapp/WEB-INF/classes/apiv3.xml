@@ -3276,6 +3276,13 @@
             <param name="moduleName">timeSheet</param>
             <param name="permission">GET:READ</param>
         </action>
+        <action name="trip/endTrip"
+                class="com.facilio.fsm.actions.fsmAction"
+                method="updateTripStatus">
+            <param name="parentModuleName">serviceAppointment</param>
+            <param name="moduleName">trip</param>
+            <param name="permission">GET:READ</param>
+        </action>
     </package>
 
     <package name="timeSheet" namespace="/api/v3/timeSheet" extends="v3Api">

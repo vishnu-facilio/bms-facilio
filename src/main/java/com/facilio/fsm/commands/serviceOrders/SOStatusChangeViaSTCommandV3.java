@@ -79,32 +79,32 @@ public class SOStatusChangeViaSTCommandV3 extends FacilioCommand {
                             }
                             updateServiceOrder(serviceOrderInfo);
                         }
-                        else{
-                            Long completedCount = 0L;
-                            for(ServiceTaskContext soTask: serviceTasks){
-                                if(soTask.getServiceAppointment() != null && soTask.getServiceAppointment().getId() > 0){
-                                    if(soTask.getStatus().getName().equals(completedTask)){
-                                        completedCount++;
-                                    }
-                                }
-                            }
-                            if(serviceTasks.size() == completedCount){
-                                serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
-                                Long startDuration = serviceOrderInfo.getActualStartTime();
-                                Long endDuration = System.currentTimeMillis();
-                                serviceOrderInfo.setActualEndTime(endDuration);
-                                serviceOrderInfo.setActualDuration(endDuration - startDuration);
-                                User user = AccountUtil.getCurrentAccount().getUser();
-                                if(user != null){
-                                    V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
-                                    serviceOrderInfo.setCompletedBy(completedBy);
-                                }
-                                serviceOrderInfo.setCompletedTime(endDuration);
-
-                                updateServiceOrder(serviceOrderInfo);
-                            }
-
-                        }
+//                        else{
+//                            Long completedCount = 0L;
+//                            for(ServiceTaskContext soTask: serviceTasks){
+//                                if(soTask.getServiceAppointment() != null && soTask.getServiceAppointment().getId() > 0){
+//                                    if(soTask.getStatus().getName().equals(completedTask)){
+//                                        completedCount++;
+//                                    }
+//                                }
+//                            }
+//                            if(serviceTasks.size() == completedCount){
+//                                serviceOrderInfo.setStatus(ServiceOrderAPI.getStatus(FacilioConstants.ServiceOrder.COMPLETED));
+//                                Long startDuration = serviceOrderInfo.getActualStartTime();
+//                                Long endDuration = System.currentTimeMillis();
+//                                serviceOrderInfo.setActualEndTime(endDuration);
+//                                serviceOrderInfo.setActualDuration(endDuration - startDuration);
+//                                User user = AccountUtil.getCurrentAccount().getUser();
+//                                if(user != null){
+//                                    V3PeopleContext completedBy = V3RecordAPI.getRecord(FacilioConstants.ContextNames.PEOPLE,user.getPeopleId(),V3PeopleContext.class);
+//                                    serviceOrderInfo.setCompletedBy(completedBy);
+//                                }
+//                                serviceOrderInfo.setCompletedTime(endDuration);
+//
+//                                updateServiceOrder(serviceOrderInfo);
+//                            }
+//
+//                        }
                     }
                 }
             }

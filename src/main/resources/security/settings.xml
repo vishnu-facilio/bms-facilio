@@ -3009,13 +3009,14 @@
             <property name="endLocation" type="object"/>
         </requestbody>
     </request>
-    <request path="/api/v3/module/serviceOrder/:recordId/systemButton/:identifier" method="POST">
+    <request path="/api/v3/module/timeSheet/:recordId/systemButton/:identifier" method="POST">
         <urlparams>
             <property name="recordId" type="number" mandatory="true"/>
             <property name="identifier" type="string" mandatory="true"/>
         </urlparams>
         <requestbody type="object">
             <property name="transitionToState" type="string"/>
+            <property name="validate" type="boolean"/>
         </requestbody>
     </request>
     <request path="/api/v3/module/serviceOrder/:recordId/systemButton/:identifier" method="POST">
@@ -4954,6 +4955,8 @@
             <property name="recordIds" type="array">
                 <items type="number"/>
             </property>
+            <property name="validate" type="boolean"/>
+            <property name="transitionToState" type="string"/>
         </requestbody>
     </request>
     <request path="/api/v3/serviceAppointment/timeSheet/bulkStopTimeSheet" method="POST">
@@ -4961,6 +4964,14 @@
             <property name="recordIds" type="array">
                 <items type="number"/>
             </property>
+            <property name="validate" type="boolean"/>
+            <property name="transitionToState" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/trip/endTrip" method="POST">
+        <requestbody type="object">
+            <property name="recordId" type="number"/>
+            <property name="endLocation" type="object"/>
         </requestbody>
     </request>
 
@@ -6099,7 +6110,7 @@
             <property name="isSandBox" type="boolean"></property>
         </requestbody>
     </request>
-    <request path="/api/v2/systemButton/serviceAppointment/serviceTask/getAvailableButtonsForList" method="POST">
+    <request path="/api/v2/systemButton/:moduleName/:subModuleName/getAvailableButtonsForList" method="POST">
         <urlparams>
             <property name="moduleName" type="string"/>
         </urlparams>
@@ -6117,6 +6128,9 @@
             <property name="recordId" type="number" mandatory="true"/>
             <property name="identifier" type="string" mandatory="true"/>
         </urlparams>
+        <requestbody>
+            <property name="validate" type="boolean"/>
+        </requestbody>
     </request>
     <request path="/api/v3/modules/data/serviceAppointment/:moduleName" method="POST">
         <urlparams>

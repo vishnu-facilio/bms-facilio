@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,7 +93,7 @@ public class AddServiceOrderActivityForAddServiceAppointmentAction_ServiceAppoin
 
         // Add Activity to ServiceOrder
         new AddActivitiesCommandV3(FacilioConstants.ContextNames.SERVICE_ORDER_ACTIVITY).executeCommand(context);
-
+        context.put(FacilioConstants.ContextNames.ACTIVITY_LIST, new ArrayList<>());
         return false;
     }
 }
