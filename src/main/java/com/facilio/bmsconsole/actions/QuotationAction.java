@@ -6,6 +6,8 @@ import com.facilio.bmsconsoleV3.context.quotation.QuotationAssociatedTermsContex
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.File;
 import java.util.List;
@@ -90,6 +92,19 @@ public class QuotationAction extends FacilioAction {
         FacilioChain chain = TransactionChainFactory.getAssociateQuotationTermsChain();
         chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, recordId);
         chain.getContext().put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, termsAssociated );
+        chain.execute();
+        setResult(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS));
+
+        return SUCCESS;
+    }
+    public String manageTerms() throws Exception {
+
+        FacilioChain chain = TransactionChainFactory.getManageTermsToQuotationChain();
+        chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, recordId);
+        chain.getContext().put(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, termsAssociated );
+        chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+        chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS);
+
         chain.execute();
         setResult(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.QUOTE_ASSOCIATED_TERMS));
 

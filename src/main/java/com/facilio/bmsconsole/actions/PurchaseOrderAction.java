@@ -426,6 +426,21 @@ public class PurchaseOrderAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	public String manageTerms() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, termsAssociated );
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS);
+
+		FacilioChain chain = TransactionChainFactory.getManageTermsToPOChain();
+		chain.execute(context);
+
+		setResult(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS));
+
+		return SUCCESS;
+	}
 	
 	public String disAssociateTerms() throws Exception {
 		

@@ -267,6 +267,19 @@ public class PurchaseRequestAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	public String manageTerms() throws Exception {
+
+		FacilioChain chain = TransactionChainFactory.getManageTermsToPRChain();
+		chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		chain.getContext().put(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, termsAssociated );
+		chain.getContext().put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+		chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS);
+		chain.execute();
+
+		setResult(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS, chain.getContext().get(FacilioConstants.ContextNames.PR_ASSOCIATED_TERMS));
+
+		return SUCCESS;
+	}
 
 	public String disAssociateTerms() throws Exception {
 

@@ -3614,6 +3614,12 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AssociateInvoiceTermsCommand());
         return c;
     }
+    public static FacilioChain manageTermsInvoiceChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DissociateTermsCommand());
+        c.addCommand(new AssociateInvoiceTermsCommand());
+        return c;
+    }
 
     public static FacilioChain getSendInvoiceMailChain() {
         FacilioChain c = getDefaultChain();

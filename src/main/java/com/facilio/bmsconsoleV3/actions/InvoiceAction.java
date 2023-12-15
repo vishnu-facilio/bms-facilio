@@ -90,6 +90,15 @@ public class InvoiceAction extends V3Action {
 
     private Integer recordId;
 
+    private List<Long> recordIds;
+
+    public List<Long> getRecordIds() {
+        return recordIds;
+    }
+    public void setRecordIds(List<Long> recordIds) {
+        this.recordIds = recordIds;
+    }
+
     public EMailTemplate getEmailTemplate() {
         return emailTemplate;
     }
@@ -206,6 +215,21 @@ public class InvoiceAction extends V3Action {
         context.put(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS, termsAssociated );
 
         FacilioChain chain = TransactionChainFactoryV3.associateTermsInvoiceChain();
+        chain.execute(context);
+
+        setData(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS));
+
+        return SUCCESS;
+    }
+    public String manageTerms() throws Exception {
+
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+        context.put(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS, termsAssociated );
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,recordIds);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS);
+
+        FacilioChain chain = TransactionChainFactoryV3.manageTermsInvoiceChain();
         chain.execute(context);
 
         setData(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.INVOICE_ASSOCIATED_TERMS));

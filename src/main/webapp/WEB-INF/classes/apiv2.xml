@@ -5877,11 +5877,11 @@
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
 
-		<action name="associateTerms"
+		<action name="manageTerms"
 				class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
-				method="associateTerms">
+				method="manageTerms">
 			<param name="moduleName">purchaseorder</param>
-			<param name="permission">CREATE,UPDATE</param>
+			<param name="permission">POST:CREATE,UPDATE</param>
 		</action>
 		<action name="disassociateTerms"
 				class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
@@ -6014,6 +6014,12 @@
 			method="associateTerms">
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="manageTerms"
+			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
+			method="manageTerms">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">POST:CREATE,UPDATE</param>
 		</action>
 		<action name="disassociateTerms"
 			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
@@ -9168,6 +9174,12 @@
 				class="com.facilio.bmsconsole.actions.QuotationAction"
 				method="associateTerms">
 			<param name="deprecated">true</param>
+		</action>
+		<action name="manageTerms"
+				class="com.facilio.bmsconsole.actions.QuotationAction"
+				method="manageTerms">
+			<param name="moduleName">quote</param>
+			<param name="permission">POST:CREATE,UPDATE</param>
 		</action>
 		<action name="disassociateTerms"
 				class="com.facilio.bmsconsole.actions.QuotationAction"

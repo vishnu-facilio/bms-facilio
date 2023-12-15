@@ -3200,6 +3200,10 @@
             <param name="moduleName">invoice</param>
             <param name="permission">POST:CREATE,UPDATE</param>
         </action>
+        <action name="manageTerms" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="manageTerms">
+            <param name="moduleName">invoice</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
+        </action>
         <action name="convertInvoice" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="convertInvoice">
             <param name="moduleName">invoice</param>
             <param name="permission">POST:CREATE,UPDATE</param>

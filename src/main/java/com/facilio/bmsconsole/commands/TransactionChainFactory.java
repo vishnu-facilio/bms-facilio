@@ -4742,8 +4742,21 @@ public class TransactionChainFactory {
 		c.addCommand(new AssociateTermsToPOCommand());
 		return c;
 	}
+	public static FacilioChain getManageTermsToPOChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand( new DissociateTermsCommand());
+		c.addCommand(new AssociateTermsToPOCommand());
+		return c;
+	}
 	public static FacilioChain getAssociateTermsToPRChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateTermsToPRCommand());
+		return c;
+	}
+
+	public static FacilioChain getManageTermsToPRChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand( new DissociateTermsCommand());
 		c.addCommand(new AssociateTermsToPRCommand());
 		return c;
 	}
@@ -6551,6 +6564,14 @@ public class TransactionChainFactory {
 
 	public static FacilioChain getAssociateQuotationTermsChain() {
 		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateQuotationTermsCommand());
+		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
+		return c;
+	}
+
+	public static FacilioChain getManageTermsToQuotationChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand( new DissociateTermsCommand());
 		c.addCommand(new AssociateQuotationTermsCommand());
 		c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.QUOTE_ACTIVITY));
 		return c;
