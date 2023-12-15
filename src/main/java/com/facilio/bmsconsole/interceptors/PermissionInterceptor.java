@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.interceptors;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ModuleAPI;
@@ -32,7 +34,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         Parameter skipPermissionParam = ActionContext.getContext().getParameters().get("skipPermission");
         boolean skipPermission = skipPermissionParam != null && Boolean.parseBoolean(skipPermissionParam.getValue());
 
-        if (AccountUtil.getCurrentOrg() != null) {
+        if (AccountUtil.getCurrentOrg() != null && isAllowedOrg()) {
             try {
                 boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
                 if ( checkAgentAdminRolePermission() && V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
@@ -92,12 +94,16 @@ public class PermissionInterceptor extends AbstractInterceptor {
     private static boolean checkTabPermission(String method) throws Exception {
         Parameter action = ActionContext.getContext().getParameters().get("permission");
         Parameter moduleNameParam = ActionContext.getContext().getParameters().get("moduleName");
-        Parameter parentModuleName = ActionContext.getContext().getParameters().get("parentModuleName");
+        Parameter parentModuleParam = ActionContext.getContext().getParameters().get("parentModuleName");
+        Parameter permissionModuleParam = ActionContext.getContext().getParameters().get("permissionModuleName");
         Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
         Boolean deprecated = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("deprecated")));
 
-        if(parentModuleName != null && parentModuleName.getValue() != null) {
-            moduleNameParam = parentModuleName;
+        if(permissionModuleParam != null && permissionModuleParam.getValue() != null) {
+            moduleNameParam = permissionModuleParam;
+        }
+        if(parentModuleParam != null && parentModuleParam.getValue() != null) {
+            moduleNameParam = parentModuleParam;
         }
         if(setupTab != null && setupTab.getValue() != null) {
             moduleNameParam = getModuleNameParam("setup");
@@ -156,5 +162,16 @@ public class PermissionInterceptor extends AbstractInterceptor {
             return !AccountUtil.isPrivilegedRole();
         }
         return true;
+    }
+
+    private static boolean isAllowedOrg(){
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+
+        if(FacilioProperties.getEnvironment().equals("stage2")) {
+            return !(currentOrg.getOrgId() == 418 || currentOrg.getOrgId() == 173);
+        } else if (FacilioProperties.isProduction()) {
+            return currentOrg.getOrgId() == 1516;
+        }
+        return currentOrg!=null;
     }
 }

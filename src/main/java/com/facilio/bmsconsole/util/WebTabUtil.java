@@ -42,15 +42,15 @@ import java.util.*;
 @Log4j
 public class WebTabUtil {
 
-    private static final Map<String, Class<? extends WebTabHandler>> webTabHandlerMap = new HashMap<>();
+    private static final Map<String, Class<? extends WebTabHandler>> WEB_TAB_HANDLER_MAP = new HashMap<>();
 
     public static void initialize() throws IOException {
         try {
             Reflections reflections = new Reflections("com.facilio.bmsconsole.context.webtab");
             Set<Class<? extends WebTabHandler>> webTabHandlerClasses = reflections.getSubTypesOf(WebTabHandler.class);
             if (CollectionUtils.isNotEmpty(webTabHandlerClasses)) {
-                for (Class<? extends WebTabHandler> vg : webTabHandlerClasses) {
-                    webTabHandlerMap.put(vg.getSimpleName(), vg);
+                for (Class<? extends WebTabHandler> webTabHandler : webTabHandlerClasses) {
+                    WEB_TAB_HANDLER_MAP.put(webTabHandler.getSimpleName(), webTabHandler);
                 }
             }
         } catch (Exception e) {
@@ -91,7 +91,7 @@ public class WebTabUtil {
                 isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tabType.contains(tab.getTypeEnum().getName())) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
             }
         } else if (params.containsKey("handler") && StringUtils.isNotEmpty(params.get("handler"))) {
-            WebTabHandler formTypeHandler = webTabHandlerMap.get(params.get("handler")).newInstance();
+            WebTabHandler formTypeHandler = WEB_TAB_HANDLER_MAP.get(params.get("handler")).newInstance();
             return formTypeHandler.hasPermission(tab, params, action);
         }
 

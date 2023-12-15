@@ -13,7 +13,14 @@ public class ModuleTypeHandler implements WebTabHandler {
     @Override
     public boolean hasPermission(WebTabContext webtab, Map<String,String> parameters, String action) throws Exception {
         boolean isAttachmentAPI = Boolean.parseBoolean(parameters.get("isAttachmentApi"));
-        String moduleName = StringUtils.isNotEmpty(parameters.get("parentModuleName"))?  parameters.get("parentModuleName") : parameters.get("moduleName");;
+        String moduleName = parameters.get("moduleName");
+
+        if( StringUtils.isNotEmpty(parameters.get("parentModuleName")) ) {
+            moduleName = parameters.get("parentModuleName");
+        }
+        if( StringUtils.isNotEmpty(parameters.get("permissionModuleName")) ) {
+            moduleName = parameters.get("permissionModuleName");
+        }
 
         if(StringUtils.isEmpty(moduleName)){
             LOGGER.info("Can't get moduleName for this Tab");

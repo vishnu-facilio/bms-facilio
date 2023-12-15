@@ -172,17 +172,6 @@ public class V3PermissionUtil {
         return false;
     }
 
-    public static boolean isSpecialModule(String moduleName) {
-        List<String> SPECIAL_MODULE_LIST = Arrays.asList(
-                FacilioConstants.ContextNames.USER_NOTIFICATION
-        );
-
-        if(StringUtils.isNotEmpty(moduleName) && SPECIAL_MODULE_LIST.contains(moduleName)) {
-            return true;
-        }
-        return false;
-    }
-
     public static boolean currentUserHasPermission(long tabId, String action) {
         try {
             long rolePermissionVal = ApplicationApi.getRolesPermissionValForTab(tabId, AccountUtil.getCurrentUser().getRole().getRoleId());

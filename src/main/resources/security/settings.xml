@@ -4081,7 +4081,11 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/switchVariable/getSwitchVariable" method="GET"/>
+    <request path="/api/v3/switchVariable/getSwitchVariable" method="GET">
+        <urlparams>
+            <property name="force" type="boolean"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/unrelated/serviceRequest/fetchAll/emailConversationThreading" method="GET" />
 
     <!--    pdf Builder -->

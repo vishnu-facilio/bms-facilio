@@ -17,7 +17,7 @@ public class FormulaBuilderTypeHandler implements WebTabHandler {
         if (StringUtils.isEmpty(moduleName)) {
             LOGGER.info("Can't get moduleName for this Tab");
             return false;
-        } else if (!(V3PermissionUtil.isSpecialModule(moduleName) && V3PermissionUtil.isModuleAccessible(moduleName, webTab.getId()))) {
+        } else if (!(V3PermissionUtil.isModuleAccessible(moduleName, webTab.getId()))) {
             LOGGER.info(moduleName + " is not accessible in this Tab");
             return false;
         }

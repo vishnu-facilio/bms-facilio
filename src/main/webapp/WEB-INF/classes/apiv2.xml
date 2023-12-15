@@ -300,7 +300,7 @@
 		</action>
 
 		<action name="isSessionActive" class="com.facilio.bmsconsole.actions.LoginAction" method="isSessionActive">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 

@@ -4649,7 +4649,7 @@ public class FacilioConstants {
 	}
 
 	public static class HTTPParameter {
-		public static final List<String> KEYS = Arrays.asList("permission","moduleName","tabType","setupTab",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME,"isAttachmentApi","skipPermission");
+		public static final List<String> KEYS = Arrays.asList("permission","moduleName","tabType","setupTab",FacilioConstants.ContextNames.WebTab.PARENT_MODULE_NAME,"isAttachmentApi","skipPermission","permissionModuleName");
 	}
 
 	public static class SummaryWidget{
