@@ -1864,7 +1864,8 @@
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="viewName">{1}</param>
-			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="setupTab">TEAMS,USERS</param>
 		</action>
 		<action name="*/*"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
@@ -2582,12 +2583,12 @@
 		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="addOrUpdateServiceCatalog">
 			<param name="permission">ALL</param>
-			<param name="setup">SERVICE_CATALOGS</param>
+			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogList">
 			<param name="permission">ALL</param>
-			<param name="setup">SERVICE_CATALOGS</param>
+			<param name="setupTab">SERVICE_CATALOGS</param>
 		</action>
 		<action name="detail" class="com.facilio.bmsconsole.actions.ServiceCatalogAction"
 				method="getServiceCatalogDetails">
@@ -2668,6 +2669,7 @@
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2updateBusinessHours">
 			<param name="permission">ALL</param>
+			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2685,12 +2687,14 @@
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="updateBusinessHourInResource">
 			<param name="permission">ALL</param>
+			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2getBusinessHoursList">
 			<param name="id">{1}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">OPERATING_HOURS</param>
 		</action>
 	</package>
 

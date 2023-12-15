@@ -218,14 +218,15 @@
             <param name="permission">
                 ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
-            <param name="setupTab">INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,RULE_LOGS,EMAIL_LOGS</param>
+            <param name="setupTab">INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,RULE_LOGS,EMAIL_LOGS,PEOPLE,TEAMS,LABOUR,CRAFTS,READINGS,SPACE_CATEGORIES,SPACE_ASSET_CUSTOMIZATION,ASSET_DEPRECIATION,WEATHER_STATION,METER_CUSTOMIZATION</param>
         </action>
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="permission">
-                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
+            <param name="setupTab">PEOPLE,TEAMS,LABOUR,CRAFTS</param>
         </action>
         <action name="*/glimpse/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -237,8 +238,9 @@
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
             <param name="permission">
-                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
+            <param name="setupTab">USERS</param>
         </action>
         <action name="*/view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -624,7 +626,8 @@
                 method="pickList">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="setupTab">TEAMS,LABOUR,USERS</param>
         </action>
     </package>
 

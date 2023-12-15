@@ -16,6 +16,7 @@
 			<interceptor name="validationinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.ValidationInterceptor" />
 			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
+			<interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
@@ -24,6 +25,7 @@
 					<param name="enableSMD">true</param>
 				</interceptor-ref>
 				<interceptor-ref name="validationinterceptor"/>
+				<interceptor-ref name="permissionInterceptor"/>
 			</interceptor-stack>
 		</interceptors>
 

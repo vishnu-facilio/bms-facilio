@@ -24,6 +24,7 @@
 			<interceptor name="apiKeyInterceptor" class="com.facilio.bmsconsole.interceptors.APIKeyInterceptor" />
 			<interceptor name="exceptionHandlingInterceptor" class="com.facilio.bmsconsole.interceptors.ExceptionHandlingInterceptor" />
 			<interceptor name="accessRateInterceptor" class="com.facilio.bmsconsole.interceptors.AccessRateInterceptor" />
+			<interceptor name="permissionInterceptor" class="com.facilio.bmsconsole.interceptors.PermissionInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
@@ -34,6 +35,7 @@
 				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="malwareInterceptor" />
 				<interceptor-ref name="globalscopevariableinterceptor" />
+				<interceptor-ref name="permissionInterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="permissionSetInterceptor" />
 				<interceptor-ref name="json">
@@ -183,7 +185,7 @@
 		</action>
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 		<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_LOGS,PORTALS,SERVICE_CATALOGS,USERS,ROLES,API_SETUP</param>
+			<param name="setupTab">EMAIL_LOGS,PORTALS,SERVICE_CATALOGS,USERS,ROLES,API_SETUP,PEOPLE</param>
 			<param name="cache">org</param>
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
@@ -413,7 +415,8 @@
 			</result>
 		</action>
 		<action name="updateWebTabRole" class="com.facilio.bmsconsole.actions.RoleAction" method="updateWebTabRole">
-			<param name="permission">USER_MANAGEMENT,ROLES</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">ROLES,PORTALS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">roleId</param>
 			</result>
@@ -537,7 +540,7 @@
 		<action name="subscription" class="com.facilio.bmsconsole.actions.UserAction"
 			method="subscriptionInfo">
 			<param name="permission">ALL</param>
-			<param name="setupTab">COMPANY_PROFILE</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^subscription.*</param>
 			</result>
