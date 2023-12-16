@@ -2665,6 +2665,7 @@
             <param name="permissionModuleName">{1}</param>
             <param name="moduleName">{2}</param>
             <param name="id">{3}</param>
+            <param name="recordId">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
@@ -2997,7 +2998,7 @@
             <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">PATCH:UPDATE</param>
-<!--            <param name="recordId">{1}</param>-->
+            <param name="recordId">{1}</param>
 <!--            <param name="buttonAction">systemButton</param>-->
 <!--            <param name="identifier">{2}</param>-->
 <!--            <param name="buttonPermission">true</param>-->
@@ -3156,6 +3157,70 @@
             <param name="assetCategoryId">{1}</param>
             <param name="moduleName">alarmCorrelationRule</param>
             <param name="permission">GET:READ</param>
+        </action>
+    </package>
+
+    <package name="flaggedAlarmProcess" namespace="/api/v3/flaggedAlarmProcess" extends="v3Api">
+        <action name="getTicketModuleForCreate" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getTicketModuleForCreate">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="flaggedAlarm/statusOptions" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getFlaggedAlarmStatusOptions">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="closureRestrictionOptions" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getClosureRestrictionOptions">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="workorder/fields" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getTicketModuleFields">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="ticketModuleName">workorder</param>
+            <param name="fieldName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="serviceOrder/fields" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getTicketModuleFields">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="ticketModuleName">serviceOrder</param>
+            <param name="fieldName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="statusOptions/*/flaggedEventClosureConfig" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getTicketModuleStatusOptions">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="fieldName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="pickList/*/*/*" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getPickListForSecondLevelLookup">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="directLookupFieldName">{1}</param>
+            <param name="directLookupModuleName">{1}</param>
+            <param name="secondLevelLookupFieldName">{3}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="subModulePickList/*/flaggedEventBureauEvaluation" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getEvaluationTeamsOptionList">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="fieldName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="subModulePickList/*/flaggedEventRuleAlarmType" class="com.facilio.remotemonitoring.action.FlaggedAlarmProcessAction" method="getAlarmTypeOptions">
+            <param name="moduleName">flaggedAlarmProcess</param>
+            <param name="fieldName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+
+    <package name="alarmCorrelationRule" namespace="/api/v3/alarmCorrelationRule" extends="v3Api">
+        <action name="alarmFilterCriteriaTypeOptions" class="com.facilio.remotemonitoring.action.AlarmCorrelationRuleAction" method="getCriteriaTypeOptions">
+            <param name="moduleName">alarmCorrelationRule</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="controllerTypesMap" class="com.facilio.remotemonitoring.action.AlarmCorrelationRuleAction" method="getControllerTypesAsMap">
+            <param name="moduleName">alarmCorrelationRule</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="alarmTypeMappingList" class="com.facilio.remotemonitoring.action.AlarmCorrelationRuleAction" method="getAlarmTypeMappingList">
+            <param name="moduleName">alarmCorrelationRule</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 

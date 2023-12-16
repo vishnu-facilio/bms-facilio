@@ -176,6 +176,9 @@ public class FlaggedEventUtil {
     }
 
     public static void checkAndCreateWorkorderForFlaggedEvent(Long flaggedEventId, boolean manualAction) throws Exception {
+        checkAndCreateWorkorderForFlaggedEvent(flaggedEventId, manualAction,false);
+    }
+    public static void checkAndCreateWorkorderForFlaggedEvent(Long flaggedEventId, boolean manualAction,boolean skipStatusCheck) throws Exception {
         if (flaggedEventId != null && flaggedEventId > -1) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             Object record = V3Util.getRecord(FlaggedEventModule.MODULE_NAME, flaggedEventId, null);
@@ -183,8 +186,10 @@ public class FlaggedEventUtil {
             AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
             Map<String, Object> workorderProp = null;
             if (flaggedEventContext != null && flaggedEventContext.getFlaggedAlarmProcess() != null) {
-                if (!(flaggedEventContext.getStatus() == null || (flaggedEventContext.getStatus() != null && flaggedEventContext.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN))) {
-                    return;
+                if(!skipStatusCheck) {
+                    if (!(flaggedEventContext.getStatus() == null || (flaggedEventContext.getStatus() != null && flaggedEventContext.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN))) {
+                        return;
+                    }
                 }
                 FlaggedEventRuleContext flaggedEventRule = alarmBean.getFlaggedEventRule(flaggedEventContext.getFlaggedAlarmProcess().getId());
                 if (flaggedEventRule != null && flaggedEventRule.shouldCreateWorkorder()) {
@@ -545,6 +550,25 @@ public class FlaggedEventUtil {
         closeFlaggedEvent(flaggedEventId,isManualClose,null);
     }
     public static void closeFlaggedEvent(Long flaggedEventId,boolean isManualClose,List<BureauCloseIssueReasonOptionContext> closeIssueReasons) throws Exception {
+        if(!isManualClose) {
+            FlaggedEventContext event = getFlaggedEvent(flaggedEventId);
+
+            if(event != null && event.getStatus() != FlaggedEventContext.FlaggedEventStatus.OPEN) {
+                return;
+            }
+
+            if(event != null && event.getCurrentBureauActionDetail() != null && event.getCurrentBureauActionDetail().getId() > 0){
+                FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus[] restrictedStatus = {
+                        FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY,
+                        FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.PASSED_TO_NEXT_BUREAU
+                };
+                FlaggedEventBureauActionsContext evaluationTeamAction = V3RecordAPI.getRecord(FlaggedEventBureauActionModule.MODULE_NAME, event.getCurrentBureauActionDetail().getId());
+                FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus currentActionStatus = evaluationTeamAction.getEventStatus();
+                if(currentActionStatus != null && Arrays.asList(restrictedStatus).contains(currentActionStatus)){
+                    return;
+                }
+            }
+        }
         if(flaggedEventId != null) {
             Map<String, Object> updateMap = new HashMap<>();
             if(isManualClose) {

@@ -328,4 +328,15 @@ public class RemoteMonitorUtils {
         }
         return ticketModuleName;
     }
+
+    public static FacilioModule getTicketModuleForFlaggedAlarmProcessCreate() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        String skipFieldName = FieldUtil.getSkipFieldNameForModule(FlaggedEventModule.MODULE_NAME);
+        if(StringUtils.isNotEmpty(skipFieldName) && skipFieldName.equals("workorder")){
+            return modBean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER);
+        } else {
+            return modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+
+        }
+    }
 }

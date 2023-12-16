@@ -18,6 +18,11 @@ public class RemoteMonitorConstants {
     public static final String ID = "id";
     public static final String SUBJECT = "subject";
     public static final String PRIORITY = "priority";
+    public static final String TICKET_MODULE = "ticketModule";
+    public static final String FLAGGED_ALARM_STATUSES = "flaggedAlarmStatuses";
+    public static final String CLOSURE_RESTRICTION_OPTIONS = "closureRestrictionOptions";
+    public static final String ALARM_FILTER_CRITERIA_TYPES = "alarmFilterCriteriaTypes";
+    public static final String CONTROLLER_TYPE_MAP = "controllerTypeMap";
 
     public static class FlaggedEvent {
         public static final String FLAGGED_EVENT = "flaggedEvent";

@@ -398,9 +398,8 @@ public class FieldsConfigList {
     );
 
     public static final List<String> FLAGGED_EVENT_RULE_FIELDS_TO_INCLUDE = Arrays.asList(
-            "id", "name", "description", "executionType", "priority",
-            "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
-            "sysModifiedByPeople"
+            "id", "name", "description", "executionType", "priority", "client",
+            "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime", "sysModifiedByPeople"
     );
 
     public static final List<String> FLAGGED_EVENT_FIELDS_TO_INCLUDE = Arrays.asList(

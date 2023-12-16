@@ -1935,6 +1935,7 @@
             <property name="recordId" type="number"/>
             <property name="tabName" type="string"/>
             <property name="showNewPageBuilder" type="boolean"/>
+            <property name="recordId" type="number" mandatory="true"/>
         </urlparams>
     </request>
 
@@ -4261,25 +4262,25 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="GET">
+    <request path="/api/v3/flaggedEvent/:id/createworkorder" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/takecustody" method="GET">
+    <request path="/api/v3/flaggedEvent/:id/takecustody" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/pass" method="GET">
+    <request path="/api/v3/flaggedEvent/:id/pass" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/inhibit" method="POST">
+    <request path="/api/v3/flaggedEvent/:id/inhibit" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
@@ -4288,7 +4289,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/flaggedEvent/:id/close" method="POST">
+    <request path="/api/v3/flaggedEvent/:id/close" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
@@ -5601,4 +5602,96 @@
         </requestbody>
     </request>
     <request path="/api/v2/getAllSecurityPolicies/tenantcontact" />
+
+    <request path="/api/v3/flaggedAlarmProcess/getTicketModuleForCreate" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/getTicketModule" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/flaggedAlarm/statusOptions" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/closureRestrictionOptions" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/workorder/fields" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/serviceOrder/fields" method="GET"/>
+
+    <request path="/api/v3/flaggedAlarmProcess/statusOptions/:fieldName/flaggedEventClosureConfig" method="GET">
+        <urlparams>
+            <property name="fieldName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/flaggedAlarmProcess/subModulePickList/:fieldName/flaggedEventRuleAlarmType" method="GET">
+        <urlparams>
+            <property name="fieldName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/flaggedAlarmProcess/subModulePickList/:fieldName/flaggedEventBureauEvaluation" method="GET">
+        <urlparams>
+            <property name="fieldName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/flaggedAlarmProcess/pickList/:directLookupFieldName/:directLookupModuleName/:secondLevelLookupFieldName" method="GET">
+        <urlparams>
+            <property name="directLookupFieldName" type="string" mandatory="true"/>
+            <property name="directLookupModuleName" type="string" mandatory="true"/>
+            <property name="secondLevelLookupFieldName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/alarmCorrelationRule/alarmFilterCriteriaTypeOptions" method="GET"/>
+
+    <request path="/api/v3/alarmCorrelationRule/controllerTypesMap" method="GET"/>
+
+    <request path="/api/v3/alarmCorrelationRule/alarmTypeMappingList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="filters" mandatory="false"/>
+            <property name="withCount" type="boolean" mandatory="false"/>
+        </urlparams>
+    </request>
+
+
 </config>

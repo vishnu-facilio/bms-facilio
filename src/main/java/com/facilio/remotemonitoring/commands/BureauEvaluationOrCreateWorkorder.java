@@ -65,7 +65,7 @@ public class BureauEvaluationOrCreateWorkorder extends FacilioCommand {
                     }
                 }
                 if(createWorkorder) {
-                    FlaggedEventUtil.checkAndCreateWorkorderForFlaggedEvent(flaggedEvent.getId());
+                    FlaggedEventUtil.checkAndCreateWorkorderForFlaggedEvent(flaggedEvent.getId(),false,true);
                 }
             }
         }

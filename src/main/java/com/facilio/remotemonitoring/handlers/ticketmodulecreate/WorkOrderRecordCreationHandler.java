@@ -76,30 +76,30 @@ public class WorkOrderRecordCreationHandler implements TicketModuleRecordCreatio
                         }
                     }
                 }
-                Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEvent.getController().getId());
-                if (controller != null) {
-                    workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, controller.getSiteId());
-                    ResourceContext resource = new ResourceContext();
-                    resource.setId(controller.getSiteId());
-                    workOrderProp.put(FacilioConstants.ContextNames.RESOURCE, FieldUtil.getAsProperties(resource));
-                }
-                if (!workOrderProp.containsKey(RemoteMonitorConstants.SUBJECT)) {
-                    workOrderProp.put(RemoteMonitorConstants.SUBJECT, flaggedEvent.getName());
-                }
+            }
+            Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEvent.getController().getId());
+            if (controller != null) {
+                workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, controller.getSiteId());
+                ResourceContext resource = new ResourceContext();
+                resource.setId(controller.getSiteId());
+                workOrderProp.put(FacilioConstants.ContextNames.RESOURCE, FieldUtil.getAsProperties(resource));
+            }
+            if (!workOrderProp.containsKey(RemoteMonitorConstants.SUBJECT)) {
+                workOrderProp.put(RemoteMonitorConstants.SUBJECT, flaggedEvent.getName());
+            }
 
-                //compute site id from resource lookup field value
-                if (!workOrderProp.containsKey(FacilioConstants.ContextNames.SITE_ID) && workOrderProp.containsKey(FacilioConstants.ContextNames.RESOURCE)) {
-                    Map<String, Object> resourceProp = (Map<String, Object>) workOrderProp.get(FacilioConstants.ContextNames.RESOURCE);
-                    if (MapUtils.isNotEmpty(resourceProp) && resourceProp.containsKey(RemoteMonitorConstants.ID)) {
-                        V3ResourceContext resource = V3RecordAPI.getRecord(FacilioConstants.ContextNames.RESOURCE, (Long) resourceProp.get("id"), V3ResourceContext.class);
-                        if (resource != null && resource.getSiteId() > -1) {
-                            workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, resource.getSiteId());
-                        }
+            //compute site id from resource lookup field value
+            if (!workOrderProp.containsKey(FacilioConstants.ContextNames.SITE_ID) && workOrderProp.containsKey(FacilioConstants.ContextNames.RESOURCE)) {
+                Map<String, Object> resourceProp = (Map<String, Object>) workOrderProp.get(FacilioConstants.ContextNames.RESOURCE);
+                if (MapUtils.isNotEmpty(resourceProp) && resourceProp.containsKey(RemoteMonitorConstants.ID)) {
+                    V3ResourceContext resource = V3RecordAPI.getRecord(FacilioConstants.ContextNames.RESOURCE, (Long) resourceProp.get("id"), V3ResourceContext.class);
+                    if (resource != null && resource.getSiteId() > -1) {
+                        workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, resource.getSiteId());
                     }
                 }
-
-                workOrderProp.put(RemoteMonitorConstants.FlaggedEvent.FLAGGED_EVENT, ImmutableMap.of(RemoteMonitorConstants.ID, flaggedEvent.getId()));
             }
+
+            workOrderProp.put(RemoteMonitorConstants.FlaggedEvent.FLAGGED_EVENT, ImmutableMap.of(RemoteMonitorConstants.ID, flaggedEvent.getId()));
 
         }
 //        if (flaggedEventRule.getWorkorderTemplateId() != null) {

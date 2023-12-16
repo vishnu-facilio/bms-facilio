@@ -408,15 +408,20 @@
     <request path="/api/v3/modules/:moduleName/:id/relatedList/:relatedModuleName/:relatedFieldName" method="GET">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>
+            <property name="recordId" type="number"/>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="currentModuleName" type="string"/>
             <property name="relatedModuleName" type="string" mandatory="true"/>
             <property name="relatedFieldName" type="string" mandatory="true"/>
             <property name="viewName" type="string"/>
+            <property name="viewname" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
             <property name="filters" type="string"/>
             <property name="withCount" type="boolean"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="withoutCustomButtons" type="boolean"/>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"/>
             <property name="orderType" type="string"/>
             <property name="orderBy" type="string"/>
             <property name="force" type="boolean"/>

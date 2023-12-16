@@ -1,11 +1,13 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsoleV3.signup.SignUpData;
+import com.facilio.command.FacilioCommand;
+import org.apache.commons.chain.Context;
 
-public class AddSkipFieldForModule extends SignUpData {
+public class AddSkipFieldForModule extends FacilioCommand {
     @Override
-    public void addData() throws Exception{
+    public boolean executeCommand(Context context) throws Exception {
         CommonCommandUtil.insertOrgInfo("skipField_flaggedAlarm", "serviceOrder");
+        return false;
     }
 }

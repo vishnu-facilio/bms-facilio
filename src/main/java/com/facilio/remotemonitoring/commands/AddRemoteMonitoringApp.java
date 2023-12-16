@@ -26,7 +26,7 @@ public class AddRemoteMonitoringApp extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         ApplicationContext application = new ApplicationContext(AccountUtil.getCurrentOrg().getOrgId(), "Remote Monitoring", false,
                 AppDomain.AppDomainType.FACILIO.getIndex(), FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,
-                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Remote Monitoring",
+                ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Monitor and respond to critical alarms for all your vital distributed assets",
                 ApplicationContext.AppCategory.FEATURE_GROUPING.getIndex());
         application.setConfig(FacilioUtil.parseJson("{\"canShowSitesSwitch\":true , \"canShowNotifications\":true , \"canShowProfile\":true}"));
         Map<String, Object> prop = FieldUtil.getAsProperties(application);

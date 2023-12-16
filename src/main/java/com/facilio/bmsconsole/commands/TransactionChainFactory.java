@@ -52,6 +52,7 @@ import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppRelatedApplication;
 import com.facilio.bmsconsoleV3.signup.enrgyApp.AddEnergyAppTabsAndLayout;
 import com.facilio.bmsconsoleV3.signup.fsmApp.*;
 import com.facilio.bmsconsoleV3.signup.maintenanceApp.*;
+import com.facilio.bmsconsoleV3.signup.moduleconfig.AddSkipFieldForModule;
 import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.classification.command.UpdateClassificationStatusCommand;
@@ -133,6 +134,8 @@ public class TransactionChainFactory {
 			c.addCommand(addRemoteMonitoringApplicationMeta());
 			c.addCommand(new AssignShiftToUserCommand());
 			c.addCommand(new DefaultPermissionSetCommand());
+//			add field you want to skip for a module here(should be at last always)
+			c.addCommand(new AddSkipFieldForModule());
 			return c;
 		}
 
