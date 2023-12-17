@@ -68,6 +68,6 @@ public class ValidationInterceptor extends AbstractInterceptor {
     }
 
     private boolean isAllowed() {
-        return (!FacilioProperties.isOnpremise()) && FacilioProperties.isCheckPrivilegeAccess();
+        return (!(FacilioProperties.isProduction() || FacilioProperties.isOnpremise()) && FacilioProperties.isCheckPrivilegeAccess());
     }
 }

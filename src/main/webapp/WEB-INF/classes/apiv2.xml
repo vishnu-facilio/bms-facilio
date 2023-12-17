@@ -184,7 +184,7 @@
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllBuildings">
 			<param name="permission">ALL</param>
-			<param name="setupTab">ORGANIZATION_SETTINGS,TEAMS</param>
+			<param name="setupTab">ORGANIZATION_SETTINGS,TEAMS,USERS</param>
 		</action>
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">

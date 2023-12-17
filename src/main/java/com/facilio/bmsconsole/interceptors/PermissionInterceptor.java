@@ -96,7 +96,6 @@ public class PermissionInterceptor extends AbstractInterceptor {
         Parameter moduleNameParam = ActionContext.getContext().getParameters().get("moduleName");
         Parameter parentModuleParam = ActionContext.getContext().getParameters().get("parentModuleName");
         Parameter permissionModuleParam = ActionContext.getContext().getParameters().get("permissionModuleName");
-        Parameter setupTab = ActionContext.getContext().getParameters().get("setupTab");
         Boolean deprecated = Boolean.valueOf(String.valueOf(ActionContext.getContext().getParameters().get("deprecated")));
 
         if(permissionModuleParam != null && permissionModuleParam.getValue() != null) {
@@ -104,9 +103,6 @@ public class PermissionInterceptor extends AbstractInterceptor {
         }
         if(parentModuleParam != null && parentModuleParam.getValue() != null) {
             moduleNameParam = parentModuleParam;
-        }
-        if(setupTab != null && setupTab.getValue() != null) {
-            moduleNameParam = getModuleNameParam("setup");
         }
 
         if(throwDeprecatedApiError(deprecated)) {
@@ -168,7 +164,7 @@ public class PermissionInterceptor extends AbstractInterceptor {
         Organization currentOrg = AccountUtil.getCurrentOrg();
 
         if(FacilioProperties.getEnvironment().equals("stage2")) {
-            return !(currentOrg.getOrgId() == 418 || currentOrg.getOrgId() == 173);
+            return !(currentOrg.getOrgId() == 418);
         } else if (FacilioProperties.isProduction()) {
             return currentOrg.getOrgId() == 1516;
         }
