@@ -2,7 +2,6 @@ package com.facilio.fw.filter;
 
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.iam.accounts.util.IAMAppUtil;
 import com.facilio.util.RequestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -21,6 +20,7 @@ import java.util.List;
 public class SecurityFilter implements Filter {
     private static final Logger LOGGER = LogManager.getLogger(SecurityFilter.class.getName());
     private static final String CSRF_HEADER = "x-csrf-token";
+    private static final String X_VERSION_HEADER = "X-Version";
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
@@ -59,8 +59,9 @@ public class SecurityFilter implements Filter {
 
         String requestUri = request.getRequestURI();
         if ((FacilioProperties.isProduction() || FacilioProperties.isSecurtiyFilterEnabled()) && !isWhiteListedUri(requestUri)) {
+            String xVersionHeader = request.getHeader(X_VERSION_HEADER);
             String csrfCookieToken = FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE);
-            if (StringUtils.isNotEmpty(csrfCookieToken)) {
+            if (StringUtils.isNotEmpty(xVersionHeader) && StringUtils.isNotEmpty(csrfCookieToken)) {
                 String csrfHeaderToken = request.getHeader(CSRF_HEADER);
                 if (csrfHeaderToken == null) {
                     if (handleInvalid(request, response, "header token is null when cookie is not null")) {
