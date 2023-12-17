@@ -3583,6 +3583,7 @@ public class FacilioConstants {
 			classMap.put(FieldServiceManagement.SERVICE_ORDER_SERVICES, ServiceOrderServiceContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_TASK_ATTACHMENTS, AttachmentV3Context.class);
 			classMap.put(Territory.TERRITORY, TerritoryContext.class);
+			classMap.put(Territory.PEOPLE_TERRITORY,PeopleTerritoryContext.class);
 			classMap.put(ServiceAppointment.SERVICE_APPOINTMENT,ServiceAppointmentContext.class);
 			classMap.put(FieldServiceManagement.SERVICE_ORDER,ServiceOrderContext.class);
 			classMap.put(Priority.PRIORITY, PriorityContext.class);

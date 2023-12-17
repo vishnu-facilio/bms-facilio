@@ -1685,6 +1685,45 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/employee/serviceSkill/pickList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/serviceTaskStatus/pickList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/serviceTaskStatus/pickList" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+            <property name="viewName" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/pickList/modules/:moduleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -2309,6 +2348,7 @@
             <property name="filters" type="string"/>
             <property name="withCount" type="boolean"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="search" type="string"/>
         </urlparams>
     </request>
 
@@ -2323,6 +2363,7 @@
             <property name="filters" type="string"/>
             <property name="withCount" type="boolean"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="search" type="string"/>
         </urlparams>
     </request>
 
@@ -2478,21 +2519,23 @@
     <request path="/api/integ/orgLogo"></request>
 
     <request path="/api/v3/shiftplanner/view">
-        <requestbody type="object">
+        <urlparams>
             <property name="rangeFrom" type="number" mandatory="true"/>
             <property name="rangeTo" type="number" mandatory="true"/>
-            <property name="employeeID" type="number" mandatory="true"/>
-        </requestbody>
+            <property name="peopleId" type="number" mandatory="true"/>
+        </urlparams>
     </request>
     <request path="/api/v3/shiftplanner/calendar">
-        <requestbody type="object">
+        <urlparams>
             <property name="rangeFrom" type="number" mandatory="true"/>
             <property name="rangeTo" type="number" mandatory="true"/>
             <property name="page" type="number" mandatory="true"/>
             <property name="perPage" type="number" mandatory="true"/>
             <property name="orderBy" type="string" mandatory="true"/>
             <property name="orderType" type="string" mandatory="true"/>
-        </requestbody>
+            <property name="withCount" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v3/shiftplanner/update">
         <requestbody type="object">
@@ -2505,7 +2548,7 @@
         </requestbody>
     </request>
     <request path="/api/v3/shiftplanner/export">
-        <requestbody type="object">
+        <urlparams>
             <property name="rangeFrom" type="number" mandatory="true"/>
             <property name="rangeTo" type="number" mandatory="true"/>
             <property name="format" type="string" mandatory="true"/>
@@ -2513,22 +2556,22 @@
             <property name="page" type="number" mandatory="true"/>
             <property name="orderBy" type="string" mandatory="true"/>
             <property name="orderType" type="string" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
 
-    <request path="/api/v3/attendance/view">
-        <requestbody type="object">
+    <request path="/api/v3/attendance/view" method="GET">
+        <urlparams>
             <property name="rangeFrom" type="number" mandatory="true"/>
             <property name="rangeTo" type="number" mandatory="true"/>
             <property name="peopleID" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
-    <request path="/api/v3/attendance/transition">
-        <requestbody type="object">
+    <request path="/api/v3/attendance/transition" method="GET">
+        <urlparams>
             <property name="peopleID" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v3/attendancetransaction/view">
@@ -2939,6 +2982,49 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/module/serviceAppointment/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+            <property name="startLocation" type="object"/>
+            <property name="endLocation" type="object"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/module/trip/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="startLocation" type="object"/>
+            <property name="endLocation" type="object"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/module/serviceOrder/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="transitionToState" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/module/serviceOrder/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="validate" type="boolean"/>
+        </requestbody>
+    </request>
     <request path="/api/v3/module/:moduleName/:recordId/systemButton/:identifier" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
@@ -3002,6 +3088,10 @@
         </requestbody>
     </request>
     <request path="/api/v3/workOrderPlansCost/cost">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/modules/data/territory/site/bulkPatch" method="POST">
         <requestbody type="object">
         </requestbody>
     </request>
@@ -4700,8 +4790,30 @@
             <property name="perPage" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v3/serviceAppointment/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="boardId" type="number"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
     <request path="/api/fsm/board/list" method="GET"/>
+    <request path="/api/v3/board/list" method="GET"/>
     <request path="/api/v3/people/util/shiftDetailsForCurrentDay" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/employee/people/shiftDetailsForCurrentDay" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/vendorContact/people/shiftDetailsForCurrentDay" method="GET">
         <urlparams>
             <property name="id" type="number"/>
         </urlparams>
@@ -4710,7 +4822,9 @@
     <request path="/api/v3/serviceAppointment/associateTask" method="POST">
         <requestbody type="object">
             <property name="serviceTasks" type="array">
-                <items type="object"/>
+                <items type="object">
+                    <property name="id" type="number"/>
+                </items>
             </property>
             <property name="appointmentId" type="number"/>
         </requestbody>
@@ -4732,6 +4846,14 @@
     <request path="/api/v3/serviceAppointment/fetchTaskList" method="GET">
         <urlparams>
             <property name="timeSheetId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/timeSheet/fetchTaskList" method="GET">
+        <urlparams>
+            <property name="timeSheetId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
         </urlparams>
     </request>
     <request path="/api/v3/employee/workschedule" method="GET">
@@ -4778,7 +4900,28 @@
             <property name="filters" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/v3/data/resource/list" method="GET">
+        <urlparams>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/fsm/events/list" method="GET">
+        <urlparams>
+            <property name="resourceIds" type="string"/>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/events/list" method="GET">
         <urlparams>
             <property name="resourceIds" type="string"/>
             <property name="startTime" type="number"/>
@@ -4795,7 +4938,23 @@
             <property name="filters" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/v3/mapView/data" method="GET">
+        <urlparams>
+            <property name="startTime" type="number"/>
+            <property name="endTime" type="number"/>
+            <property name="boardId" type="number"/>
+            <property name="search" type="string"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/timeSheet/bulkStopTimeSheet" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/serviceAppointment/timeSheet/bulkStopTimeSheet" method="POST">
         <requestbody type="object">
             <property name="recordIds" type="array">
                 <items type="number"/>
@@ -5937,5 +6096,239 @@
             <property name="revertActionDateTime" type="number"></property>
             <property name="isSandBox" type="boolean"></property>
         </requestbody>
+    </request>
+    <request path="/api/v2/systemButton/serviceAppointment/serviceTask/getAvailableButtonsForList" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/module/serviceAppointment/serviceTask/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/:moduleName/:id" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/:moduleName/:id" method="DELETE">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/employee/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/employee/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/employee/:moduleName/:id" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/employee/:moduleName/:id" method="DELETE">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/:moduleName/:id" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/:moduleName/:id" method="PATCH">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/:moduleName/:id" method="DELETE">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/fsm/homePage/serviceAppointment/view/:viewName" method="GET">
+        <urlparams>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="viewname" type="string"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="withoutCustomButtons" type="boolean"/>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="force" type="boolean"/>
+            <property name="selectableFieldNames" type="string"/>
+            <property name="quickFilter" type="string"/>
+            <property name="orderBy" type="string" />
+            <property name="orderType" type="string" />
+            <property name="excludeParentFilter" type="boolean"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceAppointment/serviceTaskStatus/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="viewname" type="string"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="withoutCustomButtons" type="boolean"/>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="force" type="boolean"/>
+            <property name="selectableFieldNames" type="string"/>
+            <property name="quickFilter" type="string"/>
+            <property name="orderBy" type="string" />
+            <property name="orderType" type="string" />
+            <property name="excludeParentFilter" type="boolean"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/serviceOrder/serviceTaskStatus/view/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="viewname" type="string"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="withoutCustomButtons" type="boolean"/>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="force" type="boolean"/>
+            <property name="selectableFieldNames" type="string"/>
+            <property name="quickFilter" type="string"/>
+            <property name="orderBy" type="string" />
+            <property name="orderType" type="string" />
+            <property name="excludeParentFilter" type="boolean"/>
+            <property name="clientCriteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/data/territory/people/associate" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="territoryId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/modules/data/territory/people/dissociate" method="DELETE">
+        <requestbody type="object">
+            <property name="recordIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="territoryId" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/dispatchConsole/glimpse/employee/:id" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dispatchConsole/glimpse/serviceAppointment/:id" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dispatchConsole/serviceAppointment/getAvailableButtons" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="positionType" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dispatchConsole/serviceAppointment/:recordId/systemButton/:identifier" method="POST">
+        <urlparams>
+            <property name="recordId" type="number" mandatory="true"/>
+            <property name="identifier" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="appointmentId" type="number"/>
+            <property name="fieldAgentId" type="number"/>
+            <property name="scheduledEndTime" type="number"/>
+            <property name="scheduledStartTime" type="number"/>
+            <property name="skipValidation" type="boolean"/>
+            <property name="startLocation" type="object"/>
+            <property name="endLocation" type="object"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/dispatchConsole/timeOffType/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/dispatchConsole/:moduleName/picklist" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="default" type="string" />
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/dispatchConsole/people/shiftDetailsForCurrentDay" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/dispatchConsole/views/viewList" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string"/>
+            <property name="groupType" type="number"/>
+            <property name="viewType" type="number"/>
+            <property name="fromBuilder" type="boolean"/>
+        </urlparams>
     </request>
 </config>

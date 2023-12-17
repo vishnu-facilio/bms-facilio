@@ -17,7 +17,10 @@ import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
@@ -31,6 +34,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.MultiLookupField;
 import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.permission.factory.PermissionSetFieldFactory;
+import com.facilio.permission.factory.PermissionSetModuleFactory;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
@@ -1270,5 +1275,52 @@ public class ServiceAppointmentUtil {
                     .offset(offset);
         }
         return selectRecordsBuilder.get();
+    }
+
+    public static void associateTerritory(Long territoryId,List<Long>peopleIds) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule peopleTerritoryRel = modBean.getModule(FacilioConstants.Territory.PEOPLE_TERRITORY);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.Territory.PEOPLE_TERRITORY);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        if(CollectionUtils.isNotEmpty(peopleIds) && territoryId != null && territoryId > 0) {
+
+            SelectRecordsBuilder<PeopleTerritoryContext> fetchTerritoryBuilder = new SelectRecordsBuilder<PeopleTerritoryContext>()
+                    .module(peopleTerritoryRel)
+                    .beanClass(PeopleTerritoryContext.class)
+                    .select(fields)
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("left"), StringUtils.join(peopleIds, ","), NumberOperators.EQUALS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("right"), String.valueOf(territoryId), NumberOperators.EQUALS));
+
+            List<PeopleTerritoryContext> existingRelRecords = fetchTerritoryBuilder.get();
+            if (CollectionUtils.isEmpty(existingRelRecords)) {
+                List<Map<String, Object>> propsList = new ArrayList<>();
+                for (Long peopleId : peopleIds) {
+                    Map<String, Object> prop = new HashMap<>();
+                    prop.put("left", peopleId);
+                    prop.put("right", territoryId);
+                    propsList.add(prop);
+                }
+                InsertRecordBuilder insertBuilder = new InsertRecordBuilder<>()
+                        .fields(fields)
+                        .module(peopleTerritoryRel)
+                        .table(peopleTerritoryRel.getTableName());
+                insertBuilder.addRecordProps(propsList);
+                insertBuilder.save();
+            } else {
+                throw new RESTException(ErrorCode.VALIDATION_ERROR, "Territory is already associated to the selected field agent(s)");
+            }
+        } else {
+            throw new IllegalArgumentException("Please provide all the mandatory details to associate territory with a field agent");
+        }
+    }
+    public static void dissociateTerritories(Long territoryId,List<Long>peopleIds) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule peopleTerritoryRel = modBean.getModule(FacilioConstants.Territory.PEOPLE_TERRITORY);
+        GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+                .table(peopleTerritoryRel.getTableName())
+                .andCondition(CriteriaAPI.getCondition("PEOPLE_ID","left",StringUtils.join(peopleIds,","),NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("TERRITORY_ID","right",String.valueOf(territoryId),NumberOperators.EQUALS));
+        deleteRecordBuilder.delete();
     }
 }

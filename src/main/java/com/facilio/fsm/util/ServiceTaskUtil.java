@@ -503,7 +503,7 @@ public class ServiceTaskUtil {
     }
 
 
-    public static FacilioContext getTaskList(Long timeSheetId,int page, int perPage)throws Exception{
+    public static FacilioContext getTaskList(Long timeSheetId,int page, int perPage,boolean withCount)throws Exception{
         List<Long> taskIds = getTaskListFromTimeSheet(timeSheetId);
         if(CollectionUtils.isNotEmpty(taskIds)) {
             ModuleBean moduleBean = Constants.getModBean();
@@ -512,7 +512,7 @@ public class ServiceTaskUtil {
             criteria.addAndCondition(CriteriaAPI.getIdCondition(taskIds, serviceTask));
             FacilioContext taskList = V3Util.fetchList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, true, "hidden-all", null,
                     true, null, null, null,
-                    null, page, perPage, false, null, criteria,null);
+                    null, page, perPage, withCount, null, criteria,null);
             return taskList;
         }
         return null;

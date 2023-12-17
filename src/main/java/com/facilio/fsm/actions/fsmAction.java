@@ -69,6 +69,8 @@ public class fsmAction extends V3Action {
     private Long timeSheetId;
     private Long tripId;
     private JSONArray serviceTasks;
+    private boolean withCount = false;
+    private Long territoryId;
 
     public String getViewName() {
         return viewName;
@@ -459,7 +461,7 @@ public class fsmAction extends V3Action {
 
     public String fetchTaskList() throws Exception{
         if(timeSheetId != null && timeSheetId > 0) {
-            FacilioContext serviceTaskContext = ServiceTaskUtil.getTaskList(timeSheetId, getPage(), getPerPage());
+            FacilioContext serviceTaskContext = ServiceTaskUtil.getTaskList(timeSheetId, getPage(), getPerPage(),withCount);
             List<Map<String, Object>> serviceTaskList = new ArrayList<>();
             if (serviceTaskContext != null) {
                 Map<String, List<ModuleBaseWithCustomFields>> recordMap = Constants.getRecordMap(serviceTaskContext);
@@ -467,6 +469,7 @@ public class fsmAction extends V3Action {
                 serviceTaskList = FieldUtil.getAsMapList(serviceTasks, ServiceTaskContext.class);
             }
             setData(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK, serviceTaskList);
+            setData(FacilioConstants.ContextNames.COUNT, serviceTaskContext.get("count"));
         }
         return SUCCESS;
     }
@@ -483,6 +486,15 @@ public class fsmAction extends V3Action {
         if(tripId != null && tripId >0){
             setData(FacilioConstants.Trip.TRIP_LOCATION_HISTORY, TripUtil.fetchTripLocationDetails(tripId));
         }
+        return SUCCESS;
+    }
+
+    public String associateTerritory()throws Exception{
+        ServiceAppointmentUtil.associateTerritory(territoryId,recordIds);
+        return SUCCESS;
+    }
+    public String dissociateTerritory()throws Exception{
+        ServiceAppointmentUtil.dissociateTerritories(territoryId,recordIds);
         return SUCCESS;
     }
 

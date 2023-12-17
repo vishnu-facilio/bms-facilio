@@ -322,7 +322,7 @@ public class WebTabContext implements Serializable {
         PORTFOLIO("Portfolio",false,TabType.NORMAL,new PortfolioTypeHandler()), // 103
         PDF_TEMPLATES("PDF Templates",false,TabType.SETUP,new SetupTypeHandler()), //104
         DISPATCHER_CONFIG("Dispatcher Console Settings",false,TabType.SETUP,new SetupTypeHandler()), //105
-        DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,null), // 106
+        DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,new DispatchConsoleHandler()), // 106
         FSM_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),//107
         SKILLS("Skills",false,TabType.SETUP,new SetupTypeHandler()),//108
         FSM_GENERAL_SETTINGS("General Settings",false,TabType.SETUP,new SetupTypeHandler()),//109

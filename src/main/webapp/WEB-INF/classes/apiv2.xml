@@ -753,7 +753,15 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
-		</package>
+	</package>
+	<package name="serviceTaskSystemButton" namespace="/api/v2/systemButton/serviceAppointment/serviceTask" extends="v2Api">
+		<action name="getAvailableButtonsForList"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
+			<param name="parentModuleName">serviceAppointment</param>
+			<param name="moduleName">serviceTask</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
 
 	<package name="fieldRelation" namespace="/api/v2/fieldRelation" extends="v2Api">
 		<action name="runDependency"
@@ -9768,6 +9776,20 @@
 			<param name="permissionModuleName">{1}</param>
 			<param name="moduleName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	<package name="dispatcherConsole" namespace="/api/v2/dispatchConsole" extends="v2Api">
+		<action name="serviceAppointment/getAvailableButtons"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
+			<param name="moduleName">serviceAppointment</param>
+			<param name="tabType">Dispatcher Console</param>
+			<param name="permission">GET:READ</param>
+		</action>
+		<action name="views/viewList"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
+			<param name="translationImpl">ViewTranslation</param>
+			<param name="tabType">Dispatcher Console</param>
+			<param name="permission">GET:READ</param>
 		</action>
 	</package>
 

@@ -1,9 +1,15 @@
 package com.facilio.bmsconsoleV3.commands.shift;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 
@@ -13,6 +19,10 @@ import java.util.Map;
 public class GetPageEmployeesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
+        ModuleBean modBean = Constants.getModBean();
+        List<FacilioField> peopleFields = modBean.getAllFields(FacilioConstants.ContextNames.PEOPLE);
+        Map<String,FacilioField> peopleFieldMap = FieldFactory.getAsMap(peopleFields);
         
         validateProps(context);
 
@@ -33,7 +43,10 @@ public class GetPageEmployeesCommand extends FacilioCommand {
         Object orderBy =  context.get(FacilioConstants.ContextNames.REPORT_ORDER_BY);
         String search = null;
         Map<String, List<Object>> queryParameters = null;
-        Criteria serverCriteria = null;
+
+        Criteria serverCriteria = new Criteria();
+        serverCriteria.addAndCondition(CriteriaAPI.getCondition(peopleFieldMap.get(FacilioConstants.ContextNames.PEOPLE_TYPE),"2,3", NumberOperators.EQUALS));
+
         Boolean isV3 = true;
         Boolean excludeParent = true;
         Boolean withCount = true;

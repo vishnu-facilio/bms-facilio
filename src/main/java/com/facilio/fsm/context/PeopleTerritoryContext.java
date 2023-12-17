@@ -7,8 +7,6 @@ import lombok.Setter;
 
 @Getter@Setter
 public class PeopleTerritoryContext extends V3Context {
-    private V3PeopleContext people;
-    private TerritoryContext territory;
-    private Long startTime;
-    private Long endTime;
+    private V3PeopleContext left;
+    private TerritoryContext right;
 }

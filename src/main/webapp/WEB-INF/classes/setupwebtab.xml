@@ -1578,19 +1578,24 @@
     </package>
     <package name="dispatcher" namespace="/api/v1/setup/dispatcher" extends="v2Api">
         <action name="addDispatcherConfig" class="com.facilio.fsm.actions.DispatcherAction" method="addDispatcherConfig" >
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">DISPATCHER_CONFIG</param>
 		</action>
         <action name="updateDispatcherConfig" class="com.facilio.fsm.actions.DispatcherAction" method="updateDispatcherConfig" >
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">DISPATCHER_CONFIG</param>
 		</action>
         <action name="fetchDispatcherConfig" class="com.facilio.fsm.actions.DispatcherAction" method="fetchDispatcherConfig" >
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">DISPATCHER_CONFIG</param>
 		</action>
         <action name="list" class="com.facilio.fsm.actions.DispatcherAction" method="fetchDispatcherBoardList" >
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">DISPATCHER_CONFIG</param>
 		</action>
         <action name="delete" class="com.facilio.fsm.actions.DispatcherAction" method="deleteDispatcherBoard" >
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">DISPATCHER_CONFIG</param>
 		</action>
     </package>
     <package name="numberformat" namespace="/api/v1/setup/numberformat" extends="v3Api">
@@ -1721,6 +1726,13 @@
                 method="getModules">
             <param name="permission">ALL</param>
             <param name="setupTab">SERVICE_CATALOGS</param>
+        </action>
+    </package>
+
+    <package name="setupPeopleGroup" namespace="/api/v1/setup/group" extends="v3Api">
+        <action name="scopeBySite" class="com.facilio.bmsconsole.actions.GroupAction" method="ScopeTeamUser">
+            <param name="permission">ALL</param>
+            <param name="setupTab">ASSIGNMENT_RULES,WORKFLOWS,NOTIFICATIONS</param>
         </action>
     </package>
 

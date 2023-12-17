@@ -28,7 +28,7 @@ public class FieldsConfigList {
             "createdBy", "priority","resource","type",
             "modifiedTime","actualWorkStart","actualWorkEnd","totalCost",
             "siteId","vendor", "requester", "tenant", "client",
-            "noOfNotes","noOfTasks","noOfAttachments","attachmentPreview",
+            "attachmentPreview",
             "jobPlan", "flaggedEvent"
     );
 
