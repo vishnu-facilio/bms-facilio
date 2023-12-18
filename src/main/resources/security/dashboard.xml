@@ -570,7 +570,10 @@
         <requestbody type="object"></requestbody>
     </request>
     <request path="/api/v3/dashboard/mobile/list" method="GET">
-        <requestbody/>
+        <urlparams>
+            <property name="appId" type="number"></property>
+            <property name="withEmptyFolders" type="boolean"></property>
+        </urlparams>
     </request>
     <request path="/api/v3/dashboard/mobile/:linkName" method="GET">
         <urlparams>
@@ -651,6 +654,7 @@
     <request path="/api/v2/dashboard/views/viewList" method="GET">
         <urlparams>
             <property name="moduleName" type="string"></property>
+            <property name="appId" type="number"></property>
         </urlparams>
     </request>
     <request path="/api/v2/dashboard/views/:viewName" method="GET">
@@ -700,6 +704,8 @@
         </urlparams>
     </request>
     <request path="/api/v2/dashboard/setup/roles" method="GET">
-        <requestbody type="object"></requestbody>
+        <urlparams>
+            <property name="appId" type="number"></property>
+        </urlparams>
     </request>
 </config>

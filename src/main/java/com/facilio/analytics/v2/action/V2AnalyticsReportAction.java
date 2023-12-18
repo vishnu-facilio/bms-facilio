@@ -123,6 +123,7 @@ public class V2AnalyticsReportAction extends V3Action {
         FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticsReportDataOldChain();
         FacilioContext context = chain.getContext();
         context.put("report_v2", report);
+        context.put("db_filter", db_filter);
         chain.execute();
         setReportResult(context);
         return V3Action.SUCCESS;

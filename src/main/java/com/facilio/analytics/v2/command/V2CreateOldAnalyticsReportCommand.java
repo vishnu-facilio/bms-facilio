@@ -1,6 +1,7 @@
 package com.facilio.analytics.v2.command;
 
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
+import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2DimensionContext;
 import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
@@ -33,12 +34,16 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
     public boolean executeCommand(Context context)throws Exception
     {
         V2ReportContext report = (V2ReportContext) context.get("report_v2");
+        V2AnalyticsContextForDashboardFilter db_filter = (V2AnalyticsContextForDashboardFilter) context.get("db_filter");
         ReportContext report_context = context.get("report")  != null ? (ReportContext) context.get("report") : new ReportContext();
         ReportContext reportContext = V2AnalyticsOldUtil.constructReportOld(report, report_context);
         reportContext.setType(ReportContext.ReportType.READING_REPORT);
         setModeWiseXAggr(reportContext, ReadingAnalysisContext.ReportMode.valueOf(report.getReportMode()));
         if(report.getReportTTimeFilter() != null) {
             reportContext.setReportTTimeFilter(report.getReportTTimeFilter());
+        }
+        if(db_filter != null && db_filter.getDb_user_filter() != null){
+            context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, db_filter.getDb_user_filter());
         }
         this.constructDataPoints(report, reportContext);
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);

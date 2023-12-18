@@ -6602,6 +6602,8 @@
 		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
 			<param name="permission">GET:READ,VIEW</param>
 			<param name="tabType">Dashboard,New Dashboard</param>
+			<result name="success" type="json">
+				<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>
 	</package>
 
