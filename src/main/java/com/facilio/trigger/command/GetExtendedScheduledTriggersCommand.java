@@ -8,6 +8,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -48,7 +49,7 @@ public class GetExtendedScheduledTriggersCommand extends FacilioCommand {
             criteria.addAndCondition(CriteriaAPI.getCondition("SCHEDULE_TYPE", "scheduleType", String.valueOf(scheduledRuleType.getValue()), NumberOperators.EQUALS));
         }
         if (timeValue != null){
-            criteria.addAndCondition(CriteriaAPI.getCondition("TIME_VALUE", "timeValue", String.valueOf(timeValue), NumberOperators.EQUALS));
+            criteria.addAndCondition(CriteriaAPI.getCondition("TIME_VALUE", "timeValue", String.valueOf(timeValue), StringOperators.IS));
         }
         if (timeInterval != null){
             criteria.addAndCondition(CriteriaAPI.getCondition("TIME_INTERVAL", "timeInterval", String.valueOf(timeInterval), NumberOperators.EQUALS));
