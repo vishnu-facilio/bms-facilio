@@ -5763,4 +5763,70 @@
             <property name="filters" type="string"/>
         </urlparams>
     </request>
+    <!-- WorkOrder SetTab Settings APIs -->
+    <request path="/api/v1/setup/womodulesetting/add" method="POST">
+        <requestbody type="object"/>
+    </request>
+    <request path="/api/v1/setup/womodulesetting/fetch" method="GET">
+    </request>
+    <request path="/api/v1/setup/womodulesetting/update" method="POST">
+        <requestbody type="object">
+            <property name="workOrderModuleSetting" type="object" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v1/setup/workOrderFeatureSettings/add" method="PUT">
+        <requestbody type="object">
+            <property name="workOrderFeatureSettings" type="array">
+                <items type="object" />
+                <items type="object">
+                    <property name="isAllowed" type="boolean" mandatory="true"/>
+                    <property name="allowedTicketStatusId" type="number" mandatory="true"/>
+                    <property name="settingType" type="number" mandatory="true"/>
+                    <property name="settingTypeENUM" type="string" mandatory="true"/>
+                    <property name="displayName" type="string"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/update" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/list" method="GET">
+        <urlparams>
+            <property name="parentModuleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/workOrderFeatureSettings/typesList" method="GET">
+        <urlparams>
+            <property name="parentModuleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <!-- WorkOrder APIs -->
+    <request path="/api/v2/statetransition/timelog" method="GET">
+        <urlparams>
+            <property name="parentModuleName" type="string" mandatory="true"/>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="page" type="number"/>
+            <property name="page" type="perPage"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/workOrderPlansCost/cost" method="GET">
+        <urlparams>
+            <property name="workOrderId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/tasks/updatestatus" method="POST">
+        <requestbody>
+            <property name="id" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="task" type="object" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/modules/bulkCreate/workorderCost/workorder" method="POST">
+        <requestbody type="object"></requestbody>
+    </request>
 </config>

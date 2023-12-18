@@ -155,7 +155,8 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permissionModuleName">workorder</param>
+			<param name="permission">GET:READ;READ_TEAM;READ_OWN</param>
 		</action>
 		
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
@@ -961,6 +962,15 @@
 		</action>
 	</package>
 
+	<package name="stateTransition2"
+			 namespace="/api/v2/statetransition" extends="v2Api">
+		<action name="timelog"
+				class="com.facilio.bmsconsole.actions.StateFlowAction"
+				method="getTimeLog" >
+			<param name="moduleName">workorder</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
 	<package name="stateTransition"
 		namespace="/api/v2/statetransition" extends="v2Api">
 		<action name="update"
@@ -2729,6 +2739,25 @@
 			method="getLastBreakdown">
 			<param name="permission">GENERAL</param>
 	</action>
+
+
+	 <action name="addNew/*"
+			 class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetDowntime">
+		 <param name="permission">GENERAL</param>
+		 <param name="permissionModuleName">{1}</param>
+	 </action>
+	 <action name="add/*"
+			 class="com.facilio.bmsconsole.actions.AssetBreakdownAction"
+			 method="addAssetBreakDown">
+		 <param name="permission">GENERAL</param>
+		 <param name="permissionModuleName">{1}</param>
+	 </action>
+	 <action name="getlastbreakdown/*"
+			 class="com.facilio.bmsconsole.actions.AssetBreakdownAction"
+			 method="getLastBreakdown">
+		 <param name="permission">GENERAL</param>
+		 <param name="permissionModuleName">{1}</param>
+	 </action>
 	</package>
 	<package name="businessHoursApiv2"
 		namespace="/api/v2/businesshours" extends="v2Api">
@@ -2803,87 +2832,100 @@
 		<action name="updatestatus"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2updateStatus">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 		
 		<action name="deleteTaskAttachment"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2deleteTaskAttachment">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="closeAllTask"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="closeResourceTasks"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="closeSectionsTasks"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="updateAllTask"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2updateAllTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2updateTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="sync"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="syncOfflineTasks">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK,UPDATE_TASK;PATCH:UPDATE_WORKORDER_TASK,UPDATE_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="parents"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2multipleTaskList">
-			<param name="moduleName">workorder</param>
+			<param name="moduleName">task</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.TaskAction" method="v2viewTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="moduleName">task</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:UPDATE_WORKORDER_TASK,UPDATE_TASK;PATCH:UPDATE_WORKORDER_TASK,UPDATE_TASK;DELETE:UPDATE_TASK</param>
 			<param name="taskId">{1}</param>
+			<param name="permissionModuleName">workorder</param>
 		</action>
 
 	</package>
+
 	<package name="taskApiListv2" namespace="/api/v2/tasks/parent"
 		extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.TaskAction" method="v2taskList">
-			<param name="moduleName">workorder</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<param name="moduleName">task</param>
+			<param name="permissionModuleName">workorder</param>
+			<param name="permission">GET:READ;READ_TEAM;READ_OWN</param>
 			<param name="recordId">{1}</param>
 		</action>
 		<action name="closeAllTask"
 			class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK,UPDATE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permissionModuleName">workorder</param>
+			<param name="permission">POST:UPDATE_WORKORDER_TASK;PATCH:UPDATE_WORKORDER_TASK</param>
 		</action>
 	</package>
 

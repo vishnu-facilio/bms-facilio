@@ -322,6 +322,16 @@
         </action>
     </package>
 
+    <!-- WorkOrder modules APIs-->
+    <package name="workorderV3ModulesApi" namespace="/api/v3/modules" extends="v3Api">
+        <action name="workorderHazard" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="permissionModuleName">workorder</param>
+            <param name="permission">
+                GET:READ;READ_TEAM;READ_OWN;POST:CREATE;PATCH:UPDATE;DELETE:DELETE
+            </param>
+        </action>
+    </package>
+
     <package name="relationv3api" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/associate" class="com.facilio.v3.action.RelationshipDataAction" method="associateRelation">
             <param name="moduleName">{1}</param>
@@ -2373,6 +2383,8 @@
             <param name="deprecated">true</param>
         </action>
     </package>
+
+    <!-- WorkOrder modules APIs-->
     <package name="workOrderPlannedItems" namespace="/api/v3/workOrderPlannedItems"
              extends="v3Api">
         <action name="reserve"
@@ -2415,7 +2427,8 @@
         <action name="cost"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlansCostAction"
                 method="cost">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">workorder</param>
+            <param name="permission">GET:READ;READ_TEAM;READ_OWN</param>
         </action>
     </package>
     <package name="rotatingAsset" namespace="/api/v3/rotatingAsset"
@@ -2708,6 +2721,13 @@
                 method="bulkCreate">
             <param name="permissionModuleName">{1}</param>
             <param name="moduleName">{2}</param>
+                        <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+        </action>
+        <action name="*/workorder"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkCreate">
+            <param name="moduleName">{1}</param>
+            <param name="permissionModuleName">workorder</param>
             <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
         </action>
     </package>

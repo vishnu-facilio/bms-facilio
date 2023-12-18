@@ -613,8 +613,9 @@
 
 		<action name="add" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTask">
-			<param name="moduleName">workorder</param>
-			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+			<param name="moduleName">task</param>
+			<param name="permission">POST:UPDATE_TASK</param>
+			<param name="permissionModuleName">workorder</param>
 			<result name="success" type="json">
 				<param name="includeProperties">taskId</param>
 			</result>
