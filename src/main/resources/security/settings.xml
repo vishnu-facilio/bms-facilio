@@ -1633,6 +1633,14 @@
             <property name="default" type="string" mandatory="false"/>
         </urlparams>
     </request>
+    <request path="/api/v2/picklist/:moduleName/label" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="labelMeta" type="object"/>
+        </requestbody>
+    </request>
 
     <request path="/api/v3/action/:moduleName/:id/:actionType" method="PATCH">
         <urlparams>

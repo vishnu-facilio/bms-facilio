@@ -307,7 +307,6 @@
 			<result name="success" type="json">
 				<param name="includeProperties">fileUrl</param>
 			</result>
-			<param name="deprecated">true</param>
 		</action>
 		<action name="readingalarm" class="com.facilio.bmsconsole.actions.AlarmAction"
 			method="fetchReadingAlarms">

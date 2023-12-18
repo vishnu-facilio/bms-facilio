@@ -3098,6 +3098,12 @@
 				method="fetchLabels">
 			<param name="deprecated">true</param>
 		</action>
+		<action name="*/label"
+				class="com.facilio.bmsconsole.actions.PickListAction"
+				method="fetchLabels">
+			<param name="moduleName">{1}</param>
+			<param name="permission">ALL;POST:READ,READ_OWN,READ_TEAM</param>
+		</action>
 	</package>
 
 	<package name="dashboardPicklistApiv2" namespace="/api/v2/dashboard/picklist">
