@@ -25,7 +25,7 @@ public class SetServiceOrderPlannedServicesCommand  extends FacilioCommand {
         List<ServiceOrderContext> serviceOrders = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(serviceOrderPlannedServices)){
             for(ServiceOrderPlannedServicesContext serviceOrderPlannedService : serviceOrderPlannedServices){
-                if(serviceOrderPlannedService.getServiceTask()!=null){
+                if(serviceOrderPlannedService.getServiceTask()!=null && serviceOrderPlannedService.getServiceTask().getId()>0){
                     ServiceTaskContext serviceTask = V3RecordAPI.getRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,serviceOrderPlannedService.getServiceTask().getId(), ServiceTaskContext.class);
                     if(serviceTask.getServiceOrder()!=null){
                         serviceOrderPlannedService.setServiceOrder(serviceTask.getServiceOrder());
