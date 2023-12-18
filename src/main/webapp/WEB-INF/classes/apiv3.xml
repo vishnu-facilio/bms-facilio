@@ -840,6 +840,13 @@
             <param name="translationImpl">V3PickListTranslation</param>
             <param name="deprecated">true</param>
         </action>
+        <action name="*/fetch"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="fetchTimelineScheduledViewGroupData">
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
     </package>
 
     <package name="timelineScheduledViewModuleV3Api" namespace="/api/v3/modules/data/timelineScheduledView" extends="v3Api">
@@ -848,11 +855,23 @@
                 method="timelineScheduledViewData">
 			<param name="deprecated">true</param>
 		</action>
+        <action name="*/get"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewData">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
 
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewSelectiveList">
 			<param name="deprecated">true</param>
+		</action>
+        <action name="*/list"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewSelectiveList">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
         <action name="update"
@@ -860,11 +879,23 @@
                 method="timelineScheduledViewPatch">
 			<param name="deprecated">true</param>
 		</action>
+        <action name="*/update"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewPatch">
+            <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
+		</action>
 
         <action name="unscheduled"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewUnScheduledList">
 			<param name="deprecated">true</param>
+		</action>
+        <action name="*/unscheduled"
+                class="com.facilio.bmsconsoleV3.actions.TimelineAction"
+                method="timelineScheduledViewUnScheduledList">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
     </package>
 
