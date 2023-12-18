@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.PagesContext;
 import com.facilio.bmsconsole.util.ApplicationApi;
@@ -19,6 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -70,6 +72,11 @@ public class AddCustomPageCommand extends FacilioCommand {
             customPage.setAppId(appId);
             long pageCount = CustomPageAPI.getPageCountForModuleInApp(moduleId, appId);
             long maxLimitForPage = 6L;  // maximum page allowed is limited to 6 excluding default page
+            Map<String, String> orgInfoMap = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.CUSTOM_PAGE_LIMIT);
+            if(MapUtils.isNotEmpty(orgInfoMap) && StringUtils.isNotEmpty(orgInfoMap.get(FacilioConstants.OrgInfoKeys.CUSTOM_PAGE_LIMIT))) {
+                maxLimitForPage = Long.parseLong(orgInfoMap.get(FacilioConstants.OrgInfoKeys.CUSTOM_PAGE_LIMIT));
+            }
+
             if(pageCount >= maxLimitForPage) {
                 throw new IllegalArgumentException("New page creation can't be permitted as maximum limit attained");
             }

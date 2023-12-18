@@ -3861,6 +3861,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_BULKUPDATE = "workorderbulkupdate";
 		public static final String PPM_BULKUPDATE = "ppmbulkupdate";
 		public static final String PPM_BULKPUBLISH = "ppmbulkpublish";
+		public static final String CUSTOM_PAGE_LIMIT = "customPageLimit";
 	}
 
 	public static class Services {
