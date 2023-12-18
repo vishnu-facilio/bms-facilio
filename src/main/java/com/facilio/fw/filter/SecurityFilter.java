@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import javax.servlet.*;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -68,11 +69,16 @@ public class SecurityFilter implements Filter {
                         chain.doFilter(req, res);
                     }
                 }
-                else if (csrfCookieToken.equals(csrfHeaderToken)) {
-                    chain.doFilter(req, res);
-                } else {
-                    if (handleInvalid(request, response, "header token didn't match with cookie")) {
+                else {
+                    if(csrfHeaderToken.contains(",")) {
+                        csrfHeaderToken = csrfHeaderToken.substring(0,csrfHeaderToken.indexOf(","));
+                    }
+                    if (csrfCookieToken.equals(csrfHeaderToken)) {
                         chain.doFilter(req, res);
+                    } else {
+                        if (handleInvalid(request, response, "header token didn't match with cookie")) {
+                            chain.doFilter(req, res);
+                        }
                     }
                 }
             } else {
