@@ -1006,27 +1006,34 @@
    </package>
     <package name="womodulesetting" namespace="/api/v1/setup/womodulesetting" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetch">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdate">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
     </package>
     <package name="workOrderFeatureSettings" namespace="/api/v1/setup/workOrderFeatureSettings" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdateWorkOrderFeatureSettings">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="update" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="addOrUpdateWorkOrderFeatureSettings">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="list" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetchWorkOrderFeatureSettings">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="typesList" class="com.facilio.bmsconsoleV3.actions.WorkOrderModuleSettingAction" method="fetchWorkOrderFeatureSettingsTypes">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
     </package>
     <package name="userScoping" namespace="/api/v1/setup/userScoping" extends="v2Api">

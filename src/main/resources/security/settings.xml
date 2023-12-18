@@ -5810,7 +5810,7 @@
             <property name="id" type="number" mandatory="true"/>
             <property name="includeParentFilter" type="boolean"/>
             <property name="page" type="number"/>
-            <property name="page" type="perPage"/>
+            <property name="perPage" type="number"/>
         </urlparams>
     </request>
     <request path="/api/v3/workOrderPlansCost/cost" method="GET">
