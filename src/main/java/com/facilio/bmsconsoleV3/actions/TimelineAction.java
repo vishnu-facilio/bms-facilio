@@ -349,7 +349,7 @@ public class TimelineAction extends RESTAPIHandler {
 				AuditLogHandler.ActionType.UPDATE, true);
 
 		if(this.getTimelineRequest() != null) {
-			FacilioChain chain = ChainUtil.getTimelineChain();
+			FacilioChain chain = ChainUtil.getTimelineScheduledViewChain();
 			FacilioContext context = TimelineViewUtil.getTimelineContext(chain, this.getTimelineRequest());
 			chain.execute();
 			setData(new JSONObject());
