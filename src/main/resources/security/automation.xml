@@ -115,9 +115,13 @@
                 <property name="relationName" type="string" />
                 <property name="description" type="string"/>
                 <property name="isVirtual" type="boolean" />
+                <property name="relationCategory" type="number" />
                 <property name="reverseRelationName" type="string" />
                 <property name="virtualRelationIds" type="array">
                     <items type="number"/>
+                </property>
+                <property name="virtualRelationConfig" type="object">
+                    <property name="relationId" type="number"/>
                 </property>
             </property>
         </requestbody>
@@ -136,14 +140,13 @@
                 <property name="relationName" type="string" />
                 <property name="description" type="string"/>
                 <property name="isVirtual" type="boolean" />
+                <property name="relationCategory" type="number" />
                 <property name="reverseRelationName" type="string" />
                 <property name="virtualRelationIds" type="array">
                     <items type="number"/>
                 </property>
-                <property name="virtualRelationConfig" type="array">
-                    <items type="object">
-                        <property name="relationId" type="number"/>
-                    </items>
+                <property name="virtualRelationConfig" type="object">
+                    <property name="relationId" type="number"/>
                 </property>
             </property>
         </requestbody>
