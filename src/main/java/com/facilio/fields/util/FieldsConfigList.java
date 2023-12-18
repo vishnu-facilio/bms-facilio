@@ -113,16 +113,37 @@ public class FieldsConfigList {
             "description","managedBy","siteType","grossFloorArea",
             "area","client","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","territory","decommissionedBy"
     );
+
+    public static final List<String> SITE_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList( // Relationship Summary fields
+            "name", "description","managedBy","siteType","grossFloorArea",
+            "area","client","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","territory","decommissionedBy"
+    );
+
     public static final List<String> BUILDING_SUMMARY_FIELDS_INCLUDE = Arrays.asList( //Summary fields
             "description","managedBy",
+            "area","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","site","decommissionedBy"
+    );
+
+    public static final List<String> BUILDING_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList( // Relationship Summary fields
+            "name", "description","managedBy",
             "area","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","site","decommissionedBy"
     );
     public static final List<String> FLOOR_SUMMARY_FIELDS_INCLUDE = Arrays.asList( //Summary fields
             "description","managedBy",
             "building","site","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
     );
+
+    public static final List<String> FLOOR_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList( // Relationship Summary fields
+            "name", "description","managedBy",
+            "building","site","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
+    );
     public static final List<String> SPACE_SUMMARY_FIELDS_INCLUDE = Arrays.asList(  //Summary fields
             "description","floor",
+            "site","building","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
+    );
+
+    public static final List<String> SPACE_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList(  // Relationship Summary fields
+            "name", "description","floor",
             "site","building","location","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
     );
     public static final List<String> ASSET_VIEW_FIELDS_EXCLUDE = Arrays.asList(
@@ -137,7 +158,13 @@ public class FieldsConfigList {
     );
 
     public static final List<String> ASSET_SUMMARY_FIELDS_INCLUDE = Arrays.asList( //Summary fields
-            "description","category","type","department","storeRoom",
+            "name", "description","category","type","department","storeRoom",
+            "manufacturer","unitPrice","site","rotatingItemType",
+            "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
+    );
+
+    public static final List<String> ASSET_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList( // Relationship Summary fields
+            "name", "description","category","type","department","storeRoom",
             "manufacturer","unitPrice","site","rotatingItemType",
             "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
     );

@@ -38,6 +38,10 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.ASSET_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
+                .relationshipSummaryFields()
+                .add(FieldsConfigList.ASSET_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
                 .add(FieldsConfigList.ASSET_VIEW_FIELDS)
                 .addFixedFields(FieldsConfigList.getNameField())
@@ -783,6 +787,10 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.SITE_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
+                .relationshipSummaryFields()
+                .add(FieldsConfigList.SITE_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
                 .addFixedFields(FieldsConfigList.SITE_VIEW_FIXED_FIELDS)
                 .add(FieldsConfigList.SITE_VIEW_FIELDS_INCLUDE)
@@ -833,6 +841,10 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.BUILDING_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
+                .relationshipSummaryFields()
+                .add(FieldsConfigList.BUILDING_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
                 .advancedFields()
                 .add(FieldsConfigList.BUILDING_FIELDS_INCLUDE)
                 .skipOnelevelFields(FieldsConfigList.BUILDING_FILTER_FIELDS_EXCLUDE)
@@ -860,6 +872,10 @@ public class APIFieldsConfig {
                 .add(FieldsConfigList.FLOOR_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
+                .relationshipSummaryFields()
+                .add(FieldsConfigList.FLOOR_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
                 .viewFields()
                 .addFixedFields(FieldsConfigList.FLOOR_VIEW_FIXED_FIELDS)
                 .add(FieldsConfigList.FLOOR_VIEW_FIELDS_INCLUDE)
@@ -880,6 +896,10 @@ public class APIFieldsConfig {
 
                 .summaryWidgetFields()
                 .add(FieldsConfigList.SPACE_SUMMARY_FIELDS_INCLUDE)
+                .done()
+
+                .relationshipSummaryFields()
+                .add(FieldsConfigList.SPACE_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE)
                 .done()
 
                 .viewFields()

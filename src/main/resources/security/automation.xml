@@ -106,6 +106,7 @@
     <!-- Relation - start -->
     <request path="/api/v2/relation/addOrUpdate">
         <requestbody type="object">
+            <property name="moduleName" type="string" />
             <property name="relation" type="object">
                 <property name="name" type="string" />
                 <property name="relationType" type="number" />
@@ -113,11 +114,18 @@
                 <property name="toModuleId" type="number" />
                 <property name="relationName" type="string" />
                 <property name="reverseRelationName" type="string" />
+                <property name="description" type="string" />
+                <property name="isVirtual" type="boolean" />
+                <property name="relationCategory" type="number" />
+                <property name="virtualRelationIds" type="array" mandatory="true">
+                    <items type="number"/>
+                </property>
             </property>
         </requestbody>
     </request>
     <request path="/api/v2/relation/:moduleName/addOrUpdate" method="POST">
         <requestbody type="object">
+            <property name="moduleName" type="string" />
             <property name="relation" type="object">
                 <property name="name" type="string" />
                 <property name="relationType" type="number" />

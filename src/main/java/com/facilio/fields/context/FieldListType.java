@@ -9,7 +9,8 @@ public enum FieldListType {
     VIEW_FIELDS("viewFields"),
     ADVANCED_FILTER_FIELDS("advancedFilterFields"),
     PAGE_BUILDER_CRITERIA_FIELDS("pageBuilderCriteriaFields", ADVANCED_FILTER_FIELDS),
-    SUMMARY_WIDGET_FIELDS("summaryWidgetFields");
+    SUMMARY_WIDGET_FIELDS("summaryWidgetFields"),
+    RELATIONSHIP_SUMMARY_WIDGET_FIELDS("relationshipSummaryWidgetFields", SUMMARY_WIDGET_FIELDS);
 
     FieldListType(String name) {
         this.name = name;

@@ -128,3 +128,6 @@ fieldListType:
     fieldResponseChain:
       - com.facilio.fields.commands.SummaryWidgetFieldsResponseCommand
 
+  - name: RELATIONSHIP_SUMMARY_WIDGET_FIELDS
+    fetchCustomFields: false
+

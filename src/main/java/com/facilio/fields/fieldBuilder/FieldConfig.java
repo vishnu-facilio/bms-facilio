@@ -40,8 +40,19 @@ public class FieldConfig {
         return addType(FieldListType.PAGE_BUILDER_CRITERIA_FIELDS);
     }
     public FieldListHandler summaryWidgetFields() {
-        return addType(FieldListType.SUMMARY_WIDGET_FIELDS);
+        FieldListHandler fieldListHandler = addType(FieldListType.SUMMARY_WIDGET_FIELDS);
+        if (!fieldListTypeHandlerMap.containsKey(FieldListType.RELATIONSHIP_SUMMARY_WIDGET_FIELDS.getName())) {
+            fieldListTypeHandlerMap.put(FieldListType.RELATIONSHIP_SUMMARY_WIDGET_FIELDS.getName(), fieldListHandler);
+        }
+        return fieldListHandler;
     }
+
+    public FieldListHandler relationshipSummaryFields() {
+        String fieldListTypeName = FieldListType.RELATIONSHIP_SUMMARY_WIDGET_FIELDS.getName();
+        fieldListTypeHandlerMap.put(fieldListTypeName, new FieldListHandler(this));
+        return fieldListTypeHandlerMap.get(fieldListTypeName);
+    }
+
     private FieldListHandler addType(FieldListType fieldListType) {
         String fieldListTypeName = fieldListType.getName();
         if (!fieldListTypeHandlerMap.containsKey(fieldListTypeName)) {
