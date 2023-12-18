@@ -86,13 +86,14 @@ public class V2AddNewAnalyticReportCommand extends FacilioCommand {
 
     public static List<V2AnalyticUserFilterContext> getReportV2UserFilter(V2ReportContext report)throws Exception
     {
-        V2ReportFiltersContext global_crt_obj = report.getG_criteria();
-        if(global_crt_obj != null && global_crt_obj.getAnalytics_user_filters() != null && global_crt_obj.getAnalytics_user_filters().size() > 0)
+        if(report != null)
         {
-            List<V2AnalyticUserFilterContext> user_filters = global_crt_obj.getAnalytics_user_filters();
-            if(user_filters != null && user_filters.size() > 0)
-            {
-              return user_filters;
+            V2ReportFiltersContext global_crt_obj = report.getG_criteria();
+            if (global_crt_obj != null && global_crt_obj.getAnalytics_user_filters() != null && global_crt_obj.getAnalytics_user_filters().size() > 0) {
+                List<V2AnalyticUserFilterContext> user_filters = global_crt_obj.getAnalytics_user_filters();
+                if (user_filters != null && user_filters.size() > 0) {
+                    return user_filters;
+                }
             }
         }
         return null;
