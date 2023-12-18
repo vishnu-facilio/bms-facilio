@@ -1526,16 +1526,20 @@
     </package>
     <package name="quotesetting" namespace="/api/v1/setup/quotesetting" extends="v3Api">
         <action name="add" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="addQuotationSetting">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="fetchQuotationSetting">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="update" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="updateQuotationSetting">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="deleteQuoteSetting">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
 		</action>
     </package>
     <package name="dispatcher" namespace="/api/v1/setup/dispatcher" extends="v2Api">
@@ -1614,9 +1618,18 @@
     </package>
 
     <package name="invoiceSetting" namespace="/api/v1/setup/invoiceSetting" extends="v3Api">
-        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="addOrUpdateInvoiceSetting"/>
-        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="fetchInvoiceSetting"/>
-        <action name="delete" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="deleteInvoiceSetting"/>
+        <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="addOrUpdateInvoiceSetting">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="fetchInvoiceSetting">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
+        <action name="delete" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="deleteInvoiceSetting">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULES</param>
+        </action>
     </package>
 
     <package name="virtualRelationSetupV1" namespace="/api/v1/setup/virtualRelation" extends="v2Api">

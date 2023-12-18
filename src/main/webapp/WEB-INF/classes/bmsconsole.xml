@@ -2312,7 +2312,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
-			<param name="permission">GET:RAED</param>
+			<param name="permission">GET:READ</param>
 		</action>
 	</package>
 	

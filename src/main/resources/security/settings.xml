@@ -2792,6 +2792,11 @@
         </requestbody>
     </request>
     <request path="/api/v3/commentPreferences/sharingOptions" method="GET"/>
+    <request path="/api/v3/commentPreferences/:permissionModuleName/sharingOptions" method="GET">
+        <urlparams type="object">
+            <property name="permissionModuleName" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/workOrderLabour/actuals">
         <requestbody type="object">
         </requestbody>
@@ -5091,7 +5096,23 @@
             <property name="fetchCount" type="boolean"/>
         </urlparams>
     </request>
-
+    <request path="/api/v2/reading/latestdata/:moduleName/:parentId" method="GET">
+        <urlparams>
+            <property name="parentId" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="readingType" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="search" type="string"/>
+            <property name="fetchCount" type="boolean"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/reading/latestdata/getReadingsRelationships/:moduleName" method="GET">
+        <urlparams type="object">
+            <property name="resourceId" type="number"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
     <request path="/api/v2/relation/:moduleName/fetchMeterRelations/:ModuleName" method="GET">
         <urlparams>
             <property name="moduleName" type="string"/>
@@ -5251,6 +5272,7 @@
             <property name="module" type="string" mandatory="true"/>
             <property name="parentModule" type="string" mandatory="true"/>
             <property name="recordId" type="number" mandatory="true"/>
+            <property name="parentModuleName" type="string" />
         </urlparams>
     </request>
 

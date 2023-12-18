@@ -1952,6 +1952,7 @@
 /api/v3/files/download/app
 /api/v2/files/add
 /api/v2/files/:parentModule/addCommentAttachments/:recordId
+/api/attachment/:module/:parentModule/add/:recordId
 /api/v2/files/download/:previewFile
 /api/v2/workflow/xml
 /api/v2/workflow/execute

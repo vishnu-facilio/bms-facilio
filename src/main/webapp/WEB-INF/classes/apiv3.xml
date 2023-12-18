@@ -2409,7 +2409,7 @@
         <action name="*/recordPeople/*" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields">
             <param name="permissionModuleName">{1}</param>
             <param name="recordId">{2}</param>
-            <param name="permission">POST:RAED</param>
+            <param name="permission">POST:READ</param>
         </action>
     </package>
 
@@ -3228,6 +3228,19 @@
             <param name="permission">
                 GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
+        </action>
+    </package>
+
+    <package name="invoiceSetting" namespace="/api/v3/invoiceSetting" extends="v3Api">
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="fetchInvoiceSetting">
+            <param name="permission">GET:READ,CREATE,UPDATE</param>
+            <param name="moduleName">invoice</param>
+        </action>
+    </package>
+    <package name="quotesetting" namespace="/api/v3/quotesetting" extends="v3Api">
+        <action name="fetch" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="fetchQuotationSetting">
+            <param name="permission">GET:READ,CREATE,UPDATE</param>
+            <param name="moduleName">quote</param>
         </action>
     </package>
 </struts>
