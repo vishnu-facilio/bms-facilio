@@ -5327,4 +5327,37 @@
             <property name="onlyFetchParentNotes" type="boolean"/>
         </urlparams>
     </request>
+
+    <request path="/api/v3/modules/pmResourcePlanner/lookupData/:relatedFieldName/:extendedModuleName" method="GET">
+        <urlparams type="object">
+            <property name="plannerId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/timelineGroupData/fetch/*" method="GET">
+        <urlparams type="object">
+            <property name="timelineModuleName" type="string" mandatory="true"/>
+            <property name="timelineViewName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/modules/:moduleName/:id" method="GET">
+        <urlparams type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="force" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/modules/jobplansection/:id/relatedList/jobplantask/taskSection" method="GET">
+        <urlparams type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="jobplansection" type="number" mandatory="true"/>
+            <property name="withCount" type="boolean"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
 </config>

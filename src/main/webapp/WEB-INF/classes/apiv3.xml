@@ -311,6 +311,16 @@
         </action>
     </package>
 
+    <package name="jobPlanAPIs" namespace="/api/v3/modules" extends="v3Api">
+        <action name="jobplansection/*/relatedList/jobplantask/taskSection" class="com.facilio.bmsconsoleV3.actions.RelatedDataAction">
+            <param name="id">{1}</param>
+            <param name="permissionModuleName">jobplan</param>
+            <param name="permission">GET:READ</param>
+            <param name="moduleName">jobplansection</param>
+            <param name="relatedModuleName">jobplantask</param>
+            <param name="relatedFieldName">taskSection</param>
+        </action>
+    </package>
 
     <package name="relationv3api" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/associate" class="com.facilio.v3.action.RelationshipDataAction" method="associateRelation">
