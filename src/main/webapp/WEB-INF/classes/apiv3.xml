@@ -2390,7 +2390,8 @@
         <action name="rotatingAssetUsages"
                 class="com.facilio.bmsconsoleV3.actions.RotatingAssetAction"
                 method="rotatingAssetUsages">
-            <param name="deprecated">true</param>
+            <param name="moduleName">asset</param>
+            <param name="permission">GET:READ</param>
         </action>
     </package>
     <package name="peoplefilter" namespace="/api/v3/people/filters" extends="v3Api">

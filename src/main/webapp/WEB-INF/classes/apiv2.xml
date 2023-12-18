@@ -1075,7 +1075,8 @@
 	<package name="assetDepreciation" extends="v2Api" namespace="/api/v2/asset/depreciation">
 		<action name="chart"
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="getDepreciationChart" >
-			<param name="deprecated">true</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">POST:READ</param>
 		</action>
 		<action name="activate"
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="activate" >
@@ -1095,7 +1096,8 @@
 		</action>
 		<action name="getForAsset"
 				class="com.facilio.bmsconsole.actions.AssetDepreciationAction" method="getForAsset" >
-			<param name="deprecated">true</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">POST:READ</param>
 		</action>
 	</package>
 
@@ -2700,7 +2702,8 @@
 	extends="v2Api">
 	<action name="addNew"
 		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetDowntime">
-		<param name="permission">GENERAL</param>
+		<param name="moduleName">asset</param>
+		<param name="permission">POST:CREATE,UPDATE</param>
 	</action>
 	<action name="add"
 			class="com.facilio.bmsconsole.actions.AssetBreakdownAction"
@@ -3721,16 +3724,36 @@
 			method="getReadingsRelationships">
 			<param name="deprecated">true</param>
 		</action>
+		<action name="getReadingsRelationships/*"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="getReadingsRelationships">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ</param>
+
+		</action>
 		<action name="getRelatedData"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestRelatedReadingData">
 			<param name="deprecated">true</param>
+		</action>
+		<action name="getRelatedData/*"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="v2GetLatestRelatedReadingData">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ</param>
 		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="v2GetLatestReadingData">
 			<param name="parentId">{1}</param>
 			<param name="deprecated">true</param>
+		</action>
+		<action name="*/*"
+				class="com.facilio.bmsconsole.actions.ReadingAction"
+				method="v2GetLatestReadingData">
+			<param name="moduleName">{1}</param>
+			<param name="parentId">{2}</param>
+			<param name="permission">GET:READ</param>
 		</action>
 	</package>
 
@@ -4352,12 +4375,13 @@
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetDowntimeMetrics">
 			<param name="moduleName">asset</param>
-			<param name="permission">asset</param>
+			<param name="permission">GET:READ</param>
 		</action>
 		<action name="downtimehistory"
 				class="com.facilio.bmsconsole.actions.AssetAction"
 				method="fetchAssetDowntimeHistory">
-			<param name="deprecated">true</param>
+			<param name="moduleName">asset</param>
+			<param name="permission">GET:READ</param>
 		</action>
 		
 		<action name="checkrunstatus"
@@ -4411,6 +4435,7 @@
 			method="v2GetLastValue">
 			<param name="deprecated">true</param>
 		</action>
+
 	</package>
 	
 	<package name="relationshipApiV2" namespace="/api/v2/relationship"
