@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.util;
 
 import com.facilio.accounts.dto.NewPermission;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.FacilioProperties;
@@ -9,6 +10,7 @@ import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingCacheContext;
 import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.interceptors.PermissionInterceptor;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
@@ -183,9 +185,19 @@ public class V3PermissionUtil {
     }
 
     public static boolean isAllowedEnvironment(){
-        return (!FacilioProperties.isOnpremise()) && FacilioProperties.isCheckPrivilegeAccess();
+        return isAllowedOrg();
     }
 
+
+    public static boolean isAllowedOrg(){
+        Organization currentOrg = AccountUtil.getCurrentOrg();
+        if (FacilioProperties.isProduction()) {
+            if(currentOrg != null) {
+                return currentOrg.getOrgId() == 1516;
+            }
+        }
+        return false;
+    }
     public static boolean isModuleAccessible(String moduleName, Long tabId) throws Exception {
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");
         FacilioModule module = Constants.getModBean().getModule(moduleName);

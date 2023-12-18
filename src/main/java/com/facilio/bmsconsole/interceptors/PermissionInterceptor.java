@@ -33,16 +33,13 @@ public class PermissionInterceptor extends AbstractInterceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         Parameter skipPermissionParam = ActionContext.getContext().getParameters().get("skipPermission");
         boolean skipPermission = skipPermissionParam != null && Boolean.parseBoolean(skipPermissionParam.getValue());
-
-        if (AccountUtil.getCurrentOrg() != null && isAllowedOrg()) {
-            try {
-                boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
-                if ( checkAgentAdminRolePermission() && V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
-                    return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
-                }
-            } catch (Exception e) {
-                LOGGER.error("Error while checking permission", e);
+        try {
+            boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
+            if ( checkAgentAdminRolePermission() && V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
+                return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
             }
+        } catch (Exception e) {
+            LOGGER.error("Error while checking permission", e);
         }
         return invocation.invoke();
     }
@@ -160,14 +157,4 @@ public class PermissionInterceptor extends AbstractInterceptor {
         return true;
     }
 
-    private static boolean isAllowedOrg(){
-        Organization currentOrg = AccountUtil.getCurrentOrg();
-
-        if(FacilioProperties.getEnvironment().equals("stage2")) {
-            return !(currentOrg.getOrgId() == 418);
-        } else if (FacilioProperties.isProduction()) {
-            return currentOrg.getOrgId() == 1516;
-        }
-        return currentOrg!=null;
-    }
 }
