@@ -6681,15 +6681,6 @@
 			<param name="permission">GET:READ,VIEW</param>
 		</action>
 	</package>
-	<package name="dashboardRolesApi" namespace="/api/v2/dashboard/setup" extends="v2Api">
-		<action name="roles" class="com.facilio.bmsconsole.actions.RoleAction" method="roleList">
-			<param name="permission">GET:READ,VIEW</param>
-			<param name="tabType">Dashboard,New Dashboard</param>
-			<result name="success" type="json">
-				<param name="includeProperties">groups.*,roles.*,users.*</param></result>
-		</action>
-	</package>
-
 	<package name="moduleWorkflowRule" namespace="/api/v2/modules/rules" extends="v2Api">
 		<action name="getRule" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="fetchWorkflowRule" >

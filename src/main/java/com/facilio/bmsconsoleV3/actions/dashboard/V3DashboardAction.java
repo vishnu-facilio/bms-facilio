@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.actions.dashboard;
 
+import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -25,10 +26,13 @@ import com.facilio.report.util.ReportUtil;
 import com.facilio.v3.V3Action;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
+import com.opensymphony.xwork2.ActionContext;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -592,5 +596,14 @@ public class V3DashboardAction extends V3Action {
             setData("baselineDataColors", context.get("baselineDataColors"));
         }
         return SUCCESS;
+    }
+    public String roleList() throws Exception {
+        List<Long> appIds = new ArrayList<>();
+        if(appId > 0){
+            appIds.add(appId);
+        }
+        List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRolesForApps(appIds);
+        setData("roles",rolesList);
+        return V3Action.SUCCESS;
     }
 }

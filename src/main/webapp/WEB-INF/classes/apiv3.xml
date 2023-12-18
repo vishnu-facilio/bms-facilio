@@ -2871,6 +2871,14 @@
             <param name="permission">GET:VIEW,READ</param>
         </action>
     </package>
+    <package name="dashboardRolesApi" namespace="/api/v3/dashboard/setup" extends="v3Api">
+        <action name="roles"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="roleList">
+            <param name="permission">GET:READ,VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
+        </action>
+    </package>
     <package name="v2CardAnalytics" namespace="/api/v3/card" extends="v3Api">
         <action name="fetch" class="com.facilio.analytics.v2.action.V2DashboardCardAction" method="fetch">
             <param name="permission">PUT:CREATE_EDIT</param>

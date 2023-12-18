@@ -703,7 +703,7 @@
             <property name="moduleName" type="string" mandatory="true"></property>
         </urlparams>
     </request>
-    <request path="/api/v2/dashboard/setup/roles" method="GET">
+    <request path="/api/v3/dashboard/setup/roles" method="GET">
         <urlparams>
             <property name="appId" type="number"></property>
         </urlparams>

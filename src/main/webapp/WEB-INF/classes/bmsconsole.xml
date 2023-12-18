@@ -3852,7 +3852,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboards.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,EDIT</param>
 		</action>
 		<action name="supportedmodules" class="com.facilio.bmsconsole.actions.DashboardAction" method="getSupportedModules">
 			<result name="success" type="json">
