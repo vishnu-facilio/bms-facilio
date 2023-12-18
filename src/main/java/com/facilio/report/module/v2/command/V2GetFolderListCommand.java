@@ -1,5 +1,8 @@
 package com.facilio.report.module.v2.command;
 
+import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.context.V2AnalyticsReportResponseContext;
@@ -20,6 +23,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +53,7 @@ public class V2GetFolderListCommand extends FacilioCommand {
     private JSONArray getFoldersList(List<ReportContext> reports, String searchText, Long appId)throws Exception
     {
         JSONArray folders_list = new JSONArray();
+        JSONArray role_specific_folders_list = new JSONArray();
         JSONObject folder_obj = null;
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(ModuleFactory.getReportFolderModule().getTableName())
@@ -86,6 +91,29 @@ public class V2GetFolderListCommand extends FacilioCommand {
                         folders_list.add(folder_obj);
                     } else if (searchText != null && !"".equals(searchText) && folder.getName().contains(searchText)) {
                         folders_list.add(folder_obj);
+                    }
+                }
+            }
+            Long orgId = AccountUtil.getCurrentOrg() != null ? AccountUtil.getCurrentOrg().getOrgId() : null;
+            User current_user = AccountUtil.getCurrentUser();
+            if(orgId != null && orgId == 1474 &&  current_user != null)
+            {
+                Role role = current_user.getRole();
+                if(role != null && role.isPrevileged() != null && !role.isPrevileged() && role.getRoleId() == 12836l && folders_list != null && folders_list.size() > 0)
+                {
+                    Iterator<JSONObject> iterator = folders_list.iterator();
+                    while (iterator.hasNext())
+                    {
+                        JSONObject folder_json = iterator.next();
+                        if(folder_json != null && folder_json.containsKey("id"))
+                        {
+                            Long id = (Long) folder_json.get("id");
+                            if(id != null && id > 0 && id == 921)
+                            {
+                                role_specific_folders_list.add(folder_json);
+                                return role_specific_folders_list;
+                            }
+                        }
                     }
                 }
             }

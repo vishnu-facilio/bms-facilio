@@ -6,6 +6,7 @@ import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldType;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -53,7 +54,11 @@ public class V2GetAnalyticReportCommand extends FacilioCommand {
         }
         for(ReportDataPointContext dataPoint : report.getDataPoints())
         {
-            if ((dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE)) && (dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM))) {
+            if(dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM) && (dataPoint.getyAxis().getAggr() == BmsAggregateOperators.CommonAggregateOperator.COUNT.getValue()))
+            {
+                dataPoint.setHandleEnum(true);
+            }
+            else if (dataPoint.getxAxis() != null && (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE) && (dataPoint.getyAxis() != null && (dataPoint.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN || dataPoint.getyAxis().getDataTypeEnum() == FieldType.ENUM)) &&  (dataPoint.getyAxis().getAggrEnum() == null || dataPoint.getyAxis().getAggr() == BmsAggregateOperators.CommonAggregateOperator.ACTUAL.getValue())) {
                 dataPoint.getyAxis().setAggr(null);
                 dataPoint.setHandleEnum(true);
             }
