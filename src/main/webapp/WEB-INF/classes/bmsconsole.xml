@@ -304,6 +304,7 @@
 		<action name="*/exportModule" class="com.facilio.bmsconsole.actions.CommonAction"
 				method="exportModule">
 			<param name="moduleName">{1}</param>
+			<param name="permission">POST:READ,READ_TEAM,READ_OWN;</param>
 			<result name="success" type="json">
 				<param name="includeProperties">fileUrl</param>
 			</result>
