@@ -30,24 +30,29 @@ public class GetChartParamsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
-
+        Long widgetId=(Long) context.get("widgetId");
         PageSectionWidgetContext pageWidget = (PageSectionWidgetContext) context.get(FacilioConstants.CustomPage.PAGE_SECTION_WIDGET);
+        PageWidget.WidgetType widgetType = (PageWidget.WidgetType) context.get("widgetType");
         if(recordId != null && recordId > 0) {
-            FacilioUtil.throwIllegalArgumentException(pageWidget == null, "pageSectionWidget can't be null while fetching chartParams");
-            String widgetName=pageWidget.getWidgetType().getName();
+            FacilioUtil.throwIllegalArgumentException(widgetId<=-1 && pageWidget == null, "pageSectionWidget can't be null while fetching chartParams");
             ChartParamWidget chartParamWidget = new ChartParamWidget();
+            if(pageWidget != null){
+                chartParamWidget.setChartParams(getChartParams(recordId,pageWidget.getWidgetType()));
+            }
+            else{
+                chartParamWidget.setChartParams(getChartParams(recordId,widgetType));
+            }
 
-            chartParamWidget.setChartParams(getChartParams(recordId,widgetName));
             context.put(FacilioConstants.CustomPage.WIDGET_DETAIL, chartParamWidget);
         }
 
         return false;
     }
 
-    private static Map<String, Object> getChartParams(long recordId , String widgetName) throws Exception {
+    private static Map<String, Object> getChartParams(long recordId , PageWidget.WidgetType widgetType) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Criteria criteria = new Criteria();
-        switch (widgetName) {
+        switch (widgetType.getName()) {
             case "avgRepairTime":
                 PageWidget cardWidget = new PageWidget(PageWidget.WidgetType.AVERAGE_REPAIR_TIME, "avgTtr");
                 Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ASSET_BREAKDOWN));

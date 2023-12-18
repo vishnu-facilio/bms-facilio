@@ -185,6 +185,7 @@ public class WidgetConfigUtil {
         context.put(FacilioConstants.CustomPage.IS_FETCH_FOR_CLONE, isFetchForClone);
         context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, isBuilderRequest);
         context.put(FacilioConstants.CustomPage.WIDGETID, id);
+        context.put(FacilioConstants.CustomPage.WIDGET_TYPE,widgetType);
 
         fetchWidgetDetailChain.execute();
 
