@@ -2363,6 +2363,7 @@
             <property name="perPage" type="number"/>
             <property name="resourceType" type="number"/>
             <property name="moduleName" type="string"/>
+            <property name="assetCategoryId" type="number"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/kpiLogger">
@@ -2704,9 +2705,9 @@
     </request>
 
     <request path="/api/v3/readingrule/actions/fetchRuleWo">
-        <requestbody type="object">
+        <urlparams type="object">
             <property name="ruleId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v3/readingrule/actions/updatewfStatus">
         <requestbody type="object">
