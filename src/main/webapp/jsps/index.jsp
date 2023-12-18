@@ -48,7 +48,7 @@
             }
 
             // set csrf token cookie
-            FacilioCookie.setCSRFTokenCookie(request, response, true);
+            String csrfToken = FacilioCookie.setCSRFTokenCookie(request, response, true);
 
             JSONObject copyrightInfo = new JSONObject();
             copyrightInfo.put("name", copyrightName);
@@ -154,7 +154,7 @@
             } else {
                 placeHolderParams.put("addOrgDomainInRootPath", Boolean.toString(false));
             }
-            placeHolderParams.put("requestHeaders", FacilioIndexJsp.constructRequestHeaders(request));
+            placeHolderParams.put("requestHeaders", FacilioIndexJsp.constructRequestHeaders(request,csrfToken));
 
             String isExport = request.getHeader("X-Is-Export");
 

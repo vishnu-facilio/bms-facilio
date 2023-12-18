@@ -45,10 +45,10 @@ public class FacilioCookie {
         return false;
     }
     
-    public static void setCSRFTokenCookie(HttpServletRequest request, HttpServletResponse response, boolean setOnlyIfNotExists) throws Exception {
+    public static String setCSRFTokenCookie(HttpServletRequest request, HttpServletResponse response, boolean setOnlyIfNotExists) throws Exception {
     	
     	if (setOnlyIfNotExists && getUserCookie(request, CSRF_TOKEN_COOKIE) != null) {
-    		return;
+    		return getUserCookie(request, CSRF_TOKEN_COOKIE);
     	}
     	
     	String csrfToken = AwsUtil.generateCSRFToken();
@@ -61,6 +61,7 @@ public class FacilioCookie {
 		}
         cookie.setHttpOnly(true);
         response.addCookie(cookie);
+        return csrfToken;
     }
 
     public static void addUserCookie(HttpServletResponse response, String key, String value, String domain) {

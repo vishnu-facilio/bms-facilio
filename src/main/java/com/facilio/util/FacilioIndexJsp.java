@@ -45,7 +45,7 @@ public class FacilioIndexJsp {
     }
 
     private static final String X_ORG_GROUP_HEADER = "X-Org-Group", X_ORG_ID_HEADER = "X-Org-Id", X_VERSION_HEADER = "X-Version", X_CSRF_TOKEN = "X-Csrf-Token";
-    public static String constructRequestHeaders (HttpServletRequest request) {
+    public static String constructRequestHeaders (HttpServletRequest request,String csrfToken) {
         Organization org = (Organization) request.getAttribute(RequestUtil.REQUEST_CURRENT_ORG);
         JSONObject headers = new JSONObject();
         if (org != null) {
@@ -57,7 +57,7 @@ public class FacilioIndexJsp {
         if (DBConf.getInstance().isNewVersion()) {
             headers.put(X_VERSION_HEADER, NEW_SERVER_QUERY_PARAM_VAL);
         }
-        headers.put(X_CSRF_TOKEN, FacilioCookie.getUserCookie(request, FacilioCookie.CSRF_TOKEN_COOKIE));
+        headers.put(X_CSRF_TOKEN, csrfToken);
         return headers.toJSONString();
     }
 }
