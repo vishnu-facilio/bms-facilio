@@ -117,7 +117,7 @@ public class MeterModule extends BaseModuleConfig{
         DateField retireDate = new DateField(module, "retireDate", "Retire Date", FacilioField.FieldDisplayType.DATETIME, "RETIRE_DATE", FieldType.DATE_TIME, false, false, true, null);
         fields.add(retireDate);
 
-        NumberField localId = new NumberField(module, "localId", "ID", FacilioField.FieldDisplayType.NUMBER, "LOCAL_ID", FieldType.NUMBER, false, false, true, null);
+        NumberField localId = new NumberField(module, "localId", "Local ID", FacilioField.FieldDisplayType.NUMBER, "LOCAL_ID", FieldType.NUMBER, false, false, true, null);
         fields.add(localId);
 
         BooleanField isCommissioned = new BooleanField(module, "isCommissioned", "Commissioned", FacilioField.FieldDisplayType.DECISION_BOX, "IS_COMMISSIONED", FieldType.BOOLEAN, false, false, true, null);

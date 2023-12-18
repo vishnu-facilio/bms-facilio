@@ -422,7 +422,7 @@ public class FieldsConfigList {
     );
 
     public static final List<String> METER_FIELDS_EXCLUDE = Arrays.asList(
-            "qrVal","approvalFlowId", "approvalStatus"
+            "qrVal","approvalFlowId", "approvalStatus", "localId"
     );
 
     public static final List<String> VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE = Arrays.asList(
