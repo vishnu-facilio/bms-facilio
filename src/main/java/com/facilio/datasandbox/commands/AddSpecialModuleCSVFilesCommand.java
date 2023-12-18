@@ -38,13 +38,17 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
         Map<String, List<Long>> fetchedRecords = (Map<String, List<Long>>) context.get(PackageConstants.FETCHED_RECORDS);
         Map<String, List<Long>> toBeFetchRecords = (Map<String, List<Long>>) context.get(PackageConstants.TO_BE_FETCH_RECORDS);
         Map<String, String> moduleNameVsCsvFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILENAME);
+        Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
+        List<String> specialModules = SandboxModuleConfigUtil.getSpecialModules(migrationModuleNameVsDetails);
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
 
-        for (Map.Entry<String, Map<String, Object>> moduleNameVsDetails : SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.entrySet()) {
-            String moduleName = moduleNameVsDetails.getKey();
-            Map<String, Object> moduleDetails = moduleNameVsDetails.getValue();
+        for (String moduleName : specialModules) {
+            if (!SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
+                continue;
+            }
+            Map<String, Object> moduleDetails = SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.get(moduleName);
 
             Criteria moduleCriteria = (Criteria) moduleDetails.get("criteria");
             FacilioModule module = (FacilioModule) moduleDetails.get("sourceModule");

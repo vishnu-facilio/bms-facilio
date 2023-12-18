@@ -561,6 +561,7 @@ public class SandboxDataMigrationUtil {
                     if (fieldName.equals("id")) {
                         moduleIdVsOldRecordIds.computeIfAbsent(moduleId, k -> new ArrayList<>());
                         moduleIdVsOldRecordIds.get(moduleId).add((long) value);
+                        continue;
                     }
 
                     if (fieldObj == null || value == null || !fieldNamesToParse.contains(fieldName)) {
@@ -597,7 +598,8 @@ public class SandboxDataMigrationUtil {
                             if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName)) {
                                 Long lookupDataId = (Long) value;
                                 if (lookupDataId > 0) {
-                                    Long parentModuleId = (Long) numberLookUps.get(fieldName).get("lookupModuleId");
+                                    FacilioModule parentLookupModule = (FacilioModule) numberLookUps.get(fieldName).get("lookupModule");
+                                    Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
                                     String numberLookupModuleName = (String) numberLookUps.get(fieldName).get("lookupModuleName");
 
                                     if (!PackageUtil.nameVsComponentType.containsKey(numberLookupModuleName)) {
@@ -660,7 +662,8 @@ public class SandboxDataMigrationUtil {
                 if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && org.apache.commons.collections4.MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
                     Long lookupDataId = (Long) fieldValue;
                     if (lookupDataId != null && lookupDataId > 0) {
-                        Long parentModuleId = (Long) numberLookups.get(fieldName).get("lookupModuleId");
+                        FacilioModule parentLookupModule = (FacilioModule) numberLookups.get(fieldName).get("lookupModule");
+                        Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
                         String lookupModuleName = (String) numberLookups.get(fieldName).get("lookupModuleName");
                         if (StringUtils.isNotEmpty(lookupModuleName) && PackageUtil.nameVsComponentType.containsKey(lookupModuleName)) {
                             Long newId = getMetaConfNewId(lookupModuleName, lookupDataId, componentTypeVsOldVsNewId);

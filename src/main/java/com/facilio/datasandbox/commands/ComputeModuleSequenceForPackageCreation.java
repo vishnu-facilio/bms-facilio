@@ -28,6 +28,7 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         List<String> runDataMigrationOnlyForModulesNames = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         Map<String, Criteria> allModuleVsCriteria = (Map<String, Criteria>) context.getOrDefault("moduleVsCriteria", new HashMap());
         boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
+        List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
@@ -53,6 +54,12 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
 
             migrationModuleNameVsDetails = SandboxModuleConfigUtil.getModuleDetails(moduleBean, migrationModules, allModuleVsCriteria, migrationModuleNameVsModObj);
             orderedModuleNameVsDetails = SandboxModuleConfigUtil.getModuleSequence(migrationModuleNameVsDetails, allDataModulesExtendsIds);
+
+            if (CollectionUtils.isNotEmpty(skipDataMigrationModules)) {
+                for (String moduleName : skipDataMigrationModules) {
+                    orderedModuleNameVsDetails.remove(moduleName);
+                }
+            }
         }
         else if (CollectionUtils.isNotEmpty(runDataMigrationOnlyForModulesNames)) {
             // if runDataMigrationOnlyForModulesNames is specified (run only for specified modules)

@@ -1022,7 +1022,9 @@ public class DataMigrationUtil {
                     put(FacilioConstants.ContextNames.SITE,FacilioConstants.ContextNames.SITE);
                     put(FacilioConstants.ContextNames.SITE_ID,FacilioConstants.ContextNames.SITE);
                 }});
-
+                put("ticketnotes",new HashMap<String,String>(){{
+                    put("parentId",FacilioConstants.ContextNames.TICKET);
+                }});
                 put("inventoryrequest",new HashMap<String,String>(){{
                     put("parentId",FacilioConstants.ContextNames.TICKET);
                 }});

@@ -38,6 +38,7 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
         long transactionTimeOut = (long) context.getOrDefault(DataMigrationConstants.TRANSACTION_TIME_OUT, 500000l);
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
+        Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
@@ -50,11 +51,13 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
             migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, null, 0);
         }
 
-        Map<Long, Long> siteIdMapping = new HashMap<>();
+        List<String> specialModules = SandboxModuleConfigUtil.getSpecialModules(migrationModuleNameVsDetails);
 
-        for (Map.Entry<String, Map<String, Object>> moduleNameVsDetails : SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.entrySet()) {
-            String moduleName = moduleNameVsDetails.getKey();
-            Map<String, Object> moduleDetails = moduleNameVsDetails.getValue();
+        for (String moduleName : specialModules) {
+            if (!SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
+                continue;
+            }
+            Map<String, Object> moduleDetails = SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.get(moduleName);
 
             if (!moduleMigrationStarted && !moduleName.equals(lastModuleName)) {
                 continue;
@@ -93,11 +96,6 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
                         isModuleMigrated = true;
                     }
                     LOGGER.info("####Data Migration - Update - In progress - " + moduleName + " - Offset - " + offset);
-
-                    if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
-                        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-                        siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
-                    }
 
                     List<Map<String, Object>> propsToInsert = sanitizeProps(dataMigrationId, migrationBean, module, allFieldsMap, dataFromCSV, numberLookUps);
 

@@ -81,7 +81,7 @@
         </td>
     </tr>
     <tr id="skipDataMigrationModulesIdRow">
-        <td class="table-head"><h4>Skip Migration</h4></td>
+        <td class="table-head"><h4>Skip Modules</h4></td>
         <td>
             <textarea id="skipDataMigrationModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
         </td>
@@ -122,7 +122,7 @@
         $("#dataMigrationIdRow").toggle(!isPackageCreationAction);
         $("#moduleSequenceRow").toggle(!isPackageCreationAction);
         $("#dataMigrationLogModulesIdRow").toggle(!isPackageCreationAction);
-        $("#skipDataMigrationModulesIdRow").toggle(!isPackageCreationAction);
+        $("#skipDataMigrationModulesIdRow").toggle(!partialPackageType);
     }
 
     function sendAjax() {
@@ -138,6 +138,7 @@
                 sourceOrgId: $("#sourceOrgId").val(),
                 transactionTimeout: $('#transactionTimeout').val(),
                 dataMigrationModules: $("#dataMigrationModules").val(),
+                skipDataMigrationModules : $('#skipDataMigrationModules').val(),
                 dataMigrationForOnlyMentionedModules : $('#dataMigrationForOnlyMentionedModules').val(),
             };
 

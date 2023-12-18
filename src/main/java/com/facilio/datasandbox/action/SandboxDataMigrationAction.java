@@ -54,6 +54,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
 
         this.setFetchStackTrace(true);
         List<String> dataMigrationModulesList = new ArrayList<>();
+        List<String> skipDataMigrationLogModulesList = new ArrayList<>();
         List<String> dataMigrationForOnlyMentionedModulesList = new ArrayList<>();
 
         if (StringUtils.isNotEmpty(dataMigrationModules)) {
@@ -64,6 +65,10 @@ public class SandboxDataMigrationAction extends FacilioAction {
             dataMigrationForOnlyMentionedModulesList = Arrays.asList(FacilioUtil.splitByComma(getDataMigrationForOnlyMentionedModules()));
         }
 
+        if (StringUtils.isNotEmpty(getSkipDataMigrationModules())) {
+            skipDataMigrationLogModulesList = Arrays.asList(FacilioUtil.splitByComma(getSkipDataMigrationModules()));
+        }
+
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL, isFromAdminTool());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
@@ -71,6 +76,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES, dataMigrationModulesList);
         dataMigrationContext.put(DataMigrationConstants.RUN_ONLY_FOR_MODULES, dataMigrationForOnlyMentionedModulesList);
+        dataMigrationContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipDataMigrationLogModulesList);
 
         copyDataMigrationChain.execute();
         LOGGER.info("####Sandbox - Completed Data Package creation");

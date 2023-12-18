@@ -109,8 +109,8 @@ public class DataMigrationUpdateInsertDataLookupDetails extends FacilioCommand {
         Map<String, FacilioField> targetFieldNameVsFields = new HashMap<>();
 
         if (CollectionUtils.isNotEmpty(targetFields)) {
-            targetFields = targetFields.stream().filter(field -> (field.getName().equals("id") || field.getName().equals("siteId") || ((field.getDataTypeEnum().equals(FieldType.LOOKUP)
-                            || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP)) && ((BaseLookupField)field).getLookupModule().getTypeEnum()== FacilioModule.ModuleType.BASE_ENTITY))
+            targetFields = targetFields.stream().filter(field -> (field.getName().equals("id") || field.getName().equals("siteId") || (field.getDataTypeEnum().equals(FieldType.LOOKUP)
+                            || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP)))
                             || (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(field.getName())))
                     .collect(Collectors.toList());
             targetFieldNameVsFields = targetFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));

@@ -62,6 +62,25 @@ public class SandboxModuleConfigUtil {
         return moduleDetails;
     }
 
+    private static Map<String, List<String>> getParentModuleVsChildModules() {
+        Map<String, List<String>> parentModuleVsChildModules = new HashMap<>();
+        parentModuleVsChildModules.put("task", Arrays.asList("tasksection", "taskInputOpyion"));
+
+        return parentModuleVsChildModules;
+    }
+
+    public static List<String> getSpecialModules(Map<String, Map<String, Object>> migrationModuleNameVsDetails) {
+        List<String> specialModulesList = new ArrayList<>();
+        Map<String, List<String>> parentModuleVsChildModules = getParentModuleVsChildModules();
+        for (Map.Entry<String, List<String>> entry : parentModuleVsChildModules.entrySet()) {
+            if (migrationModuleNameVsDetails.containsKey(entry.getKey())) {
+                specialModulesList.addAll(entry.getValue());
+            }
+        }
+
+        return specialModulesList;
+    }
+
     // Modules copied in Meta are reUpdated in DataMigration flow
     public static List<String> updateOnlyModulesList() {
         return new ArrayList<String>(){{
@@ -107,6 +126,9 @@ public class SandboxModuleConfigUtil {
             put("workpermittype", "type");
             put("alarmType", "linkName");
             put("serviceTaskStatus", "name");
+            put("timeOffType", "name");
+            put("timeSheetStatus", "status");
+            put("serviceAppointmentTicketStatus", "status");
         }};
     }
 

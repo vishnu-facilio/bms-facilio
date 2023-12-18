@@ -120,6 +120,8 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             Map<String, String> nonNullableFieldVsLookupModules = nonNullableModuleVsFieldVsLookupModules.getOrDefault(moduleName, new HashMap<>());
             if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
                 FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+                parentModule = (moduleName.equals(FacilioConstants.ContextNames.CUSTOM_ACTIVITY)) ? module : parentModule;
+
                 nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
                 nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
             }
@@ -271,8 +273,9 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                         if ((fieldObj != null && fieldObj.getDataTypeEnum() == FieldType.FILE) || (CollectionUtils.isNotEmpty(numberFileFields) && numberFileFields.contains(fieldName))) {
                             Map<String, Object> fileProp = (Map<String, Object>) value;
                             if (MapUtils.isNotEmpty(fileProp)) {
+                                String fileFieldPropName = (fieldObj != null && fieldObj.getDataTypeEnum() == FieldType.FILE) ? fieldName + "Id" : fieldName;
                                 long newFileId = DataPackageFileUtil.getNewFileId(fileProp);
-                                updatedProp.put(fieldName, newFileId);
+                                updatedProp.put(fileFieldPropName, newFileId);
                             }
                             continue;
                         }

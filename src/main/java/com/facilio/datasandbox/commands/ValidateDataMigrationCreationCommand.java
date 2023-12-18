@@ -18,7 +18,7 @@ public class ValidateDataMigrationCreationCommand extends FacilioCommand {
         List<String> runOnlyForModules = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
 
-        boolean getDependantModuleData = !(createFullDataPackage || CollectionUtils.isEmpty(runOnlyForModules));
+        boolean getDependantModuleData = !(createFullDataPackage || CollectionUtils.isNotEmpty(runOnlyForModules));
         FacilioUtil.throwIllegalArgumentException(sourceOrgId == null || sourceOrgId <= 0, "Source OrgId cannot be null");
 
         AccountUtil.setCurrentAccount(sourceOrgId);

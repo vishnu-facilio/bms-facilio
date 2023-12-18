@@ -4,12 +4,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.ComponentType;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
+import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -101,6 +103,8 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             Map<String, String> nonNullableFieldVsLookupModules = nonNullableModuleVsFieldVsLookupModules.getOrDefault(moduleName, new HashMap<>());
             if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
                 FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+                parentModule = (moduleName.equals(FacilioConstants.ContextNames.CUSTOM_ACTIVITY)) ? module : parentModule;
+
                 nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
                 nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
             }
@@ -108,10 +112,14 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
 
             Map<String, FacilioField> lookupTypeFieldsMap = getLookupTypeFields(module, allFields, new ArrayList<>(nonNullableFieldVsLookupModules.keySet()), numberLookUps);
-            if (MapUtils.isEmpty(numberLookUps) && MapUtils.isEmpty(lookupTypeFieldsMap)) {
+            if (MapUtils.isEmpty(lookupTypeFieldsMap)) {
                 LOGGER.info("####Data Migration - Update - Fields to Update is null for ModuleName - " + moduleName);
                 continue;
             }
+
+            // Add System Fields "id"
+            FacilioField idField = FieldFactory.getIdField(module);
+            lookupTypeFieldsMap.putIfAbsent("id", idField);
 
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<SupplementRecord> supplementRecords = DataMigrationUtil.getSupplementFields(lookupTypeFieldsMap.values());
@@ -139,6 +147,12 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                         isModuleMigrated = true;
                     }
                     LOGGER.info("####Data Migration - Update - In progress - " + moduleName + " - Offset - " + offset);
+
+                    // dataFromCSV may contain additional fields, remove unnecessary fields for Update
+                    for (Map<String, Object> prop : dataFromCSV) {
+                        List<String> nonLookUpKeys = prop.keySet().stream().filter(key -> !lookupTypeFieldsMap.containsKey(key)).collect(Collectors.toList());
+                        nonLookUpKeys.forEach(prop::remove);
+                    }
 
                     if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
                         FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
@@ -194,6 +208,9 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                         if (oldIdVsNewIdMapping.containsKey(module.getModuleId()) && oldIdVsNewIdMapping.get(module.getModuleId()).containsKey(oldId)) {
                             Long newId = oldIdVsNewIdMapping.get(module.getModuleId()).get(oldId);
                             updatedProp.put(fieldName, newId);
+                        } else if (PackageUtil.nameVsComponentType.containsKey(module.getName())) {
+                            Long newId = SandboxDataMigrationUtil.getMetaConfNewId(module.getName(), oldId, componentTypeVsOldVsNewId);
+                            updatedProp.put(fieldName, newId);
                         } else {
                             LOGGER.info("####Data Migration - Update - Record not created - ModuleName - " + module.getName() + " OldId - " + oldId);
                             continue;
@@ -228,11 +245,11 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
         Map<String, FacilioField> targetFieldNameVsFields = new HashMap<>();
 
         if (CollectionUtils.isNotEmpty(allFields)) {
-            targetFields = allFields.stream().filter(field -> (field.getName().equals("id") || field.getName().equals("siteId") || ((field.getDataTypeEnum().equals(FieldType.LOOKUP)
-                            || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP)) && ((BaseLookupField) field).getLookupModule().getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY))
-                            || (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(field.getName()))
-                            || (CollectionUtils.isNotEmpty(nonNullableFieldNames) && !nonNullableFieldNames.contains(field.getName())))
+            targetFields = allFields.stream().filter(field -> field.getName().equals("id") || field.getName().equals("siteId") || field.getDataTypeEnum().equals(FieldType.LOOKUP)
+                            || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP)
+                            || (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(field.getName())))
                     .collect(Collectors.toList());
+            targetFields.removeIf(field -> (CollectionUtils.isNotEmpty(nonNullableFieldNames) && nonNullableFieldNames.contains(field.getName())));
             targetFieldNameVsFields = targetFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
         }
 
