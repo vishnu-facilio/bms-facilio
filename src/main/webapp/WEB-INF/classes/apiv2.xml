@@ -1917,7 +1917,15 @@
 			<param name="viewName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
-		
+		<action name="*/*/*"
+				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
+			<param name="translationImpl">ViewColumnTranslation</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="viewName">{3}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+
 		<action name="addGroup"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2addGroup">
 			<param name="permission">POST:CREATE</param>
@@ -3801,6 +3809,13 @@
 				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
 			<param name="fieldListType">{1}</param>
 			<param name="moduleName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="config/*/*/*"
+				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
+			<param name="fieldListType">{1}</param>
+			<param name="permissionModuleName">{2}</param>
+			<param name="moduleName">{3}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -8159,7 +8174,8 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" >
-			 <param name="skipPermission">true</param>
+			 <param name="permission">ALL;GET:CAN_APPROVE</param>
+			<param name="setupTab">PORTALS,USERS,ROLES,CONNECTED_APPS,API_SETUP,AUDIT_LOGS,PEOPLE,MODULES</param>
 		</action>
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplicationBasedOnModule">

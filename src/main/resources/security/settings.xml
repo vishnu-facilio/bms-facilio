@@ -2035,6 +2035,13 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v2/fields/config/:fieldListType/:permissionModuleName/:moduleName">
+        <urlparams>
+            <property name="fieldListType" type="string" mandatory="true"/>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 
     <request path="/api/v2/fields/config/:fieldListType/:moduleName" method="POST">
         <urlparams>

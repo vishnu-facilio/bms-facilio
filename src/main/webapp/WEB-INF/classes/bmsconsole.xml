@@ -1731,6 +1731,17 @@
 				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
+		<action name="*/*/meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="metadata">
+			<param name="translationImpl">ModuleTranslation</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
 		<action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metaFilterFields">
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>

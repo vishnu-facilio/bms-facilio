@@ -354,7 +354,7 @@
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="permission">
-                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+                ALL;GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
             <param name="setupTab">PEOPLE,TEAMS,LABOUR,CRAFTS</param>
         </action>
@@ -2591,7 +2591,7 @@
             <param name="id">{2}</param>
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 
@@ -2629,7 +2629,7 @@
             <param name="moduleName">{1}</param>
             <param name="fieldName">{2}</param>
             <param name="extendedModuleName">{3}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE</param>
         </action>
     </package>
 
