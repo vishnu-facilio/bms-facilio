@@ -3102,6 +3102,16 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v1/setup/iamuser/reset/:uid/password" method="POST" allowedRequest="3">
+        <requestbody type="object">
+            <property name="user" type="object">
+                <property name="uid" type="number"/>
+            </property>
+        </requestbody>
+        <urlparams>
+            <property name="uid" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/iamuser/getpeople" method="GET">
         <urlparams>
             <property name="email" type="string"/>

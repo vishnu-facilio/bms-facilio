@@ -61,6 +61,7 @@ public class IAMUserManagementAction extends FacilioAction{
     private List<PeopleUserContext> users = null;
     private Boolean fetchCount;
     private Boolean isUserVerified=null;
+    private long uid;
     public Boolean getFetchCount() {
         if (fetchCount == null) {
             return false;
@@ -368,6 +369,12 @@ public class IAMUserManagementAction extends FacilioAction{
         return SUCCESS;
     }
 
+    public String sendResetPasswordLinkUid() throws Exception{
+        if(uid > 0) {
+            IdentityClient.getDefaultInstance().getUserBean().sendResetPasswordLink(uid);
+        }
+        return SUCCESS;
+    }
     public String getPeople() throws Exception{
 
         PeopleContext people = ApplicationUserUtil.checkIfExistsinPeople(email);

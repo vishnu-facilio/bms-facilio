@@ -1325,6 +1325,13 @@
             <param name="setupTab">USERS</param>
             <param name="permission">ALL</param>
         </action>
+        <action name="reset/*/password"
+                class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="sendResetPasswordLinkUid">
+            <param name="setupTab">USERS</param>
+            <param name="permission">ALL</param>
+            <param name="rateLimitKey">{1}</param>
+            <param name="uid">{1}</param>
+        </action>
         <action name="getpeople"
                 class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getPeople">
             <param name="setupTab">USERS</param>

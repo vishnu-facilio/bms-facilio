@@ -7,10 +7,12 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.security.ratelimiter.APIRateLimiter;
 import com.facilio.security.ratelimiter.RateLimiterAPI;
 import com.facilio.security.requestvalidator.Executor;
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import lombok.extern.log4j.Log4j;
 import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,9 +32,17 @@ public class AccessRateInterceptor extends AbstractInterceptor {
             if (executor != null) {
                 maxAllowedReqCount = executor.getMaxAllowedReqCount();
             }
-
+            String rateLimitKey = null;
+            try {
+                Parameter rateLimiterKeyParam = ActionContext.getContext().getParameters().get("rateLimitKey");
+                if (rateLimiterKeyParam != null && rateLimiterKeyParam.getValue() != null) {
+                    rateLimitKey = rateLimiterKeyParam.getValue();
+                }
+            } catch (Exception e) {
+                LOGGER.error("Error while getting rateLimitKey from request", e);
+            }
             APIRateLimiter rateLimiter = RateLimiterAPI.getRateLimiter();
-            if (org != null && user != null && !(rateLimiter.allow(request.getRequestURI(), user.getUid(), org.getOrgId(), null, maxAllowedReqCount))) {
+            if (org != null && user != null && !(rateLimiter.allow(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey, maxAllowedReqCount))) {
                 HttpServletResponse response = ServletActionContext.getResponse();
                 response.setHeader("X-Retry-After", String.valueOf(FacilioProperties.getRateLimiterInterval()));
 
