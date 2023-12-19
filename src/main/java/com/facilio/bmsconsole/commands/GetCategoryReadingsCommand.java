@@ -57,6 +57,7 @@ public class GetCategoryReadingsCommand extends FacilioCommand {
 		}
 
 		List<FacilioModule> existingReadings = (List<FacilioModule>) context.getOrDefault(FacilioConstants.ContextNames.MODULE_LIST, new ArrayList<>());
+		existingReadings = existingReadings != null ? existingReadings : new ArrayList<>();
 		existingReadings.addAll(childReadingModuleList);
 
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, existingReadings);
