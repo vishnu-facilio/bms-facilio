@@ -25,7 +25,11 @@ public class BinLookupCommandV3 extends FacilioCommand {
         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
         List<SupplementRecord> additionalLookups = new ArrayList<SupplementRecord>();
         LookupField itemField = (LookupField) fieldsAsMap.get("item");
+        LookupField toolField = (LookupField) fieldsAsMap.get("tool");
+
         additionalLookups.add(itemField);
+        additionalLookups.add(toolField);
+
 
         context.put(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS,additionalLookups);
         return false;

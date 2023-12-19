@@ -442,13 +442,14 @@ public class V3ToolsApi {
     }
 
     public static void makeBinDefault(V3ToolContext tool, V3BinContext bin) throws Exception {
-        //cloning the existing bin to avoid circular reference
-        tool.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
+        V3ToolContext updateTool = new V3ToolContext();
+        updateTool.setId(tool.getId());
+        updateTool.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
         FacilioField binField = modBean.getField("defaultBin", FacilioConstants.ContextNames.TOOL);
         if(module != null && binField != null){
-            V3RecordAPI.updateRecord(tool, module,Arrays.asList(binField));
+            V3RecordAPI.updateRecord(updateTool, module,Arrays.asList(binField));
         }
     }
 }

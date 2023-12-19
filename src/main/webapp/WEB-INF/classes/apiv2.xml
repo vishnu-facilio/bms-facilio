@@ -5677,17 +5677,11 @@
 	</package>
 	<package name="itemTransactionsList"
 		namespace="/api/v2/itemTransactions/view" extends="v2Api">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
-			method="itemsList">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ,READ_OWN</param>
-			<param name="viewName">{1}</param>
-		</action>
-		<action name="showItemTransactionListForReturn"
+		<action name="*/showItemTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ItemTransactionsAction"
 			method="showItemTransactionListForReturn">
-			<param name="moduleName">inventory</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">itemTransactions</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="showItemTransactionListForIssue"
@@ -5791,17 +5785,11 @@
 	</package>
 	<package name="toolTransactionsList"
 		namespace="/api/v2/toolTransactions/view" extends="v2Api">
-		<action name="*"
-			class="com.facilio.bmsconsole.actions.ToolTransactionsAction"
-			method="toolsTransactionsList">
-			<param name="moduleName">inventory</param>
-			<param name="permission">READ,READ_OWN</param>
-			<param name="viewName">{1}</param>
-		</action>
-		<action name="showToolTransactionListForReturn"
+		<action name="*/showToolTransactionListForReturn"
 			class="com.facilio.bmsconsole.actions.ToolTransactionsAction"
 			method="showToolTransactionListForReturn">
-			<param name="moduleName">inventory</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">toolTransactions</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>
 		<action name="showToolTransactionListForIssue"

@@ -2875,11 +2875,27 @@
         <requestbody type="object">
         </requestbody>
     </request>
+    <request path="/api/v3/modules/bulkCreate/related/:permissionModuleName/:moduleName">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+        </requestbody>
+    </request>
     <request path="/api/v3/workOrderPlansCost/cost">
         <requestbody type="object">
         </requestbody>
     </request>
     <request path="/api/v3/modules/bulkPatch/:moduleName">
+        <requestbody type="object">
+        </requestbody>
+    </request>
+    <request path="/api/v3/modules/bulkPatch/related/:permissionModuleName/:moduleName">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
         <requestbody type="object">
         </requestbody>
     </request>
@@ -3262,67 +3278,75 @@
             </property>
         </requestbody>
     </request>
-    <request path="/api/v3/workOrderItem/getWorkorderItem">
-        <requestbody type="object">
-            <property name="workOrderId" type="number" mandatory="true"/>
-            <property name="itemId" type="number" mandatory="true"/>
-        </requestbody>
+    <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkorderItem">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="itemId" type="number"/>
+            <property name="workOrderId" type="number"/>
+        </urlparams>
     </request>
-    <request path="/api/v3/getWorkorderTools">
-        <requestbody type="object">
-            <property name="workOrderId" type="number" mandatory="true"/>
-            <property name="toolId" type="number" mandatory="true"/>
-        </requestbody>
-    </request>
-    <request path="/api/v3/workOrderItem/getWorkorderItemFromReservation">
-        <requestbody type="object">
+    <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkorderItemFromReservation">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
             <property name="reservationId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/workorderTools/getWorkorderToolFromReservation">
-        <requestbody type="object">
+    <request path="/api/v3/workorderTools/:permissionModuleName/getWorkorderToolFromReservation">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
             <property name="reservationId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/workOrderItem/getWorkOrderItemFromIssuedItem">
-        <requestbody type="object">
-            <property name="workOrderId" type="number" mandatory="true"/>
+    <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkOrderItemFromIssuedItem">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="workOrderId" type="number"/>
             <property name="itemTransactionId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/workorderTools/getWorkOrderToolFromIssuedTool">
-        <requestbody type="object">
-            <property name="workOrderId" type="number" mandatory="true"/>
+    <request path="/api/v3/workorderTools/:permissionModuleName/getWorkOrderToolFromIssuedTool">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="workOrderId" type="number"/>
             <property name="toolTransactionId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v3/workorderService/getWorkorderService">
-        <requestbody type="object">
+        <urlparams>
             <property name="workOrderId" type="number" mandatory="true"/>
             <property name="serviceId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
-    <request path="/api/v3/workorderTools/getWorkorderTool">
-        <requestbody type="object">
-            <property name="workOrderId" type="number" mandatory="true"/>
+    <request path="/api/v3/workorderTools/:permissionModuleName/getWorkorderTool">
+        <urlparams>
+            <property name="workOrderId" type="number"/>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
             <property name="toolId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v3/workOrderPlannedItems/reserve">
-        <requestbody type="object">
-            <property name="recordIds" type="array" mandatory="true"/>
+        <urlparams>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+        </urlparams>
+        <requestbody>
+
         </requestbody>
     </request>
     <request path="/api/v3/workOrderPlannedTools/reserve">
-        <requestbody type="object">
-            <property name="recordIds" type="array" mandatory="true"/>
-        </requestbody>
+        <urlparams>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+        </urlparams>
     </request>
-    <request path="/api/v3/workOrderPlannedTools/forActuals">
-        <requestbody type="object">
+    <request path="/api/v3/workOrderPlannedTools/:parentModuleName/forActuals">
+        <urlparams type="object">
+            <property name="parentModuleName" type="string" mandatory="true"/>
             <property name="workOrderId" type="number" mandatory="true"/>
             <property name="plannedToolId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v3/workOrderPlannedServices/forActuals">
         <requestbody type="object">
@@ -5266,6 +5290,7 @@
             <property name="clientCriteria" type="string"/>
             <property name="orderType" type="string"/>
             <property name="orderBy" type="string"/>
+            <property name="force" type="boolean"/>
         </urlparams>
     </request>
 
@@ -5724,4 +5749,18 @@
     </request>
 
 
+    <request path="/api/v2/itemTransactions/view/:permissionModuleName/showItemTransactionListForReturn" method="GET">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="showItemsForReturn" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/toolTransactions/view/:permissionModuleName/showToolTransactionListForReturn" method="GET">
+        <urlparams>
+            <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="showToolsForReturn" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
 </config>

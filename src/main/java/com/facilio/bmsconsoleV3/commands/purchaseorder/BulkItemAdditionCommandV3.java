@@ -76,8 +76,9 @@ public class BulkItemAdditionCommandV3 extends FacilioCommand {
                         pItem.setItem(item);
                         pItem.setItemType(item.getItemType());
                         if(pItem.getBin() == null){
-                            if(item.getDefaultBin() != null){
-                                pItem.setBin(item.getDefaultBin());
+                            V3BinContext defaultBin = V3ItemsApi.getDefaultBin(item);
+                            if(defaultBin != null){
+                                pItem.setBin(defaultBin);
                             } else {
                                 V3BinContext bin = V3ItemsApi.addVirtualBin(item);
                                 pItem.setBin(bin);

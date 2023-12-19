@@ -2274,39 +2274,52 @@
 
     <package name="workorderItem" namespace="/api/v3/workOrderItem"
              extends="v3Api">
-        <action name="getWorkorderItem"
+        <action name="*/getWorkorderItem"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkorderItem">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
-        <action name="getWorkorderItemFromReservation"
+
+        <action name="*/getWorkorderItemFromReservation"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkorderItemFromReservation">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
-        <action name="getWorkOrderItemFromIssuedItem"
+        <action name="*/getWorkOrderItemFromIssuedItem"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkOrderItemFromIssuedItem">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 
     <package name="workorderTools" namespace="/api/v3/workorderTools"
              extends="v3Api">
-        <action name="getWorkorderTool"
+        <action name="*/getWorkorderTool"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderTool">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
-        <action name="getWorkorderToolFromReservation"
+        <action name="*/getWorkorderToolFromReservation"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderToolFromReservation">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
-        <action name="getWorkOrderToolFromIssuedTool"
+        <action name="*/getWorkOrderToolFromIssuedTool"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkOrderToolFromIssuedTool">
-            <param name="deprecated">true</param>
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 
@@ -2315,7 +2328,9 @@
         <action name="getWorkorderService"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderServiceActionV3"
                 method="getWorkorderService">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workorderService</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 
@@ -2363,7 +2378,9 @@
         <action name="reserve"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedItemsAction"
                 method="reserve">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workOrderPlannedItems</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
     <package name="workOrderPlannedTools" namespace="/api/v3/workOrderPlannedTools"
@@ -2371,12 +2388,16 @@
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="getPlannedToolForActuals">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workOrderPlannedTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
         <action name="reserve"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedToolsAction"
                 method="reserve">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workOrderPlannedTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
     <package name="workOrderPlannedServices" namespace="/api/v3/workOrderPlannedServices"
@@ -2384,7 +2405,9 @@
         <action name="forActuals"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderPlannedServicesAction"
                 method="getPlannedServiceForActuals">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workOrderPlannedServices</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
     <package name="workOrderPlansCost" namespace="/api/v3/workOrderPlansCost"
@@ -2439,11 +2462,15 @@
     <package name="workOrderLabourV3" namespace="/api/v3/workOrderLabour" extends="v3Api">
         <action name="actuals" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
                 method="actualLabour">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workorderLabourPlan</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
         <action name="plans" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
                 method="plannedLabour">
-            <param name="deprecated">true</param>
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">workorderLabourPlan</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
 
@@ -2676,12 +2703,27 @@
             <param name="moduleName">{1}</param>
             <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
         </action>
+        <action name="related/*/*"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkCreate">
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">{2}</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+        </action>
     </package>
+
     <package name="bulkPatchAPI" extends="v3Api" namespace="/api/v3/modules/bulkPatch">
         <action name="*"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="bulkPatch">
             <param name="moduleName">{1}</param>
+            <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
+        </action>
+        <action name="related/*/*"
+                class="com.facilio.v3.RESTAPIHandler"
+                method="bulkPatch">
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">{2}</param>
             <param name="permission">POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;</param>
         </action>
     </package>

@@ -482,12 +482,22 @@ public class V3ItemsApi {
 
     public static void makeBinDefault(V3ItemContext item, V3BinContext bin) throws Exception {
 		//cloning the existing bin to avoid circular reference
-		item.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
+        V3ItemContext updateItem = new V3ItemContext();
+        updateItem.setId(item.getId());
+        updateItem.setDefaultBin(FieldUtil.cloneBean(bin, V3BinContext.class));
 		ModuleBean modBean = Constants.getModBean();
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		FacilioField binField = modBean.getField("defaultBin", FacilioConstants.ContextNames.ITEM);
 		if(module != null && binField != null){
-			V3RecordAPI.updateRecord(item, module,Arrays.asList(binField));
+			V3RecordAPI.updateRecord(updateItem, module,Arrays.asList(binField));
 		}
 	}
+
+    public static V3BinContext getDefaultBin(V3ItemContext item) throws Exception {
+        if(item.getDefaultBin() != null){
+            return item.getDefaultBin();
+        }
+        V3ItemContext record = V3RecordAPI.getRecord(FacilioConstants.ContextNames.ITEM, item.getId(), V3ItemContext.class);
+        return record.getDefaultBin();
+    }
 }

@@ -186,10 +186,11 @@ public class PurchaseOrderAutoCompleteCommand extends FacilioCommand {
 		tool.setStoreRoom(po.getStoreRoom());
 		tool.setToolType(lineItem.getToolType());
 		tool.setQuantity(lineItem.getQuantity());
-		V3PurchasedToolContext purchasedItem = new V3PurchasedToolContext();
-		purchasedItem.setQuantity(lineItem.getQuantity());
-		purchasedItem.setUnitPrice(lineItem.getUnitPrice());
-		tool.setPurchasedTools(Collections.singletonList(purchasedItem));
+		V3PurchasedToolContext purchasedTool = new V3PurchasedToolContext();
+		purchasedTool.setQuantity(lineItem.getQuantity());
+		purchasedTool.setCurrentQuantity(lineItem.getQuantity());
+		purchasedTool.setUnitPrice(lineItem.getUnitPrice());
+		tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 		CurrencyUtil.setCurrencyCodeAndExchangeRateForWrite(tool, baseCurrency, currencyMap, lineItem.getCurrencyCode(),
 				lineItem.getExchangeRate());
 
