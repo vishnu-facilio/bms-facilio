@@ -271,7 +271,7 @@
         </action>
     </package>
 
-    <package name="lookupModuleAction" namespace="/api/v3/modules" extends="v3Api">
+    <package name="lookupModuleActionPMv2" namespace="/api/v3/modules" extends="v3Api">
         <action name="pmResourcePlanner/lookupData/*/*" class="com.facilio.bmsconsoleV3.actions.LookupModuleDataAction" method="getLookupListData">
             <param name="permissionModuleName">plannedmaintenance</param>
             <param name="moduleName">pmResourcePlanner</param>
@@ -281,7 +281,7 @@
         </action>
     </package>
 
-    <package name="timelineV3Api" namespace="/api/v3/modules/data/timeline/plannedmaintenance" extends="v3Api">
+    <package name="timelineV3ApiPMv2" namespace="/api/v3/modules/data/timeline/plannedmaintenance" extends="v3Api">
         <action name="get"
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineData">
@@ -777,7 +777,7 @@
         </action>
     </package>
 
-    <package name="bulkActionCreatePermissionModuleName" namespace="/api/v3/bulkAction" extends="v3Api">
+    <package name="bulkActionCreatePMv2" namespace="/api/v3/bulkAction" extends="v3Api">
         <action name="create/plannedmaintenance"
                 class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"
                 method="bulkActionCreate">

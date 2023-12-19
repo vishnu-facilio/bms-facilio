@@ -5433,6 +5433,24 @@
     <request path="/api/v3/modules/pmResourcePlanner/lookupData/:relatedFieldName/:extendedModuleName" method="GET">
         <urlparams type="object">
             <property name="plannerId" type="number"/>
+            <property name="relatedFieldName" type="string"/>
+            <property name="extendedModuleName" type="string"/>
+            <property name="viewname" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/pmResourcePlanner/lookupData/jobPlan" method="GET">
+        <urlparams type="object">
+            <property name="viewname" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="filters" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v3/timelineGroupData/fetch/*" method="GET">
