@@ -927,7 +927,7 @@ public class SpaceAPI {
 				.beanClass(FloorContext.class)
 				.andCondition(CriteriaAPI.getCondition("BUILDING_ID", "building", String.valueOf(buildingId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(BaseSpaceContext.SpaceType.FLOOR.getIntVal()), NumberOperators.EQUALS))
-				.orderBy("Floor.FLOOR_LEVEL ASC,Resources.NAME ASC");
+				.orderBy("Floor.FLOOR_LEVEL is null,Floor.FLOOR_LEVEL ASC,Resources.NAME ASC");
 		boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
 		if (skipModuleCriteria) {
 			selectBuilder.skipModuleCriteria();

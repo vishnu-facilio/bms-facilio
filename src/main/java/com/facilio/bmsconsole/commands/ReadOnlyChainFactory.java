@@ -3621,6 +3621,8 @@ public class ReadOnlyChainFactory {
     public static FacilioChain getTreeParentNodesChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new FetchSpaceDetailsCommand());
+		chain.addCommand(new FetchSiteDirectChildrenCommand());
+		chain.addCommand(new FetchFloorLevelMapCommand());
 		chain.addCommand(new FetchChildNodesCommand());
 		return chain;
     }

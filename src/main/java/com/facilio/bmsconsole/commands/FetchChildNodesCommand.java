@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -16,14 +13,13 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.*;
 
 public class FetchChildNodesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long buildingId = (long) context.get("buildingId");
-        List<Map<String,Object>> siteChildren = getSiteNode((Long) context.get("siteId"),context);
+        List<Map<String,Object>> siteChildren = (List<Map<String, Object>>) context.get("SITE_CHILDREN_PROPS");
         if(buildingId != -1){
             getTreeNode(buildingId, context);
             List<Map<String, Object>> nodeProps = (List<Map<String, Object>>) context.get("node");
@@ -32,12 +28,17 @@ public class FetchChildNodesCommand extends FacilioCommand {
             List<Long> addedKeys = new ArrayList<>();
             for (Map<String, Object> nodeProp : nodeProps) {
                 if (!nodeProp.containsKey("parentId")) {
-                    Map<String, Object> modifiedProp = nodeProp;
+                    Map<String, Object> modifiedProp = new HashMap<>(nodeProp);
+                    boolean isContainsFloor = false;
                     if (parentIdVsChildrenMap.containsKey(nodeProp.get("id").toString())) {
-                        getChilNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("id").toString(), addedKeys);
+                        getChildNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("id").toString(), addedKeys);
+                        isContainsFloor = true;
                     }
                     modifiedProp.put("children", modifiedProp.get("children"));
                     modifiedProp.put("isOpen",true);
+                    if(isContainsFloor){
+                        modifiedProp.put("children",  getFloorsByLevels(modifiedProp,context));
+                    }
                     childNodes.add(modifiedProp);
                 }
             }
@@ -50,45 +51,30 @@ public class FetchChildNodesCommand extends FacilioCommand {
         }
         context.put("node", siteChildren);
         return false;
-        }
-
-    private List<Map<String, Object>> getSiteNode(Long spaceId,Context context) throws Exception {
-        List<BuildingContext> siteChildren = SpaceAPI.getSiteBuildings(spaceId);
-        List<SpaceContext> independantSpaces = SpaceAPI.getIndependentSpaces(spaceId,context);
-        List<Map<String, Object>> siteChildrenProps = new ArrayList<>();
-        if(siteChildren != null && !siteChildren.isEmpty()) {
-            for (BuildingContext building : siteChildren) {
-                Map<String, Object> buildingProp = new HashMap<>();
-                buildingProp.put("title", building.getName());
-                buildingProp.put("id", building.getId());
-                buildingProp.put("isOpen",false);
-                buildingProp.put("isEnd",false);
-                buildingProp.put("moduleName", building.getSpaceTypeEnum().getStringVal());
-                siteChildrenProps.add(buildingProp);
-            }
-        }
-        if(independantSpaces != null && !independantSpaces.isEmpty()) {
-            for (SpaceContext space : independantSpaces) {
-                Map<String, Object> buildingProp = new HashMap<>();
-                buildingProp.put("title", space.getName());
-                buildingProp.put("id", space.getId());
-                buildingProp.put("moduleName", space.getSpaceTypeEnum().getStringVal());
-                buildingProp.put("isOpen",false);
-                buildingProp.put("isEnd", false);
-                siteChildrenProps.add(buildingProp);
-            }
-        }
-        return siteChildrenProps;
     }
 
-    private void getChilNodes(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentIdVsChildrenMap, String key,List<Long> addedKeys) {
+    private List<Map<String, Object>> getFloorsByLevels(Map<String, Object> modifiedProp, Context context) throws Exception {
+        List<Map<String,Object>> childrenList = (List<Map<String, Object>>) modifiedProp.get("children");
+        List<Map<String, Object>> newChildrenList = new ArrayList<>(childrenList);
+        Map<Long,Integer> floorLevelMap = (Map<Long, Integer>) context.get(FacilioConstants.ContextNames.FLOOR_LIST);
+        for(Map<String,Object> child:childrenList){
+            if(floorLevelMap.containsKey((Long)child.get("id"))) {
+                int idx=floorLevelMap.get((Long)child.get("id"));
+                newChildrenList.remove(idx);
+                newChildrenList.add(idx,child);
+            }
+        }
+        return newChildrenList.subList(0,childrenList.size());
+    }
+
+    private void getChildNodes(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentIdVsChildrenMap, String key,List<Long> addedKeys) {
         parent.put("children",parentIdVsChildrenMap.get(key));
         List<Map<String,Object>> childNode = (List<Map<String, Object>>) parent.get("children");
         for(int i=0;i<childNode.size();i++){
             Map<String,Object> childrenProp = childNode.get(i);
             if(parentIdVsChildrenMap.containsKey(childrenProp.get("id").toString())){
                 addedKeys.add((Long) childrenProp.get("id"));
-                getChilNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("id").toString(),addedKeys);
+                getChildNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("id").toString(),addedKeys);
             }
         }
     }
@@ -157,5 +143,4 @@ public class FetchChildNodesCommand extends FacilioCommand {
             context.put("parentIdVsChildrenMap",parentIdVsChildrenMap);
         }
     }
-
 }
