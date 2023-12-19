@@ -15,8 +15,8 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExecuteFlowCommand extends FacilioCommand {
     @Override
@@ -40,7 +40,7 @@ public class ExecuteFlowCommand extends FacilioCommand {
         BaseBlock startBlock = BlockFactory.buildFlowGraph(flowTransitions);
 
         JSONObject currentRecord = FieldUtil.getAsJSON(record);
-        HashMap<String, Object> memory = new HashMap<>();
+        Map<String, Object> memory = FlowUtil.getNewFlowMemory();
 
         FlowEngine flowEngine = new FlowEngine(flow,currentRecord);
         flowEngine.setFlowLogService(new ModuleFlowLogServiceImpl(flowEngine));

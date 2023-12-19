@@ -3,6 +3,7 @@ package com.facilio.flows.util;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.blockfactory.enums.BlockType;
+import com.facilio.bmsconsole.automation.util.GlobalVariableUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -25,6 +26,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import lombok.SneakyThrows;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -439,5 +441,23 @@ public class FlowUtil {
                 .table(ModuleFactory.getFlowParameters().getTableName());
 
         deleteRecordBuilder.batchDeleteById(ids);
+    }
+
+    @SneakyThrows
+    public static Map<String,Object> getNewFlowMemory(){
+        Map<String,Object>  memory = new HashMap<>();
+        fillFlowSystemPlaceHolders(memory);
+        return memory;
+    }
+    public static void fillFlowSystemPlaceHolders(Map<String,Object> memory) throws Exception{
+        Map<String,Object> systemPlaceHolders = new HashMap<>();
+        Map<String, Map<String, Object>> liveVariables = GlobalVariableUtil.getLiveVariables();
+        if(MapUtils.isNotEmpty(liveVariables)){
+            systemPlaceHolders.put("globalVariables",liveVariables);
+        }
+        systemPlaceHolders.put("org", FieldUtil.getAsJSON(AccountUtil.getCurrentOrg()));
+        systemPlaceHolders.put("user",FieldUtil.getAsJSON(AccountUtil.getCurrentUser()));
+
+        memory.put("_sys_",systemPlaceHolders);
     }
 }

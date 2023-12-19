@@ -214,6 +214,7 @@ public class FacilioContextListener implements ServletContextListener {
 		TypeFactory.registerType("formData", FormData::new);
 		TypeFactory.registerType("lookup",LookUpDataType::new);
 		TypeFactory.registerType("filters",FiltersDataType::new);
+		TypeFactory.registerType("flowTransitionProps",FlowTransitionProps::new);
 	}
 
 	private void initClientAppConfig() throws Exception {

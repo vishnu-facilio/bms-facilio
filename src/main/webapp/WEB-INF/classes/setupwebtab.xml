@@ -1159,25 +1159,32 @@
     </package>
     <package name="flowSetupAPI" namespace="/api/v1/setup/flows" extends="v2Api">
         <action name="addOrUpdate" class="com.facilio.flows.action.FlowAction" method="addOrUpdateFlow">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="list" class="com.facilio.flows.action.FlowAction" method="getFlowList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="get" class="com.facilio.flows.action.FlowAction" method="viewFlow">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="delete" class="com.facilio.flows.action.FlowAction" method="deleteFlow">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="executeFlow" class="com.facilio.flows.action.FlowAction" method="executeFlow">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="operators" class="com.facilio.flows.action.FlowAction" method="getFlowOperators">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="clone" class="com.facilio.flows.action.FlowAction" method="cloneFlow">
-            <param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
         </action>
     </package>
     <package name="KPI_flowsSetupAPI" namespace="/api/v1/setup/flows/kpi" extends="v2Api">
@@ -1190,37 +1197,44 @@
         <action name="addOrUpdate"
                 class="com.facilio.flows.action.FlowAction"
                 method="addOrUpdateFlowTransition">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="list"
                 class="com.facilio.flows.action.FlowAction"
                 method="getFlowTransitionList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="view"
                 class="com.facilio.flows.action.FlowAction"
                 method="viewFlowTransition">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="delete"
                 class="com.facilio.flows.action.FlowAction"
                 method="deleteFlowTransition">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="deleteConnection"
                 class="com.facilio.flows.action.FlowAction"
                 method="deleteTransactionConnection">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="availableBlocks"
                 class="com.facilio.flows.action.FlowAction"
                 method="availableBlocksList">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
         <action name="updateConnection"
                 class="com.facilio.flows.action.FlowAction"
                 method="updateConnection">
-			<param name="deprecated">true</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">WEAVE</param>
 		</action>
     </package>
     <package name="permissionSet" namespace="/api/v1/setup/permissionSet" extends="v2Api">

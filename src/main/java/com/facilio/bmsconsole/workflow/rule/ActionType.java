@@ -2013,7 +2013,7 @@ public enum ActionType implements FacilioIntEnum {
 				BaseBlock startBlock = BlockFactory.buildFlowGraph(transitions);
 
 				String moduleName = currentRule.getModuleName();
-				Map<String,Object> memory = new HashMap<>();
+				Map<String, Object> memory = FlowUtil.getNewFlowMemory();
 				memory.put(moduleName,currentRecordJSON);
 
 				flowEngine.execute(startBlock,memory);

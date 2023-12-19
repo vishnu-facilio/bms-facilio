@@ -3442,6 +3442,14 @@
                 <property name="returnVariableName" type="string"/>
                 <property name="returnVariableDataType" type="string"/>
                 <property name="flowType" type="number"/>
+                <property name="parameters" type="array">
+                    <items type="object">
+                        <property name="id" type="number"/>
+                        <property name="flowId" type="number"/>
+                        <property name="parameterName" type="string"/>
+                        <property name="dataType" type="string"/>
+                    </items>
+                </property>
             </property>
         </requestbody>
     </request>
@@ -3519,31 +3527,13 @@
     <!-- Flow Transition-->
     <request path="/api/v2/flowTransition/addOrUpdate" method="POST">
         <requestbody type="object">
-            <property name="flowTransition" type="object">
-                <property name="id" type="number"/>
-                <property name="name" type="string"/>
-                <property name="flowId" type="number"/>
-                <property name="connectedFrom" type="number"/>
-                <property name="position" type="string"/>
-                <property name="handlePosition" type="string"/>
-                <property name="configData" type="string"/>
-                <property name="blockType" type="string"/>
-                <property name="isStartBlock" type="boolean"/>
+            <property name="flowTransition" type="flowTransitionProps">
             </property>
         </requestbody>
     </request>
     <request path="/api/v1/setup/flowTransition/addOrUpdate" method="POST">
         <requestbody type="object">
-            <property name="flowTransition" type="object">
-                <property name="id" type="number"/>
-                <property name="name" type="string"/>
-                <property name="flowId" type="number"/>
-                <property name="connectedFrom" type="number"/>
-                <property name="position" type="string"/>
-                <property name="handlePosition" type="string"/>
-                <property name="configData" type="string"/>
-                <property name="blockType" type="string"/>
-                <property name="isStartBlock" type="boolean"/>
+            <property name="flowTransition" type="flowTransitionProps">
             </property>
         </requestbody>
     </request>
