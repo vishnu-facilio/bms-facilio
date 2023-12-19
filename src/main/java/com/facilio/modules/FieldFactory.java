@@ -11358,7 +11358,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("newValue","NEW_VALUE",module));
         fields.add(getNumberField("scheduleType","SCHEDULE_TYPE",module));
         fields.add(getNumberField("timeInterval","TIME_INTERVAL",module));
-        fields.add(getNumberField("timeValue","TIME_VALUE",module));
+        fields.add(getStringField("timeValue","TIME_VALUE",module));
         return fields;
     }
 

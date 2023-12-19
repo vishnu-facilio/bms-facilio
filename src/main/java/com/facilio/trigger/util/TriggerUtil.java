@@ -514,7 +514,7 @@ public class TriggerUtil {
 					scheduleRel.setFieldId(rule.getDateFieldId());
 					scheduleRel.setScheduleType(rule.getScheduleType());
 					scheduleRel.setTimeInterval(rule.getInterval());
-					scheduleRel.setTime(rule.getTime());
+					scheduleRel.setTimeValue(rule.getTime());
 					scheduleRel.setEventType(rule.getActivityTypeEnum());
 					triggerList.add(scheduleRel);
 					break;

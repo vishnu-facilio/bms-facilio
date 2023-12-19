@@ -18,7 +18,7 @@ public class TriggerFieldRelContext extends BaseTriggerContext{
     long fieldId = -1;
     int scheduleType;
     long timeInterval = -1;
-    LocalTime timeValue;
+    String timeValue;
 
     @Override
     public int getType() {
@@ -57,11 +57,6 @@ public class TriggerFieldRelContext extends BaseTriggerContext{
         }
     }
 
-    public void setTime(String timeValue) {
-        if(timeValue != null) {
-            this.timeValue = LocalTime.parse(timeValue);
-        }
-    }
 
     public Long validatedExecutionTime(Long executionTime){
         if(executionTime == null){
