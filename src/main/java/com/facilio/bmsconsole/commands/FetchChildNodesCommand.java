@@ -31,7 +31,7 @@ public class FetchChildNodesCommand extends FacilioCommand {
                     Map<String, Object> modifiedProp = new HashMap<>(nodeProp);
                     boolean isContainsFloor = false;
                     if (parentIdVsChildrenMap.containsKey(nodeProp.get("id").toString())) {
-                        getChildNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("id").toString(), addedKeys);
+                        getChildNodes(modifiedProp, parentIdVsChildrenMap, nodeProp.get("id").toString(), addedKeys,context);
                         isContainsFloor = true;
                     }
                     modifiedProp.put("children", modifiedProp.get("children"));
@@ -41,6 +41,11 @@ public class FetchChildNodesCommand extends FacilioCommand {
                     }
                     childNodes.add(modifiedProp);
                 }
+                Map<String,Object> iconMap = (Map<String, Object>) context.get("iconMap");
+                String moduleName = (String) nodeProp.get("moduleName");
+                Map<String,String> moduleIconMap = (Map<String, String>) iconMap.get(moduleName.toLowerCase());
+                nodeProp.put("icongroup",moduleIconMap.get("icongroup"));
+                nodeProp.put("iconname",moduleIconMap.get("iconname"));
             }
             for (int i=0;i<siteChildren.size();i++){
                 if(siteChildren.get(i).get("id").equals(childNodes.get(0).get("id"))){
@@ -56,25 +61,38 @@ public class FetchChildNodesCommand extends FacilioCommand {
     private List<Map<String, Object>> getFloorsByLevels(Map<String, Object> modifiedProp, Context context) throws Exception {
         List<Map<String,Object>> childrenList = (List<Map<String, Object>>) modifiedProp.get("children");
         List<Map<String, Object>> newChildrenList = new ArrayList<>(childrenList);
+        List<Map<String,Object>> spacesList = new ArrayList<>();
         Map<Long,Integer> floorLevelMap = (Map<Long, Integer>) context.get(FacilioConstants.ContextNames.FLOOR_LIST);
         for(Map<String,Object> child:childrenList){
             if(floorLevelMap.containsKey((Long)child.get("id"))) {
                 int idx=floorLevelMap.get((Long)child.get("id"));
                 newChildrenList.remove(idx);
                 newChildrenList.add(idx,child);
+            }else{
+                spacesList.add(child);
             }
+        }
+        if(CollectionUtils.isNotEmpty(spacesList)){
+            newChildrenList.addAll(spacesList);
         }
         return newChildrenList.subList(0,childrenList.size());
     }
 
-    private void getChildNodes(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentIdVsChildrenMap, String key,List<Long> addedKeys) {
+    private void getChildNodes(Map<String, Object> parent, Map<String, List<Map<String, Object>>> parentIdVsChildrenMap, String key, List<Long> addedKeys, Context context) {
+
+        Map<String,Object> iconMap = (Map<String, Object>) context.get("iconMap");
+        String moduleName = (String) parent.get("moduleName");
+        Map<String,String> moduleIconMap = (Map<String, String>) iconMap.get(moduleName.toLowerCase());
+        parent.put("icongroup",moduleIconMap.get("icongroup"));
+        parent.put("iconname",moduleIconMap.get("iconname"));
         parent.put("children",parentIdVsChildrenMap.get(key));
+
         List<Map<String,Object>> childNode = (List<Map<String, Object>>) parent.get("children");
         for(int i=0;i<childNode.size();i++){
             Map<String,Object> childrenProp = childNode.get(i);
             if(parentIdVsChildrenMap.containsKey(childrenProp.get("id").toString())){
                 addedKeys.add((Long) childrenProp.get("id"));
-                getChildNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("id").toString(),addedKeys);
+                getChildNodes(childrenProp,parentIdVsChildrenMap,childrenProp.get("id").toString(),addedKeys, context);
             }
         }
     }
@@ -122,6 +140,8 @@ public class FetchChildNodesCommand extends FacilioCommand {
                         nodeProp.put("parentId",prop.get("space1"));
                     }else if(prop.get("floor")!=null && ((long)prop.get("floor")!=-1)) {
                          nodeProp.put("parentId", prop.get("floor"));
+                     }else if(prop.get("building")!=null && ((long)prop.get("building")!=-1)) {
+                         nodeProp.put("parentId", prop.get("building"));
                      }
                 }
                 if(nodeProp.containsKey("parentId")){

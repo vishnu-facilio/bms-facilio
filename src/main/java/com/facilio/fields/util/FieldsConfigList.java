@@ -154,7 +154,7 @@ public class FieldsConfigList {
             "purchasedDate","rotatingItemType","storeRoom",
             "type","unitPrice","decommissionedBy","decommission",
             "sysCreatedBy","sysCreatedTime","sysModifiedTime", "sysModifiedBy",
-            "siteId"
+            "siteId","space"
     );
 
     public static final List<String> ASSET_SUMMARY_FIELDS_INCLUDE = Arrays.asList( //Summary fields

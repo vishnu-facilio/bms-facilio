@@ -3387,13 +3387,13 @@
         </action>
     </package>
 
-    <package name="invoiceSetting" namespace="/api/v3/invoiceSetting" extends="v3Api">
+    <package name="invoiceSettingForm" namespace="/api/v3/invoiceSetting" extends="v3Api">
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.InvoiceSettingAction" method="fetchInvoiceSetting">
             <param name="permission">GET:READ,CREATE,UPDATE</param>
             <param name="moduleName">invoice</param>
         </action>
     </package>
-    <package name="quotesetting" namespace="/api/v3/quotesetting" extends="v3Api">
+    <package name="quoteSettingForm" namespace="/api/v3/quotesetting" extends="v3Api">
         <action name="fetch" class="com.facilio.bmsconsoleV3.actions.QuotationSettingAction" method="fetchQuotationSetting">
             <param name="permission">GET:READ,CREATE,UPDATE</param>
             <param name="moduleName">quote</param>

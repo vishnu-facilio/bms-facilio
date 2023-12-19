@@ -37,6 +37,9 @@ public class FetchSpaceDetailsCommand extends FacilioCommand {
                     if(firstParentId == spaceContext.getSiteId()){
                         siteId = firstParentId;
                     }
+                    if(firstParentId == spaceContext.getBuildingId()){
+                        buildingId = firstParentId;
+                    }
                     break;
                 case "Floor":
                     firstParentId = spaceContext.getBuildingId();

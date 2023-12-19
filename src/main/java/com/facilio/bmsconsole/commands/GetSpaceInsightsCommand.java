@@ -2,26 +2,30 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GetSpaceInsightsCommand extends FacilioCommand {
     @Override
@@ -30,7 +34,7 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         JSONObject insights = new JSONObject();
         long floorCount = 0, spaceCount = 0, independantSpaceCount = 0, buildingCount = 0, assetCount = 0, subSpaceCount = 0, meterCount = 0;
-        assetCount = SpaceAPI.getAssetsCount(spaceId);
+        assetCount = getAssetsCount(spaceId);
         meterCount = SpaceAPI.getMetersCount(spaceId);
         if (spaceId > 0) {
             switch (moduleName) {
@@ -64,6 +68,23 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         insights.put("meters", meterCount);
         context.put(FacilioConstants.ContextNames.COUNT, insights);
         return false;
+    }
+
+    private long getAssetsCount(long baseSpaceId) throws Exception{
+        FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
+        List<FacilioField> resourceFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.RESOURCE);
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(resourceFields);
+        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                .table(resourceModule.getTableName())
+                .select(FieldFactory.getCountField())
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), Collections.singleton(baseSpaceId), StringOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), EnumOperators.IS))
+                .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY));
+        Map<String, Object> assetCount = builder.fetchFirst();
+        if(MapUtils.isNotEmpty(assetCount) && assetCount.containsKey("count")){
+            return ((Number) assetCount.get("count")).longValue();
+        }
+        return 0;
     }
 
     private long getAllSpaces(long siteId, long spaceType) throws Exception {
