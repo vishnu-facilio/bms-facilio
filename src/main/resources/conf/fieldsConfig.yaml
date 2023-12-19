@@ -115,6 +115,7 @@ fieldListType:
       - ENUM
       - COUNTER
       - ID
+      - FILE
       - SYSTEM_ENUM
       - MULTI_LOOKUP
       - MULTI_ENUM
