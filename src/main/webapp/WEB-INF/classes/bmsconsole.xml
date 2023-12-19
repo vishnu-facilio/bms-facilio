@@ -1785,6 +1785,19 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
+	<package name="moduleMetaApprovalTab" namespace="/api/module/approval" extends="homeApi">
+		<action name="*/meta" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="metadata">
+			<param name="translationImpl">ModuleTranslation</param>
+			<param name="tabType">Approval</param>
+			<param name="moduleName">{1}</param>
+			<param name="permission">ALL;GET:CAN_APPROVE</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
+	</package>
 
 	<package name="fieldApi" namespace="/api/field" extends="homeApi">
 		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"

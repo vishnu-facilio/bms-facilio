@@ -997,6 +997,16 @@
             <property name="moduleName" type="string"/>
         </urlparams>
     </request>
+    <request path="/api/module/:moduleName/meta">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/module/approval/:moduleName/meta">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
 
     <request path="/api/v2/modules/list/:featureOrAPI">
         <urlparams>
