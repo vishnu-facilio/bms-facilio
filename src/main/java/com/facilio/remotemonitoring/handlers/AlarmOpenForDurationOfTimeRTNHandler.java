@@ -58,10 +58,11 @@ public class AlarmOpenForDurationOfTimeRTNHandler implements AlarmCriteriaHandle
                     rawAlarms = rawAlarms.stream().filter(r -> r.getId() != rawAlarm.getId()).collect(Collectors.toList());
                 }
                 List<Long> ids = rawAlarms.stream().map(RawAlarmContext::getId).collect(Collectors.toList());
-                Map<String,Object> map = new HashMap<>();
-                map.put("clearedTime",System.currentTimeMillis());
-                V3Util.updateBulkRecords(rawAlarmModule.getName(), map,ids,false);
-//                V3RecordAPI.updateRecord(updateRecord,rawAlarmModule, Collections.singletonList(modBean.getField("clearedTime",rawAlarmModule.getName())),ids);
+                if(CollectionUtils.isNotEmpty(ids)){
+                    Map<String,Object> map = new HashMap<>();
+                    map.put("clearedTime",System.currentTimeMillis());
+                    V3Util.updateBulkRecords(rawAlarmModule.getName(), map,ids,false);
+                }
             }
             if(filterRuleCriteria != null) {
                 RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
