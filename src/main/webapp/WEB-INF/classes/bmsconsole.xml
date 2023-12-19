@@ -127,7 +127,7 @@
 			<result name="error" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="resetPassword">
@@ -139,7 +139,7 @@
 				<param name="statusCode">400</param>
 				<param name="includeProperties">invitation.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="login" class="com.facilio.bmsconsole.actions.LoginAction"
 				method="apiLogin">
@@ -162,7 +162,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^account.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermissiom">true</param>
 		</action>
 		<action name="switchaccount" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="switchCurrentAccount">
@@ -385,7 +385,7 @@
 			<result name="error" type="httpheader">
 				<param name="status">404</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermissiom">true</param>
 		</action>
 	</package>
 	<package name="tvApi" namespace="/api/tv" extends="homeApi">
@@ -3055,14 +3055,14 @@
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.UserAction"
 			method="deleteUserAvatar">
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 	
@@ -3070,7 +3070,7 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
 			<result name="success" type="json">
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="getNotificationPreferences" class="com.facilio.bmsconsole.actions.UserAction" method="getNotificationPreferences">
 			<result name="success" type="json">

@@ -11,6 +11,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.Collections;
 
@@ -22,7 +23,7 @@ public class UpdatePeopleCommand extends FacilioCommand {
         c.getContext().put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
         PeopleUserContext user = (PeopleUserContext) context.get(FacilioConstants.ContextNames.USER);
 
-        if(!user.getUser().getIsSuperUser() && user.getRole() != null && !user.getRole().isSuperAdmin()){
+        if(!BooleanUtils.isTrue(user.getUser().getIsSuperUser()) && user.getRole() != null && !user.getRole().isSuperAdmin()){
             PeopleContext existingPeople = PeopleAPI.getPeople(user.getUser().getEmail());
             user.setPeopleId(existingPeople.getId());
             if (user.getPeople() != null) {

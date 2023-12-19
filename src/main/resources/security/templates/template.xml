@@ -171,4 +171,21 @@
         <property name="name" type="string"/>
         <property name="description" type="string" maxLength="500"/>
     </template>
+    <template name="userRole">
+        <property name="createdTime" type="number"/>
+        <property name="description" type="string"/>
+        <property name="id" type="number"/>
+        <property name="isPrevileged" type="boolean"/>
+        <property name="isSuperAdmin" type="boolean"/>
+        <property name="name" type="string"/>
+        <property name="newPermissions" type="array"/>
+        <property name="orgId" type="number"/>
+        <property name="permissionStr" type="string"/>
+        <property name="permissions" type="array"/>
+        <property name="roleId" type="number"/>
+        <property name="roleMembersEmail" type="string"/>
+        <property name="roleMembersIds" type="string"/>
+        <property name="roleMembersPhone" type="string"/>
+        <property name="superAdmin" type="boolean"/>
+    </template>
 </templates>

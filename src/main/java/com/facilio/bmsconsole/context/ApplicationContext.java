@@ -195,7 +195,8 @@ public class ApplicationContext implements Serializable{
 		PORTALS,
 		WORK_CENTERS,
 		FEATURE_GROUPING,
-		TOOLS;
+		TOOLS,
+		KIOSK;
 
 		private AppCategory() {
 		}

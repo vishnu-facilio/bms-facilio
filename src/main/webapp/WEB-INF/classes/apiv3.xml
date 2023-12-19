@@ -2157,7 +2157,7 @@
 
     <package name="myApps" namespace="/api/v3/myApps" extends="v3Api">
         <action name="listMyApps" class="com.facilio.bmsconsoleV3.actions.MyAppsAction" method="listMyApps">
-            <param name="deprecated">true</param>
+            <param name="skipPermission">true</param>
         </action>
         <action name="listMyAppsForUser" class="com.facilio.bmsconsoleV3.actions.MyAppsAction"
                 method="listMyAppsForUser">

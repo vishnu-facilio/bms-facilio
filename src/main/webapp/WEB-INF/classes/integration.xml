@@ -133,7 +133,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
 	</action>
 
 	<action name="authorizeproxyuser" class="com.facilio.auth.actions.FacilioAuthAction" method="authorizeproxyuser">
@@ -146,7 +146,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^jsonresponse.*</param>
 		</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
 	</action>
 
 
@@ -335,7 +335,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
 	</action>
 
 	<action name="termsOfService" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchTermsOfService">
@@ -348,7 +348,7 @@
 			<param name="ignoreHierarchy">false</param>
 			<param name="includeProperties">responseCode, ^result.*</param>
 		</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
 	</action>
 
 		<action name="domainlink" class="com.facilio.auth.actions.FacilioAuthAction" method="fetchDomainLink">
@@ -361,7 +361,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 

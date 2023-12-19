@@ -112,7 +112,7 @@
             <result name="error" type="json">
                 <param name="includeProperties">jsonresponse.*</param>
             </result>
-        <param name="deprecated">true</param>
+        <param name="skipPermission">true</param>
         </action>
 
         <action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
@@ -121,7 +121,7 @@
             <result name="success" type="json">
                 <param name="includeProperties">invitation.*</param>
             </result>
-        <param name="deprecated">true</param>
+        <param name="skipPermission">true</param>
         </action>
 
 		<action name="portalaccount" class="com.facilio.bmsconsole.actions.LoginAction"
@@ -130,7 +130,7 @@
            <result name="success" type="json">
 				<param name="includeProperties">account.*</param>
 			</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
         </action>
 		
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
@@ -139,7 +139,7 @@
 		  	<result name="success" type="json">
 				<param name="includeProperties">account.*</param>
 			</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
         </action>
 		
 		
@@ -165,20 +165,20 @@
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
         </action>
 		<action name="deleteUserAvatar" class="com.facilio.bmsconsole.actions.UserAction"
 			method="deleteUserAvatar">
 			<result name="success" type="json">
 				<param name="includeProperties">avatarUrl</param>
 			</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
         </action>
 
 		<action name="updateProfile" class="com.facilio.bmsconsole.actions.UserAction" method="updateMyProfile">
 			<result name="success" type="json">
 			</result>
-		<param name="deprecated">true</param>
+		<param name="skipPermission">true</param>
         </action>
    		<action name="samllogin" class="com.facilio.customerportal.actions.Authentication" method="samllogin">
    			<result>/service/samllogin.jsp</result>

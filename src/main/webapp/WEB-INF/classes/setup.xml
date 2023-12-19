@@ -307,7 +307,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="removemobilesetting"  class="com.facilio.bmsconsole.actions.UserAction" method="removeMobileSetting">
 			<param name="permission">USER_MANAGEMENT</param>
@@ -319,7 +319,7 @@
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="addgroup" class="com.facilio.bmsconsole.actions.GroupAction" method="addGroup">
 			<param name="permission">USER_MANAGEMENT,TEAMS</param>

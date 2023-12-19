@@ -215,6 +215,12 @@
 			<param name="setupTab">SECURITY_POLICY,USERS,PORTALS,PEOPLE</param>
 		</action>
 
+		<action name="getAllSecurityPolicies/*" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
+				method="getAllSecurityPolicy">
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ</param>
+		</action>
+
 		<action name="deleteSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="deleteSecurityPolicy">
 			<param name="permission">ALL</param>
@@ -8153,8 +8159,7 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" >
-			 <param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,USERS,ROLES,CONNECTED_APPS,API_SETUP,AUDIT_LOGS,PEOPLE,MODULES</param>
+			 <param name="skipPermission">true</param>
 		</action>
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplicationBasedOnModule">
@@ -8250,13 +8255,13 @@
 			<param name="setupTab">USERS</param>
 		</action>
 		<action name="addOrUpdateSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="addOrUpdateUserSignature">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="getSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="getUserSignature">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="deleteUserSignature">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 

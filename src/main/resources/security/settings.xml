@@ -3092,6 +3092,14 @@
             </property>
         </urlparams>
     </request>
+    <request path="/api/v1/setup/iamuser/getpeople" method="POST">
+        <urlparams>
+            <property name="email" type="string"/>
+            <property name="user" type="object">
+                <property name="orgUserId" type="number"/>
+            </property>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/iamuser/getuser" method="GET">
         <urlparams>
             <property name="email" type="string"/>
@@ -3790,6 +3798,7 @@
             <property name="search" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="force" type="boolean" />
         </urlparams>
     </request>
 
@@ -5436,4 +5445,125 @@
             <property name="perPage" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v2/application/users/getSignature" method="GET" />
+    <request path="/api/v2/application/users/addOrUpdateSignature" method="POST">
+        <requestbody>
+            <property name="signatureContent" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/application/users/deleteSignature" method="GET" />
+    <request path="/api/account/update" method="POST">
+        <requestbody>
+            <property name="user" type="object" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/application/list">
+        <urlparams type="object">
+            <property name="moduleName" type="string" />
+            <property name="fetchMyApps" type="boolean" />
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/iamuser/adduser">
+        <requestbody>
+            <property name="appId" type="number"></property>
+            <property name="sendInvitation" type="boolean"></property>
+            <property name="user" type="object">
+                <property name="people" type="object">
+                    <property name="groups" type="array"></property>
+                    <property name="id" type="number"></property>
+                    <property name="permissionSets" type="array"></property>
+                </property>
+                <property name="peopleId" type="number"/>
+                <property name="roleId" type="number"/>
+                <property name="user" type="object">
+                    <property name="email" type="string"/>
+                    <property name="groups" type="array"/>
+                    <property name="language" type="string"/>
+                    <property name="name" type="string"/>
+                    <property name="peopleId" type="number"/>
+                    <property name="permissionSets" type="array"/>
+                    <property name="roleId" type="number"/>
+                    <property name="scoping" type="object"/>
+                    <property name="scoping" type="scopingId"/>
+                    <property name="securityPolicyId" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v1/setup/iamuser/updateuser">
+        <requestbody>
+            <property name="appId" type="number"></property>
+            <property name="sendInvitation" type="boolean"></property>
+            <property name="user" type="object">
+                <property name="people" type="object">
+                    <property name="groups" type="array"></property>
+                    <property name="id" type="number"></property>
+                    <property name="permissionSets" type="array"></property>
+                </property>
+                <property name="peopleId" type="number"/>
+                <property name="role" type="userRole" />
+                <property name="roleId" type="number"/>
+                <property name="user" type="object">
+                    <property name="acceptedTime" type="number"/>
+                    <property name="deletedTime" type="number"/>
+                    <property name="accessibleSpace" type="array"/>
+                    <property name="active" type="boolean"/>
+                    <property name="appDomain" type="object"/>
+                    <property name="appType" type="number"/>
+                    <property name="applicationId" type="number"/>
+                    <property name="avatar" type="object"/>
+                    <property name="avatarContentType" type="string"/>
+                    <property name="avatarFileName" type="string"/>
+                    <property name="avatarUrl" type="string"/>
+                    <property name="city" type="string"/>
+                    <property name="country" type="string"/>
+                    <property name="defaultOrg" type="boolean"/>
+                    <property name="facilioAuth" type="boolean"/>
+                    <property name="email" type="string"/>
+                    <property name="inviteStatus" type="number"/>
+                    <property name="inviteStatusEnum" type="string"/>
+                    <property name="invitedBy" type="number"/>
+                    <property name="isDefault" type="boolean"/>
+                    <property name="isSuperUser" type="boolean"/>
+                    <property name="language" type="string"/>
+                    <property name="lastLoginTime" type="number"/>
+                    <property name="mfaEnabled" type="boolean"/>
+                    <property name="mobile" type="number"/>
+                    <property name="orgId" type="number"/>
+                    <property name="ouid" type="number"/>
+                    <property name="passwordLastUpdatedTime" type="number"/>
+                    <property name="groups" type="array"/>
+                    <property name="iamOrgUserId" type="number"/>
+                    <property name="id" type="number"/>
+                    <property name="identifier" type="string"/>
+                    <property name="inviteAcceptStatus" type="boolean"/>
+                    <property name="invitedTime" type="number"/>
+                    <property name="isDefaultOrg" type="boolean"/>
+                    <property name="license" type="number"/>
+                    <property name="licenseEnum" type="number"/>
+                    <property name="language" type="string"/>
+                    <property name="name" type="string"/>
+                    <property name="peopleId" type="number"/>
+                    <property name="permissionSets" type="array"/>
+                    <property name="roleId" type="number"/>
+                    <property name="scoping" type="object"/>
+                    <property name="scopingId" type="number"/>
+                    <property name="securityPolicyId" type="number"/>
+                    <property name="phone" type="string"/>
+                    <property name="photoId" type="number"/>
+                    <property name="role" type="userRole" />
+                    <property name="state" type="string"/>
+                    <property name="street" type="string"/>
+                    <property name="timezone" type="string"/>
+                    <property name="uid" type="number"/>
+                    <property name="userStatus" type="boolean"/>
+                    <property name="userVerified" type="boolean"/>
+                    <property name="userName" type="string"/>
+                    <property name="zip" type="number"/>
+                </property>
+            </property>
+
+        </requestbody>
+    </request>
+    <request path="/api/v2/getAllSecurityPolicies/tenantcontact" />
 </config>

@@ -887,7 +887,7 @@ public class ApplicationApi {
         ApplicationContext kioskApplication = new ApplicationContext(orgId, "Visitor Kiosk", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.KIOSK_APP,
                 ApplicationContext.AppLayoutType.SINGLE.getIndex(), "Kiosk App",
-                ApplicationContext.AppCategory.WORK_CENTERS.getIndex());
+                ApplicationContext.AppCategory.KIOSK.getIndex());
 
         ApplicationContext workplaceApplication = new ApplicationContext(orgId, "IWMS App", false,
                 facilioApp.getAppDomainType(), FacilioConstants.ApplicationLinkNames.IWMS_APP,
@@ -4027,7 +4027,9 @@ public class ApplicationApi {
                 .andCondition(CriteriaAPI.getCondition("ORG_User_Apps.ORG_USERID", "ouid", String.valueOf(ouId),
                         NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition("Application.DOMAIN_TYPE", "domainType",
-                        String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS));
+                        String.valueOf(appDomainObj.getAppDomainType()), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("Application.STATUS", "status",
+                String.valueOf(true), BooleanOperators.IS));
         ;
 
         selectBuilder.orderBy("ID asc");
