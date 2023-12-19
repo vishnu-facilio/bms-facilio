@@ -116,8 +116,7 @@ public class GetCategoryReadingsCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 
-		List<FacilioModule> readings = null;
-		readings = new ArrayList<>();
+		List<FacilioModule> readings = new ArrayList<>();
 
 		if(props != null && !props.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
