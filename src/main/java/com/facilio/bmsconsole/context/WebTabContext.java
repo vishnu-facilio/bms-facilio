@@ -320,7 +320,7 @@ public class WebTabContext implements Serializable {
         METER_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()), //101
         SANDBOX("Sandbox",false,TabType.SETUP,new SetupTypeHandler()), //102
         PORTFOLIO("Portfolio",false,TabType.NORMAL,new PortfolioTypeHandler()), // 103
-        PDF_TEMPLATES("Pdf Templates",false,TabType.SETUP,new SetupTypeHandler()), //104
+        PDF_TEMPLATES("PDF Templates",false,TabType.SETUP,new SetupTypeHandler()), //104
         DISPATCHER_CONFIG("Dispatcher Console Settings",false,TabType.SETUP,new SetupTypeHandler()), //105
         DISPATCHER_CONSOLE ("Dispatcher Console", false, TabType.NORMAL,null), // 106
         FSM_CUSTOMIZATION("Customization",false,TabType.SETUP,new SetupTypeHandler()),//107
@@ -328,6 +328,7 @@ public class WebTabContext implements Serializable {
         FSM_GENERAL_SETTINGS("General Settings",false,TabType.SETUP,new SetupTypeHandler()),//109
         SFG_20("SFG 20",false,TabType.SETUP,new SetupTypeHandler()), //110
         WEAVE("Weave",false,TabType.SETUP,new SetupTypeHandler()); //111
+
         public void setName(String name) {
             this.name = name;
         }

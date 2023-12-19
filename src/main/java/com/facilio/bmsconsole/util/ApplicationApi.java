@@ -3251,7 +3251,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
             webTabs.add(new WebTabContext("Classifications","classifications",WebTabContext.Type.CLASSIFICATIONS,null,appId,null,AccountUtil.FeatureLicense.CLASSIFICATION.getFeatureId()));
             webTabs.add(new WebTabContext("Survey Templates", "surveytemplates", WebTabContext.Type.SETUP_SURVEY, null, appId, null,AccountUtil.FeatureLicense.SURVEY.getFeatureId()));
-            webTabs.add(new WebTabContext("Pdf Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null));
+            webTabs.add(new WebTabContext("PDF Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null,2l));
 
             groupNameVsWebTabsMap.put("customization", webTabs);
 
@@ -4143,7 +4143,7 @@ public class ApplicationApi {
             webTabs.add(new WebTabContext("Functions", "functions", WebTabContext.Type.FUNCTIONS, null, appId, null));
             webTabs.add(new WebTabContext("Email Templates", "emailtemplates", WebTabContext.Type.EMAIL_TEMPLATES, null, appId, null));
             webTabs.add(new WebTabContext("Tabs and Layouts", "tabsandlayouts", WebTabContext.Type.TABS_AND_LAYOUTS, null, appId, null));
-            webTabs.add(new WebTabContext("Pdf Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null));
+            webTabs.add(new WebTabContext("PDF Templates", "pdftemplates", WebTabContext.Type.PDF_TEMPLATES, null, appId, null,2l));
             groupNameVsWebTabsMap.put("customization", webTabs);
 
             webTabGroups.add(new WebTabGroupContext("Automation", "automation", layout.getId(), 205, groupOrder++));
