@@ -696,7 +696,9 @@
         </urlparams>
     </request>
     <request path="/api/v3/dashboard/modules/list/all" method="GET">
-        <requestbody type="object"></requestbody>
+        <urlparams>
+            <property name="webTabId" type="number"></property>
+        </urlparams>
     </request>
     <request path="/api/v2/dashboard/modules/meta/:moduleName" method="GET">
         <urlparams>

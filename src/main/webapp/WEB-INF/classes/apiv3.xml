@@ -917,7 +917,7 @@
     </package>
 
     <package name="dashboardModuleApiv3" namespace="/api/v3/dashboard/modules/list" extends="v3Api">
-        <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
+        <action name="all" class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction" method="reportModulesList">
             <param name="permission">GET:READ,VIEW</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
