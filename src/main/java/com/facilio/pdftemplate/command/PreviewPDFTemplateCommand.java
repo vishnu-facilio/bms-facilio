@@ -7,6 +7,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.pdftemplate.context.PDFTemplate;
+import com.facilio.pdftemplate.util.HandleBarsHelper;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.exception.ErrorCode;
 import com.facilio.v3.exception.RESTException;
@@ -40,7 +41,8 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
         placeholders.put("org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()));
         placeholders.put("user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()));
 
-        Handlebars handlebars = new Handlebars();
+        HandleBarsHelper handleBarsHelper = new HandleBarsHelper();
+        Handlebars handlebars = handleBarsHelper.getHandlebars();
         Template hbsTemplate = handlebars.compileInline(pdfTemplate.getHtmlContent());
         String renderedContent = hbsTemplate.apply(placeholders);
 

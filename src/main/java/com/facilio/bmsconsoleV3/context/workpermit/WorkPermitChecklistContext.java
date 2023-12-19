@@ -109,4 +109,31 @@ public class WorkPermitChecklistContext extends V3Context {
             return name;
         }
     }
+    private String itemName;
+    private String categoryName;
+    private String checkListType;
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public void setItemName(String itemName) {
+        this.itemName = itemName;
+    }
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
+
+    public String getCheckListType() {
+        return checkListType;
+    }
+
+    public void setCheckListType(String checkListType) {
+        this.checkListType = checkListType;
+    }
 }

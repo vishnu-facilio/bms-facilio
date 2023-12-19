@@ -39,8 +39,11 @@ public class V3WorkPermitContext extends V3Context {
     private V3PeopleContext people;
     private List<WorkPermitChecklistContext> checklist;
     private List<WorkPermitChecklistContext> workpermitchecklist;
+    private List<WorkPermitChecklistContext> preRequisites;
+    private List<WorkPermitChecklistContext> postRequisites;
     private Boolean isPreValidationDone;
     private Boolean isPostValidationDone;
+
 
     public List<WorkPermitChecklistContext> getWorkpermitchecklist() {
         return workpermitchecklist;
@@ -324,5 +327,21 @@ public class V3WorkPermitContext extends V3Context {
             }
             return null;
         }
+    }
+
+    public List<WorkPermitChecklistContext> getPreRequisites() {
+        return preRequisites;
+    }
+
+    public void setPreRequisites(List<WorkPermitChecklistContext> preRequisites) {
+        this.preRequisites = preRequisites;
+    }
+
+    public List<WorkPermitChecklistContext> getPostRequisites() {
+        return postRequisites;
+    }
+
+    public void setPostRequisites(List<WorkPermitChecklistContext> postRequisites) {
+        this.postRequisites = postRequisites;
     }
 }
