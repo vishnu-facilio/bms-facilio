@@ -2101,6 +2101,7 @@
             <property name="moduleName" type="string"/>
             <property name="layoutType" type="string"/>
             <property name="pageId" type="number"/>
+            <property name="isBuilderRequest" type="boolean"/>
         </urlparams>
     </request>
 
@@ -2111,6 +2112,7 @@
             <property name="appId" type="number"/>
             <property name="layoutType" type="string"/>
             <property name="excludeColumns" type="boolean"/>
+            <property name="isBuilderRequest" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
             <property name="layoutType" type="string"/>
@@ -2124,6 +2126,7 @@
             <property name="appId" type="number"/>
             <property name="layoutType" type="string"/>
             <property name="excludeColumns" type="boolean"/>
+            <property name="isBuilderRequest" type="boolean"/>
             <property name="tabName" type="string"/>
             <property name="pageId" type="number"/>
         </urlparams>

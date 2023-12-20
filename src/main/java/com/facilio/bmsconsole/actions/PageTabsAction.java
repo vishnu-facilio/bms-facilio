@@ -28,6 +28,7 @@ public class PageTabsAction extends FacilioAction{
     private String tabName;
     private String moduleName;
     private long appId;
+    private Boolean isBuilderRequest = false;
     private PageTabContext tab;
     private Long layoutId;
     private String widgetName;
@@ -56,6 +57,7 @@ public class PageTabsAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.APP_ID,getAppId());
         context.put(FacilioConstants.ContextNames.MODULE_NAME,getModuleName());
         context.put(FacilioConstants.CustomPage.TAB_NAME,tabName);
+        context.put(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, isBuilderRequest);
         context.put(FacilioConstants.CustomPage.PAGE_ID, pageId);
         context.put(FacilioConstants.CustomPage.LAYOUT_TYPE, layoutType);
         context.put(FacilioConstants.CustomPage.EXCLUDE_COLUMNS, excludeColumns);

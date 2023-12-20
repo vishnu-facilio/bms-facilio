@@ -22,6 +22,7 @@ public class GetBulkRelationShipWidgetCommand extends FacilioCommand {
 
         Long widgetId = (Long) context.get(FacilioConstants.CustomPage.WIDGETID);
         WidgetWrapperType widgetWrapperType = (WidgetWrapperType) context.get(FacilioConstants.CustomPage.WIDGET_WRAPPER_TYPE);
+        boolean isBuilderRequest = (boolean) context.getOrDefault(FacilioConstants.CustomPage.IS_BUILDER_REQUEST, false);
         if((widgetId == null || widgetId <= 0)) {
             throw new IllegalArgumentException("widgetId should be defined to fetch relationships");
         }
@@ -33,7 +34,7 @@ public class GetBulkRelationShipWidgetCommand extends FacilioCommand {
 
         BulkRelationshipWidget bulkRelShip = RelationshipWidgetUtil.getBulkRelationShipWidgetForWidgetId(widgetId, widgetWrapperType);
 
-        if(bulkRelShip != null && CollectionUtils.isNotEmpty(bulkRelShip.getRelationships())) {
+        if(!isBuilderRequest && bulkRelShip != null && CollectionUtils.isNotEmpty(bulkRelShip.getRelationships())) {
             Map<Long, RelationRequestContext>  relRequests = RelationshipWidgetUtil.getRelationsAsMapOfMappingId(module);
 
             if(MapUtils.isNotEmpty(relRequests)) {
