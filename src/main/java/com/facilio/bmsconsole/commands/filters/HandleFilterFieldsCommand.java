@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.MetersAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
@@ -219,6 +220,9 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
     private List<FacilioField> filterModuleFields (FacilioModule module, List<FacilioField> fields) throws Exception {
         if (AssetsAPI.isAssetsModule(module) && !module.instanceOf(AgentConstants.CONTROLLER)) {
             return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.ASSET_FIELDS_INCLUDE, FieldFactory.Fields.FilterType.INCLUDE);
+        }
+        else if (MetersAPI.isMetersModule(module) && !module.instanceOf(AgentConstants.CONTROLLER)){
+            return FieldFactory.Fields.filterOutFields(fields, FieldFactory.Fields.METER_FIELDS_EXCLUDE, FieldFactory.Fields.FilterType.EXCLUDE);
         }
         else {
             switch (module.getName()) {

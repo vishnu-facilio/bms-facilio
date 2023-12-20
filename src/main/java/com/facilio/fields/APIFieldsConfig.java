@@ -1198,6 +1198,7 @@ public class APIFieldsConfig {
 
                 .advancedFields()
                 .skip(FieldsConfigList.METER_FIELDS_EXCLUDE)
+                .skipOnelevelFields(FieldsConfigList.METER_SKIP_ONE_LEVEL_FIELDS)
                 .done()
 
                 .viewFields()

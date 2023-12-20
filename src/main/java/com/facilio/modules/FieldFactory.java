@@ -633,6 +633,10 @@ public class FieldFactory extends BaseFieldFactory {
                 "decommission"
         }).collect(Collectors.toList()));
 
+        public static final List<String> METER_FIELDS_EXCLUDE = Collections.unmodifiableList(Arrays.asList(new String[]{
+                "localId"
+        }));
+
     }
 
     public static List<FacilioField> getFormFields() {

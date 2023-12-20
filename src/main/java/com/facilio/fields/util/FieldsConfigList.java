@@ -451,6 +451,10 @@ public class FieldsConfigList {
             "qrVal","approvalFlowId", "approvalStatus", "localId"
     );
 
+    public static final List<String> METER_SKIP_ONE_LEVEL_FIELDS = Arrays.asList(
+            "sysCreatedByPeople","sysModifiedByPeople","utilityType"
+    );
+
     public static final List<String> VIRTUAL_METER_TEMPLATE_FIELDS_INCLUDE = Arrays.asList(
             "name","utilityType","scope","relationShipId","vmTemplateStatus","sysModifiedTime","sysModifiedByPeople","spaceCategory","assetCategory","sysCreatedTime","sysCreatedByPeople"
     );
