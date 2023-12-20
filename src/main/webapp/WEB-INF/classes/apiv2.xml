@@ -8257,8 +8257,8 @@
 			 extends="v2Api">
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getAllApplicationRelatedApps" >
-			<param name="permission">GET:READ,VIEW</param>
-			<param name="tabType">Dashboard,New Dashboard</param>
+			<param name="permission">GET:VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
 		</action>
 	</package>
 	<package name="applicationsRelatedApps" namespace="/api/v2/application/relatedApps"

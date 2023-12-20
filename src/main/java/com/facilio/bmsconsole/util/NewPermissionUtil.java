@@ -130,8 +130,11 @@ public class NewPermissionUtil {
 
     private static Map<String, Integer> initAnalyticsMap() {
         analyticsTabType = new HashMap<>();
-        analyticsTabType.put("SAVE_AS_REPORT", 1);
+        analyticsTabType.put("CREATE", 1);
         analyticsTabType.put("VIEW", 2);
+        analyticsTabType.put("UPDATE",4);
+        analyticsTabType.put("DELETE",8);
+        analyticsTabType.put("SHARE",16);
         return analyticsTabType;
     }
 
@@ -573,8 +576,11 @@ public class NewPermissionUtil {
 
         permissions = new ArrayList<>();
         permissionMap = new HashMap<>();
-        permissions.add(new Permission("SAVE_AS_REPORT", "Save As Report", analyticsTabType.get("SAVE_AS_REPORT"), null));
+        permissions.add(new Permission("CREATE", "Create", analyticsTabType.get("CREATE"), null));
         permissions.add(new Permission("VIEW", "View", analyticsTabType.get("VIEW"), null));
+        permissions.add(new Permission("UPDATE", "Update", analyticsTabType.get("UPDATE"), null));
+        permissions.add(new Permission("DELETE", "Delete", analyticsTabType.get("DELETE"), null));
+        permissions.add(new Permission("SHARE", "Share", analyticsTabType.get("SHARE"), null));
         permissionMap.put("*", permissions);
         permissionList.put(Type.ANALYTICS.getIndex(), permissionMap);
 

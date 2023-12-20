@@ -1394,7 +1394,8 @@
         <action name="fields"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="getFields">
-            <param name="deprecated">true</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="sub_modules/list"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
@@ -2899,30 +2900,30 @@
     </package>
     <package name="v2ModuleReport" namespace="/api/v3/module/report" extends="v3Api">
         <action name="folder/list" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="folders">
-            <param name="permission">GET:VIEW,READ</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="create" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="create">
-            <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">POST:CREATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="update" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="update">
-            <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="fetch" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="fetch">
-            <param name="permission">PUT:CREATE_EDIT</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">PUT:CREATE,VIEW,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="delete/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="delete">
             <param name="reportId">{1}</param>
-            <param name="permission">DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">DELETE:DELETE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ;PUT:READ</param>
-            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">GET:VIEW,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
     </package>
     <package name="v2ModuleKpi" namespace="/api/v3/module/kpi" extends="v3Api">
@@ -2963,44 +2964,56 @@
     </package>
     <package name="v2Analytics" namespace="/api/v3/analytics" extends="v3Api">
         <action name="list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="list">
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="criteria/module" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getModuleFromCategory">
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="fetch" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="fetchOld">
-            <param name="permission">PUT:CREATE_EDIT</param>
-		</action>
+            <param name="permission">PUT:CREATE,VIEW,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
         <action name="create" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="create">
-            <param name="permission">POST:UPDATE,UPDATE_OWN,CREATE</param>
+            <param name="permission">POST:CREATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="update" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="update">
-            <param name="permission">PUT:CREATE_EDIT</param>
-		</action>
+            <param name="permission">PUT:UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
         <action name="delete/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="delete">
             <param name="reportId">{1}</param>
-            <param name="permission">DELETE:DELETE,DELETE_TEAM,DELETE_OWN</param>
+            <param name="permission">DELETE:DELETE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="edit/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,READ;PUT:READ</param>
+            <param name="permission">GET:VIEW,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="dimension/modes" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getAllReportModes">
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="readings/*" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="readings">
             <param name="categoryId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="module/list" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getModuleList">
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,EDIT</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="kpis/*" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="kpis">
             <param name="categoryId">{1}</param>
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="weather/readings" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="weatherReadings">
-            <param name="permission">GET:VIEW,READ</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="newreadingalarm" class="com.facilio.analytics.v2.action.V2AnalyticsAPIAction" method="getFieldsFromAlarm">
             <param name="permission">GET:VIEW,READ</param>
