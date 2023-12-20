@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.commands.Calendar;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.calendar.V3EventContext;
+import com.facilio.bmsconsoleV3.context.calendar.V3EventTimeSlotContext;
 import com.facilio.bmsconsoleV3.enums.EventTypeEnum;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -71,7 +72,15 @@ public class ValidateEventDetailsCommand extends FacilioCommand {
                 }
 
             }
+            List<V3EventTimeSlotContext> eventTimeSlotContextList = eventContext.getTimeSlotList();
+            if(CollectionUtils.isNotEmpty(eventTimeSlotContextList)){
+                for(V3EventTimeSlotContext eventTimeSlotContext : eventTimeSlotContextList){
+                    eventTimeSlotContext.setStartMin(null);
+                    eventTimeSlotContext.setEndMin(null);
+                }
+            }
         }
+
 
         return false;
     }

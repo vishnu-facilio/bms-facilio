@@ -15,11 +15,14 @@ public class ActivateControlActionTemplateCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long controlActionTemplateId = (Long) context.get("controlActionTemplateId");
+        Boolean ignoreActivityMsg = (Boolean) context.getOrDefault("ignoreActivityMsg",false);
         V3ControlActionTemplateContext controlActionTemplateContext = ControlActionAPI.getControlActionTemplate(controlActionTemplateId);
         controlActionTemplateContext.setControlActionTemplateStatus(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getVal());
         controlActionTemplateContext.setControlActionStatus(V3ControlActionContext.ControlActionStatus.UNPUBLISHED.getVal());
         ControlActionAPI.updateControlActionTemplate(controlActionTemplateContext);
-        ControlActionAPI.addControlActionTemplateActivity(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getValue(),controlActionTemplateId);
+        if(ignoreActivityMsg) {
+            ControlActionAPI.addControlActionTemplateActivity(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getValue(), controlActionTemplateId);
+        }
         if(controlActionTemplateContext.getControlActionTemplateType() != V3ControlActionTemplateContext.ControlActionTemplateType.FLAGGED_EVENT.getVal()){
             Long currentTime = System.currentTimeMillis();
             ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), DBConf.getInstance().getCurrentZoneId());

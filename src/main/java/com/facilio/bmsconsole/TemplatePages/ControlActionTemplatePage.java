@@ -94,6 +94,24 @@ public class ControlActionTemplatePage implements TemplatePageFactory {
         controlActionTemplateTypeCondition.setOperator(EnumOperators.IS);
         controlActionTemplateTypeCondition.setValue(String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateType.SCHEDULED.getVal()));
         controlActionTemplateTypeCondition.setModuleName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        Condition unscheduledTypeCondition = new Condition();
+        unscheduledTypeCondition.setFieldName("controlActionTemplateType");
+        unscheduledTypeCondition.setColumnName("Control_Action_Templates.CONTROL_ACTION_TEMPLATE_TYPE");
+        unscheduledTypeCondition.setOperator(EnumOperators.IS);
+        unscheduledTypeCondition.setValue(String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateType.NOT_SCHEDULED.getVal()));
+        unscheduledTypeCondition.setModuleName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        criteria.addAndCondition(controlActionTemplateTypeCondition);
+        criteria.addOrCondition(unscheduledTypeCondition);
+        return criteria;
+    }
+    public static Criteria getFlaggedEventTypeCriteria(){
+        Criteria criteria = new Criteria();
+        Condition controlActionTemplateTypeCondition = new Condition();
+        controlActionTemplateTypeCondition.setFieldName("controlActionTemplateType");
+        controlActionTemplateTypeCondition.setColumnName("Control_Action_Templates.CONTROL_ACTION_TEMPLATE_TYPE");
+        controlActionTemplateTypeCondition.setOperator(EnumOperators.IS);
+        controlActionTemplateTypeCondition.setValue(String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateType.FLAGGED_EVENT.getVal()));
+        controlActionTemplateTypeCondition.setModuleName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
         criteria.addAndCondition(controlActionTemplateTypeCondition);
         return criteria;
     }

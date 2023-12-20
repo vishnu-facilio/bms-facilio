@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionContext;
 import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
@@ -115,6 +116,17 @@ public class AddControlActionTemplateModule extends SignUpData {
         unPublishCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateStatus.ACTIVE.getIndex()), EnumOperators.IS));
         inactivateControlActionTemplate.setCriteria(unPublishCriteria);
         SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,inactivateControlActionTemplate);
+
+        SystemButtonRuleContext createActionButton = new SystemButtonRuleContext();
+        createActionButton.setName("Create Action");
+        createActionButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        createActionButton.setIdentifier("createAction");
+        createActionButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        Criteria createActionCriteria = new Criteria();
+        createActionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateStatus"),String.valueOf(V3ControlActionContext.ControlActionStatus.PUBLISHED.getIndex()),EnumOperators.IS));
+        createActionCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("controlActionTemplateType"),String.valueOf(V3ControlActionTemplateContext.ControlActionTemplateType.NOT_SCHEDULED.getIndex()),EnumOperators.IS));
+        createActionButton.setCriteria(createActionCriteria);
+        SystemButtonApi.addSystemButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME,createActionButton);
 
         SystemButtonApi.addSummaryEditButton(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
         SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , "New Template");

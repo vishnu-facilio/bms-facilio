@@ -127,6 +127,41 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
                 .columnDone()
                 .tabDone()
                 .layoutDone();
+        PagesContext controlActionTemplateFlaggedEventPage = new PagesContext("controlActionTemplateFlaggedEventViewPage", "Control Action Template Flagged Event View Page", "", ControlActionTemplatePage.getFlaggedEventTypeCriteria(), false, false, true)
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("controlactiontemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("controlactiontemplatesummaryfields", null, null)
+                .addWidget("controlactiontemplatesummaryfieldswidget", "General Information", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, ControlActionTemplatePage.getSummaryWidgetDetails(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME , app, true))
+                .widgetDone()
+                .sectionDone()
+                .addSection("controlactiontemplateControlfields", null, null)
+                .addWidget("controlactiontemplateControlfieldswidget", "Actions", PageWidget.WidgetType.ACTIONS_LIST_VIEW, "webActionsListView_6_12", 0, 0, null,null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("notesandcomments",null,null)
+                .addWidget("widgetGroup", "Comments", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, ControlActionTemplatePage.getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("controlActionTemplateControlactions", "Control Actions", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("controlActionTemplateControlactionfields", null, null)
+                .addWidget("controlActionTemplateControlactionRelatedList", "List of Control Actions", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, ControlActionTemplatePage.fetchRelatedListForModule(module,FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .addTab("controlActionTemplateHistory", "History", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("controlActionTemplateHistoryFields", null, null)
+                .addWidget("controlActionTemplateHistory", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, controlActionTemplateActivityWidgetParam,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+                .layoutDone();
         PagesContext controlActionTemplateDefaultPage = new PagesContext("controlActionTemplateViewPage", "Default Control Action Template View Page", "", null, false, true, true)
                 .addLayout(PagesContext.PageLayoutType.WEB)
                 .addTab("controlactiontemplatesummary", "Summary", PageTabContext.TabType.SIMPLE,true, null)
@@ -175,6 +210,7 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
                 .tabDone()
                 .layoutDone();
         controlActionTemplatePages.add(controlActionTemplateScheduledPage);
+        controlActionTemplatePages.add(controlActionTemplateFlaggedEventPage);
         controlActionTemplatePages.add(controlActionTemplateDefaultPage);
         return controlActionTemplatePages;
     }

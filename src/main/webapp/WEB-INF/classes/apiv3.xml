@@ -3110,6 +3110,13 @@
             <param name="identifier">unPublish</param>
             <param name="buttonPermission">true</param>
         </action>
+        <action name="createAction" class="com.facilio.bmsconsoleV3.actions.V3ControlActionTemplateAction" method="createAction">
+            <param name="moduleName">controlActionTemplate</param>
+            <param name="permission">POST:UPDATE</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">createAction</param>
+            <param name="buttonPermission">true</param>
+        </action>
     </package>
 
 

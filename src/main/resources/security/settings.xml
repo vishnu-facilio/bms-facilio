@@ -5864,4 +5864,12 @@
         <requestbody type="object">
         </requestbody>
     </request>
+    <request path="/api/v3/ControlActionTemplate/createAction" method="POST">
+        <requestbody type="object">
+            <property name="controlActionTemplateId" type="number"></property>
+            <property name="scheduledActionDateTime" type="number"></property>
+            <property name="revertActionDateTime" type="number"></property>
+            <property name="isSandBox" type="boolean"></property>
+        </requestbody>
+    </request>
 </config>

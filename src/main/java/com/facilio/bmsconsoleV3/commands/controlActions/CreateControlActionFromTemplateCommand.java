@@ -114,21 +114,31 @@ public class CreateControlActionFromTemplateCommand extends FacilioCommand {
                     }
                 }
             } else {
-                //Todo create control Action template without calendar
-                Map<String, Object> asProperties = FieldUtil.getAsProperties(controlActionTemplateContext);
-                V3ControlActionContext controlActionRecord = FieldUtil.getAsBeanFromMap(asProperties, V3ControlActionContext.class);
-                List<PeopleContext> firstLevelApprovalList = ControlActionAPI.getApprovalList(controlActionTemplateId, FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
-                List<PeopleContext> secondLevelApprovalList = ControlActionAPI.getApprovalList(controlActionTemplateId, FacilioConstants.Control_Action.CONTROL_ACTION_SECOND_LEVEL_APPROVAL_MODULE_NAME);
-                if (CollectionUtils.isNotEmpty(firstLevelApprovalList)) {
-                    controlActionRecord.setFirstLevelApproval(firstLevelApprovalList);
+                if(controlActionTemplateContext.getScheduledActionDateTime() != null) {
+                    Map<String, Object> asProperties = FieldUtil.getAsProperties(controlActionTemplateContext);
+                    V3ControlActionContext controlActionRecord = FieldUtil.getAsBeanFromMap(asProperties, V3ControlActionContext.class);
+                    List<PeopleContext> firstLevelApprovalList = ControlActionAPI.getApprovalList(controlActionTemplateId, FacilioConstants.Control_Action.CONTROL_ACTION_FIRST_LEVEL_APPROVAL_MODULE_NAME);
+                    List<PeopleContext> secondLevelApprovalList = ControlActionAPI.getApprovalList(controlActionTemplateId, FacilioConstants.Control_Action.CONTROL_ACTION_SECOND_LEVEL_APPROVAL_MODULE_NAME);
+                    if (CollectionUtils.isNotEmpty(firstLevelApprovalList)) {
+                        controlActionRecord.setFirstLevelApproval(firstLevelApprovalList);
+                    }
+                    if (CollectionUtils.isNotEmpty(secondLevelApprovalList)) {
+                        controlActionRecord.setSecondLevelApproval(secondLevelApprovalList);
+                    }
+                    if (controlActionTemplateContext.getAssetCriteriaId() != null && controlActionTemplateContext.getAssetCriteriaId() > 0) {
+                        controlActionRecord.setAssetCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getAssetCriteriaId()));
+                    }
+                    if (controlActionTemplateContext.getSiteCriteriaId() != null && controlActionTemplateContext.getSiteCriteriaId() > 0) {
+                        controlActionRecord.setSiteCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getSiteCriteriaId()));
+                    }
+                    if (controlActionTemplateContext.getControllerCriteriaId() != null && controlActionTemplateContext.getControllerCriteriaId() > 0) {
+                        controlActionRecord.setControllerCriteria(CriteriaAPI.getCriteria(controlActionTemplateContext.getControllerCriteriaId()));
+                    }
+                    controlActionRecord.setControlActionTemplate(controlActionTemplateContext);
+                    controlActionRecord.setControlActionSourceType(V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal());
+                    records.add(controlActionRecord);
+
                 }
-                if (CollectionUtils.isNotEmpty(secondLevelApprovalList)) {
-                    controlActionRecord.setSecondLevelApproval(secondLevelApprovalList);
-                }
-                records.add(controlActionRecord);
-                controlActionRecord.setControlActionTemplate(controlActionTemplateContext);
-                controlActionRecord.setControlActionSourceType(V3ControlActionContext.ControlActionSourceTypeEnum.CONTROL_ACTION_TEMPLATE.getVal());
-                controlActionRecord.setControlActionTemplate(controlActionTemplateContext);
             }
             if (CollectionUtils.isNotEmpty(records)) {
                 V3Util.createRecord(controlActionModule, records);

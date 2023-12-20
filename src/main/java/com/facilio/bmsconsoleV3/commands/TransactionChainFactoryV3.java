@@ -70,6 +70,7 @@ import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
 import com.facilio.assetcatergoryfeature.commands.FetchAssetCategoryLevelStatusCommand;
 import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatusCommand;
+import com.facilio.chain.FacilioContext;
 import com.facilio.faults.LoadOccurrenceForAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.connected.commands.AddExecutorCommand;
@@ -4398,6 +4399,16 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain getControlActionCancelChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new CancelControlActionCommand());
+        return c;
+    }
+    public static FacilioChain getControlActionTemplateCreateActionChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CreateActionForControlActionTemplateCommand());
+        return c;
+    }
+    public static FacilioChain getCalendarSlotCreationChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new CalendarSlotCreationCommand());
         return c;
     }
 }

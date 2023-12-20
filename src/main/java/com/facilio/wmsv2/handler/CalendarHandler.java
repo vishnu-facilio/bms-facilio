@@ -1,18 +1,23 @@
 package com.facilio.wmsv2.handler;
 
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.util.CalendarApi;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.util.DBConf;
 import com.facilio.ims.handler.ImsHandler;
 import com.facilio.fms.message.Message;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Log4j
 public class CalendarHandler extends ImsHandler {
@@ -23,7 +28,13 @@ public class CalendarHandler extends ImsHandler {
             Long calendarId = getCalendarId(message);
             ZonedDateTime startDate = getStartDate(message);
             ZonedDateTime endDate = getEndDate(message);
-            CalendarApi.eventSelectorMethod(calendarId,startDate,endDate);
+            FacilioContext context = new FacilioContext();
+            context.put("calendarId",calendarId);
+            context.put("startDate",startDate);
+            context.put("endDate",endDate);
+            FacilioChain chain = TransactionChainFactoryV3.getCalendarSlotCreationChain();
+            chain.setContext(context);
+            chain.execute();
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }

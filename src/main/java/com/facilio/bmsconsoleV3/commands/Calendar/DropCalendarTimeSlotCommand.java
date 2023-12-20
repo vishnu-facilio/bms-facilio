@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands.Calendar;
 
+
 import com.facilio.bmsconsoleV3.context.calendar.V3CalendarContext;
 import com.facilio.bmsconsoleV3.util.CalendarApi;
 import com.facilio.command.FacilioCommand;
@@ -23,7 +24,7 @@ public class DropCalendarTimeSlotCommand extends FacilioCommand {
             return false;
         }
         for(V3CalendarContext calendarContext : calendarContextList){
-             CalendarApi.dropCalendarSlotsOfCalendar(calendarContext.getId());
+                CalendarApi.dropCalendarSlotsOfCalendar(calendarContext.getId());
         }
         return false;
     }

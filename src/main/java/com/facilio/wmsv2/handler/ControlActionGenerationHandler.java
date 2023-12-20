@@ -37,11 +37,17 @@ public class ControlActionGenerationHandler extends ImsHandler {
     }
     private Long getStartTime(Message message){
         JSONObject object = message.getContent();
-        return Long.parseLong(String.valueOf(object.get("startTime")));
+        if(object.get("startTime") != null) {
+            return Long.parseLong(String.valueOf(object.get("startTime")));
+        }
+        return null;
     }
     private Long getEndTime(Message message){
         JSONObject object = message.getContent();
-        return Long.parseLong(String.valueOf(object.get("endTime")));
+        if(object.get("endTime") != null) {
+            return Long.parseLong(String.valueOf(object.get("endTime")));
+        }
+        return null;
     }
 
     private Long getProperty(Message message,String propertyName) {

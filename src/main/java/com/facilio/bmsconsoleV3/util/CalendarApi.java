@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3SiteContext;
 import com.facilio.bmsconsoleV3.context.calendar.*;
+import com.facilio.bmsconsoleV3.context.controlActions.V3ControlActionTemplateContext;
 import com.facilio.bmsconsoleV3.enums.EventTypeEnum;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -590,6 +591,19 @@ public class CalendarApi {
         }
         String time = hr+":"+min+""+suffix;
         return time;
+    }
+    public static List<V3ControlActionTemplateContext> getAssociatedControlActionTemplateList(Long calendarId) throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
+        List<FacilioField> fields = modBean.getAllFields(module.getName());
+        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+        SelectRecordsBuilder<V3ControlActionTemplateContext> controlActionTemplateContextSelectRecordsBuilder = new SelectRecordsBuilder<V3ControlActionTemplateContext>()
+                .module(module)
+                .select(fields)
+                .beanClass(V3ControlActionTemplateContext.class)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("calendar"),String.valueOf(calendarId),NumberOperators.EQUALS));
+        return controlActionTemplateContextSelectRecordsBuilder.get();
     }
 
 }
