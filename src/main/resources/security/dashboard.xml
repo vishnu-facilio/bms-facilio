@@ -506,7 +506,7 @@
             <property name="perPage" type="number"></property>
             <property name="folderId" type="number"></property>
             <property name="fetchOnlyKpi" type="boolean"></property>
-            <property name="fetchOnlyModule" type="boolean"></property>
+            <property name="fetchOnlyModule" type="string"></property>
         </urlparams>
     </request>
     <request path="/api/v3/module/report/folder/list" method="GET">
