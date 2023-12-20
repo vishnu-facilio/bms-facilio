@@ -132,10 +132,8 @@ public class ReadingKpiPackageBeanImpl implements PackageBean<ReadingKPIContext>
             Long kpiId = xmlNdIds.getKey();
             XMLBuilder kpiBuilder = xmlNdIds.getValue();
 
-            ResourceType resourceType = ResourceType.valueOf(Integer.valueOf(kpiBuilder.getElement("resourceType").getText()));
-            NameSpaceContext nsCtx = PackageBeanUtil.updateDataIdForConnected(kpiId, NSType.KPI_RULE, resourceType);
-            NamespaceBean nsBean = (NamespaceBean) BeanFactory.lookup("NamespaceBean");
-            nsBean.updateNamespace(nsCtx);
+//            ResourceType resourceType = ResourceType.valueOf(Integer.valueOf(kpiBuilder.getElement("resourceType").getText()));
+//            PackageBeanUtil.updateDataIdForConnected(kpiId, NSType.KPI_RULE, resourceType);
         }
     }
 

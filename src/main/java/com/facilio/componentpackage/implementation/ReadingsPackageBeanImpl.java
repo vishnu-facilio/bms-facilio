@@ -23,6 +23,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         XMLBuilder assetReadingBuilder = readingsBuilder.e("AssetCategoryReading");
         assetReadingBuilder.e("assetCategoryName").text(readingComponent.getAssetCategoryName());
         assetReadingBuilder.e("readingModuleName").text(readingComponent.getModuleName());
+        assetReadingBuilder.e("tableName").text(readingComponent.getReadingField().getTableName());
         PackageBeanUtil.convertFacilioFieldToXML(readingComponent.getReadingField(), readingsBuilder.e("ReadingField"));
     }
 
@@ -104,21 +106,24 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
             FacilioField facilioField = assetReading.getReadingField();
             String assetCategoryName = assetReading.getAssetCategoryName();
             String moduleName = assetReading.getModuleName();
+            String tableName=assetReading.getTableName();
+            
+            String moduleFieldsKey=getModuleFieldsKey(moduleName,tableName);
 
             if (StringUtils.isNotEmpty(assetCategoryName) && !moduleNameVsFields.containsKey(assetCategoryName)) {
                 moduleNameVsFields.put(assetCategoryName, new HashMap<>());
             }
             Map<String, List<FacilioField>> moduleNdFields = moduleNameVsFields.get(assetCategoryName);
-            if (StringUtils.isNotEmpty(moduleName) && !moduleNdFields.containsKey(moduleName)) {
-                moduleNdFields.put(moduleName, new ArrayList<>());
+            if (StringUtils.isNotEmpty(moduleFieldsKey) && !moduleNdFields.containsKey(moduleFieldsKey)) {
+                moduleNdFields.put(moduleFieldsKey, new ArrayList<>());
             }
-            moduleNdFields.get(moduleName).add(assetReading.getReadingField());
+            moduleNdFields.get(moduleFieldsKey).add(assetReading.getReadingField());
 
 
-            if (!moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleName)) {
-                moduleNameVsFieldNameVsUniqueIdentifier.put(moduleName, new HashMap<>());
+            if (!moduleNameVsFieldNameVsUniqueIdentifier.containsKey(moduleFieldsKey)) {
+                moduleNameVsFieldNameVsUniqueIdentifier.put(moduleFieldsKey, new HashMap<>());
             }
-            moduleNameVsFieldNameVsUniqueIdentifier.get(moduleName).put(facilioField.getName(), idVsData.getKey());
+            moduleNameVsFieldNameVsUniqueIdentifier.get(moduleFieldsKey).put(facilioField.getName(), idVsData.getKey());
         }
 
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
@@ -131,6 +136,11 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         }
 
         return uniqueIdentifierVsComponentId;
+    }
+
+    private String getModuleFieldsKey(String moduleName, String tableName) {
+        String moduleFieldKey="moduleName : "+moduleName+" tableName : "+tableName;
+        return moduleFieldKey;
     }
 
     @Override
@@ -162,9 +172,10 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         XMLBuilder assetReading = fieldsBuilder.getElement("AssetCategoryReading");
         String assetCategoryName = assetReading.getElement("assetCategoryName").getText();
         String moduleName = assetReading.getElement("readingModuleName").getText();
+        String tableName = assetReading.getElement("tableName").getText();
 
         FacilioField fields = PackageBeanUtil.getFieldFromXMLComponent(fieldsBuilder.getElement("ReadingField"));
-        AssetReading assetReadingCtx = new AssetReading(moduleName, assetCategoryName, fields);
+        AssetReading assetReadingCtx = new AssetReading(moduleName, assetCategoryName, fields,tableName);
 
         return assetReadingCtx;
     }
@@ -220,7 +231,7 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         if (MapUtils.isNotEmpty(categoryMap)) {
             for (Map.Entry<Long, List<FacilioField>> prop : categoryMap.entrySet()) {
                 V3AssetCategoryContext assetCategoryContext = AssetsAPI.getAssetCategories(Collections.singletonList(prop.getKey())).get(0);
-                assetReadings.putAll(prop.getValue().stream().filter(m -> ids.contains(m.getFieldId())).map(m -> new AssetReading(m.getModule().getName(), assetCategoryContext.getDisplayName(), m)).collect(Collectors.toMap(m -> m.getReadingField().getFieldId(), m -> m)));
+                assetReadings.putAll(prop.getValue().stream().filter(field -> ids.contains(field.getFieldId())).map(field -> new AssetReading(field.getModule().getName(), assetCategoryContext.getDisplayName(), field, field.getTableName())).collect(Collectors.toMap(m -> m.getReadingField().getFieldId(), m -> m)));
             }
         }
         return assetReadings;
@@ -230,11 +241,12 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         Map<String, Long> uniqueIdentifierVsComponentId = new HashMap<>();
         Map<String, Long> assetNameVsId = PackageBeanUtil.getAssetCategoryNameVsId(null);
         for (Map.Entry<String, List<FacilioField>> m : fieldsList.entrySet()) {
-            String moduleName = m.getKey();
-            List<FacilioField> assetReadings = createAssetReadings(assetNameVsId.get(assetCategoryName), moduleName, m.getValue());
+            String moduleFieldsKey = m.getKey();
+            Pair<String, String> deSerilializedModuleFieldKey=deSerilializeModuleFieldKey(moduleFieldsKey);
 
+            List<FacilioField> assetReadings = createAssetReadings(assetNameVsId.get(assetCategoryName), deSerilializedModuleFieldKey.getKey(), deSerilializedModuleFieldKey.getValue(), m.getValue());
             if (moduleVsFieldVsUniqueId.containsKey(m.getKey()) && CollectionUtils.isNotEmpty(assetReadings)) {
-                Map<String, String> fieldNameVsUniqueIdentifier = moduleVsFieldVsUniqueId.get(moduleName);
+                Map<String, String> fieldNameVsUniqueIdentifier = moduleVsFieldVsUniqueId.get(moduleFieldsKey);
                 for (FacilioField field : assetReadings) {
                     String fieldName = field.getName();
                     String uniqueIdentifier = fieldNameVsUniqueIdentifier.get(fieldName);
@@ -246,14 +258,23 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         return uniqueIdentifierVsComponentId;
     }
 
-    private static List<FacilioField> createAssetReadings(Long categoryId, String moduleName, List<FacilioField> fields) throws Exception {
+    private static Pair<String, String> deSerilializeModuleFieldKey(String moduleFieldsKey) {
+        String[] parts = moduleFieldsKey.split("moduleName :| tableName :");
+
+        String moduleName = parts[1].trim();
+        String tableName = parts[2].trim();
+
+        return Pair.of(moduleName, tableName);
+    }
+
+    private static List<FacilioField> createAssetReadings(Long categoryId, String moduleName, String tableName, List<FacilioField> fields) throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
         context.put(FacilioConstants.ContextNames.READING_NAME, moduleName);
         context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
-        context.put(FacilioConstants.ContextNames.TABLE_NAME,fields.get(0).getTableName());
+        context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,tableName);
 
         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
         addReadingChain.execute(context);
@@ -280,16 +301,20 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         Long moduleId;
         String moduleName;
 
-        public AssetReading(String moduleName, String assetCategoryName, FacilioField readingField) {
+        String tableName;
+
+        public AssetReading(String moduleName, String assetCategoryName, FacilioField readingField,String tableName) {
             this.moduleName = moduleName;
             this.readingField = readingField;
             this.assetCategoryName = assetCategoryName;
+            this.tableName=tableName;
         }
 
-        public AssetReading(Long moduleId, Long assetCategoryId, FacilioField readingField) {
+        public AssetReading(Long moduleId, Long assetCategoryId, FacilioField readingField,String tableName) {
             this.moduleId = moduleId;
             this.assetCategoryId = assetCategoryId;
             this.readingField = readingField;
+            this.tableName=tableName;
         }
 
 

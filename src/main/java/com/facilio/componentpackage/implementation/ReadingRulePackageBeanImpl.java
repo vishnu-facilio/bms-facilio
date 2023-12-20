@@ -137,10 +137,8 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
 
             new RuleXMLdeSerializer(ruleCtx, xmlNdIds.getValue()).convertRootCause();
 
-            ResourceType resourceType = ResourceType.valueOf(Integer.valueOf(ruleBuilder.getElement("resourceType").getText()));
-            NameSpaceContext nsCtx = PackageBeanUtil.updateDataIdForConnected(ruleId, NSType.READING_RULE, resourceType);
-            NamespaceBean nsBean = (NamespaceBean) BeanFactory.lookup("NamespaceBean");
-            nsBean.updateNamespace(nsCtx);
+//            ResourceType resourceType = ResourceType.valueOf(Integer.valueOf(ruleBuilder.getElement("resourceType").getText()));
+//            NameSpaceContext nsCtx = PackageBeanUtil.updateDataIdForConnected(ruleId, NSType.READING_RULE, resourceType);
 
             if (ruleCtx.getRca() != null) {
                 FacilioChain rcaChain = TransactionChainFactoryV3.addRCARuleChain();

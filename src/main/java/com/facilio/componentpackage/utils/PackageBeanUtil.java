@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.beans.NamespaceBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -1796,6 +1797,7 @@ public class PackageBeanUtil {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         String fieldName = fldBuilder.getElement(PackageConstants.NameSpaceConstants.FIELD_NAME).getText();
         String fieldModuleName = fldBuilder.getElement(PackageConstants.MODULENAME).getText();
+        LOGGER.info("fieldName : "+fieldName +" moduleName :" +fieldModuleName);
         FacilioField facilioField = moduleBean.getField(fieldName, fieldModuleName);
         return facilioField;
     }
@@ -1864,21 +1866,28 @@ public class PackageBeanUtil {
 
     public static NameSpaceContext updateDataIdForConnected(Long parentRuleId, NSType type, ResourceType resourceType) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        DataMigrationBean dataMigrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, AccountUtil.getCurrentOrg().getOrgId());
 
         NameSpaceContext ns = NamespaceAPI.getNameSpaceByRuleId(parentRuleId, type);
         FacilioModule dataModule = moduleBean.getModule(resourceType.getModuleName());
 
-        Map<Long, Long> includedAssetsIdMap = dataMigrationBean.getOldVsNewId(null, dataModule.getModuleId(), ns.getIncludedAssetIds());
-        ns.setIncludedAssetIds(includedAssetsIdMap.values().stream().collect(Collectors.toList()));
+        if(CollectionUtils.isNotEmpty(ns.getIncludedAssetIds())) {
+            Map<Long, Long> includedAssetsIdMap = PackageBeanUtil.getNewRecordIds( dataModule.getModuleId(), ns.getIncludedAssetIds());
+            ns.setIncludedAssetIds(includedAssetsIdMap.values().stream().collect(Collectors.toList()));
+
+            NamespaceAPI.deleteExistingInclusionRecords(ns);
+            NamespaceAPI.addInclusions(ns);
+        }
 
         ns.getFields().stream().filter(field -> field.getResourceId() != null).forEach(field -> {
             try {
                 FacilioModule nsTypeDataModule = CommonConnectedUtil.getModuleBasedOnNsFieldType(field.getNsFieldType());
-                Map<Long, Long> fieldAssetMap = dataMigrationBean.getOldVsNewId(null, nsTypeDataModule.getModuleId(), Collections.singletonList(field.getResourceId()));
+                Map<Long, Long> fieldAssetMap = PackageBeanUtil.getNewRecordIds( nsTypeDataModule.getModuleId(), Collections.singletonList(field.getResourceId()));
                 field.setResourceId(fieldAssetMap.get(field.getResourceId()));
+
+                NamespaceBean nsBean = Constants.getNsBean();
+                nsBean.addNamespaceFields(ns.getId(), ns.getFields());
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Sandbox Exception Namespace data migration exception --- "+ e);
             }
         });
         return ns;
@@ -1893,7 +1902,6 @@ public class PackageBeanUtil {
         fieldElement.element(PackageConstants.FieldXMLConstants.DATA_TYPE).text(String.valueOf(facilioField.getDataType()));
         fieldElement.element(PackageConstants.FieldXMLConstants.MAIN_FIELD).text(String.valueOf(facilioField.isMainField()));
         fieldElement.element(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).text(String.valueOf(facilioField.getDisplayTypeInt()));
-        fieldElement.element("tableName").text(facilioField.getModule().getTableName());
 
         Map<String, Object> additionalFieldProps = fetchAdditionalFieldProps(facilioField);
         for (Map.Entry<String, Object> entry : additionalFieldProps.entrySet()) {
@@ -2045,7 +2053,6 @@ public class PackageBeanUtil {
         fieldProp.put("isDefault", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.IS_DEFAULT).getText()));
         fieldProp.put("displayType", Integer.parseInt(fieldElement.getElement(PackageConstants.FieldXMLConstants.DISPLAY_TYPE).getText()));
         fieldProp.put("isMainField", Boolean.parseBoolean(fieldElement.getElement(PackageConstants.FieldXMLConstants.MAIN_FIELD).getText()));
-        fieldProp.put("tableName",fieldElement.getElement(fieldElement.getElement("tableName").getText()));
 
         FacilioField facilioField = setAdditionalFieldProps(fieldProp, fieldElement);
         return facilioField;

@@ -2561,16 +2561,43 @@
         </urlparams>
     </request>
     <request path="/api/v1/setup/kpiLogger">
-        <requestbody type="object"/>
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="force" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="filters" type="string"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v1/setup/readingkpi">
-        <requestbody type="object"/>
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="force" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="filters" type="string"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v3/readingKpi/historical/run">
-        <requestbody type="object"/>
+        <urlparams type="object"/>
     </request>
     <request path="/api/v3/readingKpi/historical/fetchAssetDetails">
-        <requestbody type="object"/>
+        <urlparams type="object">
+            <property name="parentLoggerId" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/readingKpi/historical/fetchAssetDetails">
+        <urlparams type="object">
+            <property name="parentLoggerId" type="number"/>
+        </urlparams>
     </request>
     <request path="/api/v3/readingKpi/historical/getGraphDetailsForKpi">
         <requestbody type="object">
@@ -2916,11 +2943,17 @@
     </request>
 
     <request path="/api/v1/setup/faultImpact">
-        <property name="page" type="number"/>
-        <property name="perPage" type="number"/>
-        <property name="moduleName" type="string"/>
-        <property name="viewName" type="string"/>
-        <property name="force" type="false"/>
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="moduleName" type="string"/>
+            <property name="viewName" type="string"/>
+            <property name="force" type="boolean"/>
+            <property name="withCount" type="boolean"/>
+            <property name="filters" type="string"/>
+            <property name="orderBy" type="string"/>
+            <property name="orderType" type="string"/>
+        </urlparams>
     </request>
     <request path="/api/v1/setup/commentPreferences/update" method="POST">
         <requestbody type="object">
@@ -4976,8 +5009,10 @@
         </requestbody>
     </request>
     <request path="/api/v1/setup/readings/utilitytype" method="GET">
+        <urlparams>
         <property name="id" type="number"/>
         <property name="excludeEmptyFields" type="boolean"/>
+        </urlparams>
     </request>
     <request path="/api/v3/module/servicePlannedMaintenance/:recordId/systemButton/:identifier" method="POST">
         <urlparams>
