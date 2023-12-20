@@ -836,6 +836,7 @@ public class PackageUtil {
         componentNameVsTypes.put(FacilioConstants.ContextNames.SPACE_CATEGORY,ComponentType.SPACE_CATEGORY);
         componentNameVsTypes.put(FacilioConstants.ContextNames.PEOPLE,ComponentType.PEOPLE);
         componentNameVsTypes.put(FacilioConstants.ContextNames.ASSIGNMENT,ComponentType.TEAM);
+        componentNameVsTypes.put(FacilioConstants.ContextNames.GROUPS,ComponentType.TEAM);
         componentNameVsTypes.put(FacilioConstants.ContextNames.CUSTOM_BUTTON_ID,ComponentType.CUSTOM_BUTTON);
         componentNameVsTypes.put(FacilioConstants.ContextNames.EMPLOYEE,ComponentType.PEOPLE);
         componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT_CONTACT,ComponentType.PEOPLE);

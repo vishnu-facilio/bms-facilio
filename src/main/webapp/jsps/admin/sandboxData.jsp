@@ -62,6 +62,10 @@
         <td class="table-head"><h4>Record Limit</h4></td>
         <td><input type="text" id="limit" required class="input-field"></td>
     </tr>
+    <tr id="offsetRow">
+            <td class="table-head"><h4>Record Offset</h4></td>
+            <td><input type="text" id="offset" required class="input-field"></td>
+        </tr>
     <tr id="dataMigrationIdRow">
         <td class="table-head"><h4>Data Migration Id</h4></td>
         <td><input type="text" id="dataMigrationId" class="input-field"/></td>
@@ -112,6 +116,7 @@
         const partialPackageType = $("#partialPackageType").is(":checked");
         $("#packageTypeRowId").toggle(isPackageCreationAction);
         $("#limitRow").toggle(isPackageCreationAction && partialPackageType);
+        $("#offsetRow").toggle(isPackageCreationAction && partialPackageType);
         $("#dataMigrationModulesIdRow").toggle(isPackageCreationAction && partialPackageType);
         $("#dataMigrationForOnlyModulesIdRow").toggle(isPackageCreationAction && partialPackageType);
 
@@ -133,6 +138,7 @@
             const dataObject = {
                 fromAdminTool: true,
                 limit: $("#limit").val(),
+                offset: $("#offset").val(),
                 fullPackageType: fullPackageType,
                 bucketName: $("#bucketName").val(),
                 sourceOrgId: $("#sourceOrgId").val(),

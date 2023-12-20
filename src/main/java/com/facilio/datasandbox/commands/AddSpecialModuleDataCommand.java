@@ -2,7 +2,6 @@ package com.facilio.datasandbox.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datamigration.util.DataMigrationConstants;
@@ -15,7 +14,6 @@ import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -84,10 +82,10 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
             boolean isModuleMigrated = false;
 
             do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, allFieldsMap, numberFileFields, offset, limit + 1);
+                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, allFieldsMap, numberFileFields, offset, limit + 1);
 
                 if (CollectionUtils.isEmpty(dataFromCSV)) {
-                    LOGGER.info("####Data Migration - Update - No Records obtained from CSV - " + moduleName);
+                    LOGGER.info("####Data Migration - SpecialModule - No Records obtained from CSV - " + moduleName);
                     isModuleMigrated = true;
                 } else {
                     if (dataFromCSV.size() > limit) {
@@ -95,7 +93,7 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
                     } else {
                         isModuleMigrated = true;
                     }
-                    LOGGER.info("####Data Migration - Update - In progress - " + moduleName + " - Offset - " + offset);
+                    LOGGER.info("####Data Migration - SpecialModule - In progress - " + moduleName + " - Offset - " + offset);
 
                     List<Map<String, Object>> propsToInsert = sanitizeProps(dataMigrationId, migrationBean, module, allFieldsMap, dataFromCSV, numberLookUps);
 
@@ -110,7 +108,7 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
                 migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, module.getModuleId(), offset);
 
                 if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
-                    LOGGER.info("####Data Migration - Update - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
+                    LOGGER.info("####Data Migration - SpecialModule - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
                     return true;
                 }
             } while (!isModuleMigrated);

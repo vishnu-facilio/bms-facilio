@@ -34,6 +34,8 @@ public class CreateDataCSVFilesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long sourceOrgId = (long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
+        int reqOffset = (int) context.getOrDefault(DataMigrationConstants.OFFSET, 0);
+        int reqLimit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 0);
         boolean getDependantModuleData = (boolean) context.get(DataMigrationConstants.GET_DEPENDANT_MODULE_DATA);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
@@ -61,6 +63,12 @@ public class CreateDataCSVFilesCommand extends FacilioCommand {
 
             int offset = 0;
             int limit = 5000;
+            if (reqOffset > 0) {
+                offset = reqOffset;
+            }
+            if (reqLimit > 0 && reqLimit < limit) {
+                limit = reqLimit;
+            }
             File moduleCsvFile = null;
             String moduleCsvFilePath = null;
             boolean isModuleMigrated = false;
@@ -95,6 +103,10 @@ public class CreateDataCSVFilesCommand extends FacilioCommand {
 
                     propsForCsv.addAll(props);
                     offset = offset + props.size();
+
+                    if (offset >= reqLimit) {
+                        isModuleMigrated = true;
+                    }
                 }
             } while (!isModuleMigrated);
 

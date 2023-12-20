@@ -25,6 +25,7 @@ import java.util.List;
 @Log4j
 public class SandboxDataMigrationAction extends FacilioAction {
     private int limit;
+    private int offset;
     private long packageId;
     private long sourceOrgId;
     private long targetOrgId;
@@ -70,6 +71,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         }
 
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
+        dataMigrationContext.put(DataMigrationConstants.OFFSET, getOffset());
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL, isFromAdminTool());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.CREATE_FULL_PACKAGE, fullPackageType);

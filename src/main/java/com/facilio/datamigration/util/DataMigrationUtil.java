@@ -220,9 +220,11 @@ public class DataMigrationUtil {
                 break;
             case "task":
                 addNumberLookupDetails("parentTicketId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                // "sectionId" - refers to Task_Section ID
                 // "readingFieldId" - refers to FieldId in FacilioField
                 // "readingDataId" - refers to RecordId in the Reading Module table (Module that contains "readingFieldId")
                 addNumberLookupDetails("readingDataId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                addNumberLookupDetails("sectionId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
 //                addNumberLookupDetails("statusNew", "ticketstatus", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "tasksection":
@@ -1016,7 +1018,18 @@ public class DataMigrationUtil {
                     put("left",FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
                     put("right",FacilioConstants.ContextNames.SITE);
                 }});
-
+                put("taskattachments", new HashMap<String, String>() {{
+                    put("parentId", "task");
+                }});
+                put("pmTriggerV2", new HashMap<String, String>() {{
+                    put("pmId", FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
+                }});
+                put("pmPlanner", new HashMap<String, String>() {{
+                    put("pmId", FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
+                }});
+                put("pmResourcePlanner", new HashMap<String, String>() {{
+                    put("pmId", FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
+                }});
                 put("workorderTimeLog",new HashMap<String,String>(){{
                     put("parent",FacilioConstants.ContextNames.WORK_ORDER);
                     put(FacilioConstants.ContextNames.SITE,FacilioConstants.ContextNames.SITE);

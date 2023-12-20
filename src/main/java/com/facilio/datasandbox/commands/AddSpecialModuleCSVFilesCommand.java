@@ -40,11 +40,18 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
         Map<String, String> moduleNameVsCsvFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILENAME);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
+        List<String> dataMigrationModuleNames = (List<String>) context.get(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES);
+        List<String> runDataMigrationOnlyForModulesNames = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
+        boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
+
         List<String> specialModules = SandboxModuleConfigUtil.getSpecialModules(migrationModuleNameVsDetails);
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
 
         for (String moduleName : specialModules) {
+            if (!createFullDataPackage && !dataMigrationModuleNames.contains(moduleName) && !runDataMigrationOnlyForModulesNames.contains(moduleName)) {
+                continue;
+            }
             if (!SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
                 continue;
             }
@@ -79,9 +86,11 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
                 moduleCsvFilePath = moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN;
                 DataPackageFileUtil.addModuleCSVFile(moduleName, moduleCsvFile);
                 moduleNameVsCsvFileName.put(moduleName, moduleCsvFilePath);
+                migrationModuleNameVsDetails.put(moduleName, moduleDetails);
             }
         }
 
+        context.put(DataMigrationConstants.MODULENAME_VS_CSV_FILENAME, moduleNameVsCsvFileName);
         return false;
     }
 

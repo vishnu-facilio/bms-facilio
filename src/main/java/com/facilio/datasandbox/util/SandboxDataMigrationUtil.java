@@ -15,7 +15,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -288,12 +287,12 @@ public class SandboxDataMigrationUtil {
         }
     }
 
-    public static List<Map<String, Object>> getDataFromCSV(String moduleName, String moduleFileName, Map<String, FacilioField> fieldsMap, List<String> numberFileFields, int offset, int limit) throws Exception {
-        List<Map<String, String>> fieldNameVsValueList = parseCSVAndGetData(moduleName, moduleFileName, offset, limit);
+    public static List<Map<String, Object>> getDataFromCSV(FacilioModule module, String moduleFileName, Map<String, FacilioField> fieldsMap, List<String> numberFileFields, int offset, int limit) throws Exception {
+        List<Map<String, String>> fieldNameVsValueList = parseCSVAndGetData(module.getName(), moduleFileName, offset, limit);
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(fieldNameVsValueList)) {
             List<Map<String, Object>> propsList = convertCSVDataToProps(fieldsMap, fieldNameVsValueList, numberFileFields);
             // special handling
-            moduleSpecialHandlingDuringImport(Constants.getModBean().getModule(moduleName), new ArrayList<>(fieldsMap.values()), propsList);
+            moduleSpecialHandlingDuringImport(module, new ArrayList<>(fieldsMap.values()), propsList);
             return propsList;
         }
         return null;
@@ -496,7 +495,7 @@ public class SandboxDataMigrationUtil {
         } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
             Map<String, Set<String>> moduleNameVsFieldsNames = new HashMap<>();
             for (Map<String, Object> prop : propsList) {
-                Integer inputType = (Integer) prop.get("inputType");
+                Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
                 if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
                     String readingFieldName = (String) prop.get("readingFieldName");
                     String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
@@ -525,14 +524,14 @@ public class SandboxDataMigrationUtil {
                 }
 
                 for (Map<String, Object> prop : propsList) {
-                    Integer inputType = (Integer) prop.get("inputType");
+                    Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
                     if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
                         String readingFieldName = (String) prop.get("readingFieldName");
                         String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
 
                         if (moduleVsFieldsMap.containsKey(readingFieldModuleNameName) && moduleVsFieldsMap.get(readingFieldModuleNameName).containsKey(readingFieldName)) {
                             FacilioModule readingModule = moduleNameVsModuleObj.get(readingFieldModuleNameName);
-                            FacilioField readingField = moduleVsFieldsMap.get(readingFieldModuleNameName).get(readingFieldModuleNameName);
+                            FacilioField readingField = moduleVsFieldsMap.get(readingFieldModuleNameName).get(readingFieldName);
 
                             prop.put("readingFieldId", readingField.getFieldId());
                             prop.put("##ReadingFieldModule##", readingModule);
@@ -594,9 +593,17 @@ public class SandboxDataMigrationUtil {
                             }
                             break;
 
+                        case STRING:
                         case NUMBER:
                             if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName)) {
-                                Long lookupDataId = (Long) value;
+                                long lookupDataId;
+                                if (value instanceof Double) {
+                                    lookupDataId = ((Double) value).longValue();
+                                } else if (value instanceof String) {
+                                    lookupDataId = Long.parseLong((String) value);
+                                } else {
+                                    lookupDataId = (Long) value;
+                                }
                                 if (lookupDataId > 0) {
                                     FacilioModule parentLookupModule = (FacilioModule) numberLookUps.get(fieldName).get("lookupModule");
                                     Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
@@ -660,7 +667,7 @@ public class SandboxDataMigrationUtil {
 
             case NUMBER:
                 if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && org.apache.commons.collections4.MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
-                    Long lookupDataId = (Long) fieldValue;
+                    Long lookupDataId = fieldValue instanceof Double ? ((Double) fieldValue).longValue() : (Long) fieldValue;
                     if (lookupDataId != null && lookupDataId > 0) {
                         FacilioModule parentLookupModule = (FacilioModule) numberLookups.get(fieldName).get("lookupModule");
                         Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
@@ -670,6 +677,8 @@ public class SandboxDataMigrationUtil {
                             dataProp.put(fieldName, newId);
                         } else if (moduleIdVsOldNewIdMapping.containsKey(parentModuleId) && moduleIdVsOldNewIdMapping.get(parentModuleId).containsKey(lookupDataId)) {
                             dataProp.put(fieldName, moduleIdVsOldNewIdMapping.get(parentModuleId).get(lookupDataId));
+                        } else {
+                            dataProp.put(fieldName, lookupDataId);
                         }
                     }
                 } else {
@@ -697,7 +706,11 @@ public class SandboxDataMigrationUtil {
         Map<Long, Map<Long, Long>> moduleIdVsOldNewIdMapping = new HashMap<>();
         if (org.apache.commons.collections4.MapUtils.isNotEmpty(moduleIdVsOldRecordIds)) {
             for (Map.Entry<Long, List<Long>> moduleVsIds : moduleIdVsOldRecordIds.entrySet()) {
-                Map<Long, Long> idMappings = migrationBean.getOldVsNewId(dataMigrationId, moduleVsIds.getKey(), moduleVsIds.getValue());
+                if (moduleVsIds.getKey() == null || moduleVsIds.getKey() < 0 || CollectionUtils.isEmpty(moduleVsIds.getValue())) {
+                    continue;
+                }
+                HashSet<Long> nonDuplicateValues = new HashSet<>(moduleVsIds.getValue());
+                Map<Long, Long> idMappings = migrationBean.getOldVsNewId(dataMigrationId, moduleVsIds.getKey(), new ArrayList<>(nonDuplicateValues));
                 if (MapUtils.isNotEmpty(idMappings)) {
                     if (moduleIdVsOldNewIdMapping.containsKey(moduleVsIds.getKey())) {
                         moduleIdVsOldNewIdMapping.get(moduleVsIds.getKey()).putAll(idMappings);

@@ -318,6 +318,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
         for(Map<String,Object> prop : props) {
             oldIds.add(new Long((Long) prop.get("id")));
+            propToInsert.add(prop);
             if(addLogger) {
                 LOGGER.info(module.getName()+" - Insert prop :::"+prop);
             }

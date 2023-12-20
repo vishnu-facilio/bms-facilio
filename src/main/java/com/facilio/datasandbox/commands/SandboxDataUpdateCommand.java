@@ -13,11 +13,7 @@ import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.BaseLookupField;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
 import lombok.extern.log4j.Log4j;
@@ -76,7 +72,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                 moduleMigrationStarted = true;
             }
 
-            if (skipDataMigrationModules.contains(moduleName)) {
+            if (skipDataMigrationModules.contains(moduleName) || SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
                 LOGGER.info("####Data Migration - Update - skipped for ModuleName - " + moduleName);
                 continue;
             }
@@ -107,9 +103,15 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
 
                 nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
                 nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
+            } else if (module.getTypeEnum() == FacilioModule.ModuleType.READING) {
+                FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForReadingModule(module);
+                if (parentModuleForReadingModule != null) {
+                    nonNullableFieldVsLookupModules.put("parentId", parentModuleForReadingModule.getName());
+                }
             }
 
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            Map<String, FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
 
             Map<String, FacilioField> lookupTypeFieldsMap = getLookupTypeFields(module, allFields, new ArrayList<>(nonNullableFieldVsLookupModules.keySet()), numberLookUps);
             if (MapUtils.isEmpty(lookupTypeFieldsMap)) {
@@ -134,8 +136,16 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             boolean isModuleMigrated = false;
             Map<Long, Long> siteIdMapping = new HashMap<>();
 
+            if (moduleName.equals(FacilioConstants.ContextNames.TASK)) {
+                lookupTypeFieldsMap.put("##ReadingFieldModule##", null);
+                lookupTypeFieldsMap.put("inputType", allFieldsMap.get("inputType"));
+                lookupTypeFieldsMap.put("readingFieldId", allFieldsMap.get("readingFieldId"));
+            } else if (moduleName.equals(FacilioConstants.ContextNames.COMMENT_ATTACHMENTS)) {
+                lookupTypeFieldsMap.put("commentModuleId", allFieldsMap.get("commentModuleId"));
+            }
+
             do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, lookupTypeFieldsMap, numberFileFields, offset, limit + 1);
+                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, lookupTypeFieldsMap, numberFileFields, offset, limit + 1);
 
                 if (CollectionUtils.isEmpty(dataFromCSV)) {
                     LOGGER.info("####Data Migration - Update - No Records obtained from CSV - " + moduleName);
@@ -163,6 +173,9 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                             numberLookUps, siteIdMapping, dataMigrationId, migrationBean);
 
                     if (CollectionUtils.isNotEmpty(propsToUpdate)) {
+                        if (moduleName.equals(FacilioConstants.ContextNames.TASK)) {
+                            lookupTypeFieldsMap.remove("##ReadingFieldModule##");
+                        }
                         migrationBean.updateModuleData(module, new ArrayList<>(lookupTypeFieldsMap.values()), supplementRecords, propsToUpdate, addLogger);
                     }
 
@@ -176,7 +189,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                 }
             } while (!isModuleMigrated);
 
-            LOGGER.info("####Data Migration - Update - Completed for ModuleName -" + moduleName);
+            LOGGER.info("####Data Migration - Update - Completed for ModuleName - " + moduleName);
         }
 
         migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, null, 0);
@@ -194,6 +207,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
 
         List<Map<String, Object>> propsToUpdate = new ArrayList<>();
         for (Map<String, Object> prop : propsList) {
+            boolean newIdCreated = false;
             boolean hasLookupValue = false;
             Map<String, Object> updatedProp = new HashMap<>();
             for (Map.Entry<String, Object> entry : prop.entrySet()) {
@@ -203,40 +217,43 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
 
                 if (value != null) {
                     // Handle System Fields
-                    if (MapUtils.isNotEmpty(oldIdVsNewIdMapping) && fieldName.equals("id")) {
+                    if (fieldName.equals("id")) {
                         long oldId = (long) value;
-                        if (oldIdVsNewIdMapping.containsKey(module.getModuleId()) && oldIdVsNewIdMapping.get(module.getModuleId()).containsKey(oldId)) {
+                        if (MapUtils.isNotEmpty(oldIdVsNewIdMapping) && oldIdVsNewIdMapping.containsKey(module.getModuleId()) && oldIdVsNewIdMapping.get(module.getModuleId()).containsKey(oldId)) {
                             Long newId = oldIdVsNewIdMapping.get(module.getModuleId()).get(oldId);
                             updatedProp.put(fieldName, newId);
+                            newIdCreated = true;
                         } else if (PackageUtil.nameVsComponentType.containsKey(module.getName())) {
                             Long newId = SandboxDataMigrationUtil.getMetaConfNewId(module.getName(), oldId, componentTypeVsOldVsNewId);
                             updatedProp.put(fieldName, newId);
+                            newIdCreated = true;
                         } else {
                             LOGGER.info("####Data Migration - Update - Record not created - ModuleName - " + module.getName() + " OldId - " + oldId);
-                            continue;
                         }
-                    }
-
-                    if (fieldsToParse.contains(fieldName) && fieldObj != null) {
-                        hasLookupValue = true;
-                        SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
                     } else if (fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && MapUtils.isNotEmpty(siteIdMapping)) {
+                        hasLookupValue = true;
                         updatedProp.put(fieldName, siteIdMapping.get((Long) prop.get(fieldName)));
                     } else if (fieldName.equals("site") && MapUtils.isNotEmpty(siteIdMapping)) {
+                        hasLookupValue = true;
                         Map<String, Long> site = (Map<String, Long>) prop.get(fieldName);
                         if (siteIdMapping.containsKey(site.get("id"))) {
                             site.put("id", siteIdMapping.get(site.get("id")));
                             updatedProp.put(fieldName, site);
                         }
+                    } else if (fieldsToParse.contains(fieldName) && fieldObj != null) {
+                        hasLookupValue = true;
+                        SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
+                    } else {
+                        updatedProp.put(fieldName, value);
                     }
                 }
             }
-            if (hasLookupValue) {
+            if (newIdCreated && hasLookupValue) {
                 propsToUpdate.add(updatedProp);
             }
-            // Special Handling
-            updateLookUpIds(module, new ArrayList<>(fieldsMap.values()), propsList, dataMigrationId, migrationBean);
         }
+        // Special Handling
+        updateLookUpIds(module, new ArrayList<>(fieldsMap.values()), propsToUpdate, dataMigrationId, migrationBean);
         return propsToUpdate;
     }
 
@@ -291,11 +308,16 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             }
         } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
             if (CollectionUtils.isNotEmpty(propsList)) {
+                Set<Long> oldSectionIds = new HashSet<>();
                 Map<Long, List<Long>> moduleIdVsOldIds = new HashMap<>();
                 for (Map<String, Object> prop : propsList) {
-                    Integer inputType = (Integer) prop.get("inputType");
+                    if (prop.containsKey("sectionId")) {
+                        oldSectionIds.add((long) prop.get("sectionId"));
+                    }
+                    Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
                     if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
-                        long readingFieldModuleId = prop.containsKey("##ReadingFieldModule##") ? (long) prop.get("##ReadingFieldModule##") : -1;
+                        FacilioModule readingFieldModule = prop.containsKey("##ReadingFieldModule##") ? (FacilioModule) prop.get("##ReadingFieldModule##") : null;
+                        long readingFieldModuleId = readingFieldModule != null ? readingFieldModule.getModuleId() : -1;
                         long readingDataId = prop.containsKey("readingDataId") ? (long) prop.get("readingDataId") : -1;
 
                         if (readingDataId > 0 && readingFieldModuleId > 0) {
@@ -304,15 +326,33 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                         }
                     }
                 }
+                // sectionId field
+                if (CollectionUtils.isNotEmpty(oldSectionIds)) {
+                    FacilioModule taskSectionModule = ModuleFactory.getTaskSectionModule();
+                    Map<Long, Long> oldVsNewSectionIds = migrationBean.getOldVsNewId(dataMigrationId, taskSectionModule.getName(), new ArrayList<>(oldSectionIds));
+                    if (MapUtils.isNotEmpty(oldVsNewSectionIds)) {
+                        for (Map<String, Object> prop : propsList) {
+                            long oldSectionId = prop.containsKey("sectionId") ? (long) prop.get("sectionId") : -1;
+                            Long newSectionId = oldVsNewSectionIds.get(oldSectionId);
+                            prop.put("sectionId", newSectionId);
+                        }
+                    }
+                }
+
+                // other fields
                 if (MapUtils.isNotEmpty(moduleIdVsOldIds)) {
                     Map<Long, Map<Long, Long>> oldIdVsNewIdMapping = SandboxDataMigrationUtil.getOldIdVsNewIdMapping(migrationBean, dataMigrationId, moduleIdVsOldIds);
                     if (MapUtils.isNotEmpty(oldIdVsNewIdMapping)) {
                         for (Map<String, Object> prop : propsList) {
-                            long readingFieldModuleId = prop.containsKey("##ReadingFieldModule##") ? (long) prop.get("##ReadingFieldModule##") : -1;
-                            long oldId = prop.containsKey("readingDataId") ? (long) prop.get("readingDataId") : -1;
+                            Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
+                            if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
+                                FacilioModule readingFieldModule = prop.containsKey("##ReadingFieldModule##") ? (FacilioModule) prop.get("##ReadingFieldModule##") : null;
+                                long readingFieldModuleId = readingFieldModule != null ? readingFieldModule.getModuleId() : -1;
+                                long oldId = prop.containsKey("readingDataId") ? (long) prop.get("readingDataId") : -1;
 
-                            if (oldIdVsNewIdMapping.containsKey(readingFieldModuleId) && oldIdVsNewIdMapping.get(readingFieldModuleId).containsKey(oldId)) {
-                                prop.put("readingDataId", oldIdVsNewIdMapping.get(readingFieldModuleId).get(oldId));
+                                if (oldIdVsNewIdMapping.containsKey(readingFieldModuleId) && oldIdVsNewIdMapping.get(readingFieldModuleId).containsKey(oldId)) {
+                                    prop.put("readingDataId", oldIdVsNewIdMapping.get(readingFieldModuleId).get(oldId));
+                                }
                             }
                         }
                     }

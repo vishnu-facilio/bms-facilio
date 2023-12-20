@@ -1,5 +1,6 @@
 package com.facilio.datasandbox.util;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -50,7 +51,7 @@ public class SandboxModuleConfigUtil {
         }
         List<String> numberFileFields = DataMigrationUtil.getNumberFileFields(module);
         Criteria moduleSpecificCriteria = DataMigrationUtil.getModuleSpecificCriteria(module);
-        Map<String, Map<String, Object>> numberLookUps = DataMigrationUtil.getNumberLookups(module, modBean, null);
+        Map<String, Map<String, Object>> numberLookUps = DataMigrationUtil.getNumberLookups(module, null, null);
 
         Map<String, Object> moduleDetails = new HashMap<>();
         moduleDetails.put("fields", fields);
@@ -356,5 +357,31 @@ public class SandboxModuleConfigUtil {
 
         FacilioField idField = FieldFactory.getIdField(module);
         fieldsMap.put(idField.getName(), idField);
+    }
+
+    public static FacilioModule getParentModuleForReadingModule(FacilioModule readingModule) throws Exception {
+        FacilioModule moduleModule = ModuleFactory.getModuleModule();
+        FacilioModule relModule = ModuleFactory.getSubModulesRelModule();
+        List<FacilioField> moduleFields = FieldFactory.getModuleFields();
+        Map<String,FacilioField> relModuleFieldMap = FieldFactory.getAsMap(FieldFactory.getSubModuleRelFields(relModule));
+
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(moduleFields)
+                .table(moduleModule.getTableName())
+                .innerJoin(relModule.getTableName())
+                .on(relModule.getTableName() + ".PARENT_MODULE_ID = " + moduleModule.getTableName() + ".MODULEID")
+                .andCondition(CriteriaAPI.getCondition(relModuleFieldMap.get("childModuleId"), String.valueOf(readingModule.getModuleId()), NumberOperators.EQUALS));
+
+        Map<String, Object> prop = selectRecordBuilder.fetchFirst();
+
+        if (MapUtils.isNotEmpty(prop)) {
+            if (prop.containsKey("createdBy")) {
+                IAMUser user = new IAMUser();
+                user.setId((long) prop.get("createdBy"));
+                prop.put("createdBy", user);
+            }
+            return FieldUtil.getAsBeanFromMap(prop, FacilioModule.class);
+        }
+        return null;
     }
 }

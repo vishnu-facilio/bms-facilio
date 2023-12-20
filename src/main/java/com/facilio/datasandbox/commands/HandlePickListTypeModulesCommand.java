@@ -35,9 +35,8 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
         
         long targetOrgId = (long) context.get(DataMigrationConstants.TARGET_ORG_ID);
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
+        Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
-
-        Map<String, String> moduleNameVsXmlFileName = DataPackageFileUtil.getModuleNameVsXmlFileName();
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
@@ -109,7 +108,6 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
         dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
-        context.put(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME, moduleNameVsXmlFileName);
 
         return false;
     }
@@ -122,7 +120,7 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
         List<Map<String, Object>> resultProps = new ArrayList<>();
 
         do {
-            List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(moduleName, moduleFileName, allFieldsMap, new ArrayList<>(), offset, limit + 1);
+            List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, allFieldsMap, new ArrayList<>(), offset, limit + 1);
 
             if (org.apache.commons.collections4.CollectionUtils.isEmpty(dataFromCSV)) {
                 LOGGER.info("####Data Migration - Picklist - No Records obtained from CSV - " + moduleName);
