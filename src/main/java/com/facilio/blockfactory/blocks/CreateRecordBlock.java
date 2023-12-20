@@ -61,7 +61,7 @@ public class CreateRecordBlock extends CRUDBaseBlock {
             }
 
             if(StringUtils.isNotEmpty(variableName)){
-                memory.put(variableName, FieldUtil.getAsJSON(records.get(0)));
+                memory.put(variableName, records.get(0).getId());
             }
 
         }catch (Exception exception){
