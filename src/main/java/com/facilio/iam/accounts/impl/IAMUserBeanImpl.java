@@ -99,6 +99,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private static final Logger USER_LOGIN = LogManager.getLogger("UserLogin");
 	private static final Logger LOGGER = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 	public static final String JWT_DELIMITER = "#";
+
+	private static JSONObject JWT_SIGNING_KEYS = null;
+
 	public static int YEAR_IN_SECONDS = 365 * 24 * 3600;
 	public static int MINUTE_IN_SECONDS = 60;
 
@@ -1536,6 +1539,65 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		return null;
 	}
+	private static JSONObject getJWTSigningKeys() {
+		if (JWT_SIGNING_KEYS == null) {
+			JSONObject jwtSigningKeys = new JSONObject();
+			try {
+				FacilioModule jwtSigningKeysModule = new FacilioModule("jwtSigningKeys","JWT Signing Keys","JWT_Signing_Keys");
+				List<FacilioField> fields = new ArrayList<>();
+				fields.add(FieldFactory.getStringField("keyId", "KEY_ID", jwtSigningKeysModule));
+				fields.add(FieldFactory.getStringField("keyValue", "KEY_VALUE", jwtSigningKeysModule));
+
+				GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+						.table(jwtSigningKeysModule.getTableName())
+						.select(fields);
+
+				List<Map<String, Object>> rows = builder.get();
+				if (rows != null && !rows.isEmpty()) {
+					for (Map<String, Object> row : rows) {
+						jwtSigningKeys.put(row.get("keyId"), row.get("keyValue"));
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.error("Error fetching jwt signing keys.", e);
+			}
+			JWT_SIGNING_KEYS = jwtSigningKeys;
+		}
+		return JWT_SIGNING_KEYS;
+	}
+	public static long validateIdentityJWT(String token) {
+		try {
+			String keyId = JWT.decode(token).getKeyId();
+			if (StringUtils.isEmpty(keyId)) {
+				// Default JWT encoding
+				Algorithm algorithm = Algorithm.HMAC256("secret");
+				JWTVerifier verifier = JWT.require(algorithm).withIssuer("auth0").build();
+
+				DecodedJWT decodedJWT = verifier.verify(token);
+				String uId = null;
+				if (decodedJWT.getSubject().contains(JWT_DELIMITER)) {
+					uId = decodedJWT.getSubject().split(JWT_DELIMITER)[0];
+				} else {
+					uId = decodedJWT.getSubject().split("_")[0];
+				}
+				return Long.parseLong(uId);
+			}
+			else {
+				String keyValue = (String) getJWTSigningKeys().get(keyId);
+
+				String issuer = FacilioProperties.getConfig("identity.jwt.issuer", "facilio");
+				Algorithm algorithm = Algorithm.HMAC256(keyValue);
+				JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build();
+
+				DecodedJWT decodedJWT = verifier.verify(token);
+				String uId = decodedJWT.getSubject().split("_")[1]; // splitting user_<uid>
+				return Long.parseLong(uId);
+			}
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			LOGGER.error("Exception while decoding user session jwt token. ", exception);
+		}
+		return -1l;
+	}
 	public static DecodedJWT validateJWT(String token, String issuer) {
 		return validateJWT(token, issuer, false);
 	}
@@ -2324,22 +2386,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		// TODO Auto-generated method stub
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
-			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
-			if(decodedjwt != null) {
-				String uId = null;
-				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
-					uId = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
-				}
-				else {
-					uId = decodedjwt.getSubject().split("_")[0];
-				}
+			long userId = validateIdentityJWT(idToken);
+			if(userId > 0) {
 				IAMAccount account = null;
-				long userId = Long.parseLong(uId);
 				if(overrideSessionCheck) {
 					account = IAMUtil.getUserBean().getAccountv3(userId);
 				}
 				else {
-					account = IAMUtil.getUserBean().verifyUserSessionv3(uId, idToken, userType);
+					account = IAMUtil.getUserBean().verifyUserSessionv3(String.valueOf(userId), idToken, userType);
 				}
 			
 				return account;
