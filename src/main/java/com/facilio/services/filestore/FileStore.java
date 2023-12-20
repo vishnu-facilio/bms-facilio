@@ -3,6 +3,7 @@ package com.facilio.services.filestore;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -25,6 +26,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.sandbox.utils.SandboxAPI;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.util.FacilioUtil;
 import lombok.Getter;
@@ -631,6 +633,12 @@ public abstract class FileStore {
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getClientAppUrl());
 		}
+
+		Organization organization = AccountUtil.getCurrentOrg();
+		if(SandboxAPI.isSandboxOrg(organization)) {
+			url.append("/" + organization.getDomain());
+		}
+
 		url.append("/api/v2/files/");
 
 		if (isDownload) {
@@ -781,6 +789,12 @@ public abstract class FileStore {
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getServerName());
 		}
+
+		Organization organization = AccountUtil.getCurrentOrg();
+		if(SandboxAPI.isSandboxOrg(organization)) {
+			url.append("/" + organization.getDomain());
+		}
+
 		url.append("/api/v3/file/");
 		if(AccountUtil.getCurrentOrg() !=null) {
 			url.append("app/");
@@ -801,6 +815,12 @@ public abstract class FileStore {
 		if (FacilioProperties.isDevelopment()) {
 			url.append(FacilioProperties.getServerName());
 		}
+
+		Organization organization = AccountUtil.getCurrentOrg();
+		if(SandboxAPI.isSandboxOrg(organization)) {
+			url.append("/" + organization.getDomain());
+		}
+
 		url.append("/api/v3/files/");
 		if(isDownload) {
 			url.append("download/");
@@ -1024,6 +1044,12 @@ public abstract class FileStore {
 			token = getToken(moduleId,recordId,namespace,fileId,expiryTime,-1,isModuleFile);
 		}
 		StringBuilder url = new StringBuilder();
+
+		Organization organization = AccountUtil.getCurrentOrg();
+		if(SandboxAPI.isSandboxOrg(organization)) {
+			url.append("/" + organization.getDomain());
+		}
+
 		if(!(AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().isFromMobile())) {
 			url.append("/");
 			url.append(app.getLinkName());
