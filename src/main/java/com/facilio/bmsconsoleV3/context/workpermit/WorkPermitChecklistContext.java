@@ -112,6 +112,7 @@ public class WorkPermitChecklistContext extends V3Context {
     private String itemName;
     private String categoryName;
     private String checkListType;
+    private String reviewedValue;
 
     public String getItemName() {
         return itemName;
@@ -135,5 +136,13 @@ public class WorkPermitChecklistContext extends V3Context {
 
     public void setCheckListType(String checkListType) {
         this.checkListType = checkListType;
+    }
+
+    public String getReviewedValue() {
+        return reviewedValue;
+    }
+
+    public void setReviewedValue(String reviewedValue) {
+        this.reviewedValue = reviewedValue;
     }
 }

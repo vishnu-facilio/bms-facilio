@@ -22,6 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FillWorkPermitChecklistCommand extends FacilioCommand {
 
@@ -50,10 +51,13 @@ public class FillWorkPermitChecklistCommand extends FacilioCommand {
                 if (checklistData.getCategory() != null) {
                     checklist.setCategoryName(checklistData.getCategory().getName());
                 }
+                String reviewedValue = checklist.isReviewed() ? "Yes" : "No";
+                checklist.setReviewedValue(reviewedValue);
             }
         }
         return checklists;
     }
+
     private List<WorkPermitChecklistContext> fetchAllChecklistForWorkPermit(Long workPermitId) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_CHECKLIST);
