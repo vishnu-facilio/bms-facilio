@@ -5501,7 +5501,7 @@
     </request>
     <request path="/api/v3/modules/pmResourcePlanner/lookupData/jobPlan" method="GET">
         <urlparams type="object">
-            <property name="viewname" type="string"/>
+            <property name="viewName" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
             <property name="withCount" type="boolean"/>
@@ -5531,6 +5531,14 @@
         <urlparams type="object">
             <property name="id" type="number" mandatory="true"/>
             <property name="jobplansection" type="number" mandatory="true"/>
+            <property name="withCount" type="boolean"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/pmPlanner/:id/relatedList/pmResourcePlanner/planner" method="GET">
+        <urlparams type="object">
+            <property name="id" type="number" mandatory="true"/>
             <property name="withCount" type="boolean"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
@@ -5828,5 +5836,24 @@
     </request>
     <request path="/api/v3/modules/bulkCreate/workorderCost/workorder" method="POST">
         <requestbody type="object"></requestbody>
+    </request>
+
+    <!-- PMv2 validations -->
+    <request path="/api/v3/modules/pmResourcePlanner/lookupData/:relatedFieldName/:extendedModuleName" method="GET">
+        <urlparams>
+            <property name="relatedFieldName" type="string" mandatory="true"/>
+            <property name="extendedModuleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string"/>
+            <property name="includeParentFilter" type="boolean"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
+            <property name="plannerId" type="number" mandatory="true"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/modules/pmPlanner/:id" method="PATCH">
+        <requestbody type="object">
+        </requestbody>
     </request>
 </config>
