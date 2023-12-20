@@ -490,6 +490,73 @@
             <property name="moduleType" type="string" mandatory="true"/>
         </urlparams>
     </request>
+
+
+    <request path="/api/v1/setup/modules/related" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/relation" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/relation/count" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/fields/count" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/fields" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/related/count" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/extended" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v1/setup/modules/extended/count" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+
     <request path="/api/v1/setup/modules/lists/:moduleType/count" method="GET">
         <urlparams>
             <property name="page" type="number" mandatory="false"/>

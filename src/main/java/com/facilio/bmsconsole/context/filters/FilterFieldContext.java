@@ -85,7 +85,7 @@ public class FilterFieldContext {
                     lookup.getName(),
                     lookup.getDisplayName(),
                     showLookupPopup != null ? showLookupPopup : lookup.getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && StringUtils.isEmpty(((BaseLookupField) field).getSpecialType()),
-                    lookupFilters);
+                    lookupFilters, lookup.getTypeEnum());
         }
     }
 
@@ -159,12 +159,14 @@ public class FilterFieldContext {
         private String name, displayName;
         private Boolean showPopup;
         private JSONObject filters;
+        private String typeEnum;
 
-        public FilterFieldLookupModule (String name, String displayName, boolean showPopup, JSONObject filters) {
+        public FilterFieldLookupModule (String name, String displayName, boolean showPopup, JSONObject filters, FacilioModule.ModuleType moduleType) {
             this.name = name;
             this.displayName = displayName;
             this.showPopup = showPopup;
             this.filters = filters;
+            typeEnum = moduleType != null? moduleType.name() : null;
         }
 
         public FilterFieldLookupModule (FacilioModule module) {

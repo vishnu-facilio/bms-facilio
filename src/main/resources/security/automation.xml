@@ -68,9 +68,10 @@
     </request>
 
     <request path="/api/v2/systemButton/list">
-        <requestbody type="object">
-            <property name="moduleName" type="string"/>
-        </requestbody>
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string"/>
+        </urlparams>
     </request>
 
     <request path="/api/v2/systemButton/get">

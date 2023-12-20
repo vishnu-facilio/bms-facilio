@@ -2214,28 +2214,64 @@
     </request>
 
     <request path="/api/v1/setup/bulkRelatedList/relatedModules/list">
-        <requestbody type="object">
+        <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="pageWidgetId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v1/setup/bulkRelatedList/add">
         <requestbody type="object">
+            <property name="widgetWrapperType" type="string" mandatory="true"/>
             <property name="pageWidgetId" type="number" mandatory="true"/>
+            <property name="bulkRelatedList" type="object">
+                <property name="relatedList" type="array">
+                    <items type="object">
+                        <property name="displayName" type="string"/>
+                        <property name="fieldId" type="number" />
+                        <property name="fieldName" type="string"/>
+                        <property name="connectedAppWidgetId" type="number" />
+                        <property name="subModuleId" type="number" />
+                        <property name="subModuleName" type="string"/>
+                    </items>
+                </property>
+            </property>
         </requestbody>
     </request>
 
     <request path="/api/v1/setup/bulkRelatedList/update">
         <requestbody type="object">
+            <property name="widgetWrapperType" type="string" mandatory="true"/>
             <property name="pageWidgetId" type="number" mandatory="true"/>
+            <property name="bulkRelatedList" type="object">
+                <property name="relatedList" type="array">
+                    <items type="object">
+                        <property name="id" type="number" />
+                        <property name="displayName" type="string"/>
+                        <property name="field" type="filters" />
+                        <property name="fieldId" type="number" />
+                        <property name="fieldName" type="string"/>
+                        <property name="connectedAppWidgetId" type="number" />
+                        <property name="subModuleId" type="number" />
+                        <property name="subModuleName" type="string"/>
+                        <property name="module" type="filters"/>
+                        <property name="relationName" type="string"/>
+                        <property name="sequenceNumber" type="number" />
+                        <property name="status" type="boolean"/>
+                        <property name="orgId" type="number" />
+                        <property name="widgetGroupWidgetId" type="number" />
+                        <property name="widgetId" type="number" />
+                        <property name="relatedListEnum" type="string"/>
+                    </items>
+                </property>
+            </property>
         </requestbody>
     </request>
 
     <request path="/api/v1/setup/bulkRelatedList/get">
-        <requestbody type="object">
+        <urlparams>
             <property name="pageWidgetId" type="number" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v3/modules/:moduleName/lookupData/:relatedFieldName" method="GET">
@@ -2298,9 +2334,15 @@
             <property name="bulkRelationShipWidget" type="object">
                 <property name="relationships" type="array">
                 <items type="object">
-                        <property name="displayName" type="string"/>
-                        <property name="relationName" type="string"/>
-                        <property name="relationMappingId" type="number" mandatory="true"/>
+                    <property name="id" type="number" />
+                    <property name="displayName" type="string"/>
+                    <property name="relationName" type="string"/>
+                    <property name="sequenceNumber" type="number" />
+                    <property name="orgId" type="number" />
+                    <property name="widgetId" type="number" />
+                    <property name="relation" type="filters"/>
+                    <property name="title" type="string"/>
+                    <property name="relationMappingId" type="number" mandatory="true"/>
                 </items>
                 </property>
             </property>

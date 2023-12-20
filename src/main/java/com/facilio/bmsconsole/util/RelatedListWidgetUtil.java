@@ -118,7 +118,7 @@ public class RelatedListWidgetUtil {
         List<RelatedListWidgetContext> relatedLists = fetchAllRelatedList(module, checkPermission, modulesToAdd, modulesToRemove);
         if (CollectionUtils.isNotEmpty(relatedLists)) {
             BulkRelatedListContext bulkRelatedListWidget = new BulkRelatedListContext();
-            bulkRelatedListWidget.setRelatedList(relatedLists);
+            bulkRelatedListWidget.setRelatedList(FieldUtil.getAsJSONArray(relatedLists, RelatedListWidgetContext.class));
             return FieldUtil.getAsJSON(bulkRelatedListWidget);
         }
 
