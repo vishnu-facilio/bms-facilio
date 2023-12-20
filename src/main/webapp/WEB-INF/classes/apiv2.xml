@@ -3861,6 +3861,22 @@
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
+	<package name="approvalTabFieldsAPI" namespace="/api/v2/fields/approvaltab" extends="v2Api">
+		<action name="config/*/*"
+				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
+			<param name="fieldListType">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">CAN_APPROVE</param>
+			<param name="tabType">Approval</param>
+		</action>
+		<action name="sortable/*"
+				class="com.facilio.fields.actions.FieldsAction"
+				method="fetchSortableFields">
+			<param name="moduleName">{1}</param>
+			<param name="permission">CAN_APPROVE</param>
+			<param name="tabType">Approval</param>
+		</action>
+	</package>
 
 	<package name="readingFieldLatestValuesApiv2"
 		namespace="/api/v2/reading" extends="v2Api">

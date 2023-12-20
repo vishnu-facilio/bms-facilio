@@ -915,12 +915,17 @@
             <property name="id" type="number" mandatory="true"/>
         </urlparams>
     </request>
-    <request path="/api/v2/activity/:moduleName" method="GET">
+    <request path="/api/v2/activity/:moduleName/:activityModule" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
+            <property name="activityModule" type="string" mandatory="true"/>
             <property name="parentId" type="number" mandatory="true"/>
             <property name="occurrenceId"  type="number"/>
         </urlparams>
+        <requestbody type="object">
+            <property name="parentId" type="number" mandatory="true"/>
+            <property name="occurrenceId"  type="number"/>
+        </requestbody>
     </request>
     <request path="/api/v3/licensinginfo/add">
         <requestbody type="object">
@@ -2061,6 +2066,19 @@
             <property name="moduleName" type="string" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v2/fields/approvaltab/config/:fieldListType/:moduleName">
+        <urlparams>
+            <property name="fieldListType" type="string" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/fields/approvaltab/sortable/:moduleName">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="defaultFieldIds" type="array"/>
+        </urlparams>
+    </request>
+
 
     <request path="/api/v2/fields/config/:fieldListType/:moduleName" method="POST">
         <urlparams>

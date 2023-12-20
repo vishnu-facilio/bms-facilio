@@ -425,7 +425,6 @@
             <property name="orderType" type="string"/>
             <property name="orderBy" type="string"/>
             <property name="force" type="boolean"/>
-            <property name="withoutCustomButtons" type="boolean"/>
         </urlparams>
     </request>
 
