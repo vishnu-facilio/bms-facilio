@@ -302,6 +302,7 @@
             <property name="withCount" type="boolean"/>
             <property name="unAssociated" type="boolean"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="default" type="string" mandatory="false"/>
         </urlparams>
     </request>
     <request path="/api/v3/modules/:moduleName/:id/relationship/:relationName" method="POST">
