@@ -41,10 +41,7 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
         placeholders.put("org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()));
         placeholders.put("user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()));
 
-        HandleBarsHelper handleBarsHelper = new HandleBarsHelper();
-        Handlebars handlebars = handleBarsHelper.getHandlebars();
-        Template hbsTemplate = handlebars.compileInline(pdfTemplate.getHtmlContent());
-        String renderedContent = hbsTemplate.apply(placeholders);
+        String renderedContent = HandleBarsHelper.getInstance().compile(pdfTemplate.getHtmlContent(),placeholders);
 
         String pdfTemplateWithCSS = renderedContent + "<style>" + pdfTemplate.getHtmlContentCss() + "</style>";
         context.put(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML, pdfTemplateWithCSS);

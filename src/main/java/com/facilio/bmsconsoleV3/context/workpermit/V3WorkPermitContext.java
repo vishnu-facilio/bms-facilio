@@ -41,6 +41,7 @@ public class V3WorkPermitContext extends V3Context {
     private List<WorkPermitChecklistContext> workpermitchecklist;
     private Boolean isPreValidationDone;
     private Boolean isPostValidationDone;
+    private List<WorkPermitChecklistContext> formattedCheckList;
 
 
     public List<WorkPermitChecklistContext> getWorkpermitchecklist() {
@@ -325,5 +326,13 @@ public class V3WorkPermitContext extends V3Context {
             }
             return null;
         }
+    }
+
+    public List<WorkPermitChecklistContext> getFormattedCheckList() {
+        return formattedCheckList;
+    }
+
+    public void setFormattedCheckList(List<WorkPermitChecklistContext> formattedCheckList) {
+        this.formattedCheckList = formattedCheckList;
     }
 }

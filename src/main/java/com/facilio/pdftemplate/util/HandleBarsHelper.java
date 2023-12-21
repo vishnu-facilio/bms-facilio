@@ -3,27 +3,35 @@ package com.facilio.pdftemplate.util;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
+import com.github.jknack.handlebars.Template;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class HandleBarsHelper {
 
+    private static HandleBarsHelper instance;
     private Handlebars handlebars;
 
-    public HandleBarsHelper(){
+    private HandleBarsHelper(){
         this.handlebars = new Handlebars();
         registerCustomHelpers();
     }
-
+    public static HandleBarsHelper getInstance(){
+        if(instance==null){
+            instance = new HandleBarsHelper();
+        }
+        return instance;
+    }
     public Handlebars getHandlebars() {
         return handlebars;
     }
 
     private void registerCustomHelpers(){
         registerGroupDataHelper();
-        registerValuePlusOneHelper();
+        registerPlusOneHelper();
         registerFilterListHelper();
     }
     private void registerGroupDataHelper(){
@@ -47,8 +55,8 @@ public class HandleBarsHelper {
             }
         });
     }
-    private void registerValuePlusOneHelper(){
-        handlebars.registerHelper("valuePlusOne", new Helper<Integer>() {
+    private void registerPlusOneHelper(){
+        handlebars.registerHelper("plusOne", new Helper<Integer>() {
             @Override
             public Integer apply(Integer value, Options options) {
                 return value + 1;
@@ -67,5 +75,10 @@ public class HandleBarsHelper {
                 return list;
             }
         });
+    }
+    public String compile(String htmlContent, Map<String, Map<String, Object>> placeholders) throws IOException {
+        Template hbsTemplate = handlebars.compileInline(htmlContent);
+        String renderedContent = hbsTemplate.apply(placeholders);
+        return renderedContent;
     }
 }

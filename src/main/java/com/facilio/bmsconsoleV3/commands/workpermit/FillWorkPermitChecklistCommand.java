@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -20,6 +21,7 @@ import com.facilio.v3.util.CommandUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,14 +36,22 @@ public class FillWorkPermitChecklistCommand extends FacilioCommand {
         if (workPermit != null && workPermit.getId() > 0) {
             List<WorkPermitChecklistContext> checklists = fetchAllChecklistForWorkPermit(workPermit.getId());
             if (CollectionUtils.isNotEmpty(checklists)) {
-                checklists = refactorCheckLists(checklists);
                 workPermit.setChecklist(checklists);
+                List<WorkPermitChecklistContext> checkListsClone = getCheckListClone(checklists);
+                List<WorkPermitChecklistContext> formattedCheckList = refactorCheckLists(checkListsClone);
+                workPermit.setFormattedCheckList(formattedCheckList);
             }
         }
-
         return false;
     }
-
+    private List<WorkPermitChecklistContext> getCheckListClone(List<WorkPermitChecklistContext> checklists){
+        List<WorkPermitChecklistContext> checkListsClone = new ArrayList<>();
+        for(WorkPermitChecklistContext checklist : checklists){
+            WorkPermitChecklistContext checkListClone = FieldUtil.cloneBean(checklist,WorkPermitChecklistContext.class);
+            checkListsClone.add(checkListClone);
+        }
+        return checkListsClone;
+    }
     private List<WorkPermitChecklistContext> refactorCheckLists(List<WorkPermitChecklistContext> checklists) {
         for (WorkPermitChecklistContext checklist : checklists) {
             if (checklist.getChecklist() != null) {
