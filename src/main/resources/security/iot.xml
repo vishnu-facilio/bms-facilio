@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config >
+    <!-- overView  -->
+    <request path="/api/v2/agent/overview" method="GET"/>
+
+    <!--  Agent -->
+    <request path="/api/v2/agent/list" method="GET">
+        <urlparams>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="filters" type="string"/>
+            <property name="defaultIds" type="number"/>
+            <property name="querySearch" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/count" method="GET">
+        <urlparams>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/controller/discover" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="ipAddress" type="string"/>
+            <property name="port" type="number"/>
+            <property name="range" type="object"/>
+            <property name="bacnetPort" type="number"/>
+            <property name="timeout_sec" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/create" method="POST">
+        <requestbody type="object">
+            <property name="agentName" type="string"/>
+            <property name="dataInterval" type="number"/>
+            <property name="siteId" type="number" mandatory="true"/>
+            <property name="agentType" type="number" mandatory="true"/>
+            <property name="displayName" type="string" mandatory="true"/>
+            <property name="orgUserId" type="number"/>
+            <property name="messageSourceId" type="number"/>
+            <property name="subscribeTopics" type="string"/>
+            <property name="userName" type="string"/>
+            <property name="password" type="string"/>
+            <property name="url" type="string"/>
+            <property name="port" type="number"/>
+            <property name="ipAddress" type="string"/>
+            <property name="controllerAlarmIntervalInMins" type="number"/>
+            <property name="setPointPriority" type="number"/>
+            <property name="allowAutoMapping" type="boolean"/>
+            <property name="autoMappingParentFieldId" type="number"/>
+            <property name="readingScope" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/agent/toggleJob" method="POST">
+        <requestbody type="object">
+            <property name="data" type="object"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/agentOverview" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/getIotMessages" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/iotMessageCount" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/versions" method="GET">
+        <urlparams>
+            <property name="latestVersion" type="boolean" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/certificate" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/config" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/point/export" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="type" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/ping" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/restart" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/upgradeAgent" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="versionId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+
+    <!--  Controller  -->
+
+    <request path="/api/v2/controller/getFilter" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/controller/controllers" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="moduleName" type="string"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="count" type="boolean"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/device/discoverPoints" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="timeoutInSeconds" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/agent/getFilter" method="GET"/>
+
+    <request path="/api/v2/modbus/addController" method="POST">
+        <requestbody type="object">
+            <property name="name" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="slaveId" type="number"/>
+            <property name="ip" type="string" maxLength="15"/>
+            <property name="port" type="number"/>
+            <property name="rtuNetwork" type="object">
+                <property name="baudRate" type="number"/>
+                <property name="comPort" type="string"/>
+                <property name="dataBits" type="number"/>
+                <property name="name" type="string"/>
+                <property name="parity" type="number"/>
+                <property name="stopBits" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/modbus/rtuNetworks" method="GET">
+        <urlparams>
+            <property name="agentId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/bacnet/addController" method="POST">
+        <requestbody type="object">
+            <property name="bacnetController" type="object">
+                <property name="ipAddress" type="string" />
+                <property name="networkNumber" type="number" />
+                <property name="instanceNumber" type="number"/>
+                <property name="agentId" type="number" mandatory="true"/>
+                <property name="controllerType" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/opcUa/addController" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number"/>
+            <property name="certPath" type="string"/>
+            <property name="controllerType" type="number"/>
+            <property name="name" type="string"/>
+            <property name="securityMode" type="number"/>
+            <property name="securityPolicy" type="number"/>
+            <property name="url" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/opcda/addController" method="POST">
+        <requestbody type="object">
+            <property name="name" type="string"/>
+            <property name="url" type="string"/>
+            <property name="agentId" type="number"/>
+            <property name="controllerType" type="number"/>
+            <property name="userName" type="string"/>
+            <property name="password" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/modbus/addMiscController" method="POST">
+        <requestbody type="object">
+            <property name="name" type="string"/>
+            <property name="agentId" type="number"/>
+            <property name="controllerType" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/rdm/addController" method="POST">
+        <requestbody type="object">
+            <property name="name" type="string"/>
+            <property name="url" type="string"/>
+            <property name="agentId" type="number"/>
+            <property name="controllerType" type="number"/>
+            <property name="userName" type="string"/>
+            <property name="password" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/e2/addController" method="POST">
+        <requestbody type="object">
+            <property name="name" type="string"/>
+            <property name="agentId" type="number"/>
+            <property name="controllerType" type="number"/>
+            <property name="ipAddress" type="string"/>
+            <property name="portNumber" type="number"/>
+        </requestbody>
+    </request>
+
+    <!-- Point  -->
+    <request path="/api/v3/point/list" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" />
+            <property name="controllerIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="page" type="number" mandatory="true" />
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="filters" type="string" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/point/count" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" />
+            <property name="controllerIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="filters" type="string" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/point/exportV2" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="type" type="number" mandatory="true"/>
+            <property name="viewLimit" type="number" />
+            <property name="controllerIds" type="array" >
+                <items type="number"/>
+            </property>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/point/configure" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="logical" type="boolean" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerIds" type="array" >
+                <items type="number"/>
+            </property>
+            <property name="interval" type="number"/>
+            <property name="filters" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path=" /api/v2/point/unconfigure" method="POST">
+        <requestbody type="object">
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="controllerType" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/point/subscribe" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number"/>
+            <property name="instances" type="array">
+                <items type="object">
+                    <property name="id" type="number"/>
+                    <property name="thresholdJson" type="string"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/point/unsubscribe" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number"/>
+            <property name="instances" type="array">
+                <items type="object">
+                    <property name="id" type="number"/>
+                    <property name="thresholdJson" type="string"/>
+                </items>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/point/export" method="POST">
+        <requestbody type="object">
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" />
+            <property name="controllerIds" type="array">
+                <items type="number"/>
+            </property>
+            <property name="page" type="number" mandatory="true" />
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="filters" type="string" />
+            <property name="type" type="number"/>
+        </requestbody>
+    </request>
+
+    <!--  Commissioning  -->
+    <request path="/api/v2/commissioning/list" method="GET">
+        <urlparams>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="filters" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/commissioning/count" method="GET">
+        <urlparams>
+            <property name="status" type="string" mandatory="true"/>
+            <property name="filters" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/controller/filterControllerTypes" method="GET">
+        <urlparams>
+            <property name="agentId" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/commissioning/delete" method="GET">
+        <urlparams>
+            <property name="id" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/commissioning/add" method="POST">
+        <requestbody type="object">
+            <property name="log" type="object">
+                <property name="agent" type="object">
+                    <property name="id" type="number"/>
+                </property>
+                <property name="controllerType" type="number"/>
+                <property name="controllerIds" type="array">
+                    <items type="number"/>
+                </property>
+                <property name="prefillMlData" type="boolean"/>
+                <property name="controllers" type="array">
+                    <items type="object">
+                        <property name="id" type="number"/>
+                    </items>
+                </property>
+                <property name="readingScope" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/commissioning/:id" method="GET"/>
+
+    <request path="/api/v2/commissioning/update" method="POST">
+        <requestbody type="object">
+            <property name="log" type="object">
+                <property name="clientMeta" type="object">
+                    <property name="commissioningTabs" type="array">
+                        <items type="object">
+                            <property name="searchText" type="string"/>
+                            <property name="mappedCategoryId" type="number"/>
+                            <property name="displayName" type="string"/>
+                            <property name="name" type="string"/>
+                        </items>
+                    </property>
+                </property>
+                <property name="id" type="number"/>
+                <property name="points" type="array">
+                    <items type="object">
+                        <property name="unit" type="number"/>
+                        <property name="suggestedColumns" type="array">
+                            <items type="string"/>
+                        </property>
+                        <property name="resourceId" type="number"/>
+                        <property name="name" type="string"/>
+                        <property name="instanceTypeLabel" type="string"/>
+                        <property name="inputValues" type="array">
+                            <items type="object">
+                                <property name="idx" type="number"/>
+                                <property name="inputLabel" type="string"/>
+                                <property name="inputValue" type="string" />
+                                <property name="label" type="string"/>
+                                <property name="pointId" type="number"/>
+                            </items>
+                        </property>
+                        <property name="id" type="number"/>
+                        <property name="fieldId" type="number"/>
+                        <property name="dataType" type="number"/>
+                        <property name="controllerName" type="string"/>
+                        <property name="categoryId" type="number"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/commissioning/publish" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/commissioning/inputValues" method="GET">
+        <urlparams>
+            <property name="pointId" type="number"/>
+        </urlparams>
+    </request>
+
+
+    <!--  Triggers  -->
+
+    <request path="/api/v3/trigger/agent" method="GET"/>
+
+    <request path="/api/v3/trigger/changeStatus" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="status" type="boolean"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/trigger/delete" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/trigger/:id" method="GET"/>
+
+    <request path="/api/v3/trigger/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="trigger" type="object">
+                <property name="type" type="number"/>
+                <property name="triggerActions" type="array">
+                    <items type="object">
+                        <property name="typeRefObj" type="object">
+                            <property name="isV2Script" type="boolean"/>
+                            <property name="workflowV2String" type="string"/>
+                        </property>
+                        <property name="name" type="string"/>
+                        <property name="executionOrder" type="number"/>
+                        <property name="actionType" type="number"/>
+                    </items>
+                </property>
+                <property name="status" type="boolean"/>
+                <property name="name" type="string"/>
+                <property name="eventType" type="number"/>
+                <property name="criteria" type="object" key-type="string" value-type="object" value-template="template.xml#criteria"/>
+                <property name="agentId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+
+    <!--  Alarm Mapping  -->
+    <request path="/api/v2/event/sources" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+            <property name="mapped" type="boolean" mandatory="true"/>
+            <property name="querySearch" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/event/count" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="mapped" type="boolean" mandatory="true"/>
+            <property name="querySearch" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/event/updatesource" method="PUT">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="resourceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/event/removeResource" method="PUT">
+        <requestbody type="object">
+            <property name="sourceId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/event/discoverSource" method="POST">
+        <requestbody type="object">
+            <property name="agentId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+
+    <!--  Metrics  -->
+
+    <request path="/api/v2/agent/metrics" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="page" type="number" mandatory="true"/>
+            <property name="perPage" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/agent/metricsCount" method="GET">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/timeseries/push" method="POST">
+        <requestbody type="object">
+            <property name="payload" type="object"  mandatory="true">
+                <property name="agent" type="string" mandatory="true"/>
+                <property name="controller" type="object">
+                    <property name="name" type="string"/>
+                </property>
+                <property name="controllerType" type="number"/>
+                <property name="uniqueId" type="string"/>
+                <property name="publishType" type="number"/>
+                <property name="publish_ts_sec" type="number"/>
+                <property name="ts_sec" type="number"/>
+                <property name="version" type="number"/>
+                <property name="values" type="object"/> <!--  for custom payload -->
+                <property name="time_series" type="array">
+                    <items type="object">
+                        <property name="ts_sec" type="number"/>
+                        <property name="data" type="array">
+                            <items type="object">
+                                <property name="name" type="string"/>
+                                <property name="value" type="string"/> <!-- Multi type needed -->
+                                <property name="unit" type="string"/>
+                            </items>
+                        </property>
+                    </items>
+                </property>
+                <property name="data" type="array">
+                    <items type="object">
+                        <property name="name" type="string"/>
+                        <property name="value" type="string"/> <!-- Multi type needed -->
+                        <property name="unit" type="string"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+</config>

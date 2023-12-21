@@ -34,8 +34,8 @@ public class PermissionInterceptor extends AbstractInterceptor {
         Parameter skipPermissionParam = ActionContext.getContext().getParameters().get("skipPermission");
         boolean skipPermission = skipPermissionParam != null && Boolean.parseBoolean(skipPermissionParam.getValue());
         try {
-            boolean isNotValid = APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
-            if ( checkAgentAdminRolePermission() && V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
+            boolean isNotValid = checkAgentAdminRolePermission() && APIPermissionUtil.shouldCheckPermission(request.getRequestURI()) && !(checkSubModulePermission(request.getMethod()) && checkTabPermission(request.getMethod()));
+            if (  V3PermissionUtil.isAllowedEnvironment() && !skipPermission && isNotValid) {
                 return ErrorUtil.sendError(ErrorUtil.Error.PERMISSION_NOT_HANDLED);
             }
         } catch (Exception e) {
