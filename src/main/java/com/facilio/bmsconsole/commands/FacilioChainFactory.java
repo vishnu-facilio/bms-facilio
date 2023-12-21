@@ -2257,6 +2257,25 @@ public class FacilioChainFactory {
 		c.addCommand(new AddOfflineSyncErrorCommand());
 		return c;
 	}
+
+	public static FacilioChain getExtendModuleFormDetailsChain(){
+
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ValidateExtendModuleFormFormCommand());
+		c.addCommand(getFormMetaChain());
+
+		return c;
+	}
+
+	public static FacilioChain getSubModuleFormDetailsChain(){
+
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new ValidateSubModuleFormFormCommand());
+		c.addCommand(getFormMetaChain());
+
+		return c;
+	}
+
 	
 	public static FacilioChain getFormMetaChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();

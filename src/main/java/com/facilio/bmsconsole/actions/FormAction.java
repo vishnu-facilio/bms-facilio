@@ -17,6 +17,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Context;
 
 import org.json.simple.JSONObject;
@@ -293,6 +295,11 @@ public class FormAction extends FacilioAction {
 		this.subModuleName = subModuleName;
 	}
 
+	@Getter @Setter
+	private String extendModuleName;
+
+	@Getter @Setter
+	private String lookupFieldName;
 	private String subModuleName;
 
 	private Boolean skipTemplatePermission = false;
@@ -567,7 +574,48 @@ public class FormAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
-	
+
+	public String subModuleFormDetails() throws Exception {
+
+		FacilioChain c = FacilioChainFactory.getSubModuleFormDetailsChain();
+		FacilioContext context = c.getContext();
+
+		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(ContextNames.LOOKUP_FIELD_NAME, lookupFieldName);
+		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
+		context.put(FacilioConstants.ContextNames.FORM_SOURCE, formSourceType);
+		context.put(ContextNames.FOR_CREATE, forCreate);
+
+		c.execute(context);
+
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		setResult(ContextNames.FORM, form);
+
+		return SUCCESS;
+	}
+
+	public String extendModuleFormDetails() throws Exception {
+
+		FacilioChain c = FacilioChainFactory.getExtendModuleFormDetailsChain();
+		FacilioContext context = c.getContext();
+
+		context.put(FacilioConstants.ContextNames.FORM_NAME, formName);
+		context.put(FacilioConstants.ContextNames.FORM_ID, formId);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(ContextNames.EXTENDED_MODULE_NAME, extendModuleName);
+		context.put(FacilioConstants.ContextNames.FETCH_FORM_RULE_FIELDS, fetchFormRuleFields);
+		context.put(FacilioConstants.ContextNames.FORM_SOURCE, formSourceType);
+		context.put(ContextNames.FOR_CREATE, forCreate);
+
+		c.execute(context);
+
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		setResult(ContextNames.FORM, form);
+
+		return SUCCESS;
+	}
 	public void setFromBuilder(Boolean fromBuilder) {
 		if (fromBuilder != null) {
 			formSourceType = FormSourceType.FROM_BUILDER;

@@ -1025,6 +1025,7 @@ public class FacilioConstants {
 		public static final String GET_ONLY_BASIC_VIEW_DETAILS = "getOnlyBasicViewDetails";
 
 		public static final String MODULE_NAME = "moduleName";
+		public static final String LOOKUP_FIELD_NAME = "lookupFieldName";
 		public static final String IS_HIDDEN_MODULE = "isHiddenModule";
 
 		public static final String SUB_MODULE_NAME = "subModuleName";

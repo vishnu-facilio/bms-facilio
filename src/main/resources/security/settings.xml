@@ -1045,6 +1045,28 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/forms/:moduleName/subModuleForms/:lookupFieldName" method="GET">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="lookupFieldName" type="string" mandatory="true"/>
+            <property name="fetchExtendedModuleForms" type="boolean"/>
+            <property name="fetchDisabledForms" type="boolean"/>
+            <property name="appId" type="number"/>
+            <property name="skipTemplatePermission" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/forms/:moduleName/extendModuleForms/:extendModuleName" method="GET">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="extendModuleName" type="string" mandatory="true"/>
+            <property name="fetchExtendedModuleForms" type="boolean"/>
+            <property name="fetchDisabledForms" type="boolean"/>
+            <property name="appId" type="number"/>
+            <property name="skipTemplatePermission" type="boolean"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/workorders/activity">
         <requestbody type="object">
             <property name="workOrderId" type="number"/>

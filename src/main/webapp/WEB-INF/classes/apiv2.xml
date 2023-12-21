@@ -3401,6 +3401,20 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+		<action name="*/subModuleForms/*" class="com.facilio.bmsconsole.actions.FormAction" method="subModuleFormDetails">
+			<param name="moduleName">{1}</param>
+			<param name="lookupFieldName">{2}</param>
+			<param name="translationImpl">FormFieldTranslation</param>
+			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
+			<param name="setupTab">MODULES</param>
+		</action>
+		<action name="*/extendModuleForms/*" class="com.facilio.bmsconsole.actions.FormAction" method="extendModuleFormDetails">
+			<param name="moduleName">{1}</param>
+			<param name="extendModuleName">{2}</param>
+			<param name="translationImpl">FormFieldTranslation</param>
+			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
+			<param name="setupTab">MODULES</param>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">FormFieldTranslation</param>
