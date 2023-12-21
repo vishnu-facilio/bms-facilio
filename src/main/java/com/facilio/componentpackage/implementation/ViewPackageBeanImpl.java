@@ -441,13 +441,14 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             List<XMLBuilder> viewFieldsElementList = viewElement.getElementList(PackageConstants.ViewConstants.VIEW_FIELD);
             for (XMLBuilder viewFieldElement : viewFieldsElementList) {
                 long fieldId = -1, parentFieldId = -1;
+                FacilioField facilioField = null;
                 String viewFieldDisplayName = viewFieldElement.getElement(PackageConstants.DISPLAY_NAME).getText();
                 String customization = viewFieldElement.getElement(PackageConstants.ViewConstants.CUSTOMIZATION).getText();
                 String viewFieldName = viewFieldElement.getElement(PackageConstants.ViewConstants.VIEW_FIELD_NAME).getText();
                 if (viewFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME) != null) {
                     String facilioFieldName = viewFieldElement.getElement(PackageConstants.FormXMLComponents.FACILIO_FIELD_NAME).getText();
                     String fieldModuleName = viewFieldElement.getElement(PackageConstants.MODULENAME).getText();
-                    FacilioField facilioField = moduleBean.getField(facilioFieldName, fieldModuleName);
+                    facilioField = moduleBean.getField(facilioFieldName, fieldModuleName);
                     fieldId = facilioField != null ? facilioField.getFieldId() : -1;
                 }
 
@@ -459,6 +460,7 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
                 }
 
                 ViewField viewField = new ViewField(viewFieldName, viewFieldDisplayName, fieldId, parentFieldId, customization);
+                viewField.setField(facilioField);
                 viewFieldsList.add(viewField);
             }
             view.setFields(viewFieldsList);

@@ -1,19 +1,14 @@
 package com.facilio.componentpackage.implementation;
 
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
 import com.facilio.chain.FacilioContext;
-import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.interfaces.PackageBean;
 import com.facilio.componentpackage.utils.PackageBeanUtil;
-import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -55,9 +50,14 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         element.element(PackageConstants.AssetCategoryConstants.DISPLAY_NAME).text(component.getDisplayName());
         element.element(PackageConstants.AssetCategoryConstants.ASSET_TYPE).text(String.valueOf(component.getType()));
         if(component.getDefault() != null && component.getDefault()){
-            element.element(PackageConstants.AssetCategoryConstants.IS_DEFAULT).text(String.valueOf(component.getDefault()));
+            element.element(PackageConstants.AssetCategoryConstants.IS_DEFAULT).text(String.valueOf(true));
         }else {
             element.element(PackageConstants.AssetCategoryConstants.IS_DEFAULT).text(String.valueOf(false));
+        }
+        if(component.isDeleted()){
+            element.element(PackageConstants.AssetCategoryConstants.IS_DELETED).text(String.valueOf(true));
+        }else {
+            element.element(PackageConstants.AssetCategoryConstants.IS_DELETED).text(String.valueOf(false));
         }
         List<FacilioField> parentAssetField = new ArrayList<>();
         parentAssetField.add(FieldFactory.getField("NAME", "NAME", FieldType.STRING ));
@@ -149,9 +149,14 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
                 .beanClass(V3AssetCategoryContext.class)
                 .table(module.getTableName());
         List<V3AssetCategoryContext> assetCategories = assetCategoriesBuilder.get();
+        List<Long> deletedIds = new ArrayList<>();
         for (Map.Entry<Long, XMLBuilder> idVsData : idVsXMLComponents.entrySet()) {
             long assetCategoryId = idVsData.getKey();
             XMLBuilder assetCategoryElement = idVsData.getValue();
+            boolean isDeleted = Boolean.parseBoolean(assetCategoryElement.getElement(PackageConstants.AssetCategoryConstants.IS_DELETED).getText());
+            if(isDeleted) {
+                deletedIds.add(assetCategoryId);
+            }
             V3AssetCategoryContext assetCategoryContext = constructAssetCategoryFromBuilder(assetCategoryElement);
             assetCategories.add(assetCategoryContext);
             assetCategoryContext.setId(assetCategoryId);
@@ -167,11 +172,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
                 }
             }
         }
-        List<Long> targetAssetCategoryIds = new ArrayList<>(idVsXMLComponents.keySet());
-        Map<String, Long> assetCategoriesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.ASSET_CATEGORY);
-        if(PackageUtil.isInstallThread()) {
-            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), assetCategoriesUIdVsIdsFromPackage,targetAssetCategoryIds);
-        }
+        PackageBeanUtil.bulkDeleteV3Records(module.getName() , deletedIds);
     }
 
     @Override
@@ -215,7 +216,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
     public List<V3AssetCategoryContext> getAssetCategoryForIds(Collection<Long> ids) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
-        List<V3AssetCategoryContext> assetCategories = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetCategoryModule, V3AssetCategoryContext.class);
+        List<V3AssetCategoryContext> assetCategories = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetCategoryModule, V3AssetCategoryContext.class, Boolean.TRUE);
         if(CollectionUtils.isNotEmpty(assetCategories)){
             for(V3AssetCategoryContext assetCategory : assetCategories){
                 if(assetCategory.getData()!=null)

@@ -448,7 +448,7 @@ public class PackageConstants {
         public static final String IS_DEFAULT = "Is_Default";
         public static final String DESCRIPTION="Description";
         public static final String ASSET_CATEGORY="AssetCategory";
-
+        public static final String IS_DELETED = "Is_Deleted";
     }
     public static class CustomButtonConstants{
         public static final String FORM_DATA_JSON="formDataJson";

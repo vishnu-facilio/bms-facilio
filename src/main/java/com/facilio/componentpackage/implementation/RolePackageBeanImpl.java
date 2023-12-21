@@ -256,7 +256,7 @@ public class RolePackageBeanImpl implements PackageBean<Role> {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getNewPermissionFields())
                 .table(ModuleFactory.getNewPermissionModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(ids, ","), NumberOperators.EQUALS));;
+                .andCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", StringUtils.join(ids, ","), NumberOperators.EQUALS));
         List<Map<String,Object>> permissions = selectBuilder.get();
         if(!permissions.isEmpty()) {
             List<NewPermissionContext> newPermissions = FieldUtil.getAsBeanListFromMapList(permissions, NewPermissionContext.class);

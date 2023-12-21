@@ -19,6 +19,7 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileInfo;
@@ -37,7 +38,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 public class ServiceCatalogItemPackageImpl implements PackageBean<ServiceCatalogContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -271,9 +271,19 @@ public class ServiceCatalogItemPackageImpl implements PackageBean<ServiceCatalog
         String formName;
         if (element.getElement(PackageConstants.ServiceCatalogConstants.FORM_NAME) != null) {
             formName = element.getElement(PackageConstants.ServiceCatalogConstants.FORM_NAME).getText();
-            FacilioForm formDetails = FormsAPI.getFormFromDB(formName, moduleDetails);
-            catalogContext.setForm(formDetails);
-            catalogContext.setFormId(formDetails.getId());
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("name"), formName, StringOperators.IS));
+            if (moduleDetails != null) {
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(moduleDetails.getModuleId()), StringOperators.IS));
+            }
+            List<FacilioForm> formDetails = FormsAPI.getFormFromDB(criteria,true);
+            FacilioForm facilioForm = null;
+            if(CollectionUtils.isNotEmpty(formDetails)){
+                facilioForm = formDetails.get(0);
+                catalogContext.setForm(facilioForm);
+                catalogContext.setFormId(facilioForm.getId());
+            }
         }
 
         String externalURL = element.getElement(PackageConstants.ServiceCatalogConstants.EXTERNAL_URL).getText();

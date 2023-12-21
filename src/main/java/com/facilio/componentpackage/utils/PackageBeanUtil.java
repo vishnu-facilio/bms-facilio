@@ -1809,8 +1809,7 @@ public class PackageBeanUtil {
         if (fetchSystem != null) {
             criteria.addAndCondition(CriteriaAPI.getCondition("IS_DEFAULT", "isDefault", String.valueOf(fetchSystem), BooleanOperators.IS));
         }
-        criteria.addAndCondition(CriteriaAPI.getCondition("SYS_DELETED", "sysDeleted", String.valueOf(false), BooleanOperators.IS));
-        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class, Boolean.FALSE);
+        List<V3AssetCategoryContext> props = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleData(criteria, assetCategoryModule, V3AssetCategoryContext.class, Boolean.TRUE);
         return props;
     }
 
@@ -2244,11 +2243,7 @@ public class PackageBeanUtil {
         if (CollectionUtils.isNotEmpty(targetOrgComponentIds) && MapUtils.isNotEmpty(sourceOrgComponentUIdVsId)) {
             targetOrgComponentIds.removeAll(sourceOrgComponentUIdVsId.values());
             if (CollectionUtils.isNotEmpty(targetOrgComponentIds)) {
-                for (long id : targetOrgComponentIds) {
-                    JSONObject data = new JSONObject();
-                    data.put(moduleName, id);
-                    V3Util.deleteRecords(moduleName, data, null, null, false);
-                }
+                PackageBeanUtil.bulkDeleteV3Records(moduleName, targetOrgComponentIds);
             }
         }
     }

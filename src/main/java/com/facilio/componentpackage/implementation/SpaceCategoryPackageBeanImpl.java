@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategoryContext> {
 
@@ -163,7 +164,8 @@ public class SpaceCategoryPackageBeanImpl implements PackageBean<V3SpaceCategory
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("spacecategory");
-        List<Long> targetSpaceCategoryIds = new ArrayList<>(idVsXMLComponents.keySet());
+        List<V3SpaceCategoryContext> spaceCategories  = (List<V3SpaceCategoryContext>) PackageBeanUtil.getModuleData(null, module,V3SpaceCategoryContext.class, false);
+        List<Long> targetSpaceCategoryIds = spaceCategories.stream().map(V3SpaceCategoryContext::getId).collect(Collectors.toList());
         Map<String, Long> spaceCategoriesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.SPACE_CATEGORY);
         if(PackageUtil.isInstallThread()) {
             PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), spaceCategoriesUIdVsIdsFromPackage,targetSpaceCategoryIds);

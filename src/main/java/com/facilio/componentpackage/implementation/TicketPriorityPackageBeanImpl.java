@@ -21,6 +21,7 @@ import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriorityContext> {
     @Override
@@ -143,7 +144,8 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("ticketpriority");
-        List<Long> targetTicketPriorityIds = new ArrayList<>(idVsXMLComponents.keySet());
+        List<TicketPriorityContext> ticketPriorities  = (List<TicketPriorityContext>) PackageBeanUtil.getModuleData(null, module,TicketPriorityContext.class, false);
+        List<Long> targetTicketPriorityIds = ticketPriorities.stream().map(TicketPriorityContext::getId).collect(Collectors.toList());
         Map<String, Long> ticketPrioritiesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.TICKET_PRIORITY);
         if(PackageUtil.isInstallThread()) {
             PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), ticketPrioritiesUIdVsIdsFromPackage,targetTicketPriorityIds);

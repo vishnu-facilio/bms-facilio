@@ -18,6 +18,7 @@ import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext> {
     @Override
@@ -113,10 +114,11 @@ public class TicketTypePackageBeanImpl implements PackageBean<TicketTypeContext>
     public void postComponentAction(Map<Long, XMLBuilder> idVsXMLComponents) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule module = moduleBean.getModule("tickettype");
-        List<Long> targetTicketTypeIds = new ArrayList<>(idVsXMLComponents.keySet());
+        List<TicketTypeContext> ticketTypes  = (List<TicketTypeContext>) PackageBeanUtil.getModuleData(null, module,TicketTypeContext.class, false);
+        List<Long> targetTicketTypesIds = ticketTypes.stream().map(TicketTypeContext::getId).collect(Collectors.toList());
         Map<String, Long> ticketTypesUIdVsIdsFromPackage = PackageUtil.getComponentsUIdVsComponentIdForComponent(ComponentType.TICKET_TYPE);
         if(PackageUtil.isInstallThread()) {
-            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), ticketTypesUIdVsIdsFromPackage,targetTicketTypeIds);
+            PackageBeanUtil.deleteV3OldRecordFromTargetOrg(module.getName(), ticketTypesUIdVsIdsFromPackage,targetTicketTypesIds);
         }
     }
 

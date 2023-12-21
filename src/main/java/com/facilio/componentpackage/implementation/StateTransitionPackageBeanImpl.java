@@ -1,16 +1,13 @@
 package com.facilio.componentpackage.implementation;
 
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.BaseScheduleContext;
 import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
@@ -20,9 +17,10 @@ import com.facilio.componentpackage.utils.PackageBeanUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
@@ -248,6 +246,7 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
         FacilioStatus fromState = TicketAPI.getStatus(module,fromStateName);
         String toStateName = builder.getElement(PackageConstants.WorkFlowRuleConstants.TO_STATE_NAME).getText();
         FacilioStatus toState = TicketAPI.getStatus(module,toStateName);
+        FacilioModule formModule = null;
         boolean shouldExecuteFromPermaLink = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.SHOULD_EXECUTE_FORM_PERMALINK).getText());
         boolean showInClientPortal = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.SHOW_IN_CLIENT_PORTAL).getText());
         boolean showInOccupantPortal = Boolean.parseBoolean(builder.getElement(PackageConstants.WorkFlowRuleConstants.SHOW_IN_OCCUPANT_PORTAL).getText());
@@ -301,16 +300,27 @@ public class StateTransitionPackageBeanImpl implements PackageBean<WorkflowRuleC
             int dialogType = Integer.parseInt(builder.getElement(PackageConstants.WorkFlowRuleConstants.DIALOG_TYPE).getText());
             stateflowTransition.setDialogType(dialogType);
         }
-        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.FORMNAME) != null){
-            String formName = builder.getElement(PackageConstants.WorkFlowRuleConstants.FORMNAME).getText();
-            FacilioForm form = FormsAPI.getFormFromDB(formName,module);
-            stateflowTransition.setFormId(form.getId());
-            stateflowTransition.setForm(form);
-        }
-
-        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.FORM_MODULENAME) != null){
+        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.FORM_MODULENAME) != null) {
             String formModuleName = builder.getElement(PackageConstants.WorkFlowRuleConstants.FORM_MODULENAME).getText();
             stateflowTransition.setFormModuleName(formModuleName);
+            formModule = moduleBean.getModule(formModuleName);
+        }
+        if (builder.getElement(PackageConstants.WorkFlowRuleConstants.FORMNAME) != null){
+            String formName = builder.getElement(PackageConstants.WorkFlowRuleConstants.FORMNAME).getText();
+            Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
+            FacilioModule queryModule = formModule != null ? formModule: module;
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("name"), formName, StringOperators.IS));
+            if (module != null) {
+                criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(queryModule.getModuleId()), StringOperators.IS));
+            }
+            List<FacilioForm> formDetails = FormsAPI.getFormFromDB(criteria,true);
+            FacilioForm facilioForm = null;
+            if(CollectionUtils.isNotEmpty(formDetails)){
+                facilioForm = formDetails.get(0);
+                stateflowTransition.setForm(facilioForm);
+                stateflowTransition.setFormId(facilioForm.getId());
+            }
         }
 
         if (builder.getElement(PackageConstants.WorkFlowRuleConstants.ISOFFLINE) != null){
