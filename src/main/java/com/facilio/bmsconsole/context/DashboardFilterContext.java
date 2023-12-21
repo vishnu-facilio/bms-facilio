@@ -24,6 +24,7 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	private long dateOperator;
 	private String dateValue;
 	private String dateLabel;
+	private String dateType;
 	private Map<Long,List<Long>> widgetUserFiltersMap;
 	private List<Long > customScriptWidgets=new ArrayList<>();
 	private boolean hideFilterInsideWidgets;
@@ -103,7 +104,6 @@ public class DashboardFilterContext extends ModuleBaseWithCustomFields{
 	}
 	private String linkName;
 	private String dashboardLinkName;
-
 	private String tabLinkName;
 
 

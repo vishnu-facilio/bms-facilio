@@ -361,11 +361,16 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 					   DashboardFilterUtil.isEnumFilterApplicableToWidget(filter.getField().getModule(), widgetModule);
 			   if(customAppliesToMapping!=null && customAppliesToMapping.containsKey(widgetId))
 			   {
-				   FacilioField filterApplicableField=customAppliesToMapping.get(widgetId);
-				   filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
-				   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+				   if(customAppliesToMapping.get(widgetId) == null) {
+					   filter.getWidgetExcludeFieldMap().put(widgetId, modBean.getField(filter.getFieldId()));
+				   }
+				   else{
+					   FacilioField filterApplicableField=customAppliesToMapping.get(widgetId);
+					   filter.getWidgetFieldMap().put(widgetId, filterApplicableField);
+					   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
+				   }
 			   }
-			   if (isFilterApplicableForWidget) {
+			   else if (isFilterApplicableForWidget) {
 				   filter.getWidgetFieldMap().put(widgetId, fieldForFilter);
 				   this.addToWidgetUserFiltersMap(widgetId, filter.getId(), widgetUserFiltersMap);
 			   }

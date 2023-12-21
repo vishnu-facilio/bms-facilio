@@ -11084,7 +11084,8 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
         fields.add(getField("dateLabel", "DATE_LABEL", module, FieldType.STRING));
         fields.add(getField("hideFilterInsideWidgets", "WIDGET_TIMELINE_FILTER_STATUS", module, FieldType.BOOLEAN));
-         fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
+        fields.add(getField("linkName","LINK_NAME",module,FieldType.STRING));
+        fields.add(getField("dateType","DATE_TYPE",module,FieldType.STRING));
         return fields;
     }
     public static List<FacilioField>  getDashboardFieldMappingsFields()
