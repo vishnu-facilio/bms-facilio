@@ -11,10 +11,12 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.io.FileUtils;
+import lombok.extern.log4j.Log4j;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Log4j
 public class PackageCreationResponseCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -43,6 +45,7 @@ public class PackageCreationResponseCommand extends FacilioCommand {
 
         String url = DataPackageFileUtil.getFileUrl(PackageUtil.getRootFolderPath());
         CommonCommandUtil.insertOrgInfo(DataMigrationConstants.SANDBOX_DATA_PACKAGE_URL, url);
+        LOGGER.info("####Data Migration - DataPackageUrl - " + url);
 
         // clean temp folder
         FileUtils.deleteDirectory(DataPackageFileUtil.getTempFolderRoot());

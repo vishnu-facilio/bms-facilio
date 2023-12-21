@@ -90,6 +90,35 @@ public class SandboxDataMigrationUtil {
                     }
                 }
             }
+        } else if (module.getName().equals(FacilioConstants.ContextNames.READING_DATA_META)) {
+            Set<Long> fieldIds = new HashSet<>();
+            for (Map<String, Object> prop : propsList) {
+                Long fieldId = (Long) prop.get("fieldId");
+                fieldIds.add(fieldId);
+            }
+
+            if (CollectionUtils.isEmpty(fieldIds)) {
+                return;
+            }
+
+            List<FacilioField> fieldsList = modBean.getFields(fieldIds);
+            if (CollectionUtils.isNotEmpty(fieldsList)) {
+                FacilioField fieldNameField = FieldFactory.getStringField("fieldName", null, module);
+                FacilioField fieldModuleNameNameField = FieldFactory.getStringField("fieldModuleNameName", null, module);
+                fields.add(fieldNameField);
+                fields.add(fieldModuleNameNameField);
+
+                Map<Long, FacilioField> fieldIdVsFieldObj = fieldsList.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
+
+                for (Map<String, Object> prop : propsList) {
+                    Long fieldId = (Long) prop.get("fieldId");
+                    FacilioField fieldObj = fieldIdVsFieldObj.get(fieldId);
+                    String fieldModuleName = fieldObj.getModule() != null ? fieldObj.getModule().getName() : null;
+
+                    prop.put("fieldName", fieldObj.getName());
+                    prop.put("fieldModuleNameName", fieldModuleName);
+                }
+            }
         }
     }
 
@@ -539,6 +568,46 @@ public class SandboxDataMigrationUtil {
                     }
                 }
             }
+        } else if (module.getName().equals(FacilioConstants.ContextNames.READING_DATA_META)) {
+            Map<String, Set<String>> moduleNameVsFieldsNames = new HashMap<>();
+            for (Map<String, Object> prop : propsList) {
+                String fieldName = (String) prop.get("fieldName");
+                String fieldModuleNameName = (String) prop.get("fieldModuleNameName");
+
+                if (StringUtils.isNotEmpty(fieldName) && StringUtils.isNotEmpty(fieldModuleNameName)) {
+                    moduleNameVsFieldsNames.computeIfAbsent(fieldModuleNameName, k -> new HashSet<>());
+                    moduleNameVsFieldsNames.get(fieldModuleNameName).add(fieldName);
+                }
+            }
+
+            if (MapUtils.isNotEmpty(moduleNameVsFieldsNames)) {
+                Map<String, FacilioModule> moduleNameVsModuleObj = new HashMap<>();
+                Map<String, Map<String, FacilioField>> moduleVsFieldsMap = new HashMap<>();
+                for (Map.Entry<String, Set<String>> entry : moduleNameVsFieldsNames.entrySet()) {
+                    String moduleName = entry.getKey();
+                    Set<String> fieldNames = entry.getValue();
+                    Map<String, FacilioField> moduleFieldsMap = SandboxModuleConfigUtil.getModuleFields(moduleName, new ArrayList<>(fieldNames));
+                    if (MapUtils.isNotEmpty(moduleFieldsMap)) {
+                        if (!moduleNameVsModuleObj.containsKey(moduleName)) {
+                            FacilioModule currModule = modBean.getModule(moduleName);
+                            moduleNameVsModuleObj.put(moduleName, currModule);
+                        }
+                        moduleVsFieldsMap.put(moduleName, moduleFieldsMap);
+                    }
+                }
+
+                for (Map<String, Object> prop : propsList) {
+                    String fieldName = (String) prop.get("fieldName");
+                    String fieldModuleNameName = (String) prop.get("fieldModuleNameName");
+
+                    if (moduleVsFieldsMap.containsKey(fieldModuleNameName) && moduleVsFieldsMap.get(fieldModuleNameName).containsKey(fieldName)) {
+                        FacilioField fieldObj = moduleVsFieldsMap.get(fieldModuleNameName).get(fieldName);
+                        FacilioModule moduleObj = moduleNameVsModuleObj.get(fieldModuleNameName);
+                        prop.put("##ReadingFieldModule##", moduleObj);
+                        prop.put("fieldId", fieldObj.getFieldId());
+                    }
+                }
+            }
         }
     }
 
@@ -595,7 +664,7 @@ public class SandboxDataMigrationUtil {
 
                         case STRING:
                         case NUMBER:
-                            if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName)) {
+                            if (MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName) && !isSpecialTypeNumberLookUp(numberLookUps.get(fieldName))) {
                                 long lookupDataId;
                                 if (value instanceof Double) {
                                     lookupDataId = ((Double) value).longValue();
@@ -665,9 +734,17 @@ public class SandboxDataMigrationUtil {
                 }
                 break;
 
+            case STRING:
             case NUMBER:
-                if (org.apache.commons.collections4.MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && org.apache.commons.collections4.MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
-                    Long lookupDataId = fieldValue instanceof Double ? ((Double) fieldValue).longValue() : (Long) fieldValue;
+                if (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && !isSpecialTypeNumberLookUp(numberLookups.get(fieldName)) && MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
+                    Long lookupDataId;
+                    if (fieldValue instanceof Double) {
+                        lookupDataId = ((Double) fieldValue).longValue();
+                    } else if (fieldValue instanceof String) {
+                        lookupDataId = Long.parseLong((String) fieldValue);
+                    } else {
+                        lookupDataId = (Long) fieldValue;
+                    }
                     if (lookupDataId != null && lookupDataId > 0) {
                         FacilioModule parentLookupModule = (FacilioModule) numberLookups.get(fieldName).get("lookupModule");
                         Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
@@ -690,6 +767,10 @@ public class SandboxDataMigrationUtil {
                 dataProp.put(fieldName, fieldValue);
                 break;
         }
+    }
+
+    private static boolean isSpecialTypeNumberLookUp(Map<String, Object> numberLookUpDetails) {
+        return (boolean) numberLookUpDetails.getOrDefault("isSpecialType", false);
     }
 
     public static Long getMetaConfNewId(String compName, Long oldId, Map<ComponentType, Map<Long, Long>> compTypeVsOldVsNewIdMap) {

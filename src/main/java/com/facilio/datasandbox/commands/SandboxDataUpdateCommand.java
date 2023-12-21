@@ -20,6 +20,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -72,7 +73,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                 moduleMigrationStarted = true;
             }
 
-            if (skipDataMigrationModules.contains(moduleName) || SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
+            if (updateOnlyModulesList.contains(moduleName) || skipDataMigrationModules.contains(moduleName) || SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
                 LOGGER.info("####Data Migration - Update - skipped for ModuleName - " + moduleName);
                 continue;
             }
@@ -96,6 +97,9 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
 
             LOGGER.info("####Data Migration - Update - Started for ModuleName - " + moduleName);
 
+            List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            Map<String, FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
+
             Map<String, String> nonNullableFieldVsLookupModules = nonNullableModuleVsFieldVsLookupModules.getOrDefault(moduleName, new HashMap<>());
             if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
                 FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
@@ -104,14 +108,27 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                 nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
                 nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
             } else if (module.getTypeEnum() == FacilioModule.ModuleType.READING) {
-                FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForReadingModule(module);
+                FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, null);
                 if (parentModuleForReadingModule != null) {
                     nonNullableFieldVsLookupModules.put("parentId", parentModuleForReadingModule.getName());
                 }
+            } else if (module.getTypeEnum() == FacilioModule.ModuleType.TIME_LOG && !nonNullableFieldVsLookupModules.containsKey("parent")) {
+                FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, FacilioModule.ModuleType.BASE_ENTITY);
+                if (parentModuleForSubModule != null) {
+                    nonNullableFieldVsLookupModules.put("parent", parentModuleForSubModule.getName());
+                }
+            } else if (module.getTypeEnum() == FacilioModule.ModuleType.NOTES || module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+                FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, FacilioModule.ModuleType.BASE_ENTITY);
+                if (parentModuleForSubModule != null) {
+                    String parentFieldName = allFieldsMap.keySet().stream().filter(fieldName -> fieldName.equals("parentId")).findFirst().orElse(null);
+                    if (StringUtils.isEmpty(parentFieldName)) {
+                        parentFieldName = allFieldsMap.keySet().stream().filter(fieldName -> fieldName.contains("parent")).findFirst().orElse(null);
+                    }
+                    if (StringUtils.isNotEmpty(parentFieldName)) {
+                        nonNullableFieldVsLookupModules.put(parentFieldName, parentModuleForSubModule.getName());
+                    }
+                }
             }
-
-            List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            Map<String, FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
 
             Map<String, FacilioField> lookupTypeFieldsMap = getLookupTypeFields(module, allFields, new ArrayList<>(nonNullableFieldVsLookupModules.keySet()), numberLookUps);
             if (MapUtils.isEmpty(lookupTypeFieldsMap)) {
@@ -192,8 +209,10 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             LOGGER.info("####Data Migration - Update - Completed for ModuleName - " + moduleName);
         }
 
-        migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, null, 0);
+        migrationBean.updateDataMigrationStatus(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.REUPDATE_META_MODULES, null, 0);
+        dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
+        context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
         return false;
     }
 
@@ -230,16 +249,6 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                         } else {
                             LOGGER.info("####Data Migration - Update - Record not created - ModuleName - " + module.getName() + " OldId - " + oldId);
                         }
-                    } else if (fieldName.equals(FacilioConstants.ContextNames.SITE_ID) && MapUtils.isNotEmpty(siteIdMapping)) {
-                        hasLookupValue = true;
-                        updatedProp.put(fieldName, siteIdMapping.get((Long) prop.get(fieldName)));
-                    } else if (fieldName.equals("site") && MapUtils.isNotEmpty(siteIdMapping)) {
-                        hasLookupValue = true;
-                        Map<String, Long> site = (Map<String, Long>) prop.get(fieldName);
-                        if (siteIdMapping.containsKey(site.get("id"))) {
-                            site.put("id", siteIdMapping.get(site.get("id")));
-                            updatedProp.put(fieldName, site);
-                        }
                     } else if (fieldsToParse.contains(fieldName) && fieldObj != null) {
                         hasLookupValue = true;
                         SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
@@ -262,18 +271,12 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
         Map<String, FacilioField> targetFieldNameVsFields = new HashMap<>();
 
         if (CollectionUtils.isNotEmpty(allFields)) {
-            targetFields = allFields.stream().filter(field -> field.getName().equals("id") || field.getName().equals("siteId") || field.getDataTypeEnum().equals(FieldType.LOOKUP)
+            targetFields = allFields.stream().filter(field -> field.getName().equals("id") || field.getDataTypeEnum().equals(FieldType.LOOKUP)
                             || field.getDataTypeEnum().equals(FieldType.MULTI_LOOKUP)
                             || (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(field.getName())))
                     .collect(Collectors.toList());
             targetFields.removeIf(field -> (CollectionUtils.isNotEmpty(nonNullableFieldNames) && nonNullableFieldNames.contains(field.getName())));
             targetFieldNameVsFields = targetFields.stream().collect(Collectors.toMap(FacilioField::getName, Function.identity()));
-        }
-
-        Set<String> siteIdAllowedModules = FieldUtil.getSiteIdAllowedModules();
-        if (siteIdAllowedModules.contains(module.getName())) {
-            FacilioField siteIdField = FieldFactory.getSiteIdField(module);
-            targetFieldNameVsFields.putIfAbsent("siteId", siteIdField);
         }
         return targetFieldNameVsFields;
     }

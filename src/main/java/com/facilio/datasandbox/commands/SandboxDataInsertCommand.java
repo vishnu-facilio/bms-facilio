@@ -3,8 +3,6 @@ package com.facilio.datasandbox.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.ComponentType;
-import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
-import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
@@ -24,6 +22,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -102,6 +101,9 @@ public class SandboxDataInsertCommand extends FacilioCommand {
 
             LOGGER.info("####Data Migration - Insert - Started for ModuleName - " + moduleName);
 
+            List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
+
             Map<String, String> nonNullableFieldVsLookupModules = nonNullableModuleVsFieldVsLookupModules.getOrDefault(moduleName, new HashMap<>());
             if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
                 FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
@@ -110,16 +112,30 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                 nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
                 nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
             } else if (module.getTypeEnum() == FacilioModule.ModuleType.READING) {
-                FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForReadingModule(module);
+                FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, null);
                 if (parentModuleForReadingModule != null) {
                     nonNullableFieldVsLookupModules.put("parentId", parentModuleForReadingModule.getName());
+                }
+            } else if (module.getTypeEnum() == FacilioModule.ModuleType.TIME_LOG && !nonNullableFieldVsLookupModules.containsKey("parent")) {
+                FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, FacilioModule.ModuleType.BASE_ENTITY);
+                if (parentModuleForSubModule != null) {
+                    nonNullableFieldVsLookupModules.put("parent", parentModuleForSubModule.getName());
+                }
+            } else if (module.getTypeEnum() == FacilioModule.ModuleType.NOTES || module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+                FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, null);
+                if (parentModuleForSubModule != null) {
+                    String parentFieldName = fieldsMap.keySet().stream().filter(fieldName -> fieldName.equals("parentId")).findFirst().orElse(null);
+                    if (StringUtils.isEmpty(parentFieldName)) {
+                        parentFieldName = fieldsMap.keySet().stream().filter(fieldName -> fieldName.contains("parent")).findFirst().orElse(null);
+                    }
+                    if (StringUtils.isNotEmpty(parentFieldName)) {
+                        nonNullableFieldVsLookupModules.put(parentFieldName, parentModuleForSubModule.getName());
+                    }
                 }
             }
 
             List<Long> extendedModuleIds = module.getExtendedModuleIds();
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
-            List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
             List<SupplementRecord> supplementRecords = DataMigrationUtil.getSupplementFields(allFields);
             boolean addLogger = (CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
 
@@ -182,11 +198,9 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             LOGGER.info("####Data Migration - Insert - Completed for ModuleName - " + moduleName);
         }
 
-        migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
+        migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.READING_MODULE_IN_PROGRESS, null, 0);
         dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
-        context.put(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME, moduleNameVsXmlFileName);
-        context.put(DataMigrationConstants.PACKAGE_CHANGE_SET, componentTypeVsOldVsNewId);
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
 
         return false;

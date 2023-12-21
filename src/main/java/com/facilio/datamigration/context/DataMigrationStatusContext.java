@@ -42,10 +42,11 @@ public class DataMigrationStatusContext {
         INITIATED("initiated"),
         CUSTOMIZATION_MAPPING_IN_PROGRESS("customizationMapping"),
         CREATION_IN_PROGRESS("creationInProgress"),
+        READING_MODULE_IN_PROGRESS("readingModuleInProgress"),
+        SPECIAL_MODULE_IN_PROGRESS("specialModuleInProgress"),
         UPDATION_IN_PROGRESS("updateInProgress"),
-        COMPLETED("completed"),
-        SPECIAL_MODULE_IN_PROGRESS("specialModuleInProgress");
-
+        REUPDATE_META_MODULES("reUpdateMetaModules"),
+        COMPLETED("completed");
         private String name;
 
         DataMigrationStatus(String name) {

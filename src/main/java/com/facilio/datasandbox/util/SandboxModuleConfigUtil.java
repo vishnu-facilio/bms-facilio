@@ -36,6 +36,7 @@ public class SandboxModuleConfigUtil {
         try {
             moduleNameVsModuleDetails.put(ModuleFactory.getTaskSectionModule().getName(), getModuleDetails(ModuleFactory.getTaskSectionModule(), FieldFactory.getTaskSectionFields()));
             moduleNameVsModuleDetails.put(ModuleFactory.getTaskInputOptionModule().getName(), getModuleDetails(ModuleFactory.getTaskInputOptionModule(), FieldFactory.getTaskInputOptionsFields()));
+            moduleNameVsModuleDetails.put(ModuleFactory.getReadingDataMetaModule().getName(), getModuleDetails(ModuleFactory.getReadingDataMetaModule(), FieldFactory.getReadingDataMetaFields()));
         } catch (Exception e) {
             LOGGER.info("####Data Migration - Exception while fetching SPECIAL_MODULENAME_VS_DETAILS - " + e);
             throw new RuntimeException(e);
@@ -63,9 +64,10 @@ public class SandboxModuleConfigUtil {
         return moduleDetails;
     }
 
-    private static Map<String, List<String>> getParentModuleVsChildModules() {
+    public static Map<String, List<String>> getParentModuleVsChildModules() {
         Map<String, List<String>> parentModuleVsChildModules = new HashMap<>();
         parentModuleVsChildModules.put("task", Arrays.asList("tasksection", "taskInputOpyion"));
+        parentModuleVsChildModules.put("readingdatameta", Arrays.asList("readingdatameta"));
 
         return parentModuleVsChildModules;
     }
@@ -346,12 +348,12 @@ public class SandboxModuleConfigUtil {
         }
 
         if (!fieldsMap.containsKey(FacilioConstants.ContextNames.FORM_ID)) {
-            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, null, module);
+            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, "FORM_ID", module);
             fieldsMap.put(formIdField.getName(), formIdField);
         }
 
         if (!fieldsMap.containsKey(FacilioConstants.ContextNames.STATE_FLOW_ID)) {
-            FacilioField stateFlowIdFields = FieldFactory.getNumberField(FacilioConstants.ContextNames.STATE_FLOW_ID, null, module);
+            FacilioField stateFlowIdFields = FieldFactory.getNumberField(FacilioConstants.ContextNames.STATE_FLOW_ID, "STATE_FLOW_ID", module);
             fieldsMap.put(stateFlowIdFields.getName(), stateFlowIdFields);
         }
 
@@ -359,7 +361,7 @@ public class SandboxModuleConfigUtil {
         fieldsMap.put(idField.getName(), idField);
     }
 
-    public static FacilioModule getParentModuleForReadingModule(FacilioModule readingModule) throws Exception {
+    public static FacilioModule getParentModuleForSubModule(FacilioModule subModule, FacilioModule.ModuleType parentModuleType) throws Exception {
         FacilioModule moduleModule = ModuleFactory.getModuleModule();
         FacilioModule relModule = ModuleFactory.getSubModulesRelModule();
         List<FacilioField> moduleFields = FieldFactory.getModuleFields();
@@ -370,7 +372,11 @@ public class SandboxModuleConfigUtil {
                 .table(moduleModule.getTableName())
                 .innerJoin(relModule.getTableName())
                 .on(relModule.getTableName() + ".PARENT_MODULE_ID = " + moduleModule.getTableName() + ".MODULEID")
-                .andCondition(CriteriaAPI.getCondition(relModuleFieldMap.get("childModuleId"), String.valueOf(readingModule.getModuleId()), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(relModuleFieldMap.get("childModuleId"), String.valueOf(subModule.getModuleId()), NumberOperators.EQUALS));
+
+        if (parentModuleType != null) {
+            selectRecordBuilder.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(parentModuleType.getValue()), NumberOperators.EQUALS));
+        }
 
         Map<String, Object> prop = selectRecordBuilder.fetchFirst();
 

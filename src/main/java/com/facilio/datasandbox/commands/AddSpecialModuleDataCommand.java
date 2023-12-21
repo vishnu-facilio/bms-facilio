@@ -2,6 +2,7 @@ package com.facilio.datasandbox.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datamigration.util.DataMigrationConstants;
@@ -49,7 +50,8 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
             migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, null, 0);
         }
 
-        List<String> specialModules = SandboxModuleConfigUtil.getSpecialModules(migrationModuleNameVsDetails);
+        Map<String, List<String>> parentModuleVsChildModules = SandboxModuleConfigUtil.getParentModuleVsChildModules();
+        List<String> specialModules = parentModuleVsChildModules.get(FacilioConstants.ContextNames.TASK);
 
         for (String moduleName : specialModules) {
             if (!SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
@@ -105,7 +107,7 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
                     offset = offset + dataFromCSV.size();
                 }
 
-                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, module.getModuleId(), offset);
+                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_IN_PROGRESS, module.getModuleId(), offset);
 
                 if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
                     LOGGER.info("####Data Migration - SpecialModule - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
@@ -116,8 +118,10 @@ public class AddSpecialModuleDataCommand extends FacilioCommand {
             LOGGER.info("####Data Migration - SpecialModule - Completed for ModuleName - " + moduleName);
         }
 
-        migrationBean.updateDataMigrationStatus(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.COMPLETED, null, 0);
+        migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
+        dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
+        context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
         return false;
     }
 

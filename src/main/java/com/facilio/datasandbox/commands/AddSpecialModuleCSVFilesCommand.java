@@ -10,17 +10,16 @@ import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;
@@ -34,6 +33,8 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long sourceOrgId = (long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
+        int reqOffset = (int) context.getOrDefault(DataMigrationConstants.OFFSET, 0);
+        int reqLimit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 0);
         boolean getDependantModuleData = (boolean) context.get(DataMigrationConstants.GET_DEPENDANT_MODULE_DATA);
         Map<String, List<Long>> fetchedRecords = (Map<String, List<Long>>) context.get(PackageConstants.FETCHED_RECORDS);
         Map<String, List<Long>> toBeFetchRecords = (Map<String, List<Long>>) context.get(PackageConstants.TO_BE_FETCH_RECORDS);
@@ -44,18 +45,16 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
         List<String> runDataMigrationOnlyForModulesNames = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
 
-        List<String> specialModules = SandboxModuleConfigUtil.getSpecialModules(migrationModuleNameVsDetails);
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
 
-        for (String moduleName : specialModules) {
+        for (Map.Entry<String, Map<String, Object>> moduleVsDetails : SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.entrySet()) {
+            String moduleName = moduleVsDetails.getKey();
+            Map<String, Object> moduleDetails = moduleVsDetails.getValue();
+
             if (!createFullDataPackage && !dataMigrationModuleNames.contains(moduleName) && !runDataMigrationOnlyForModulesNames.contains(moduleName)) {
                 continue;
             }
-            if (!SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.containsKey(moduleName)) {
-                continue;
-            }
-            Map<String, Object> moduleDetails = SandboxModuleConfigUtil.SPECIAL_MODULENAME_VS_DETAILS.get(moduleName);
 
             Criteria moduleCriteria = (Criteria) moduleDetails.get("criteria");
             FacilioModule module = (FacilioModule) moduleDetails.get("sourceModule");
@@ -69,7 +68,7 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
             File moduleCsvFile = null;
             String moduleCsvFilePath = null;
 
-            List<Map<String, Object>> propsForCsv = getPropsForCSV(module, allFields, moduleCriteria);
+            List<Map<String, Object>> propsForCsv = getPropsForCSV(module, allFields, moduleCriteria, reqOffset, reqLimit);
             if (CollectionUtils.isEmpty(propsForCsv)) {
                 LOGGER.info("####Data Package - Fetch - No Records found for ModuleName - " + moduleName);
                 continue;
@@ -94,9 +93,15 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
         return false;
     }
 
-    private static List<Map<String, Object>> getPropsForCSV(FacilioModule module, List<FacilioField> allFields, Criteria moduleCriteria) throws Exception {
+    private static List<Map<String, Object>> getPropsForCSV(FacilioModule module, List<FacilioField> allFields, Criteria moduleCriteria, int reqOffset, int reqLimit) throws Exception {
         int offset = 0;
         int limit = 5000;
+        if (reqOffset > 0) {
+            offset = reqOffset;
+        }
+        if (reqLimit > 0 && reqLimit < limit) {
+            limit = reqLimit;
+        }
         boolean isModuleMigrated = false;
         String moduleName = module.getName();
         List<Map<String, Object>> propsForCsv = new ArrayList<>();
@@ -130,6 +135,10 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
 
                 propsForCsv.addAll(props);
                 offset = offset + props.size();
+
+                if (offset >= reqLimit) {
+                    isModuleMigrated = true;
+                }
             }
         } while (!isModuleMigrated);
 
@@ -146,6 +155,11 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
 
         if (moduleCriteria != null && !moduleCriteria.isEmpty()) {
             selectBuilder.andCriteria(moduleCriteria);
+        }
+
+        String customWhereClause = DataMigrationUtil.getCustomWhereClause(module);
+        if (StringUtils.isNotEmpty(customWhereClause)) {
+            selectBuilder.andCustomWhere(customWhereClause);
         }
 
         List<Map<String, Object>> propsList = selectBuilder.get();

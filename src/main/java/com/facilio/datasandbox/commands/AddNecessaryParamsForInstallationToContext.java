@@ -19,7 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddNecessaryParamsToContext extends FacilioCommand {
+public class AddNecessaryParamsForInstallationToContext extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long packageId = (Long) context.get(DataMigrationConstants.PACKAGE_ID);

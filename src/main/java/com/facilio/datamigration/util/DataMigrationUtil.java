@@ -9,27 +9,22 @@ import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -138,6 +133,58 @@ public class DataMigrationUtil {
         return cr;
     }
 
+    public static String getCustomWhereClause(FacilioModule module) throws Exception {
+        String queryString = null;
+        ModuleBean modBean = Constants.getModBean();
+
+        switch (module.getName()) {
+            case "task":
+            case "tasksection":
+                FacilioModule ticketsModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+                FacilioField idFieldFromTicketTable = FieldFactory.getIdField(ticketsModule);
+                String valueList = generateSubQuery(ticketsModule, idFieldFromTicketTable, null);
+
+                queryString = module.getTableName() + ".PARENT_TICKET_ID IN (" + valueList + ")";
+                break;
+            case "taskInputOpyion":
+                FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
+                FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+                FacilioField idFieldFromTaskTable = FieldFactory.getIdField(taskModule);
+                FacilioField idFieldFromTicketsTable = FieldFactory.getIdField(ticketModule);
+
+                String ticketsSubQuery = generateSubQuery(ticketModule, idFieldFromTicketsTable, null);
+                queryString = "Tasks.PARENT_TICKET_ID IN (" + ticketsSubQuery + ")";
+
+                String taskSubQuery = generateSubQuery(taskModule, idFieldFromTaskTable, queryString);
+                queryString = "Task_Input_Options.TASK_ID IN (" + taskSubQuery + ")";
+                break;
+            case "workorderTimeLog":
+                FacilioModule ticketModuleObj = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+                String generatedSubQuery = generateSubQuery(ticketModuleObj, FieldFactory.getIdField(ticketModuleObj), null);
+
+                queryString = module.getTableName() + ".PARENT_ID IN (" + generatedSubQuery + ")";
+                break;
+            default:
+                break;
+        }
+        return queryString;
+    }
+
+    private static String generateSubQuery(FacilioModule module, FacilioField fieldObj, String customWhereStr) throws Exception {
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> subQueryBuilder = new SelectRecordsBuilder<>()
+                .module(module)
+                .setAggregation()
+                .skipModuleCriteria()
+                .select(Collections.singleton(fieldObj));
+
+        if (StringUtils.isNotEmpty(customWhereStr)) {
+            subQueryBuilder.andCustomWhere(customWhereStr);
+        }
+
+        String valueList = subQueryBuilder.constructQueryString();
+        return valueList;
+    }
+
     public static List<String> getNumberFileFields(FacilioModule module) {
         List<String> numberFieldsVsFileFields = new ArrayList<>();
 
@@ -223,9 +270,13 @@ public class DataMigrationUtil {
                 // "sectionId" - refers to Task_Section ID
                 // "readingFieldId" - refers to FieldId in FacilioField
                 // "readingDataId" - refers to RecordId in the Reading Module table (Module that contains "readingFieldId")
-                addNumberLookupDetails("readingDataId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
-                addNumberLookupDetails("sectionId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                addSpecialTypeNumberLookupDetails("readingDataId", "task", numberFieldsVsLookupModules);
+                addSpecialTypeNumberLookupDetails("sectionId", "tasksection", numberFieldsVsLookupModules);
 //                addNumberLookupDetails("statusNew", "ticketstatus", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "readingdatameta":
+                // "fieldId" - refers to FieldId in FacilioField
+                addNumberLookupDetails("resourceId", "resource", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "tasksection":
                 addNumberLookupDetails("parentTicketId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -355,9 +406,9 @@ public class DataMigrationUtil {
             parentModule = (module.getName().equals("customactivity") || module.getName().equals("commentattachments")) ? module : parentModule;
             if (module.getName().equals("commentattachments")) {
                 // "parent" -> refers to the ID in a Module with Notes Type (eg. ID of Ticket_Notes (SubModule of Ticket))
-                addNumberLookupDetails("parent", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
+                addSpecialTypeNumberLookupDetails("parent", parentModule.getName(), numberFieldsVsLookupModules);
                 // refers to the ModuleId with Notes Type
-                addNumberLookupDetails("commentModuleId", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
+                addSpecialTypeNumberLookupDetails("commentModuleId", parentModule.getName(), numberFieldsVsLookupModules);
             } else {
                 addNumberLookupDetails("parentId", parentModule.getName(), targetModuleNameVsObj, numberFieldsVsLookupModules);
             }
@@ -374,6 +425,16 @@ public class DataMigrationUtil {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(lookupModuleName);
         lookupDetails.put("lookupModule",module);
+        lookupDetails.put("isSpecialType", false);
+        numberFieldsVsLookupModules.put(fieldName, lookupDetails);
+    }
+
+    // To be used for modules which does not have relation in SubModulesRel
+    private static void addSpecialTypeNumberLookupDetails(String fieldName, String lookupModuleName, Map<String, Map<String, Object>> numberFieldsVsLookupModules) throws Exception {
+        Map<String, Object> lookupDetails = new HashMap<>();
+        lookupDetails.put("isSpecialType", true);
+        lookupDetails.put("lookupModuleName", lookupModuleName);
+
         numberFieldsVsLookupModules.put(fieldName, lookupDetails);
     }
 

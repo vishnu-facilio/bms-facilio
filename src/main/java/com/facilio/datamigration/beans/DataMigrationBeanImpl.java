@@ -3,7 +3,6 @@ package com.facilio.datamigration.beans;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.beans.ModuleBeanImpl;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
@@ -13,6 +12,7 @@ import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -111,6 +111,11 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
             additionalModCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, valueList, NumberOperators.EQUALS));
 
             cr.andCriteria(additionalModCriteria);
+        }
+
+        String customWhereClause = DataMigrationUtil.getCustomWhereClause(module);
+        if (StringUtils.isNotEmpty(customWhereClause)) {
+            selectBuilder.andCustomWhere(customWhereClause);
         }
 
         if(!cr.isEmpty()) {
