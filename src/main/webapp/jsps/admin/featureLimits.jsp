@@ -16,7 +16,7 @@
 <%@ page import="com.facilio.bmsconsole.util.FeatureLimitsUtil" %>
 <%
     String orgid = request.getParameter("orgid");
-    Map<String, Long> featureNameVsLimits=null;
+    Map<String, Integer> featureNameVsLimits=null;
     if(orgid!=null)
       {
           featureNameVsLimits= FeatureLimitsUtil.getFeatureNameVsLimits(Long.parseLong(orgid));
@@ -182,7 +182,7 @@ function openModuleList() {
            </div>
        </div>
             </form>
-    <% } else {  %>
+    <%  } else if(orgid!=null) {  %>
     <h4>No Data Available</h4>
     <%}%>
   </div>

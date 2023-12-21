@@ -13,7 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 
 public class FeatureLimitsUtil {
-    public static Long getFeatureLimitsForOrg(String featureName) throws Exception {
+    public static Integer getFeatureLimitsForOrg(String featureName) throws Exception {
 
         Map<String,FacilioField> fieldMap= FieldFactory.getAsMap(FieldFactory.getFeatureLimitsFields());
         GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
@@ -22,15 +22,15 @@ public class FeatureLimitsUtil {
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("featureName"),featureName, StringOperators.IS));
         Map<String,Object> countMap= builder.fetchFirst();
 
-        return (Long) countMap.get(FacilioConstants.ContextNames.LIMIT_COUNT);
+        return (Integer) countMap.get(FacilioConstants.ContextNames.LIMIT_COUNT);
 
     }
-    public static Map<String, Long>  getFeatureNameVsLimits(Long orgId)throws Exception{
+    public static Map<String, Integer>  getFeatureNameVsLimits(Long orgId)throws Exception{
 
         AccountUtil.setCurrentAccount(orgId);
         if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == orgId) {
 
-            Map<String, Long> featureNameVsLimits = new HashMap<>();
+            Map<String, Integer > featureNameVsLimits = new HashMap<>();
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFeatureLimitsFields());
             List<FacilioField> selectedFields = new ArrayList<>();
             selectedFields.add(fieldMap.get("featureName"));
@@ -43,7 +43,7 @@ public class FeatureLimitsUtil {
 
             if (CollectionUtils.isNotEmpty(props)) {
                 for (Map<String, Object> map : props) {
-                    featureNameVsLimits.put((String) map.get(FacilioConstants.ContextNames.FEATURE_NAME), (Long) map.get(FacilioConstants.ContextNames.LIMIT_COUNT));
+                    featureNameVsLimits.put((String) map.get(FacilioConstants.ContextNames.FEATURE_NAME), (Integer) map.get(FacilioConstants.ContextNames.LIMIT_COUNT));
                 }
                 return featureNameVsLimits;
             }
