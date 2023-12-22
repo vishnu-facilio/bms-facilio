@@ -3396,6 +3396,12 @@
             </property>
         </requestbody>
     </request>
+    <request path="/api/v3/workOrderItem/getWorkorderItem">
+        <urlparams>
+            <property name="itemId" type="number"/>
+            <property name="workOrderId" type="number"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkorderItem">
         <urlparams>
             <property name="permissionModuleName" type="string" mandatory="true"/>
@@ -3403,9 +3409,19 @@
             <property name="workOrderId" type="number"/>
         </urlparams>
     </request>
+    <request path="/api/v3/workOrderItem/getWorkorderItemFromReservation">
+        <urlparams>
+            <property name="reservationId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkorderItemFromReservation">
         <urlparams>
             <property name="permissionModuleName" type="string" mandatory="true"/>
+            <property name="reservationId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkorderToolFromReservation">
+        <urlparams>
             <property name="reservationId" type="number" mandatory="true"/>
         </urlparams>
     </request>
@@ -3415,11 +3431,23 @@
             <property name="reservationId" type="number" mandatory="true"/>
         </urlparams>
     </request>
+    <request path="/api/v3/workOrderItem/getWorkOrderItemFromIssuedItem">
+        <urlparams>
+            <property name="workOrderId" type="number"/>
+            <property name="itemTransactionId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v3/workOrderItem/:permissionModuleName/getWorkOrderItemFromIssuedItem">
         <urlparams>
             <property name="permissionModuleName" type="string" mandatory="true"/>
             <property name="workOrderId" type="number"/>
             <property name="itemTransactionId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkOrderToolFromIssuedTool">
+        <urlparams>
+            <property name="workOrderId" type="number"/>
+            <property name="toolTransactionId" type="number" mandatory="true"/>
         </urlparams>
     </request>
     <request path="/api/v3/workorderTools/:permissionModuleName/getWorkOrderToolFromIssuedTool">
@@ -3433,6 +3461,12 @@
         <urlparams>
             <property name="workOrderId" type="number" mandatory="true"/>
             <property name="serviceId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/workorderTools/getWorkorderTool">
+        <urlparams>
+            <property name="workOrderId" type="number"/>
+            <property name="toolId" type="number" mandatory="true"/>
         </urlparams>
     </request>
     <request path="/api/v3/workorderTools/:permissionModuleName/getWorkorderTool">

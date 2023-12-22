@@ -2285,6 +2285,13 @@
 
     <package name="workorderItem" namespace="/api/v3/workOrderItem"
              extends="v3Api">
+        <action name="getWorkorderItem"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="getWorkorderItem">
+            <param name="permissionModuleName">workorder</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
         <action name="*/getWorkorderItem"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkorderItem">
@@ -2293,10 +2300,25 @@
             <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
 
+        <action name="getWorkorderItemFromReservation"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="getWorkorderItemFromReservation">
+            <param name="permissionModuleName">workorder</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
+
         <action name="*/getWorkorderItemFromReservation"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
                 method="getWorkorderItemFromReservation">
             <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderItem</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
+        <action name="getWorkOrderItemFromIssuedItem"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderItemsActionV3"
+                method="getWorkOrderItemFromIssuedItem">
+            <param name="permissionModuleName">workorder</param>
             <param name="moduleName">workorderItem</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
@@ -2311,6 +2333,13 @@
 
     <package name="workorderTools" namespace="/api/v3/workorderTools"
              extends="v3Api">
+        <action name="getWorkorderTool"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkorderTool">
+            <param name="permissionModuleName">workorder</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
         <action name="*/getWorkorderTool"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderTool">
@@ -2318,10 +2347,24 @@
             <param name="moduleName">workorderTools</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
+        <action name="getWorkorderToolFromReservation"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkorderToolFromReservation">
+            <param name="permissionModuleName">workorder</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
         <action name="*/getWorkorderToolFromReservation"
                 class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
                 method="getWorkorderToolFromReservation">
             <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">workorderTools</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
+        <action name="getWorkOrderToolFromIssuedTool"
+                class="com.facilio.bmsconsoleV3.actions.WorkOrderToolsActionV3"
+                method="getWorkOrderToolFromIssuedTool">
+            <param name="permissionModuleName">workorder</param>
             <param name="moduleName">workorderTools</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
