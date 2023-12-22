@@ -92,6 +92,13 @@ public class WorkOrderModule extends BaseModuleConfig {
         createInvoice.setIdentifier("generateInvoice");
         createInvoice.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,createInvoice);
+
+        SystemButtonRuleContext generateQuote = new SystemButtonRuleContext();
+        generateQuote.setName("Generate Quote");
+        generateQuote.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        generateQuote.setIdentifier("generateQuote");
+        generateQuote.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.WORK_ORDER,generateQuote);
     }
 
     public static void addListSystemButtons() throws Exception {
@@ -327,6 +334,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
+                    .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("financialSection", null, null)
+                    .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
                     .addTab("timelog", "Timelog And Metrics", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("timelog", null, null)
@@ -478,6 +494,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
+                    .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("financialSection", null, null)
+                    .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
                     .addTab("timelog", "Timelog And Metrics", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("timelog", null, null)
@@ -619,6 +644,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("widgetGroup", null, null)
                     .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("financialSection", null, null)
+                    .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -832,6 +866,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
+                    .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("financialSection", null, null)
+                    .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
                     .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                     .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
@@ -904,6 +947,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .sectionDone()
                     .addSection("jobplandetails", null, null)
                     .addWidget("jobplandetails", "Job Plan", PageWidget.WidgetType.JOBPLAN_DETAILS, "flexiblewebjobplandetails_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("financialSection", null, null)
+                    .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -1041,6 +1093,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("widgetGroup", null, null)
                 .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("financialSection", null, null)
+                .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
@@ -1192,6 +1253,15 @@ public class WorkOrderModule extends BaseModuleConfig {
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("widgetGroup", null, null)
                 .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("financial", "Financial", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("financialSection", null, null)
+                .addWidget("financialWidget", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL, "flexiblewebfinancial_5", 0, 0, null,null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

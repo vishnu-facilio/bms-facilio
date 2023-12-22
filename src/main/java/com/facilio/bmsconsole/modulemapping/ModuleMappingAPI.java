@@ -34,6 +34,15 @@ public class ModuleMappingAPI {
      * }
      **/
 
+    @ModuleMappingConfig("workorder") public static Supplier<ModuleMappings> getWorkorderMappings() {
+        return () -> new ModuleMappings("workorderModuleMappings", "WorkOrder Module Mapping")
+                .addModuleMapping(WorkOrderModuleMapping.workOrderToQuoteConversion())
+                .moduleMappingDone()
+                .addModuleMapping(WorkOrderModuleMapping.workOrderToInvoiceConversion())
+                .moduleMappingDone()
+                ;
+    }
+
     @ModuleMappingConfig("serviceRequest")
     public static Supplier<ModuleMappings> getServiceRequestMappings() {
         return null;

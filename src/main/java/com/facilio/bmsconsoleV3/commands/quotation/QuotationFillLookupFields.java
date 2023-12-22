@@ -28,6 +28,7 @@ public class QuotationFillLookupFields extends FacilioCommand {
         fetchLookupsList.add((LookupField) fieldsAsMap.get("billToAddress"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("client"));
         fetchLookupsList.add((LookupField) fieldsAsMap.get("tenant"));
+        fetchLookupsList.add((LookupField) fieldsAsMap.get("vendor"));
         LookupFieldMeta workorderField = new LookupFieldMeta((LookupField) fieldsAsMap.get("workorder"));
         LookupField pmTrigger = (LookupField) modBean.getField("trigger", FacilioConstants.ContextNames.WORK_ORDER);
         workorderField.addChildSupplement(pmTrigger);

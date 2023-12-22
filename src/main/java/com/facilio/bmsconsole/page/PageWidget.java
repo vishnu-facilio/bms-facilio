@@ -434,6 +434,7 @@ public class PageWidget {
 		RELATED_RECORDS("relatedRecords"),
 		WORKORDER_PROGRESS("workorderProgress"),
 		TASKS("tasks"),
+		WORKORDER_FINANCIAL("workorderFinancial"),
 		WORKORDER_HISTORY("workorderHistory"),
 		WORKORDER_SIDEBAR("workorderSidebar"),
 		HAZARDS("hazards"),

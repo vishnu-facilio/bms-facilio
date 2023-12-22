@@ -5559,6 +5559,8 @@
             <property name="recordId" type="number"></property>
         </requestbody>
     </request>
+    <request path="/api/v3/invoice/getConversionForm" method="GET">
+    </request>
 
     <request path="/api/v3/invoice/sendMail" method="POST">
         <requestbody type="object">

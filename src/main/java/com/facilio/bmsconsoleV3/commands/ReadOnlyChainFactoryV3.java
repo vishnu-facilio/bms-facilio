@@ -728,4 +728,10 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new GlobalSwitchAccessiblityCommandV3());
         return c;
     }
+
+    public static FacilioChain getInvoiceConversionFormChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetInvoiceDefaultFormCommand());
+        return c;
+    }
 }

@@ -3611,6 +3611,10 @@
             <param name="moduleName">invoice</param>
             <param name="permission">POST:CREATE,UPDATE</param>
         </action>
+        <action name="getConversionForm" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="getInvoiceConversionForm">
+            <param name="moduleName">invoice</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+        </action>
         <action name="sendMail" class="com.facilio.bmsconsoleV3.actions.InvoiceAction" method="sendMail">
             <param name="moduleName">invoice</param>
             <param name="permission">POST:CREATE,UPDATE</param>

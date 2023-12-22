@@ -104,6 +104,10 @@ public class APIModuleWidgets {
 
                 .addModuleWidget("jobplandetails", "Jobplan Details", PageWidget.WidgetType.JOBPLAN_DETAILS)
                 .addWidgetConfig("flexiblewebjobplandetails_3","Jobplan Details - 3",WidgetConfigContext.ConfigType.FLEXIBLE,3,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("financial", "Financial", PageWidget.WidgetType.WORKORDER_FINANCIAL)
+                .addFlexibleWidgetConfig("flexiblewebfinancial_5","Financial - 5", 5, PagesContext.PageLayoutType.WEB)
                 .done();
 
 

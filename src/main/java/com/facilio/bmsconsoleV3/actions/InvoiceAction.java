@@ -2,6 +2,7 @@ package com.facilio.bmsconsoleV3.actions;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsoleV3.commands.ReadOnlyChainFactoryV3;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.invoice.InvoiceAssociatedTermsContext;
 import com.facilio.bmsconsoleV3.context.invoice.InvoiceContextV3;
@@ -276,6 +277,15 @@ public class InvoiceAction extends V3Action {
         chain.setContext(context);
         chain.execute();
         setData("invoice",context.get(FacilioConstants.ContextNames.RECORD));
+        setData("form",context.get(FacilioConstants.ContextNames.FORM));
+        return SUCCESS;
+    }
+
+    public String getInvoiceConversionForm() throws Exception{
+        FacilioContext context = new FacilioContext();
+        FacilioChain chain = ReadOnlyChainFactoryV3.getInvoiceConversionFormChain();
+        chain.setContext(context);
+        chain.execute();
         setData("form",context.get(FacilioConstants.ContextNames.FORM));
         return SUCCESS;
     }
