@@ -1682,4 +1682,10 @@ public class ReadingsAPI {
 		return facilioModules.stream().map(r -> r.getFields()).flatMap(r -> r.stream()).collect(Collectors.toList());
 	}
 
+	public static long adjustTimestamp(long time, long interval) {
+		ZonedDateTime zdt = DateTimeUtil.getDateTime(time);
+		zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
+		return DateTimeUtil.getMillis(zdt, true);
+	}
+
 }

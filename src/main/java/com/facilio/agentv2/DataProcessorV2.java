@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsoleV3.context.DataLogContextV3;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -629,6 +630,9 @@ public class DataProcessorV2 {
         try{
             if (alarmProcessorType != null &&  alarmProcessorType != FacilioAgent.AgentBMSAlarmProcessorType.BMS_ALARM) {
                 Controller controller = AgentConstants.getControllerBean().getController(payload, agent.getId());
+                if (controller == null) {
+                    throw new FacilioException("The controller is not available");
+                }
                 processRawAlarm(agent,controller,events, timestamp);
                 if (alarmProcessorType == FacilioAgent.AgentBMSAlarmProcessorType.RAW_ALARM) {
                     return true;
@@ -661,6 +665,11 @@ public class DataProcessorV2 {
             }
             if (controller.getControllerType() == FacilioControllerType.E2.asInt()) {
                 alarmContext.setAlarmApproach(AlarmApproach.RETURN_TO_NORMAL.getIndex());
+            }
+            if(rawAlarm.containsKey("assetId")) {
+                V3AssetContext asset = new V3AssetContext();
+                asset.setId((long) rawAlarm.get("assetId"));
+                alarmContext.setAsset(asset);
             }
             RawAlarmUtil.pushToStormRawAlarmQueue(alarmContext);
             ControllerUtilV2.processUpdateLastDataReceivedTimeAndClearControllerAlarm(agent, controller);
