@@ -4875,21 +4875,26 @@
         </requestbody>
     </request>
 
-    <request path="/api/v3/pdftemplates/preview/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/preview/:moduleName/:recordId" method="GET">
         <urlparams>
-            <property name="moduleName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
             <property name="id" type="number"></property>
-            <property name="recordId" type="number"></property>
-
+            <property name="recordId" type="number" mandatory="true"></property>
         </urlparams>
+        <requestbody type="object">
+            <property name="id" type="number"></property>
+        </requestbody>
     </request>
 
-    <request path="/api/v3/pdftemplates/download/:moduleName/:id/:recordId" method="GET">
+    <request path="/api/v3/pdftemplates/download/:moduleName/:recordId" method="GET">
         <urlparams>
-            <property name="moduleName" type="string"/>
+            <property name="moduleName" type="string" mandatory="true"/>
             <property name="id" type="number"></property>
-            <property name="recordId" type="number"></property>
+            <property name="recordId" type="number" mandatory="true"></property>
         </urlparams>
+        <requestbody type="object">
+            <property name="id" type="number"></property>
+        </requestbody>
     </request>
 
     <request path="/api/v1/setup/invoiceSetting/fetch" method="GET">

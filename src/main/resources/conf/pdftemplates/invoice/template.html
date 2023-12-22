@@ -1,71 +1,62 @@
 <body>
-<div id="iwqo" class="pdf-header">
-    <div contentEditable placeholder="Enter text here..." id="ixgu" class="header-normal-text"></div>
+<div id="il5s" class="pdf-header">
+    <div contentEditable placeholder="Enter text here..." id="irwl" class="header-normal-text"></div>
 </div>
 <div></div>
-<div data-gjs-type="customWrapper" id="i6jf">
-    <div contentEditable placeholder="Enter text here..." id="ixje" class="custom-text">
+<div data-gjs-type="customWrapper" id="i78s">
+    <div contentEditable placeholder="Enter text here..." id="ifdk" class="custom-text">
         <div><font size="3"><font weight="500">{{ org.name }}</font></font></div>
         <div><font size="1">{{ org.city }}</font></div>
         <div><font size="1">{{ org.state }}</font></div>
         <div><font size="1">{{ org.phone }}</font></div>
     </div>
-    <div contentEditable placeholder="Enter text here..." id="iuie" class="custom-text">
-        <div style="text-align: right;"><span style="font-size: 20px; color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);"><font weight="500">Quote</font></span></div>
-        <div style="text-align: right;"><font color="#607796">#{{ quote.localId }}</font></div>
+    <div contentEditable placeholder="Enter text here..." id="i1za" class="custom-text">
+        <div style="text-align: right;"><span style="color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);"><font weight="500" style="" size="5">Invoice</font></span></div>
+        <div style="text-align: right;"><font color="#607796">#{{ invoice.localId }}</font></div>
     </div>
 </div>
-<div data-gjs-type="customWrapper" data-gjs-spacer id="i5nz">
-    <div id="ie3a">
+<div data-gjs-type="customWrapper" data-gjs-spacer id="i1fc">
+    <div id="in6v">
         <hr class="horizontal-line" style="height:1px;border-width:0;color:gray;background-color: var(--half-white);"/>
     </div>
 </div>
-<div data-gjs-type="customWrapper" id="it1jl">
-    <div contentEditable placeholder="Enter text here..." id="ijcb" class="custom-text">Bill To</div>
-    <div contentEditable placeholder="Enter text here..." id="io2hk" class="custom-text">
+<div data-gjs-type="customWrapper" id="i8mqc">
+    <div contentEditable placeholder="Enter text here..." id="ifrh" class="custom-text">Bill To</div>
+    <div contentEditable placeholder="Enter text here..." id="ifkmk" class="custom-text">
         <div style="text-align: right;"><span style="color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);">Details</span></div>
     </div>
-    <div contentEditable placeholder="Enter text here..." id="ifgk7" class="custom-text">
-        <div></div>
-        <font weight="500">
-            <div>{{ quote.contact.name }}</div>
-            <div></div>
-        </font>
-        <div><font size="1">{{ quote.contact.email}}</font></div>
-        <div><font size="1">{{ quote.billToAddress.street }}</font></div>
-        <div><font size="1">{{ quote.billToAddress.city}}</font></div>
+    <div contentEditable placeholder="Enter text here..." id="ik1bo" class="custom-text">
+        <div><font size="1">{{ invoice.billToAddress.street }}</font></div>
+        <div><font size="1">{{ invoice.billToAddress.city}}</font></div>
+        <div><font size="1">{{ invoice.billToAddress.state}}</font></div>
+        <div><font size="1">{{ invoice.billToAddress.country}}</font></div>
     </div>
-    <div contentEditable placeholder="Enter text here..." id="i85lj" class="custom-text"></div>
-    <div id="ijxpk" billDate="Bill Date - billDate " expiryDate="Expiry Date - expiryDate " class="field-component custom-text align-right">
-        <div contentEditable placeholder="Enter text here..." id="ij1fd" class="field-widget">
+    <div contentEditable placeholder="Enter text here..." id="ibrk3" class="custom-text"></div>
+    <div id="ireah" billDate="Bill Date - billDate " expiryDate="Expiry Date - expiryDate " class="field-component custom-text align-right">
+        <div contentEditable placeholder="Enter text here..." id="ir4fk" class="field-widget">
             <div class="line-widget-text">Bill Date</div>
-            <div class="line-widget-value"> {{quote.billDate}}</div>
+            <div class="line-widget-value"> {{invoice.billDate}}</div>
         </div>
-        <div contentEditable placeholder="Enter text here..." id="ialso" class="field-widget">
+        <div contentEditable placeholder="Enter text here..." id="i0s14" class="field-widget">
             <div class="line-widget-text">Expiry Date</div>
-            <div class="line-widget-value"> {{quote.expiryDate}}</div>
+            <div class="line-widget-value"> {{invoice.expiryDate}}</div>
         </div>
     </div>
 </div>
-<div data-gjs-type="customWrapper" data-gjs-spacer id="i48wm">
-    <div id="icvrz">
+<div data-gjs-type="customWrapper" data-gjs-spacer id="ipctx">
+    <div id="irzgo">
         <hr class="horizontal-line" style="height:1px;border-width:0;color:gray;background-color: var(--half-white);"/>
     </div>
 </div>
-<div data-gjs-type="customWrapper" id="i8mui">
-    <div contentEditable placeholder="Enter text here..." id="iyr5c" class="custom-text">
-        <font weight="500" size="1">Subject</font>
-        <div>{{ quote.subject }}</div>
+<div data-gjs-type="customWrapper" id="iadzu">
+    <div contentEditable placeholder="Enter text here..." id="iweg3" class="custom-text">
+        <font size="1"><font weight="500">Subject</font></font>
+        <div>{{ invoice.subject }}</div>
     </div>
 </div>
-<div data-gjs-type="customWrapper" data-gjs-spacer id="iplkp">
-    <vue-spacer id="iiz69">
-        <div style="height: 16px;width: 100%;"></div>
-    </vue-spacer>
-</div>
-<div data-gjs-type="quoteLineItemWrapper" id="ipbza">
-    <div id="i6enk">
-        <div class="line-item-dummy-data dummy-data-wrapper quote">
+<div data-gjs-type="invoiceLineItemWrapper" id="i9cxo">
+    <div id="if0iz">
+        <div class="line-item-dummy-data dummy-data-wrapper invoice">
             <table class="line-item-table line-item-table-overide">
                 <thead>
                 <tr>
@@ -275,7 +266,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                {{#each quote.lineItems}}
+                {{#each invoice.lineItems}}
                 <tr>
                     <td class="table-field-data-item">
                         {{plusOne @index}}
@@ -323,7 +314,7 @@
                         <div class="text-right fc-violet fwBold controlled-row-data-3 wt-500"> Sub total</div>
                     </td>
                     <td colspan="3" class="controlled-row-data-4">
-                        <div style="font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;" class="text-right">{{quote.subTotal}} {{account.org.currency}}</div>
+                        <div style="font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;" class="text-right">{{invoice.subTotal}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow2-2">
@@ -331,7 +322,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Discount </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.discountAmount}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.discountAmount}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow3-2">
@@ -339,7 +330,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Adjusted Total </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.discountAmount}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.discountAmount}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow4-2">
@@ -347,7 +338,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Vat </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.totalTaxAmount}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.totalTaxAmount}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow5-2">
@@ -355,7 +346,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Shipping Charges </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.shippingCharges}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.shippingCharges}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow6-2">
@@ -363,7 +354,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Misc.charges </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.miscellaneousCharges}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.miscellaneousCharges}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow7-2">
@@ -371,7 +362,7 @@
                         <div class="text-right fc-violet controlled-row-data-3"> Adjusted Cost </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.adjustmentsCost}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.adjustmentsCost}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledRow8-2">
@@ -379,7 +370,7 @@
                         <div class="text-right fc-violet controlled-row-data-3">Total Tax </div>
                     </td>
                     <td colspan="3" class="table-data-field">
-                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{quote.adjustmentsCost}} {{account.org.currency}}</div>
+                        <div class="text-right" style="padding-top: 3px;padding-bottom: 3px;">{{invoice.adjustmentsCost}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 <tr id="controlledHeader-2">
@@ -387,7 +378,7 @@
                         <div class="text-right fc-violet fwBold controlled-row-data-3 wt-600"> Grand total </div>
                     </td>
                     <td colspan="3" class="controlled-row-data-4">
-                        <div style="font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;" class="text-right"> {{quote.totalCost}} {{account.org.currency}}</div>
+                        <div style="font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;" class="text-right"> {{invoice.totalCost}} {{account.org.currency}}</div>
                     </td>
                 </tr>
                 </tbody>
@@ -395,14 +386,14 @@
         </div>
     </div>
 </div>
-<div data-gjs-type="customWrapper" data-gjs-spacer id="ihqlr">
-    <vue-spacer id="iku3p">
+<div data-gjs-type="customWrapper" data-gjs-spacer id="izwoh">
+    <vue-spacer id="ik1tk">
         <div style="height: 16px;width: 100%;"></div>
     </vue-spacer>
 </div>
 <div>
     <div
-            class='terms-condition-dummy-data dummy-data-wrapper terms-condition-quote'
+            class='terms-condition-dummy-data dummy-data-wrapper terms-condition-invoice'
             style='margin-top: 10px;margin-bottom: 10px;'
     >
         <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>
@@ -446,7 +437,7 @@
     <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>
         Terms and conditions
     </div>
-    {{#each quote.termsAssociated}}
+    {{#each invoice.termsAssociated}}
     <div>{{terms.longDesc}}</div>
     {{/each}}
 </div>

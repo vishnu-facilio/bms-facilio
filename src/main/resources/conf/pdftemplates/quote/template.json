@@ -1,0 +1,313 @@
+[
+  {
+    "components": [
+      {
+        "custom-width": "full",
+        "selectable": false,
+        "classes": [
+          "header-normal-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ixgu"
+        },
+        "type": "text"
+      }
+    ],
+    "removable": false,
+    "classes": [
+      "pdf-header"
+    ],
+    "style": "",
+    "attributes": {
+      "id": "iwqo"
+    },
+    "type": "page-header"
+  },
+  {
+    "removable": false,
+    "type": "page-footer"
+  },
+  {
+    "components": [
+      {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ixje"
+        },
+        "line-height": "21",
+        "type": "text",
+        "content": "<div><font size=\"3\"><font weight=\"500\">{{ org.name }}</font></font></div><div><font size=\"1\">{{ org.city }}</font></div><div><font size=\"1\">{{ org.state }}</font></div><div><font size=\"1\">{{ org.phone }}</font></div>"
+      },
+      {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iuie"
+        },
+        "line-height": "21",
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"font-size: 20px; color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"><font weight=\"500\">Quote</font></span></div><div style=\"text-align: right;\"><font color=\"#607796\">#{{ quote.localId }}</font></div>"
+      }
+    ],
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "id": "i6jf",
+      "data-gjs-type": "customWrapper"
+    },
+    "highlightable": false,
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "attributes": {
+          "id": "ie3a"
+        },
+        "type": "horizontalLine",
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
+      }
+    ],
+    "attributes": {
+      "data-gjs-spacer": true,
+      "id": "i5nz",
+      "data-gjs-type": "customWrapper"
+    },
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ijcb"
+        },
+        "type": "text",
+        "content": "Bill To"
+      },
+      {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "io2hk"
+        },
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\">Details</span></div>"
+      },
+      {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ifgk7"
+        },
+        "line-height": "21",
+        "type": "text",
+        "content": "<div></div><font weight=\"500\"><div>{{ quote.contact.name }}</div><div></div></font><div><font size=\"1\">{{ quote.contact.email}}</font></div><div><font size=\"1\">{{ quote.billToAddress.street }}</font></div><div><font size=\"1\">{{ quote.billToAddress.city}}</font></div>"
+      },
+      {
+        "custom-width": "quarter",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "i85lj"
+        },
+        "type": "text"
+      },
+      {
+        "components": [
+          {
+            "custom-width": "full",
+            "editable": false,
+            "selectable": false,
+            "classes": [
+              "field-widget"
+            ],
+            "style": "",
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "ij1fd"
+            },
+            "type": "text",
+            "content": "<div class=\"line-widget-text\">Bill Date</div><div class=\"line-widget-value\"> {{quote.billDate}}</div>"
+          },
+          {
+            "custom-width": "full",
+            "editable": false,
+            "selectable": false,
+            "classes": [
+              "field-widget"
+            ],
+            "style": "",
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "ialso"
+            },
+            "type": "text",
+            "content": "<div class=\"line-widget-text\">Expiry Date</div><div class=\"line-widget-value\"> {{quote.expiryDate}}</div>"
+          }
+        ],
+        "classes": [
+          "field-component",
+          "custom-text",
+          "align-right"
+        ],
+        "width": "quarter",
+        "hoverable": false,
+        "attributes": {
+          "expiryDate": "Expiry Date - expiryDate ",
+          "billDate": "Bill Date - billDate ",
+          "id": "ijxpk"
+        },
+        "line-height": "21",
+        "type": "field-widget",
+        "content": "<div class=\"placeholder-text\">Add placeholder</div>",
+        "text-align": "right"
+      }
+    ],
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "id": "it1jl",
+      "data-gjs-type": "customWrapper"
+    },
+    "highlightable": false,
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "attributes": {
+          "id": "icvrz"
+        },
+        "type": "horizontalLine",
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
+      }
+    ],
+    "attributes": {
+      "data-gjs-spacer": true,
+      "id": "i48wm",
+      "data-gjs-type": "customWrapper"
+    },
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "custom-width": "full",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iyr5c"
+        },
+        "type": "text",
+        "content": "<font weight=\"500\" size=\"1\">Subject</font><div>{{ quote.subject }}</div>"
+      }
+    ],
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "id": "i8mui",
+      "data-gjs-type": "customWrapper"
+    },
+    "highlightable": false,
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iiz69"
+        },
+        "type": "spacer",
+        "content": "<div style=\"height: 16px;width: 100%;\"></div>",
+        "height": "12"
+      }
+    ],
+    "attributes": {
+      "data-gjs-spacer": true,
+      "id": "iplkp",
+      "data-gjs-type": "customWrapper"
+    },
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "attributes": {
+          "id": "i6enk"
+        },
+        "type": "quote-line-items",
+        "content": "\n<div class=\"line-item-dummy-data dummy-data-wrapper quote\">\n<table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th class=\"table-field\" style=\"text-align: left;\">S.No</th>\n<th class=\"table-field\" style=\"text-align: left;\">Item and description</th>\n<th class=\"table-field\" style=\"text-align: right;\">Unit price</th>\n<th class=\"table-field\" style=\"text-align: right;\">Qty</th>\n<th class=\"table-field\" style=\"text-align: right;\">Tax (%)</th>\n<th class=\"table-field\" style=\"text-align: right;\">Markup (%)</th>\n<th class=\"table-field\" style=\"text-align: left;\">UOM</th>\n<th class=\"table-field\" style=\"text-align: right;\">Amount</th>\n</tr>\n  </thead>\n  <tbody>\n     <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n     \n <tr id=\"controlledRow0\">\n    <td colspan=\"5\" class=\"controlled-row-data\">\n     <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n       <div>Mark up (%)</div>\n     </div>\n    </td>\n   \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow1\">\n   <td colspan=\"5\" class=\"controlled-row-data-2\">\n     <div class=\"text-right fc-violet fwBold\" style=\"text-align: right;font-weight: var(--fwt-500);display: flex; justify-content: flex-end;font-size: var(--font-medium);font-weight: var(--fwt-600);\">\n       <div>Sub Total</div>\n     </div>\n   </td>\n   \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow2\">\n    <td colspan=\"5\" class=\"controlled-row-data\">\n      <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n        <div>Discount</div>\n      </div>\n    </td>\n   \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow3\">\n   <td colspan=\"5\" class=\"controlled-row-data\">\n     <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n       <div>Vat</div>\n     </div>\n   </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow5\">\n   <td colspan=\"5\" class=\"controlled-row-data\">\n     <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n       <div>Total Tax</div>\n     </div>\n    </td>\n   \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow6\">\n  <td colspan=\"5\" class=\"controlled-row-data\">\n    <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n      <div>Shipping charges</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow7\">\n  <td colspan=\"5\" class=\"controlled-row-data\">\n    <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper\">\n      <div>Adjustment Cost</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n <tr id=\"controlledRow9\">\n  <td colspan=\"5\" class=\"controlled-row-data-2\">\n    <div class=\"text-right fc-violet text-uppercase fwBold\" style=\"font-size: var(--font-medium);text-align: right;font-weight: var(--fwt-600);display: flex; justify-content: flex-end;\">\n      <div>Grand total</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div style=\"font-weight: bold;\">\n       <div class=\"table-field-data-shimmer-1\"></div>\n    </div>\n  </td>\n\n </tr>\n\n  </tbody>\n</table>\n</div>\n<div class=\"line-item-original-data\">\n  <table class=\"line-item-table line-item-table-overide width-98\">\n  <thead>\n    <tr><th class=\"table-field\" style=\"text-align: left;\">S.No</th>\n<th class=\"table-field\" style=\"text-align: left;\">Item and description</th>\n<th class=\"table-field\" style=\"text-align: right;\">Unit price</th>\n<th class=\"table-field\" style=\"text-align: right;\">Qty</th>\n<th class=\"table-field\" style=\"text-align: right;\">Tax (%)</th>\n<th class=\"table-field\" style=\"text-align: right;\">Markup (%)</th>\n<th class=\"table-field\" style=\"text-align: left;\">UOM</th>\n<th class=\"table-field\" style=\"text-align: right;\">Amount</th>\n</tr>\n  </thead>\n  <tbody>\n  {{#each quote.lineItems}}\n     <tr>\n      <td class=\"table-field-data-item\">\n        {{plusOne @index}}\n      </td>\n      <td class=\"table-field-data-item\">\n        <div style=\"font-weight: var(--fwt-600);\">{{name}}</div>\n        <div>{{description}}</div>\n      </td>\n      <td class=\"table-field-data-item\">\n        <div>\n          {{unitPrice}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item\">\n        {{quantity}}\n      </td>\n      <td class=\"table-field-data-item\">\n        {{taxAmount}}\n      </td>\n      <td class=\"table-field-data-item\">\n        ---\n      </td>\n      <td class=\"table-field-data-item\" style=\"text-align: left;\">\n        <div>\n          {{unitOfMeasure}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item\">\n        <div style=\"text-align: right;\">\n          {{cost}}\n        </div>\n      </td>\n    </tr>\n    {{/each}}\n    <tr id=\"controlledRow1-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3 wt-500\">Markup (%)</div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right;padding-top: 3px;padding-bottom: 3px;\">---</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow1-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data-2\" style=\"background: var(--very-light-blue)\">\n        <div class=\"text-right fc-violet fwBold controlled-row-data-3 wt-500\"> Sub total</div>\n      </td>\n      <td colspan=\"3\" class=\"controlled-row-data-4\">\n        <div style=\"font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;\" class=\"text-right\">{{quote.subTotal}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow2-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Discount </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.discountAmount}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow3-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Adjusted Total </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.discountAmount}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow4-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Vat </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.totalTaxAmount}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow5-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Shipping Charges </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.shippingCharges}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow6-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Misc.charges </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.miscellaneousCharges}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow7-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\"> Adjusted Cost </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.adjustmentsCost}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow8-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data\">\n        <div class=\"text-right fc-violet controlled-row-data-3\">Total Tax </div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right\" style=\"padding-top: 3px;padding-bottom: 3px;\">{{quote.adjustmentsCost}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledHeader-2\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data-2\" style=\"background: var(--very-light-blue)\">\n        <div class=\"text-right fc-violet fwBold controlled-row-data-3 wt-600\"> Grand total </div>\n      </td>\n      <td colspan=\"3\" class=\"controlled-row-data-4\">\n        <div style=\"font-weight: var(--fwt-600);padding-top: 3px;padding-bottom: 3px;\" class=\"text-right\"> {{quote.totalCost}} {{account.org.currency}}</div>\n      </td>\n    </tr>\n  </tbody>\n</table>\n</div>\n"
+      }
+    ],
+    "attributes": {
+      "id": "ipbza",
+      "data-gjs-type": "quoteLineItemWrapper"
+    },
+    "type": "div"
+  },
+  {
+    "components": [
+      {
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iku3p"
+        },
+        "type": "spacer",
+        "content": "<div style=\"height: 16px;width: 100%;\"></div>",
+        "height": "12"
+      }
+    ],
+    "attributes": {
+      "data-gjs-spacer": true,
+      "id": "ihqlr",
+      "data-gjs-type": "customWrapper"
+    },
+    "type": "div"
+  },
+  {
+    "type": "termsAndConditions",
+    "content": "\n  \n<div\n   class='terms-condition-dummy-data dummy-data-wrapper terms-condition-quote'\n   style='margin-top: 10px;margin-bottom: 10px;'\n   >\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n      Terms and Conditions\n   </div>\n   <div>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 50%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 60%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n</div>\n</div>\n\n  \n<div class='terms-condition-original-data'>\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n     Terms and conditions\n   </div>\n   {{#each quote.termsAssociated}}\n     <div>{{terms.longDesc}}</div>\n   {{/each}}\n</div>\n\n"
+  }
+]

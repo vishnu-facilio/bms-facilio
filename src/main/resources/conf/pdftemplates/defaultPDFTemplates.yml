@@ -5,3 +5,10 @@ templates:
     html_path: "quote/template.html"
     css_path: "quote/template.css"
     settings_path: "quote/template.json"
+
+  - name: "Default Invoice Template"
+    description: "Create professional and polished invoice documents with this default template. Customizable for a branded and clear presentation of invoices to clients."
+    moduleName: "invoice"
+    html_path: "invoice/template.html"
+    css_path: "invoice/template.css"
+    settings_path: "invoice/template.json"
