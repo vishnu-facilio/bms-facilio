@@ -256,7 +256,7 @@ public class WorkOrderItemsModule extends BaseModuleConfig{
         singleRule.setName("Set Bin Filter Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
         singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 
         FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
         triggerField.setFieldName("Item");

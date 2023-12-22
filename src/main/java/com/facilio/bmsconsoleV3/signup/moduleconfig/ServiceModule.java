@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.AddSubModulesSystemFieldsCommad;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
@@ -13,6 +15,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -20,6 +23,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -31,8 +35,40 @@ public class ServiceModule extends BaseModuleConfig{
 
     @Override
     public void addData() throws Exception {
+        addNotesAndAttachmentsModule();
         addSystemButtons();
     }
+
+    public void addNotesAndAttachmentsModule() throws Exception {
+        FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.SERVICE);
+        List<FacilioModule> modules = new ArrayList<>();
+        FacilioModule customNotesModule = new FacilioModule();
+        customNotesModule.setName(FacilioConstants.ContextNames.SERVICE_NOTES);
+        customNotesModule.setDisplayName(module.getDisplayName() + " Notes");
+        customNotesModule.setTableName("Service_Notes");
+        customNotesModule.setType(FacilioModule.ModuleType.NOTES);
+        modules.add(customNotesModule);
+
+
+        FacilioModule customAttachmentModule = new FacilioModule();
+        customAttachmentModule.setName(FacilioConstants.ContextNames.SERVICE_ATTACHMENTS);
+        customAttachmentModule.setDisplayName(module.getDisplayName() + " Attachments");
+        customAttachmentModule.setTableName("Service_Attachments");
+        customAttachmentModule.setType(FacilioModule.ModuleType.ATTACHMENTS);
+
+        modules.add(customAttachmentModule);
+
+        if (modules != null && modules.size() > 0) {
+            for (FacilioModule subModule: modules) {
+                AddSubModulesSystemFieldsCommad.addModuleBasedFields(module, subModule);
+            }
+        }
+
+        FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
+        addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, modules);
+        addModuleChain.execute();
+    }
+
 
     @Override
     public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception {
@@ -59,10 +95,10 @@ public class ServiceModule extends BaseModuleConfig{
                 .addWidget("servicesummary", "Service Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_5", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
-//                .addSection("widgetGroup", null, null)
-//                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
-//                .widgetDone()
-//                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", "Widget Group", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup())
+                .widgetDone()
+                .sectionDone()
                 .columnDone()
                 .tabDone()
                 .addTab("vendors", "Vendors", PageTabContext.TabType.SIMPLE, true, null)

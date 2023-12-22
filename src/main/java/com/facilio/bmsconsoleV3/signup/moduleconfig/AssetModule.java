@@ -1963,7 +1963,7 @@ public class AssetModule extends BaseModuleConfig{
         singleRule.setName("Bin Filter Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
         singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 
         FormRuleTriggerFieldContext itemField = new FormRuleTriggerFieldContext();
         itemField.setFieldName("Rotating - Item Type");

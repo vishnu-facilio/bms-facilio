@@ -378,13 +378,14 @@ public class V3ToolsApi {
     }
 
     public static void validateBin(Set<Long> binIds, V3ToolContext tool) throws Exception {
-        Condition toolCondition = CriteriaAPI.getCondition("tool",String.valueOf(tool.getId()), NumberOperators.NOT_EQUALS);
+        FacilioField toolField = Constants.getModBean().getField("tool", FacilioConstants.ContextNames.BIN);
+        Condition toolCondition = CriteriaAPI.getCondition(toolField,String.valueOf(tool.getId()), NumberOperators.NOT_EQUALS);
         Condition idCondition = CriteriaAPI.getIdCondition(binIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.BIN));
         Criteria criteria = new Criteria();
         criteria.addAndCondition(toolCondition);
         criteria.addAndCondition(idCondition);
         FacilioField aggregateField = Constants.getModBean().getField("id", FacilioConstants.ContextNames.BIN);
-        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,binIds, V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,null, V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
         if(props != null) {
             Long count = (Long) props.get(0).get(aggregateField.getName());
             if(count != null && count > 0) {

@@ -209,6 +209,8 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         List<FormRuleContext> workOrderToolFormRules = new ArrayList<>();
         workOrderToolFormRules.add(addToolFilterRule());
         workOrderToolFormRules.add(addBinFilterRule());
+        workOrderToolsModuleForm.setDefaultFormRules(workOrderToolFormRules);
+
 
 
         return Collections.singletonList(workOrderToolsModuleForm);
@@ -221,7 +223,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         singleRule.setName("Set Tool Filter Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
         singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 
         FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
         triggerField.setFieldName("Storeroom");
@@ -259,7 +261,7 @@ public class WorkOrderToolsModule extends BaseModuleConfig{
         singleRule.setName("Set Bin Filter Rule");
         singleRule.setRuleType(FormRuleContext.RuleType.ACTION.getIntVal());
         singleRule.setTriggerType(FormRuleContext.TriggerType.FIELD_UPDATE.getIntVal());
-        singleRule.setType(FormRuleContext.FormRuleType.FROM_FORM.getIntVal());
+        singleRule.setType(FormRuleContext.FormRuleType.FROM_RULE.getIntVal());
 
         FormRuleTriggerFieldContext triggerField = new FormRuleTriggerFieldContext();
         triggerField.setFieldName("Tool");

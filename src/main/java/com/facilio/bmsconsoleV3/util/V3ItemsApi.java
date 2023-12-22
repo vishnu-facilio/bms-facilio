@@ -401,13 +401,14 @@ public class V3ItemsApi {
     }
 
     public static void validateBin(Set<Long> binIds, V3ItemContext item) throws Exception {
-        Condition itemCondition = CriteriaAPI.getCondition("item",String.valueOf(item.getId()), NumberOperators.NOT_EQUALS);
+        FacilioField itemField = Constants.getModBean().getField("item", FacilioConstants.ContextNames.BIN);
+        Condition itemCondition = CriteriaAPI.getCondition(itemField,String.valueOf(item.getId()), NumberOperators.NOT_EQUALS);
         Condition idCondition = CriteriaAPI.getIdCondition(binIds, Constants.getModBean().getModule(FacilioConstants.ContextNames.BIN));
         Criteria criteria = new Criteria();
         criteria.addAndCondition(itemCondition);
         criteria.addAndCondition(idCondition);
         FacilioField aggregateField = Constants.getModBean().getField("id", FacilioConstants.ContextNames.BIN);
-        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,binIds,V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
+        List<Map<String, Object>> props = V3RecordAPI.getRecordsAggregateValue(FacilioConstants.ContextNames.BIN,null,V3BinContext.class,criteria,BmsAggregateOperators.CommonAggregateOperator.COUNT,aggregateField,null);
         if(props != null) {
             Long count = (Long) props.get(0).get(aggregateField.getName());
             if(count != null && count > 0) {
