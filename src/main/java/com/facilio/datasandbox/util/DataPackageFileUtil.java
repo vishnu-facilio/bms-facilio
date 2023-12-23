@@ -17,6 +17,8 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -253,7 +255,7 @@ public class DataPackageFileUtil {
 
         Map<String, String> fileDataProp = new HashMap<>();
         fileDataProp.put("uniqueIdentifier", value);
-        fileDataProp.put("fileName", fileNameWithExtension);
+        fileDataProp.put("fileName", URLEncoder.encode(fileNameWithExtension, "UTF-8"));
         fileDataProp.put("fileId", String.valueOf(fileInfo.getFileId()));
         fileDataProp.put("contentType", fileInfo.getContentType());
 
@@ -268,7 +270,8 @@ public class DataPackageFileUtil {
 
         if (StringUtils.isNotEmpty(attachmentFilePath)) {
             File sourceOrgFile = new File(attachmentFilePath);
-            File file = new File(sourceOrgFile.getParentFile(), fileName);
+            String decodedFileName = URLDecoder.decode(fileName, "UTF-8");
+            File file = new File(sourceOrgFile.getParentFile(), decodedFileName);
             sourceOrgFile.renameTo(file);
 
             FileContext fileContext = PackageFileUtil.addFileToStore(file, contentType);

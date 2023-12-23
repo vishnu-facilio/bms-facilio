@@ -147,6 +147,8 @@ public class DataMigrationUtil {
                 queryString = module.getTableName() + ".PARENT_TICKET_ID IN (" + valueList + ")";
                 break;
             case "taskInputOpyion":
+            case "taskattachments":
+                String columnName = module.getName().equals("taskattachments") ? "PARENT_ID" : "TASK_ID";
                 FacilioModule taskModule = modBean.getModule(FacilioConstants.ContextNames.TASK);
                 FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
                 FacilioField idFieldFromTaskTable = FieldFactory.getIdField(taskModule);
@@ -156,16 +158,48 @@ public class DataMigrationUtil {
                 queryString = "Tasks.PARENT_TICKET_ID IN (" + ticketsSubQuery + ")";
 
                 String taskSubQuery = generateSubQuery(taskModule, idFieldFromTaskTable, queryString);
-                queryString = "Task_Input_Options.TASK_ID IN (" + taskSubQuery + ")";
-                break;
-            case "workorderTimeLog":
-                FacilioModule ticketModuleObj = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-                String generatedSubQuery = generateSubQuery(ticketModuleObj, FieldFactory.getIdField(ticketModuleObj), null);
-
-                queryString = module.getTableName() + ".PARENT_ID IN (" + generatedSubQuery + ")";
+                queryString = module.getTableName() + "." + columnName + " IN (" + taskSubQuery + ")";
                 break;
             default:
                 break;
+        }
+
+        if (StringUtils.isNotEmpty(queryString)) {
+            return queryString;
+        }
+
+        if (module.getTypeEnum().equals(FacilioModule.ModuleType.PHOTOS) ||
+                module.getTypeEnum().equals(FacilioModule.ModuleType.NOTES) ||
+                module.getTypeEnum().equals(FacilioModule.ModuleType.ATTACHMENTS)) {
+            FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+            FacilioField field = modBean.getField("parentId", module.getName());
+            field = field != null ? field : modBean.getField("parent", module.getName());
+            if (field == null) {
+                List<FacilioField> allFields = modBean.getAllFields(module.getName());
+                field = allFields.stream().filter(fieldObj -> fieldObj.getName().contains("parent")).findFirst().orElse(null);
+            }
+            queryString = generateSubQuery(parentModule, field);
+        } else if (module.getTypeEnum().equals(FacilioModule.ModuleType.TIME_LOG)) {
+            FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+            FacilioField field = modBean.getField("parent", module.getName());
+            queryString = generateSubQuery(parentModule, field);
+
+        } else if (module.getTypeEnum().equals(FacilioModule.ModuleType.ACTIVITY)) {
+            if (module.getName().equals(FacilioConstants.ContextNames.CUSTOM_ACTIVITY)) {
+                return null;
+            }
+            FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+            FacilioField field = modBean.getField("parentId", module.getName());
+            queryString = generateSubQuery(parentModule, field);
+        }
+        return queryString;
+    }
+
+    private static String generateSubQuery(FacilioModule parentModule, FacilioField parentField) throws Exception {
+        String queryString = null;
+        if (parentModule != null && parentField != null) {
+            String subQueryFromBuilder = generateSubQuery(parentModule, FieldFactory.getIdField(parentModule), null);
+            queryString = parentField.getCompleteColumnName() + " IN (" + subQueryFromBuilder + ")";
         }
         return queryString;
     }
@@ -238,8 +272,14 @@ public class DataMigrationUtil {
         Map<String, Map<String, Object>> numberFieldsVsLookupModules = new HashMap<>();
 
         switch (module.getName()) {
+            case "resource":
+                addNumberLookupDetails("operatingHour", "businesshours", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
             case "site":
                 addNumberLookupDetails("weatherStation", "weatherstation", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "backgroundActivity":
+                addNumberLookupDetails("parentActivity", "backgroundActivity", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "floor":
                 addNumberLookupDetails("floorPlanId", "indoorfloorplan", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -283,6 +323,9 @@ public class DataMigrationUtil {
                 break;
             case "taskInputOpyion":
                 addNumberLookupDetails("taskId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "taskattachments":
+                addNumberLookupDetails("parentId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "workorderLabour":
                 addNumberLookupDetails("parentId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -1090,6 +1133,8 @@ public class DataMigrationUtil {
                 }});
                 put("pmResourcePlanner", new HashMap<String, String>() {{
                     put("pmId", FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
+                    put("resource", "resource");
+                    put("planner", "pmPlanner");
                 }});
                 put("workorderTimeLog",new HashMap<String,String>(){{
                     put("parent",FacilioConstants.ContextNames.WORK_ORDER);
@@ -1179,8 +1224,84 @@ public class DataMigrationUtil {
                     put("toolType",FacilioConstants.ContextNames.TOOL_TYPES);
                     put("storeRoom",FacilioConstants.ContextNames.STORE_ROOM);
                 }});
+                put("task", new HashMap<String, String>() {{
+                    put("createdBy", FacilioConstants.ContextNames.USERS);
+                }});
+                put("attendance", new HashMap<String, String>() {{
+                    put("people", FacilioConstants.ContextNames.PEOPLE);
+                }});
+                put("vendorQuotes", new HashMap<String, String>() {{
+                    put("requestForQuotation", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
+                }});
+                put("auditLogs", new HashMap<String, String>() {{
+                    put("performedBy", FacilioConstants.ContextNames.USERS);
+                }});
+                put("receivable", new HashMap<String, String>() {{
+                    put("poId", FacilioConstants.ContextNames.PURCHASE_ORDER);
+                }});
+                put("receipts", new HashMap<String, String>() {{
+                    put("receivableId", "receivable");
+                    put("lineItem", FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+                }});
+                put(FacilioConstants.ContextNames.ASSET, new HashMap<String, String>() {{
+                    put("category", FacilioConstants.ContextNames.ASSET_CATEGORY);
+                }});
+                put(FacilioConstants.ContextNames.ITEM_TRANSACTIONS, new HashMap<String, String>() {{
+                    put("item", FacilioConstants.ContextNames.ITEM);
+                }});
+                put(FacilioConstants.ContextNames.TOOL_TRANSACTIONS, new HashMap<String, String>() {{
+                    put("tool", FacilioConstants.ContextNames.TOOL);
+                }});
+                put("qandaQuestion", new HashMap<String, String>() {{
+                    put("parent", "qandaTemplate");
+                    put("page", "qandaPage");
+                }});
+                put("workflowVersionHistory", new HashMap<String, String>() {{
+                    put("createdByPeople", "people");
+                    put("modifiedByPeople", "people");
+                }});
+                put("jobPlanSectionInputOptions", new HashMap<String, String>() {{
+                    put("jobPlanSection", "jobplansection");
+                }});
+                put("jobPlanTaskInputOptions", new HashMap<String, String>() {{
+                    put("jobPlanTask", "jobplantask");
+                }});
+                put("qandaMcqSingleOptions", new HashMap<String, String>() {{
+                    put("parentId", "qandaMcqSingle");
+                }});
+                put("qandaPage", new HashMap<String, String>() {{
+                    put("parent", "qandaTemplate");
+                }});
+                put("requestForQuotationLineItems", new HashMap<String, String>() {{
+                    put("requestForQuotation", "requestForQuotation");
+                }});
+                put("tenantspaces", new HashMap<String, String>() {{
+                    put("space", "space");
+                    put("tenant", "tenant");
+                }});
+                put("vendorQuotesLineItems", new HashMap<String, String>() {{
+                    put("vendorQuotes", "vendorQuotes");
+                }});
+                put("workOrderPlannedItems", new HashMap<String, String>() {{
+                    put("workOrder", "workOrder");
+                }});
+                put("qandaAnswer", new HashMap<String, String>() {{
+                    put("question", "qandaQuestion");
+                    put("parent", "qandaTemplate");
+                    put("response", "qandaResponse");
+                }});
             }}
     );
+
+    public static Map<String, String> getNonNullableColumns(FacilioModule module) {
+        Map<String, String> nonNullableFieldVsLookupModules = new HashMap<>();
+        FacilioModule currModule = new FacilioModule(module);
+        while (currModule != null) {
+            nonNullableFieldVsLookupModules.putAll(getNonNullableModuleVsFieldVsLookupModules().getOrDefault(currModule.getName(), new HashMap<>()));
+            currModule = currModule.getExtendModule();
+        }
+        return nonNullableFieldVsLookupModules;
+    }
 
 
     public static FacilioModule getBaseExtendedModule(String moduleName , ModuleBean moduleBean) throws Exception{

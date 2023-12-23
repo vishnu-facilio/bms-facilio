@@ -55,7 +55,7 @@ public class SandboxDataMigrationUtil {
                     prop.put("parentCommentModuleName", commentModuleName);
                 }
             }
-        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
+        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
             Set<Long> readingFieldIds = new HashSet<>();
             for (Map<String, Object> prop : propsList) {
                 Integer inputType = (Integer) prop.get("inputType");
@@ -404,7 +404,7 @@ public class SandboxDataMigrationUtil {
                         case DATE:
                         case NUMBER:
                         case DATE_TIME:
-                            if (field.getDisplayType() == FacilioField.FieldDisplayType.DECIMAL || field.getDisplayType() == FacilioField.FieldDisplayType.TEXTBOX) {
+                            if (field.getDisplayType() == FacilioField.FieldDisplayType.DECIMAL || field.getDisplayType() == FacilioField.FieldDisplayType.TEXTBOX || value.contains(".")) {
                                 Double fieldValue = Double.parseDouble(value);
                                 dataProp.put(fieldName, fieldValue);
                             } else {
@@ -521,7 +521,7 @@ public class SandboxDataMigrationUtil {
                     prop.put("commentModuleId", commentModuleId);
                 }
             }
-        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK)) {
+        } else if (module.getName().equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
             Map<String, Set<String>> moduleNameVsFieldsNames = new HashMap<>();
             for (Map<String, Object> prop : propsList) {
                 Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;

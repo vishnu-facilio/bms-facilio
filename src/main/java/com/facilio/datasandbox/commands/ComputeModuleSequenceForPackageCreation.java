@@ -43,17 +43,22 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         if (createFullDataPackage) {
             migrationModules = SandboxModuleConfigUtil.getFilteredModuleList(allModules);
 
-            List<Long> allDataModulesExtendsIds = new ArrayList<>();
-            HashMap<String, FacilioModule> migrationModuleNameVsModObj = new HashMap<>();
-            for (FacilioModule dataMigrationModule : migrationModules) {
-                List<Long> extendedModuleIds = dataMigrationModule.getExtendedModuleIds();
-                extendedModuleIds.remove(dataMigrationModule.getModuleId());
-                allDataModulesExtendsIds.addAll(extendedModuleIds);
-                migrationModuleNameVsModObj.put(dataMigrationModule.getName(), dataMigrationModule);
+            List<FacilioModule> baseEntityModules = new ArrayList<>();
+            List<FacilioModule> nonBaseEntityModules = new ArrayList<>();
+
+            for (FacilioModule module : migrationModules) {
+                if (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY) {
+                    baseEntityModules.add(module);
+                } else {
+                    nonBaseEntityModules.add(module);
+                }
             }
 
-            migrationModuleNameVsDetails = SandboxModuleConfigUtil.getModuleDetails(moduleBean, migrationModules, allModuleVsCriteria, migrationModuleNameVsModObj);
-            orderedModuleNameVsDetails = SandboxModuleConfigUtil.getModuleSequence(migrationModuleNameVsDetails, allDataModulesExtendsIds);
+            Map<String, Map<String, Object>> baseEntityModuleNameVsDetails = getOrderModuleNameVsDetails(moduleBean, baseEntityModules, allModuleVsCriteria);
+            Map<String, Map<String, Object>> nonBaseEntityModuleNameVsDetails = getOrderModuleNameVsDetails(moduleBean, nonBaseEntityModules, allModuleVsCriteria);
+
+            orderedModuleNameVsDetails.putAll(baseEntityModuleNameVsDetails);
+            orderedModuleNameVsDetails.putAll(nonBaseEntityModuleNameVsDetails);
 
             if (CollectionUtils.isNotEmpty(skipDataMigrationModules)) {
                 for (String moduleName : skipDataMigrationModules) {
@@ -145,5 +150,21 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         LOGGER.info("####Data Package - Ordered Module Sequence - " + orderedModuleNameVsDetails.keySet());
 
         return false;
+    }
+
+    private static Map<String, Map<String, Object>> getOrderModuleNameVsDetails(ModuleBean moduleBean, List<FacilioModule> migrationModules, Map<String, Criteria> moduleVsCriteria) throws Exception {
+        List<Long> extendedIds = new ArrayList<>();
+        HashMap<String, FacilioModule> migrationModuleNameVsModObj = new HashMap<>();
+        for (FacilioModule dataMigrationModule : migrationModules) {
+            List<Long> extendedModuleIds = dataMigrationModule.getExtendedModuleIds();
+            extendedModuleIds.remove(dataMigrationModule.getModuleId());
+            extendedIds.addAll(extendedModuleIds);
+            migrationModuleNameVsModObj.put(dataMigrationModule.getName(), dataMigrationModule);
+        }
+
+        Map<String, Map<String, Object>> migrationModuleNameVsDetails = SandboxModuleConfigUtil.getModuleDetails(moduleBean, migrationModules, moduleVsCriteria, migrationModuleNameVsModObj);;
+        Map<String, Map<String, Object>> orderedModuleNameVsDetails = SandboxModuleConfigUtil.getModuleSequence(migrationModuleNameVsDetails, extendedIds);
+
+        return orderedModuleNameVsDetails;
     }
 }

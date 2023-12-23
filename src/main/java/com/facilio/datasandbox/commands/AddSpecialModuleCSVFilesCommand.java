@@ -136,7 +136,7 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
                 propsForCsv.addAll(props);
                 offset = offset + props.size();
 
-                if (offset >= reqLimit) {
+                if (reqLimit > 0 && offset >= reqLimit) {
                     isModuleMigrated = true;
                 }
             }

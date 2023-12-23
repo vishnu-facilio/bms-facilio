@@ -48,10 +48,11 @@ public class ComputeModuleSequenceForPackageInstallation extends FacilioCommand 
             if (CollectionUtils.isNotEmpty(dataConfigModuleNames)) {
                 migrationModules = SandboxModuleConfigUtil.getModuleObjects(dataConfigModuleNames, allModulesMap);
                 Map<String, FacilioModule> migrationModuleNameVsModObj = migrationModules.stream().collect(Collectors.toMap(FacilioModule::getName, Function.identity(), (a, b) -> b));
-                Set<Long> extendedModuleIds = migrationModules.stream().filter(module -> module.getExtendModule() != null).map(module ->  module.getExtendModule().getModuleId()).collect(Collectors.toSet());
 
                 migrationModuleNameVsDetails = SandboxModuleConfigUtil.getModuleDetails(moduleBean, migrationModules, moduleVsCriteria, migrationModuleNameVsModObj);
-                orderedModuleNameVsDetails = SandboxModuleConfigUtil.getModuleSequence(migrationModuleNameVsDetails, new ArrayList<>(extendedModuleIds));
+                for (String moduleName : dataConfigModuleNames) {
+                    orderedModuleNameVsDetails.put(moduleName, migrationModuleNameVsDetails.get(moduleName));
+                }
             }
         }
 

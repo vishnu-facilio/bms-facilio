@@ -18,8 +18,8 @@ public class SandboxDataMigrationChainFactory {
         return chain;
     }
 
-    public static FacilioChain getInstallDataMigrationChain(){
-        FacilioChain c = getDefaultChain(-1);
+    public static FacilioChain getInstallDataMigrationChain(int transactionTimeout){
+        FacilioChain c = getDefaultChain(transactionTimeout);
         c.addCommand(new ValidateDataMigrationInstallationCommand());
         c.addCommand(new AddNecessaryParamsForInstallationToContext());
         c.addCommand(new ComputeModuleSequenceForPackageInstallation());
