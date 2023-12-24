@@ -110,14 +110,30 @@ public class SandboxDataMigrationUtil {
 
                 Map<Long, FacilioField> fieldIdVsFieldObj = fieldsList.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
 
+                List<Long> fieldIdsToRemove = new ArrayList<>();
                 for (Map<String, Object> prop : propsList) {
                     Long fieldId = (Long) prop.get("fieldId");
                     FacilioField fieldObj = fieldIdVsFieldObj.get(fieldId);
+                    if (fieldObj == null) {
+                        fieldIdsToRemove.add(fieldId);
+                        continue;
+                    }
                     String fieldModuleName = fieldObj.getModule() != null ? fieldObj.getModule().getName() : null;
 
                     prop.put("fieldName", fieldObj.getName());
                     prop.put("fieldModuleNameName", fieldModuleName);
                 }
+
+                // Remove fieldId without fieldObj
+                Iterator<Map<String, Object>> iterator = propsList.iterator();
+                while (iterator.hasNext()) {
+                    Map<String, Object> prop = iterator.next();
+                    Long fieldId = (Long) prop.get("fieldId");
+                    if (fieldIdsToRemove.contains(fieldId)) {
+                        iterator.remove();
+                    }
+                }
+
             }
         }
     }

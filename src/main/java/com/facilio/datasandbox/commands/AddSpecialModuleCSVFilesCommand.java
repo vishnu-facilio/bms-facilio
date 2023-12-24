@@ -44,6 +44,7 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
         List<String> dataMigrationModuleNames = (List<String>) context.get(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES);
         List<String> runDataMigrationOnlyForModulesNames = (List<String>) context.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
         boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
+        List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
@@ -52,7 +53,8 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
             String moduleName = moduleVsDetails.getKey();
             Map<String, Object> moduleDetails = moduleVsDetails.getValue();
 
-            if (!createFullDataPackage && !dataMigrationModuleNames.contains(moduleName) && !runDataMigrationOnlyForModulesNames.contains(moduleName)) {
+            if (CollectionUtils.isNotEmpty(skipDataMigrationModules) && skipDataMigrationModules.contains(moduleName) ||
+                    (!createFullDataPackage && !dataMigrationModuleNames.contains(moduleName) && !runDataMigrationOnlyForModulesNames.contains(moduleName))) {
                 continue;
             }
 

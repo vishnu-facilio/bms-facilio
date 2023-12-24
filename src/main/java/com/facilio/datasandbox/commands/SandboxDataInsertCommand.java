@@ -148,8 +148,6 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             SandboxModuleConfigUtil.addSystemFields(module, fieldsMap);
 
             do {
-                try {
-
                 List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
 
                 if (CollectionUtils.isEmpty(dataFromCSV)) {
@@ -186,9 +184,6 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                         }
 
                     offset = offset + dataFromCSV.size();
-                } } catch (Exception e) {
-                    isModuleMigrated = true;
-                    LOGGER.info("#################################################################", e);
                 }
                 migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, module.getModuleId(), offset);
 
