@@ -2,6 +2,7 @@ package com.facilio.datasandbox.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
@@ -10,6 +11,7 @@ import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
@@ -166,6 +168,18 @@ public class SandboxDataMigrationUtil {
             fields.add(0, stateFlowIdFields);
         }
 
+        if (module.isTrashEnabled()) {
+            FacilioModule parentModule = module.getParentModule();
+            fields.add(FieldFactory.getIsDeletedField(parentModule));
+            fields.add(FieldFactory.getSysDeletedTimeField(parentModule));
+
+            if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
+                fields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
+            } else {
+                fields.add(FieldFactory.getSysDeletedByField(parentModule));
+            }
+        }
+
         fields.add(0, FieldFactory.getIdField(module));
 
         // special handling
@@ -307,6 +321,12 @@ public class SandboxDataMigrationUtil {
                 result = urlBuilder.toString();
                 break;
 
+            case STRING:
+            case BIG_STRING:
+            case LARGE_TEXT:
+                result = value.toString().replace(",", StringOperators.DELIMITED_COMMA);
+                break;
+
             default:
                 result = value.toString();
                 break;
@@ -380,7 +400,8 @@ public class SandboxDataMigrationUtil {
     private static Map<String, String> getFieldNameVsValueMap(String[] fieldNames, String[] values) {
         // Size of fieldNames & values may not be same (if consecutive columns are empty, they were not parsed)
         Map<String, String> fieldNameVsValueMap = new HashMap<>();
-        for (int i = 0; i < values.length; i++) {
+        int length = Math.min(fieldNames.length, values.length);
+        for (int i = 0; i < length; i++) {
             String fieldName = fieldNames[i];
             String value = values[i];
 
@@ -436,6 +457,12 @@ public class SandboxDataMigrationUtil {
                             break;
                         case DECIMAL:
                             dataProp.put(fieldName, Double.parseDouble(value));
+                            break;
+                        case STRING:
+                        case BIG_STRING:
+                        case LARGE_TEXT:
+                            String parsedValue = value.replace(StringOperators.DELIMITED_COMMA, ",");
+                            dataProp.put(fieldName, parsedValue);
                             break;
                         case URL_FIELD:
                             String[] valueArray = value.split(",");

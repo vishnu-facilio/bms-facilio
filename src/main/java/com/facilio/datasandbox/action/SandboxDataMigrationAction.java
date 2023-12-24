@@ -6,6 +6,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.utils.PackageUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datasandbox.commands.SandboxDataMigrationChainFactory;
 import com.facilio.util.FacilioUtil;
@@ -30,6 +31,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
     private long sourceOrgId;
     private long targetOrgId;
     private String bucketName;
+    private boolean fetchDeleted;
     private long dataMigrationId;
     private String packageFileURL;
     private String moduleSequence;
@@ -75,6 +77,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL, isFromAdminTool());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.CREATE_FULL_PACKAGE, fullPackageType);
+        dataMigrationContext.put(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, fetchDeleted);
         dataMigrationContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, transactionTimeout);
         dataMigrationContext.put(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES, dataMigrationModulesList);
         dataMigrationContext.put(DataMigrationConstants.RUN_ONLY_FOR_MODULES, dataMigrationForOnlyMentionedModulesList);

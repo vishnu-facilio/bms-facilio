@@ -3,6 +3,7 @@ package com.facilio.datasandbox.util;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationUtil;
@@ -359,6 +360,22 @@ public class SandboxModuleConfigUtil {
 
         FacilioField idField = FieldFactory.getIdField(module);
         fieldsMap.put(idField.getName(), idField);
+    }
+
+    public static List<FacilioField> getSysDeletedFields(FacilioModule module) {
+        List<FacilioField> deletedFields = new ArrayList<>();
+        if (module.isTrashEnabled()) {
+            FacilioModule parentModule = module.getParentModule();
+            deletedFields.add(FieldFactory.getIsDeletedField(parentModule));
+            deletedFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
+
+            if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
+                deletedFields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
+            } else {
+                deletedFields.add(FieldFactory.getSysDeletedByField(parentModule));
+            }
+        }
+        return deletedFields;
     }
 
     public static FacilioModule getParentModuleForSubModule(FacilioModule subModule, FacilioModule.ModuleType parentModuleType) throws Exception {

@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
@@ -36,6 +37,7 @@ public class CreateDataCSVFilesCommand extends FacilioCommand {
         long sourceOrgId = (long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
         int reqOffset = (int) context.getOrDefault(DataMigrationConstants.OFFSET, 0);
         int reqLimit = (int) context.getOrDefault(DataMigrationConstants.LIMIT, 0);
+        boolean fetchDeletedRecords = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, false);
         boolean getDependantModuleData = (boolean) context.get(DataMigrationConstants.GET_DEPENDANT_MODULE_DATA);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
@@ -84,7 +86,7 @@ public class CreateDataCSVFilesCommand extends FacilioCommand {
             do {
                 List<Map<String, Object>> props = new ArrayList<>();
                 try {
-                    props = migrationBean.getModuleData(module, allFields, sourceSupplements, offset, limit + 1, null, moduleCriteria);
+                    props = migrationBean.getModuleData(module, allFields, sourceSupplements, offset, limit + 1, null, moduleCriteria, null, fetchDeletedRecords);
                 } catch (Exception e) {
                     LOGGER.error("####Data Package - Fetch - Error while fetching records for ModuleName - " + moduleName, e);
                     isModuleMigrated = true;

@@ -16,6 +16,8 @@ public interface DataMigrationBean {
     public List<FacilioModule> getAllModules() throws Exception;
     public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria) throws Exception;
 
+    public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria, List<Long> recordIds, boolean fetchDeleted) throws Exception;
+
     public List<Map<String,Object>> getModuleDataForIds(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria,List<Long> recordIds) throws Exception;
 
     List<FacilioModule> getSystemSubModules(List<Long> parentModuleIds) throws Exception;

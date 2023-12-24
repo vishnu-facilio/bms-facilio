@@ -42,6 +42,17 @@
             </label>
         </td>
     </tr>
+    <tr id="fetchDeletedRow">
+            <td class="table-head"><h4>Fetch Deleted</h4></td>
+            <td>
+                <label class="radio-text">
+                    <input class="radio-label" type="radio" name="fetchDeleted" id="getAllRecords" value="getAllRecords"> Yes
+                </label>
+                <label class="radio-text">
+                    <input class="radio-label" type="radio" name="fetchDeleted" id="getNonDeletedRecords" value="getNonDeletedRecords" checked="checked"> No
+                </label>
+            </td>
+        </tr>
     <tr id="dataPackageFileUrlRow">
         <td class="table-head"><h4>Data Package File URL</h4></td>
         <td><input type="text" id="dataPackageFileUrl" required class="input-field"></td>
@@ -115,6 +126,7 @@
         const isPackageCreationAction = $("#createPackageAction").is(":checked");
         const partialPackageType = $("#partialPackageType").is(":checked");
         $("#packageTypeRowId").toggle(isPackageCreationAction);
+        $("#fetchDeletedRow").toggle(isPackageCreationAction);
         $("#limitRow").toggle(isPackageCreationAction && partialPackageType);
         $("#offsetRow").toggle(isPackageCreationAction && partialPackageType);
         $("#dataMigrationModulesIdRow").toggle(isPackageCreationAction && partialPackageType);
@@ -131,6 +143,7 @@
     }
 
     function sendAjax() {
+        const fetchDeletedRecords = $("#getAllRecords").is(":checked");
         const fullPackageType = $("#fullPackageType").is(":checked");
         const isPackageCreationAction = $("#createPackageAction").is(":checked");
 
@@ -139,6 +152,7 @@
                 fromAdminTool: true,
                 limit: $("#limit").val(),
                 offset: $("#offset").val(),
+                fetchDeleted: fetchDeletedRecords,
                 fullPackageType: fullPackageType,
                 bucketName: $("#bucketName").val(),
                 sourceOrgId: $("#sourceOrgId").val(),

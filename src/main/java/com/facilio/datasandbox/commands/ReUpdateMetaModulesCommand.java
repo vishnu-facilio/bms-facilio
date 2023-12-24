@@ -1,6 +1,7 @@
 package com.facilio.datasandbox.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.utils.PackageUtil;
@@ -98,6 +99,7 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
 
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module));
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
             List<SupplementRecord> supplementRecords = DataMigrationUtil.getSupplementFields(allFields);
             boolean addLogger = (CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));

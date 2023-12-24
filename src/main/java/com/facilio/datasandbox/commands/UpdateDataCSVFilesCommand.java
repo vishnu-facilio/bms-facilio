@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageFileContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
@@ -43,6 +44,7 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
         long sourceOrgId = (long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
         Map<String, List<Long>> fetchedRecords = (Map<String, List<Long>>) context.get(PackageConstants.FETCHED_RECORDS);
         Map<String, List<Long>> toBeFetchRecords = (Map<String, List<Long>>) context.get(PackageConstants.TO_BE_FETCH_RECORDS);
+        boolean fetchDeletedRecords = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, false);
         Map<String, String> moduleNameVsCsvFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILENAME);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
@@ -97,7 +99,7 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
                 do {
                     List<Map<String, Object>> props = new ArrayList<>();
                     try {
-                        props = migrationBean.getModuleDataForIds(module, allFields, sourceSupplements, offset, limit + 1, null, moduleCriteria, toBeFetchRecordIds);
+                        props = migrationBean.getModuleData(module, allFields, sourceSupplements, offset, limit + 1, null, moduleCriteria, toBeFetchRecordIds, fetchDeletedRecords);
                     } catch (Exception e) {
                         LOGGER.error("####Data Package - LookUp Fetch - Error while fetching records for ModuleName - " + moduleName, e);
                         isModuleMigrated = true;

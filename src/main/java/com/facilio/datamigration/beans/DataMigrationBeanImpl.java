@@ -43,86 +43,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
 
     @Override
     public List<Map<String, Object>> getModuleDataForIds(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria,List<Long> recordIds) throws Exception {
-//        if(CollectionUtils.isNotEmpty(siteIds)) {
-//            AccountUtil.setCurrentSiteId(siteIds.iterator().next());
-//        }
-        ScopeHandler.ScopeFieldsAndCriteria siteScopeCriteria = null;
-        if (CollectionUtils.isNotEmpty(siteIds) && (FieldUtil.isSiteIdFieldPresent(module) || (module.isCustom() && !SKIP_SITE_FILTER.contains(module.getType())))) {
-            siteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(module, false, new ArrayList<Long>(){{addAll(siteIds);}});
-        }
-        if(siteScopeCriteria != null) {
-            fields.addAll(siteScopeCriteria.getFields());
-        }
-
-        SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder<>();
-        selectBuilder.module(module)
-                        .select(fields)
-                                .skipModuleCriteria()
-                                        .offset(offset)
-                                                .limit(limit);
-
-        if(CollectionUtils.isNotEmpty(recordIds)){
-            selectBuilder.andCondition(CriteriaAPI.getIdCondition(recordIds,module));
-        }
-
-        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(supplements)) {
-            selectBuilder.fetchSupplements(supplements);
-        }
-        Criteria cr = new Criteria();
-        if(siteScopeCriteria != null) {
-            cr.andCriteria(siteScopeCriteria.getCriteria());
-        }
-        if(moduleCriteria != null) {
-            cr.andCriteria(moduleCriteria);
-        }
-
-        if (module.getTypeEnum().equals(FacilioModule.ModuleType.READING)) {
-            List<Integer> resourceTypeCategories = Arrays.asList(
-                    ResourceContext.ResourceType.ASSET.getValue(), ResourceContext.ResourceType.SPACE.getValue());
-
-            ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", module.getOrgId());
-            FacilioModule resourceModule = targetModuleBean.getModule("resource");
-            FacilioField resourceIdField = FieldFactory.getIdField(resourceModule);
-
-            Criteria resourceFilterCriteria = new Criteria();
-            resourceFilterCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(resourceTypeCategories, ","), NumberOperators.EQUALS));
-
-            ScopeHandler.ScopeFieldsAndCriteria resourceSiteScopeCriteria = null;
-            if (CollectionUtils.isNotEmpty(siteIds)) {
-                 resourceSiteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(resourceModule, false, new ArrayList<Long>() {{
-                    addAll(siteIds);
-                }});
-                if (resourceSiteScopeCriteria != null) {
-                    resourceFilterCriteria.andCriteria(resourceSiteScopeCriteria.getCriteria());
-                }
-            }
-
-            SelectRecordsBuilder<ModuleBaseWithCustomFields> subQueryBuilder = new SelectRecordsBuilder<>();
-            subQueryBuilder.module(resourceModule)
-                    .select(Collections.singleton(resourceIdField))
-                    .andCriteria(resourceFilterCriteria)
-                    .setAggregation()
-                    .skipModuleCriteria();
-
-            String valueList = subQueryBuilder.constructQueryString();
-
-            FacilioField parentIdField = targetModuleBean.getField("parentId", module.getName());
-            Criteria additionalModCriteria = new Criteria();
-            additionalModCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, valueList, NumberOperators.EQUALS));
-
-            cr.andCriteria(additionalModCriteria);
-        }
-
-        String customWhereClause = DataMigrationUtil.getCustomWhereClause(module);
-        if (StringUtils.isNotEmpty(customWhereClause)) {
-            selectBuilder.andCustomWhere(customWhereClause);
-        }
-
-        if(!cr.isEmpty()) {
-            selectBuilder.andCriteria(cr);
-        }
-
-        return selectBuilder.getAsProps();
+        return getModuleData(module,fields,supplements,offset,limit,siteIds,moduleCriteria,recordIds,false);
     }
 
     @Override
@@ -273,6 +194,95 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
     public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria) throws Exception {
         return getModuleDataForIds(module,fields,supplements,offset,limit,siteIds,moduleCriteria,new ArrayList<>());
     }
+
+    @Override
+    public List<Map<String, Object>> getModuleData(FacilioModule module, List<FacilioField> fields, List<SupplementRecord> supplements, int offset, int limit, Set<Long> siteIds, Criteria moduleCriteria, List<Long> recordIds, boolean fetchDeleted) throws Exception {
+        //        if(CollectionUtils.isNotEmpty(siteIds)) {
+//            AccountUtil.setCurrentSiteId(siteIds.iterator().next());
+//        }
+        ScopeHandler.ScopeFieldsAndCriteria siteScopeCriteria = null;
+        if (CollectionUtils.isNotEmpty(siteIds) && (FieldUtil.isSiteIdFieldPresent(module) || (module.isCustom() && !SKIP_SITE_FILTER.contains(module.getType())))) {
+            siteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(module, false, new ArrayList<Long>(){{addAll(siteIds);}});
+        }
+        if(siteScopeCriteria != null) {
+            fields.addAll(siteScopeCriteria.getFields());
+        }
+
+        SelectRecordsBuilder selectBuilder = new SelectRecordsBuilder<>();
+        selectBuilder.module(module)
+                .select(fields)
+                .skipModuleCriteria()
+                .offset(offset)
+                .limit(limit);
+
+        if(CollectionUtils.isNotEmpty(recordIds)){
+            selectBuilder.andCondition(CriteriaAPI.getIdCondition(recordIds,module));
+        }
+
+        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(supplements)) {
+            selectBuilder.fetchSupplements(supplements);
+        }
+        Criteria cr = new Criteria();
+        if(siteScopeCriteria != null) {
+            cr.andCriteria(siteScopeCriteria.getCriteria());
+        }
+        if(moduleCriteria != null) {
+            cr.andCriteria(moduleCriteria);
+        }
+
+        if (module.getTypeEnum().equals(FacilioModule.ModuleType.READING)) {
+            List<Integer> resourceTypeCategories = Arrays.asList(
+                    ResourceContext.ResourceType.ASSET.getValue(), ResourceContext.ResourceType.SPACE.getValue());
+
+            ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", module.getOrgId());
+            FacilioModule resourceModule = targetModuleBean.getModule("resource");
+            FacilioField resourceIdField = FieldFactory.getIdField(resourceModule);
+
+            Criteria resourceFilterCriteria = new Criteria();
+            resourceFilterCriteria.addAndCondition(CriteriaAPI.getCondition("RESOURCE_TYPE", "resourceType", StringUtils.join(resourceTypeCategories, ","), NumberOperators.EQUALS));
+
+            ScopeHandler.ScopeFieldsAndCriteria resourceSiteScopeCriteria = null;
+            if (CollectionUtils.isNotEmpty(siteIds)) {
+                resourceSiteScopeCriteria = ScopingUtil.constructSiteFieldsAndCriteria(resourceModule, false, new ArrayList<Long>() {{
+                    addAll(siteIds);
+                }});
+                if (resourceSiteScopeCriteria != null) {
+                    resourceFilterCriteria.andCriteria(resourceSiteScopeCriteria.getCriteria());
+                }
+            }
+
+            SelectRecordsBuilder<ModuleBaseWithCustomFields> subQueryBuilder = new SelectRecordsBuilder<>();
+            subQueryBuilder.module(resourceModule)
+                    .select(Collections.singleton(resourceIdField))
+                    .andCriteria(resourceFilterCriteria)
+                    .setAggregation()
+                    .skipModuleCriteria();
+
+            String valueList = subQueryBuilder.constructQueryString();
+
+            FacilioField parentIdField = targetModuleBean.getField("parentId", module.getName());
+            Criteria additionalModCriteria = new Criteria();
+            additionalModCriteria.addAndCondition(CriteriaAPI.getCondition(parentIdField, valueList, NumberOperators.EQUALS));
+
+            cr.andCriteria(additionalModCriteria);
+        }
+
+        String customWhereClause = DataMigrationUtil.getCustomWhereClause(module);
+        if (StringUtils.isNotEmpty(customWhereClause)) {
+            selectBuilder.andCustomWhere(customWhereClause);
+        }
+
+        if(!cr.isEmpty()) {
+            selectBuilder.andCriteria(cr);
+        }
+
+        if (fetchDeleted) {
+            selectBuilder.fetchDeleted();
+        }
+
+        return selectBuilder.getAsProps();
+    }
+
     @Override
     public Map<Long, Long> createModuleData(FacilioModule module, List<FacilioField> targetFields, List<SupplementRecord> supplements,
                                             List<Map<String, Object>> props, Boolean addLogger) throws Exception {

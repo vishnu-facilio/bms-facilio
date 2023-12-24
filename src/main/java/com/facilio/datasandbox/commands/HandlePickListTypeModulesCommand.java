@@ -1,5 +1,6 @@
 package com.facilio.datasandbox.commands;
 
+import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
@@ -68,6 +69,7 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
 
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
+            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module));
             String uniqueFieldName = pickListModuleNameVsFieldName.get(moduleName);
             Map<String, FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
             boolean addLogger = (org.apache.commons.collections4.CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
