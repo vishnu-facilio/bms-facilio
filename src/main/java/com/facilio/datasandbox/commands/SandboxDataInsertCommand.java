@@ -149,25 +149,26 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             boolean isModuleMigrated = false;
             SandboxModuleConfigUtil.addSystemFields(module, fieldsMap);
 
-            do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
+            try {
+                do {
+                    List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
 
-                if (CollectionUtils.isEmpty(dataFromCSV)) {
-                    LOGGER.info("####Data Migration - Insert - No Records obtained from CSV - " + moduleName);
-                    isModuleMigrated = true;
-                } else {
-                    if (dataFromCSV.size() > limit) {
-                        dataFromCSV.remove(limit);
-                    } else {
+                    if (CollectionUtils.isEmpty(dataFromCSV)) {
+                        LOGGER.info("####Data Migration - Insert - No Records obtained from CSV - " + moduleName);
                         isModuleMigrated = true;
-                    }
-                    LOGGER.info("####Data Migration - Insert - In progress - " + moduleName + " - Offset - " + offset);
+                    } else {
+                        if (dataFromCSV.size() > limit) {
+                            dataFromCSV.remove(limit);
+                        } else {
+                            isModuleMigrated = true;
+                        }
+                        LOGGER.info("####Data Migration - Insert - In progress - " + moduleName + " - Offset - " + offset);
 
-                    if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
-                        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-                        siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
-                    }
-                     List<Map<String, Object>> propsToInsert = sanitizePropsBeforeInsert(module, fieldsMap, dataFromCSV, componentTypeVsOldVsNewId,
+                        if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
+                            FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+                            siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
+                        }
+                        List<Map<String, Object>> propsToInsert = sanitizePropsBeforeInsert(module, fieldsMap, dataFromCSV, componentTypeVsOldVsNewId,
                                 numberLookUps, nonNullableFieldVsLookupModules, childModuleIds, numberFileFields,
                                 siteIdMapping, dataMigrationId, migrationBean);
 
@@ -185,15 +186,20 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                             }
                         }
 
-                    offset = offset + dataFromCSV.size();
-                }
-                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, module.getModuleId(), offset);
+                        offset = offset + dataFromCSV.size();
+                    }
+                    migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, module.getModuleId(), offset);
 
-                if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
-                    LOGGER.info("####Data Migration - Insert - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
-                    return true;
-                }
-            } while (!isModuleMigrated);
+                    if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
+                        LOGGER.info("####Data Migration - Insert - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
+                        return true;
+                    }
+                } while (!isModuleMigrated);
+            } catch (Exception e) {
+                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, module.getModuleId(), offset);
+                LOGGER.info("####Data Migration - Insert - Error occurred in ModuleName - " + moduleName, e);
+                return true;
+            }
 
             LOGGER.info("####Data Migration - Insert - Completed for ModuleName - " + moduleName);
         }

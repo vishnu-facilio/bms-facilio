@@ -159,50 +159,56 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
                 lookupTypeFieldsMap.put("commentModuleId", allFieldsMap.get("commentModuleId"));
             }
 
-            do {
-                List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, lookupTypeFieldsMap, numberFileFields, offset, limit + 1);
+            try {
+                do {
+                    List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, lookupTypeFieldsMap, numberFileFields, offset, limit + 1);
 
-                if (CollectionUtils.isEmpty(dataFromCSV)) {
-                    LOGGER.info("####Data Migration - Update - No Records obtained from CSV - " + moduleName);
-                    isModuleMigrated = true;
-                } else {
-                    if (dataFromCSV.size() > limit) {
-                        dataFromCSV.remove(limit);
-                    } else {
+                    if (CollectionUtils.isEmpty(dataFromCSV)) {
+                        LOGGER.info("####Data Migration - Update - No Records obtained from CSV - " + moduleName);
                         isModuleMigrated = true;
-                    }
-                    LOGGER.info("####Data Migration - Update - In progress - " + moduleName + " - Offset - " + offset);
-
-                    // dataFromCSV may contain additional fields, remove unnecessary fields for Update
-                    for (Map<String, Object> prop : dataFromCSV) {
-                        List<String> nonLookUpKeys = prop.keySet().stream().filter(key -> !lookupTypeFieldsMap.containsKey(key)).collect(Collectors.toList());
-                        nonLookUpKeys.forEach(prop::remove);
-                    }
-
-                    if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
-                        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-                        siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
-                    }
-
-                    List<Map<String, Object>> propsToUpdate = sanitizePropsBeforeUpdate(module, lookupTypeFieldsMap, dataFromCSV, componentTypeVsOldIdVsNewId,
-                            numberLookUps, siteIdMapping, dataMigrationId, migrationBean);
-
-                    if (CollectionUtils.isNotEmpty(propsToUpdate)) {
-                        if (moduleName.equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
-                            lookupTypeFieldsMap.remove("##ReadingFieldModule##");
+                    } else {
+                        if (dataFromCSV.size() > limit) {
+                            dataFromCSV.remove(limit);
+                        } else {
+                            isModuleMigrated = true;
                         }
-                        migrationBean.updateModuleData(module, new ArrayList<>(lookupTypeFieldsMap.values()), supplementRecords, propsToUpdate, addLogger);
+                        LOGGER.info("####Data Migration - Update - In progress - " + moduleName + " - Offset - " + offset);
+
+                        // dataFromCSV may contain additional fields, remove unnecessary fields for Update
+                        for (Map<String, Object> prop : dataFromCSV) {
+                            List<String> nonLookUpKeys = prop.keySet().stream().filter(key -> !lookupTypeFieldsMap.containsKey(key)).collect(Collectors.toList());
+                            nonLookUpKeys.forEach(prop::remove);
+                        }
+
+                        if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
+                            FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+                            siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
+                        }
+
+                        List<Map<String, Object>> propsToUpdate = sanitizePropsBeforeUpdate(module, lookupTypeFieldsMap, dataFromCSV, componentTypeVsOldIdVsNewId,
+                                numberLookUps, siteIdMapping, dataMigrationId, migrationBean);
+
+                        if (CollectionUtils.isNotEmpty(propsToUpdate)) {
+                            if (moduleName.equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
+                                lookupTypeFieldsMap.remove("##ReadingFieldModule##");
+                            }
+                            migrationBean.updateModuleData(module, new ArrayList<>(lookupTypeFieldsMap.values()), supplementRecords, propsToUpdate, addLogger);
+                        }
+
+                        offset = offset + dataFromCSV.size();
                     }
+                    migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, module.getModuleId(), offset);
 
-                    offset = offset + dataFromCSV.size();
-                }
+                    if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
+                        LOGGER.info("####Data Migration - Update - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
+                        return true;
+                    }
+                } while (!isModuleMigrated);
+            } catch (Exception e) {
                 migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, module.getModuleId(), offset);
-
-                if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
-                    LOGGER.info("####Data Migration - Update - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
-                    return true;
-                }
-            } while (!isModuleMigrated);
+                LOGGER.info("####Data Migration - Update - Error occurred in ModuleName - " + moduleName, e);
+                return true;
+            }
 
             LOGGER.info("####Data Migration - Update - Completed for ModuleName - " + moduleName);
         }

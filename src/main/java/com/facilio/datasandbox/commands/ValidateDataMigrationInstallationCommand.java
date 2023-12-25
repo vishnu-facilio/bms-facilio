@@ -44,8 +44,8 @@ public class ValidateDataMigrationInstallationCommand extends FacilioCommand {
             PackageUtil.setSandboxBucketRegion(bucketRegion);
         }
 
-        boolean validDirectory = DataPackageFileUtil.isValidDirectory(packageFileURL);
-        FacilioUtil.throwIllegalArgumentException(!validDirectory, "Enter a valid path for Package File");
+//        boolean validDirectory = DataPackageFileUtil.isValidDirectory(packageFileURL);
+//        FacilioUtil.throwIllegalArgumentException(!validDirectory, "Enter a valid path for Package File");
 
         PackageUtil.addRootFolderPath(packageFileURL);
 

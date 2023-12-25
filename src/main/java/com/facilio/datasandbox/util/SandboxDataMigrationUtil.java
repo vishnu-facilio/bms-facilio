@@ -1,5 +1,7 @@
 package com.facilio.datasandbox.util;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -823,7 +825,19 @@ public class SandboxDataMigrationUtil {
         }
 
         Map<Long, Long> oldIdVsNewId = compTypeVsOldVsNewIdMap.get(componentType);
-        return oldIdVsNewId.getOrDefault(oldId, -1L);
+        long newId = oldIdVsNewId.getOrDefault(oldId, -1L);
+        if (newId < 0 && (componentType.equals(ComponentType.USER) || componentType.equals(ComponentType.PEOPLE))) {
+            try {
+                long orgId = AccountUtil.getCurrentOrg().getOrgId();
+                User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(orgId);
+                if (superAdmin != null) {
+                    newId = componentType.equals(ComponentType.USER) ? superAdmin.getOuid() : superAdmin.getPeopleId();
+                }
+            } catch (Exception e) {
+                LOGGER.info("####Sandbox Migration - Super Admin User not found", e);
+            }
+        }
+        return newId;
     }
 
     public static Map<Long, Map<Long, Long>> getOldIdVsNewIdMapping(DataMigrationBean migrationBean, long dataMigrationId, Map<Long, List<Long>> moduleIdVsOldRecordIds) throws Exception {

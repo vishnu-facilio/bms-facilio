@@ -22,6 +22,7 @@ public class SandboxS3FileStore extends SandboxFileStore {
         if (this.bucketName == null) {
             this.bucketName = FacilioProperties.getSandboxS3BucketName();
         }
+        LOGGER.info("####FileStore - Sandbox Bucket Name - " + this.bucketName);
         return this.bucketName;
     }
 

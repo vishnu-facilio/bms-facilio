@@ -163,10 +163,10 @@ public class DataPackageFileUtil {
         String dataFolderPath = PackageConstants.DATA_FOLDER_NAME;
         if (StringUtils.isNotEmpty(PackageUtil.getRootFolderPath())) {
             String dataFolderAbsolutePath = PackageUtil.getRootFolderPath() + File.separator + dataFolderPath;
-            if (isValidDirectory(dataFolderAbsolutePath)) {
+//            if (isValidDirectory(dataFolderAbsolutePath)) {
                 InputStream inputStream = getFileStreamFromPackage(dataFolderAbsolutePath + File.separator + moduleFileName);
                 return inputStream;
-            }
+//            }
         }
         return null;
     }
@@ -175,9 +175,9 @@ public class DataPackageFileUtil {
         String attachmentFolderName = PackageConstants.DATA_ATTACHMENT_FILE_FOLDER_NAME;
         if (StringUtils.isNotEmpty(PackageUtil.getRootFolderPath())) {
             String attachmentFolderAbsolutePath = PackageUtil.getRootFolderPath() + File.separator + attachmentFolderName;
-            if (isValidDirectory(attachmentFolderAbsolutePath)) {
+//            if (isValidDirectory(attachmentFolderAbsolutePath)) {
                 return attachmentFolderAbsolutePath + File.separator + attachmentFileName;
-            }
+//            }
         }
         return null;
     }
@@ -188,7 +188,7 @@ public class DataPackageFileUtil {
         if (StringUtils.isEmpty(sandboxBucketName)) {
             fs = FacilioFactory.getSandboxFileStore();
         } else {
-            LOGGER.info("####FileStore - Setting Bucket Region - " + sandboxBucketName);
+            LOGGER.info("####FileStore - Setting Bucket Name - " + sandboxBucketName);
             fs = FacilioFactory.getSandboxFileStore(sandboxBucketName);
         }
         return fs;

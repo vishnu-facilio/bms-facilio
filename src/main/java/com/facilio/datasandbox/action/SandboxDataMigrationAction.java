@@ -103,7 +103,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         if (transactionTimeout < 1) {
             transactionTimeout = 6000000;
         }
-        FacilioChain installDataMigrationChain = SandboxDataMigrationChainFactory.getInstallDataMigrationChain(transactionTimeout);
+        FacilioChain installDataMigrationChain = SandboxDataMigrationChainFactory.getInstallDataMigrationChain();
         FacilioContext dataMigrationContext = installDataMigrationChain.getContext();
 
         this.setFetchStackTrace(true);

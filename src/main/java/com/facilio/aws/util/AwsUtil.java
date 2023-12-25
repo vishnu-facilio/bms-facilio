@@ -246,11 +246,11 @@ public class AwsUtil extends BaseAwsUtil{
 			String region = null;
 			String sandboxBucketRegion = PackageUtil.getSandboxBucketRegion();
 			if (StringUtils.isNotEmpty(sandboxBucketRegion)) {
-				LOGGER.info("####FileStore - Setting Bucket Region - " + sandboxBucketRegion);
 				region = sandboxBucketRegion;
 			} else {
 				region = getRegion();
 			}
+			LOGGER.info("####FileStore - Setting Sandbox Bucket Region - " + region);
 			ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(200).withConnectionTimeout(30000).withMaxErrorRetry(3);
 			SANDBOX_AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
 		}

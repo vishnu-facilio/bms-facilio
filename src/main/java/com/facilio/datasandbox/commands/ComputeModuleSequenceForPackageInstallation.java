@@ -54,6 +54,7 @@ public class ComputeModuleSequenceForPackageInstallation extends FacilioCommand 
                     orderedModuleNameVsDetails.put(moduleName, migrationModuleNameVsDetails.get(moduleName));
                 }
             }
+            context.put(DataMigrationConstants.MODULE_SEQUENCE, dataConfigModuleNames);
         }
 
         context.put(DataMigrationConstants.MODULES_VS_DETAILS, orderedModuleNameVsDetails);
