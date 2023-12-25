@@ -20,6 +20,7 @@ import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -29,6 +30,7 @@ import com.facilio.queue.source.KafkaMessageSource;
 import com.facilio.queue.source.MessageSourceUtil;
 import com.facilio.service.FacilioService;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -80,6 +82,7 @@ public class AwsUtil extends BaseAwsUtil{
 	private static Map<String, AWSIotMqttClient> AWS_IOT_MQTT_CLIENTS = new HashMap<>();
 
 	private static AmazonS3 AWS_S3_CLIENT = null;
+	private static AmazonS3 SANDBOX_AWS_S3_CLIENT = null;
 	private static TextractClient AWS_TEXTRACT_CLIENT = null;
 	private static AmazonRekognition AWS_REKOGNITION_CLIENT = null;
 
@@ -236,6 +239,22 @@ public class AwsUtil extends BaseAwsUtil{
 			AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
 		}
 		return AWS_S3_CLIENT;
+	}
+
+	public static AmazonS3 getAmazonS3ClientForSandbox() {
+		if (SANDBOX_AWS_S3_CLIENT == null) {
+			String region = null;
+			String sandboxBucketRegion = PackageUtil.getSandboxBucketRegion();
+			if (StringUtils.isNotEmpty(sandboxBucketRegion)) {
+				LOGGER.info("####FileStore - Setting Bucket Region - " + sandboxBucketRegion);
+				region = sandboxBucketRegion;
+			} else {
+				region = getRegion();
+			}
+			ClientConfiguration configuration = new ClientConfiguration().withMaxConnections(200).withConnectionTimeout(30000).withMaxErrorRetry(3);
+			SANDBOX_AWS_S3_CLIENT = AmazonS3ClientBuilder.standard().withRegion(region).withCredentials(getAWSCredentialsProvider()).withClientConfiguration(configuration).build();
+		}
+		return SANDBOX_AWS_S3_CLIENT;
 	}
 
 	public static TextractClient getAmazonTextractClient() {

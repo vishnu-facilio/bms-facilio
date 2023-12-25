@@ -30,6 +30,7 @@ public class ValidateDataMigrationInstallationCommand extends FacilioCommand {
         Long sourceOrgId = (Long) context.get(DataMigrationConstants.SOURCE_ORG_ID);
         Long targetOrgId = (Long) context.get(DataMigrationConstants.TARGET_ORG_ID);
         String bucketName = (String) context.get(DataMigrationConstants.BUCKET_NAME);
+        String bucketRegion = (String) context.get(DataMigrationConstants.BUCKET_REGION);
         Long dataMigrationId = (Long) context.get(DataMigrationConstants.DATA_MIGRATION_ID);
         String packageFileURL = (String) context.get(DataMigrationConstants.PACKAGE_FILE_URL);
 
@@ -38,14 +39,15 @@ public class ValidateDataMigrationInstallationCommand extends FacilioCommand {
         FacilioUtil.throwIllegalArgumentException(packageId == null || packageId <= 0, "Meta Package Id cannot be null");
         FacilioUtil.throwIllegalArgumentException(StringUtils.isBlank(packageFileURL), "Package File URL cannot be null");
 
+        if (StringUtils.isNotEmpty(bucketName) && StringUtils.isNotEmpty(bucketRegion)) {
+            PackageUtil.setSandboxBucketName(bucketName);
+            PackageUtil.setSandboxBucketRegion(bucketRegion);
+        }
+
         boolean validDirectory = DataPackageFileUtil.isValidDirectory(packageFileURL);
         FacilioUtil.throwIllegalArgumentException(!validDirectory, "Enter a valid path for Package File");
 
         PackageUtil.addRootFolderPath(packageFileURL);
-
-        if (StringUtils.isNotEmpty(bucketName)) {
-            PackageUtil.setSandboxBucketName(bucketName);
-        }
 
         AccountUtil.setCurrentAccount(targetOrgId);
 

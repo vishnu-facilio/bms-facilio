@@ -89,6 +89,10 @@
         <td class="table-head"><h4>Sandbox BucketName</h4></td>
         <td><input type="text" id="bucketName" required class="input-field"></td>
     </tr>
+    <tr id="bucketRegionRow">
+            <td class="table-head"><h4>Sandbox Bucket Region</h4></td>
+            <td><input type="text" id="bucketRegion" required class="input-field"></td>
+        </tr>
     <tr id="moduleSequenceRow">
         <td class="table-head"><h4>Module Sequence</h4></td>
         <td>
@@ -134,6 +138,7 @@
 
         $("#packageIdRow").toggle(!isPackageCreationAction);
         $("#bucketNameRow").toggle(!isPackageCreationAction);
+        $("#bucketRegionRow").toggle(!isPackageCreationAction);
         $("#targetOrgIdRow").toggle(!isPackageCreationAction);
         $("#dataPackageFileUrlRow").toggle(!isPackageCreationAction);
         $("#dataMigrationIdRow").toggle(!isPackageCreationAction);
@@ -154,7 +159,6 @@
                 offset: $("#offset").val(),
                 fetchDeleted: fetchDeletedRecords,
                 fullPackageType: fullPackageType,
-                bucketName: $("#bucketName").val(),
                 sourceOrgId: $("#sourceOrgId").val(),
                 transactionTimeout: $('#transactionTimeout').val(),
                 dataMigrationModules: $("#dataMigrationModules").val(),
@@ -183,6 +187,8 @@
                 packageId: $("#packageId").val(),
                 sourceOrgId: $("#sourceOrgId").val(),
                 targetOrgId: $("#targetOrgId").val(),
+                bucketName: $("#bucketName").val(),
+                bucketRegion: $("#bucketRegion").val(),
                 packageFileURL: $("#dataPackageFileUrl").val(),
                 moduleSequence: $("#moduleSequence").val(),
                 dataMigrationId: $("#dataMigrationId").val(),

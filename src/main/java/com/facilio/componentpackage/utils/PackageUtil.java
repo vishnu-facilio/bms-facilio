@@ -64,6 +64,7 @@ public class PackageUtil {
     private static ThreadLocal<Map<String, Map<String, FileInfo>>> META_FILES_FOR_COMPONENTS = ThreadLocal.withInitial(HashMap::new);     // Filename vs Id vs File
     private static ThreadLocal<String> PACKAGE_ROOT_PATH = new ThreadLocal<>();         // Root folder path
     private static ThreadLocal<String> SANDBOX_BUCKET_NAME = new ThreadLocal<>();       // Sandbox Bucket Name (used for Cross DC cases)
+    private static ThreadLocal<String> SANDBOX_BUCKET_REGION = new ThreadLocal<>();       // Sandbox Bucket Region (used for Cross DC cases)
     private static ThreadLocal<Long> PACKAGE_ID = new ThreadLocal<>();
     private static ThreadLocal<Long> DATA_MIGRATION_ID = new ThreadLocal<>();           // Data Migration Id
 
@@ -347,6 +348,17 @@ public class PackageUtil {
 
     public static void removeSandboxBucketName() {
         SANDBOX_BUCKET_NAME.remove();
+    }
+
+    public static void setSandboxBucketRegion(String bucketName) {
+        SANDBOX_BUCKET_REGION.set(bucketName);
+    }
+    public static String getSandboxBucketRegion() {
+        return SANDBOX_BUCKET_REGION.get();
+    }
+
+    public static void removeSandboxBucketRegion() {
+        SANDBOX_BUCKET_REGION.remove();
     }
 
     public static void clearPickListConf() throws Exception {

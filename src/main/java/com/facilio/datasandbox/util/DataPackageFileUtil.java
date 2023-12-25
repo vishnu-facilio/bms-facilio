@@ -188,6 +188,7 @@ public class DataPackageFileUtil {
         if (StringUtils.isEmpty(sandboxBucketName)) {
             fs = FacilioFactory.getSandboxFileStore();
         } else {
+            LOGGER.info("####FileStore - Setting Bucket Region - " + sandboxBucketName);
             fs = FacilioFactory.getSandboxFileStore(sandboxBucketName);
         }
         return fs;

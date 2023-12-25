@@ -31,6 +31,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
     private long sourceOrgId;
     private long targetOrgId;
     private String bucketName;
+    private String bucketRegion;
     private boolean fetchDeleted;
     private long dataMigrationId;
     private String packageFileURL;
@@ -124,6 +125,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
         dataMigrationContext.put(DataMigrationConstants.PACKAGE_ID, packageId);
         dataMigrationContext.put(DataMigrationConstants.BUCKET_NAME, getBucketName());
+        dataMigrationContext.put(DataMigrationConstants.BUCKET_REGION, getBucketRegion());
         dataMigrationContext.put(PackageConstants.FROM_ADMIN_TOOL, isFromAdminTool());
         dataMigrationContext.put(DataMigrationConstants.SOURCE_ORG_ID, getSourceOrgId());
         dataMigrationContext.put(DataMigrationConstants.TARGET_ORG_ID, getTargetOrgId());
@@ -138,6 +140,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
         installDataMigrationChain.execute();
         PackageUtil.removeRootFolderPath();
         PackageUtil.removeSandboxBucketName();
+        PackageUtil.removeSandboxBucketRegion();
 
         LOGGER.info("####Sandbox - Completed Data Package installation");
         setResult("result", "success");

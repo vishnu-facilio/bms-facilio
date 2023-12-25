@@ -84,6 +84,7 @@ public class DataMigrationConstants {
     public static final String LIMIT = "limit";
     public static final String OFFSET = "offset";
     public static final String BUCKET_NAME = "bucketName";
+    public static final String BUCKET_REGION = "bucketRegion";
     public static final String ALLOW_NOTES_AND__ATTACHMENTS = "allowNotesAndAttachments";
     public static final String ALLOW_UPDATE_DATA_ONLY = "allowUpdateDataOnly";
     public static final String PACKAGE_ID = "packageId";

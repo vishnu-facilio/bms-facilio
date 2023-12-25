@@ -66,7 +66,7 @@ public class SandboxS3FileStore extends SandboxFileStore {
 
         while (retryCount < maxRetryCount) {
             try {
-                S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileURL);
+                S3Object so = AwsUtil.getAmazonS3ClientForSandbox().getObject(getBucketName(), fileURL);
                 return so.getObjectContent();
             } catch (AbortedException e) {
                 retryCount++;
@@ -88,7 +88,7 @@ public class SandboxS3FileStore extends SandboxFileStore {
             if (rs != null) {
                 File rootFile = new File(rootFilePath);
                 addFiles(rootFile, file, file);
-                return AwsUtil.getAmazonS3Client().getUrl(getBucketName(), rootFilePath).toString();
+                return AwsUtil.getAmazonS3ClientForSandbox().getUrl(getBucketName(), rootFilePath).toString();
             } else {
                 LOGGER.info("PutObjectResult is null. File not added - " + rootFilePath);
                 return null;
@@ -104,7 +104,7 @@ public class SandboxS3FileStore extends SandboxFileStore {
 
         while (retryCount < maxRetryCount) {
             try {
-                PutObjectResult rs = AwsUtil.getAmazonS3Client().putObject(getBucketName(), filePath, file);
+                PutObjectResult rs = AwsUtil.getAmazonS3ClientForSandbox().putObject(getBucketName(), filePath, file);
                 return rs;
             } catch (AbortedException e) {
                 retryCount++;
