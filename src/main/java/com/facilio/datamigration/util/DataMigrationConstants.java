@@ -82,6 +82,7 @@ public class DataMigrationConstants {
     public static final String SUB_MODULES_VS_DETAILS = "subModulesVsInfo";
     public static final String MODULES_VS_DETAILS = "ModulesVsInfo";
     public static final String LIMIT = "limit";
+    public static final String QUERY_LIMIT = "queryLimit";
     public static final String OFFSET = "offset";
     public static final String BUCKET_NAME = "bucketName";
     public static final String BUCKET_REGION = "bucketRegion";

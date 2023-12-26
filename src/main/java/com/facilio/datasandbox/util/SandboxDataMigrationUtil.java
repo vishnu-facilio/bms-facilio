@@ -688,8 +688,10 @@ public class SandboxDataMigrationUtil {
                             long lookupModuleModuleId = lookupModule.getModuleId();
                             if (!PackageUtil.nameVsComponentType.containsKey(lookupModuleName) && lookupModuleModuleId > 0 && org.apache.commons.collections4.MapUtils.isNotEmpty(((Map<String, Object>) value))) {
                                 Long lookupDataId = (Long) ((Map<String, Object>) value).get("id");
-                                moduleIdVsOldRecordIds.computeIfAbsent(lookupModuleModuleId, k -> new ArrayList<>());
-                                moduleIdVsOldRecordIds.get(lookupModuleModuleId).add(lookupDataId);
+                                if (lookupDataId != null && lookupDataId > 0) {
+                                    moduleIdVsOldRecordIds.computeIfAbsent(lookupModuleModuleId, k -> new ArrayList<>());
+                                    moduleIdVsOldRecordIds.get(lookupModuleModuleId).add(lookupDataId);
+                                }
                             }
                             break;
 
@@ -700,9 +702,10 @@ public class SandboxDataMigrationUtil {
                             if (!PackageUtil.nameVsComponentType.containsKey(multiLookupModuleName) && multiLookupModuleModuleId > 0 && org.apache.commons.collections4.CollectionUtils.isNotEmpty((List<Map<String, Object>>) value)) {
                                 for (Map<String, Object> lookupData : (List<Map<String, Object>>) value) {
                                     Long lookupDataId = (Long) (lookupData).get("id");
-
-                                    moduleIdVsOldRecordIds.computeIfAbsent(multiLookupModuleModuleId, k -> new ArrayList<>());
-                                    moduleIdVsOldRecordIds.get(multiLookupModuleModuleId).add(lookupDataId);
+                                    if (lookupDataId != null && lookupDataId > 0) {
+                                        moduleIdVsOldRecordIds.computeIfAbsent(multiLookupModuleModuleId, k -> new ArrayList<>());
+                                        moduleIdVsOldRecordIds.get(multiLookupModuleModuleId).add(lookupDataId);
+                                    }
                                 }
                             }
                             break;
@@ -747,15 +750,20 @@ public class SandboxDataMigrationUtil {
             case LOOKUP:
                 FacilioModule lookupModule = ((LookupField) fieldObj).getLookupModule();
                 Map<String, Object> lookUpData = (Map<String, Object>) fieldValue;
-                if (org.apache.commons.collections4.MapUtils.isNotEmpty(lookUpData)) {
+                if (org.apache.commons.collections4.MapUtils.isNotEmpty(lookUpData) && ((Long) (lookUpData).get("id")) > 0) {
+                    Long newId = null;
                     Long lookupDataId = (Long) (lookUpData).get("id");
                     if (PackageUtil.nameVsComponentType.containsKey(lookupModule.getName())) {
-                        Long newId = getMetaConfNewId(lookupModule.getName(), lookupDataId, componentTypeVsOldVsNewId);
-                        lookUpData.put("id", newId);
-                    } else {
-                        lookUpData.put("id", moduleIdVsOldNewIdMapping.get(lookupModule.getModuleId()).get(lookupDataId));
+                        newId = getMetaConfNewId(lookupModule.getName(), lookupDataId, componentTypeVsOldVsNewId);
+                    } else if (MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping) && moduleIdVsOldNewIdMapping.containsKey(lookupModule.getModuleId())) {
+                        newId = moduleIdVsOldNewIdMapping.get(lookupModule.getModuleId()).get(lookupDataId);
                     }
-                    dataProp.put(fieldName, lookUpData);
+                    if (newId == null || newId < 0) {
+                        LOGGER.info("####Data Migration Tracking - Cannot get NewId for OldId - " + lookupDataId + " for FieldName - " + fieldName + " LookupModuleName - " + lookupModule.getName());
+                    } else {
+                        lookUpData.put("id", newId);
+                        dataProp.put(fieldName, lookUpData);
+                    }
                 }
                 break;
 
@@ -763,25 +771,36 @@ public class SandboxDataMigrationUtil {
                 FacilioModule multiLookupModule = ((MultiLookupField) fieldObj).getLookupModule();
                 if (multiLookupModule != null && CollectionUtils.isNotEmpty((List<Map<String, Object>>) fieldValue)) {
                     List<Map<String, Object>> updatedMultiLookupData = new ArrayList<>();
+                    boolean isValueUpdated = false;
                     for (Map<String, Object> lookupData : (List<Map<String, Object>>) fieldValue) {
                         Long lookupDataId = (Long) (lookupData).get("id");
-                        if (PackageUtil.nameVsComponentType.containsKey(multiLookupModule.getName())) {
-                            Long newId = getMetaConfNewId(multiLookupModule.getName(), lookupDataId, componentTypeVsOldVsNewId);
-                            lookupData.put("id", newId);
-                        } else {
-                            lookupData.put("id", moduleIdVsOldNewIdMapping.get(multiLookupModule.getModuleId()).get(lookupDataId));
+                        if ((Long) (lookupData).get("id") > 0) {
+                            Long newId = null;
+                            if (PackageUtil.nameVsComponentType.containsKey(multiLookupModule.getName())) {
+                                newId = getMetaConfNewId(multiLookupModule.getName(), lookupDataId, componentTypeVsOldVsNewId);
+                            } else if (MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping) && moduleIdVsOldNewIdMapping.containsKey(multiLookupModule.getModuleId())) {
+                                newId = moduleIdVsOldNewIdMapping.get(multiLookupModule.getModuleId()).get(lookupDataId);
+                            }
+                            if (newId == null || newId < 0) {
+                                LOGGER.info("####Data Migration Tracking - Cannot get NewId for OldId - " + lookupDataId + " for FieldName - " + fieldName + " LookupModuleName - " + multiLookupModule.getName());
+                            } else {
+                                isValueUpdated = true;
+                                lookupData.put("id", newId);
+                                updatedMultiLookupData.add(lookupData);
+                            }
                         }
-                        updatedMultiLookupData.add(lookupData);
                     }
-                    dataProp.put(fieldName, updatedMultiLookupData);
-                } else {
-                    dataProp.put(fieldName, fieldValue);
+                    if (isValueUpdated) {
+                        dataProp.put(fieldName, updatedMultiLookupData);
+                    }
                 }
                 break;
 
             case STRING:
             case NUMBER:
-                if (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName) && !isSpecialTypeNumberLookUp(numberLookups.get(fieldName)) && MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping)) {
+                if (isSpecialTypeNumberLookUp(numberLookups.get(fieldName))) {
+                    dataProp.put(fieldName, fieldValue);
+                } else if (MapUtils.isNotEmpty(numberLookups) && numberLookups.containsKey(fieldName)) {
                     Long lookupDataId;
                     if (fieldValue instanceof Double) {
                         lookupDataId = ((Double) fieldValue).longValue();
@@ -791,20 +810,21 @@ public class SandboxDataMigrationUtil {
                         lookupDataId = (Long) fieldValue;
                     }
                     if (lookupDataId != null && lookupDataId > 0) {
+                        Long newId = null;
                         FacilioModule parentLookupModule = (FacilioModule) numberLookups.get(fieldName).get("lookupModule");
                         Long parentModuleId = parentLookupModule != null ? parentLookupModule.getModuleId() : -1;
                         String lookupModuleName = (String) numberLookups.get(fieldName).get("lookupModuleName");
                         if (StringUtils.isNotEmpty(lookupModuleName) && PackageUtil.nameVsComponentType.containsKey(lookupModuleName)) {
-                            Long newId = getMetaConfNewId(lookupModuleName, lookupDataId, componentTypeVsOldVsNewId);
-                            dataProp.put(fieldName, newId);
-                        } else if (moduleIdVsOldNewIdMapping.containsKey(parentModuleId) && moduleIdVsOldNewIdMapping.get(parentModuleId).containsKey(lookupDataId)) {
-                            dataProp.put(fieldName, moduleIdVsOldNewIdMapping.get(parentModuleId).get(lookupDataId));
+                            newId = getMetaConfNewId(lookupModuleName, lookupDataId, componentTypeVsOldVsNewId);
+                        } else if (MapUtils.isNotEmpty(moduleIdVsOldNewIdMapping) && moduleIdVsOldNewIdMapping.containsKey(parentModuleId)) {
+                            newId = moduleIdVsOldNewIdMapping.get(parentModuleId).get(lookupDataId);
+                        }
+                        if (newId == null || newId < 0) {
+                            LOGGER.info("####Data Migration Tracking - Cannot get NewId for OldId - " + lookupDataId + " for FieldName - " + fieldName + " LookupModuleName - " + lookupModuleName);
                         } else {
-                            dataProp.put(fieldName, lookupDataId);
+                            dataProp.put(fieldName,newId);
                         }
                     }
-                } else {
-                    dataProp.put(fieldName, fieldValue);
                 }
                 break;
 
@@ -815,7 +835,7 @@ public class SandboxDataMigrationUtil {
     }
 
     private static boolean isSpecialTypeNumberLookUp(Map<String, Object> numberLookUpDetails) {
-        return (boolean) numberLookUpDetails.getOrDefault("isSpecialType", false);
+        return MapUtils.isNotEmpty(numberLookUpDetails) && (boolean) numberLookUpDetails.getOrDefault("isSpecialType", false);
     }
 
     public static Long getMetaConfNewId(String compName, Long oldId, Map<ComponentType, Map<Long, Long>> compTypeVsOldVsNewIdMap) {

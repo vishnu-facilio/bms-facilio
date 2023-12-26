@@ -1122,6 +1122,9 @@ public class DataMigrationUtil {
                     put("left",FacilioConstants.PM_V2.PM_V2_MODULE_NAME);
                     put("right",FacilioConstants.ContextNames.SITE);
                 }});
+                put("workorderCost", new HashMap<String, String>() {{
+                    put("parentId", "workorder");
+                }});
                 put("taskattachments", new HashMap<String, String>() {{
                     put("parentId", "task");
                 }});

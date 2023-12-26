@@ -111,6 +111,10 @@
             <textarea id="dataMigrationLogModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
         </td>
     </tr>
+    <tr id="queryLimitRow">
+        <td class="table-head"><h4>Query Limit</h4></td>
+        <td><input type="text" id="queryLimit" required class="input-field"></td>
+    </tr>
 </table>
 
 <div>
@@ -136,6 +140,7 @@
         $("#dataMigrationModulesIdRow").toggle(isPackageCreationAction && partialPackageType);
         $("#dataMigrationForOnlyModulesIdRow").toggle(isPackageCreationAction && partialPackageType);
 
+        $("#queryLimitRow").toggle(!isPackageCreationAction);
         $("#packageIdRow").toggle(!isPackageCreationAction);
         $("#bucketNameRow").toggle(!isPackageCreationAction);
         $("#bucketRegionRow").toggle(!isPackageCreationAction);
@@ -183,7 +188,7 @@
         } else {
             const dataObject = {
                 fromAdminTool: true,
-                limit: $("#limit").val(),
+                queryLimit: $("#queryLimit").val(),
                 packageId: $("#packageId").val(),
                 sourceOrgId: $("#sourceOrgId").val(),
                 targetOrgId: $("#targetOrgId").val(),
@@ -193,7 +198,7 @@
                 moduleSequence: $("#moduleSequence").val(),
                 dataMigrationId: $("#dataMigrationId").val(),
                 transactionTimeout: $('#transactionTimeout').val(),
-                dataMigrationModules: $("#dataMigrationModules").val(),
+                dataMigrationLogModules: $("#dataMigrationLogModules").val(),
                 skipDataMigrationModules : $('#skipDataMigrationModules').val(),
             };
 

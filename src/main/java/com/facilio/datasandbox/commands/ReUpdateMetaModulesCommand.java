@@ -235,7 +235,7 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
                         Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ContextNames.MODULE, (Long) value, componentTypeVsOldVsNewId);
                         updatedProp.put(fieldName, newId);
                     } else if (fieldName.equals("approvalRuleId") || fieldName.equals("approvalFlowId")) {
-                        Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ContextNames.STATE_FLOW_ID, (Long) value, componentTypeVsOldVsNewId);
+                        Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, (Long) value, componentTypeVsOldVsNewId);
                         updatedProp.put(fieldName, newId);
                     } else if (fieldsToParse.contains(fieldName) && fieldObj != null) {
                         SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);

@@ -35,6 +35,7 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             return false;
         }
 
+        int queryLimit = (int) context.getOrDefault(DataMigrationConstants.QUERY_LIMIT, 0);
         long targetOrgId = (long) context.getOrDefault(DataMigrationConstants.TARGET_ORG_ID, -1l);
         long dataMigrationId = (long) context.getOrDefault(DataMigrationConstants.DATA_MIGRATION_ID, -1l);
         long transactionStartTime = (long) context.get(DataMigrationConstants.TRANSACTION_START_TIME);
@@ -146,6 +147,9 @@ public class SandboxDataUpdateCommand extends FacilioCommand {
             int limit = 5000;
             if (moduleName.equals(lastModuleName) && offset < dataMigrationObj.getMigratedCount()) {
                 offset = (int) dataMigrationObj.getMigratedCount();
+            }
+            if (queryLimit > 0) {
+                limit = queryLimit;
             }
 
             boolean isModuleMigrated = false;

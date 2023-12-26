@@ -29,6 +29,7 @@ import java.util.List;
 public class SandboxDataMigrationAction extends FacilioAction {
     private int limit;
     private int offset;
+    private int queryLimit;
     private long packageId;
     private long sourceOrgId;
     private long targetOrgId;
@@ -124,7 +125,7 @@ public class SandboxDataMigrationAction extends FacilioAction {
             skipDataMigrationLogModulesList = Arrays.asList(FacilioUtil.splitByComma(getSkipDataMigrationModules()));
         }
 
-        dataMigrationContext.put(DataMigrationConstants.LIMIT, getLimit());
+        dataMigrationContext.put(DataMigrationConstants.QUERY_LIMIT, getQueryLimit());
         dataMigrationContext.put(DataMigrationConstants.PACKAGE_ID, packageId);
         dataMigrationContext.put(DataMigrationConstants.BUCKET_NAME, getBucketName());
         dataMigrationContext.put(DataMigrationConstants.BUCKET_REGION, getBucketRegion());
