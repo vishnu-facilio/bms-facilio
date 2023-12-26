@@ -69,9 +69,9 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
 
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module));
             String uniqueFieldName = pickListModuleNameVsFieldName.get(moduleName);
             Map<String, FacilioField> allFieldsMap = FieldFactory.getAsMap(allFields);
+            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module, allFieldsMap));
             boolean addLogger = (org.apache.commons.collections4.CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
 
             SandboxModuleConfigUtil.addSystemFields(module, allFieldsMap);

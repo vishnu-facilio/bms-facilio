@@ -102,8 +102,8 @@ public class SandboxDataInsertCommand extends FacilioCommand {
             LOGGER.info("####Data Migration - Insert - Started for ModuleName - " + moduleName);
 
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module));
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
+            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module, fieldsMap));
 
             Map<String, String> nonNullableFieldVsLookupModules = DataMigrationUtil.getNonNullableColumns(module);
             if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {

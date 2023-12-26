@@ -44,7 +44,7 @@ public class DataPackageFileUtil {
         return new File(filePath);
     }
 
-    // get file from bucket and add to temp directory
+    // get file from bucket and add to temp directory (file field)
     private static File addFileToTempFolder(String fileName, FileInfo fileInfo) throws Exception {
         File rootFile = getTempFolderRoot();
         String tempFilepath = rootFile.getPath() + File.separator + fileName;
@@ -65,7 +65,7 @@ public class DataPackageFileUtil {
         return new File(tempFilepath);
     }
 
-    // get file from bucket and add to temp directory
+    // get file from bucket and add to temp directory (csv file)
     public static File addFileToTempFolder(String sourceFileName, String targetFileName) throws Exception {
         File rootFile = getTempFolderRoot();
         String tempFilepath = rootFile.getPath() + File.separator + targetFileName;
@@ -85,6 +85,29 @@ public class DataPackageFileUtil {
             throw e;
         }
         return new File(tempFilepath);
+    }
+
+    // get file from bucket and add to temp directory (attachment file during installation)
+    public static File addAttachmentFileToTempFolder(String fileURL, String targetFileName) throws Exception {
+        File rootFile = getTempFolderRoot();
+        String tempFilepath = rootFile.getPath() + File.separator + targetFileName;
+
+        try (InputStream fileInputStream = getFileStreamFromPackage(fileURL);
+             FileOutputStream fileOutputStream = new FileOutputStream(tempFilepath)) {
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+                fileOutputStream.write(buffer, 0, bytesRead);
+            }
+
+        } catch (IOException e) {
+            LOGGER.info("Error while adding file to temp folder " + targetFileName + e);
+            throw e;
+        }
+        return new File(tempFilepath);
+
     }
 
     public static String addRootFolder(String rootFolderName, boolean addChildFolders) throws Exception {
@@ -270,13 +293,13 @@ public class DataPackageFileUtil {
         String attachmentFilePath = getAttachmentFilePath(uniqueIdentifier);
 
         if (StringUtils.isNotEmpty(attachmentFilePath)) {
-            File sourceOrgFile = new File(attachmentFilePath);
             String decodedFileName = URLDecoder.decode(fileName, "UTF-8");
-            File file = new File(sourceOrgFile.getParentFile(), decodedFileName);
-            sourceOrgFile.renameTo(file);
+            File file = addAttachmentFileToTempFolder(attachmentFilePath, decodedFileName);
 
             FileContext fileContext = PackageFileUtil.addFileToStore(file, contentType);
-            return fileContext.getFileId();
+            long newFileId = fileContext.getFileId();
+            FileUtils.delete(file);
+            return newFileId;
         }
         return -1;
     }

@@ -362,17 +362,29 @@ public class SandboxModuleConfigUtil {
         fieldsMap.put(idField.getName(), idField);
     }
 
-    public static List<FacilioField> getSysDeletedFields(FacilioModule module) {
+    public static List<FacilioField> getSysDeletedFields(FacilioModule module, Map<String, FacilioField> fieldsMap) {
         List<FacilioField> deletedFields = new ArrayList<>();
         if (module.isTrashEnabled()) {
             FacilioModule parentModule = module.getParentModule();
-            deletedFields.add(FieldFactory.getIsDeletedField(parentModule));
-            deletedFields.add(FieldFactory.getSysDeletedTimeField(parentModule));
+            FacilioField isDeletedField = FieldFactory.getIsDeletedField(parentModule);
+            FacilioField sysDeletedTimeField = FieldFactory.getSysDeletedTimeField(parentModule);
+            if (!fieldsMap.containsKey(isDeletedField.getName())) {
+                deletedFields.add(isDeletedField);
+            }
+            if (!fieldsMap.containsKey(sysDeletedTimeField.getName())) {
+                deletedFields.add(sysDeletedTimeField);
+            }
 
             if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
-                deletedFields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
+                FacilioField sysDeletedPeopleByField = FieldFactory.getSysDeletedPeopleByField(parentModule);
+                if (!fieldsMap.containsKey(sysDeletedPeopleByField.getName())) {
+                    deletedFields.add(sysDeletedPeopleByField);
+                }
             } else {
-                deletedFields.add(FieldFactory.getSysDeletedByField(parentModule));
+                FacilioField sysDeletedByField = FieldFactory.getSysDeletedByField(parentModule);
+                if (!fieldsMap.containsKey(sysDeletedByField.getName())) {
+                    deletedFields.add(sysDeletedByField);
+                }
             }
         }
         return deletedFields;

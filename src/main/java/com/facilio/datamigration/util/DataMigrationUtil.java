@@ -1216,6 +1216,12 @@ public class DataMigrationUtil {
                 put("tasksection", new HashMap<String,String>(){{
                     put("parentTicketId",FacilioConstants.ContextNames.TICKET);
                 }});
+                put("craftSkill", new HashMap<String, String>() {{
+                    put("parentId", "crafts");
+                }});
+                put("labourCraftSkill", new HashMap<String, String>() {{
+                    put("labour", "labour");
+                }});
                 put(FacilioConstants.ContextNames.ITEM, new HashMap<String,String>(){{
                     put("itemType",FacilioConstants.ContextNames.ITEM_TYPES);
                     put("storeRoom",FacilioConstants.ContextNames.STORE_ROOM);

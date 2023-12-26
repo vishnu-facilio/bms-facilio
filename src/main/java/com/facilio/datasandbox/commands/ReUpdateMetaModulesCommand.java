@@ -104,8 +104,8 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
 
             String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
-            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module));
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
+            allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module, fieldsMap));
             List<SupplementRecord> supplementRecords = DataMigrationUtil.getSupplementFields(allFields);
             boolean addLogger = (CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
 

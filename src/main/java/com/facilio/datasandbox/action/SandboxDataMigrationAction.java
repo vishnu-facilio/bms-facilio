@@ -9,10 +9,12 @@ import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datasandbox.commands.SandboxDataMigrationChainFactory;
+import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
@@ -138,6 +140,9 @@ public class SandboxDataMigrationAction extends FacilioAction {
         dataMigrationContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipDataMigrationLogModulesList);
 
         installDataMigrationChain.execute();
+        // clean temp folder
+        FileUtils.deleteDirectory(DataPackageFileUtil.getTempFolderRoot());
+
         PackageUtil.removeRootFolderPath();
         PackageUtil.removeSandboxBucketName();
         PackageUtil.removeSandboxBucketRegion();

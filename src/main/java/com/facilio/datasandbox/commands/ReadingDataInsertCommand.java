@@ -115,7 +115,7 @@ public class ReadingDataInsertCommand extends FacilioCommand {
                         offset = offset + dataFromCSV.size();
                     }
 
-                    migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.READING_MODULE_IN_PROGRESS, module.getModuleId(), offset);
+                    migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.READING_MODULE_IN_PROGRESS, module.getName(), offset);
 
                     if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
                         LOGGER.info("####Data Migration - ReadingModule - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
@@ -123,8 +123,8 @@ public class ReadingDataInsertCommand extends FacilioCommand {
                     }
                 } while (!isModuleMigrated);
             } catch (Exception e) {
-                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.READING_MODULE_IN_PROGRESS, module.getModuleId(), offset);
-                LOGGER.info("####Data Migration - Update - Error occurred in ModuleName - " + moduleName, e);
+                migrationBean.updateDataMigrationStatusWithModuleName(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.READING_MODULE_IN_PROGRESS, module.getName(), offset);
+                LOGGER.info("####Data Migration - ReadingModule - Error occurred in ModuleName - " + moduleName, e);
                 return true;
             }
 
