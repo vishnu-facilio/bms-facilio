@@ -1,5 +1,6 @@
 package com.facilio.fields.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.module.GetSortableFieldsCommand;
 import com.facilio.command.FacilioCommand;
@@ -50,8 +51,17 @@ public class SortableFieldsResponseCommand extends FacilioCommand {
     }
     private static void removeNonPickListLookupFields(List<FacilioField> fields) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            fields.removeIf(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
-                    ((LookupField) field).getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST);
+            boolean isNMDP = (AccountUtil.getCurrentOrg().getOrgId() == 429 && AccountUtil.getCurrentOrg().getDomain().equals("nmdp"))
+                    || (AccountUtil.getCurrentOrg().getOrgId() == 1544 && AccountUtil.getCurrentOrg().getDomain().equals("nmdpsandbox2"));
+
+            if (isNMDP) {
+                fields.removeIf(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
+                        (((LookupField) field).getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST) &&
+                        !((LookupField) field).getLookupModule().getName().equals(FacilioConstants.ContextNames.USERS));
+            } else {
+                fields.removeIf(field -> field.getDataTypeEnum() == FieldType.LOOKUP &&
+                        ((LookupField) field).getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST);
+            }
         }
     }
 }
