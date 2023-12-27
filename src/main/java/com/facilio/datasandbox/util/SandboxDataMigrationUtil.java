@@ -710,7 +710,6 @@ public class SandboxDataMigrationUtil {
                             }
                             break;
 
-                        case STRING:
                         case NUMBER:
                             if (MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName) && !isSpecialTypeNumberLookUp(numberLookUps.get(fieldName))) {
                                 long lookupDataId;
@@ -796,7 +795,6 @@ public class SandboxDataMigrationUtil {
                 }
                 break;
 
-            case STRING:
             case NUMBER:
                 if (isSpecialTypeNumberLookUp(numberLookups.get(fieldName))) {
                     dataProp.put(fieldName, fieldValue);

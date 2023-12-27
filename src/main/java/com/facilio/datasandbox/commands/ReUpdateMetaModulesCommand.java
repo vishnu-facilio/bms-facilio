@@ -212,7 +212,7 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
                             updatedProp.put(fieldName, newId);
                             newIdCreated = true;
                         } else {
-                            LOGGER.info("####Data Migration - Update - Record not created - ModuleName - " + module.getName() + " OldId - " + oldId);
+                            LOGGER.info("####Data Migration - MetaModule Update - Record not created - ModuleName - " + module.getName() + " OldId - " + oldId);
                         }
                     } else if (fieldName.equals(FacilioConstants.ContextNames.FORM_ID)) {
                         Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ContextNames.FORM_ID, (Long) value, componentTypeVsOldVsNewId);
@@ -237,7 +237,8 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
                     } else if (fieldName.equals("approvalRuleId") || fieldName.equals("approvalFlowId")) {
                         Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, (Long) value, componentTypeVsOldVsNewId);
                         updatedProp.put(fieldName, newId);
-                    } else if (fieldsToParse.contains(fieldName) && fieldObj != null) {
+                    } else if (fieldObj != null && (fieldObj.getDataTypeEnum() == FieldType.LOOKUP || fieldObj.getDataTypeEnum() == FieldType.MULTI_LOOKUP ||
+                            MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName))) {
                         SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
                     } else {
                         updatedProp.put(fieldName, value);

@@ -280,6 +280,7 @@ public class DataMigrationUtil {
                 break;
             case "backgroundActivity":
                 addNumberLookupDetails("parentActivity", "backgroundActivity", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                addNumberLookupDetails("initiatedBy", "people", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "floor":
                 addNumberLookupDetails("floorPlanId", "indoorfloorplan", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -1298,6 +1299,9 @@ public class DataMigrationUtil {
                     put("question", "qandaQuestion");
                     put("parent", "qandaTemplate");
                     put("response", "qandaResponse");
+                }});
+                put("qandaHeadingQuestionRichText", new HashMap<String, String>() {{
+                    put("parentId", "qandaHeadingQuestion");
                 }});
             }}
     );

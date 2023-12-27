@@ -12,10 +12,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,6 +26,8 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class SandboxModuleConfigUtil {
+    public static List<String> SYSTEM_USER_PEOPLE_LOOKUP_FIELDS = Arrays.asList("sysCreatedBy", "sysModifiedBy", "sysDeletedBy", "sysCreatedByPeople", "sysModifiedByPeople", "sysDeletedByPeople");
+
     // Handled Special V2 Modules like "taskSection", "taskInputOption" (associated with "task" module)
     public static final Map<String, Map<String, Object>> SPECIAL_MODULENAME_VS_DETAILS = Collections.unmodifiableMap(initializeModuleDetails());
 
@@ -36,7 +35,7 @@ public class SandboxModuleConfigUtil {
         Map<String, Map<String, Object>> moduleNameVsModuleDetails = new LinkedHashMap<>();
         try {
             moduleNameVsModuleDetails.put(ModuleFactory.getTaskSectionModule().getName(), getModuleDetails(ModuleFactory.getTaskSectionModule(), FieldFactory.getTaskSectionFields()));
-            moduleNameVsModuleDetails.put(ModuleFactory.getTaskInputOptionModule().getName(), getModuleDetails(ModuleFactory.getTaskInputOptionModule(), FieldFactory.getTaskInputOptionsFields()));
+            moduleNameVsModuleDetails.put(ModuleFactory.getTaskInputOptionModule().getName(), getModuleDetails(ModuleFactory.getTaskInputOptionModule(), getTaskInputOptionsFields()));
             moduleNameVsModuleDetails.put(ModuleFactory.getReadingDataMetaModule().getName(), getModuleDetails(ModuleFactory.getReadingDataMetaModule(), FieldFactory.getReadingDataMetaFields()));
         } catch (Exception e) {
             LOGGER.info("####Data Migration - Exception while fetching SPECIAL_MODULENAME_VS_DETAILS - " + e);
@@ -63,6 +62,18 @@ public class SandboxModuleConfigUtil {
         moduleDetails.put("criteria", moduleSpecificCriteria);
 
         return moduleDetails;
+    }
+
+    // Misconfigured in FieldFactory
+    public static List<FacilioField> getTaskInputOptionsFields() {
+        FacilioModule module = ModuleFactory.getTaskInputOptionModule();
+        List<FacilioField> fields = new ArrayList<>();
+
+        fields.add(FieldFactory.getIdField(module));
+        fields.add(FieldFactory.getField("taskId", "TASK_ID", module, FieldType.NUMBER));
+        fields.add(FieldFactory.getField("option", "OPTION_VALUE", module, FieldType.STRING));
+
+        return fields;
     }
 
     public static Map<String, List<String>> getParentModuleVsChildModules() {

@@ -309,7 +309,7 @@ public class SandboxDataInsertCommand extends FacilioCommand {
                         } else if (fieldName.equals("approvalRuleId") || fieldName.equals("approvalFlowId")) {
                             Long newId = SandboxDataMigrationUtil.getMetaConfNewId(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, (Long) value, componentTypeVsOldVsNewId);
                             updatedProp.put(fieldName, newId);
-                        } else if (fieldName.equals("sysCreatedBy") || fieldName.equals("sysModifiedBy")) {
+                        } else if (SandboxModuleConfigUtil.SYSTEM_USER_PEOPLE_LOOKUP_FIELDS.contains(fieldName)) {
                             SandboxDataMigrationUtil.updateLookupData(fieldObj, value, updatedProp, numberLookUps, oldIdVsNewIdMapping, componentTypeVsOldVsNewId);
                         } else if (fieldObj != null && (fieldObj.getDataTypeEnum() == FieldType.LOOKUP || fieldObj.getDataTypeEnum() == FieldType.MULTI_LOOKUP ||
                                 MapUtils.isNotEmpty(numberLookUps) && numberLookUps.containsKey(fieldName))) {
