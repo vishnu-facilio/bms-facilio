@@ -24,6 +24,7 @@ public class AddOrUpdateCurrencyCommand extends FacilioCommand {
             } else {
                 int linesModified = CurrencyUtil.updateCurrency(currencyContext);
             }
+            CurrencyUtil.addCurrencyTrend(currencyContext);
         }
 
         context.put(FacilioConstants.ContextNames.CURRENCY, currencyContext);

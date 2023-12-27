@@ -96,7 +96,7 @@ public class AddOrUpdateMonthlyBudgetAmountCommandV3 extends FacilioCommand {
                                 month = FieldUtil.getAsBeanFromMap(monthlyAmountAsProps, BudgetMonthlyAmountContext.class);
 
                             } else {
-                                month = (BudgetMonthlyAmountContext) CurrencyUtil.addMultiCurrencyData(monthlyAmountModule.getName(), monthlyAmountMultiCurrencyFields, Collections.singletonList(month), BudgetMonthlyAmountContext.class, baseCurrency, currencyMap).get(0);
+                                month = (BudgetMonthlyAmountContext) CurrencyUtil.addMultiCurrencyData(monthlyAmountModule.getName(), monthlyAmountMultiCurrencyFields, Collections.singletonList(month), BudgetMonthlyAmountContext.class, baseCurrency, currencyMap, false).get(0);
                             }
                             monthlySplit.add(month);
                             Double monthlyAmount = month.getMonthlyAmount();

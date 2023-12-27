@@ -47,8 +47,8 @@ public class V3AssetContext extends V3ResourceContext {
     private Long boundaryRadius;
     private Double distanceMoved;
     private V3SiteContext identifiedLocation;
-    private Long salvageAmount;
-    private Long currentPrice;
+    private Double salvageAmount;
+    private Double currentPrice;
     private V3PurchaseOrderContext purchaseOrder;
     public Boolean isUsed;
     public Boolean connected;
@@ -295,19 +295,19 @@ public class V3AssetContext extends V3ResourceContext {
         this.identifiedLocation = identifiedLocation;
     }
 
-    public Long getSalvageAmount() {
+    public Double getSalvageAmount() {
         return salvageAmount;
     }
 
-    public void setSalvageAmount(Long salvageAmount) {
+    public void setSalvageAmount(Double salvageAmount) {
         this.salvageAmount = salvageAmount;
     }
 
-    public Long getCurrentPrice() {
+    public Double getCurrentPrice() {
         return currentPrice;
     }
 
-    public void setCurrentPrice(Long currentPrice) {
+    public void setCurrentPrice(Double currentPrice) {
         this.currentPrice = currentPrice;
     }
 

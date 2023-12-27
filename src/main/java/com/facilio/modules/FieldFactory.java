@@ -12042,6 +12042,18 @@ public class FieldFactory extends BaseFieldFactory {
         return fields;
     }
 
+    public static List<FacilioField> getCurrencyTrendFields() {
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getCurrencyTrendModule();
+        fields.add(getIdField(module));
+        fields.add(getField("currencyCode", "CURRENCY_CODE", module, FieldType.STRING));
+        fields.add(getField("exchangeRate", "EXCHANGE_RATE", module, FieldType.DECIMAL));
+        fields.add(getField("decimalPlaces", "DECIMAL_PLACE", module, FieldType.NUMBER));
+        fields.add(getSystemField("sysModifiedBy", module));
+        fields.add(getSystemField("sysModifiedTime", module));
+        return fields;
+    }
+
     public static List<FacilioField> getDataMigrationStatusFields() {
         List<FacilioField> fields = new ArrayList<>();
         FacilioModule module = ModuleFactory.getDataMigrationStatusModule();

@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.MultiCurrencyConstants;
 import com.facilio.db.builder.*;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -1094,7 +1095,7 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getMultiLookupFieldsModule(), FieldFactory.getMultiLookupFieldFields(), fieldProps);
 					break;
 				case MULTI_CURRENCY_FIELD:
-					if(FacilioConstants.MultiCurrency.MULTI_CURRENCY_CUSTOM_FIELD_ADDITION_MODULES.contains(field.getModule().getName()) || (field.getModule().isCustom() && field.getModule().getTypeEnum().equals(FacilioModule.ModuleType.BASE_ENTITY))) {
+					if(MultiCurrencyConstants.MULTI_CURRENCY_CUSTOM_FIELD_ADDITION_MODULES.contains(field.getModule().getName()) || (field.getModule().isCustom() && field.getModule().getTypeEnum().equals(FacilioModule.ModuleType.BASE_ENTITY))) {
 						if (!(field instanceof MultiCurrencyField)) {
 							throw new IllegalArgumentException("Invalid Field instance for the MULTI_CURRENCY_FIELD data type");
 						}

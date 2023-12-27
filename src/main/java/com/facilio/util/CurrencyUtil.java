@@ -5,7 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsoleV3.enums.MultiCurrencyParentVsSubModule;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.MultiCurrencyConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -323,7 +323,7 @@ public class CurrencyUtil {
 		}
 	}
 	public static boolean isMultiCurrencyEnabledModule(FacilioModule module) {
-		return FacilioConstants.MultiCurrency.MULTI_CURRENCY_ENABLED_MODULES.contains(module.getName())
+		return MultiCurrencyConstants.MULTI_CURRENCY_ENABLED_MODULES.contains(module.getName())
 				|| (module.isCustom() && module.getTypeEnum().equals(FacilioModule.ModuleType.BASE_ENTITY));
 	}
 	public static void setCurrencyCodeAndExchangeRateForWrite(ModuleBaseWithCustomFields record, CurrencyContext baseCurrency,
@@ -421,9 +421,15 @@ public class CurrencyUtil {
 		return null;
 	}
 
-	public static List<ModuleBaseWithCustomFields> addMultiCurrencyData(String moduleName, List<FacilioField> multiCurrencyFields,
-																		List<? extends ModuleBaseWithCustomFields> records, Class beanClass,
-																		CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyCodeVsCurrency) throws Exception {
+    public static List<ModuleBaseWithCustomFields> addMultiCurrencyData(String moduleName, List<FacilioField> multiCurrencyFields,
+                                                                        List<? extends ModuleBaseWithCustomFields> records, Class beanClass,
+                                                                        CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyCodeVsCurrency) throws Exception {
+        return addMultiCurrencyData(moduleName, multiCurrencyFields, records, beanClass, baseCurrency, currencyCodeVsCurrency, true);
+    }
+
+    public static List<ModuleBaseWithCustomFields> addMultiCurrencyData(String moduleName, List<FacilioField> multiCurrencyFields,
+                                                                        List<? extends ModuleBaseWithCustomFields> records, Class beanClass,
+                                                                        CurrencyContext baseCurrency, Map<String, CurrencyContext> currencyCodeVsCurrency, boolean updateCurrencyDataBasedOnParentModule) throws Exception {
 		List<ModuleBaseWithCustomFields> newRecords = new ArrayList<>();
 		for (ModuleBaseWithCustomFields record : records) {
 			String currencyCode = record.getCurrencyCode();
@@ -444,7 +450,7 @@ public class CurrencyUtil {
 		}
 
 		Map<String, String> subModuleNameVsParentModuleName = MultiCurrencyParentVsSubModule.SUBMODULE_VS_PARENT_MODULE;
-		if (subModuleNameVsParentModuleName.containsKey(moduleName)) {
+		if (subModuleNameVsParentModuleName.containsKey(moduleName) && updateCurrencyDataBasedOnParentModule) {
 			List<ModuleBaseWithCustomFields> updatedNewRecords = updateRecordCurrencyDataBasedOnParentModule(moduleName, baseCurrency, beanClass, multiCurrencyFields, newRecords);
 			if (CollectionUtils.isNotEmpty(updatedNewRecords)) {
 				newRecords = updatedNewRecords;
@@ -581,5 +587,14 @@ public class CurrencyUtil {
 		if (CollectionUtils.isNotEmpty(baseCurrencyColumnFields)) {
 			fields.addAll(baseCurrencyColumnFields);
 		}
+	}
+
+	public static void addCurrencyTrend(CurrencyContext currencyContext) throws Exception{
+		Map<String, Object> currencyProps = FieldUtil.getAsProperties(currencyContext);
+		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getCurrencyTrendModule().getTableName())
+				.fields(FieldFactory.getCurrencyTrendFields())
+				.addRecord(currencyProps);
+		insertRecordBuilder.save();
 	}
 }

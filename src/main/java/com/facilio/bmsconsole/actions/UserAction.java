@@ -15,6 +15,8 @@ import com.facilio.bmsconsoleV3.context.PeopleNotificationSettings;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
 import com.facilio.iam.accounts.util.IAMUserException;
 import com.facilio.identity.client.dto.UserMobileSettings;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -163,6 +165,9 @@ public class UserAction extends FacilioAction {
 	public void setAppDomain(String appDomain) {
 		this.appDomain = appDomain;
 	}
+
+	@Getter @Setter
+	private int currencyId = -1;
 	public String userPickList() throws Exception {
 		if (getGroupId() > 0) {
 			List<GroupMember> memberList = AccountUtil.getGroupBean().getGroupMembers(getGroupId());
@@ -628,6 +633,9 @@ public class UserAction extends FacilioAction {
 			PeopleAPI.updatePeopleOnUserUpdate(user);
 			AccountUtil.getUserBean().updateUser(user);
 			PeopleAPI.updatePeopleNotificationSettings(peopleNotificationSettingsList);
+			if (currencyId > 0) {
+				PeopleAPI.updateOrgUserCurrency(currencyId, AccountUtil.getCurrentUser().getOuid());
+			}
 		}
 		return SUCCESS;
 	}

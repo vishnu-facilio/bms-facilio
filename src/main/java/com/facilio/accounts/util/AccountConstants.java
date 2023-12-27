@@ -936,8 +936,10 @@ public class AccountConstants {
 		signatureFileId.setDataType(FieldType.NUMBER);
 		signatureFileId.setColumnName("SIGNATURE_FILE_ID");
 		signatureFileId.setModule(module);
-		fields.add(signatureFileId);
+        fields.add(signatureFileId);
 
+		fields.add(FieldFactory.getNumberField("currency", "CURRENCY", module));
+		
 		return fields;
 	}
 

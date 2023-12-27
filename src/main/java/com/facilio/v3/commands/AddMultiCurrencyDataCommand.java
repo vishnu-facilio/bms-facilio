@@ -1,7 +1,10 @@
 package com.facilio.v3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.CurrencyContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.*;
@@ -12,8 +15,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AddMultiCurrencyDataCommand extends FacilioCommand {
     @Override
@@ -43,8 +45,15 @@ public class AddMultiCurrencyDataCommand extends FacilioCommand {
         Map<String, CurrencyContext> currencyCodeVsCurrency = Constants.getCurrencyMap(context);
 
         List<ModuleBaseWithCustomFields> newRecords = CurrencyUtil.addMultiCurrencyData(moduleName, multiCurrencyFields, records, beanClass, baseCurrency, currencyCodeVsCurrency);
-
         recordMap.put(moduleName, newRecords);
+
+        Set<String> extendedModules = Constants.getExtendedModules(context);
+        if (CollectionUtils.isNotEmpty(extendedModules)) {
+            for (String extendedModule : extendedModules) {
+                recordMap.put(extendedModule, newRecords);
+            }
+        }
+
         context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
         return false;
     }

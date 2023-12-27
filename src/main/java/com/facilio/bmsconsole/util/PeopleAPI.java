@@ -51,8 +51,8 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1662,4 +1662,32 @@ public class PeopleAPI {
 
 	}
 
+	public static void updateOrgUserCurrency(int currencyId, long orgUserId) throws SQLException {
+		Map<String, FacilioField> orgUsersFields = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
+		FacilioField currencyField = orgUsersFields.get("currency");
+		Map<String, Object> updateProps = new HashMap<String, Object>() {{
+			put("currency", currencyId);
+		}};
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
+				.fields(Collections.singletonList(currencyField))
+				.andCondition(CriteriaAPI.getCondition("ORG_USERID", "ouId", String.valueOf(orgUserId), NumberOperators.EQUALS));
+
+		updateBuilder.update(updateProps);
+	}
+
+	public static Long getOrgUserCurrency(long orgUserId) throws Exception {
+		Map<String, FacilioField> orgUsersFields = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
+		FacilioField currencyField = orgUsersFields.get("currency");
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(Collections.singletonList(currencyField))
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(orgUsersFields.get("ouid"), String.valueOf(orgUserId), NumberOperators.EQUALS));
+		Map<String, Object> map = selectRecordBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(map)) {
+			return (Long) map.get("currency");
+		}
+		return null;
+	}
 }

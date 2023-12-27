@@ -939,6 +939,7 @@ public class LoginAction extends FacilioAction {
 		if(AccountUtil.getCurrentUser() != null) {
 			account.put("people", PeopleAPI.getPeopleForId(AccountUtil.getCurrentUser().getPeopleId()));
 		}
+		account.put("orgUserCurrency", AccountUtil.getOrgUserCurrency(AccountUtil.getCurrentUser()));
 
 		try{
 			JSONObject userSettings = IdentityClient.getDefaultInstance().getUserBean().getAllUserSettings(AccountUtil.getCurrentUser().getUid());

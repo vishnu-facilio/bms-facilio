@@ -5,11 +5,9 @@ import com.facilio.accounts.dto.*;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.UserScopeBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ApplicationContext;
-import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.context.ScopingConfigContext;
-import com.facilio.bmsconsole.context.WebTabContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.PeopleAPI;
 import com.facilio.bmsconsoleV3.context.GlobalScopeVariableEvaluationContext;
 import com.facilio.cache.CacheUtil;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +29,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.service.FacilioService;
 import com.facilio.service.FacilioServiceUtil;
+import com.facilio.util.CurrencyUtil;
 import com.facilio.util.RequestUtil;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j;
@@ -1012,4 +1011,13 @@ public class AccountUtil {
 		}
 		return FieldUtil.getAsJSON(brand);
 	}
+	public static CurrencyContext getOrgUserCurrency(User currentUser) throws Exception {
+		long orgUserId = currentUser.getOuid();
+		Long orgUserCurrencyId = PeopleAPI.getOrgUserCurrency(orgUserId);
+		if (orgUserCurrencyId != null &&  orgUserCurrencyId > 0) {
+			return CurrencyUtil.getCurrencyFromId(orgUserCurrencyId);
+		}
+		return null;
+	}
+
 }

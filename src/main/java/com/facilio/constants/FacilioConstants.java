@@ -137,56 +137,7 @@ public class FacilioConstants {
 		public static final String URL_RECORD = "urlRecord";
 		public static final String CURRENCY_RECORD = "currencyRecord";
 	}
-	public static class MultiCurrency {
-		public static final List<String> MULTI_CURRENCY_ENABLED_MODULES = Collections.unmodifiableList(getMultiCurrencyEnabledModuleNames());
-		public static final List<String> MULTI_CURRENCY_CUSTOM_FIELD_ADDITION_MODULES = Collections.unmodifiableList(getMultiCurrencyCustomFieldAdditionModules());
 
-		private static List<String> getMultiCurrencyCustomFieldAdditionModules() {
-			List<String> moduleNames = new ArrayList<>();
-			moduleNames.add(ContextNames.PURCHASE_ORDER);
-			moduleNames.add(ContextNames.QUOTE);
-			moduleNames.add(ContextNames.PURCHASE_REQUEST);
-			moduleNames.add(ContextNames.WORK_ORDER);
-			return moduleNames;
-		}
-		private static List<String> getMultiCurrencyEnabledModuleNames() {
-			List<String> moduleNames = new ArrayList<>();
-			moduleNames.add(ContextNames.PURCHASE_ORDER);
-			moduleNames.add(ContextNames.PURCHASE_ORDER_LINE_ITEMS);
-			moduleNames.add(ContextNames.QUOTE);
-			moduleNames.add(ContextNames.QUOTE_LINE_ITEMS);
-			moduleNames.add(ContextNames.PURCHASE_REQUEST);
-			moduleNames.add(ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
-			moduleNames.add(ContextNames.WORK_ORDER);
-			moduleNames.add(ContextNames.TICKET);
-//			moduleNames.add(ContextNames.RESOURCE);
-			moduleNames.add(ContextNames.WORKORDER_COST);
-			moduleNames.add(ContextNames.WORKORDER_ITEMS);
-			moduleNames.add(ContextNames.WORKORDER_TOOLS);
-			moduleNames.add(ContextNames.WO_SERVICE);
-			moduleNames.add(ContextNames.WO_PLANNED_ITEMS);
-			moduleNames.add(ContextNames.WO_PLANNED_TOOLS);
-			moduleNames.add(ContextNames.WO_PLANNED_SERVICES);
-			moduleNames.add(ContextNames.WorkOrderLabourPlan.WORKORDER_LABOUR_PLAN);
-			moduleNames.add(ContextNames.WO_LABOUR);
-			moduleNames.add(ContextNames.Budget.BUDGET);
-			moduleNames.add(ContextNames.Budget.BUDGET_AMOUNT);
-			moduleNames.add(ContextNames.Budget.BUDGET_MONTHLY_AMOUNT);
-			moduleNames.add(ContextNames.TRANSACTION);
-			moduleNames.add(ContextNames.ITEM);
-			moduleNames.add(ContextNames.ITEM_TYPES);
-			moduleNames.add(ContextNames.TOOL);
-			moduleNames.add(ContextNames.TOOL_TYPES);
-			moduleNames.add(ContextNames.SERVICE);
-			moduleNames.add(ContextNames.SERVICE_VENDOR);
-			moduleNames.add(ContextNames.PURCHASED_ITEM);
-			moduleNames.add(ContextNames.PURCHASED_TOOL);
-			moduleNames.add(ContextNames.ITEM_TRANSACTIONS);
-			moduleNames.add(ContextNames.TOOL_TRANSACTIONS);
-			return moduleNames;
-		}
-	}
-	
 	public static class PM_V2 {
 		public static final String PM_V2_MODULE_NAME = "plannedmaintenance";
 		public static final String PM_V2_TRIGGER = "pmTriggerV2";

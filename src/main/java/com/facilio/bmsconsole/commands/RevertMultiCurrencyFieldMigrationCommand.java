@@ -15,17 +15,21 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.util.DBConf;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 import static com.facilio.modules.FieldFactory.getNumberField;
 
 public class RevertMultiCurrencyFieldMigrationCommand extends FacilioCommand {
+    public static Logger LOGGER = LogManager.getLogger(RevertMultiCurrencyFieldMigrationCommand.class.getName());
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = Constants.getModBean();
@@ -39,6 +43,10 @@ public class RevertMultiCurrencyFieldMigrationCommand extends FacilioCommand {
         }
 
         FacilioField field = modBean.getField(fieldName, moduleName);
+        if (!(field instanceof MultiCurrencyField || Objects.equals(field.getDataTypeEnum(), FieldType.MULTI_CURRENCY_FIELD))) {
+            LOGGER.info(String.format("Unable to revert field : %s ModuleName : %s  not a MultiCurrency Field", fieldName, moduleName));
+            return false;
+        }
         FacilioModule module = modBean.getModule(moduleName);
 //      revert dataType and displayType in Fields
         Map<String, Object> updateProps = new HashMap<>();

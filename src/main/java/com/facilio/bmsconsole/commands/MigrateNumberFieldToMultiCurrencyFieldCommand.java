@@ -18,12 +18,14 @@ import com.facilio.db.util.DBConf;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
-import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -31,6 +33,7 @@ import java.util.*;
 import static com.facilio.modules.FieldFactory.getNumberField;
 
 public class MigrateNumberFieldToMultiCurrencyFieldCommand extends FacilioCommand {
+    public static Logger LOGGER = LogManager.getLogger(MigrateNumberFieldToMultiCurrencyFieldCommand.class.getName());
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ModuleBean modBean = Constants.getModBean();
@@ -43,7 +46,13 @@ public class MigrateNumberFieldToMultiCurrencyFieldCommand extends FacilioComman
             return false;
         }
 
-        MultiCurrencyField field = new MultiCurrencyField(modBean.getField(fieldName, moduleName), baseCurrencyValueColumnName);
+        FacilioField fieldDetail = modBean.getField(fieldName, moduleName);
+        if (fieldDetail instanceof MultiCurrencyField || Objects.equals(fieldDetail.getDataTypeEnum(), FieldType.MULTI_CURRENCY_FIELD)) {
+            LOGGER.info(String.format("Skipped field : %s ModuleName : %s Already a MultiCurrency Field", fieldName, moduleName));
+            return false;
+        }
+
+        MultiCurrencyField field = new MultiCurrencyField(fieldDetail, baseCurrencyValueColumnName);
         FacilioModule module = modBean.getModule(moduleName);
         FieldUtil.dropFieldFromCache(AccountUtil.getCurrentOrg().getOrgId(), field);
 

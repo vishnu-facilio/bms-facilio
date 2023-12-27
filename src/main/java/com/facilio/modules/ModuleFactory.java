@@ -6058,11 +6058,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		return constructModule("aggregationReadingInfo", "Aggregation Reading Info", "Aggregation_Reading_Info");
 	}
 
+
 	public static FacilioModule getScheduleTriggerRecordRelationModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("scheduleTriggerRecordRelation");
 		module.setTableName("Schedule_Trigger_Record_Relation");
 		module.setDisplayName("Schedule Trigger Record Relation");
+		return module;
+	}
+
+	public static FacilioModule getCurrencyTrendModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("currencyTrend");
+		module.setDisplayName("Currency Trend");
+		module.setTableName("Currency_Trend");
 		return module;
 	}
 }

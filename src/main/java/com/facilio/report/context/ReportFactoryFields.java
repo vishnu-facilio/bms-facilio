@@ -475,7 +475,7 @@ public class ReportFactoryFields {
 		for (FacilioField field : fields) {
 			if(field != null) {
 				if(field.getDataTypeEnum() != FieldType.BIG_STRING && field.getDataTypeEnum() != FieldType.LARGE_TEXT) {
-					if (field instanceof NumberField) {
+					if (field instanceof NumberField || field instanceof MultiCurrencyField) {
 						if ("siteId".equalsIgnoreCase(field.getName())) {
 							addFieldInList(dimensionFieldMap, "siteId", field);
 						} else if ((!"stateFlowId".equalsIgnoreCase(field.getName()))) {
