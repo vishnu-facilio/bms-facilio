@@ -1655,18 +1655,24 @@ public class ViewAPI {
 			modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		}
 		List<ViewField> columns = new ArrayList<>();
+
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+
+		FieldUtil.setSiteIdFieldForModuleFields(allFields, module.getName());
+
 		FacilioContext fieldsContext = FieldsConfigChainUtil.fetchFieldList(module.getName(), AccountUtil.getCurrentApp().getId(), FieldListType.VIEW_FIELDS, null);
 		List<ModuleViewField>  moduleViewFields = (List<ModuleViewField>) fieldsContext.get(FacilioConstants.ContextNames.FIELDS);
 		Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
 
 		for (ModuleViewField moduleViewField : moduleViewFields) {
 			FacilioField field = allFieldsAsMap.get(moduleViewField.getName());
-			ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
-			viewField.setFieldName(viewField.getName());
-			viewField.setFieldId(field.getFieldId());
-			viewField.setField(field);
-			columns.add(viewField);
+			if (field != null) {
+				ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+				viewField.setFieldName(viewField.getName());
+				viewField.setFieldId(field.getFieldId());
+				viewField.setField(field);
+				columns.add(viewField);
+			}
 		}
 
 		if (columns != null && module.isCustom()) {

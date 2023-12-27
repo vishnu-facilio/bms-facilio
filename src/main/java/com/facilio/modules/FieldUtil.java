@@ -1055,4 +1055,11 @@ public class FieldUtil {
 		}
 		return null;
 	}
+
+	public static void setSiteIdFieldForModuleFields(List<FacilioField> fields, String moduleName) {
+		if (Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.TENANT, FacilioConstants.ContextNames.ASSET,
+				FacilioConstants.ContextNames.SERVICE_REQUEST, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT, FacilioConstants.ContextNames.NEW_READING_ALARM).contains(moduleName)) {
+			fields.add(FieldFactory.getSiteIdField());
+		}
+	}
 }

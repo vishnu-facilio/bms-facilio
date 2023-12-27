@@ -9,6 +9,7 @@ import com.facilio.fields.context.ModuleViewField;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,11 +29,7 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
         fieldsList = CollectionUtils.isNotEmpty(fieldsList) ? fieldsList : new ArrayList<>();
 
         // siteId Field
-        if ((Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.TENANT, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.SERVICE_REQUEST, FacilioConstants.ContextNames.WorkPermit.WORKPERMIT).contains(module.getName()))
-        && fieldsList.stream().noneMatch(f->f.getName().equals("siteId"))) {
-            fieldsList.add(FieldFactory.getSiteIdField());
-        }
-
+        FieldUtil.setSiteIdFieldForModuleFields(fieldsList, moduleName);
 
         List<String> fixedFieldNames = (List<String>) context.get(FacilioConstants.FieldsConfig.FIXED_FIELD_NAMES);
         List<String> fixedSelectableFieldNames = (List<String>) context.get(FacilioConstants.FieldsConfig.FIXED_SELECTABLE_FIELD_NAMES);
