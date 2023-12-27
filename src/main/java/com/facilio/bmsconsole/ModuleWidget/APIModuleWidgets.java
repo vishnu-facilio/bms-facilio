@@ -1219,4 +1219,13 @@ public class APIModuleWidgets {
                 .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
                 .done();
     }
+
+    @WidgetsForModule(FacilioConstants.Survey.SURVEY_RESPONSE)
+    public static Supplier<ModuleWidgets> getSurveyResponseWidgets(){
+        return () -> new ModuleWidgets()
+                .addModuleWidget("surveyResponse","Survey Response", PageWidget.WidgetType.SURVEY_RESPONSE)
+                .addFlexibleWidgetConfig("flexibleSurveyResponse_10","Survey Response - 10",10, PagesContext.PageLayoutType.WEB)
+                .done()
+                ;
+    }
 }

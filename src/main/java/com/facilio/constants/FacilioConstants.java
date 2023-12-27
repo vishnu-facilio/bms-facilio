@@ -3598,6 +3598,7 @@ public class FacilioConstants {
 			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, ServicePMTemplateContext.class);
 			classMap.put(ServicePlannedMaintenance.SERVICE_PM_TEMPLATE_ACTIVITY,ActivityContext.class);
 			classMap.put(ContextNames.INVOICE_ACTIVITY,ActivityContext.class);
+			classMap.put(Survey.SURVEY_RESPONSE_ACTIVITY, ActivityContext.class);
 
 
 			for (QuestionType type : QuestionType.values()) {
