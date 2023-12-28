@@ -10,6 +10,7 @@ import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
+import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -18,12 +19,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.*;
+import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -274,6 +277,7 @@ public class SandboxDataMigrationUtil {
     private static String getDataForField(FacilioField field, Object value, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords, Map<String, List<Long>> toBeFetchRecords) {
         Object result = null;
         FacilioModule lookupModule;
+        String moduleName = field.getModule() != null ? field.getModule().getName() : "";
         switch (field.getDataTypeEnum()) {
             case LOOKUP:
                 Map<String, Object> fieldValue = (Map<String, Object>) value;
@@ -326,7 +330,11 @@ public class SandboxDataMigrationUtil {
             case STRING:
             case BIG_STRING:
             case LARGE_TEXT:
-                result = value.toString().replace(",", StringOperators.DELIMITED_COMMA);
+                if (DataMigrationUtil.getJsonFieldNamesForModule(moduleName).contains(field.getName())) {
+                    result = value.toString();
+                } else {
+                    result = value.toString().replace(",", StringOperators.DELIMITED_COMMA);
+                }
                 break;
 
             default:
@@ -357,7 +365,7 @@ public class SandboxDataMigrationUtil {
     public static List<Map<String, Object>> getDataFromCSV(FacilioModule module, String moduleFileName, Map<String, FacilioField> fieldsMap, List<String> numberFileFields, int offset, int limit) throws Exception {
         List<Map<String, String>> fieldNameVsValueList = parseCSVAndGetData(module.getName(), moduleFileName, offset, limit);
         if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(fieldNameVsValueList)) {
-            List<Map<String, Object>> propsList = convertCSVDataToProps(fieldsMap, fieldNameVsValueList, numberFileFields);
+            List<Map<String, Object>> propsList = convertCSVDataToProps(module.getName(), fieldsMap, fieldNameVsValueList, numberFileFields);
             // special handling
             moduleSpecialHandlingDuringImport(module, new ArrayList<>(fieldsMap.values()), propsList);
             return propsList;
@@ -412,7 +420,7 @@ public class SandboxDataMigrationUtil {
         return fieldNameVsValueMap;
     }
 
-    private static List<Map<String, Object>> convertCSVDataToProps(Map<String, FacilioField> fieldsMap, List<Map<String, String>> fieldNameVsValueList, List<String> numberFileFields) throws Exception {
+    private static List<Map<String, Object>> convertCSVDataToProps(String moduleName, Map<String, FacilioField> fieldsMap, List<Map<String, String>> fieldNameVsValueList, List<String> numberFileFields) throws Exception {
         if (org.apache.commons.collections4.CollectionUtils.isEmpty(fieldNameVsValueList)) {
             return null;
         }
@@ -463,7 +471,12 @@ public class SandboxDataMigrationUtil {
                         case STRING:
                         case BIG_STRING:
                         case LARGE_TEXT:
-                            String parsedValue = value.replace(StringOperators.DELIMITED_COMMA, ",");
+                            String parsedValue;
+                            if (DataMigrationUtil.getJsonFieldNamesForModule(moduleName).contains(fieldName)) {
+                                parsedValue = StringUtils.isNotEmpty(value) ? FacilioUtil.parseJson(value).toJSONString() : null;
+                            } else {
+                                parsedValue = value.replace(StringOperators.DELIMITED_COMMA, ",");
+                            }
                             dataProp.put(fieldName, parsedValue);
                             break;
                         case URL_FIELD:

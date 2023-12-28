@@ -1113,6 +1113,18 @@ public class DataMigrationUtil {
         return newComponentValue;
     }
 
+    private static final Map<String, List<String>> MODULENAME_VS_JSON_FIELDNAMES = Collections.unmodifiableMap(initModuleNameVsFieldNames());
+
+    private static Map<String, List<String>> initModuleNameVsFieldNames() {
+        Map<String, List<String>> moduleNameVsFieldsMap = new HashMap<>();
+        moduleNameVsFieldsMap.put("workorderactivity", Arrays.asList("infoJsonStr"));
+        return moduleNameVsFieldsMap;
+    }
+
+    public static List<String> getJsonFieldNamesForModule(String moduleName) {
+        return MODULENAME_VS_JSON_FIELDNAMES.getOrDefault(moduleName, new ArrayList<>());
+    }
+
     public static final Map<String,Map<String,String>> getNonNullableModuleVsFieldVsLookupModules(){
         return NON_NULLABLE_MODULE_LOOKUP_RECORDS;
     }
@@ -1302,6 +1314,9 @@ public class DataMigrationUtil {
                 }});
                 put("qandaHeadingQuestionRichText", new HashMap<String, String>() {{
                     put("parentId", "qandaHeadingQuestion");
+                }});
+                put("outgoingMailAttachments", new HashMap<String, String>() {{
+                    put("mailId", "outgoingMailLogger");
                 }});
             }}
     );
