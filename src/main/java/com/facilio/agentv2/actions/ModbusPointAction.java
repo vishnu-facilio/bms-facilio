@@ -115,7 +115,7 @@ public class ModbusPointAction extends DeviceIdActions {
                     tcpPointContext.setModbusDataType(modbusDataType);
                     tcpPointContext.setRegisterNumber(registerNumber);
                     tcpPointContext.setName(name);
-                    ControllerMessenger.sendAddModbusTcpPoint(controller, tcpPointContext, interval);
+                    ControllerMessenger.sendAddPointCommand(controller, tcpPointContext, interval);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 } else {
@@ -124,7 +124,7 @@ public class ModbusPointAction extends DeviceIdActions {
                     rtuPointContext.setModbusDataType(modbusDataType);
                     rtuPointContext.setRegisterNumber(registerNumber);
                     rtuPointContext.setName(name);
-                    ControllerMessenger.sendAddModbusTcpPoint(controller, rtuPointContext, interval);
+                    ControllerMessenger.sendAddPointCommand(controller, rtuPointContext, interval);
                     setResponseCode(HttpURLConnection.HTTP_OK);
                     return SUCCESS;
                 }

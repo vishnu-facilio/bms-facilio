@@ -62,16 +62,13 @@ public class PointsUtil {
 
     public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
         LOGGER.info("Processing points for controller " + controller.getName());
-
-        IotMessage iotMessage = IotMessageApiV2.getIotMessage(AckUtil.getMessageIdFromPayload(payload));
-
+        boolean configurePoint = (boolean) payload.getOrDefault("configure", false);
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
             long incomingCount = pointsJSON.size();
             if (incomingCount == 0) {
                 throw new Exception("PointJSON can't be empty");
             }
-
 
             //getting points name
             List<String> pointName = (List<String>) pointsJSON.stream().map(x -> ((JSONObject) x).get(AgentConstants.NAME).toString()).collect(Collectors.toList());
@@ -102,14 +99,14 @@ public class PointsUtil {
                             point.setControllerId(controller.getId());
                             point.setAgentId(controller.getAgentId());
                             point.setDeviceName(controller.getName());
-                            int agentType = agent.getAgentType();
-                            if (iotMessage.getCommand() == FacilioCommand.ADD_POINTS.asInt() || agentType == AgentType.CUSTOM.getKey() || agentType == AgentType.REST.getKey() || agentType == AgentType.CLOUD.getKey() || agentType == AgentType.MQTT.getKey()) {
+                            AgentType agentType = agent.getAgentTypeEnum();
+                            if (configurePoint || agentType.isCustomPayload()) {
                                 point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                             }
                             if (controller.getControllerType() == FacilioControllerType.MODBUS_IP.asInt() ||
                                     controller.getControllerType() == FacilioControllerType.MODBUS_RTU.asInt() ||
                                     (controller.getControllerType() == FacilioControllerType.RDM.asInt() && ((RdmControllerContext) controller).getIsTdb())) {
-                                if (agentType == AgentType.FACILIO.getKey() || agent.getAgentTypeEnum().isAgentService()) {
+                                if (agentType == AgentType.FACILIO || agent.getAgentTypeEnum().isAgentService()) {
                                     point.setConfigureStatus(PointEnum.ConfigureStatus.CONFIGURED.getIndex());
                                 }
                             }
@@ -162,7 +159,6 @@ public class PointsUtil {
                 point.setAgentWritable(true);
             }
         }
-        // TODO Auto-generated method stub
         if (pointJSON.containsKey(AgentConstants.WRITABLE)) {
             Boolean value = Boolean.parseBoolean(pointJSON.get(AgentConstants.WRITABLE).toString());
             if (value != null && value) {
@@ -208,7 +204,7 @@ public class PointsUtil {
         ReadingDataMeta meta = new ReadingDataMeta();
         meta.setResourceId(point.getResourceId());
         meta.setFieldId(point.getFieldId());
-        if(point.getUnit() > 0){
+        if (point.getUnit() > 0) {
             meta.setUnit(point.getUnit());
         }
         meta.setInputType(ReadingDataMeta.ReadingInputType.CONTROLLER_MAPPED);
@@ -243,10 +239,10 @@ public class PointsUtil {
                 .module(module)
                 .beanClass(beanClass)
                 .select(fields)
-                .andCondition(CriteriaAPI.getCondition(field, fieldValue,  StringOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(field, fieldValue, StringOperators.IS));
 
         List<V3Context> v3Contexts = selectBuilder.get();
-        if(v3Contexts != null && !v3Contexts.isEmpty()) {
+        if (v3Contexts != null && !v3Contexts.isEmpty()) {
             return v3Contexts.get(0);
         }
         return null;

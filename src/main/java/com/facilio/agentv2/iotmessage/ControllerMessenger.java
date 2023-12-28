@@ -334,7 +334,7 @@ public class ControllerMessenger {
         MessengerUtil.addAndPublishNewAgentData(iotData);
     }
 
-    public static void sendAddModbusTcpPoint(Controller controller, Point point, int interval) throws Exception {
+    public static void sendAddPointCommand(Controller controller, Point point, int interval) throws Exception {
         IotData iotData;
         if (interval > 0) {
             iotData = constructNewIotMessage(new ArrayList<>(Arrays.asList(point)), FacilioCommand.ADD_POINTS, controller, interval);

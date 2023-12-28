@@ -603,6 +603,10 @@
         <action name="addController" class="com.facilio.agentv2.actions.OpcUaControllerAction" method="addController">
             <param name="deprecated">true</param>
         </action>
+        <action name="addPoint" class="com.facilio.agentv2.actions.OpcUaPointAction"
+                method="addOpcPoint">
+            <param name="deprecated">true</param>
+        </action>
     </package>
 
     <package name="bacnet" namespace="/api/v2/bacnet" extends="agent">

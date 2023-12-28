@@ -104,8 +104,7 @@ public class OpcUaControllerContext extends Controller {
     @Override
     public JSONObject getChildJSON() {
         JSONObject controllerJSON = new JSONObject();
-        controllerJSON.put(AgentConstants.URL, this.url);
-        controllerJSON.put(AgentConstants.CERT_PATH, this.certPath);
+        controllerJSON.put(AgentConstants.URL, getUrl());
         controllerJSON.put(AgentConstants.SECURITY_MODE, getSecurityMode());
         controllerJSON.put(AgentConstants.SECURITY_POLICY, getSecurityPolicy());
         return controllerJSON;

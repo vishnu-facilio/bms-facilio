@@ -563,6 +563,30 @@
         </urlparams>
     </request>
 
+    <request path="/api/v2/opcUa/addPoint" method="POST">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="controllerId" type="number" mandatory="true"/>
+            <property name="interval" type="number" mandatory="true"/>
+            <property name="uaPointIdentifier" type="string" mandatory="true"/>
+            <property name="namespace" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/modbus/addPoint" method="POST">
+        <urlparams>
+            <property name="agentId" type="number" mandatory="true"/>
+            <property name="controllerType" type="number" mandatory="true"/>
+            <property name="controllerId" type="number" mandatory="true"/>
+            <property name="interval" type="number" mandatory="true"/>
+            <property name="name" type="string" mandatory="true"/>
+            <property name="modbusDataType" type="number" mandatory="true"/>
+            <property name="registerType" type="number" mandatory="true"/>
+            <property name="registerNumber" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v3/timeseries/push" method="POST">
         <requestbody type="object">
             <property name="payload" type="object"  mandatory="true">
