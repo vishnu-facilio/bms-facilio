@@ -159,7 +159,7 @@ public class InductionTemplateModule extends BaseModuleConfig{
     public static void addSystemButtons() throws Exception {
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("NEW INDUCTION TEMPLATE");
+        createButton.setName("New Induction Template");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

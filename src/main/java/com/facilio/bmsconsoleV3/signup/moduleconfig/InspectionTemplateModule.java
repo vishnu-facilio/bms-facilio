@@ -175,7 +175,7 @@ public class InspectionTemplateModule extends BaseModuleConfig{
     public static void addSystemButtons() throws Exception {
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("NEW INSPECTION TEMPLATE");
+        createButton.setName("New Inspection Template");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");
