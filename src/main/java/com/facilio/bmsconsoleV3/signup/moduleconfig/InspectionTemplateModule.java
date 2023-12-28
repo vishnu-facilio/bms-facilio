@@ -174,6 +174,14 @@ public class InspectionTemplateModule extends BaseModuleConfig{
 
     public static void addSystemButtons() throws Exception {
 
+        SystemButtonRuleContext createButton = new SystemButtonRuleContext();
+        createButton.setName("NEW INSPECTION TEMPLATE");
+        createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
+        createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
+        createButton.setIdentifier("create");
+        createButton.setPermissionRequired(true);
+        createButton.setPermission(AccountConstants.ModulePermission.CREATE.name());
+
         SystemButtonRuleContext qAndABuilderSystemButton = new SystemButtonRuleContext();
         qAndABuilderSystemButton.setName(FacilioConstants.Inspection.Q_AND_A_BUILDER_BUTTON_TEXT);
         qAndABuilderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -201,6 +209,7 @@ public class InspectionTemplateModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.Inspection.INSPECTION_TEMPLATE,qAndABuilderSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Inspection.INSPECTION_TEMPLATE,editSystemButton);
         SystemButtonApi.addSystemButton(FacilioConstants.Inspection.INSPECTION_TEMPLATE,executeNowSystemButton);
+        SystemButtonApi.addSystemButton(FacilioConstants.Inspection.INSPECTION_TEMPLATE,createButton);
     }
 
     // enable this while publish and clone is enabled

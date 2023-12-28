@@ -124,7 +124,7 @@ public class SurveyResponseModule extends BaseModuleConfig{
         historyWidgetParam.put("activityModuleName", FacilioConstants.Survey.SURVEY_RESPONSE_ACTIVITY);
 
         return new ModulePages()
-                .addPage("surveyResponse", "Survey Response", "", null, isTemplate, isDefault, false)
+                .addPage("surveyResponsedefaultpage", "Default Survey Response Page", "", null, isTemplate, isDefault, false)
                 .addWebLayout()
                 .addTab("surveyResponseSummary", "Summary", PageTabContext.TabType.SIMPLE,  true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)

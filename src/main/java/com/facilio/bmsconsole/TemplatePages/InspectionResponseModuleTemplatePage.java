@@ -4,12 +4,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleWidget.APIModuleWidgets;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.WidgetAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.util.SummaryWidgetUtil;
 import org.json.simple.JSONObject;
 import java.util.ArrayList;
@@ -47,6 +49,19 @@ public class InspectionResponseModuleTemplatePage implements TemplatePageFactory
                 .sectionDone()
                 .addSection("commentsandattachments", "", null)
                 .addWidget("inspectionCommentsAndAttachmentsWidget", "", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("inspectionresponserelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("inspectionresponsebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("inspectionresponserelatedlist", "Related List", "List of related records across modules")
+                .addWidget("inspectionresponsebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

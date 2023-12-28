@@ -8,17 +8,27 @@ import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
+import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.util.SummaryWidgetUtil;
 import com.facilio.v3.context.Constants;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.*;
@@ -76,6 +86,19 @@ public class InspectionResponseModule extends BaseModuleConfig{
                 .sectionDone()
                 .addSection("commentsandattachments", "", null)
                 .addWidget("inspectionCommentsAndAttachmentsWidget", "", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getInspectionWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("inspectionresponserelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("inspectionresponsebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("inspectionresponserelatedlist", "Related List", "List of related records across modules")
+                .addWidget("inspectionresponsebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

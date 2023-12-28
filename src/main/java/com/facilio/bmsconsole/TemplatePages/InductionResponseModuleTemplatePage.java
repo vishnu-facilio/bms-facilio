@@ -3,16 +3,28 @@ package com.facilio.bmsconsole.TemplatePages;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.CustomPageAPI;
+import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
+import com.facilio.bmsconsoleV3.signup.util.PagesUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.relation.util.RelationshipWidgetUtil;
 import com.facilio.util.SummaryWidgetUtil;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class InductionResponseModuleTemplatePage implements TemplatePageFactory{
     @Override
@@ -46,6 +58,19 @@ public class InductionResponseModuleTemplatePage implements TemplatePageFactory{
                 .sectionDone()
                 .addSection("commentsandattachments", "", null)
                 .addWidget("inductionCommentsAndAttachmentsWidget", "", PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE,true, null)
+                .addColumn( PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("inductionresponserelationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("inductionresponsebulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0,  null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("inductionresponserelatedlist", "Related List", "List of related records across modules")
+                .addWidget("inductionresponsebulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0,  null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
