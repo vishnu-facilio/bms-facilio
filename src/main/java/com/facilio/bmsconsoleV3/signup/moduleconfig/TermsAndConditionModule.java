@@ -74,7 +74,7 @@ public class TermsAndConditionModule extends BaseModuleConfig{
     private static void addListButtons() throws Exception{
         addDeleteButton("delete_list",CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
         addEditButton("edit_list",CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
-        SystemButtonApi.addCreateButton(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
         SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
         SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
     }

@@ -2125,7 +2125,7 @@ public class InvoiceModule extends BaseModuleConfig {
         SystemButtonApi.addExportAsExcel(FacilioConstants.ContextNames.INVOICE);
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New " + module.getDisplayName());
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

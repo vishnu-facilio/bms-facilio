@@ -130,10 +130,10 @@ public class StoreRoomModule extends BaseModuleConfig{
     }
     @Override
     public void addData() throws Exception {
-        addSystemButton();
+        addSystemButton(getModule());
     }
 
-    private static void addSystemButton() throws Exception {
+    private static void addSystemButton(FacilioModule module) throws Exception {
         SystemButtonRuleContext editButton = new SystemButtonRuleContext();
         editButton.setName("Edit");
         editButton.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -238,7 +238,7 @@ public class StoreRoomModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.STORE_ROOM,returnToolsToPerson);
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New " + module.getDisplayName());
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");

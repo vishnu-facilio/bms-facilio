@@ -37,7 +37,7 @@ public class InsuranceModule extends BaseModuleConfig{
 
     @Override
     public void addData() throws Exception {
-        addSystemButton(getModuleName());
+        addSystemButton(getModule());
     }
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
@@ -371,16 +371,16 @@ public class InsuranceModule extends BaseModuleConfig{
         return glimpseList;
 
     }
-    private static void addSystemButton(String moduleName) throws Exception{
+    private static void addSystemButton(FacilioModule module) throws Exception{
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Create");
+        createButton.setName("New " + module.getDisplayName());
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");
         createButton.setPermissionRequired(true);
         createButton.setPermission("CREATE");
-        SystemButtonApi.addSystemButton(moduleName,createButton);
+        SystemButtonApi.addSystemButton(module.getName(),createButton);
 
         SystemButtonRuleContext listEditButton = new SystemButtonRuleContext();
         listEditButton.setName("Edit");
@@ -389,7 +389,7 @@ public class InsuranceModule extends BaseModuleConfig{
         listEditButton.setIdentifier("edit_list");
         listEditButton.setPermissionRequired(true);
         listEditButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(moduleName,listEditButton);
+        SystemButtonApi.addSystemButton(module.getName(),listEditButton);
 
         SystemButtonRuleContext listDeleteButton = new SystemButtonRuleContext();
         listDeleteButton.setName("Delete");
@@ -398,7 +398,7 @@ public class InsuranceModule extends BaseModuleConfig{
         listDeleteButton.setIdentifier("delete_list");
         listDeleteButton.setPermissionRequired(true);
         listDeleteButton.setPermission("DELETE");
-        SystemButtonApi.addSystemButton(moduleName,listDeleteButton);
+        SystemButtonApi.addSystemButton(module.getName(),listDeleteButton);
 
         SystemButtonRuleContext bulkDeleteButton = new SystemButtonRuleContext();
         bulkDeleteButton.setName("Delete");
@@ -407,7 +407,7 @@ public class InsuranceModule extends BaseModuleConfig{
         bulkDeleteButton.setIdentifier("delete_bulk");
         bulkDeleteButton.setPermissionRequired(true);
         bulkDeleteButton.setPermission("DELETE");
-        SystemButtonApi.addSystemButton(moduleName,bulkDeleteButton);
+        SystemButtonApi.addSystemButton(module.getName(),bulkDeleteButton);
 
         SystemButtonRuleContext exportAsCSVButton = new SystemButtonRuleContext();
         exportAsCSVButton.setName("Export As CSV");
@@ -416,7 +416,7 @@ public class InsuranceModule extends BaseModuleConfig{
         exportAsCSVButton.setIdentifier("export_as_csv");
         exportAsCSVButton.setPermissionRequired(true);
         exportAsCSVButton.setPermission("EXPORT");
-        SystemButtonApi.addSystemButton(moduleName,exportAsCSVButton);
+        SystemButtonApi.addSystemButton(module.getName(),exportAsCSVButton);
 
         SystemButtonRuleContext exportAsExcelButton = new SystemButtonRuleContext();
         exportAsExcelButton.setName("Export As Excel");
@@ -425,7 +425,7 @@ public class InsuranceModule extends BaseModuleConfig{
         exportAsExcelButton.setIdentifier("export_as_excel");
         exportAsExcelButton.setPermissionRequired(true);
         exportAsExcelButton.setPermission("EXPORT");
-        SystemButtonApi.addSystemButton(moduleName,exportAsExcelButton);
+        SystemButtonApi.addSystemButton(module.getName(), exportAsExcelButton);
 
         SystemButtonRuleContext summaryEditButton = new SystemButtonRuleContext();
         summaryEditButton.setName("Edit");
@@ -434,7 +434,7 @@ public class InsuranceModule extends BaseModuleConfig{
         summaryEditButton.setIdentifier("edit_summary");
         summaryEditButton.setPermissionRequired(true);
         summaryEditButton.setPermission("UPDATE");
-        SystemButtonApi.addSystemButton(moduleName,summaryEditButton);
+        SystemButtonApi.addSystemButton(module.getName(),summaryEditButton);
 
     }
 
