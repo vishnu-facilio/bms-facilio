@@ -31,6 +31,9 @@ public class FieldsConfigList {
             "attachmentPreview",
             "jobPlan", "flaggedEvent"
     );
+    public static final List<String> MULTIRESOURCE_FIELDS_EXCLUDE = Arrays.asList(
+           "parentModuleId"
+    );
 
     public static final List<String> WORKORDER_VIEW_FIXED_FIELDS = Arrays.asList(
             "subject", "localId"

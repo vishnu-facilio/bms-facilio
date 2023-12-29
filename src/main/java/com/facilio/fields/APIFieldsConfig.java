@@ -96,6 +96,13 @@ public class APIFieldsConfig {
                 .addFixedFields(Collections.singletonList("name"))
                 .done();
     }
+    @Module("multiResource")
+    public static Supplier<FieldConfig> getMultiResourceFieldConfig() {
+        return () -> new FieldConfig()
+                .advancedFields()
+                .skip(FieldsConfigList.MULTIRESOURCE_FIELDS_EXCLUDE)
+                .done();
+    }
 
     @Module(FacilioConstants.ContextNames.NEW_READING_ALARM)
     public static Supplier<FieldConfig> getNewReadingAlarmFieldConfig(){

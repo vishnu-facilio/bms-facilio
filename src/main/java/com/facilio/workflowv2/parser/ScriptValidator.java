@@ -275,6 +275,8 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add(FacilioConstants.TimeSheet.TIME_SHEET);
         scriptWhiteListedModules.add(FacilioConstants.TimeOff.TIME_OFF);
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK);
+        scriptWhiteListedModules.add("workorderHazard");
+        scriptWhiteListedModules.add("workorderHazardPrecaution");
     }
 
     @Override
