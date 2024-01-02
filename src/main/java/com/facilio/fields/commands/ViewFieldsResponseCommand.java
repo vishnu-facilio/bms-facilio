@@ -45,6 +45,7 @@ public class ViewFieldsResponseCommand extends FacilioCommand {
                 viewField.setFixed(true);
             } else if (hasFixedSelectableFields && fixedSelectableFieldNames.contains(field.getName())) {
                 viewField.setFixedSelectable(true);
+                viewField.setFixed(false);
             }
             if(isCustomization && customization.containsKey(viewField.getName())){
                 viewField.setCustomization(customization.get(viewField.getName()).toJSONString());

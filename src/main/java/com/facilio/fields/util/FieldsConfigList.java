@@ -247,7 +247,9 @@ public class FieldsConfigList {
             "modifiedTime", "sysModifiedBy", "estimatedDuration","dueDuration", "createdBy");
 
     public static final List<String> PM_VIEW_FIXED_FIELDS_INCLUDE = Arrays.asList( //FIXED VIEW FIELDS
-            "name", "subject");
+            "name");
+    public static final List<String> PM_VIEW_FIXED_SELECTABLE_FIELDS_INCLUDE = Arrays.asList( //FIXED VIEW FIELDS
+            "subject");
 
 
     public static final List<String> OUTGOING_MAIL_LOGGER_INCLUDE = Arrays.asList( //ADVANCED_FILTER_FIELDS

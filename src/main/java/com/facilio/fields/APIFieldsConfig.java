@@ -352,6 +352,7 @@ public class APIFieldsConfig {
                 .viewFields()
                 .add(FieldsConfigList.PM_VIEW_FIELDS_INCLUDE)
                 .addFixedFields(FieldsConfigList.PM_VIEW_FIXED_FIELDS_INCLUDE)
+                .addFixedSelectableFields(FieldsConfigList.PM_VIEW_FIXED_SELECTABLE_FIELDS_INCLUDE)
                 .done()
 
                 .sortFields()
