@@ -45,6 +45,7 @@ public class AddAssetCategoryModuleCommandV3 extends FacilioCommand {
         FacilioModule module = new FacilioModule();
         if (assetModuleName != null && !assetModuleName.isEmpty()){
             module.setName(assetModuleName);
+            context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, true);
         }else{
             module.setName("custom_" + name.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
         }
