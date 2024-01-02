@@ -10,7 +10,6 @@ import com.facilio.bmsconsole.context.Permission;
 import com.facilio.bmsconsole.context.PermissionGroup;
 import com.facilio.bmsconsole.context.TabIdAppIdMappingCacheContext;
 import com.facilio.bmsconsole.context.WebTabContext;
-import com.facilio.bmsconsole.interceptors.PermissionInterceptor;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.NewPermissionUtil;
 import com.facilio.constants.FacilioConstants;
@@ -195,8 +194,12 @@ public class V3PermissionUtil {
             if(currentOrg != null) {
                 return currentOrg.getOrgId() == 1516;
             }
+        } else if (FacilioProperties.getEnvironment().equals("stage2")) {
+            if(currentOrg != null) {
+                return currentOrg.getOrgId() != 418;
+            }
         }
-        return false;
+        return true;
     }
     public static boolean isModuleAccessible(String moduleName, Long tabId) throws Exception {
         WebTabBean tabBean = (WebTabBean) BeanFactory.lookup("TabBean");

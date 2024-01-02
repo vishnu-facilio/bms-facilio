@@ -120,7 +120,7 @@ public class BeforeAuthInputFilter implements Filter {
             }
             if (isAllowed()) {
                 Map<String, String> errorMap = new HashMap<>();
-                errorMap.put("message", "Error validating");
+                errorMap.put("message", "Error validating "+ex.getMessage());
                 write(errorMap, 500, servletResponse);
                 return;
             }

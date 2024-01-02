@@ -2728,6 +2728,8 @@
     <request path="/api/v3/group/scopeBySite">
         <requestbody type="object">
             <property name="siteId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
         </requestbody>
     </request>
     <request path="/api/v1/setup/userScoping/list">
@@ -3649,8 +3651,8 @@
                 <items type="object">
                     <property name="id" type="number" mandatory="true"/>
                     <property name="customization" type="object" mandatory="true">
-<!--                        <property name="columnWidth" type="number" mandatory="true"/>-->
-<!--                        <property name="text-wrap" type="string" mandatory="true"/>-->
+                        <property name="columnWidth" type="number" mandatory="true"/>
+                        <property name="text-wrap" type="string" mandatory="true"/>
                     </property>
                 </items>
             </property>
