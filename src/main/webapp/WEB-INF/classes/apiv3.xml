@@ -792,7 +792,7 @@
                 method="pickList">
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
-            <param name="permission">GET:READ,VIEW</param>
+            <param name="permission">GET:READ,VIEW;POST:CREATE,UPDATE</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
     </package>
@@ -2986,7 +2986,7 @@
         </action>
         <action name="edit/*" class="com.facilio.report.module.v2.action.V2ModuleReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,UPDATE</param>
+            <param name="permission">GET:VIEW,UPDATE;PUT:READ</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
     </package>
@@ -3054,7 +3054,7 @@
         </action>
         <action name="edit/*" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="edit">
             <param name="reportId">{1}</param>
-            <param name="permission">GET:VIEW,UPDATE</param>
+            <param name="permission">GET:VIEW,UPDATE;PUT:READ</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
         <action name="dimension/modes" class="com.facilio.analytics.v2.action.V2AnalyticsReportAction" method="getAllReportModes">

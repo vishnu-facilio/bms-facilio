@@ -4068,7 +4068,7 @@
 		<action name="executePivotReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="executePivotReport">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:READ</param>
 		</action>
 		<action name="exportPivotReport"
 				class="com.facilio.bmsconsole.actions.V2ReportAction"

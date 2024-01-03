@@ -675,6 +675,15 @@
             <property name="filters" type="filters"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/picklist/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"></property>
+            <property name="filters" type="filters"></property>
+            <property name="search" type="string"></property>
+            <property name="perPage" type="number"></property>
+            <property name="page" type="number"></property>
+        </urlparams>
+    </request>
     <request path="/api/v2/dashboard/getGroups" method="GET">
         <requestbody type="object"></requestbody>
     </request>
@@ -690,6 +699,17 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"></property>
             <property name="viewName" type="string"></property>
+            <property name="page" type="number"></property>
+            <property name="perPage" type="number"></property>
+            <property name="withoutCustomButtons" type="boolean"></property>
+        </urlparams>
+    </request>
+    <request path="/api/v3/dashboard/modules/:moduleName/view/:viewname" method="GET">
+        <urlparams>
+            <property name="fetchOnlyViewGroupColumn" type="boolean"></property>
+            <property name="moduleName" type="string" mandatory="true"></property>
+            <property name="viewName" type="string"></property>
+            <property name="viewname" type="string"></property>
             <property name="page" type="number"></property>
             <property name="perPage" type="number"></property>
             <property name="withoutCustomButtons" type="boolean"></property>
