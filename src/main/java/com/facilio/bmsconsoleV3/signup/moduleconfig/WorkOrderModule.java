@@ -214,12 +214,19 @@ public class WorkOrderModule extends BaseModuleConfig {
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
         appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
         for (String appName : appLinkNames) {
-            appNameVsPage.put(appName, createWorkorderDefaultPage(ApplicationApi.getApplicationForLinkName(appName), module, false, true));
+            if(appName.equals(FacilioConstants.ApplicationLinkNames.ENERGY_APP)){
+                appNameVsPage.put(appName,createEnergyAppWorkorderDefaultPage(ApplicationApi.getApplicationForLinkName(appName),module,false,true));
+            }
+            else {
+                appNameVsPage.put(appName, createWorkorderDefaultPage(ApplicationApi.getApplicationForLinkName(appName), module, false, true));
+            }
         }
         return appNameVsPage;
     }
@@ -237,6 +244,14 @@ public class WorkOrderModule extends BaseModuleConfig {
 
         org.json.simple.JSONObject historyWidgetParam = new org.json.simple.JSONObject();
         historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+        Criteria criteria = new Criteria();
+        Condition safetyPlan = new Condition();
+        safetyPlan.setFieldName("safetyPlan");
+        safetyPlan.setColumnName("WorkOrders.SAFETY_PLAN_ID");
+        safetyPlan.setOperator(CommonOperators.IS_NOT_EMPTY);
+        safetyPlan.setModuleName(FacilioConstants.ContextNames.WORK_ORDER);
+        criteria.addOrCondition(safetyPlan);
 
         if(app.getDomainType() == AppDomain.AppDomainType.FACILIO.getIndex()) {
             return new ModulePages()
@@ -285,12 +300,159 @@ public class WorkOrderModule extends BaseModuleConfig {
 
                     .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("safetyplan", null, null)
+                    .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("tasks", "Tasks", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("tasksSection", null, null)
+                    .addWidget("tasksWidget", "Tasks", PageWidget.WidgetType.TASKS, "flexiblewebtasks_5", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("plan", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("planSection", null, null)
+                    .addWidget("plansWidget", "Plans", PageWidget.WidgetType.PLANS, "flexiblewebplans_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("timelog", "Timelog And Metrics", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("timelog", null, null)
+                    .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_6", 0, 0, timeLogWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+//                    .addTab("failurereport", "Failure Report ", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.FAILURE_CODES)
+//                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                    .addSection("failurereport", null, null)
+//                    .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_6", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .addSection("failurehierarchy", null, null)
+//                    .addWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY, "flexiblewebfailurehierarchy_5", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .columnDone()
+//                    .tabDone()
+
+                    .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("classification", null, null)
+                    .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("relatedlist", "Related List", "List of related records across modules")
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("dependentworkorders", "", null)
+                    .addWidget("dependentworkorders", "Dependent Work Orders", PageWidget.WidgetType.RELATED_RECORDS, "flexiblewebrelatedrecords_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("history", null, null)
+                    .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .layoutDone()
+
+                    .pageDone()
+
+
+
+                    .addPage("workordersafetyplanpage", "Workorder SafetyPlan Page", "", criteria, isTemplate, isDefault, true)
+
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_7", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("multiresource", null, null)
+                    .addWidget("workordermultiresource", "Space & Asset", PageWidget.WidgetType.MULTIRESOURCE, "flexiblewebmultiresource_4", 0, 0, multiresourceWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("responsibility", null, null)
+                    .addWidget("workorderresponsibility", "Responsibility", PageWidget.WidgetType.RESPONSIBILITY, "flexiblewebresponsibility_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("locationdetails", null, null)
+                    .addWidget("workorderlocationdetails", "Location Details", PageWidget.WidgetType.RESOURCE, "flexiblewebresource_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("timeDetails", null, null)
+                    .addWidget("workordertimedetails", "Time Details", PageWidget.WidgetType.TIME_DETAILS, "flexiblewebtimedetails_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("costdetails", null, null)
+                    .addWidget("workordercostdetails", "Cost", PageWidget.WidgetType.COST_DETAILS, "flexiblewebcostdetails_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("jobplandetails", null, null)
+                    .addWidget("jobplandetails", "Job Plan", PageWidget.WidgetType.JOBPLAN_DETAILS, "flexiblewebjobplandetails_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("safetyplan", null, null)
+                    .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
                     .addSection("safetyplanhazard", null, null)
                     .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .addSection("safetyplanprecaution", null, null)
-                    .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
+                    .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.WORKORDER_HAZARD_PRECAUTIONS, "flexiblewebworkorderhazardprecautions_6", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -431,14 +593,11 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .columnDone()
                     .tabDone()
 
-                    .addTab("safetyplan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.SAFETY_PLAN)
+
+                    .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
                     .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
-                    .addSection("safetyplanhazard", null, null)
-                    .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
-                    .widgetDone()
-                    .sectionDone()
-                    .addSection("safetyplanprecaution", null, null)
-                    .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS, "flexiblewebsafetyplanprecautions_6", 0, 0, null, null)
+                    .addSection("safetyplan", null, null)
+                    .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
                     .widgetDone()
                     .sectionDone()
                     .columnDone()
@@ -499,7 +658,126 @@ public class WorkOrderModule extends BaseModuleConfig {
                     .tabDone()
                     .layoutDone()
 
-                    .pageDone().getCustomPages();
+                    .pageDone()
+
+                    .addPage("workordersafetyplanpage", "Workorder SafetyPlan Page", "", criteria, isTemplate, isDefault, true)
+
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+                    .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                    .addSection("summaryfields", "", null)
+                    .addWidget("summaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_7", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("multiresource", null, null)
+                    .addWidget("workordermultiresource", "Space & Asset", PageWidget.WidgetType.MULTIRESOURCE, "flexiblewebmultiresource_4", 0, 0, multiresourceWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                    .addSection("responsibility", null, null)
+                    .addWidget("workorderresponsibility", "Responsibility", PageWidget.WidgetType.RESPONSIBILITY, "flexiblewebresponsibility_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("locationdetails", null, null)
+                    .addWidget("workorderlocationdetails", "Location Details", PageWidget.WidgetType.RESOURCE, "flexiblewebresource_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("timeDetails", null, null)
+                    .addWidget("workordertimedetails", "Time Details", PageWidget.WidgetType.TIME_DETAILS, "flexiblewebtimedetails_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("costdetails", null, null)
+                    .addWidget("workordercostdetails", "Cost", PageWidget.WidgetType.COST_DETAILS, "flexiblewebcostdetails_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("jobplandetails", null, null)
+                    .addWidget("jobplandetails", "Job Plan", PageWidget.WidgetType.JOBPLAN_DETAILS, "flexiblewebjobplandetails_3", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("safetyplan", null, null)
+                    .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("safetyplanhazard", null, null)
+                    .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("safetyplanprecaution", null, null)
+                    .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.WORKORDER_HAZARD_PRECAUTIONS, "flexiblewebworkorderhazardprecautions_6", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("tasks", "Tasks", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("tasksSection", null, null)
+                    .addWidget("tasksWidget", "Tasks", PageWidget.WidgetType.TASKS, "flexiblewebtasks_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+
+                    .addTab("plan", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("planSection", null, null)
+                    .addWidget("plans", "Plans", PageWidget.WidgetType.PLANS, "flexiblewebplans_5", 0, 0, null,null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("widgetGroup", null, null)
+                    .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                    .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("relatedlist", "Related List", "List of related records across modules")
+                    .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                    .widgetDone()
+                    .sectionDone()
+                    .addSection("dependentworkorders", "", null)
+                    .addWidget("dependentworkorders", "Dependent Work Orders", PageWidget.WidgetType.RELATED_RECORDS, "flexiblewebrelatedrecords_5", 0, 0, null, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+
+                    .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                    .addSection("history", null, null)
+                    .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                    .widgetDone()
+                    .sectionDone()
+                    .columnDone()
+                    .tabDone()
+                    .layoutDone()
+
+                    .pageDone()
+
+
+                    .getCustomPages();
 
 
 
@@ -675,6 +953,321 @@ public class WorkOrderModule extends BaseModuleConfig {
 
     }
 
+    public static List<PagesContext> createEnergyAppWorkorderDefaultPage(ApplicationContext app, FacilioModule module, boolean isTemplate, boolean isDefault) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule workOrderModule = modBean.getModule("workorder");
+        JSONObject multiresourceWidgetParam = new JSONObject();
+        multiresourceWidgetParam.put("summaryWidgetName", "multiResourceWidget");
+        multiresourceWidgetParam.put("module", "\""+ workOrderModule+"\"");
+
+        JSONObject timeLogWidgetParam = new JSONObject();
+        timeLogWidgetParam.put("card", "timeLog");
+
+        org.json.simple.JSONObject historyWidgetParam = new org.json.simple.JSONObject();
+        historyWidgetParam.put("activityModuleName", FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+
+        Criteria criteria = new Criteria();
+        Condition safetyPlan = new Condition();
+        safetyPlan.setFieldName("safetyPlan");
+        safetyPlan.setColumnName("WorkOrders.SAFETY_PLAN_ID");
+        safetyPlan.setOperator(CommonOperators.IS_NOT_EMPTY);
+        safetyPlan.setModuleName(FacilioConstants.ContextNames.WORK_ORDER);
+        criteria.addOrCondition(safetyPlan);
+
+        return new ModulePages()
+                .addPage("workorderdefaultpage", "Default Workorder Page", "", null, isTemplate, isDefault, true)
+
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_7", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("multiresource", null, null)
+                .addWidget("workordermultiresource", "Space & Asset", PageWidget.WidgetType.MULTIRESOURCE, "flexiblewebmultiresource_4", 0, 0, multiresourceWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("responsibility", null, null)
+                .addWidget("workorderresponsibility", "Responsibility", PageWidget.WidgetType.RESPONSIBILITY, "flexiblewebresponsibility_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("locationdetails", null, null)
+                .addWidget("workorderlocationdetails", "Location Details", PageWidget.WidgetType.RESOURCE, "flexiblewebresource_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("timeDetails", null, null)
+                .addWidget("workordertimedetails", "Time Details", PageWidget.WidgetType.TIME_DETAILS, "flexiblewebtimedetails_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("costdetails", null, null)
+                .addWidget("workordercostdetails", "Cost", PageWidget.WidgetType.COST_DETAILS, "flexiblewebcostdetails_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("jobplandetails", null, null)
+                .addWidget("jobplandetails", "Job Plan", PageWidget.WidgetType.JOBPLAN_DETAILS, "flexiblewebjobplandetails_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("safetyplan", null, null)
+                .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("tasks", "Tasks", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("tasksSection", null, null)
+                .addWidget("tasksWidget", "Tasks", PageWidget.WidgetType.TASKS, "flexiblewebtasks_5", 0, 0, null,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("plan", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("planSection", null, null)
+                .addWidget("plansWidget", "Plans", PageWidget.WidgetType.PLANS, "flexiblewebplans_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("timelog", "Timelog And Metrics", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("timelog", null, null)
+                .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_6", 0, 0, timeLogWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+//                    .addTab("failurereport", "Failure Report ", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.FAILURE_CODES)
+//                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                    .addSection("failurereport", null, null)
+//                    .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_6", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .addSection("failurehierarchy", null, null)
+//                    .addWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY, "flexiblewebfailurehierarchy_5", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .columnDone()
+//                    .tabDone()
+
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("dependentworkorders", "", null)
+                .addWidget("dependentworkorders", "Dependent Work Orders", PageWidget.WidgetType.RELATED_RECORDS, "flexiblewebrelatedrecords_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+
+                .pageDone()
+
+
+
+                .addPage("workordersafetyplanpage", "Workorder SafetyPlan Page", "", criteria, isTemplate, isDefault, true)
+
+                .addLayout(PagesContext.PageLayoutType.WEB)
+                .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.THREE_QUARTER_WIDTH)
+                .addSection("summaryfields", "", null)
+                .addWidget("summaryFieldsWidget", "Work Order Details", PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_7", 0, 0, null, getSummaryWidgetDetails(module.getName(), app))
+                .widgetDone()
+                .sectionDone()
+                .addSection("multiresource", null, null)
+                .addWidget("workordermultiresource", "Space & Asset", PageWidget.WidgetType.MULTIRESOURCE, "flexiblewebmultiresource_4", 0, 0, multiresourceWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .addColumn(PageColumnContext.ColumnWidth.QUARTER_WIDTH)
+                .addSection("responsibility", null, null)
+                .addWidget("workorderresponsibility", "Responsibility", PageWidget.WidgetType.RESPONSIBILITY, "flexiblewebresponsibility_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("locationdetails", null, null)
+                .addWidget("workorderlocationdetails", "Location Details", PageWidget.WidgetType.RESOURCE, "flexiblewebresource_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("timeDetails", null, null)
+                .addWidget("workordertimedetails", "Time Details", PageWidget.WidgetType.TIME_DETAILS, "flexiblewebtimedetails_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("costdetails", null, null)
+                .addWidget("workordercostdetails", "Cost", PageWidget.WidgetType.COST_DETAILS, "flexiblewebcostdetails_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("jobplandetails", null, null)
+                .addWidget("jobplandetails", "Job Plan", PageWidget.WidgetType.JOBPLAN_DETAILS, "flexiblewebjobplandetails_3", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("safetyPlan", "Safety Plan", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("safetyplan", null, null)
+                .addWidget("safetyplan", "Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN, "flexiblewebworkordersafetyplan_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("safetyplanhazard", null, null)
+                .addWidget("safetyplanhazard", "Hazards", PageWidget.WidgetType.SAFETYPLAY_HAZARD, "flexiblewebsafetyplanhazard_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .addSection("safetyplanprecaution", null, null)
+                .addWidget("safetyplanprecaution", "Precautions", PageWidget.WidgetType.WORKORDER_HAZARD_PRECAUTIONS, "flexiblewebworkorderhazardprecautions_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("tasks", "Tasks", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("tasksSection", null, null)
+                .addWidget("tasksWidget", "Tasks", PageWidget.WidgetType.TASKS, "flexiblewebtasks_5", 0, 0, null,null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("plan", "Plans", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("planSection", null, null)
+                .addWidget("plansWidget", "Plans", PageWidget.WidgetType.PLANS, "flexiblewebplans_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("actuals", "Actuals", PageTabContext.TabType.SINGLE_WIDGET_TAB, true, AccountUtil.FeatureLicense.INVENTORY)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("widgetGroup", null, null)
+                .addWidget("widgetGroup", null, PageWidget.WidgetType.WIDGET_GROUP, "flexiblewebwidgetgroup_4", 0, 0, null, getActualWidgetGroup(false))
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .addTab("timelog", "Timelog And Metrics", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("timelog", null, null)
+                .addWidget("timelogandmetrics", "Time Log", PageWidget.WidgetType.STATE_TRANSITION_TIME_LOG, "flexiblewebstatetransitiontimelog_6", 0, 0, timeLogWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+//                    .addTab("failurereport", "Failure Report ", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.FAILURE_CODES)
+//                    .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+//                    .addSection("failurereport", null, null)
+//                    .addWidget("failurereport", "Failure Report", PageWidget.WidgetType.FAILURE_REPORT, "flexiblewebfailurereport_6", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .addSection("failurehierarchy", null, null)
+//                    .addWidget("failurehierarchy", "Failure Hierarchy", PageWidget.WidgetType.FAILURE_HIERARCHY, "flexiblewebfailurehierarchy_5", 0, 0, null, null)
+//                    .widgetDone()
+//                    .sectionDone()
+//                    .columnDone()
+//                    .tabDone()
+
+                .addTab("classification", "Classification", PageTabContext.TabType.SIMPLE, true, AccountUtil.FeatureLicense.CLASSIFICATION)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("classification", null, null)
+                .addWidget("classification", "Classification", PageWidget.WidgetType.CLASSIFICATION, "flexiblewebclassification_6", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("related", "Related", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("relationships", "Relationships", "List of relationships and types between records across modules")
+                .addWidget("bulkrelationshipwidget", "Relationships", PageWidget.WidgetType.BULK_RELATION_SHIP_WIDGET, "flexiblewebbulkrelationshipwidget_6", 0, 0, null, RelationshipWidgetUtil.fetchRelationshipsOfModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("relatedlist", "Related List", "List of related records across modules")
+                .addWidget("bulkrelatedlist", "Related List", PageWidget.WidgetType.BULK_RELATED_LIST, "flexiblewebbulkrelatedlist_6", 0, 0, null, RelatedListWidgetUtil.fetchAllRelatedListForModule(module))
+                .widgetDone()
+                .sectionDone()
+                .addSection("dependentworkorders", "", null)
+                .addWidget("dependentworkorders", "Dependent Work Orders", PageWidget.WidgetType.RELATED_RECORDS, "flexiblewebrelatedrecords_5", 0, 0, null, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+
+                .addTab("history", "History", PageTabContext.TabType.SIMPLE, true, null)
+                .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                .addSection("history", null, null)
+                .addWidget("historyWidget", "History", PageWidget.WidgetType.ACTIVITY, "flexiblewebactivity_4", 0, 0, historyWidgetParam, null)
+                .widgetDone()
+                .sectionDone()
+                .columnDone()
+                .tabDone()
+
+                .layoutDone()
+
+                .pageDone().getCustomPages();
+    }
+
     private static JSONObject getSummaryWidgetDetails(String moduleName,ApplicationContext app) throws Exception {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
@@ -768,12 +1361,12 @@ public class WorkOrderModule extends BaseModuleConfig {
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)
-                .addSection("notes", "Notes", "")
-                .addWidget("commentwidget", "Comment", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
+                .addSection("notes", "Comments", "")
+                .addWidget("commentwidget", "Comments", PageWidget.WidgetType.COMMENT, isMobile?"flexiblemobilecomment_8":"flexiblewebcomment_5", 0, 0, notesWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone()
-                .addSection("documents", "Documents", "")
-                .addWidget("attachmentwidget", "Documents", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentWidgetParam, null)
+                .addSection("documents", "Attachments", "")
+                .addWidget("attachmentwidget", "Attachments", PageWidget.WidgetType.ATTACHMENT, isMobile?"flexiblemobileattachment_8":"flexiblewebattachment_5", 0, 0, attachmentWidgetParam, null)
                 .widgetGroupWidgetDone()
                 .widgetGroupSectionDone();
 

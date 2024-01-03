@@ -28,7 +28,7 @@ public class FieldsConfigList {
             "createdBy", "priority","resource","type",
             "modifiedTime","actualWorkStart","actualWorkEnd","totalCost",
             "siteId","vendor", "requester", "tenant", "client",
-            "attachmentPreview",
+            "attachmentPreview","noOfTasks",
             "jobPlan", "flaggedEvent"
     );
     public static final List<String> MULTIRESOURCE_FIELDS_EXCLUDE = Arrays.asList(
@@ -74,7 +74,7 @@ public class FieldsConfigList {
     );
     public static final List<String> SPACE_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
             "name","site","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","classification",
-            "floor","decommission","building","id","moduleState","location","decommissionedBy"
+            "floor","decommission","building","id","moduleState","location","decommissionedBy","spaceCategory"
     );
 
     public static final List<String> SPACE_FILTER_FIELDS_EXCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS

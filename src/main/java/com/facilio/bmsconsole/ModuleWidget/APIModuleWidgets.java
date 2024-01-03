@@ -86,7 +86,12 @@ public class APIModuleWidgets {
                 .addModuleWidget("safetyplanhazard", "SafetyPlan Hazard", PageWidget.WidgetType.SAFETYPLAY_HAZARD)
                 .done()
 
-                .addModuleWidget("safetyplanprecautions", "Safety Plan Precautions", PageWidget.WidgetType.SAFETY_PLAN_PRECAUTIONS)
+                .addModuleWidget("workorderhazardprecautions", "Workorder Hazard Precautions", PageWidget.WidgetType.WORKORDER_HAZARD_PRECAUTIONS)
+                .addWidgetConfig("flexiblewebworkorderhazardprecautions_6","Workorder Hazard Precautions - 6",WidgetConfigContext.ConfigType.FLEXIBLE,6,-1, PagesContext.PageLayoutType.WEB)
+                .done()
+
+                .addModuleWidget("workordersafetyplan", "Workorder Safety Plan", PageWidget.WidgetType.WORKORDER_SAFETY_PLAN)
+                .addFlexibleWidgetConfig("flexiblewebworkordersafetyplan_5","Workorder Safety Plan - 5", 5, PagesContext.PageLayoutType.WEB)
                 .done()
 
                 .addModuleWidget("relatedrecords", "Related Records", PageWidget.WidgetType.RELATED_RECORDS)
