@@ -16,6 +16,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
+import com.google.gson.Gson;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -109,7 +110,7 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
             String moduleName = assetReading.getModuleName();
             String tableName=assetReading.getTableName();
             String moduleDisplayName=assetReading.getModuleDisplayName();
-            
+
             String moduleFieldsKey=getModuleFieldsKey(moduleName,tableName,moduleDisplayName);
 
             if (StringUtils.isNotEmpty(assetCategoryName) && !moduleNameVsFields.containsKey(assetCategoryName)) {
@@ -141,8 +142,8 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
     }
 
     private String getModuleFieldsKey(String moduleName, String tableName, String displayName) {
-        String moduleFieldKey = "moduleName : " + moduleName + " , tableName : " + tableName + " , displayName : " + displayName;
-        return moduleFieldKey;
+        String moduleFieldKey = String.format("{\"moduleName\":\"%s\", \"tableName\":\"%s\", \"displayName\":\"%s\"}", moduleName, tableName, displayName);
+        return  moduleFieldKey;
     }
 
     @Override
@@ -262,12 +263,8 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
     }
 
     private static Map<String, String> deSerilializeModuleFieldKey(String moduleFieldsKey) {
-
-        Map<String, String> keyMap = Pattern.compile("\\s*,\\s*")
-                .splitAsStream(moduleFieldsKey.trim())
-                .map(s -> s.split(":", 2))
-                .collect(Collectors.toMap(a -> a[0].trim(), a -> a[1].trim()));
-
+        Gson gson = new Gson();
+        Map<String, String> keyMap = gson.fromJson(moduleFieldsKey, Map.class);
         return keyMap;
     }
 
@@ -310,6 +307,7 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         String tableName;
 
         String moduleDisplayName;
+
 
         public AssetReading(String moduleName, String assetCategoryName, FacilioField readingField,String tableName,String moduleDisplayName) {
             this.moduleName = moduleName;
