@@ -57,6 +57,7 @@ public class GetBulkRelatedListWidgetCommand extends FacilioCommand {
                                 subModule = modBean.getModule(subModuleId);
                                 moduleMap.put(subModuleId, subModule);
                             }
+                            relList.setModule(subModule);
                             canShowRelList = PageFactory.relatedListHasPermission(moduleId, subModule, relList.getField());
                         }
                         if (!canShowRelList) {
