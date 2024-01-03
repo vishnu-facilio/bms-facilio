@@ -12,3 +12,10 @@ templates:
     html_path: "invoice/template.html"
     css_path: "invoice/template.css"
     settings_path: "invoice/template.json"
+
+  - name: "Default Rfq Template"
+    description: "Create professional and polished Rfq documents with this default template. Customizable for a branded and clear presentation of Rfq to clients."
+    moduleName: "requestForQuotation"
+    html_path: "rfq/template.html"
+    css_path: "rfq/template.css"
+    settings_path: "rfq/template.json"

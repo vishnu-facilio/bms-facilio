@@ -49,20 +49,6 @@ public class RequestForQuotationModule extends BaseModuleConfig{
         List<FacilioField> rfqFields = modBean.getAllFields(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION);
         Map<String,FacilioField> rfqFieldMap = FieldFactory.getAsMap(rfqFields);
 
-        SystemButtonRuleContext downloadPdf = new SystemButtonRuleContext();
-        downloadPdf.setName("Download Pdf");
-        downloadPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        downloadPdf.setIdentifier("downloadPdf");
-        downloadPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,downloadPdf);
-
-        SystemButtonRuleContext printPdf = new SystemButtonRuleContext();
-        printPdf.setName("Print Pdf");
-        printPdf.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
-        printPdf.setIdentifier("printPdf");
-        printPdf.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION,printPdf);
-
         SystemButtonRuleContext publishRfq = new SystemButtonRuleContext();
         publishRfq.setName("Publish RFQ");
         publishRfq.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -434,7 +420,7 @@ public class RequestForQuotationModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("requestForQuotationPdfViewer", null, null)
-                .addWidget("requestForQuotationPdfViewerWidget", null, PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
+                .addWidget("requestForQuotationPdfViewerWidget", "Summary", PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()

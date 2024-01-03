@@ -46,6 +46,7 @@ public class SetRequestForQuotationLineItemsCommandV3  extends FacilioCommand {
                 .andCondition(CriteriaAPI.getCondition("RFQ_ID", "requestForQuotation", String.valueOf(id), NumberOperators.EQUALS))
                 .fetchSupplements(Arrays.asList((LookupField) fieldsAsMap.get("itemType"), (LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("awardedTo")));
         List<V3RequestForQuotationLineItemsContext> list = builder.get();
+        setName(list);
         setTaxAmount(list);
         requestForQuotation.setRequestForQuotationLineItems(list);
 
@@ -70,6 +71,35 @@ public class SetRequestForQuotationLineItemsCommandV3  extends FacilioCommand {
                 }
                 Double taxAmount = taxRate * (lineItem.getQuantity() * lineItem.getAwardedPrice())/100;
                 lineItem.setTaxAmount(taxAmount);
+            }
+        }
+    }
+
+    private static void setName(List<V3RequestForQuotationLineItemsContext> lineItems) {
+        if(CollectionUtils.isEmpty(lineItems)){
+            return;
+        }
+        for (V3RequestForQuotationLineItemsContext lineItem: lineItems) {
+            if(lineItem.getInventoryTypeEnum() == null){
+                continue;
+            }
+            if(lineItem.getInventoryTypeEnum() == V3RequestForQuotationLineItemsContext.InventoryTypeRfq.ITEM){
+                if(lineItem.getItemType() == null){
+                    continue;
+                }
+                lineItem.setName(lineItem.getItemType().getName());
+            }
+            if(lineItem.getInventoryTypeEnum() == V3RequestForQuotationLineItemsContext.InventoryTypeRfq.TOOL){
+                if(lineItem.getToolType() == null){
+                    continue;
+                }
+                lineItem.setName(lineItem.getToolType().getName());
+            }
+            if(lineItem.getInventoryTypeEnum() == V3RequestForQuotationLineItemsContext.InventoryTypeRfq.SERVICE){
+                if(lineItem.getService() == null){
+                    continue;
+                }
+                lineItem.setName(lineItem.getService().getName());
             }
         }
     }

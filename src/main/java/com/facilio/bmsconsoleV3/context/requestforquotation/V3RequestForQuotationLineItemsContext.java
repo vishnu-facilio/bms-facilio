@@ -15,7 +15,8 @@ import java.util.List;
 
 public class V3RequestForQuotationLineItemsContext extends V3Context {
     private static final long serialVersionUID = 1L;
-
+    @Getter @Setter
+    private String name;
     private V3RequestForQuotationContext requestForQuotation;
     private InventoryTypeRfq inventoryType;
     private V3ItemTypesContext itemType;
