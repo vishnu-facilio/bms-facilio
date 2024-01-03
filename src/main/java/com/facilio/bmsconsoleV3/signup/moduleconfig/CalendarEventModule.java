@@ -36,7 +36,7 @@ public class CalendarEventModule extends BaseModuleConfig{
         defaultEventForm.setName("default_event_web");
         defaultEventForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultEventForm.setShowInWeb(true);
-        defaultEventForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        defaultEventForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
 
         List<FormField> defaultEventFormFields = new ArrayList<>();
         defaultEventFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX,"Name", FormField.Required.REQUIRED,1,1));
@@ -68,7 +68,7 @@ public class CalendarEventModule extends BaseModuleConfig{
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.Calendar.EVENT_MODULE_NAME);
-        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         groupDetails.put("views", calendarEvent);
         groupVsViews.add(groupDetails);
 
@@ -78,7 +78,7 @@ public class CalendarEventModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Events");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setFields(getAllViewColumns());
 
 

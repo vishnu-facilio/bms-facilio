@@ -10,6 +10,7 @@ import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleClosureConfigContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
+import com.facilio.remotemonitoring.utils.RemoteMonitorUtils;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,6 +38,7 @@ public class FlaggedEventClosureCommand extends FacilioCommand {
                             updateEvent.setId(flaggedEvent.getId());
                             updateEvent.setStatus(FlaggedEventContext.FlaggedEventStatus.AUTO_CLOSED);
                             V3RecordAPI.updateRecord(updateEvent,modBean.getModule(FlaggedEventModule.MODULE_NAME), Arrays.asList(modBean.getField("status",FlaggedEventModule.MODULE_NAME)));
+                            RemoteMonitorUtils.addFlaggedAlarmTimeLogForTicket(flaggedEvent.getId());
                         }
                     }
                 }

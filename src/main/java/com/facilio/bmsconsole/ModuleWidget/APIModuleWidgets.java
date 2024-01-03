@@ -949,6 +949,9 @@ public class APIModuleWidgets {
                 .done()
                 .addModuleWidget("evaluationTeamDetails","Evaluation Team Details",PageWidget.WidgetType.EVALUATION_TEAM_DETAILS)
                 .addWidgetConfig("evaluationTeamDetails_4_3","Evaluation Team Details - 4 - 3",WidgetConfigContext.ConfigType.FIXED,4,3,PagesContext.PageLayoutType.WEB)
+                .done()
+                .addModuleWidget("flaggedAlarmTimeLog", "Flagged Alarm Time Log", PageWidget.WidgetType.FLAGGED_ALARM_TIME_LOG)
+                .addWidgetConfig("flaggedAlarmTimeLog_6_12", "Flagged Alarm Time Log - 6 - 12", WidgetConfigContext.ConfigType.FIXED, 6, 12, PagesContext.PageLayoutType.WEB)
                 .done();
     }
     @WidgetsForModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE)

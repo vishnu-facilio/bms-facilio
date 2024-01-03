@@ -747,7 +747,8 @@ public class PageWidget {
 		SERVICE_PM("servicePM"),
 		ENERGY_SPACE_INSIGHTS("energySpaceInsights"),
 		JOBPLAN_DETAILS("jobplanDetails"),
-		SURVEY_RESPONSE("surveyResponse");
+		SURVEY_RESPONSE("surveyResponse"),
+		FLAGGED_ALARM_TIME_LOG("flaggedAlarmTimeLog");
 
 		private String name;
 		@Getter

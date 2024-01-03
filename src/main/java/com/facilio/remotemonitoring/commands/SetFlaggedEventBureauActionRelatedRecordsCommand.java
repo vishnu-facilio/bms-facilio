@@ -23,8 +23,10 @@ public class SetFlaggedEventBureauActionRelatedRecordsCommand extends FacilioCom
                 flaggedEventBureauAction.setConfiguredinhibitReasonList(RemoteMonitorUtils.getInhibitReasonList(flaggedEventBureauActionId));
                 flaggedEventBureauAction.setCloseIssueReasonOptionList(RemoteMonitorUtils.getCloseIssueReasonOptionContexts(flaggedEventBureauActionId));
                 Map<String, Object> prop = new HashMap<>();
-                prop.put("statusDisplayName", flaggedEventBureauAction.getEventStatus().getValue());
-                flaggedEventBureauAction.addData(prop);
+                if(flaggedEventBureauAction.getEventStatus() != null) {
+                    prop.put("statusDisplayName", flaggedEventBureauAction.getEventStatus().getValue());
+                    flaggedEventBureauAction.addData(prop);
+                }
             }
         }
         return false;

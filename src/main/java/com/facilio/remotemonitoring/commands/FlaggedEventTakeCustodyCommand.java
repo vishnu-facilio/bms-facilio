@@ -54,9 +54,9 @@ public class FlaggedEventTakeCustodyCommand extends FacilioCommand {
                 V3PeopleContext people = new V3PeopleContext();
                 people.setId(AccountUtil.getCurrentUser().getPeopleId());
                 updateAction.setAssignedPeople(people);
-                updateAction.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY);
                 updateAction.setTakeCustodyTimestamp(System.currentTimeMillis());
                 V3RecordAPI.updateRecord(updateAction,modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Arrays.asList(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),modBean.getField("takeCustodyTimestamp",FlaggedEventBureauActionModule.MODULE_NAME),modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME)));
+                FlaggedEventUtil.updateBureauActionStatus(bureauAction.getId(),FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY);
                 startTakeActionJob(bureauAction);
             }
             Map<String,Object> eventUpdateProp = new HashMap<>();

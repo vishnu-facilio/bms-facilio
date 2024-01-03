@@ -36,7 +36,7 @@ public class CalendarModule extends BaseModuleConfig{
         defaultCalendarForm.setName("default_calendar_web");
         defaultCalendarForm.setLabelPosition(FacilioForm.LabelPosition.TOP);
         defaultCalendarForm.setShowInWeb(true);
-        defaultCalendarForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        defaultCalendarForm.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
 
         List<FormField> defaultCalendarFormFields = new ArrayList<>();
         defaultCalendarFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX,"Name", FormField.Required.REQUIRED,1,1));
@@ -75,7 +75,7 @@ public class CalendarModule extends BaseModuleConfig{
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.Calendar.CALENDAR_MODULE_NAME);
-        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         groupDetails.put("views", calenderViews);
         groupVsViews.add(groupDetails);
 
@@ -85,7 +85,7 @@ public class CalendarModule extends BaseModuleConfig{
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Calendar");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         allView.setFields(getAllViewColumns());
 
         return allView;
@@ -97,6 +97,7 @@ public class CalendarModule extends BaseModuleConfig{
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());

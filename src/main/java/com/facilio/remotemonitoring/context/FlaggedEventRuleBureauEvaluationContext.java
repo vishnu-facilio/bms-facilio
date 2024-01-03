@@ -2,6 +2,7 @@ package com.facilio.remotemonitoring.context;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.context.peoplegroup.V3PeopleGroupContext;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +19,7 @@ public class FlaggedEventRuleBureauEvaluationContext extends V3Context {
     private Long takeActionPeriod;
     private Boolean addUnusedEvalTime;
     private List<BureauInhibitReasonListContext> inhibitReasonList;
-    private Group team;
+    private V3PeopleGroupContext team;
     private List<BureauCloseIssueReasonOptionContext> closeIssueReasonOptionContexts;
     private List<BureauCauseListContext> causeList;
     private List<BureauResolutionListContext> resolutionList;

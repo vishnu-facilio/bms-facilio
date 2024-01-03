@@ -32,7 +32,7 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
         groupDetails.put("name", "systemviews");
         groupDetails.put("displayName", "System Views");
         groupDetails.put("moduleName", FacilioConstants.Control_Action.CONTROL_ACTION_TEMPLATE_MODULE_NAME);
-        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        groupDetails.put("appLinkNames", Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         groupDetails.put("views", controlAction);
         groupVsViews.add(groupDetails);
         return groupVsViews;
@@ -42,7 +42,7 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
         FacilioView allView = new FacilioView();
         allView.setName("all");
         allView.setDisplayName("All Control Action Template");
-        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP));
+        allView.setAppLinkNames(Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.ENERGY_APP, FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
 
 
         List<ViewField> fields = new ArrayList<>();
@@ -66,6 +66,7 @@ public class ControlActionTemplateModule extends BaseModuleConfig {
         appNames.add(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         appNames.add(FacilioConstants.ApplicationLinkNames.ENERGY_APP);
+        appNames.add(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(getModuleName());

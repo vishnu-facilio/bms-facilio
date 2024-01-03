@@ -32,10 +32,7 @@ public class FlaggedEventBureauTakeActionJob extends FacilioJob {
                     if (rule != null && (rule.shouldCreateWorkorder() || (bureauAction.getInhibitTimeStamp() != null && bureauAction.getInhibitTimeStamp() > 0)) && flaggedEvent.getStatus() != null && flaggedEvent.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN) {
                         if(bureauAction.getTakeActionTimestamp() != null && bureauAction.getTakeActionTimestamp() > 0) {
                             if (bureauAction.getEventStatus() != null && (bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY || bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN || bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.INHIBIT)) {
-                                FlaggedEventBureauActionsContext updateAction = new FlaggedEventBureauActionsContext();
-                                updateAction.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
-                                updateAction.setId(bureauAction.getId());
-                                V3RecordAPI.updateRecord(updateAction, modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Collections.singletonList(modBean.getField("eventStatus", FlaggedEventBureauActionModule.MODULE_NAME)));
+                                FlaggedEventUtil.updateBureauActionStatus(bureauAction.getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
                             }
                             passToNextBureau(flaggedEvent, bureauAction);
                         }

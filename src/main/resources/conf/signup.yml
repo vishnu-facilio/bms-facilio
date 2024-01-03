@@ -590,3 +590,4 @@ classes:
   - com.facilio.bmsconsoleV3.signup.moduleconfig.AddFeatureLimit
   #Invoice Module
   - com.facilio.bmsconsoleV3.signup.moduleconfig.InvoiceModule
+  - com.facilio.remotemonitoring.signup.AlarmTimeLogModule

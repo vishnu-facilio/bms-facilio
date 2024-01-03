@@ -4036,6 +4036,19 @@ public class APIv3Config {
                 .build();
     }
 
+    @Module(AlarmTimeLogModule.MODULE_NAME)
+    public static Supplier<V3Config> getAlarmTimeLogModule(){
+        return () -> new V3Config(AlarmLogModuleContext.class, null)
+                .create()
+                .update()
+                .list()
+                .fetchSupplement(AlarmTimeLogModule.MODULE_NAME, "performedTeam")
+                .fetchSupplement(AlarmTimeLogModule.MODULE_NAME, "performedBy")
+                .summary()
+                .delete()
+                .build();
+    }
+
     @Module(FlaggedEventAlarmTypeRelModule.MODULE_NAME)
     public static Supplier<V3Config> getFlaggedEventRuleAlarmTypeRelModule(){
         return () -> new V3Config(FlaggedEventRuleAlarmTypeRel.class,null)

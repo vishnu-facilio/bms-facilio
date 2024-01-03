@@ -67,10 +67,11 @@ public class InhibitFlaggedEventCommand extends FacilioCommand {
             updateAction.setId(actionId);
             updateAction.setTakeActionTimestamp(System.currentTimeMillis());
             updateAction.setInhibitTimeStamp(System.currentTimeMillis());
-            updateAction.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.INHIBIT);
             updateAction.setInhibitReason(inhibitReason);
             List<FacilioField> fields = Arrays.asList(modBean.getField("inhibitReason", FlaggedEventBureauActionModule.MODULE_NAME), modBean.getField("eventStatus", FlaggedEventBureauActionModule.MODULE_NAME), modBean.getField("inhibitTimeStamp", FlaggedEventBureauActionModule.MODULE_NAME),modBean.getField("takeActionTimestamp", FlaggedEventBureauActionModule.MODULE_NAME));
             V3RecordAPI.updateRecord(updateAction, modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), fields);
+            FlaggedEventUtil.updateBureauActionStatus(actionId,FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.INHIBIT);
+
             return V3RecordAPI.getRecord(FlaggedEventBureauActionModule.MODULE_NAME, actionId, FlaggedEventBureauActionsContext.class);
         }
         return null;
