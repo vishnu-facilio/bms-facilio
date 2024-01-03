@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 @Log4j
-public class PermissionSetConfigPackageImpl implements PackageBean<BasePermissionContext> {
+public class PermissionSetConfigPackageBeanImpl implements PackageBean<BasePermissionContext> {
 
     PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
     List<PermissionSetContext> permissionSet = permissionSetBean.getPermissionSetsList(-1,-1,null,false);
     List<Long> permissionSetIds = permissionSet.stream().map(PermissionSetContext::getId).collect(Collectors.toList());
 
-    public PermissionSetConfigPackageImpl() throws Exception {
+    public PermissionSetConfigPackageBeanImpl() throws Exception {
     }
 
     @Override

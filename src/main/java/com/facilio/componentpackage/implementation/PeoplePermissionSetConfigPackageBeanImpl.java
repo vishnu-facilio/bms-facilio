@@ -29,13 +29,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class PeoplePermissionSetConfigPackageImpl implements PackageBean<Pair<Long, Long>> {
+public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pair<Long, Long>> {
 
     PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
     List<PermissionSetContext> existingPermissionSetList = permissionSetBean.getPermissionSetsList(-1,-1,null,false);
     Map<Long, PermissionSetContext> idVsExistingPermissionSet = existingPermissionSetList.stream().collect(Collectors.toMap(PermissionSetContext::getId, Function.identity()));
 
-    public PeoplePermissionSetConfigPackageImpl() throws Exception {
+    public PeoplePermissionSetConfigPackageBeanImpl() throws Exception {
     }
 
     @Override

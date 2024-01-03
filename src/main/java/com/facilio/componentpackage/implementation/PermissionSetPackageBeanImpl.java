@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j;
 import java.util.*;
 
 @Log4j
-public class PermissionSetPackageImpl implements PackageBean<PermissionSetContext> {
+public class PermissionSetPackageBeanImpl implements PackageBean<PermissionSetContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
         return getPermissionSetComponent(true, false);

@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Log4j
-public class UserScopingPackageImpl implements PackageBean<ScopingContext> {
+public class UserScopingPackageBeanImpl implements PackageBean<ScopingContext> {
 
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {

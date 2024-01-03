@@ -30,7 +30,7 @@ public class UserScopingConfigPackageBeanImpl implements PackageBean<ScopingConf
 
     UserScopeBean userScopeBean = (UserScopeBean) BeanFactory.lookup("UserScopeBean");
     List<ScopingContext>allUserScopingList = userScopeBean.getUserScopingList(null,-1,-1);
-    Map<Long, ScopingContext> scopingIdIdVsContext = scopingIdIdVsContext = allUserScopingList.stream().collect(Collectors.toMap(ScopingContext::getId, Function.identity()));
+    Map<Long, ScopingContext> scopingIdIdVsContext = allUserScopingList.stream().collect(Collectors.toMap(ScopingContext::getId, Function.identity()));
 
     public UserScopingConfigPackageBeanImpl() throws Exception {
     }
