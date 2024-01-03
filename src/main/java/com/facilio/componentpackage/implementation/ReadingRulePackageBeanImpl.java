@@ -97,6 +97,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             FacilioModule module = moduleBean.getModule(FacilioConstants.ReadingRules.NEW_READING_RULE);
 
             readingRule = constructRuleFromXMLBuilder(ruleElement);
+            LOGGER.info(readingRule.getNs() + " rule name" + readingRule.getName());
             FacilioContext context = V3Util.createRecord(module, FieldUtil.getAsProperties(readingRule));
 
             Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);

@@ -123,7 +123,11 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 	
 	private FacilioModule createModule(String readingName, Context context) {
 		FacilioModule module = new FacilioModule();
-		module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
+		if (context.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
+			module.setName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		} else {
+			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
+		}
 		module.setDisplayName(readingName);
 		String tableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		if (tableName == null || tableName.isEmpty()) {
