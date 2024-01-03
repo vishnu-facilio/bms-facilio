@@ -24,6 +24,8 @@ public class ScoringRule extends QAndARule<ScoringRuleCondition> {
     public void beforeSaveHook(QuestionContext question) {
         if (CollectionUtils.isNotEmpty(getRuleConditions())) {
             fullScore = question.getQuestionType().getAnswerHandler().computeFullScore(this.getRuleConditions()); //Answer handler cannot be null when rule is enabled
+        } else{
+            fullScore=0D;
         }
     }
 

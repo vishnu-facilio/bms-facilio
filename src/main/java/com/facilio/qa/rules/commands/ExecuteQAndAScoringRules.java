@@ -50,6 +50,9 @@ public class ExecuteQAndAScoringRules extends ExecuteQAndARulesCommand {
         if(CollectionUtils.isEmpty(conditions)) {
             ScoringRule scoringRule = (ScoringRule) rule;
             Map<String, Object> answerMap = FieldUtil.getAsProperties(answer);
+            if(scoringRule.getWorkflowId()==null){
+                return;
+            }
             Map<String, Object> workflowResult = (Map<String, Object>) WorkflowUtil.getResult(scoringRule.getWorkflowId(),answerMap);
             answer.setFullScore(FacilioUtil.parseDouble(workflowResult.get("fullScore")));
             answer.setScore(FacilioUtil.parseDouble(workflowResult.get("totalScore")));
