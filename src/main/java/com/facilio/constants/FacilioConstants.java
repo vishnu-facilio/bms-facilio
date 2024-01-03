@@ -649,6 +649,7 @@ public class FacilioConstants {
 		public static final String MAIL_CONVERSION_TYPE = "mailConversionType";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
+		public static final String FORMATTED_RECORD_MAP = "formattedRecordMap";
 		public static final String RECORD_LIST_MAP = "recordListMap";
 
 		public static final String RECORD_ID = "recordId";

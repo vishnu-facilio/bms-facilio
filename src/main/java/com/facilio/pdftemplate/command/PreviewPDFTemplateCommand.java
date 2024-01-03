@@ -26,16 +26,9 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         PDFTemplate pdfTemplate = (PDFTemplate) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE);
-
-        long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+        Map<String, Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORMATTED_RECORD_MAP);
 
         String moduleName = Constants.getModBean().getModule(pdfTemplate.getModuleId()).getName();
-        List<Long> recordIds = new ArrayList<>();
-        recordIds.add(recordId);
-
-        FacilioContext recordMapContext = V3Util.getSummary(moduleName,recordIds);
-        ModuleBaseWithCustomFields recordContext = Constants.getRecordMap(recordMapContext).get(moduleName).get(0);
-        Map<String, Object> recordMap = FieldUtil.getAsProperties(recordContext);
         Map<String, Map<String, Object>> placeholders = new HashMap<>();
         placeholders.put(moduleName, recordMap);
         placeholders.put("org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()));

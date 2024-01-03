@@ -3600,6 +3600,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getPreviewPDFTemplateChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetPDFTemplateCommand());
+		chain.addCommand(new FormatRecordMapCommand());
 		chain.addCommand(new PreviewPDFTemplateCommand());
 		return chain;
 	}
@@ -3607,6 +3608,7 @@ public class ReadOnlyChainFactory {
 	public static FacilioChain getDownloadPDFTemplateChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetPDFTemplateCommand());
+		chain.addCommand(new FormatRecordMapCommand());
 		chain.addCommand(new PreviewPDFTemplateCommand());
 		chain.addCommand(new DownloadPDFTemplateCommand());
 		return chain;
