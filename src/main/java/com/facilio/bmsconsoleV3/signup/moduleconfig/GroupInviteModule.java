@@ -123,7 +123,7 @@ public class GroupInviteModule extends BaseModuleConfig{
     public static void addSystemButton(String moduleName) throws Exception{
 
         SystemButtonRuleContext createButton = new SystemButtonRuleContext();
-        createButton.setName("Group Invite");
+        createButton.setName("New Group Invite");
         createButton.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
         createButton.setPositionType(CustomButtonRuleContext.PositionType.LIST_TOP.getIndex());
         createButton.setIdentifier("create");
