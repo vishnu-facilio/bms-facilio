@@ -3546,7 +3546,7 @@ public class APIv3Config {
 
     @Module(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER)
     public static Supplier<V3Config> getUtilityCustomer() {
-        return () -> new V3Config(UtilityIntegrationCustomerContext.class, null)
+        return () -> new V3Config(UtilityIntegrationCustomerContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER_ACTIVITY))
@@ -3559,7 +3559,7 @@ public class APIv3Config {
     }
     @Module(FacilioConstants.UTILITY_INTEGRATION_METER)
     public static Supplier<V3Config> getUtilityMeters() {
-        return () -> new V3Config(UtilityIntegrationMeterContext.class, new ModuleCustomFieldCount30())
+        return () -> new V3Config(UtilityIntegrationMeterContext.class, new ModuleCustomFieldCount50())
                 .create()
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_METER_ACTIVITY))
