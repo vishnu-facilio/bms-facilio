@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ClientAction;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.TenantUnitSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -97,13 +98,8 @@ public class AccessibleBasespaceValueGenerator extends ValueGenerator {
                         List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SITE);
                         Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 
-                        SelectRecordsBuilder<V3SiteContext> selectBuilder = new SelectRecordsBuilder<V3SiteContext>()
-                                .select(fields)
-                                .table(module.getTableName())
-                                .moduleName(module.getName())
-                                .beanClass(V3SiteContext.class)
-                         		.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(client.getId()), NumberOperators.EQUALS));
-                        List<V3SiteContext> clienSiteList = selectBuilder.get();
+                    ClientAction clientaction=new ClientAction();
+                    List<V3SiteContext> clienSiteList= clientaction.getAssociatedClientSite(module,fields,client);
                         if(CollectionUtils.isNotEmpty(clienSiteList)) {
                             List<Long> siteIDs = new ArrayList<>();
                             for (V3SiteContext clientsite :clienSiteList) {

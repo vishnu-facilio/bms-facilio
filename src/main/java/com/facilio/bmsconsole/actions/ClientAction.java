@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.bmsconsoleV3.context.V3ClientContext;
+import com.facilio.bmsconsoleV3.context.V3SiteContext;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -196,6 +203,16 @@ public class ClientAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.CLIENT, client);
 
 		return SUCCESS;
+	}
+	public List<V3SiteContext> getAssociatedClientSite(FacilioModule module, List<FacilioField> fields, V3ClientContext client) throws Exception{
+		SelectRecordsBuilder<V3SiteContext> selectBuilder = new SelectRecordsBuilder<V3SiteContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(V3SiteContext.class)
+				.andCondition(CriteriaAPI.getCondition("CLIENT_ID", "client", String.valueOf(client.getId()), NumberOperators.EQUALS)).skipScopeCriteria();
+		List<V3SiteContext> clienSiteList = selectBuilder.get();
+		return clienSiteList;
 	}
 
 	public String clientsList() throws Exception {
