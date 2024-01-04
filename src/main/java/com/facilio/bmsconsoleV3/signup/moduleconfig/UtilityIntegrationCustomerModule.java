@@ -375,5 +375,7 @@ public class UtilityIntegrationCustomerModule extends BaseModuleConfig {
 
         String btnDisPlayName = "New Account";
         SystemButtonApi.addCreateButtonWithCustomName(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,btnDisPlayName);
+        SystemButtonApi.addExportAsCSV(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
+        SystemButtonApi.addExportAsExcel(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
     }
 }

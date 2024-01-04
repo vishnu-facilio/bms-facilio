@@ -3573,7 +3573,7 @@ public class APIv3Config {
     }
     @Module(FacilioConstants.UTILITY_INTEGRATION_BILLS)
     public static Supplier<V3Config> getUtilityBills() {
-        return () -> new V3Config(UtilityIntegrationBillContext.class, null)
+        return () -> new V3Config(UtilityIntegrationBillContext.class, new ModuleCustomFieldCount10())
                 .create()
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new CheckAndRaiseDisputeCommand(),new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY))
