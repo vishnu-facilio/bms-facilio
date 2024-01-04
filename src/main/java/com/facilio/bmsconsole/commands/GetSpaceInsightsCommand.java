@@ -34,7 +34,7 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         JSONObject insights = new JSONObject();
         long floorCount = 0, spaceCount = 0, independantSpaceCount = 0, buildingCount = 0, assetCount = 0, subSpaceCount = 0, meterCount = 0;
-        assetCount = getAssetsCount(spaceId);
+        assetCount = getAssetsCount(spaceId,moduleName);
         meterCount = SpaceAPI.getMetersCount(spaceId);
         if (spaceId > 0) {
             switch (moduleName) {
@@ -70,21 +70,52 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         return false;
     }
 
-    private long getAssetsCount(long baseSpaceId) throws Exception{
+    private long getAssetsCount(long baseSpaceId, String moduleName) throws Exception{
         FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
         List<FacilioField> resourceFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.RESOURCE);
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(resourceFields);
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(resourceModule.getTableName())
-                .select(FieldFactory.getCountField())
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), Collections.singleton(baseSpaceId), StringOperators.IS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), EnumOperators.IS))
-                .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME","sysDeletedTime",null, CommonOperators.IS_EMPTY));
-        Map<String, Object> assetCount = builder.fetchFirst();
-        if(MapUtils.isNotEmpty(assetCount) && assetCount.containsKey("count")){
-            return ((Number) assetCount.get("count")).longValue();
+        List<Long> spaceIds = getAllSpaceIds(baseSpaceId,moduleName);
+        if(CollectionUtils.isNotEmpty(spaceIds)) {
+            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                    .table(resourceModule.getTableName())
+                    .select(FieldFactory.getCountField())
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), EnumOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), spaceIds, StringOperators.IS))
+                    .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME", "sysDeletedTime", null, CommonOperators.IS_EMPTY));
+            Map<String, Object> assetCount = builder.fetchFirst();
+            if (MapUtils.isNotEmpty(assetCount) && assetCount.containsKey("count")) {
+                return ((Number) assetCount.get("count")).longValue();
+            }
         }
         return 0;
+    }
+
+    private List<Long> getAllSpaceIds(long parentBaseSpaceId, String moduleName) throws Exception{
+        FacilioModule baseSpaceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE);
+        List<FacilioField> baseSpaceFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
+        Map<String,FacilioField> baseSpaceFieldMap = FieldFactory.getAsMap(baseSpaceFields);
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                .select(Collections.singletonList(FieldFactory.getIdField(baseSpaceModule)))
+                .table(baseSpaceModule.getTableName());
+        if(!moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.SPACE)){
+                selectRecordBuilder.andCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get(moduleName),String.valueOf(parentBaseSpaceId),StringOperators.IS));
+        }else{
+            selectRecordBuilder
+                    .orCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get("space1"),String.valueOf(parentBaseSpaceId),StringOperators.IS))
+                    .orCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get("space2"),String.valueOf(parentBaseSpaceId),StringOperators.IS))
+                    .orCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get("space3"),String.valueOf(parentBaseSpaceId),StringOperators.IS))
+                    .orCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get("space4"),String.valueOf(parentBaseSpaceId),StringOperators.IS))
+                    .orCondition(CriteriaAPI.getCondition(baseSpaceFieldMap.get("space5"),String.valueOf(parentBaseSpaceId),StringOperators.IS));
+        }
+        List<Map<String,Object>> props = selectRecordBuilder.get();
+        List<Long> spaceIds = new ArrayList<>();
+        for(Map<String,Object> prop:props){
+            spaceIds.add((Long) prop.get("id"));
+        }
+        if(!spaceIds.contains(parentBaseSpaceId)){
+            spaceIds.add(parentBaseSpaceId);
+        }
+        return spaceIds;
     }
 
     private long getAllSpaces(long siteId, long spaceType) throws Exception {
