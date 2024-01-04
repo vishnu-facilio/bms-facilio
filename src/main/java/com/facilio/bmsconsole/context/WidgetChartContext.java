@@ -120,6 +120,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 //				if(optimize == false) {
 //					dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId(), true));
 //				}
+				dataOptionsJson.put("multiGroup",ReportUtil.checkMultiGroup(newReportId));
 				dataOptionsJson.put("moduleName", ReportUtil.getReportModuleName(getNewReportId()));
 				dataOptionsJson.put("reportType", ReportUtil.getReportType(getNewReportId()));
 				dataOptionsJson.put("reportTemplate", getReportTemplate());
@@ -154,6 +155,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		widgetJson.put("helpText",getHelpText());
 		widgetJson.put("title", getHeaderText());
 		widgetJson.put("sequence", index);
+		widgetJson.put("widgetSettings",getWidgetSettings());
 		widgetJson.put("web_url", "dashboard/"+ AccountUtil.getCurrentApp().getLinkName() + "/widget/" + getId());
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {

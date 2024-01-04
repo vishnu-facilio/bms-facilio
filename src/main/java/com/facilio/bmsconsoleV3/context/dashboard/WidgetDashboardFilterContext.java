@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.context.DashboardFieldMappingContext;
 import com.facilio.bmsconsole.context.DashboardFilterContext;
 import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.util.DashboardFilterUtil;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.modules.FacilioModule;
@@ -17,13 +19,15 @@ import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.Map;
 
 @Setter
 @Getter
-@Log4j
 public class WidgetDashboardFilterContext extends DashboardWidgetContext
 {
+    private static final Logger LOGGER = Logger.getLogger(WidgetDashboardFilterContext.class.getName());
     public static class WidgetDashboardFilter {
 
         private String[] defaultValues;
@@ -329,6 +333,15 @@ public class WidgetDashboardFilterContext extends DashboardWidgetContext
         widgetJson.put("dashboardFilterId", getDashboardFilterId());
         widgetJson.put("title", getHeaderText());
         widgetJson.put("sequence", index);
+        try{
+            if(widget_id > 0){
+                DashboardUserFilterContext filterData = DashboardFilterUtil.getDashboardUserFiltersForWidgetId(widget_id);
+                widgetJson.put("filterData", DashboardUtil.getDashboardMobileUserFilterContext(filterData));
+            }
+        }
+        catch(Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
         return widgetJson;
     }
 }

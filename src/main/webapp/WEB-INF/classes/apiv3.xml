@@ -1410,7 +1410,8 @@
         <action name="sub_modules/list"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="subModulesList">
-            <param name="deprecated">true</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Analytics</param>
         </action>
         <action name="folder/create"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
@@ -1881,6 +1882,12 @@
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="getDashboardTabsList">
             <param name="linkName">{1}</param>
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
+        <action name="mobile/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="getMobileTab">
+            <param name="dashboardTabId">{1}</param>
             <param name="permission">GET:VIEW,READ</param>
         </action>
     </package>

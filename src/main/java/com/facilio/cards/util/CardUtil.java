@@ -223,4 +223,17 @@ public class CardUtil {
 		}
 		return childCards;
 	}
+	public static List<JSONObject> getChildCardsResponse(List<WidgetCardContext> childCards) {
+		List<JSONObject> childResponse = new ArrayList<>();
+		for(WidgetCardContext childCard : childCards){
+			JSONObject widgetJson = new JSONObject();
+			widgetJson.put("cardLayout", childCard.getCardLayout());
+			widgetJson.put("link_name", childCard.getLinkName());
+			widgetJson.put("title", childCard.getHeaderText());
+			widgetJson.put("id", childCard.getId());
+			widgetJson.put("label", childCard.getWidgetName());
+			childResponse.add(widgetJson);
+		}
+		return childResponse;
+	}
 }

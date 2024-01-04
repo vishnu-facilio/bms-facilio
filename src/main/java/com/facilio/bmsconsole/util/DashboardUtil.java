@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
@@ -878,12 +879,37 @@ public class DashboardUtil {
 		dashboards.add(dashboard);
 		return getDashboardResponseJson(dashboards, optimize);
 	}
-	public static JSONArray getMobileDashboardResponseJson(DashboardContext dashboard, boolean optimize) {
+	public static JSONArray getMobileDashboardResponseJson(DashboardContext dashboard, boolean optimize) throws Exception {
 		List dashboards = new ArrayList<>();
 		dashboards.add(dashboard);
 		return getMobileDashboardResponseJson(dashboards, optimize);
 	}
-	public static JSONArray getMobileDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) {
+	public static JSONArray getMobileDashboardTabResponseJson(DashboardTabContext dashboardTab, boolean optimize) {
+		List dashboardTabs = new ArrayList<>();
+		dashboardTabs.add(dashboardTab);
+		return getMobileDashboardTabResponseJson(dashboardTabs, optimize);
+	}
+	public static JSONArray getMobileDashboardTabResponseJson(List<DashboardTabContext> dashboards, boolean optimize) {
+
+		JSONArray result = new JSONArray();
+
+		for(DashboardTabContext dashboard:dashboards) {
+			String tabName = dashboard.getName();
+			Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboard.getDashboardWidgets();
+			JSONArray childrenArray = new JSONArray();
+			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
+				childrenArray.add(dashboardWidgetContext.widgetMobileJsonObject(optimize, 0));
+			}
+			JSONObject dashboardJson = new JSONObject();
+			dashboardJson.put("id", dashboard.getId());
+			dashboardJson.put("label", tabName);
+			dashboardJson.put("group", childrenArray);
+			dashboardJson.put("dashboardFilter",getDashboardMobileFilterContext(dashboard.getDashboardFilter()));
+			result.add(dashboardJson);
+		}
+		return result;
+	}
+	public static JSONArray getMobileDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) throws Exception {
 
 		JSONArray result = new JSONArray();
 
@@ -900,13 +926,81 @@ public class DashboardUtil {
 			dashboardJson.put("description", dashboard.getDescription());
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("group", childrenArray);
-			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
+			if(dashboard.isTabEnabled()){
+				dashboardJson.put("tabs", getDashboardTabList(dashboard));
+			}
 			dashboardJson.put("tabEnabled", dashboard.isTabEnabled());
+			dashboardJson.put("dashboardFilter",getDashboardMobileFilterContext(dashboard.getDashboardFilter()));
 			result.add(dashboardJson);
 		}
 		return result;
 	}
-	
+	public static List<Map<String,Object>> getDashboardTabList(DashboardContext dashboard) throws Exception {
+		List<Map<String,Object>> tabsList;
+		FacilioChain chain = TransactionChainFactoryV3.getDashboardTabListChain();
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		chain.execute();
+		tabsList = (List<Map<String, Object>>) context.get("tabsList");
+		return tabsList;
+	}
+	public static JSONObject getDashboardMobileFilterContext(DashboardFilterContext dashboardFilter) {
+		JSONObject filterContext = new JSONObject();
+		JSONArray userFilters = new JSONArray();
+		if(dashboardFilter.getDashboardUserFilters() != null && dashboardFilter.getDashboardUserFilters().size() > 0){
+			for(DashboardUserFilterContext userFilter : dashboardFilter.getDashboardUserFilters()){
+				userFilters.add(getDashboardMobileUserFilterContext(userFilter));
+			}
+			filterContext.put("dashboardUserFilters",userFilters);
+		}
+		filterContext.put("dashboardId",dashboardFilter.getDashboardId());
+		filterContext.put("dashboardTabId",dashboardFilter.getDashboardTabId());
+		filterContext.put("dateLabel",dashboardFilter.getDateLabel());
+		filterContext.put("dateOperator",dashboardFilter.getDateOperator());
+		filterContext.put("dateValue",dashboardFilter.getDateValue());
+		filterContext.put("id",dashboardFilter.getId());
+		filterContext.put("isTimelineFilterEnabled",dashboardFilter.getIsTimelineFilterEnabled());
+		filterContext.put("linkName",dashboardFilter.getLinkName());
+
+		return filterContext;
+	}
+	public static JSONObject getDashboardMobileUserFilterContext(DashboardUserFilterContext filterData) {
+		JSONObject filterJson = new JSONObject();
+		filterJson.put("componentTypeEnum",filterData.getComponentTypeEnum());
+		filterJson.put("dateTimeOperator",filterData.getDateTimeOperator());
+		filterJson.put("defaultValues",filterData.getDefaultValues());
+		filterJson.put("filterDisplayType",filterData.getFilterDisplayType());
+		filterJson.put("filterOrder",filterData.getFilterOrder());
+		filterJson.put("id",filterData.getId());
+		filterJson.put("label",filterData.getLabel());
+		filterJson.put("moduleName",filterData.getModuleName());
+		filterJson.put("optionType",filterData.getOptionType());
+		filterJson.put("optionTypeEnum",filterData.getOptionTypeEnum());
+		filterJson.put("orgId",filterData.getOrgId());
+		filterJson.put("fieldId",filterData.getFieldId());
+		filterJson.put("field",filterData.getField());
+		filterJson.put("linkName",filterData.getLink_name());
+
+		return filterJson;
+	}
+	public static void updateMobileWidgets( List<DashboardWidgetContext> widgets_with_section) {
+		for(DashboardWidgetContext widgetContext: widgets_with_section){
+			WidgetSectionContext sectionWidget = (WidgetSectionContext) widgetContext;
+			if(sectionWidget.getWidgets_in_section() != null && sectionWidget.getWidgets_in_section().size() > 0){
+				List<DashboardWidgetContext> sortedArray = new ArrayList<>();
+				Map<String, List<DashboardWidgetContext>> separateArrays = new LinkedHashMap<>();
+				sectionWidget.getWidgets_in_section().sort(Comparator.comparing(DashboardWidgetContext::getyPosition));
+				for (DashboardWidgetContext obj : sectionWidget.getWidgets_in_section()) {
+					separateArrays.computeIfAbsent(obj.getyPosition().toString(), k -> new ArrayList<>()).add(obj);
+				}
+				for (Object yVal: separateArrays.keySet()) {
+					separateArrays.get(yVal).sort(Comparator.comparing(DashboardWidgetContext::getxPosition));
+					sortedArray.addAll(separateArrays.get(yVal));
+				}
+				sectionWidget.setWidgets_in_section(sortedArray);
+			}
+		}
+	}
 	public static JSONArray getDashboardResponseJson(List<DashboardContext> dashboards, boolean optimize) {
 		
 		JSONArray result = new JSONArray();

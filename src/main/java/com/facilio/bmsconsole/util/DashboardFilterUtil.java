@@ -715,6 +715,7 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 	}
 	public static DashboardUserFilterContext getDashboardUserFiltersForWidgetId(Long widgetId) throws Exception {
 		DashboardUserFilterContext newFilterContext = new DashboardUserFilterContext();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(widgetId != null){
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 					.table(ModuleFactory.getDashboardUserFilterModule().getTableName())
@@ -723,6 +724,9 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 			List<Map<String, Object>> props = selectRecordBuilder.get();
 			if(props != null && !props.isEmpty()){
 				newFilterContext = FieldUtil.getAsBeanListFromMapList(props,DashboardUserFilterContext.class).get(0);
+				if(newFilterContext.getFieldId() > 0) {
+					newFilterContext.setField(modBean.getField(newFilterContext.getFieldId()));
+				}
 			}
 		}
 		return newFilterContext;

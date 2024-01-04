@@ -730,4 +730,9 @@
             <property name="appId" type="number"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/tab/mobile/:tabId" method="GET">
+        <urlparams>
+            <property name="tabId" type="number" mandatory="true"></property>
+        </urlparams>
+    </request>
 </config>

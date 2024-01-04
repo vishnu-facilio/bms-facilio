@@ -871,6 +871,24 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		ReportContext reportContext =  ReportUtil.getReport(reportId,true);
 		return reportContext.getModule().getName();
 	}
+	public static boolean checkMultiGroup(long reportId) throws Exception {
+		boolean multiGroup = false;
+		ReportContext reportContext =  ReportUtil.getReport(reportId,true);
+		if(reportContext != null && reportContext.getTypeEnum() != ReportContext.ReportType.WORKORDER_REPORT && reportContext.getChartState() != null) {
+			JSONParser parse = new JSONParser();
+			JSONObject chartStateJson = (JSONObject) parse.parse(reportContext.getChartState());
+			if(chartStateJson != null) {
+				JSONObject visualizationProps = (JSONObject) chartStateJson.get("visualizationProps");
+				if(visualizationProps != null) {
+					JSONArray groups = (JSONArray) visualizationProps.get("groups");
+					if(groups != null && groups.size() >0){
+						multiGroup = true;
+					}
+				}
+			}
+		}
+		return multiGroup;
+	}
 	
 	public static List<ReportContext> fetchAllReportsByType(Integer reportType) throws Exception{
 		List<ReportContext> reportList = new ArrayList<ReportContext>();

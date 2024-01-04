@@ -481,29 +481,56 @@ public class V3DashboardAction extends V3Action {
         }
         try {
             DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(linkName, null);
+            FacilioChain getDashboardFilterChain = ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
+            FacilioContext getDashboardFilterContext = getDashboardFilterChain.getContext();
+            getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+            getDashboardFilterChain.execute();
             List<DashboardWidgetContext> widget_list = DashboardUtil.getDashboardWidgetsWithSection(dashboard.getDashboardWidgets());
             if(widget_list != null && widget_list.size() > 0){
-                for(DashboardWidgetContext widgetContext: widget_list){
-                    WidgetSectionContext sectionWidget = (WidgetSectionContext) widgetContext;
-                    if(sectionWidget.getWidgets_in_section() != null && sectionWidget.getWidgets_in_section().size() > 0){
-                        List<DashboardWidgetContext> sortedArray = new ArrayList<>();
-                        Map<String, List<DashboardWidgetContext>> separateArrays = new LinkedHashMap<>();
-                        sectionWidget.getWidgets_in_section().sort(Comparator.comparing(DashboardWidgetContext::getyPosition));
-                        for (DashboardWidgetContext obj : sectionWidget.getWidgets_in_section()) {
-                            separateArrays.computeIfAbsent(obj.getyPosition().toString(), k -> new ArrayList<>()).add(obj);
-                        }
-                        for (Object yVal: separateArrays.keySet()) {
-                            separateArrays.get(yVal).sort(Comparator.comparing(DashboardWidgetContext::getxPosition));
-                            sortedArray.addAll(separateArrays.get(yVal));
-                        }
-                        sectionWidget.setWidgets_in_section(sortedArray);
-                    }
-                }
+                DashboardUtil.updateMobileWidgets(widget_list);
             }
             if (widget_list != null) {
                 dashboard.setDashboardWidgets(widget_list);
             }
             setData("dashboard", DashboardUtil.getMobileDashboardResponseJson(dashboard, false));
+        }catch (Exception e)
+        {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);
+        }
+        return SUCCESS;
+    }
+    public String getMobileTab() throws Exception
+    {
+        if(dashboardTabId == null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard tab id can not be empty");
+        }
+        try {
+            FacilioChain chain = TransactionChainFactoryV3.getDashboardDataChain();
+            FacilioContext context = chain.getContext();
+            context.put("tabId", dashboardTabId);
+            chain.execute();
+            DashboardTabContext dashboardTabContext = null;
+            if(context.containsKey("dashboardTabContext")){
+                dashboardTabContext = (DashboardTabContext) context.get("dashboardTabContext");
+            }
+            if(dashboardTabContext != null)
+            {
+                FacilioChain getDashboardFilterChain=ReadOnlyChainFactory.getFetchDashboardFilterAndWidgetFilterMappingChain();
+                FacilioContext getDashboardFilterContext=getDashboardFilterChain.getContext();
+                getDashboardFilterContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+                getDashboardFilterChain.execute();
+
+                List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
+                dashboardTabContext.setDashboardWidgets(DashboardUtil.getDashboardWidgetsWithCustomActions(widgets));
+                List<DashboardWidgetContext> widgets_with_section = DashboardUtil.getDashboardWidgetsWithSection(widgets);
+                if(widgets_with_section != null && widgets_with_section.size() > 0) {
+                    DashboardUtil.updateMobileWidgets(widgets_with_section);
+                }
+                if (widgets_with_section != null) {
+                    dashboardTabContext.setDashboardWidgets(widgets_with_section);
+                }
+                setData("dashboardTab", DashboardUtil.getMobileDashboardTabResponseJson(dashboardTabContext, false));
+            }
         }catch (Exception e)
         {
             throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard info"+e);

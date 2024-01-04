@@ -111,7 +111,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                      * Select Builder construction to fetch card data starts here
                      */
 
-                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
+                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr);
                     cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
@@ -121,7 +121,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         DateRange baseline_range = baseline.calculateBaseLineRange(range, baseline.getAdjustTypeEnum());
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
                         cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
-                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
+                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter,aggr);
                         cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend()));
                     }
                     /**
@@ -207,10 +207,14 @@ public class V2ConstructCardCommand extends FacilioCommand {
         selectBuilder.limit(50);
         return selectBuilder;
     }
-    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
+    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter, AggregateOperator aggr)throws Exception
     {
         List<Map<String, Object>> props = null;
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
+        if(aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
+            selectBuilder.limit(1);
+            selectBuilder.orderBy("TTIME desc");
+        }
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE))
         {
             try {
