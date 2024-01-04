@@ -70,12 +70,12 @@ public class FormatRecordMapCommand extends FacilioCommand {
         String formattedValue;
         switch (field.getDataTypeEnum()){
             case DATE: {
-                String dateFormat = AccountUtil.getCurrentOrg().getDateFormat()!=null ? AccountUtil.getCurrentOrg().getDateFormat() : "DD-MMM-YYYY";
+                String dateFormat = AccountUtil.getCurrentOrg().getDateFormat()!=null ? AccountUtil.getCurrentOrg().getDateFormat().replaceAll("D","d").replaceAll("Y","y") : "dd-MMM-yyyy";
                 formattedValue = value!=null ? DateTimeUtil.getFormattedTime((Long) value,dateFormat) : "---";
                 break;
             }
             case DATE_TIME:{
-                String dateFormat = AccountUtil.getCurrentOrg().getDateFormat()!=null ? AccountUtil.getCurrentOrg().getDateFormat() : "DD-MMM-YYYY";
+                String dateFormat = AccountUtil.getCurrentOrg().getDateFormat()!=null ? AccountUtil.getCurrentOrg().getDateFormat().replaceAll("D","d").replaceAll("Y","y") : "dd-MMM-yyyy";
                 TimeFormat timeFormat = AccountUtil.getCurrentOrg().getTimeFormatEnum();
                 dateFormat = dateFormat + " " + ( timeFormat!=null && timeFormat == TimeFormat.HOUR_12 ? "hh:mm a" : "HH:mm");
                 formattedValue = value!=null ? DateTimeUtil.getFormattedTime((Long) value,dateFormat) : "---";
