@@ -324,7 +324,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">views,views\[\d+\],views\[\d+\].*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="task" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="taskList">
@@ -1236,7 +1236,7 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^scheduledReports.*</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="editWoScheduledView" class="com.facilio.bmsconsole.actions.ViewAction" method="editWoScheduledView">
 			<result name="success" type="json">
@@ -1753,6 +1753,18 @@
 				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
+
+		<action name="*/*/metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="metaFilterFields">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="translationImpl">FieldTranslation</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
 		
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="fields">
@@ -1760,6 +1772,17 @@
 			<param name="permission">CREATE</param> -->
 			<param name="permission">ALL</param>
 			<param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,FAULT_IMPACT_TEMPLATE</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+			</result>
+		</action>
+
+		<action name="*/*/fields" class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="fields">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>

@@ -157,7 +157,7 @@ public class ModuleListConfigChainUtil {
         }
         return Collections.emptyList();
     }
-    private static List<String> getLicenseEnabledAndDisabledModulesToFetch(@NonNull Map<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> featureLicensePairMap) throws Exception {
+    private static List<String> getLicenseEnabledAndDisabledModulesToFetch( Map<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> featureLicensePairMap) throws Exception {
         List<String> licenseBasedModulesToFetch = new ArrayList<>();
         if(MapUtils.isNotEmpty(featureLicensePairMap)) {
             for(Map.Entry<AccountUtil.FeatureLicense, Pair<List<String>, List<String>>> licenseEnabledAndDisabledModules : featureLicensePairMap.entrySet()) {

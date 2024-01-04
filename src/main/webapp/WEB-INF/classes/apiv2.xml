@@ -683,7 +683,8 @@
 	<package name="customButton" namespace="/api/v2/custombutton" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="addOrUpdateCustomButton" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAllCustomButtons" >
@@ -691,11 +692,13 @@
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="deleteCustomButton" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="reorderCustomButtons" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 
 		<action name="getAvailableButtons"
@@ -723,7 +726,8 @@
 	<package name="systemButton" namespace="/api/v2/systemButton" extends="v2Api">
 		<action name="update"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="updateSystemButton">
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">MODULES</param>
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAllSystemButtons">
@@ -751,6 +755,13 @@
 		<action name="*/getAvailableButtonsForList"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
 			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
+		</action>
+
+		<action name="*/*/getAvailableButtonsForList"
+				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -1032,7 +1043,8 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateTransition" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">STATEFLOWS</param>
 		</action>
 
 		<action name="detailsFromToken"
@@ -1140,6 +1152,11 @@
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" >
 			<param name="tabType">Approval</param>
 			<param name="permission">POST:CAN_APPROVE</param>
+		</action>
+		<action name="*/availableTransitions"
+				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" >
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="changeTransition"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="changeStatus" >
@@ -4658,6 +4675,12 @@
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
+		</action>
+		<action name="*/operators"
+				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="moduleName">{1}</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
@@ -8428,7 +8451,8 @@
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTab" >
-			<param name="deprecated">true</param>
+			<param name="permission">ALL</param>
+			<param name="setupTab">TABS_AND_LAYOUTS</param>
 		</action>
 	</package>
 
@@ -9498,7 +9522,7 @@
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.ColorPaletteAction"
 				method="listColorPalette">
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 		</action>
 
 		<action name="delete"
@@ -9543,6 +9567,11 @@
 	<package name="customPageAPI" namespace="/api/v2/customPage" extends="v2Api">
 		<action name="summaryFieldWidget"
 				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getMainSummaryWidget">
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/summaryFieldWidget"
+				class="com.facilio.bmsconsole.actions.SummaryWidgetAction" method="getMainSummaryWidget">
+			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -9604,6 +9633,12 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="*/*/fetchForRecord"
+				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{1}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 
 	<package name="widgetDetail" namespace="/api/v2/customPage/widget/widgetDetail" extends="v2Api">
@@ -9628,6 +9663,12 @@
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="*/*/get"
+				class="com.facilio.bmsconsole.actions.RelationshipWidgetsAction" method="fetchSummaryWidgetForRelation">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 
 	<package name="moduleSetting" namespace="/api/v2/modules" extends="v2Api">
@@ -9636,6 +9677,14 @@
 				method="getSettingConfigDetails">
 			<param name="moduleName">{1}</param>
 			<param name="settingName">{2}</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+		</action>
+		<action name="*/*/setting/*"
+				class="com.facilio.bmsconsole.actions.ModuleSetupAction"
+				method="getSettingConfigDetails">
+			<param name="permissionModuleName">{1}</param>
+			<param name="moduleName">{2}</param>
+			<param name="settingName">{3}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="pageBuilder/*"

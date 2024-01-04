@@ -966,7 +966,22 @@
                 </param>
 
             </result>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="*/*" class="com.facilio.bmsconsoleV3.actions.V3PageAction" method="fetchSummaryFields">
+            <param name="permissionModuleName">{1}</param>
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">FieldTranslationV3</param>
+            <result name="success" type="json">
+                <param name="excludeNullProperties">true</param>
+                <param name="ignoreHierarchy">false</param>
+                <param name="includeProperties">^code.*,^data.*,^meta.*,message</param>
+                <param name="excludeProperties">
+                    data.fields.*\.field.(columnName|completeColumnName|tableName|inputName|module|accessType)
+                </param>
+
+            </result>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
     <package name="fieldsApiv3" namespace="/api/v3/fields" extends="v3Api">
@@ -2598,7 +2613,9 @@
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="actionType">{3}</param>
-            <param name="permission">PATCH:UPDATE</param>
+            <param name="permission">
+                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
         </action>
     </package>
     <package name="newApprovalAction" namespace="/api/v3/approval/action" extends="v3Api">
@@ -2611,62 +2628,97 @@
         </action>
     </package>
     <package name="multiImportApi" namespace="/api/v3/multiImport" extends="v3Api">
-
         <action name="createImportDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="createImportDataDetails">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="getImportDataDetails" class="com.facilio.multiImport.action.MultiImportDataAction" method="fetchImportDataDetails">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
 
         <action name="importFileUpload" class="com.facilio.multiImport.action.MultiImportDataAction" method="addImportFile">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
 
         <action name="importSheetMapping" class="com.facilio.multiImport.action.MultiImportDataAction" method="sheetMapping">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="predictSheetExcutionOrder" class="com.facilio.multiImport.action.MultiImportDataAction" method="predictSheetExecution">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importSheetExecutionReorder" class="com.facilio.multiImport.action.MultiImportDataAction" method="reorderSheetsExecution">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importFileList" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportFileList">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importSheetList" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportSheetList">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="deleteImportFile" class="com.facilio.multiImport.action.MultiImportDataAction" method="deleteImportFile">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importFieldMapping" class="com.facilio.multiImport.action.MultiImportDataAction" method="fieldMapping">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="list" class="com.facilio.multiImport.action.MultiImportDataAction" method="list">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="count" class="com.facilio.multiImport.action.MultiImportDataAction" method="count">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="import" class="com.facilio.multiImport.action.MultiImportDataAction" method="parseAndImportData">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="downloadErrorRecords" class="com.facilio.multiImport.action.MultiImportDataAction" method="downloadErrorRecords">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="abortImport" class="com.facilio.multiImport.action.MultiImportDataAction" method="abortImport">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importModules" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportModules">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="importFields" class="com.facilio.multiImport.action.MultiImportDataAction" method="getMultiImportFields">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
         <action name="summary" class="com.facilio.multiImport.action.MultiImportDataAction" method="summary">
-            <param name="deprecated">true</param>
+            <param name="tabType">SETUP</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">Import Data</param>
         </action>
     </package>
 

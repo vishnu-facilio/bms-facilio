@@ -8,6 +8,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.moduleBuilder.util.ModuleListConfigChainUtil;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Setter
 public class ModuleListAction extends FacilioAction {
     private String feature;
@@ -18,7 +20,9 @@ public class ModuleListAction extends FacilioAction {
         FacilioChain chain = ModuleListConfigChainUtil.getModuleListChain(feature, appId);
         FacilioContext context = chain.getContext();
         chain.execute();
-        setResult(FacilioConstants.ContextNames.RESULT, context.get(FacilioConstants.ContextNames.RESULT));
+        Map<String, Object> resultMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RESULT);
+        setResult(FacilioConstants.ContextNames.MODULE_LIST, resultMap.get(FacilioConstants.ContextNames.MODULE_LIST));
+        setResult("subModules", resultMap.get("subModules"));
         return SUCCESS;
     }
 

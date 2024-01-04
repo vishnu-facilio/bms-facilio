@@ -59,6 +59,31 @@
         </global-exception-mappings>
     </package>
 
+    <package name="setupModuleAPI" namespace="/api/v1/setup/module" extends="homeApi">
+
+    <action name="metafields" class="com.facilio.bmsconsole.actions.ModuleAction"
+            method="metaFilterFields">
+        <param name="permission">ALL</param>
+        <param name="setupTab">USERS,EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS,TEAMS,MODULES</param>
+        <param name="translationImpl">FieldTranslation</param>
+        <result name="success" type="json">
+            <param name="enumAsBean">true</param>
+            <param name="includeProperties">meta.*</param>
+        </result>
+    </action>
+
+     <action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
+                method="*/*/fields">
+            <param name="permission">ALL</param>
+            <param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,FAULT_IMPACT_TEMPLATE</param>
+            <result name="success" type="json">
+                <param name="enumAsBean">true</param>
+                <param name="includeProperties">fields,fields\[\d+\],fields\[\d+\].*</param>
+            </result>
+     </action>
+
+    </package>
+
     <package name="sandboxApi" namespace="/api/v1/setup/sandbox" extends="v2Api">
         <action name="list"
                 class="com.facilio.sandbox.action.SandboxAction"
