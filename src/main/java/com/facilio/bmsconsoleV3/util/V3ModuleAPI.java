@@ -125,17 +125,6 @@ public class V3ModuleAPI {
         UTILITY_INTEGRATION_BILLS(FacilioConstants.UTILITY_INTEGRATION_BILLS, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_INTEGRATION_TARIFF(FacilioConstants.UTILITY_INTEGRATION_TARIFF, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         UTILITY_DISPUTE(FacilioConstants.UTILITY_DISPUTE, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
-
-//        RAW_ALARM(RawAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        ALARM_REGEX_MATCHING(AlarmDefinitionMappingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        ALARM_DEFINITION_TAGGIND(AlarmDefinitionTaggingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        ALARM_TYPE(AlarmTypeModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        ALARM_CATEGORY(AlarmCategoryModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        ALARM_DEFINITION(AlarmDefinitionModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        FILTERED_ALARMS(FilteredAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        FILTERED_ALARM_RULES(AlarmFilterRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        FLAGGED_EVENTS(FlaggedEventModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
-//        FLAGGED_EVENT_RULES(FlaggedEventRuleModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING));
         SERVICE_ORDER(ContextNames.SERVICE_ORDER,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TERRITORY(FacilioConstants.Territory.TERRITORY,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         TIME_OFF(FacilioConstants.TimeOff.TIME_OFF,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
@@ -155,7 +144,16 @@ public class V3ModuleAPI {
         //BTU_METER(FacilioConstants.Meter.BTU_METER, Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)),
         SERVICE_PLANNED_MAINTENANCE(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
         SERVICE_PLAN(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
-        SERVICE_PM_TEMPLATE(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP))
+        SERVICE_PM_TEMPLATE(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE,Arrays.asList(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP,FacilioConstants.ApplicationLinkNames.FSM_APP)),
+        RAW_ALARM(RawAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_REGEX_MATCHING(AlarmDefinitionMappingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_DEFINITION_TAGGIND(AlarmDefinitionTaggingModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_ASSET_TAGGING(AlarmAssetTaggingModule.MODULE_NAME, Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_TYPE(AlarmTypeModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_CATEGORY(AlarmCategoryModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        ALARM_DEFINITION(AlarmDefinitionModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        FILTERED_ALARMS(FilteredAlarmModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
+        FLAGGED_EVENTS(FlaggedEventModule.MODULE_NAME,Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING)),
         ;
 
 
