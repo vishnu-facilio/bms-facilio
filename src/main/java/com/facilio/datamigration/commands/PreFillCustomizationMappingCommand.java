@@ -8,7 +8,6 @@ import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -20,7 +19,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class PreFillCustomizationMappingCommand extends FacilioCommand {
@@ -29,7 +27,7 @@ public class PreFillCustomizationMappingCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         DataMigrationStatusContext dataMigrationContext = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
-        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING_IN_PROGRESS.getIndex()) {
+        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING.getIndex()) {
             return false;
         }
 
@@ -63,7 +61,7 @@ public class PreFillCustomizationMappingCommand extends FacilioCommand {
         ModuleBean sourceModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         ModuleBean targetModuleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", targetOrgId);
 
-        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING_IN_PROGRESS, null, 0);
+        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING, null, 0);
 
         for(Map.Entry<String,String> moduleNameVsPrimaryField : setupCustomizedModulesVsFieldName.entrySet()) {
             String moduleName = moduleNameVsPrimaryField.getKey();

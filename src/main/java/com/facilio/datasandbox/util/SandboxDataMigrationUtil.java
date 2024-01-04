@@ -3,14 +3,18 @@ package com.facilio.datasandbox.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsoleV3.context.V3TaskContext;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.componentpackage.constants.ComponentType;
+import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
+import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
+import com.facilio.datasandbox.context.ModuleCSVFileContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -21,12 +25,15 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.xml.builder.XMLBuilder;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -39,6 +46,111 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class SandboxDataMigrationUtil {
+    public static void updateDataMigrationContext(DataMigrationStatusContext dataMigrationContext, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, String moduleFileName, int count) throws Exception {
+        updateDataMigrationContext(dataMigrationContext, status, moduleId, null, moduleFileName, count);
+    }
+
+    public static void updateDataMigrationContextWithModuleName(DataMigrationStatusContext dataMigrationContext, DataMigrationStatusContext.DataMigrationStatus status, String moduleName, String moduleFileName, int count) throws Exception {
+        updateDataMigrationContext(dataMigrationContext, status, null, moduleName, moduleFileName, count);
+    }
+
+    private static void updateDataMigrationContext(DataMigrationStatusContext dataMigrationContext, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, String moduleName, String moduleFileName, int count) throws Exception {
+        moduleId = (moduleId == null || moduleId < 0) ? -99 : moduleId;
+        moduleName = (StringUtils.isNotEmpty(moduleName)) ? moduleName : "";
+        status = status != null ? status : dataMigrationContext.getStatusEnum();
+        moduleFileName = (StringUtils.isNotEmpty(moduleFileName)) ? moduleFileName : "";
+
+        dataMigrationContext.setStatus(status);
+        dataMigrationContext.setLastModuleId(moduleId);
+        dataMigrationContext.setLastModuleName(moduleName);
+        dataMigrationContext.setModuleFileName(moduleFileName);
+        dataMigrationContext.setSysModifiedTime(System.currentTimeMillis());
+        if(count >= 0) {
+            dataMigrationContext.setMigratedCount(count);
+        }
+
+        DataMigrationBean dataMigrationBean = DataMigrationConstants.getDataMigrationBean(dataMigrationContext.getOrgId());
+        dataMigrationBean.updateDataMigrationContext(dataMigrationContext);
+    }
+
+    public static void constructResponse(DataMigrationStatusContext dataMigrationObj, Map<String, Map<String, Object>> migrationModuleNameVsDetails, Map<String, Stack<ModuleCSVFileContext>> moduleNameVsCsvFileContext) throws Exception {
+        if (MapUtils.isNotEmpty(moduleNameVsCsvFileContext)) {
+            // dataConfig.xml
+            XMLBuilder dataConfigXML = XMLBuilder.create(PackageConstants.DATA_FOLDER_NAME);
+            XMLBuilder modulesXMLBuilder = dataConfigXML.element(PackageConstants.MODULES);
+
+            for (Map.Entry<String, Map<String, Object>> moduleNameVsDetails : migrationModuleNameVsDetails.entrySet()) {
+                String moduleName = moduleNameVsDetails.getKey();
+                Stack<ModuleCSVFileContext> moduleCSVFileContexts = moduleNameVsCsvFileContext.get(moduleName);
+
+                if (CollectionUtils.isNotEmpty(moduleCSVFileContexts)) {
+                    for (ModuleCSVFileContext csvFileContext : moduleCSVFileContexts) {
+                        XMLBuilder dataModuleNameConfigXML = modulesXMLBuilder.element(PackageConstants.MODULE);
+                        dataModuleNameConfigXML.attr(PackageConstants.NAME, moduleName);
+                        dataModuleNameConfigXML.attr(PackageConstants.SEQUENCE, String.valueOf(csvFileContext.getOrder()));
+                        dataModuleNameConfigXML.attr(PackageConstants.RECORDS_COUNT, String.valueOf(csvFileContext.getRecordCount()));
+                        dataModuleNameConfigXML.text(csvFileContext.getCsvFileName());
+                    }
+                }
+            }
+
+            DataPackageFileUtil.addDataConfFile(dataConfigXML.getAsXMLString());
+        }
+
+        String url = DataPackageFileUtil.getFileUrl(PackageUtil.getRootFolderPath());
+        LOGGER.info("####Data Migration - DataPackageUrl - " + url);
+
+        // clean temp folder
+        FileUtils.deleteDirectory(DataPackageFileUtil.getTempFolderRoot());
+
+        // remove threadlocal
+        dataMigrationObj.setPackageFilePath(url);
+        PackageUtil.removeRootFolderPath();
+
+        // update status context
+        DataMigrationConstants.getDataMigrationBean(dataMigrationObj.getOrgId()).updateDataMigrationContext(dataMigrationObj);
+    }
+
+    public static String addDataPropsToCSVFile(Map<String, Stack<ModuleCSVFileContext>> moduleNameVsCsvFileName, FacilioModule module, List<FacilioField> allFields, List<Map<String, Object>> propsForCsv,
+                                             List<String> fileFieldNamesWithId, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
+                                             Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookUps) throws Exception {
+
+        ModuleCSVFileContext fileContextForModule = DataPackageFileUtil.getFileContextForModule(module.getName(), moduleNameVsCsvFileName);
+        String fileName = fileContextForModule.getCsvFileName();
+        String moduleName = module.getName();
+
+        // module data csv creation
+        LOGGER.info("####Data Migration - CSV Creation started for ModuleName - " + moduleName);
+
+        if (fileContextForModule.getRecordCount() == 0) {
+            // create a new file
+            File moduleCsvFile = exportDataAsCSVFile(module, allFields, propsForCsv, fileName, fileFieldNamesWithId,
+                    getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
+            DataPackageFileUtil.addModuleCSVFile(fileName, moduleCsvFile);
+            LOGGER.info("####Data Migration - New CSV File created for ModuleName - " + moduleName);
+        } else {
+            // update records in old file
+            String sourceFileURL = getCSVFileURL(fileName);
+            File tempCsvFile = DataPackageFileUtil.addFileToTempFolder(sourceFileURL, fileName);
+
+            updateDataInCSVFile(tempCsvFile, module, allFields, propsForCsv, fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
+            DataPackageFileUtil.addModuleCSVFile(fileName, tempCsvFile);
+            LOGGER.info("####Data Migration - Old CSV File updated for ModuleName - " + moduleName);
+        }
+
+        int recordsSize = fileContextForModule.getRecordCount() + propsForCsv.size();
+        fileContextForModule.setRecordCount(recordsSize);
+
+        LOGGER.info("####Data Migration - CSV Creation completed for ModuleName - " + moduleName);
+
+        return fileName;
+    }
+
+    private static String getCSVFileURL(String fileName) {
+        String absolutePath = PackageUtil.getRootFolderPath() + File.separator + PackageConstants.DATA_FOLDER_NAME + File.separator + fileName;
+        return DataPackageFileUtil.getFileUrl(absolutePath);
+    }
+
     private static void moduleSpecialHandlingDuringExport(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList) throws Exception {
         ModuleBean modBean = Constants.getModBean();
 
@@ -143,7 +255,7 @@ public class SandboxDataMigrationUtil {
         }
     }
 
-    public static File exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList,
+    public static File exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList, String fileName,
                                            List<String> fileFieldNames, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
                                            Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups) throws Exception {
 
@@ -151,39 +263,11 @@ public class SandboxDataMigrationUtil {
             return null;
         }
 
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
-        File csvFile = DataPackageFileUtil.createTempFileForModule(module.getName());
+        File csvFile = DataPackageFileUtil.createTempFileForModule(fileName);
         String filePath = csvFile.getPath();
 
         // add system fields
-        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.SITE_ID)) {
-            FacilioField siteIdField = FieldFactory.getSiteIdField(module);
-            fields.add(0, siteIdField);
-        }
-
-        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.FORM_ID)) {
-            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, null, module);
-            fields.add(0, formIdField);
-        }
-
-        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.STATE_FLOW_ID)) {
-            FacilioField stateFlowIdFields = FieldFactory.getNumberField(FacilioConstants.ContextNames.STATE_FLOW_ID, null, module);
-            fields.add(0, stateFlowIdFields);
-        }
-
-        if (module.isTrashEnabled()) {
-            FacilioModule parentModule = module.getParentModule();
-            fields.add(FieldFactory.getIsDeletedField(parentModule));
-            fields.add(FieldFactory.getSysDeletedTimeField(parentModule));
-
-            if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
-                fields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
-            } else {
-                fields.add(FieldFactory.getSysDeletedByField(parentModule));
-            }
-        }
-
-        fields.add(0, FieldFactory.getIdField(module));
+        SandboxModuleConfigUtil.addSystemFieldsOnPackageCreation(module, fields);
 
         // special handling
         moduleSpecialHandlingDuringExport(module, fields, propsList);
@@ -206,13 +290,19 @@ public class SandboxDataMigrationUtil {
         return csvFile;
     }
 
-    public static void updateDataInCSVFile(File moduleCsvFile, List<FacilioField> fields, List<Map<String, Object>> propsList,
+    public static void updateDataInCSVFile(File moduleCsvFile, FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList,
                                            List<String> fileFieldNames, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
                                            Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups) throws Exception {
 
         if (org.apache.commons.collections.CollectionUtils.isEmpty(fields) || org.apache.commons.collections.CollectionUtils.isEmpty(propsList)) {
             return;
         }
+
+        // add system fields
+        SandboxModuleConfigUtil.addSystemFieldsOnPackageCreation(module, fields);
+
+        // special handling
+        moduleSpecialHandlingDuringExport(module, fields, propsList);
 
         String filePath = moduleCsvFile.getPath();
 

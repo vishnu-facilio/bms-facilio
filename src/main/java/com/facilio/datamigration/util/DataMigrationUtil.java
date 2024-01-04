@@ -8,6 +8,8 @@ import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
@@ -143,7 +145,7 @@ public class DataMigrationUtil {
 
                 queryString = module.getTableName() + ".PARENT_TICKET_ID IN (" + valueList + ")";
                 break;
-                
+
             case "taskInputOpyion":
             case "taskattachments":
                 String columnName = module.getName().equals("taskattachments") ? "PARENT_ID" : "TASK_ID";
@@ -1366,6 +1368,38 @@ public class DataMigrationUtil {
             currModule = currModule.getExtendModule();
         }
         return nonNullableFieldVsLookupModules;
+    }
+
+    public static void getModuleTypeWiseNonNullableColumns(FacilioModule module, Map<String, FacilioField> fieldsMap, Map<String, String> nonNullableFieldVsLookupModules) throws Exception {
+        ModuleBean modBean = Constants.getModBean();
+        if (module.getTypeEnum() == FacilioModule.ModuleType.ACTIVITY) {
+            FacilioModule parentModule = modBean.getParentModule(module.getModuleId());
+            parentModule = (module.getName().equals(FacilioConstants.ContextNames.CUSTOM_ACTIVITY)) ? module : parentModule;
+
+            nonNullableFieldVsLookupModules.put("parentId", parentModule.getName());
+            nonNullableFieldVsLookupModules.put("doneBy", FacilioConstants.ContextNames.USERS);
+        } else if (module.getTypeEnum() == FacilioModule.ModuleType.READING) {
+            FacilioModule parentModuleForReadingModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, null);
+            if (parentModuleForReadingModule != null) {
+                nonNullableFieldVsLookupModules.put("parentId", parentModuleForReadingModule.getName());
+            }
+        } else if (module.getTypeEnum() == FacilioModule.ModuleType.TIME_LOG && !nonNullableFieldVsLookupModules.containsKey("parent")) {
+            FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, FacilioModule.ModuleType.BASE_ENTITY);
+            if (parentModuleForSubModule != null) {
+                nonNullableFieldVsLookupModules.put("parent", parentModuleForSubModule.getName());
+            }
+        } else if (module.getTypeEnum() == FacilioModule.ModuleType.NOTES || module.getTypeEnum() == FacilioModule.ModuleType.ATTACHMENTS) {
+            FacilioModule parentModuleForSubModule = SandboxModuleConfigUtil.getParentModuleForSubModule(module, null);
+            if (parentModuleForSubModule != null) {
+                String parentFieldName = fieldsMap.keySet().stream().filter(fieldName -> fieldName.equals("parentId")).findFirst().orElse(null);
+                if (org.apache.commons.lang3.StringUtils.isEmpty(parentFieldName)) {
+                    parentFieldName = fieldsMap.keySet().stream().filter(fieldName -> fieldName.contains("parent")).findFirst().orElse(null);
+                }
+                if (org.apache.commons.lang3.StringUtils.isNotEmpty(parentFieldName)) {
+                    nonNullableFieldVsLookupModules.put(parentFieldName, parentModuleForSubModule.getName());
+                }
+            }
+        }
     }
 
 

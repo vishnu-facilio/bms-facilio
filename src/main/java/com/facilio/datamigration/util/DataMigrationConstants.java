@@ -1,11 +1,50 @@
 package com.facilio.datamigration.util;
 
+import org.apache.commons.chain.Context;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.datamigration.beans.DataMigrationBean;
+import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.fw.BeanFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class DataMigrationConstants {
+    public static final long MAX_THREAD_TIME = 840000;
+    public static final long MAX_RECORDS_PER_FILE = 500000;
+    public static final long MAX_RECORDS_PER_ITERATION = 50000;
+    public static final String DATA_PACKAGE = "Data_Package";
+
+    public static String getDataPackageFolderName(long orgId) {
+        return DATA_PACKAGE + "_" + orgId + "_" + System.currentTimeMillis();
+    }
+
+    public static DataMigrationBean getDataMigrationBean(long orgId) throws Exception {
+        return (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, orgId);
+    }
+
+    public static long getTransactionStartTime(Context context) {
+        return (long) context.getOrDefault(DataMigrationConstants.TRANSACTION_START_TIME, -1);
+    }
+
+    public static DataMigrationStatusContext getDataMigrationStatusContext(Context context) {
+        return (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
+    }
+
+    public static boolean isTransactionTimeOutReached(long transStartTime, long maxThreadTime) {
+        maxThreadTime = maxThreadTime > 0 ? maxThreadTime : MAX_THREAD_TIME;
+        return (System.currentTimeMillis() - transStartTime) > maxThreadTime;
+    }
+
+    public static boolean hasCompletedCurrentStep(Context context, DataMigrationStatusContext.DataMigrationStatus status) {
+        DataMigrationStatusContext dataMigrationObj = getDataMigrationStatusContext(context);
+        return dataMigrationObj.getStatusEnum().getIndex() > status.getIndex();
+    }
+
+    public static class LongTaskBeanMethodNames {
+        public static final String CREATE_DATA_PACKAGE = "createDataCSVPackageForSandbox";
+        public static final String INSTALL_DATA_PACKAGE = "installDataCSVPackageForSandbox";
+    }
 
     public static final List<String> SYSTEM_MODULES = Arrays.asList(
             FacilioConstants.ContextNames.WORK_ORDER,
@@ -71,7 +110,7 @@ public class DataMigrationConstants {
     public static final String SANDBOX_DATA_PACKAGE_URL = "sandboxDataPackageUrl";
     public static final String RUN_ONLY_FOR_MODULES = "runOnlyForModules";
     public static final String GET_DEPENDANT_MODULE_DATA = "getDependantModuleData";
-    public static final String MODULENAME_VS_CSV_FILENAME = "moduleNameVsCsvFileName";
+    public static final String MODULENAME_VS_CSV_FILE_CONTEXT = "moduleNameVsCsvFileContext";
     public static final String RESTRICT_DEPENDANT_MODULES = "restrictDependantModules";
     public static final String DATA_MIGRATION_MODULE_NAMES = "dataMigrationModuleNames";
     public static final String DATA_MIGRATION_SUB_MODULES = "dataMigrationSubModules";
@@ -93,6 +132,8 @@ public class DataMigrationConstants {
     public static final String FILE = "file";
     public static final String MODULE_NAMES_XML_FILE_NAME = "moduleNameVsXmlFileName";
     public static final String DATA_INSERT_PROCESS = "moduleDataInsertProcess";
-
-
+    public static final String FILTERS = "filters";
+    public static final String MODULE_VS_CRITERIA = "moduleVsCriteria";
+    public static final String FETCH_DELETED_RECORDS = "fetchDeletedRecords";
+    public static final String ERROR_OCCURRED = "errorOccurred";
 }

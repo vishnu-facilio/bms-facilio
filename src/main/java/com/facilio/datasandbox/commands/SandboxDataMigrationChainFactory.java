@@ -7,9 +7,10 @@ public class SandboxDataMigrationChainFactory {
         return FacilioChain.getTransactionChain(transactionTimeout);
     }
 
-    public static FacilioChain createDataPackageChain(int transactionTimeout) {
-        FacilioChain chain = getDefaultChain(transactionTimeout);
+    public static FacilioChain createDataPackageChain() {
+        FacilioChain chain = getDefaultChain(18000000);
         chain.addCommand(new ValidateDataMigrationCreationCommand());
+        chain.addCommand(new AddNecessaryParamsForPackageCreation());
         chain.addCommand(new ComputeModuleSequenceForPackageCreation());
         chain.addCommand(new CreateDataCSVFilesCommand());
         chain.addCommand(new UpdateDataCSVFilesCommand());
@@ -29,6 +30,18 @@ public class SandboxDataMigrationChainFactory {
         c.addCommand(new AddSpecialModuleDataCommand());
         c.addCommand(new SandboxDataUpdateCommand());
         c.addCommand(new ReUpdateMetaModulesCommand());
+        return c;
+    }
+
+    public static FacilioChain imsCreateDataPackageChain() {
+        FacilioChain c = getDefaultChain(-1);
+        c.addCommand(new IMSCreateDataPackageCommand());
+        return c;
+    }
+
+    public static FacilioChain imsInstallDataPackageChain() {
+        FacilioChain c = getDefaultChain(-1);
+        c.addCommand(new IMSInstallDataPackageChain());
         return c;
     }
 }

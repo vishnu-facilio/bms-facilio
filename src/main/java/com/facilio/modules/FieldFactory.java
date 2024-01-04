@@ -12091,6 +12091,9 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("sysCreatedBy", "SYS_CREATED_BY", module, FieldType.NUMBER));
         fields.add(getField("sysCreatedTime", "SYS_CREATED_TIME", module, FieldType.NUMBER));
         fields.add(getField("sysModifiedTime", "SYS_MODIFIED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("moduleFileName", "MODULE_FILE_NAME", module, FieldType.STRING));
+        fields.add(getField("packageFilePath", "PACKAGE_FILE_PATH", module, FieldType.STRING));
+
         return fields;
     }
 

@@ -3,13 +3,12 @@ package com.facilio.datasandbox.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.PackageConstants;
-import com.facilio.componentpackage.context.PackageFileContext;
-import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
+import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
-import com.facilio.datasandbox.util.DataPackageFileUtil;
+import com.facilio.datasandbox.context.ModuleCSVFileContext;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -17,27 +16,23 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.SupplementRecord;
-import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
 public class UpdateDataCSVFilesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
+        // TODO - Handle Pause & Continue flow
         boolean getDependantModuleData = (boolean) context.get(DataMigrationConstants.GET_DEPENDANT_MODULE_DATA);
-        if (!getDependantModuleData) {
+        DataMigrationStatusContext dataMigrationObj = DataMigrationConstants.getDataMigrationStatusContext(context);
+        if (!getDependantModuleData || DataMigrationConstants.hasCompletedCurrentStep(context, DataMigrationStatusContext.DataMigrationStatus.DEPENDENT_MODULE_DATA_CSV_CREATION)) {
+            SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_DATA_CSV_CREATION, null, null, 0);
             return false;
         }
 
@@ -45,7 +40,7 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
         Map<String, List<Long>> fetchedRecords = (Map<String, List<Long>>) context.get(PackageConstants.FETCHED_RECORDS);
         Map<String, List<Long>> toBeFetchRecords = (Map<String, List<Long>>) context.get(PackageConstants.TO_BE_FETCH_RECORDS);
         boolean fetchDeletedRecords = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, false);
-        Map<String, String> moduleNameVsCsvFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILENAME);
+        Map<String, Stack<ModuleCSVFileContext>> moduleNameVsCsvFileContext = (Map<String, Stack<ModuleCSVFileContext>>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILE_CONTEXT);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
@@ -84,8 +79,7 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
 
                 int offset = 0;
                 int limit = 5000;
-                File moduleCsvFile = null;
-                String moduleCsvFileName = null;
+                int lastCountInCSVFile = 0;
                 boolean isModuleMigrated = false;
                 List<Map<String, Object>> propsForCsv = new ArrayList<>();
 
@@ -118,6 +112,14 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
 
                         propsForCsv.addAll(props);
                         offset = offset + props.size();
+
+                        // module data csv creation
+                        if (isModuleMigrated || propsForCsv.size() == DataMigrationConstants.MAX_RECORDS_PER_ITERATION) {
+                            SandboxDataMigrationUtil.addDataPropsToCSVFile(moduleNameVsCsvFileContext, module, new ArrayList<>(allFields), propsForCsv,
+                                    fileFieldNamesWithId, true, fetchedRecords, toBeFetchRecords, numberLookUps);
+                            propsForCsv = new ArrayList<>();
+                            lastCountInCSVFile = offset;
+                        }
                     }
                 } while (!isModuleMigrated);
 
@@ -136,26 +138,14 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
                     fetchedRecords.put(moduleName, newlyFetchRecordIds);
                 }
                 toBeFetchRecords.get(moduleName).removeAll(newlyFetchRecordIds);
-
-                // update csv file
-                if (moduleNameVsCsvFileName.containsKey(moduleName)) {
-                    moduleCsvFileName = moduleNameVsCsvFileName.get(moduleName);
-                    File tempCsvFile = DataPackageFileUtil.addFileToTempFolder(moduleCsvFileName, moduleName + PackageConstants.FILE_EXTENSION_SEPARATOR + PackageConstants.CSV_FILE_EXTN);
-                    SandboxDataMigrationUtil.updateDataInCSVFile(tempCsvFile, allFields, propsForCsv, fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
-
-                    DataPackageFileUtil.addModuleCSVFile(moduleName, tempCsvFile);
-                    FileUtils.delete(tempCsvFile);
-                    LOGGER.info("####Data Migration - LookUp Fetch - Old CSV File updated for ModuleName - " + moduleName);
-                } else {
-                    // add new csv file
-                    moduleCsvFile = SandboxDataMigrationUtil.exportDataAsCSVFile(module, allFields, propsForCsv, fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
-                    moduleCsvFileName = DataPackageFileUtil.addModuleCSVFile(moduleName, moduleCsvFile);
-                    moduleNameVsCsvFileName.put(moduleName, moduleCsvFileName);
-
-                    LOGGER.info("####Data Migration - LookUp Fetch - New CSV File created for ModuleName - " + moduleName);
-                }
             }
         }
+
+        SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.SPECIAL_MODULE_DATA_CSV_CREATION, null, null, 0);
+        dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
+
+        context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
+        context.put(DataMigrationConstants.MODULENAME_VS_CSV_FILE_CONTEXT, moduleNameVsCsvFileContext);
 
         return false;
     }

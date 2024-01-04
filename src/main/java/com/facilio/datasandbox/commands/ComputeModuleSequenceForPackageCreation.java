@@ -5,6 +5,7 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationConstants;
+import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
@@ -29,6 +30,7 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         Map<String, Criteria> allModuleVsCriteria = (Map<String, Criteria>) context.getOrDefault("moduleVsCriteria", new HashMap());
         boolean createFullDataPackage = (boolean) context.getOrDefault(DataMigrationConstants.CREATE_FULL_PACKAGE, false);
         List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
+        List<String> moduleSequenceList = (List<String>) context.get(DataMigrationConstants.MODULE_SEQUENCE);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean", sourceOrgId);
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, sourceOrgId);
@@ -40,7 +42,17 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = null;
         Map<String, Map<String, Object>> orderedModuleNameVsDetails = new LinkedHashMap<>();
 
-        if (createFullDataPackage) {
+        if (CollectionUtils.isNotEmpty(moduleSequenceList)) {
+            migrationModules = SandboxModuleConfigUtil.getModuleObjects(moduleSequenceList, allModulesMap);
+            Map<String, FacilioModule> migrationModuleNameVsModObj = migrationModules.stream().collect(Collectors.toMap(FacilioModule::getName, Function.identity(), (a, b) -> b));
+
+            migrationModuleNameVsDetails = SandboxModuleConfigUtil.getModuleDetails(moduleBean, migrationModules, allModuleVsCriteria, migrationModuleNameVsModObj);
+
+            for (String moduleName : moduleSequenceList) {
+                orderedModuleNameVsDetails.put(moduleName, migrationModuleNameVsDetails.get(moduleName));
+            }
+        }
+        else if (createFullDataPackage) {
             migrationModules = SandboxModuleConfigUtil.getFilteredModuleList(allModules);
 
             List<FacilioModule> baseEntityModules = new ArrayList<>();
@@ -146,6 +158,10 @@ public class ComputeModuleSequenceForPackageCreation extends FacilioCommand {
             context.put(DataMigrationConstants.SUB_MODULES_VS_DETAILS, allSubMigrationModuleNameVsDetails);
         }
 
+        if (CollectionUtils.isEmpty(moduleSequenceList)) {
+            moduleSequenceList.addAll(orderedModuleNameVsDetails.keySet());
+            DataPackageFileUtil.addModuleSequenceFile(moduleSequenceList);
+        }
         context.put(DataMigrationConstants.MODULES_VS_DETAILS, orderedModuleNameVsDetails);
         LOGGER.info("####Data Package - Ordered Module Sequence - " + orderedModuleNameVsDetails.keySet());
 

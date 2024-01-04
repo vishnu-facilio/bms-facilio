@@ -12,7 +12,6 @@ import com.facilio.datamigration.util.DataMigrationUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -486,16 +485,16 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
     }
 
     @Override
-    public DataMigrationStatusContext checkAndAddDataMigrationStatus(Long sourceOrgId, Long dataMigrationId) throws Exception {
+    public DataMigrationStatusContext checkAndAddDataMigrationStatus(Long sourceOrgId, Long dataMigrationId, boolean isPackageCreation) throws Exception {
 
         FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder();
         Criteria criteria = new Criteria();
-        if(sourceOrgId>0) {
+        if(sourceOrgId != null && sourceOrgId>0) {
             criteria.addAndCondition(CriteriaAPI.getCondition("SOURCE_ORGID", "sourceOrgId", String.valueOf(sourceOrgId), NumberOperators.EQUALS));
         }
 //        criteria.addAndCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(DataMigrationStatusContext.DataMigrationStatus.COMPLETED.getIndex()), NumberOperators.NOT_EQUALS));
-        if(dataMigrationId != null) {
+        if(dataMigrationId != null && dataMigrationId > 0) {
             criteria.addAndCondition(CriteriaAPI.getIdCondition(dataMigrationId, dataMigrationModule));
         }
         selectBuilder.table(dataMigrationModule.getTableName())
@@ -507,10 +506,16 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
         }
 
         DataMigrationStatusContext migrationStatus = new DataMigrationStatusContext();
-        migrationStatus.setStatus(DataMigrationStatusContext.DataMigrationStatus.INITIATED);
         migrationStatus.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
         migrationStatus.setSourceOrgId(sourceOrgId);
         migrationStatus.setSysCreatedTime(System.currentTimeMillis());
+        if (isPackageCreation) {
+            migrationStatus.setStatus(DataMigrationStatusContext.DataMigrationStatus.CREATION_INITIATED);
+        } else {
+            migrationStatus.setStatus(DataMigrationStatusContext.DataMigrationStatus.INSTALLATION_INITIATED);
+        }
+        long createdBy = AccountUtil.getCurrentUser() != null ? AccountUtil.getCurrentUser().getOuid() : -1;
+        migrationStatus.setSysCreatedBy(createdBy);
 
         GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
                 .table(dataMigrationModule.getTableName())
@@ -535,6 +540,16 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
             return FieldUtil.getAsBeanFromMap(props, DataMigrationStatusContext.class);
         }
         return null;
+    }
+
+    @Override
+    public void updateDataMigrationContext(DataMigrationStatusContext dataMigrationContext) throws Exception {
+        FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(dataMigrationModule.getTableName())
+                .fields(FieldFactory.getDataMigrationStatusFields())
+                .andCondition(CriteriaAPI.getIdCondition(dataMigrationContext.getId(), dataMigrationModule));
+        updateRecordBuilder.update(FieldUtil.getAsProperties(dataMigrationContext));
     }
 
     @Override

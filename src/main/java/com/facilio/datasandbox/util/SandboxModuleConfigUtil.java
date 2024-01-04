@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.util.DataMigrationUtil;
@@ -15,11 +16,13 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.v3.util.FilterUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -158,6 +161,10 @@ public class SandboxModuleConfigUtil {
         return moduleDetails;
     }
 
+    private static boolean hasCriteria(Criteria criteria) {
+        return criteria != null && !criteria.isEmpty();
+    }
+
     public static Map<String, Map<String, Object>> getModuleDetails(ModuleBean modBean, List<FacilioModule> dataMigrationModules, Map<String, Criteria> reqModuleVsCriteria,
                                                                     Map<String, FacilioModule> dataModuleNameVsObj) throws Exception {
 
@@ -170,24 +177,33 @@ public class SandboxModuleConfigUtil {
 
             Map<String, Map<String, Object>> numberLookUps = new HashMap<>();
             List<String> numberFileFields = new ArrayList<>();
+            Criteria moduleSpecificCriteria = new Criteria();
+            Criteria requestCriteria = new Criteria();
             FacilioModule currentModule = module;
             while (currentModule != null) {
                 numberLookUps.putAll(DataMigrationUtil.getNumberLookups(currentModule, modBean, dataModuleNameVsObj));
                 numberFileFields.addAll(DataMigrationUtil.getNumberFileFields(currentModule));
+
+                Criteria currModuleSpecificCriteria = DataMigrationUtil.getModuleSpecificCriteria(currentModule);
+                if (hasCriteria(currModuleSpecificCriteria)) {
+                    moduleSpecificCriteria.andCriteria(currModuleSpecificCriteria);
+                }
+
+                if (reqModuleVsCriteria.containsKey(currentModule.getName()) && hasCriteria(reqModuleVsCriteria.get(currentModule.getName()))) {
+                    requestCriteria.andCriteria(reqModuleVsCriteria.get(currentModule.getName()));
+                }
+
                 currentModule = currentModule.getExtendModule();
             }
             details.put("numberLookups", numberLookUps);
             details.put("fileFields", numberFileFields);
 
-            Criteria moduleSpecificCriteria = DataMigrationUtil.getModuleSpecificCriteria(module);
-            Criteria requestCriteria = reqModuleVsCriteria.containsKey(module.getName()) ? reqModuleVsCriteria.get(moduleName) : null;
-
             Criteria criteria = new Criteria();
-            if (moduleSpecificCriteria != null) {
+            if (hasCriteria(moduleSpecificCriteria)) {
                 criteria.andCriteria(moduleSpecificCriteria);
             }
 
-            if (requestCriteria != null) {
+            if (hasCriteria(requestCriteria)) {
                 criteria.andCriteria(requestCriteria);
             }
 
@@ -413,6 +429,39 @@ public class SandboxModuleConfigUtil {
         return deletedFields;
     }
 
+    public static void addSystemFieldsOnPackageCreation(FacilioModule module, List<FacilioField> fields) {
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.SITE_ID)) {
+            FacilioField siteIdField = FieldFactory.getSiteIdField(module);
+            fields.add(0, siteIdField);
+        }
+
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.FORM_ID)) {
+            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, null, module);
+            fields.add(0, formIdField);
+        }
+
+        if (!fieldsMap.containsKey(FacilioConstants.ContextNames.STATE_FLOW_ID)) {
+            FacilioField stateFlowIdFields = FieldFactory.getNumberField(FacilioConstants.ContextNames.STATE_FLOW_ID, null, module);
+            fields.add(0, stateFlowIdFields);
+        }
+
+        if (module.isTrashEnabled()) {
+            FacilioModule parentModule = module.getParentModule();
+            fields.add(FieldFactory.getIsDeletedField(parentModule));
+            fields.add(FieldFactory.getSysDeletedTimeField(parentModule));
+
+            if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
+                fields.add(FieldFactory.getSysDeletedPeopleByField(parentModule));
+            } else {
+                fields.add(FieldFactory.getSysDeletedByField(parentModule));
+            }
+        }
+
+        fields.add(0, FieldFactory.getIdField(module));
+    }
+
     public static FacilioModule getParentModuleForSubModule(FacilioModule subModule, FacilioModule.ModuleType parentModuleType) throws Exception {
         FacilioModule moduleModule = ModuleFactory.getModuleModule();
         FacilioModule relModule = ModuleFactory.getSubModulesRelModule();
@@ -441,5 +490,37 @@ public class SandboxModuleConfigUtil {
             return FieldUtil.getAsBeanFromMap(prop, FacilioModule.class);
         }
         return null;
+    }
+
+    public static Map<String, Criteria> getClientCriteria(Map<String, JSONObject> moduleNameVsFilter) throws Exception {
+        Map<String, Criteria> moduleNameVsCriteria = new HashMap<>();
+        if (MapUtils.isNotEmpty(moduleNameVsFilter)) {
+            for (String moduleName : moduleNameVsFilter.keySet()) {
+                JSONObject filterJson = moduleNameVsFilter.get(moduleName);
+                if (filterJson != null && !filterJson.isEmpty()) {
+                    Criteria filterCriteria = FilterUtil.getCriteriaFromFilters(filterJson, moduleName, new FacilioContext());
+
+                    if (!filterCriteria.isEmpty()) {
+                        moduleNameVsCriteria.put(moduleName, filterCriteria);
+                    }
+                }
+            }
+        }
+        return moduleNameVsCriteria;
+    }
+
+    public static List<Map<String, Object>> evaluateModuleSkipCriteria(List<Map<String, Object>> propsList, Criteria moduleCriteria) {
+        if (moduleCriteria == null || moduleCriteria.isEmpty()) {
+            return propsList;
+        }
+
+        List<Map<String, Object>> resultProps = new ArrayList<>();
+        for (Map<String, Object> prop : propsList) {
+            boolean skipRecord = moduleCriteria.computePredicate(prop).evaluate(prop);
+            if (!skipRecord) {
+                resultProps.add(prop);
+            }
+        }
+        return resultProps;
     }
 }

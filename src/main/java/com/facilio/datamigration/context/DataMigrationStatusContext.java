@@ -14,12 +14,13 @@ public class DataMigrationStatusContext {
     private long sourceOrgId = -1;
     private long lastModuleId = -1;
     private String lastModuleName;
+    private String moduleFileName;
+    private String packageFilePath;
     private long migratedCount = -1;
     private long sysCreatedTime = -1;
     private long sysCreatedBy = -1;
     private long sysModifiedTime = -1;
     private DataMigrationStatus status;
-    private long packageId = -1;
 
     public DataMigrationStatus getStatusEnum() {
         return status;
@@ -38,15 +39,21 @@ public class DataMigrationStatusContext {
     }
 
     public static enum DataMigrationStatus implements FacilioIntEnum {
-
-        INITIATED("initiated"),
-        CUSTOMIZATION_MAPPING_IN_PROGRESS("customizationMapping"),
-        CREATION_IN_PROGRESS("creationInProgress"),
-        READING_MODULE_IN_PROGRESS("readingModuleInProgress"),
-        SPECIAL_MODULE_IN_PROGRESS("specialModuleInProgress"),
-        UPDATION_IN_PROGRESS("updateInProgress"),
-        REUPDATE_META_MODULES("reUpdateMetaModules"),
-        COMPLETED("completed");
+        // Package Creation
+        CREATION_INITIATED("creationInitiated"),
+        MODULE_DATA_CSV_CREATION("moduleDataCSVCreation"),
+        DEPENDENT_MODULE_DATA_CSV_CREATION("dependentModuleDataCSVCreation"),
+        SPECIAL_MODULE_DATA_CSV_CREATION("specialModuleDataCSVCreation"),
+        CREATION_COMPLETED("creationCompleted"),
+        // Package Installation
+        INSTALLATION_INITIATED("installationInitiated"),
+        CUSTOMIZATION_MAPPING("customizationMapping"),
+        MODULE_DATA_INSERTION("moduleDataInsertion"),
+        READING_MODULE_DATA_INSERTION("readingModuleInsertion"),
+        SPECIAL_MODULE_DATA_INSERTION("specialModuleInsertion"),
+        MODULE_DATA_UPDATION("moduleDataUpdation"),
+        META_MODULES_REUPDATE("metaModuleReUpdate"),
+        INSTALLATION_COMPLETED("installationCompleted");
         private String name;
 
         DataMigrationStatus(String name) {

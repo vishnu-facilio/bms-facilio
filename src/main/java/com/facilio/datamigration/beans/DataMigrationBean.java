@@ -42,9 +42,11 @@ public interface DataMigrationBean {
     public Map<Long,Long> getOldVsNewId(Long migrationId, String moduleName, List<Long> oldIds) throws Exception;
     public Map<Long,Long> getOldVsNewIdForCustomModules(Long migrationId, Long moduleId, List<Long> customModuleIds, List<Long> oldIds) throws Exception;
 
-    public DataMigrationStatusContext checkAndAddDataMigrationStatus(Long sourceOrgId, Long dataMigrationId) throws Exception;
+    public DataMigrationStatusContext checkAndAddDataMigrationStatus(Long sourceOrgId, Long dataMigrationId, boolean isPackageCreation) throws Exception;
 
     public DataMigrationStatusContext getDataMigrationStatus(long dataMigrationId) throws Exception;
+
+    void updateDataMigrationContext(DataMigrationStatusContext dataMigrationContext) throws Exception;
 
     public void updateDataMigrationStatus(Long id, DataMigrationStatusContext.DataMigrationStatus status, Long moduleId, int count) throws Exception;
 

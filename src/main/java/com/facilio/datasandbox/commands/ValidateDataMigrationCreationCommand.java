@@ -23,9 +23,6 @@ public class ValidateDataMigrationCreationCommand extends FacilioCommand {
 
         AccountUtil.setCurrentAccount(sourceOrgId);
 
-        String rootFolderName = "Data_Package_" + sourceOrgId + "_" + System.currentTimeMillis();
-        PackageUtil.addRootFolderPath(rootFolderName);
-
         context.put(DataMigrationConstants.GET_DEPENDANT_MODULE_DATA, getDependantModuleData);
         return false;
     }

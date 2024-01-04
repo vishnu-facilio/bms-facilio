@@ -19,6 +19,17 @@
             </label>
         </td>
     </tr>
+    <tr>
+        <td class="table-head"><h4>Server</h4></td>
+        <td>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="serverTypeAction" id="useScheduledServer" value="ims" checked="checked"> IMS
+            </label>
+            <label class="radio-text">
+                <input class="radio-label" type="radio" name="serverTypeAction" id="useUserServer" value="user"> User
+            </label>
+        </td>
+    </tr>
     <tr id="sourceOrgIdRow">
         <td class="table-head"><h4>Source OrgId</h4></td>
         <td><input type="text" id="sourceOrgId" required class="input-field"></td>
@@ -111,6 +122,12 @@
             <textarea id="dataMigrationLogModules" placeholder="asset, workorder" rows="5" cols="30"></textarea>
         </td>
     </tr>
+    <tr id="filtersRow">
+        <td class="table-head"><h4>Module Filter Criteria</h4></td>
+        <td>
+            <textarea id="filterCriteriaStr" placeholder="{'workorder':{'subject':{'operatorId':5,'value':['PM']},'oneLevelLookup':{}}, 'asset':{...}}" rows="5" cols="30"></textarea>
+        </td>
+    </tr>
     <tr id="queryLimitRow">
         <td class="table-head"><h4>Query Limit</h4></td>
         <td><input type="text" id="queryLimit" required class="input-field"></td>
@@ -146,25 +163,29 @@
         $("#bucketRegionRow").toggle(!isPackageCreationAction);
         $("#targetOrgIdRow").toggle(!isPackageCreationAction);
         $("#dataPackageFileUrlRow").toggle(!isPackageCreationAction);
-        $("#dataMigrationIdRow").toggle(!isPackageCreationAction);
         $("#moduleSequenceRow").toggle(!isPackageCreationAction);
         $("#dataMigrationLogModulesIdRow").toggle(!isPackageCreationAction);
         $("#skipDataMigrationModulesIdRow").toggle(!partialPackageType);
     }
 
     function sendAjax() {
+        const filterCriteriaStr = $("#filterCriteriaStr").val();
         const fetchDeletedRecords = $("#getAllRecords").is(":checked");
         const fullPackageType = $("#fullPackageType").is(":checked");
         const isPackageCreationAction = $("#createPackageAction").is(":checked");
+        const userImsServer = $("#useScheduledServer").is(":checked");
 
         if (isPackageCreationAction) {
             const dataObject = {
                 fromAdminTool: true,
+                useIms: userImsServer,
+                filters: filterCriteriaStr,
                 limit: $("#limit").val(),
                 offset: $("#offset").val(),
                 fetchDeleted: fetchDeletedRecords,
                 fullPackageType: fullPackageType,
                 sourceOrgId: $("#sourceOrgId").val(),
+                dataMigrationId: $("#dataMigrationId").val(),
                 transactionTimeout: $('#transactionTimeout').val(),
                 dataMigrationModules: $("#dataMigrationModules").val(),
                 skipDataMigrationModules : $('#skipDataMigrationModules').val(),
@@ -188,6 +209,8 @@
         } else {
             const dataObject = {
                 fromAdminTool: true,
+                useIms: userImsServer,
+                filters: filterCriteriaStr,
                 queryLimit: $("#queryLimit").val(),
                 packageId: $("#packageId").val(),
                 sourceOrgId: $("#sourceOrgId").val(),

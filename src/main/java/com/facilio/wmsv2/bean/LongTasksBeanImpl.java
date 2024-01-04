@@ -11,6 +11,10 @@ import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.datamigration.context.DataMigrationStatusContext;
+import com.facilio.datamigration.util.DataMigrationConstants;
+import com.facilio.datasandbox.commands.SandboxDataMigrationChainFactory;
+import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fms.message.Message;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.LongRunningTaskHandler;
@@ -32,8 +36,11 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import com.facilio.weather.commands.WeatherTransactionChainFactory;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.time.ZoneId;
@@ -41,6 +48,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Log4j
 public class LongTasksBeanImpl implements LongTasksBean {
@@ -282,11 +290,149 @@ public class LongTasksBeanImpl implements LongTasksBean {
 
 	@Override
 	public void createDataCSVPackageForSandbox(JSONObject data) throws Exception {
+		try {
+			int limit = parseValue(data, DataMigrationConstants.LIMIT, FacilioUtil::parseInt, 0);
+			int offset = parseValue(data, DataMigrationConstants.OFFSET, FacilioUtil::parseInt, 0);
+			long sourceOrgId = parseValue(data, DataMigrationConstants.SOURCE_ORG_ID, FacilioUtil::parseLong, -1L);
+			long dataMigrationId = parseValue(data, DataMigrationConstants.DATA_MIGRATION_ID, FacilioUtil::parseLong, -1L);
+			boolean createFullPackage = parseValue(data, DataMigrationConstants.CREATE_FULL_PACKAGE, FacilioUtil::parseBoolean, false);
+			boolean fetchDeletedRecords = parseValue(data, DataMigrationConstants.FETCH_DELETED_RECORDS, FacilioUtil::parseBoolean, false);
 
+			List<String> runOnlyModuleNames = (List<String>) data.get(DataMigrationConstants.RUN_ONLY_FOR_MODULES);
+			List<String> migrationModuleNames = (List<String>) data.get(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES);
+			List<String> skipModuleNames = (List<String>) data.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
+			Map<String, Map<String, Object>> filters = (Map<String, Map<String, Object>>) data.get(DataMigrationConstants.FILTERS);
+
+			LOGGER.info("####Sandbox - Initiating Data Package creation");
+
+			FacilioChain dataPackageChain = SandboxDataMigrationChainFactory.createDataPackageChain();
+
+			FacilioContext dataMigrationChainContext = dataPackageChain.getContext();
+			dataMigrationChainContext.put(DataMigrationConstants.LIMIT, limit);
+			dataMigrationChainContext.put(DataMigrationConstants.OFFSET, offset);
+			dataMigrationChainContext.put(DataMigrationConstants.SOURCE_ORG_ID, sourceOrgId);
+			dataMigrationChainContext.put(DataMigrationConstants.FILTERS, getFilterJSON(filters));
+			dataMigrationChainContext.put(DataMigrationConstants.CREATE_FULL_PACKAGE, createFullPackage);
+			dataMigrationChainContext.put(DataMigrationConstants.RUN_ONLY_FOR_MODULES, runOnlyModuleNames);
+			dataMigrationChainContext.put(DataMigrationConstants.DATA_MIGRATION_ID, dataMigrationId);
+			dataMigrationChainContext.put(FacilioConstants.ContextNames.FETCH_DELETED_RECORDS, fetchDeletedRecords);
+			dataMigrationChainContext.put(DataMigrationConstants.DATA_MIGRATION_MODULE_NAMES, migrationModuleNames);
+			dataMigrationChainContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipModuleNames);
+			dataMigrationChainContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, DataMigrationConstants.MAX_THREAD_TIME);
+			dataPackageChain.execute();
+
+			dataMigrationId = (long) dataMigrationChainContext.get(DataMigrationConstants.DATA_MIGRATION_ID);
+			boolean errorOccurred = (boolean)  dataMigrationChainContext.getOrDefault(DataMigrationConstants.ERROR_OCCURRED, false);
+			DataMigrationStatusContext dataMigrationObj = DataMigrationConstants.getDataMigrationBean(sourceOrgId).getDataMigrationStatus(dataMigrationId);
+
+			if (!errorOccurred && dataMigrationObj != null && !dataMigrationObj.getStatusEnum().equals(DataMigrationStatusContext.DataMigrationStatus.CREATION_COMPLETED)) {
+				data.put(DataMigrationConstants.DATA_MIGRATION_ID, dataMigrationId);
+				data.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
+				data.put("methodName", DataMigrationConstants.LongTaskBeanMethodNames.CREATE_DATA_PACKAGE);
+
+				// for reference
+				data.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, FacilioUtil.getAsJSON(dataMigrationObj));
+
+				Message message = new Message().setKey(LongRunningTaskHandler.KEY + "/" + DateTimeUtil.getCurrenTime())
+						.setOrgId(sourceOrgId)
+						.setContent(data);
+
+				Messenger.getMessenger().sendMessage(message);
+			}
+
+			LOGGER.info("####Sandbox - Completed Data Package creation");
+
+		} catch (Exception e) {
+			LOGGER.error("####Sandbox - Data Package Creation- Error occurred - " + e);
+			throw e;
+		}
 	}
 
 	@Override
 	public void installDataCSVPackageForSandbox(JSONObject data) throws Exception {
+		try {
+			int queryLimit = parseValue(data, DataMigrationConstants.QUERY_LIMIT, FacilioUtil::parseInt, 0);
+			long sourceOrgId = parseValue(data, DataMigrationConstants.SOURCE_ORG_ID, FacilioUtil::parseLong, -1L);
+			long targetOrgId = parseValue(data, DataMigrationConstants.TARGET_ORG_ID, FacilioUtil::parseLong, -1L);
+			long metaPackageId = parseValue(data, DataMigrationConstants.PACKAGE_ID, FacilioUtil::parseLong, -1L);
+			long dataMigrationId = parseValue(data, DataMigrationConstants.DATA_MIGRATION_ID, FacilioUtil::parseLong, -1L);
 
+			String bucketName = (String) data.get(DataMigrationConstants.BUCKET_NAME);
+			String bucketRegion = (String) data.get(DataMigrationConstants.BUCKET_REGION);
+			String packageFileURL = (String) data.get(DataMigrationConstants.PACKAGE_FILE_URL);
+			List<String> moduleSequence = (List<String>) data.get(DataMigrationConstants.MODULE_SEQUENCE);
+			List<String> logModuleNames = (List<String>) data.get(DataMigrationConstants.LOG_MODULES_LIST);
+			List<String> skipModuleNames = (List<String>) data.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
+			Map<String, Map<String, Object>> filters = (Map<String, Map<String, Object>>) data.get(DataMigrationConstants.FILTERS);
+
+			LOGGER.info("####Sandbox - Initiating Data Package installation");
+
+			FacilioChain dataPackageChain = SandboxDataMigrationChainFactory.getInstallDataMigrationChain();
+
+			FacilioContext dataMigrationChainContext = dataPackageChain.getContext();
+			dataMigrationChainContext.put(DataMigrationConstants.LIMIT, queryLimit);
+			dataMigrationChainContext.put(DataMigrationConstants.FILTERS, getFilterJSON(filters));
+			dataMigrationChainContext.put(DataMigrationConstants.BUCKET_NAME, bucketName);
+			dataMigrationChainContext.put(DataMigrationConstants.BUCKET_REGION, bucketRegion);
+			dataMigrationChainContext.put(DataMigrationConstants.SOURCE_ORG_ID, sourceOrgId);
+			dataMigrationChainContext.put(DataMigrationConstants.TARGET_ORG_ID, targetOrgId);
+			dataMigrationChainContext.put(DataMigrationConstants.PACKAGE_ID, metaPackageId);
+			dataMigrationChainContext.put(DataMigrationConstants.MODULE_SEQUENCE, moduleSequence);
+			dataMigrationChainContext.put(DataMigrationConstants.LOG_MODULES_LIST, logModuleNames);
+			dataMigrationChainContext.put(DataMigrationConstants.PACKAGE_FILE_URL, packageFileURL);
+			dataMigrationChainContext.put(DataMigrationConstants.DATA_MIGRATION_ID, dataMigrationId);
+			dataMigrationChainContext.put(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES, skipModuleNames);
+			dataMigrationChainContext.put(DataMigrationConstants.TRANSACTION_TIME_OUT, DataMigrationConstants.MAX_THREAD_TIME);
+			dataPackageChain.execute();
+
+			dataMigrationId = (long) dataMigrationChainContext.get(DataMigrationConstants.DATA_MIGRATION_ID);
+			boolean errorOccurred = (boolean)  dataMigrationChainContext.getOrDefault(DataMigrationConstants.ERROR_OCCURRED, false);
+			DataMigrationStatusContext dataMigrationObj = DataMigrationConstants.getDataMigrationBean(targetOrgId).getDataMigrationStatus(dataMigrationId);
+
+			if (!errorOccurred && dataMigrationObj != null && !dataMigrationObj.getStatusEnum().equals(DataMigrationStatusContext.DataMigrationStatus.INSTALLATION_COMPLETED)) {
+				data.put(DataMigrationConstants.DATA_MIGRATION_ID, dataMigrationId);
+				data.put("startTime", DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")) + "");
+				data.put("methodName", DataMigrationConstants.LongTaskBeanMethodNames.INSTALL_DATA_PACKAGE);
+
+				// for reference
+				data.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, FacilioUtil.getAsJSON(dataMigrationObj));
+
+				Message message = new Message().setKey(LongRunningTaskHandler.KEY + "/" + DateTimeUtil.getCurrenTime())
+						.setOrgId(targetOrgId)
+						.setContent(data);
+
+				Messenger.getMessenger().sendMessage(message);
+			}
+
+			LOGGER.info("####Sandbox - Completed Data Package installation");
+
+		} catch (Exception e) {
+			LOGGER.error("####Sandbox - Data Package Installation - Error occurred - " + e);
+			throw e;
+		}
+	}
+
+	private static <T> T parseValue(JSONObject data, String key, Function<Object, T> parser, T defaultValue) {
+		Object value = data.get(key);
+		if (value != null) {
+			return parser.apply(value);
+		}
+		return defaultValue;
+	}
+
+	private static Map<String, JSONObject> getFilterJSON(Map<String, Map<String, Object>> filterMap) {
+		Map<String, JSONObject> filterJson = new HashMap<>();
+		try {
+			if (MapUtils.isNotEmpty(filterMap)) {
+				JSONObject jsonObject = FieldUtil.getAsJSON(filterMap);
+				if (jsonObject != null) {
+					String jsonString = jsonObject.toJSONString();
+					filterJson = (Map<String, JSONObject>) new JSONParser().parse(jsonString);
+				}
+			}
+		} catch (Exception e) {
+			LOGGER.error("####Sandbox - Exception while parsing filter criteria - " + e);
+		}
+		return filterJson;
 	}
 }

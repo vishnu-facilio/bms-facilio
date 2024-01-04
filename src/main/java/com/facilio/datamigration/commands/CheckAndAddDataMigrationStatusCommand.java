@@ -21,7 +21,7 @@ public class CheckAndAddDataMigrationStatusCommand extends FacilioCommand {
         Long dataMigrationId = (Long) context.get(DataMigrationConstants.DATA_MIGRATION_ID);
 
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
-        DataMigrationStatusContext dataMigrationObj = targetConnection.checkAndAddDataMigrationStatus(sourceOrgId, dataMigrationId);
+        DataMigrationStatusContext dataMigrationObj = targetConnection.checkAndAddDataMigrationStatus(sourceOrgId, dataMigrationId, false);
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
 
         return false;

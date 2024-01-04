@@ -34,7 +34,7 @@ public class ValidateInsertDataMigrationCommand extends FacilioCommand {
         AccountUtil.setCurrentAccount(targetOrgId);
 
         DataMigrationBean targetConnection = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
-        DataMigrationStatusContext dataMigrationObj = targetConnection.checkAndAddDataMigrationStatus(sourceOrgId, dataMigrationId);
+        DataMigrationStatusContext dataMigrationObj = targetConnection.checkAndAddDataMigrationStatus(sourceOrgId, dataMigrationId, false);
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
 
         return false;

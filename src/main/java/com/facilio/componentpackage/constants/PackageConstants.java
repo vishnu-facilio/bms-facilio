@@ -20,6 +20,8 @@ public class PackageConstants {
     public static final String APPROVER_TYPE="Approver_Type";
     public static final String FORM_NAME="Form_Name";
     public static final String NAME = "name";
+    public static final String SEQUENCE = "sequence";
+    public static final String RECORDS_COUNT = "recordsCount";
     public static final String UNIQUE_NAME = "uniqueName";
     public static final String DISPLAY_NAME = "displayName";
     public static final String DESCRIPTION = "Description";
@@ -35,6 +37,7 @@ public class PackageConstants {
     public static final String COMPONENTS_FOLDER_NAME = "components";
     public static final String META_FILES_FOLDER_NAME = "metafiles";
     public static final String XML_FILE_EXTN = "xml";
+    public static final String TXT_FILE_EXTN = "txt";
     public static final String PACKAGE_CONTEXT = "packageContext";
     public static final String CREATED_USER_ID = "createdUserId";
     public static final String RELATED_MODULE = "Related_Module";
@@ -67,6 +70,7 @@ public class PackageConstants {
     public static final String MODULES = "modules";
     public static final String MODULE =  "module";
     public static final String DATA_CONF_FILE_NAME = "DataConf";
+    public static final String MODULE_SEQUENCE_FILE = "ModuleSequence";
     public static final String DATA = "Data";
 
     public static final List<String> ALLOWED_EXTN = new ArrayList<>();

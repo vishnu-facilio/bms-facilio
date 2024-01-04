@@ -32,7 +32,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         DataMigrationStatusContext dataMigrationContext = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
 
-        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS.getIndex()) {
+        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_UPDATION.getIndex()) {
             return false;
         }
 
@@ -65,7 +65,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
             lastModuleName = targetModuleBean.getModule(lastMigratedModuleId).getName();
             moduleMigrationStarted = false;
         } else {
-            targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
+            targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_UPDATION, null, 0);
         }
 
         for(Map.Entry<String,Map<String,Object>> moduleNameVsDetails : orderedModuleNameVsDetails.entrySet()) {
@@ -178,7 +178,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
 
                     offset = offset + props.size();
                 }
-                targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, targetModule.getModuleId(), offset);
+                targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_UPDATION, targetModule.getModuleId(), offset);
 
                 if(System.currentTimeMillis() - transactionStartTime > transactionTimeOut) {
                     LOGGER.info("Migration - Updation - stopped after exceeding transaction limit with moduleName: "+moduleName+" offset:"+offset);
@@ -189,7 +189,7 @@ public class DataMigrationUpdateRecordCommand extends FacilioCommand {
             LOGGER.info("Migration - Updation - Completed for moduleName -"+moduleName);
         }
 
-        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.COMPLETED, null, 0);
+        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.INSTALLATION_COMPLETED, null, 0);
 
         return false;
     }

@@ -28,7 +28,7 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         DataMigrationStatusContext dataMigrationContext = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
-        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS.getIndex()) {
+        if(dataMigrationContext.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_INSERTION.getIndex()) {
             return false;
         }
 
@@ -160,7 +160,7 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
 
                     offset = offset + props.size();
                 }
-                targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, targetModule.getModuleId(), offset);
+                targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_INSERTION, targetModule.getModuleId(), offset);
 
                 if(System.currentTimeMillis() - transactionStartTime > transactionTimeOut) {
                     LOGGER.info("Migration - Creation - stopped after exceeding transaction limit with moduleName: "+moduleName+" offset:"+offset);
@@ -171,7 +171,7 @@ public class DataMigrationCreateRecordCommand extends FacilioCommand {
             LOGGER.info("Migration creation completed for : "+moduleName);
         }
 
-        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.UPDATION_IN_PROGRESS, null, 0);
+        targetConnection.updateDataMigrationStatus(dataMigrationContext.getId(), DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_UPDATION, null, 0);
         dataMigrationContext = targetConnection.getDataMigrationStatus(dataMigrationContext.getId());
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationContext);
 

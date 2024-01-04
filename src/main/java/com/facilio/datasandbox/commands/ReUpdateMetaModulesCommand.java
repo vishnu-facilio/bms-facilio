@@ -1,7 +1,6 @@
 package com.facilio.datasandbox.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.utils.PackageUtil;
@@ -10,6 +9,7 @@ import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
 import com.facilio.datamigration.util.DataMigrationConstants;
 import com.facilio.datamigration.util.DataMigrationUtil;
+import com.facilio.datasandbox.context.ModuleCSVFileContext;
 import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
@@ -23,18 +23,16 @@ import com.facilio.fw.BeanFactory;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Log4j
 public class ReUpdateMetaModulesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         DataMigrationStatusContext dataMigrationObj = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
-        if (dataMigrationObj.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.REUPDATE_META_MODULES.getIndex()) {
+        if (dataMigrationObj.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.META_MODULES_REUPDATE.getIndex()) {
             return false;
         }
 
@@ -45,10 +43,10 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
 
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
         List<String> updateOnlyModulesList = (List<String>) context.getOrDefault(DataMigrationConstants.UPDATE_ONLY_MODULES, new ArrayList<>());
-        Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
         List<String> skipDataMigrationModules = (List<String>) context.get(DataMigrationConstants.SKIP_DATA_MIGRATION_MODULE_NAMES);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (Map<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
         Map<ComponentType, Map<Long, Long>> componentTypeVsOldIdVsNewId = (Map<ComponentType, Map<Long, Long>>) context.get(DataMigrationConstants.PACKAGE_CHANGE_SET);
+        Map<String, Stack<ModuleCSVFileContext>> moduleNameVsCSVFileContexts = (Map<String, Stack<ModuleCSVFileContext>>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILE_CONTEXT);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         DataMigrationBean migrationBean = (DataMigrationBean) BeanFactory.lookup("DataMigrationBean", true, targetOrgId);
@@ -56,12 +54,13 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
         String lastModuleName = null;
         boolean moduleMigrationStarted = true;
         long lastMigratedModuleId = dataMigrationObj.getLastModuleId();
+        String lastModuleFileName = dataMigrationObj.getModuleFileName();
 
         if (lastMigratedModuleId > 0) {
             moduleMigrationStarted = false;
             lastModuleName = modBean.getModule(lastMigratedModuleId).getName();
         } else {
-            migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.REUPDATE_META_MODULES, null, 0);
+            SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.META_MODULES_REUPDATE, null, null, 0);
         }
 
         for (Map.Entry<String, Map<String, Object>> moduleNameVsDetails : migrationModuleNameVsDetails.entrySet()) {
@@ -102,69 +101,83 @@ public class ReUpdateMetaModulesCommand extends FacilioCommand {
 
             LOGGER.info("####Data Migration - MetaModule Update - Started for ModuleName - " + moduleName);
 
-            String moduleFileName = moduleNameVsXmlFileName.get(moduleName);
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(allFields);
             allFields.addAll(SandboxModuleConfigUtil.getSysDeletedFields(module, fieldsMap));
+            Stack<ModuleCSVFileContext> moduleCSVFileContexts = moduleNameVsCSVFileContexts.get(moduleName);
             List<SupplementRecord> supplementRecords = DataMigrationUtil.getSupplementFields(allFields);
             boolean addLogger = (CollectionUtils.isNotEmpty(logModulesNames) && logModulesNames.contains(moduleName));
 
             int offset = 0;
             int limit = 5000;
-            if (moduleName.equals(lastModuleName) && offset < dataMigrationObj.getMigratedCount()) {
-                offset = (int) dataMigrationObj.getMigratedCount();
-            }
-
-            boolean isModuleMigrated = false;
+            String moduleFileName = null;
             Map<Long, Long> siteIdMapping = new HashMap<>();
             SandboxModuleConfigUtil.addSystemFields(module, fieldsMap);
 
             try {
-                do {
-                    List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
+                for (ModuleCSVFileContext moduleCSVFileContext : moduleCSVFileContexts) {
+                    offset = 0;
+                    boolean isModuleMigrated = false;
+                    moduleFileName = moduleCSVFileContext.getCsvFileName();
 
-                    if (CollectionUtils.isEmpty(dataFromCSV)) {
-                        LOGGER.info("####Data Migration - MetaModule Update - No Records obtained from CSV - " + moduleName);
-                        isModuleMigrated = true;
-                    } else {
-                        if (dataFromCSV.size() > limit) {
-                            dataFromCSV.remove(limit);
+                    if (StringUtils.isNotEmpty(lastModuleFileName)) {
+                        if (lastModuleFileName.equals(moduleFileName)) {
+                            if (offset < dataMigrationObj.getMigratedCount()) {
+                                offset = (int) dataMigrationObj.getMigratedCount();
+                            }
+                            lastModuleFileName = null;
                         } else {
+                            continue;
+                        }
+                    }
+
+                    do {
+                        List<Map<String, Object>> dataFromCSV = SandboxDataMigrationUtil.getDataFromCSV(module, moduleFileName, fieldsMap, numberFileFields, offset, limit + 1);
+
+                        if (CollectionUtils.isEmpty(dataFromCSV)) {
+                            LOGGER.info("####Data Migration - MetaModule Update - No Records obtained from CSV - " + moduleName);
                             isModuleMigrated = true;
+                        } else {
+                            if (dataFromCSV.size() > limit) {
+                                dataFromCSV.remove(limit);
+                            } else {
+                                isModuleMigrated = true;
+                            }
+                            LOGGER.info("####Data Migration - MetaModule Update - In progress - " + moduleName + " - Offset - " + offset);
+
+                            if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
+                                FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
+                                siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
+                            }
+
+                            List<Map<String, Object>> propsToUpdate = sanitizePropsBeforeUpdate(module, fieldsMap, dataFromCSV, componentTypeVsOldIdVsNewId,
+                                    numberLookUps, numberFileFields, siteIdMapping, dataMigrationId, migrationBean);
+
+                            if (CollectionUtils.isNotEmpty(propsToUpdate)) {
+                                migrationBean.updateModuleData(module, new ArrayList<>(fieldsMap.values()), supplementRecords, propsToUpdate, addLogger);
+                            }
+
+                            offset = offset + dataFromCSV.size();
                         }
-                        LOGGER.info("####Data Migration - MetaModule Update - In progress - " + moduleName + " - Offset - " + offset);
+                        SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.META_MODULES_REUPDATE, module.getModuleId(), moduleFileName, offset);
 
-                        if (MapUtils.isEmpty(siteIdMapping) || moduleName.equals(FacilioConstants.ContextNames.SITE)) {
-                            FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
-                            siteIdMapping = migrationBean.getOldVsNewId(dataMigrationId, siteModule.getModuleId(), null);
+                        if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
+                            LOGGER.info("####Data Migration - MetaModule Update - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
+                            return true;
                         }
-
-                        List<Map<String, Object>> propsToUpdate = sanitizePropsBeforeUpdate(module, fieldsMap, dataFromCSV, componentTypeVsOldIdVsNewId,
-                                numberLookUps, numberFileFields, siteIdMapping, dataMigrationId, migrationBean);
-
-                        if (CollectionUtils.isNotEmpty(propsToUpdate)) {
-                            migrationBean.updateModuleData(module, new ArrayList<>(fieldsMap.values()), supplementRecords, propsToUpdate, addLogger);
-                        }
-
-                        offset = offset + dataFromCSV.size();
-                    }
-                    migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.REUPDATE_META_MODULES, module.getModuleId(), offset);
-
-                    if ((System.currentTimeMillis() - transactionStartTime) > transactionTimeOut) {
-                        LOGGER.info("####Data Migration - MetaModule Update - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
-                        return true;
-                    }
-                } while (!isModuleMigrated);
+                    } while (!isModuleMigrated);
+                }
             } catch (Exception e) {
-                migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.REUPDATE_META_MODULES, module.getModuleId(), offset);
+                SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.META_MODULES_REUPDATE, module.getModuleId(), moduleFileName, offset);
                 LOGGER.info("####Data Migration - MetaModule Update - Error occurred in ModuleName - " + moduleName, e);
+                context.put(DataMigrationConstants.ERROR_OCCURRED, true);
                 return true;
             }
 
             LOGGER.info("####Data Migration - MetaModule Update - Completed for ModuleName - " + moduleName);
         }
 
-        migrationBean.updateDataMigrationStatus(dataMigrationId, DataMigrationStatusContext.DataMigrationStatus.COMPLETED, null, 0);
+        SandboxDataMigrationUtil.updateDataMigrationContext(dataMigrationObj, DataMigrationStatusContext.DataMigrationStatus.INSTALLATION_COMPLETED, null, null, 0);
         dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);

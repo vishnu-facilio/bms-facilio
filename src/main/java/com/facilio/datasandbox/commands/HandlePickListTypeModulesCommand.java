@@ -1,8 +1,6 @@
 package com.facilio.datasandbox.commands;
 
-import com.facilio.bmsconsoleV3.util.V3RecordAPI;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
-import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.datasandbox.util.SandboxDataMigrationUtil;
 import com.facilio.datasandbox.util.SandboxModuleConfigUtil;
 import com.facilio.fw.BeanFactory;
@@ -30,13 +28,13 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         DataMigrationStatusContext dataMigrationObj = (DataMigrationStatusContext) context.get(DataMigrationConstants.DATA_MIGRATION_CONTEXT);
-        if(dataMigrationObj.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING_IN_PROGRESS.getIndex()) {
+        if(dataMigrationObj.getStatusEnum().getIndex() > DataMigrationStatusContext.DataMigrationStatus.CUSTOMIZATION_MAPPING.getIndex()) {
             return false;
         }
         
         long targetOrgId = (long) context.get(DataMigrationConstants.TARGET_ORG_ID);
         List<String> logModulesNames = (List<String>) context.get(DataMigrationConstants.LOG_MODULES_LIST);
-        Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULE_NAMES_XML_FILE_NAME);
+        Map<String, String> moduleNameVsXmlFileName = (Map<String, String>) context.get(DataMigrationConstants.MODULENAME_VS_CSV_FILE_CONTEXT);
         Map<String, Map<String, Object>> migrationModuleNameVsDetails = (HashMap<String, Map<String, Object>>) context.get(DataMigrationConstants.MODULES_VS_DETAILS);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -106,7 +104,7 @@ public class HandlePickListTypeModulesCommand extends FacilioCommand {
             LOGGER.info("####Data Migration - Picklist - Started for ModuleName - " + moduleName);
         }
 
-        migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.CREATION_IN_PROGRESS, null, 0);
+        migrationBean.updateDataMigrationStatus(dataMigrationObj.getId(), DataMigrationStatusContext.DataMigrationStatus.MODULE_DATA_INSERTION, null, 0);
         dataMigrationObj = migrationBean.getDataMigrationStatus(dataMigrationObj.getId());
 
         context.put(DataMigrationConstants.DATA_MIGRATION_CONTEXT, dataMigrationObj);
