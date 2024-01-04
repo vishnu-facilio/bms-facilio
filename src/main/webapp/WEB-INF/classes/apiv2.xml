@@ -8242,8 +8242,7 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplication" >
-			 <param name="permission">ALL;GET:CAN_APPROVE</param>
-			<param name="setupTab">PORTALS,USERS,ROLES,CONNECTED_APPS,API_SETUP,AUDIT_LOGS,PEOPLE,MODULES</param>
+			 <param name="skipPermission">true</param>
 		</action>
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getAllApplicationBasedOnModule">

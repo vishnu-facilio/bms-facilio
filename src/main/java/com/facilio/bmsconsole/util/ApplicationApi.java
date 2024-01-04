@@ -2547,17 +2547,36 @@ public class ApplicationApi {
         if(isRequestFromMobile() && !hasMobileSupportedOldApp) {
             selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME","linkName",FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP,StringOperators.ISN_T));
         }
+        if(isRequestFromMobile()){
+            selectBuilder.innerJoin(ModuleFactory.getApplicationLayoutModule().getTableName())
+                    .on("Application.ID = Application_Layout.APPLICATION_ID ")
+                    .andCondition(CriteriaAPI.getCondition("Application_Layout.DEVICE_TYPE","layoutDeviceType", ApplicationLayoutContext.LayoutDeviceType.MOBILE.getIndex()+"",NumberOperators.EQUALS));
+        }
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List<ApplicationContext> appsList = FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
+            if(isRequestFromMobile()){
+                List<ApplicationContext> mobileAppsList = new ArrayList<ApplicationContext>();
+                for(ApplicationContext app : appsList){
+                    if(isMobileApp(app)){
+                        app.setAppDomain(appDomainObj);
+                        mobileAppsList.add(app);
+                    }
+                }
+                return mobileAppsList;
+            }
             for (ApplicationContext app : appsList) {
                 app.setAppDomain(appDomainObj);
             }
             return appsList;
         }
         return null;
+    }
 
+    private static boolean isMobileApp(ApplicationContext app) {
+        String appCategory = app.getAppCategoryEnum().getValue();
+        return "FEATURE_GROUPING".equals(appCategory) || "WORK_CENTERS".equals(appCategory);
     }
 
     public static boolean isRequestFromMobile() {
