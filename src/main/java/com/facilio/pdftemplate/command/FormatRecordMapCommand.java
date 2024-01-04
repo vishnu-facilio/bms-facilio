@@ -140,6 +140,9 @@ public class FormatRecordMapCommand extends FacilioCommand {
         }if ( address.get("country")!=null){
             formattedValue += ", " + address.get("country");
         }
+        if(formattedValue.isEmpty()){
+            return "---";
+        }
         return formattedValue;
     }
 }
