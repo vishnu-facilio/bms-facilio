@@ -385,7 +385,11 @@ public class ReadingsAPI {
 	}
 
 	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, boolean unused, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, unused, true, null, search, readingType, inputTypes);
+		return getReadingDataMetaCount(resourceIds, null, excludeEmptyFields, unused, search, readingType, inputTypes);
+	}
+
+	public static long getReadingDataMetaCount(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean unused, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, unused, true, null, search, readingType, inputTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}

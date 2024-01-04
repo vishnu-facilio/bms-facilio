@@ -95,19 +95,24 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			if (!readingInputTypes.isEmpty()) {
 				types = readingInputTypes.toArray(new ReadingInputType[readingInputTypes.size()]);
 			}
-			
-			if (fetchCount) {
-				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, excludeEmptyFields, unused, search, readingType, types);
-				context.put(FacilioConstants.ContextNames.COUNT, count);
-				return false;
-			}
-			
+
 			Map<Long, FacilioField> fieldMap = null;
 			long fieldId = (long) context.getOrDefault(FacilioConstants.ContextNames.FIELD_ID, -1l);
+			Map<Long, FacilioField> readingFieldMap = null;
+			readingFieldMap = (Map<Long, FacilioField>) context.get("readingModuleFields");
 			if (fieldId > 0) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField field = modBean.getField(fieldId);
 				fieldMap = Collections.singletonMap(fieldId, field);
+			}
+			else if (readingFieldMap != null) {
+				fieldMap = readingFieldMap;
+			}
+			
+			if (fetchCount) {
+				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, fieldMap, excludeEmptyFields, unused, search, readingType, types);
+				context.put(FacilioConstants.ContextNames.COUNT, count);
+				return false;
 			}
 			
 			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, unused, pagination, search, readingType, types);

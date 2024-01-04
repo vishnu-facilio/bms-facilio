@@ -305,6 +305,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(fetchLatestReadingDataChain());
 		return c;
 	}
+
+	public static FacilioChain fetchLatestReadingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new FetchReadingModuleFieldsCommand());
+		c.addCommand(fetchLatestReadingDataChain());
+		return c;
+	}
 	
 	public static FacilioChain getAllAssetReadingsChain() {
 		FacilioChain c = getDefaultChain();

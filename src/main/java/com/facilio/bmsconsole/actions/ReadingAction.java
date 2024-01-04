@@ -1565,6 +1565,7 @@ public class ReadingAction extends FacilioAction {
 
 	public String v2GetLatestReadingData() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_EMPTY_FIELDS, excludeEmptyFields != null ? excludeEmptyFields : true);
 		context.put(FacilioConstants.ContextNames.EXCLUDE_FORECAST, excludeForecastReadings != null ? excludeForecastReadings : true);
@@ -1589,7 +1590,8 @@ public class ReadingAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
 		}
 
-		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
+		FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingChain();
+		//FacilioChain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
 
 		if (isFetchCount()) {
