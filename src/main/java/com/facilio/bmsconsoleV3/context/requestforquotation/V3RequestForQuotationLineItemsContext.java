@@ -35,6 +35,8 @@ public class V3RequestForQuotationLineItemsContext extends V3Context {
     private TaxContext tax;
     @Getter @Setter
     private Double taxAmount;
+    @Getter @Setter
+    private String unitOfMeasureEnum;
 
 
     public V3RequestForQuotationContext getRequestForQuotation() {

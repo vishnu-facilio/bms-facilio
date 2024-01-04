@@ -14,6 +14,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.v3.context.Constants;
@@ -48,9 +50,38 @@ public class SetRequestForQuotationLineItemsCommandV3  extends FacilioCommand {
         List<V3RequestForQuotationLineItemsContext> list = builder.get();
         setName(list);
         setTaxAmount(list);
+        setEnumValues(list);
         requestForQuotation.setRequestForQuotationLineItems(list);
 
         return false;
+    }
+
+    private void setEnumValues(List<V3RequestForQuotationLineItemsContext> list) throws Exception {
+        if(CollectionUtils.isEmpty(list)){
+            return;
+        }
+        FacilioField field = Constants.getModBean().getField("unitOfMeasure", FacilioConstants.ContextNames.REQUEST_FOR_QUOTATION_LINE_ITEMS);
+        if(field == null){
+            return;
+        }
+        EnumField enumField = (EnumField) field;
+        List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
+        if(CollectionUtils.isEmpty(enumValues)){
+            return;
+        }
+
+        for (V3RequestForQuotationLineItemsContext lineItem : list) {
+            Long unitOfMeasure = lineItem.getUnitOfMeasure();
+            if (unitOfMeasure == null || unitOfMeasure <= 0) {
+                continue;
+            }
+            EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+
+            if (value == null) {
+                continue;
+            }
+            lineItem.setUnitOfMeasureEnum(value.getValue());
+        }
     }
 
     private static void setTaxAmount(List<V3RequestForQuotationLineItemsContext> lineItems) throws Exception {

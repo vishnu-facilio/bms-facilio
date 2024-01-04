@@ -138,6 +138,61 @@ body {
     margin-left: 0px;
 }
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
 :root {
     --base-font: 'Roboto', sans-serif;
     --font-xlarge: 20px;
@@ -212,6 +267,22 @@ body {
     font-family: var(--base-font);
 }
 
+.header-normal-text {
+    width: 100%;
+    outline-color: initial;
+    outline-style: none;
+    outline-width: initial;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.field-component {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
 .field-component div {
     width: 100%;
     white-space-collapse: collapse;
@@ -253,6 +324,11 @@ body {
 
 .field-component.align-right .line-widget-value {
     text-align: right;
+}
+
+.field-component.column {
+    flex-direction: row;
+    flex-wrap: wrap;
 }
 
 .field-component.column > div {
@@ -319,6 +395,27 @@ body {
     border-right-color: transparent;
     border-bottom-color: transparent;
     border-left-color: transparent;
+}
+
+.custom-text:hover {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+.custom-text.gjs-selected:hover {
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+}
+
+.field-widget {
+    pointer-events: none;
+    outline-color: initial !important;
+    outline-style: none !important;
+    outline-width: initial !important;
 }
 
 [data-gjs-type="wrapper"] {
@@ -388,6 +485,30 @@ body {
     border-right-color: transparent;
     border-bottom-color: transparent;
     border-left-color: transparent;
+}
+
+.custom-text {
+    outline-color: initial;
+    outline-style: none;
+    outline-width: initial;
+    min-height: 20px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-top-style: dashed;
+    border-right-style: dashed;
+    border-bottom-style: dashed;
+    border-left-style: dashed;
+    border-top-color: transparent;
+    border-right-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    border-image-source: initial;
+    border-image-slice: initial;
+    border-image-width: initial;
+    border-image-outset: initial;
+    border-image-repeat: initial;
 }
 
 .custom-text > div {
@@ -708,7 +829,7 @@ font[weight="900"] {
     font-weight: 900;
 }
 
-#iivx {
+#i4sl {
     display: flex;
     padding-top: 0px;
     padding-right: 10px;
@@ -720,7 +841,16 @@ font[weight="900"] {
     flex-wrap: wrap;
 }
 
-#iidv {
+#ilch {
+    padding-top: 10px;
+    outline-color: initial;
+    outline-style: none;
+    outline-width: initial;
+    width: 100%;
+    height: 100%;
+}
+
+#idjf {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -729,13 +859,13 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ivzn {
+#iskk {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-#iip8 {
+#i1db {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -744,13 +874,19 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ij3k {
+#inmjj {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
-#i9qk {
+#i06w9 {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+}
+
+#i999m {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -759,13 +895,13 @@ font[weight="900"] {
     height: 100%;
 }
 
-#it8jf {
+#iv70d {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-#itwxt {
+#ig13g {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -774,7 +910,7 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ius5o {
+#i975i {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -783,7 +919,16 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ijiig {
+#i47p4 {
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    width: 25%;
+    height: 100%;
+}
+
+#izb8c {
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
@@ -794,32 +939,41 @@ font[weight="900"] {
     line-height: 28px;
 }
 
-#ibzxo {
+#ifpfk {
     width: 100%;
     height: 100%;
 }
 
-#ik6n7 {
+#iqc8u {
     width: 100%;
     height: 100%;
 }
 
-#ihjt2 {
+#i7f2o {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
     padding-left: 8px;
-    width: 100%;
+    width: 50%;
     height: 100%;
 }
 
-#ioh1b {
+#iaxx4 {
+    padding-top: 8px;
+    padding-right: 8px;
+    padding-bottom: 8px;
+    padding-left: 8px;
+    width: 50%;
+    height: 100%;
+}
+
+#idi5h {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
 }
 
-#ilz97 {
+#i8nsh {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -828,13 +982,13 @@ font[weight="900"] {
     height: 100%;
 }
 
-#i0bzs {
+#i50qz {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
 }
 
-#i2aqn {
+#i2t9f {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -843,14 +997,7 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ixil3 {
-    padding-left: 20px;
-    padding-top: 10px;
-    width: 100%;
-    height: 100%;
-}
-
-#iwd9g {
+#ip9nb {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
@@ -859,29 +1006,11 @@ font[weight="900"] {
     height: 100%;
 }
 
-#ihkq6 {
+#i104v {
     padding-top: 8px;
     padding-right: 8px;
     padding-bottom: 8px;
     padding-left: 8px;
     width: 100%;
-    height: 100%;
-}
-
-#iplsk {
-    padding-top: 8px;
-    padding-right: 8px;
-    padding-bottom: 8px;
-    padding-left: 8px;
-    width: 100%;
-    height: 100%;
-}
-
-#ihssv {
-    padding-top: 8px;
-    padding-right: 8px;
-    padding-bottom: 8px;
-    padding-left: 8px;
-    width: 25%;
     height: 100%;
 }
