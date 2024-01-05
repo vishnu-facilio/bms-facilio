@@ -73,7 +73,7 @@ public  class PushNotificationHandler extends ImsHandler {
                     if (appLinkName.equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) {
                         obj = UserNotificationContext.getFcmObject(userNotification);
                     } else {
-                        obj = UserNotificationContext.getFcmObjectMaintainence(userNotification);
+                        obj = UserNotificationContext.getFcmObjectMaintainence(userNotification,appLinkName);
                     }
                     long uid = userNotification.getUser().getId();
                     User user = AccountUtil.getUserBean().getUser(appId, uid);

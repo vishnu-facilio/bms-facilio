@@ -11,6 +11,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -281,6 +282,9 @@ public class UserNotificationContext extends V3Context {
     }
 
     public static JSONObject getFcmObjectMaintainence(UserNotificationContext userNotification) throws Exception{
+        return getFcmObjectMaintainence(userNotification,null);
+    }
+    public static JSONObject getFcmObjectMaintainence(UserNotificationContext userNotification,String appLinkaName) throws Exception{
         JSONObject obj = new JSONObject();
         FacilioModule module = Constants.getModBean().getModule(userNotification.getParentModule());
         obj.put("summaryId",userNotification.getParentId());
@@ -289,6 +293,10 @@ public class UserNotificationContext extends V3Context {
         obj.put("title",userNotification.getTitle());
         obj.put("notificationId",userNotification.getId());
         obj.put("redirectTo","SUMMARY");
+        obj.put("orgId",userNotification.getOrgId());
+        if(StringUtils.isNotEmpty(appLinkaName)){
+            obj.put("appLinkName",appLinkaName);
+        }
 
         JSONObject notification = new JSONObject();
         notification.put("body",userNotification.getSubject());
