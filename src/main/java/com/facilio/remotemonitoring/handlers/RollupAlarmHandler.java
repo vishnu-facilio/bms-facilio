@@ -63,7 +63,7 @@ public class RollupAlarmHandler implements AlarmCriteriaHandler<RawAlarmContext>
                     RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
 //                  Create filter alarm directly when roll up alarm is not matched with any of the filter criteria
                     Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmDuration()) / 1000;
-                    FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.ALARM_OPEN_FOR_DURATION_OF_TIME, nextExecutionTime, "priority");
+                    FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.ALARM_OPEN_FOR_DURATION_OF_TIME, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
                 }
         }
     }
