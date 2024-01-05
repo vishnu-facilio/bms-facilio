@@ -326,23 +326,16 @@ public class FormFactory {
 			} else if (moduleName.equals(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT)) {
 				List<FormSection> sections = new ArrayList<>();
 				List<FormField> defaultFields = new ArrayList<>();
-				List<FormField> checklistFields = new ArrayList<>();
 
 				form.setSections(sections);
 				FormSection defaultSection = new FormSection("PERMIT INFORMATION", 1, defaultFields, true);
-				FormSection checklistSection = new FormSection("CHECKLIST", 2, checklistFields, true);
 
 				form.getFields().forEach(field -> {
-					if (field.getDisplayTypeEnum() == FieldDisplayType.PERMIT_CHECKLIST) {
-						checklistFields.add(field);
-					} else {
+					if (field.getDisplayTypeEnum() != FieldDisplayType.PERMIT_CHECKLIST) {
 						defaultFields.add(field);
 					}
 				});
 				sections.add(defaultSection);
-				if (CollectionUtils.isNotEmpty(checklistFields)) {
-					sections.add(checklistSection);
-				}
 			}  else if (moduleName.equals(FacilioConstants.ContextNames.Budget.BUDGET)) {
 				List<FormSection> sections = new ArrayList<>();
 				List<FormField> defaultFields = new ArrayList<>();
@@ -3191,7 +3184,6 @@ public class FormFactory {
 		fields.add(new FormField("ticket", FieldDisplayType.LOOKUP_SIMPLE, "Work Order", Required.OPTIONAL, "ticket", 6, 1));
 		fields.add(new FormField("workPermitType", FieldDisplayType.LOOKUP_SIMPLE, "Permit Type", Required.OPTIONAL, "workPermitType", 7, 1));
 
-		fields.add(new FormField("checklist", FieldDisplayType.PERMIT_CHECKLIST, "Checklist", Required.OPTIONAL, 8, 1));
 
 		return fields;
 	}

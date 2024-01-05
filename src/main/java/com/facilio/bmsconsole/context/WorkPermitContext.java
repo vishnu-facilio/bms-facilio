@@ -110,6 +110,48 @@ public class WorkPermitContext extends ModuleBaseWithCustomFields{
 		return false;
 	}
 
+	public PermitStatus getPermitStatusEnum() {
+		return permitStatus;
+	}
+
+	public void setPermitStatus(Integer permitStatus) {
+		if (permitStatus != null) {
+			this.permitStatus = WorkPermitContext.PermitStatus.valueOf(permitStatus);
+		}	}
+
+	private PermitStatus permitStatus;
+
+	public enum PermitStatus implements FacilioIntEnum {
+		PRE_REQUISITES_FILLED("Pre Requisites Filled"),
+		PRE_VALIDATION_DONE("Pre Validation Done"),
+		POST_REQUISITES_FILLED("Post Requisites Filled"),
+		POST_VALIDATION_DONE("Post Validation Done");
+
+		private String name;
+
+		PermitStatus(String name) {
+			this.name = name;
+		}
+
+		public static WorkPermitContext.PermitStatus valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+
+		@Override
+		public Integer getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name;
+		}
+	}
+
+
 	public boolean isPostValidationDone() {
 		if (isPostValidationDone != null) {
 			return isPostValidationDone.booleanValue();

@@ -1105,6 +1105,13 @@ public class APIModuleWidgets {
                 .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
                 .done();
     }
+
+    @WidgetsForModule(FacilioConstants.ContextNames.WorkPermit.WORKPERMIT)
+    public static Supplier<ModuleWidgets> getWorkPermitWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("pdfViewer" , "Pdf Viewer",PageWidget.WidgetType.PDF_VIEWER)
+                .done();
+    }
     @WidgetsForModule(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)
     public static Supplier<ModuleWidgets> getPlannedMaintenanceWidgets(){
         return () -> new ModuleWidgets()

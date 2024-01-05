@@ -91,6 +91,7 @@ public class NewPermissionUtil {
         moduleTabType.put("MANAGE_ACCESS",536870912L);
         moduleTabType.put("PUBLISH_PM",1073741824L);
         moduleTabType.put("PM_CREATE",2147483648L);
+        moduleTabType.put("UPDATE_REVIEW",4294967296L);
         return moduleTabType;
     }
 
@@ -371,6 +372,18 @@ public class NewPermissionUtil {
         permissionMap.put("workorder", permissions);
         permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
+
+        permissions = new ArrayList<>();
+
+        permissions.add(new Permission("CREATE", "Create", moduleTabType.get("CREATE"), null));
+        permissions.add(new Permission("READ", "Read", moduleTabType.get("READ"), null));
+        permissions.add(new Permission("UPDATE", "Update", moduleTabType.get("UPDATE"), null));
+        permissions.add(new Permission("UPDATE_REVIEW", "Review", moduleTabType.get("UPDATE_REVIEW"), null));
+        permissions.add(new Permission("DELETE", "Delete", moduleTabType.get("DELETE"), null));
+        permissions.add(new Permission("EXPORT", "Export", moduleTabType.get("EXPORT"), null));
+
+        permissionMap.put("workpermit", permissions);
+        permissionList.put(Type.MODULE.getIndex(), permissionMap);
 
         //make use of this method to add permissions for alarm modules
         alarmModulePermissions(permissionMap);

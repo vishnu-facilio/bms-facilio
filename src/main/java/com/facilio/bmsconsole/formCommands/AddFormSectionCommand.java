@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.formCommands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -37,7 +38,6 @@ public class AddFormSectionCommand extends FacilioCommand {
         List<FormField> billingAddressFields = new ArrayList<>();
         List<FormField> shippingAddressFields = new ArrayList<>();
         List<FormField> signatureFields = new ArrayList<>();
-        List<FormField> checklistFields = new ArrayList<>();
         List<FormField> budgetAmountFields = new ArrayList<>();
         List<FormField> slotAvailabilityFields = new ArrayList<>();
         List<FormField> timeSlotFields = new ArrayList<>();
@@ -50,7 +50,6 @@ public class AddFormSectionCommand extends FacilioCommand {
         FormSection billingSection = new FormSection();
         FormSection notesSection = new FormSection();
         FormSection budgetAmount = new FormSection();
-        FormSection checklistSection = new FormSection();
         FormSection availabilitySection = new FormSection();
         FormSection timeSlotSection = new FormSection();
         FormSection attendeeSection = new FormSection();
@@ -266,22 +265,12 @@ public class AddFormSectionCommand extends FacilioCommand {
                 defaultSection.setFields(defaultFields);
                 defaultSection.setShowLabel(true);
 
-                checklistSection.setName("CHECKLIST");
-                checklistSection.setSequenceNumber(i++);
-                checklistSection.setFields(checklistFields);
-                checklistSection.setShowLabel(true);
-
                 form.getFields().forEach(field -> {
-                    if (field.getDisplayTypeEnum() == FacilioField.FieldDisplayType.PERMIT_CHECKLIST) {
-                        checklistFields.add(field);
-                    } else {
+                    if (field.getDisplayTypeEnum() != FacilioField.FieldDisplayType.PERMIT_CHECKLIST) {
                         defaultFields.add(field);
                     }
                 });
                 sections.add(defaultSection);
-                if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(checklistFields)) {
-                    sections.add(checklistSection);
-                }
                 break;
             case FacilioConstants.ContextNames.Budget.BUDGET:
 

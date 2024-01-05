@@ -91,6 +91,9 @@ enums:
   - name: CustomerType
     enumClassName: com.facilio.bmsconsoleV3.context.quotation.QuotationContext$CustomerType
 
+  - name: PermitStatus
+    enumClassName: com.facilio.bmsconsole.context.WorkPermitContext$PermitStatus
+
   - name: FaultType
     enumClassName: com.facilio.bmsconsole.enums.FaultType
 

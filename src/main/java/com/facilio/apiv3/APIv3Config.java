@@ -196,6 +196,7 @@ import com.facilio.bmsconsoleV3.context.workOrderPlannedInventory.WorkOrderPlann
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourContext;
 import com.facilio.bmsconsoleV3.context.workorder.V3WorkOrderLabourPlanContext;
 import com.facilio.bmsconsoleV3.context.workpermit.V3WorkPermitContext;
+import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCategoryContext;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.*;
@@ -1416,6 +1417,15 @@ public class APIv3Config {
 
                 .list()
                 .beforeFetch(new LoadWorkPermitTypeChecklistLookupsCommand())
+                .build();
+    }
+
+    @Module("workpermitchecklist")
+    public static Supplier<V3Config> getWorkPermitChecklist() {
+        return () -> new V3Config(WorkPermitChecklistContext.class, new ModuleCustomFieldCount30())
+                .create()
+                .update()
+                .list()
                 .build();
     }
 

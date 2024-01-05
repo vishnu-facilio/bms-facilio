@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.workpermit;
 
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 public class WorkPermitChecklistContext extends V3Context {
 
@@ -15,6 +17,9 @@ public class WorkPermitChecklistContext extends V3Context {
 
     private WorkPermitTypeChecklistContext checklist;
     private String remarks;
+
+    @Getter @Setter
+    private String reviewerRemarks;
 
 
     public Boolean getIsReviewed() {
