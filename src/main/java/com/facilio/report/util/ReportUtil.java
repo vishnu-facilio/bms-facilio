@@ -880,9 +880,12 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			if(chartStateJson != null) {
 				JSONObject visualizationProps = (JSONObject) chartStateJson.get("visualizationProps");
 				if(visualizationProps != null) {
-					JSONArray groups = (JSONArray) visualizationProps.get("groups");
-					if(groups != null && groups.size() >1){
-						multiGroup = true;
+					String type = (String) visualizationProps.get("type");
+					if(type != null && type.equals("multi")){
+						JSONArray groups = (JSONArray) visualizationProps.get("groups");
+						if(groups != null && groups.size() >1){
+							multiGroup = true;
+						}
 					}
 				}
 			}

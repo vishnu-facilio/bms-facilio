@@ -713,6 +713,7 @@
             <property name="page" type="number"></property>
             <property name="perPage" type="number"></property>
             <property name="withoutCustomButtons" type="boolean"></property>
+            <property name="filters" type="filters"></property>
         </urlparams>
     </request>
     <request path="/api/v3/dashboard/modules/list/all" method="GET">

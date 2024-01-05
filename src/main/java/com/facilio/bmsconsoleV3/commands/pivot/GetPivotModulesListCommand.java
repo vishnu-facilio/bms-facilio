@@ -19,7 +19,7 @@ import java.util.List;
 
 public class GetPivotModulesListCommand extends FacilioCommand {
 
-    private List<String> fault_modules = Arrays.asList(FacilioConstants.ContextNames.ALARM_OCCURRENCE, FacilioConstants.ContextNames.BMS_ALARM_OCCURRENCE);
+    private List<String> fault_modules = Arrays.asList(FacilioConstants.ContextNames.ALARM_OCCURRENCE, FacilioConstants.ContextNames.BMS_ALARM_OCCURRENCE, FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE);
     @Override
     public boolean executeCommand(Context context)throws Exception
     {
