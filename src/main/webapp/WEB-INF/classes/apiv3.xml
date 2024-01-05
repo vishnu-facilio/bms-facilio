@@ -2596,7 +2596,7 @@
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="actionType">{3}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">PATCH:UPDATE</param>
         </action>
     </package>
     <package name="newApprovalAction" namespace="/api/v3/approval/action" extends="v3Api">
