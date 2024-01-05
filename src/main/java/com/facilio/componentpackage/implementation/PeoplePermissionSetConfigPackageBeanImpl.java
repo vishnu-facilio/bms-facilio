@@ -17,6 +17,7 @@ import com.facilio.permission.context.PermissionSetContext;
 import com.facilio.permission.factory.PermissionSetFieldFactory;
 import com.facilio.permission.factory.PermissionSetModuleFactory;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+@Log4j
 public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pair<Long, Long>> {
 
     PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
@@ -40,12 +41,35 @@ public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pai
 
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
-        return getPeoplePermissionSetConfig(true);
+        return null;
     }
 
     @Override
     public Map<Long, Long> fetchCustomComponentIdsToPackage() throws Exception {
-        return getPeoplePermissionSetConfig(false);
+        Map<Long, Long> peoplePermissionSetConfigMap = new HashMap<>();
+        List<Long> permissionSetIds = new ArrayList<>();
+        for(PermissionSetContext permissionSet : existingPermissionSetList){
+            if(permissionSet != null){
+                permissionSetIds.add(permissionSet.getId());
+            }
+        }
+        if(CollectionUtils.isNotEmpty(permissionSetIds)) {
+            GenericSelectRecordBuilder selectRecordBuilder = getBuilder();
+            selectRecordBuilder.andCondition(CriteriaAPI.getConditionFromList("PERMISSION_SET_ID", "permissionSetId", permissionSetIds, NumberOperators.EQUALS));
+
+            List<Map<String, Object>> props = selectRecordBuilder.get();
+            if (CollectionUtils.isNotEmpty(props)) {
+                for (Map<String, Object> prop : props) {
+                    if (MapUtils.isNotEmpty(prop)) {
+                        Long recordId = (Long) prop.get("id");
+                        Long permissionSetId = (Long) prop.get("permissionSetId");
+
+                        peoplePermissionSetConfigMap.put(recordId > 0 ? recordId : -1L, permissionSetId > 0 ? permissionSetId : -1L);
+                    }
+                }
+            }
+        }
+        return peoplePermissionSetConfigMap;
     }
 
     @Override
@@ -109,9 +133,9 @@ public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pai
 
         for (Map.Entry<String, XMLBuilder> uniqueIdentifierVsXMLBuilder : uniqueIdVsXMLData.entrySet()) {
             String uniqueIdentifier = uniqueIdentifierVsXMLBuilder.getKey();
-            XMLBuilder scopingConfigComponentElement = uniqueIdentifierVsXMLBuilder.getValue();
-            String peopleMail = scopingConfigComponentElement.getElement(PackageConstants.PeoplePermissionSetConfig.PEOPLE_MAIL).getText();
-            String permissionSetLinkName = scopingConfigComponentElement.getElement(PackageConstants.PeoplePermissionSetConfig.PERMISSION_SET_LINK_NAME).getText();
+            XMLBuilder PeoplePermissionSetConfigComponentElement = uniqueIdentifierVsXMLBuilder.getValue();
+            String peopleMail = PeoplePermissionSetConfigComponentElement.getElement(PackageConstants.PeoplePermissionSetConfig.PEOPLE_MAIL).getText();
+            String permissionSetLinkName = PeoplePermissionSetConfigComponentElement.getElement(PackageConstants.PeoplePermissionSetConfig.PERMISSION_SET_LINK_NAME).getText();
 
             Long peopleId = PackageUtil.getPeopleId(peopleMail);
             PermissionSetContext permissionSet = permissionSetBean.getPermissionSet(permissionSetLinkName);
@@ -122,6 +146,11 @@ public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pai
             Map<String,Object> prop = new HashMap<>();
             prop.put("peopleId",peopleId);
             prop.put("permissionSetId",permissionSetId);
+
+            if(peopleId < 0  || permissionSetId < 0){
+                LOGGER.info("####Sandbox - Skipping add PeoplePermissionSetConfig since peopleId "+peopleId+" or permissionSetId "+permissionSetId+" is not valid ");
+                continue;
+            }
 
             GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                     .table(PermissionSetModuleFactory.getPeoplePermissionSetModule().getTableName())
@@ -176,34 +205,6 @@ public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pai
 
         return selectRecordBuilder;
     }
-    private Map<Long, Long> getPeoplePermissionSetConfig(boolean fetchSystemSetConfig) throws Exception {
-        Map<Long, Long> peoplePermissionSetConfigMap = new HashMap<>();
-        List<Long> permissionSetIds = new ArrayList<>();
-        for(PermissionSetContext permissionSet : existingPermissionSetList){
-            if(permissionSet != null){
-                if(fetchSystemSetConfig == permissionSet.isPrivileged()){
-                    permissionSetIds.add(permissionSet.getId());
-                }
-            }
-        }
-        if(CollectionUtils.isNotEmpty(permissionSetIds)) {
-            GenericSelectRecordBuilder selectRecordBuilder = getBuilder();
-            selectRecordBuilder.andCondition(CriteriaAPI.getConditionFromList("PERMISSION_SET_ID", "permissionSetId", permissionSetIds, NumberOperators.EQUALS));
-
-            List<Map<String, Object>> props = selectRecordBuilder.get();
-            if (CollectionUtils.isNotEmpty(props)) {
-                for (Map<String, Object> prop : props) {
-                    if (MapUtils.isNotEmpty(prop)) {
-                        Long recordId = (Long) prop.get("id");
-                        Long permissionSetId = (Long) prop.get("permissionSetId");
-
-                        peoplePermissionSetConfigMap.put(recordId > 0 ? recordId : -1L, permissionSetId > 0 ? permissionSetId : -1L);
-                    }
-                }
-            }
-        }
-        return peoplePermissionSetConfigMap;
-    }
 
     private void deleteRecordsFromPeoplePermissionSets(List<Long> ids, Long peopleId) throws Exception{
         GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
@@ -212,7 +213,7 @@ public class PeoplePermissionSetConfigPackageBeanImpl implements PackageBean<Pai
             deleteRecordBuilder.andCondition(CriteriaAPI.getConditionFromList("ID", "id", ids, NumberOperators.EQUALS));
             deleteRecordBuilder.delete();
         }else if(peopleId > 0){
-            deleteRecordBuilder.andCondition(CriteriaAPI.getCondition("PERMISSION_SET_ID", "permissionSetId", String.valueOf(peopleId), NumberOperators.EQUALS));
+            deleteRecordBuilder.andCondition(CriteriaAPI.getCondition("PEOPLE_ID", "peopleId", String.valueOf(peopleId), NumberOperators.EQUALS));
             deleteRecordBuilder.delete();
         }
     }

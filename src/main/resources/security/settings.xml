@@ -361,7 +361,7 @@
         </requestbody>
     </request>
 
-    <request path="/api/v2/tab/addOrUpdate">
+    <request path="/api/v2/tab/addOrUpdate" method="POST">
         <requestbody type="object">
             <property name="tab" type="object">
                 <property name="applicationId" type="number"/>
@@ -374,6 +374,7 @@
                     <items type="string"/>
                 </property>
                 <property name="type" type="number"/>
+                <property name="id" type="number"/>
             </property>
         </requestbody>
     </request>

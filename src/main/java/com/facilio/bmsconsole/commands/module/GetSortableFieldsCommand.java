@@ -1,17 +1,5 @@
 package com.facilio.bmsconsole.commands.module;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -29,9 +17,13 @@ import com.facilio.modules.FieldFactory.Fields.FilterType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetSortableFieldsCommand extends FacilioCommand {
 
@@ -155,7 +147,7 @@ public class GetSortableFieldsCommand extends FacilioCommand {
 
 	private List<SortableField> getAtreSortFields(String moduleName, List<FacilioField> fields) throws Exception {
 		List<SortableField> sortFields = null;
-		if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp().getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(ApplicationLinkNames.VENDOR_PORTAL_APP)) {
 			List<String> atreFields = getAtreFieldMap().get(moduleName);
 			if (atreFields != null) {
 				sortFields = fields.stream().filter(field -> atreFields.contains(field.getName()))
