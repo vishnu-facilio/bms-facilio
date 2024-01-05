@@ -28,7 +28,7 @@ public class FieldFactory extends BaseFieldFactory {
 
     private static Map<String, Pair<String, Boolean>> initMap() {
         Map<String, Pair<String, Boolean>> lookupModuleVsSortFieldName = new HashMap<>();
-        lookupModuleVsSortFieldName.put("ticketpriority", Pair.of("sequenceNumber", false));
+        lookupModuleVsSortFieldName.put("ticketpriority", Pair.of("sequenceNumber", true));
         lookupModuleVsSortFieldName.put("ticketcategory", Pair.of("name", true));
         lookupModuleVsSortFieldName.put("ticketstatus", Pair.of("status", true));
         lookupModuleVsSortFieldName.put("tickettype", Pair.of("name", true));
