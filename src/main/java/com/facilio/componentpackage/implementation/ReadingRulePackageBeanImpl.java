@@ -144,7 +144,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             if (ruleCtx.getRca() != null) {
                 FacilioChain rcaChain = TransactionChainFactoryV3.addRCARuleChain();
                 FacilioContext rcaContext = rcaChain.getContext();
-                rcaContext.put(FacilioConstants.ContextNames.NEW_READING_RULE, ruleCtx);
+                rcaContext.put(FacilioConstants.ReadingRules.NEW_READING_RULE, ruleCtx);
 
                 rcaChain.execute();
             }
@@ -344,8 +344,8 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
                     }
                     rca.setGroups(rcaGroupContexts);
                 }
-                rule.setRca(rca);
 
+                rule.setRca(rca);
             }
         }
 
