@@ -37,6 +37,7 @@ import com.facilio.bmsconsole.workflow.rule.impact.AddOrUpdateAlarmImpactCommand
 import com.facilio.bmsconsole.workflow.rule.impact.util.AlarmImpactAPI;
 import com.facilio.bmsconsoleV3.commands.*;
 import com.facilio.bmsconsoleV3.commands.imap.SaveMailMessageCommandV3;
+import com.facilio.bmsconsoleV3.commands.inventoryrequest.ToolTransactionRemainingQuantityRollupCommandV3;
 import com.facilio.bmsconsoleV3.commands.inventoryrequest.UseInventoryRequestLineItemsCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobplan.AddJobPlanTasksForWoCommand;
 import com.facilio.bmsconsoleV3.commands.jobplan.BulkAddJobPlanTasksCommand;
@@ -214,9 +215,9 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMentionsCommand());
 			c.addCommand(new AddCommentSharingCommand());
 			c.addCommand(new AddCommentAttachmentsCommand());
+			c.addCommand(new NotifyCommentMentions());
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteNoteWorkflowCommand())
-					.addCommand(new NotifyCommentMentions()));
+					.addCommand(new ExecuteNoteWorkflowCommand()));
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
@@ -228,11 +229,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMentionsCommand());
 			c.addCommand(new AddCommentSharingCommand());
 			c.addCommand(new AddCommentAttachmentsCommand());
+			c.addCommand(new NotifyCommentMentions());
 			c.addCommand(new ForkChainToInstantJobCommand()
-					.addCommand(new ExecuteNoteWorkflowCommand())
-					.addCommand(new NotifyCommentMentions()));
+					.addCommand(new ExecuteNoteWorkflowCommand()));
 			c.addCommand(new AddActivitiesCommand());
-
 			return c;
 		}
 
