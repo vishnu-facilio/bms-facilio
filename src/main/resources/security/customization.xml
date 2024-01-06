@@ -685,4 +685,32 @@
             <property name="fromAdminTool" type="boolean"/>
         </requestbody>
     </request>
+
+    <!--New Setup API Validation-->
+    <request path="/api/v2/setup/views/:moduleName/viewList" method="GET">
+        <urlparams>
+            <property name="groupType" type="number"  mandatory="true"/>
+            <property name="viewType" type="number"  mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="fromBuilder" type="boolean"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/setup/views/:moduleName/:viewName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="viewName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/setup/forms/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="formId" type="number" mandatory="true"/>
+            <property name="formName" type="string"/>
+            <property name="fetchFormRuleFields" type="boolean"/>
+            <property name="formSourceType" type="number"/>
+            <property name="forCreate" type="boolean"/>
+        </urlparams>
+    </request>
 </config>

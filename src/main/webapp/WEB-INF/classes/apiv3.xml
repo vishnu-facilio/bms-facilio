@@ -358,18 +358,16 @@
             <param name="moduleName">{1}</param>
             <param name="tabType">Portfolio</param>
             <param name="permission">
-                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+                GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
-            <param name="setupTab">INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,RULE_LOGS,EMAIL_LOGS,PEOPLE,TEAMS,LABOUR,CRAFTS,READINGS,SPACE_CATEGORIES,SPACE_ASSET_CUSTOMIZATION,ASSET_DEPRECIATION,WEATHER_STATION,METER_CUSTOMIZATION,SCRIPT_LOGS,FSM_CUSTOMIZATION</param>
         </action>
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
             <param name="tabType">Portfolio</param>
             <param name="permission">
-                ALL;GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+                GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
-            <param name="setupTab">PEOPLE,TEAMS,LABOUR,CRAFTS,FSM_CUSTOMIZATION</param>
         </action>
         <action name="*/glimpse/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
@@ -791,9 +789,7 @@
         <action name="reSendVerificationEmail"
                 class="com.facilio.bmsconsoleV3.actions.MailMessageAction"
                 method="reSendVerificationEmail">
-            <param name="moduleName">setup</param>
-            <param name="permission">ALL</param>
-            <param name="setupTab">EMAIL_SETTINGS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
         <action name="getfromEmailForEmailThreadingReply"
@@ -847,8 +843,7 @@
             <param name="tabType">Portfolio</param>
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
-            <param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-            <param name="setupTab">TEAMS,LABOUR,USERS,FAULT_IMPACT_TEMPLATE</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 
@@ -998,8 +993,7 @@
 
     <package name="moduleApiv3" namespace="/api/v3/modules/list" extends="v3Api">
         <action name="all" class="com.facilio.bmsconsoleV3.actions.V3ModuleAction" method="moduleList">
-            <param name="permission">ALL</param>
-            <param name="setupTab">TABS_AND_LAYOUTS,PORTALS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -1013,8 +1007,7 @@
     <package name="placeholderApiv3" namespace="/api/v3/placeholders" extends="v3Api">
         <action name="*" class="com.facilio.bmsconsoleV3.actions.V3CommonAction" method="fetchPlaceholderFields">
             <param name="moduleName">{1}</param>
-            <param name="permission">ALL</param>
-            <param name="setupTab">EMAIL_TEMPLATES,SLA_POLICIES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -1254,39 +1247,33 @@
         <action name="listGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="listGroup">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="addOrUpdateGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdateGroup">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="deleteGroup"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="deleteGroup">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
 
         <action name="list"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="list">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="addOrUpdate"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="addOrUpdate">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsole.actions.GlobalVariableAction"
                 method="delete">
-            <param name="permission">ALL</param>
-            <param name="setupTab">VARIABLES</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -1417,20 +1404,17 @@
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="list">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="add"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="add">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="delete"
                 class="com.facilio.bmsconsoleV3.actions.AccessibleSpacesAction"
                 method="delete">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -2278,8 +2262,7 @@
     <package name="defaultAppUser" namespace="/api/v3/defaultApp" extends="v3Api">
         <action name="setUserDefaultApp" class="com.facilio.bmsconsoleV3.actions.DefaultAppUserAction"
                 method="setDefaultAppUser">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -2290,8 +2273,7 @@
         </action>
         <action name="listMyAppsForUser" class="com.facilio.bmsconsoleV3.actions.MyAppsAction"
                 method="listMyAppsForUser">
-            <param name="permission">ALL</param>
-            <param name="setupTab">USERS</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
     </package>
 
@@ -2338,43 +2320,34 @@
 
     <package name="scopeVariable" namespace="/api/v3/scopeVariable" extends="v3Api">
         <action name="list" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="list">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="detail" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="detail">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="addOrUpdate" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="addOrUpdate">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="delete" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="delete">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="setStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="setStatus">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="setSwitchStatus" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="setSwitchStatus">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="meta" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction" method="getScopeMetaData">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="applicableFieldsMap" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getApplicableFieldsMap">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="applicableValueGenerators" class="com.facilio.bmsconsoleV3.actions.ScopeVariableAction"
                 method="getApplicationValueGenerators">
-            <param name="permission">ALL</param>
-            <param name="setupTab">SCOPE</param>
+            <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
         </action>
         <action name="options/*" class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction" method="scopeVariableOptions">
             <param name="moduleName">{1}</param>

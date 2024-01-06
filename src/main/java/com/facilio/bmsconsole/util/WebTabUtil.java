@@ -82,13 +82,13 @@ public class WebTabUtil {
             params.putAll(extraParameters);
         }
 
-        boolean isMatchedTabType = handler instanceof ModuleTypeHandler;
+        boolean isMatchedTabType = handler instanceof ModuleTypeHandler || handler instanceof SetupTypeHandler;
         if (params.containsKey("skipPermission") && Boolean.parseBoolean(params.get("skipPermission"))) {
             return true;
         } else if (!(isMatchedTabType)) {
             if (params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))) {
                 List<String> tabType = Arrays.asList(params.get("tabType").split(","));
-                isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tabType.contains(tab.getTypeEnum().getName())) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
+                isMatchedTabType = tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tabType.contains(tab.getTypeEnum().getName());
             }
         } else if (params.containsKey("handler") && StringUtils.isNotEmpty(params.get("handler"))) {
             WebTabHandler formTypeHandler = WEB_TAB_HANDLER_MAP.get(params.get("handler")).newInstance();

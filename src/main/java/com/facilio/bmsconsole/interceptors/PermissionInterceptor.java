@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.interceptors;
 
-import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.util.ModuleAPI;

@@ -6523,4 +6523,293 @@
             </property>
         </requestbody>
     </request>
+
+    <!--New Setup API Validation-->
+    <request path="/api/v2/setup/businesshours/add" method="">
+        <requestbody type="object">
+            <property name="businessHour" type="object">
+                <property name="businessHourType" type="string"/>
+                <property name="customHourType" type="string" mandatory="false"/>
+                <property name="name" type="string" mandatory="true"/>
+                <property name="singleDaybusinessHoursList" type="array" mandatory="false">
+                    <items type="object">
+                        <property name="dayOfWeek" type="string" mandatory="true"/>
+                        <property name="startTime" type="string" mandatory="false"/>
+                        <property name="endTime" type="string" mandatory="false"/>
+                    </items>
+                </property>
+            </property>
+            <property name="resourceid" type="number" mandatory="false">
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/businesshours/edit" method="">
+        <requestbody type="object">
+            <property name="businessHour" type="object">
+                <property name="businessHourType" type="string"/>
+                <property name="businessHourTypeVal" type="string"/>
+                <property name="customHourType" type="string"/>
+                <property name="customHourTypeVal" type="string"/>
+                <property name="name" type="string"/>
+                <property name="singleDaybusinessHoursList" type="array">
+                    <items type="object">
+                        <property name="dayOfWeek" type="string"/>
+                        <property name="startTime" type="string"/>
+                        <property name="endTime" type="string"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/application/users/add" method="">
+        <requestbody type="object">
+            <property name="appId" type="number"/>
+            <property name="user" type="object">
+                <property name="name" type="string"/>
+                <property name="email" type="string"/>
+                <property name="language" type="string"/>
+                <property name="phone" type="string"/>
+                <property name="roleId" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/createSecurityPolicy">
+        <requestbody type="object">
+            <property name="securityPolicy" type="object">
+                <property name="name" type="string" maxLength="255"/>
+                <property name="description" type="string" maxLength="500"/>
+                <property name="isDefault" type="boolean"/>
+                <property name="pwdIsMixed" type="boolean"/>
+                <property name="isWebSessManagementEnabled" type="boolean"/>
+                <property name="isTOTPEnabled" type="boolean"/>
+                <property name="isPwdPolicyEnabled" type="boolean"/>
+                <property name="isMOTPEnabled" type="boolean"/>
+                <property name="pwdMinAge" type="number"/>
+                <property name="pwdMinLength" type="number"/>
+                <property name="pwdMinNumDigits" type="number"/>
+                <property name="pwdMinSplChars" type="number"/>
+                <property name="pwdPrevPassRefusal" type="number"/>
+                <property name="webSessLifeTime" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/updateSecurityPolicy">
+        <requestbody type="object">
+            <property name="securityPolicy" type="object">
+                <property name="asMap" type="object">
+                    <property name="name" type="string"/>
+                    <property name="description" type="string"/>
+                    <property name="id" type="number"/>
+                    <property name="isDefault" type="boolean"/>
+                    <property name="isTOTPEnabled" type="boolean"/>
+                    <property name="isMOTPEnabled" type="boolean"/>
+                    <property name="isPwdPolicyEnabled" type="boolean"/>
+                    <property name="isWebSessManagementEnabled" type="boolean"/>
+                    <property name="orgId" type="number"/>
+                    <property name="pwdIsMixed" type="boolean"/>
+                    <property name="pwdMinAge" type="number"/>
+                    <property name="pwdMinNumDigits" type="number"/>
+                    <property name="pwdMinSplChars" type="number"/>
+                    <property name="pwdPrevPassRefusal" type="number"/>
+                    <property name="pwdMinLength" type="number"/>
+                    <property name="webSessLifeTime" type="number"/>
+                    <property name="idleSessionTimeOut" type="number"/>
+                    <property name="isMFAEnabled" type="boolean"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/getAllSecurityPolicies" />
+    <request path="/api/v2/setup/tab/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="tab" type="object">
+                <property name="applicationId" type="number"/>
+                <property name="moduleIds" type="array">
+                    <items type="number"/>
+                </property>
+                <property name="name" type="string"/>
+                <property name="route" type="string"/>
+                <property name="specialTypeModules" type="array">
+                    <items type="string"/>
+                </property>
+                <property name="type" type="number"/>
+                <property name="id" type="number"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/tabGroup/addOrUpdate">
+        <requestbody type="object">
+            <property name="tabGroup" type="object">
+                <property name="iconType" type="number"/>
+                <property name="iconTypeEnum" type="string"/>
+                <property name="layoutId" type="number"/>
+                <property name="name" type="string" mandatory="true"/>
+                <property name="route" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/workflow/updateScheduledWorkflowStatus" method="POST">
+        <requestbody type="object">
+            <property name="scheduledWorkflow" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true"/>
+                <property name="isActive" type="boolean" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/setup/picklist/addTicketCategory">
+        <requestbody type="object">
+            <property name="ticketCategory" type="object">
+                <property name="description" type="string"/>
+                <property name="name" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/setup/picklist/updateTicketCategory">
+        <requestbody type="object">
+            <property name="ticketCategory" type="object">
+                <property name="description" type="string"/>
+                <property name="name" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/setup/picklist/addTicketType">
+        <requestbody type="object">
+            <property name="ticketType" type="object">
+                <property name="description" type="string"/>
+                <property name="name" type="string"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/application/list">
+        <urlparams type="object">
+            <property name="moduleName" type="string" />
+            <property name="fetchMyApps" type="boolean" />
+        </urlparams>
+    </request>
+    <request path="/api/v2/setup/forms/formSharing/addOrUpdate">
+    <requestbody type="object">
+        <property name="form" type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="formSharing" type="array">
+                <items type="object">
+                    <property name="roleId" type="number" mandatory="true"/>
+                    <property name="type" type="number"/>
+                </items>
+            </property>
+        </property>
+    </requestbody>
+</request>
+    <request path="/api/v2/setup/forms/formSharing/getSharingList">
+        <requestbody type="object">
+            <property name="formId" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/group/scopeBySite">
+        <requestbody type="object">
+            <property name="siteId" type="number"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/modules/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/setup/modules/data/create">
+        <requestbody type="v3fields"/>
+    </request>
+    <request path="/api/v3/setup/modules/data/patch">
+        <requestbody type="object">
+            <property name="data" type="object">
+                <property name="displayName" type="string"/>
+                <property name="email" type="string"/>
+                <property name="id" type="number"/>
+                <property name="siteId" type="number"/>
+                <property name="sourceType" type="number"/>
+            </property>
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/modules/list/all"/>
+    <request path="/api/v3/setup/myApps/listMyAppsForUser" method="GET">
+        <urlparams>
+            <property name="ouId" type="number" mandatory="true" />
+            <property name="appId" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/list" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+            <property name="perPage" type="number" mandatory="true" />
+            <property name="page" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/detail" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/addOrUpdate" method="POST">
+        <requestbody type="object" >
+            <property name="scopeVariable" type="object" mandatory="true" >
+                <property name="appId" type="number" mandatory="true" />
+                <property name="displayName" type="string" mandatory="true" />
+                <property name="applicableModuleId" type="number" mandatory="false" />
+                <property name="id" type="number" mandatory="false" />
+                <property name="scopeVariableModulesFieldsList" type="array" mandatory="true" >
+                    <items type="object">
+                        <property name="moduleId" type="number" mandatory="true"/>
+                        <property name="fieldName" type="string" mandatory="true"/>
+                    </items>
+                </property>
+                <property name="status" type="boolean" mandatory="true" />
+                <property name="type" type="number" mandatory="true" />
+                <property name="valueGeneratorId" type="number" />
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/delete" method="POST">
+        <requestbody type="object" >
+            <property name="scopeVariable" type="object" mandatory="true">
+                <property name="id" type="number" mandatory="true" />
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/setStatus" method="POST">
+        <requestbody type="object" >
+            <property name="id" type="number" mandatory="true" />
+            <property name="status" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/setSwitchStatus" method="POST">
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true" />
+            <property name="status" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/meta" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/applicableFieldsMap" method="GET">
+        <urlparams>
+            <property name="appId" type="number" mandatory="true" />
+            <property name="lookupModuleName" type="string" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/scopeVariable/applicableValueGenerators" method="GET">
+        <urlparams>
+            <property name="applicableModuleName" type="string" mandatory="true" />
+        </urlparams>
+    </request>
+    <request path="/api/v3/setup/weather/stationcode">
+        <requestbody type="object">
+            <property name="lat" type="number"/>
+            <property name="lng" type="number"/>
+        </requestbody>
+    </request>
 </config>

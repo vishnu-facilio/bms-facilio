@@ -162,31 +162,26 @@
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
 				<param name="shouldApplySwitchScope">false</param>
-				<param name="permission">ALL</param>
-			<param name="setupTab">USERS,TEAMS,MODULES,ASSIGNMENT_RULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SCHEDULER,SLA_POLICIES,ASSIGNMENT_RULES,APPROVALS,EMAIL_SETTINGS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getOrgs">
 		</action>
 		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getRoles">
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,SCHEDULER,ASSIGNMENT_RULES,API_SETUP,USERS,ROLES,MODULES,BMS_EVENT_FILTERING,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getGroups">
-			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="setupTab">PEOPLE,WORKFLOWS,NOTIFICATIONS,SCHEDULER,ASSIGNMENT_RULES,USERS,PORTALS,TEAMS,MODULES,EMAIL_TEMPLATES,SLA_POLICIES,BMS_EVENT_FILTERING,APPROVALS</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllBuildings">
-			<param name="permission">ALL</param>
-			<param name="setupTab">ORGANIZATION_SETTINGS,TEAMS,USERS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
@@ -195,14 +190,12 @@
 
 		<action name="createSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="createSecurityPolicy">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SECURITY_POLICY</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="updateSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="updateSecurityPolicy">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SECURITY_POLICY</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="getSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
@@ -212,8 +205,7 @@
 
 		<action name="getAllSecurityPolicies" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="getAllSecurityPolicy">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SECURITY_POLICY,USERS,PORTALS,PEOPLE</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="getAllSecurityPolicies/*" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
@@ -224,8 +216,7 @@
 
 		<action name="deleteSecurityPolicy" class="com.facilio.bmsconsole.actions.SecurityPoliciesSettingsAction"
 				method="deleteSecurityPolicy">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SECURITY_POLICY</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
@@ -289,8 +280,7 @@
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">FormTranslation</param>
-			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS,MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="*/forms"
 				class="com.facilio.bmsconsole.actions.FormAction" method="formList">
@@ -659,8 +649,7 @@
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
 			<param name="translationImpl">StateFlowTranslationV2</param>
-			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="setupTab">USERS,TEAMS,STATEFLOWS,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="*/list"
 				class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
@@ -671,13 +660,11 @@
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2AddStatus">
-		     <param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 	
@@ -734,13 +721,11 @@
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAllSystemButtons">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="get"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getSystemButton">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
@@ -828,43 +813,37 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateFlow">
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="updateDiagram"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="updateStateflowDiagram" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="rearrangeStateFlows" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="changeStatus"
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="changeStatus" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS,MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateFlowList" >
 			<param name="translationImpl">StateFlowListTranslation</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS,MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="viewStateFlow" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 		<action name="createDraft"
@@ -875,14 +854,12 @@
 		<action name="publish"
 				class="com.facilio.bmsconsole.actions.StateFlowAction"
 				method="publishStateFlow" >
-				<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="clone"
 				class="com.facilio.bmsconsole.actions.StateFlowAction" method="cloneStateFlow">
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 
@@ -900,28 +877,23 @@
 	<package name="emailTemplate" namespace="/api/v2/template/email" extends="v2Api">
 		<action name="list"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="list">
-				<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_TEMPLATES,WORKFLOWS,NOTIFICATIONS,SLA_POLICIES,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="addOrUpdate">
-				<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+				<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="view"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="viewEmailStructure" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="deleteEmailStructure">
-				<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+				<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="publish"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="publishEmailStructure">
-				<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+				<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="testMail"
 				class="com.facilio.emailtemplate.action.EMailTemplateAction" method="testMailTemplate" >
@@ -934,23 +906,19 @@
 	<package name="relation" namespace="/api/v2/relation" extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.relation.action.RelationAction" method="addOrUpdateRelation" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="view"
 				class="com.facilio.relation.action.RelationAction" method="viewRelation" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="list"
 				class="com.facilio.relation.action.RelationAction" method="list" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES,FAULT_IMPACT_TEMPLATE</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.relation.action.RelationAction" method="delete" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="fetchRelations"
 				class="com.facilio.relation.action.RelationAction" method="fetchRelations" >
@@ -1031,21 +999,18 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateTransition" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="deleteStateTransition" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getStateTransitionList" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">STATEFLOWS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
@@ -1107,11 +1072,11 @@
 		</action>
 	</package>
 
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="auditLogs" extends="v2Api" namespace="/api/v2/auditLogs">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.AuditLogAction" method="getAuditLogs">
-				 <param name="permission">ALL</param>
-			<param name="setupTab">AUDIT_LOGS</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -1147,13 +1112,11 @@
 	<package name="approvalTransition" extends="v2Api" namespace="/api/v2/approval">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="addOrUpdateApprovalRule">
-				<param name="permission">ALL</param>
-			<param name="setupTab">APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalRuleDetails" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="availableTransitions"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getAvailableState" >
@@ -1172,9 +1135,7 @@
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="reorderApprovalRule" >
-			<param name="permission">ALL</param>
-			<param name="tabType">SETUP</param>
-			<param name="setupTab">APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="approvalDetails"
 				class="com.facilio.bmsconsole.actions.ApprovalAction" method="getApprovalDetails" >
@@ -1200,12 +1161,11 @@
 	<package name="slaEntity" namespace="/api/v2/slaEntity" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="listSLAEntity">
-				<param name="permission">ALL</param>
-			<param name="setupTab">SLA_POLICIES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addOrUpdateSLAEntity" >
-			<param name="deprecated">true</param>
+			<param name="deprecated">true</param>	<!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLAEntity" >
@@ -1216,18 +1176,15 @@
 	<package name="namedCriteria" namespace="/api/v2/namedCriteria" extends="v2Api">
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="getAllNamedCriteria" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONDITION_MANAGER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="addOrUpdateNamedCriteria" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONDITION_MANAGER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="deleteNamedCriteria" >
-            <param name="permission">ALL</param>
-			<param name="setupTab">CONDITION_MANAGER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="evaluate"
 				class="com.facilio.bmsconsole.actions.NamedCriteriaAction" method="evaluateCriteria" >
@@ -1272,9 +1229,7 @@
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="deleteSLA" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">SLA_POLICIES</param>
-			<param name="isNewPermission">true</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="view"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="viewSLAPolicy" >
@@ -1290,39 +1245,31 @@
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="reorderSLAPolicy" >
-			<param name="permission">SLA_POLICIES</param>
-			<param name="isNewPermission">true</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="addOrUpdateWithChildren"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="addSLAPolicyWithChildren" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">SLA_POLICIES</param>
-			<param name="isNewPermission">true</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getWithChildren"
 				class="com.facilio.bmsconsole.actions.SLAAction" method="getSLAPolicyWithChildren" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">SLA_POLICIES</param>
-			<param name="isNewPermission">true</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 
 	<package name="userDelegation" namespace="/api/v2/userDelegation" extends="v2Api">
 		<action name="list"
 				class="com.facilio.delegate.action.DelegateAction" method="list" >
-                <param name="permission">ALL</param>
-			<param name="setupTab">USERS</param>
+                <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addOrUpdate"
 				class="com.facilio.delegate.action.DelegateAction" method="addOrUpdateDelegation" >
-				 <param name="permission">ALL</param>
-			<param name="setupTab">USERS</param>
+				 <param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.delegate.action.DelegateAction" method="delete" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">USERS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 
@@ -1355,17 +1302,15 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
-	
+
 	<package name="automation" namespace="/api/v2/automation" extends="v2Api">
 		<action name="module"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="automationModules">
-				<param name="permission">ALL</param>
-			<param name="setupTab">MODULES,EMAIL_TEMPLATES,PDF_TEMPLATES,CONDITION_MANAGER,SCHEDULER,WORKFLOWS,STATEFLOWS,APPROVALS,FAULT_IMPACT_TEMPLATE</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="slaModule"
 				class="com.facilio.bmsconsole.actions.ModuleAction" method="slaModules">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SLA_POLICIES</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	<package name="permalinkToken" namespace="/api/v2/permalink" extends="v2Api">
@@ -1389,8 +1334,7 @@
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="all" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,USERS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="delete" >
@@ -1894,8 +1838,7 @@
 		<action name="viewList"
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="translationImpl">ViewTranslation</param>
-			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
-			<param name="setupTab">EMAIL_LOGS</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*/viewList"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
@@ -2809,13 +2752,14 @@
 		 <param name="permissionModuleName">{1}</param>
 	 </action>
 	</package>
+
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="businessHoursApiv2"
 		namespace="/api/v2/businesshours" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="addBussinessHours">
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*/add"
 				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2828,20 +2772,17 @@
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2updateBusinessHours">
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2deleteBusinessHours">
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2getBusinessHoursList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">ORGANIZATION_SETTINGS,OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*/list"
 				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2853,8 +2794,7 @@
 		<action name="updateresource"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="updateBusinessHourInResource">
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="*/updateresource"
 				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2863,20 +2803,11 @@
 			<param name="tabType">Portfolio</param>
 			<param name="moduleName">{1}</param>
 		</action>
-		<action name="*/*"
-				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
-				method="v2getBusinessHoursList">
-			<param name="id">{2}</param>
-			<param name="moduleName">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
-		</action>
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 			method="v2getBusinessHoursList">
 			<param name="id">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">OPERATING_HOURS</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -3123,26 +3054,22 @@
 		<action name="addTicketPriority"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="v2addTicketPriority">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="updateTicketPriorities"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="v2updateTicketPriorties">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="updateTicketPriority"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateTicketPriority">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="deleteTicketPriority"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="deleteTicketPriority">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CATEGORY,WORKORDER_CUSTOMIZATION</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addInventoryCategory"
 			class="com.facilio.bmsconsole.actions.PickListAction"
@@ -3157,8 +3084,7 @@
 		<action name="updateVisitorType"
 			class="com.facilio.bmsconsole.actions.PickListAction"
 			method="updateVisitorType">
-			<param name="permission">ALL</param>
-			<param name="setupTab">VISITOR_SETTINGS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="deleteInventoryCategory"
 			class="com.facilio.bmsconsole.actions.PickListAction"
@@ -3400,8 +3326,7 @@
 		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.FormAction" method="addForm">
-			<param name="permission">ALL;POST:CREATE</param>
-			<param name="setupTab">SERVICE_CATALOGS,APPROVALS,MODULES</param>
+			<param name="permission">POST:CREATE</param>
 		</action>
 		<action name="clone" class="com.facilio.bmsconsole.actions.FormAction"
 				method="cloneFacilioForm">
@@ -3421,8 +3346,7 @@
 		</action>
 		<action name="subFormModules"
 				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules">
-			<param name="permission">ALL</param>
-			<param name="setupTab">APPROVALS,MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="*/subFormModules"
 				class="com.facilio.bmsconsole.actions.FormAction" method="subFormModules">
@@ -3432,17 +3356,14 @@
 
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="*/fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
 			<param name="moduleName">{1}</param>
@@ -3475,8 +3396,7 @@
 			<param name="moduleName">{1}</param>
 			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">FormFieldTranslation</param>
-			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
-			<param name="setupTab">MODULES</param>
+			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 		</action>
 	</package>
 	<package name="formSharing" namespace="/api/v2/forms/formSharing" extends="v2Api">
@@ -3899,20 +3819,19 @@
 		</action>
 	</package>
 
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="fieldsAPI" namespace="/api/v2/fields" extends="v2Api">
 		<action name="advancedFilter/drilldown/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="drilldownFieldList">
 			<param name="moduleName">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,SCRIPT_LOGS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="advancedFilter/*"
 				class="com.facilio.fields.actions.FieldsAction"
 				method="fetchFilterFields">
 		    <param name="moduleName">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,SCRIPT_LOGS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="sortable/*"
 				class="com.facilio.fields.actions.FieldsAction"
@@ -4012,8 +3931,7 @@
 			<param name="deprecated">true</param>
 		</action>
 		<action name="assetcategory" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
-		<param name="permission">ALL</param>
-			<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="ignoreHierarchy">false</param>
@@ -4029,8 +3947,7 @@
 				<param name="includeProperties">responseCode, ^result.*</param>
 				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(operators|columnNames)</param>
 			</result>
-			<param name="permission">ALL</param>
-			<param name="setupTab">READINGS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="site" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
 			<param name="site">true</param>
@@ -4340,20 +4257,17 @@
 		
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModuleList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="lists" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModulesList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.ModuleAction"
 				method="v2GetModule">
 			<param name="moduleName">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 	
@@ -4410,8 +4324,7 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="getModuleDataList">
 			<param name="translationImpl">V2ListApiTranslation</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">USERS,VISITOR_SETTINGS,CATEGORY,PRIORITY,TYPES,READINGS,SCHEDULER,ASSIGNMENT_RULES,TEAMS,WORKFLOWS,SLA_POLICIES,BMS_EVENT_FILTERING,SPACE_ASSET_CUSTOMIZATION,WORKORDER_CUSTOMIZATION,FAULT_IMPACT_TEMPLATE,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="*"
@@ -4711,6 +4624,7 @@
 		</action>
 	</package>
 
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="advancedFilterApiv2" namespace="/api/v2/filter/advanced"
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
@@ -4727,13 +4641,13 @@
 			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
 	</package>
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="advancedFilterFieldsApiv2" namespace="/api/v2/filter/advanced/fields"
 			 extends="v2ApiNullIgnored">
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
-			<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS,STATEFLOWS,APPROVALS</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 
@@ -4741,13 +4655,13 @@
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
-			<param name="permission">ALL;GET:READ,VIEW</param>
+			<param name="permission">GET:READ,VIEW</param>
 			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
 		</action>
 		<action name="fields/*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchFilterableFields">
 			<param name="module">{1}</param>
-			<param name="permission">ALL;GET:READ,VIEW</param>
+			<param name="permission">GET:READ,VIEW</param>
 			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
 		</action>
 	</package>
@@ -4784,8 +4698,7 @@
 	</package>
 	<package name="lookupFields" namespace="/api/v2/lookupFields" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.LookupFieldAction" method="lookupFieldList">
-			<param name="setupTab">EMAIL_LOGS,DATA_SHARING,RULE_LOGS,SCRIPT_LOGS,INBOUND_MAIL_CONVERSION,WORKFLOW_RULE_LOGS,STATEFLOWS,APPROVALS</param>
-			<param name="permission">ALL;GET:READ</param>
+			<param name="permission">GET:READ</param>
 		</action>
 	</package>
 	<package name="dashboardCardApiv2" namespace="/api/v2/dashboard/cards"
@@ -4909,8 +4822,7 @@
 		<action name="getNameSpaceListWithFunctions"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getNameSpaceListWithFunctions">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="getWorkflow"
@@ -4934,15 +4846,13 @@
 		<action name="deleteWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteWorkflow">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="addNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="addNameSpace">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="updateNameSpace"
@@ -4954,22 +4864,19 @@
 		<action name="deleteNameSpace"
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="deleteNameSpace">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="addUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction"
 				method="addUserFunction">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="updateUserFunction"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="updateUserFunction">
-			<param name="permission">ALL</param>
-			<param name="setupTab">FUNCTIONS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="deleteUserFunction"
@@ -4988,8 +4895,7 @@
 		<action name="addOrUpdateScheduledWorkflow"
 				class="com.facilio.workflows.action.WorkflowAction"
 				method="addOrUpdateScheduledWorkflow" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">SCHEDULER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="updateScheduledWorkflow"
@@ -5007,16 +4913,14 @@
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="deleteScheduledWorkflow">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SCHEDULER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 
 		<action name="getScheduledWorkflowList"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getScheduledWorkflowList">
-			<param name="permission">ALL</param>
-			<param name="setupTab">SCHEDULER</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="isNewPermission">true</param>
 		</action>
 
@@ -6736,41 +6640,37 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
-	
+
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="connection" namespace="/api/v2/connection"
 		extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addConnection">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
+			<param name="deprecated">true</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTED_APPS,CONNECTORS</param>
+			<param name="deprecated">true</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="invalidateConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="invalidateConnection">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTORS</param>
+			<param name="deprecated">true</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTORS</param>
+			<param name="deprecated">true</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
 		<action name="getAllConnection"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="getAllConnection">
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTORS</param>
+			<param name="deprecated">true</param>
 			<param name="isNewPermission">true</param>
 		</action>
 		
@@ -6778,8 +6678,7 @@
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
 			<result name="success">/jsps/connection.jsp</result>
-			<param name="permission">ALL</param>
-			<param name="setupTab">CONNECTORS</param>
+			<param name="deprecated">true</param>
 		</action>
 	</package>
 	
@@ -6791,8 +6690,7 @@
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2getFieldsList">
-			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
-			<param name="setupTab">EMAIL_TEMPLATES</param>
+			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 <!--			<param name="translationImpl">FieldOptionTranslation</param>-->
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
@@ -6804,8 +6702,7 @@
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2updateField">
-			<param name="permission">ALL</param>
-			<param name="setupTab">MODULES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getFieldForms"
 				class="com.facilio.bmsconsole.actions.ModuleAction"
@@ -6828,8 +6725,7 @@
 			method="v2metadata">
 			<param name="translationImpl">FieldTranslationV2</param>
 			<param name="moduleName">{1}</param>
-			<param name="setupTab">MODULES,WORKFLOWS,NOTIFICATIONS,WORKFLOWS</param>
-			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 	<package name="dashboardModuleMetaApiV2" namespace="/api/v2/dashboard/modules/meta" extends="v2Api">
@@ -6849,8 +6745,7 @@
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="fetchWorkflowRules" >
-		        <param name="permission">ALL</param>
-			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="addRule">
@@ -6864,8 +6759,7 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="deleteRule">
-				<param name="permission">ALL</param>
-			<param name="setupTab">EMAIL_SETTINGS,WORKFLOWS,NOTIFICATIONS,TRANSACTION_RULES,APPROVALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 
 		<action name="replacePlaceHolders" class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
@@ -6875,8 +6769,7 @@
 
 		<action name="getCount" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
 				method="getCountForWorkFlowRules">
-				<param name="permission">ALL</param>
-			<param name="setupTab">WORKFLOWS,NOTIFICATIONS,SLA_POLICIES</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 	
@@ -8349,12 +8242,12 @@
 			<param name="tabType">Dashboard,New Dashboard,Analytics</param>
 		</action>
 	</package>
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="applicationsRelatedApps" namespace="/api/v2/application/relatedApps"
 			 extends="v2Api">
 		<action name="fetchList" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getAllApplicationRelatedApps" >
-		    <param name="permission">ALL</param>
-			<param name="setupTab">USERS</param>
+			<param name="deprecated">true</param>
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="deleteApplicationRelatedApps">
@@ -8363,26 +8256,24 @@
 		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="addApplicationRelatedApps">
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS</param>
+			<param name="deprecated">true</param>
 		</action>
 
 	</package>
+	<!--Below deprecated API may have New API added for setup usage in setupwebtab.xml-->
 	<package name="applicationUsers" namespace="/api/v2/application/users"
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="addApplicationUsers">
-			<param name="permission">ALL</param>
-			<param name="setupTab">API_SETUP</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="deleteApplicationUsers">
-			<param name="deprecated">true</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="list" class="com.facilio.bmsconsole.actions.ApplicationAction"
 			method="getApplicationUsers">
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,USERS,API_SETUP,AUDIT_LOGS,SERVICE_CATALOGS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="getUserFromPeopleId" class="com.facilio.bmsconsole.actions.IAMUserManagementAction" method="getUserFromPeopleId">
 			<param name="permission">GET:MANAGE_ACCESS</param>
@@ -8401,8 +8292,7 @@
 		</action>
 		<action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
 				method="getApplicationUserDetails">
-				<param name="permission">ALL</param>
-			<param name="setupTab">USERS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="addOrUpdateSignature" class="com.facilio.bmsconsole.actions.ApplicationAction" method="addOrUpdateUserSignature">
 			<param name="skipPermission">true</param>
@@ -8428,18 +8318,14 @@
 			 extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTabGroup" >
-		<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,TABS_AND_LAYOUTS</param>
-		</action>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTabGroup" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS,TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTabGroup" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">PORTALS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 	<package name="applicationlayout" namespace="/api/v2/applicationlayout"
@@ -8458,13 +8344,11 @@
 			 extends="v2Api">
 		<action name="addOrUpdate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addOrUpdateTab">
-				<param name="permission">ALL</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="deleteTab">
-				<param name="permission">ALL</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="list"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForGroup" >
@@ -8477,26 +8361,22 @@
 		</action>
 		<action name="addTabsToGroup"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="addTabsToGroup">
-				<param name="permission">ALL</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="disassociate"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="disAssociateTabToGroupTab">
-				<param name="permission">ALL</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 		<action name="listForApp"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="getTabListForApplication">
-			<param name="setupTab">USERS,ROLES</param>
-			<param name="permission">ALL</param>
+			<param name="deprecated">true</param>   <!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 			<param name="translationImpl">WebTabTranslation</param>
 			<param name="setupTab">TABS_AND_LAYOUTS,PORTALS,ROLES</param>
 			<!--			<param name="translationImpl">WebTabTranslation</param>-->
 		</action>
 		<action name="reorder"
 				class="com.facilio.bmsconsole.actions.WebTabAction" method="reorderTab" >
-			<param name="permission">ALL</param>
-			<param name="setupTab">TABS_AND_LAYOUTS</param>
+			<param name="deprecated">true</param>	<!-- deprecated API may have New API added for setup usage in setupwebtab.xml-->
 		</action>
 	</package>
 

@@ -233,4 +233,127 @@
             <property name="recordIds" type="string" mandatory="true"/>
         </urlparams>
     </request>
+
+    <!--New Setup API Validation-->
+    <request path="/api/v2/setup/systemButton/update">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="rule" type="object">
+                <property name="name" type="string"/>
+                <property name="identifier" type="string"/>
+                <property name="id" type="number"/>
+                <property name="buttonType" type="number"/>
+                <property name="buttonTypeEnum" type="string"/>
+                <property name="active" type="boolean"/>
+                <property name="activityType" type="number" />
+                <property name="activityTypeEnum" type="string"/>
+                <property name="positionType" type="number"/>
+                <property name="positionTypeEnum" type="string"/>
+                <property name="ruleType" type="number"/>
+                <property name="ruleTypeEnum" type="string"/>
+                <property name="status" type="boolean"/>
+                <property name="approvers" type="array">
+                    <items type="object">
+                        <property name="id" type="number"/>
+                        <property name="parentId" type="number"/>
+                        <property name="type" type="number"/>
+                        <property name="typeEnum" type="string"/>
+                        <property name="userId" type="number"/>
+                    </items>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/setup/relation/addOrUpdate" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string"/>
+            <property name="relation" type="object">
+                <property name="id" type="number" />
+                <property name="name" type="string" />
+                <property name="relationType" type="number" />
+                <property name="fromModuleId" type="number" />
+                <property name="toModuleId" type="number" />
+                <property name="relationName" type="string" />
+                <property name="description" type="string"/>
+                <property name="isVirtual" type="boolean" />
+                <property name="relationCategory" type="number" />
+                <property name="reverseRelationName" type="string" />
+                <property name="virtualRelationIds" type="array">
+                    <items type="number"/>
+                </property>
+                <property name="virtualRelationConfig" type="object">
+                    <property name="relationId" type="number"/>
+                </property>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/template/email/publish">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/systemButton/list">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="search" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/setup/template/email/view">
+        <requestbody type="object">
+            <requestbody type="number" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/systemButton/get">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/template/email/delete">
+        <requestbody type="object">
+            <requestbody type="number" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/template/email/list">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+        </requestbody>
+        <urlparams>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+    <request path="/api/v2/setup/template/email/addOrUpdate">
+        <requestbody type="object">
+            <property name="moduleName" type="string" />
+            <property name="emailStructure" type="object">
+                <property name="name" type="string" />
+                <property name="subject" type="string" />
+                <property name="message" type="string" />
+                <property name="draft" type="boolean"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/relation/view">
+        <requestbody type="object">
+            <property name="id" type="number" />
+            <property name="moduleName" type="string" />
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/modules/rules/getCount">
+        <requestbody type="object">
+            <property name="ruleType" type="number"/>
+            <property name="moduleName" type="string"/>
+        </requestbody>
+    </request>
+    <request path="/api/v2/setup/relation/list">
+        <urlparams type="object">
+            <property name="moduleName" type="string" />
+        </urlparams>
+    </request>
+    <request path="/api/v2/setup/relation/delete">
+        <requestbody type="object">
+            <property name="id" type="number" />
+        </requestbody>
+    </request>
 </config>
