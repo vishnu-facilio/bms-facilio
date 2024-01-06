@@ -64,15 +64,7 @@ public class ListCommand extends FacilioCommand {
         }
 
         SelectRecordsBuilder selectRecordsBuilder = getSelectRecordsBuilder(context);
-        String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-        if (orderBy != null && !orderBy.isEmpty()) {
-            JSONObject sorting = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
-            if (sorting != null && !sorting.isEmpty()) {
-                String sortBy = (String) sorting.get("orderBy");
-                String sortType = (String) sorting.get("orderType");
-                selectRecordsBuilder.orderBy(getFinalSortQuery(sortBy,sortType));
-            }
-        }
+
         List<SupplementRecord> supplementFields = (List<SupplementRecord>) context.get(FacilioConstants.ContextNames.FETCH_SUPPLEMENTS);
         if (CollectionUtils.isNotEmpty(supplementFields)) {
             selectRecordsBuilder.fetchSupplements(supplementFields);
@@ -115,7 +107,7 @@ public class ListCommand extends FacilioCommand {
             } else {
                 Constants.setHasMoreRecords(context, false);
             }
-
+            String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
             if (orderBy != null) {
                 JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
                 String orderType = (String) sortObj.get("orderType");
@@ -195,29 +187,36 @@ public class ListCommand extends FacilioCommand {
                 selectRecordsBuilder.andCondition((Condition) serverCriteria);
             }
         }
-        String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
-        String orderType= context.containsKey(FacilioConstants.ContextNames.ORDER_TYPE) ? (String)context.get(FacilioConstants.ContextNames.ORDER_TYPE) : "desc";
-        if (orderBy != null && !orderBy.isEmpty()) {
-            orderBy += "," + FieldFactory.getIdField(module).getCompleteColumnName() + " " + orderType;
-        }
-        else {
-            orderBy = FieldFactory.getIdField(module).getCompleteColumnName()+" " + orderType;
-        }
+
+        String orderBy = getFinalSortQuery(context);
+
         selectRecordsBuilder.orderBy(orderBy);
 
         return selectRecordsBuilder;
     }
-    private String getFinalSortQuery(String sortBy,String sortType){
-        StringBuilder finalSortQuery = new StringBuilder();
-
-        finalSortQuery.append(sortBy+" "+ sortType);
-
-        if(!sortBy.equals(FieldFactory.getIdField(module).getCompleteColumnName())){
-            finalSortQuery.append(",")
-                    .append(FieldFactory.getIdField(module).getCompleteColumnName()+" "+sortType);
+    private String getFinalSortQuery(Context context){
+        String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+        String orderType= getOrderType(context);
+        if (orderBy != null && !orderBy.isEmpty() && !orderBy.contains(FieldFactory.getIdField(module).getCompleteColumnName())) {
+            orderBy += "," + FieldFactory.getIdField(module).getCompleteColumnName();
         }
+        else {
+            orderBy = FieldFactory.getIdField(module).getCompleteColumnName();
+        }
+        orderBy+=" " + orderType;
 
-        return finalSortQuery.toString();
+        return orderBy;
+    }
+    private String getOrderType(Context context){
+        String orderType= context.containsKey(FacilioConstants.ContextNames.ORDER_TYPE) ? (String)context.get(FacilioConstants.ContextNames.ORDER_TYPE) : "desc";
+        String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
+        if (orderBy != null && !orderBy.isEmpty()) {
+            JSONObject sorting = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+            if (sorting != null && !sorting.isEmpty() && sorting.get("orderType")!=null) {
+                 orderType = (String) sorting.get("orderType");
+            }
+        }
+        return orderType;
     }
 
 }
