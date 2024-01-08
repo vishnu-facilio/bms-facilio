@@ -168,4 +168,19 @@ public class AlarmRuleBeanImpl implements AlarmRuleBean {
         }
         return null;
     }
+
+
+    @Override
+    public AlarmAssetTaggingContext getAlarmAssetMapping(@NonNull Long clientId, @NonNull Long alarmDefinitionId, @NonNull Long controllerId,@NonNull Long assetId) throws Exception {
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID","clientId",String.valueOf(clientId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("CONTROLLER_ID","controllerId",String.valueOf(controllerId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_DEFINITION_ID","alarmDefinitionId",String.valueOf(alarmDefinitionId), NumberOperators.EQUALS));
+        criteria.addAndCondition(CriteriaAPI.getCondition("ASSET_ID","assetId",String.valueOf(assetId), NumberOperators.EQUALS));
+        List<AlarmAssetTaggingContext> fetchedAlarmTaggings = V3RecordAPI.getRecordsListWithSupplements(AlarmAssetTaggingModule.MODULE_NAME,null,AlarmAssetTaggingContext.class,criteria,null);
+        if(CollectionUtils.isNotEmpty(fetchedAlarmTaggings)) {
+            return fetchedAlarmTaggings.get(0);
+        }
+        return null;
+    }
 }

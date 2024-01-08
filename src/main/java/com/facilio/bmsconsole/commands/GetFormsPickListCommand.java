@@ -74,6 +74,10 @@ public class GetFormsPickListCommand extends FacilioCommand {
 
         Criteria serverCriteria = ticketStatusModuleSpecialHandlingCriteria(field,module);
 
+        if(serverCriteria == null) {
+            serverCriteria = (Criteria) context.getOrDefault(FacilioConstants.ContextNames.FILTER_SERVER_CRITERIA, null);
+        }
+
         if(LookupSpecialTypeUtil.isSpecialType(lookupModuleName)) {
             List<String> localSearchDisabled = Arrays.asList(FacilioConstants.ContextNames.USERS,FacilioConstants.ContextNames.READING_RULE_MODULE);
             context.put(FacilioConstants.ContextNames.IS_SPECIAL_MODULE,true);

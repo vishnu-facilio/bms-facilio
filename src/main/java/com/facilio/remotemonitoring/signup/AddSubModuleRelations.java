@@ -23,6 +23,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.remotemonitoring.context.FlaggedEventBureauActionsContext;
+import com.facilio.remotemonitoring.context.FlaggedEventContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.operations.Bool;
 
@@ -546,9 +547,11 @@ public class AddSubModuleRelations extends SignUpData {
         inhibitFlaggedEventButton();
         passToNextBureauButton();
         takeActionSystemButton();
+        assignToSystemButton();
+        suspendAlarmButton();
     }
 
-    private static void createWorkorderFlaggedEventButton()  throws Exception{
+    public static void createWorkorderFlaggedEventButton()  throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         //Flagged Event Create Workorder Button
@@ -563,21 +566,33 @@ public class AddSubModuleRelations extends SignUpData {
 
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
-        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY,ACTION_TAKEN", StringSystemEnumOperators.IS));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY,ACTION_TAKEN,INHIBIT", StringSystemEnumOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),
+                FlaggedEventContext.FlaggedEventStatus.OPEN.getIndex() + "," +
+                        FlaggedEventContext.FlaggedEventStatus.SUSPENDED.getIndex() , StringSystemEnumOperators.IS));
+
+
+        Criteria timeoutCriteria = new Criteria();
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team",FlaggedEventModule.MODULE_NAME), "", TeamOperator.CURRENT_PEOPLE_IN_TEAM));
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"TIMEOUT", StringSystemEnumOperators.IS));
+        Criteria ruleLookupCriteriaForTimeout = new Criteria();
+        ruleLookupCriteriaForTimeout.addAndCondition(CriteriaAPI.getCondition(modBean.getField("autoCreateWorkOrder", FlaggedEventRuleModule.MODULE_NAME),"false", BooleanOperators.IS));
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteriaForTimeout, LookupOperator.LOOKUP));
+        criteria.orCriteria(timeoutCriteria);
 
         Criteria ruleLookupCriteria = new Criteria();
         ruleLookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteria, LookupOperator.LOOKUP));
 
-        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"OPEN", StringSystemEnumOperators.IS));
 
         createWorkorderSystemButton.setCriteria(criteria);
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,createWorkorderSystemButton);
     }
 
 
-    private static void takeCustodyFlaggedEventButton()  throws Exception{
+    public static void takeCustodyFlaggedEventButton()  throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
@@ -589,28 +604,38 @@ public class AddSubModuleRelations extends SignUpData {
         systemButton.setName("Take Custody");
 
 
-        FacilioField groupField = modBean.getField("group",FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
-        Criteria groupMemberCriteria = new Criteria();
-        FacilioField peopleField = modBean.getField("people",FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
-        groupMemberCriteria.addAndCondition(CriteriaAPI.getCondition(peopleField,(String) null, PeopleOperator.CURRENT_USER));
-        Criteria crit = new Criteria();
-        crit.addAndCondition(CriteriaAPI.getCondition(groupField,groupMemberCriteria, RelatedModuleOperator.RELATED));
+//        FacilioField groupField = modBean.getField("group",FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+//        Criteria groupMemberCriteria = new Criteria();
+//        FacilioField peopleField = modBean.getField("people",FacilioConstants.PeopleGroup.PEOPLE_GROUP_MEMBER);
+//        groupMemberCriteria.addAndCondition(CriteriaAPI.getCondition(peopleField,(String) null, PeopleOperator.CURRENT_USER));
+//        Criteria crit = new Criteria();
+//        crit.addAndCondition(CriteriaAPI.getCondition(groupField,groupMemberCriteria, RelatedModuleOperator.RELATED));
         Criteria parentCriteria = new Criteria();
-        parentCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team", FlaggedEventModule.MODULE_NAME),crit, LookupOperator.LOOKUP));
-        parentCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"OPEN", StringSystemEnumOperators.IS));
-
+//        parentCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team", FlaggedEventModule.MODULE_NAME),crit, LookupOperator.LOOKUP));
+        parentCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME), FlaggedEventContext.FlaggedEventStatus.OPEN.getIndex(), StringSystemEnumOperators.IS));
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME), StringUtils.join(Arrays.asList(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN.getIndex(),FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.NOT_STARTED.getIndex()),","), StringSystemEnumOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
         parentCriteria.andCriteria(criteria);
 
+        Criteria timeoutCriteria = new Criteria();
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"TIMEOUT", StringSystemEnumOperators.IS));
+        Criteria ruleLookupCriteriaForTimeout = new Criteria();
+        ruleLookupCriteriaForTimeout.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
+        ruleLookupCriteriaForTimeout.addAndCondition(CriteriaAPI.getCondition(modBean.getField("autoCreateWorkOrder", FlaggedEventRuleModule.MODULE_NAME),"false", BooleanOperators.IS));
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteriaForTimeout, LookupOperator.LOOKUP));
+        parentCriteria.orCriteria(timeoutCriteria);
+
+
+        parentCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team",FlaggedEventModule.MODULE_NAME), "", TeamOperator.CURRENT_PEOPLE_IN_TEAM));
+
         systemButton.setCriteria(parentCriteria);
 
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,systemButton);
     }
 
-    private static void inhibitFlaggedEventButton()  throws Exception{
+    public static void inhibitFlaggedEventButton()  throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
@@ -625,7 +650,9 @@ public class AddSubModuleRelations extends SignUpData {
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY", StringSystemEnumOperators.IS));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("isSLABreached",FlaggedEventBureauActionModule.MODULE_NAME), "false", BooleanOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status", FlaggedEventModule.MODULE_NAME), FlaggedEventContext.FlaggedEventStatus.TIMEOUT.getIndex(), StringSystemEnumOperators.ISN_T));
 
         systemButton.setCriteria(criteria);
 
@@ -655,7 +682,7 @@ public class AddSubModuleRelations extends SignUpData {
         SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,systemButton);
     }
 
-    private static void takeActionSystemButton()  throws Exception{
+    public static void takeActionSystemButton()  throws Exception{
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
@@ -669,8 +696,71 @@ public class AddSubModuleRelations extends SignUpData {
         Criteria criteria = new Criteria();
         Criteria lookupCriteria = new Criteria();
         lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME),(String) null, PeopleOperator.CURRENT_USER));
-        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY", StringSystemEnumOperators.IS));
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),"UNDER_CUSTODY, INHIBIT", StringSystemEnumOperators.IS));
         criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+
+        systemButton.setCriteria(criteria);
+
+        SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,systemButton);
+    }
+
+    public static void assignToSystemButton()  throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
+        systemButton.setIdentifier("flagged_event_assign_to");
+        systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        systemButton.setName("Assign");
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME),"",CommonOperators.IS_NOT_EMPTY));
+        Criteria lookupCriteria = new Criteria();
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),
+                FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN.getIndex() + "," +
+                FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY.getIndex() + "," +
+                        FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.INHIBIT.getIndex()
+                , StringSystemEnumOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team",FlaggedEventModule.MODULE_NAME), "", TeamOperator.CURRENT_PEOPLE_IN_TEAM));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status", FlaggedEventModule.MODULE_NAME), FlaggedEventContext.FlaggedEventStatus.SUSPENDED.getIndex(), StringSystemEnumOperators.ISN_T));
+
+        Criteria timeoutCriteria = new Criteria();
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team",FlaggedEventModule.MODULE_NAME), "", TeamOperator.CURRENT_PEOPLE_IN_TEAM));
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status",FlaggedEventModule.MODULE_NAME),"TIMEOUT", StringSystemEnumOperators.IS));
+        Criteria ruleLookupCriteriaForTimeout = new Criteria();
+        ruleLookupCriteriaForTimeout.addAndCondition(CriteriaAPI.getCondition(modBean.getField("createWorkorder",FlaggedEventRuleModule.MODULE_NAME),"true", BooleanOperators.IS));
+        ruleLookupCriteriaForTimeout.addAndCondition(CriteriaAPI.getCondition(modBean.getField("autoCreateWorkOrder", FlaggedEventRuleModule.MODULE_NAME),"false", BooleanOperators.IS));
+        timeoutCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField(FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,FlaggedEventModule.MODULE_NAME), ruleLookupCriteriaForTimeout, LookupOperator.LOOKUP));
+        criteria.orCriteria(timeoutCriteria);
+
+        systemButton.setCriteria(criteria);
+
+        SystemButtonApi.addSystemButton(FlaggedEventModule.MODULE_NAME,systemButton);
+    }
+
+
+    public static void suspendAlarmButton()  throws Exception{
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+        SystemButtonRuleContext systemButton = new SystemButtonRuleContext();
+        systemButton.setPermissionRequired(true);
+        systemButton.setPermission("READ");
+        systemButton.setIdentifier("flagged_event_suspend_alarm");
+        systemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+        systemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+        systemButton.setName("Suspend Alarm");
+
+        Criteria criteria = new Criteria();
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME),"",CommonOperators.IS_NOT_EMPTY));
+        Criteria lookupCriteria = new Criteria();
+        lookupCriteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY.getIndex(), StringSystemEnumOperators.IS));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("currentBureauActionDetail",FlaggedEventModule.MODULE_NAME), lookupCriteria, LookupOperator.LOOKUP));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("team",FlaggedEventModule.MODULE_NAME), "", TeamOperator.CURRENT_PEOPLE_IN_TEAM));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("asset", FlaggedEventModule.MODULE_NAME), "", CommonOperators.IS_NOT_EMPTY));
+        criteria.addAndCondition(CriteriaAPI.getCondition(modBean.getField("status", FlaggedEventModule.MODULE_NAME), FlaggedEventContext.FlaggedEventStatus.SUSPENDED.getIndex(), StringSystemEnumOperators.ISN_T));
 
         systemButton.setCriteria(criteria);
 

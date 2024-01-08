@@ -2068,7 +2068,7 @@ VALUES (${orgId}, @BASE_CONTROLLER_MODULE_ID, 'active', 'Active', 5, 'ACTIVE', 4
 INSERT INTO BooleanFields (FIELDID, ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT, IS_MAIN_FIELD)
-VALUES (${orgId}, @BASE_CONTROLLER_MODULE_ID, 'controllerProps', 'Controller Props', 1, 'CONTROLLER_PROPS', 1, false, false, true, true);
+VALUES (${orgId}, @BASE_CONTROLLER_MODULE_ID, 'controllerProps', 'Controller Props', 1, 'CONTROLLER_PROPS', 1, false, false, true, false);
 INSERT INTO StringFields (FIELDID,ORGID) VALUES ((SELECT LAST_INSERT_ID()), ${orgId});
 
 

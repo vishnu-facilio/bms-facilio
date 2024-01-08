@@ -734,4 +734,11 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new GetInvoiceDefaultFormCommand());
         return c;
     }
+
+    public static FacilioChain fetchFlaggedEventPeopleOptions(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchFlaggedEventPeopleOptionsCommand());
+        c.addCommand(ReadOnlyChainFactory.getFormsPickListChain());
+        return c;
+    }
 }

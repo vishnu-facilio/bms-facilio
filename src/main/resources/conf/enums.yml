@@ -486,6 +486,9 @@ enums:
   - name: RawAlarmSourceType
     enumClassName: com.facilio.remotemonitoring.context.RawAlarmContext$RawAlarmSourceType
 
+  - name: FlaggedEventSourceType
+    enumClassName: com.facilio.remotemonitoring.context.FlaggedEventContext$FlaggedEventSourceType
+
   - name: FlaggedEventExecutionType
     enumClassName: com.facilio.remotemonitoring.context.FlaggedEventRuleContext$FlaggedEventExecutionType
 

@@ -884,6 +884,14 @@
             <param name="permission">GET:READ,VIEW;POST:CREATE,UPDATE</param>
             <param name="tabType">Dashboard,New Dashboard,Analytics</param>
         </action>
+        <action name="resource/data/count/*"
+                class="com.facilio.bmsconsoleV3.actions.picklist.ReadingPicklistAction"
+                method="readingModuleCount">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ,VIEW;POST:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
     </package>
 
     <package name="bulkActionCreatePMv2" namespace="/api/v3/bulkAction" extends="v3Api">
@@ -3309,6 +3317,31 @@
             <param name="moduleName">flaggedAlarm</param>
             <param name="id">{1}</param>
             <param name="permission">GET:READ</param>
+        </action>
+        <action name="options/*/fetchPeople" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="fetchPeopleOptions">
+            <param name="moduleName">people</param>
+            <param name="permissionModuleName">flaggedAlarm</param>
+            <param name="id">{1}</param>
+            <param name="permission">GET:READ</param>
+            <param name="recordId">{1}</param>
+        </action>
+        <action name="*/assign" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="assignFlaggedEvent">
+            <param name="moduleName">flaggedAlarm</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">flagged_event_assign_to</param>
+            <param name="buttonPermission">true</param>
+        </action>
+        <action name="*/suspendAlarm" class="com.facilio.remotemonitoring.action.FlaggedEventAction" method="suspendAlarm">
+            <param name="moduleName">flaggedAlarm</param>
+            <param name="id">{1}</param>
+            <param name="permission">PATCH:UPDATE</param>
+            <param name="recordId">{1}</param>
+            <param name="buttonAction">systemButton</param>
+            <param name="identifier">flagged_event_suspend_alarm</param>
+            <param name="buttonPermission">true</param>
         </action>
     </package>
 

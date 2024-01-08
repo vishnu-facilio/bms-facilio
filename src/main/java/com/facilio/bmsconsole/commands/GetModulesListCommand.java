@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -85,7 +86,9 @@ public class GetModulesListCommand extends FacilioCommand {
 			ContextNames.CLIENT_CONTACT,
 			FacilioConstants.Trip.TRIP,
 			ContextNames.INVOICE,
-			ContextNames.CLIENT);
+			ContextNames.CLIENT,
+			FlaggedEventModule.MODULE_NAME
+	);
 
 	
 	@Override

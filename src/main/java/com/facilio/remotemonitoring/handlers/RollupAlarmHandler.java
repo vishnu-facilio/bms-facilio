@@ -33,7 +33,7 @@ public class RollupAlarmHandler implements AlarmCriteriaHandler<RawAlarmContext>
             criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLIENT_ID", "clientId", String.valueOf(rawAlarm.getClient().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", null, CommonOperators.IS_EMPTY));
-            criteria.addAndCondition(CriteriaAPI.getCondition("FILTERED", "filtered", "false", BooleanOperators.IS));
+//            criteria.addAndCondition(CriteriaAPI.getCondition("FILTERED", "filtered", "false", BooleanOperators.IS));
             criteria.addAndCondition(CriteriaAPI.getCondition("STRATEGY", "alarmApproach", String.valueOf(rawAlarm.getAlarmApproach()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("FILTER_RULE_CRITERIA_ID", "filterRuleCriteriaId", String.valueOf(filterRuleCriteria.getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("OCCURRED_TIME", "occurredTime", String.valueOf(deltaTime), NumberOperators.GREATER_THAN_EQUAL));

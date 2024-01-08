@@ -239,6 +239,16 @@ public class FlaggedEventRuleModule extends SignUpData {
         onCreateTelemetryCriteria.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         modBean.addField(onCreateTelemetryCriteria);
 
+        BooleanField autoCreateWoField = new BooleanField();
+        autoCreateWoField.setDefault(true);
+        autoCreateWoField.setName("autoCreateWorkOrder");
+        autoCreateWoField.setDisplayName("Auto Create Workorder");
+        autoCreateWoField.setModule(mod);
+        autoCreateWoField.setDataType(FieldType.BOOLEAN);
+        autoCreateWoField.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
+        autoCreateWoField.setColumnName("AUTO_CREATE_WORK_ORDER");
+        modBean.addField(autoCreateWoField);
+
         addSystemButtons();
     }
 

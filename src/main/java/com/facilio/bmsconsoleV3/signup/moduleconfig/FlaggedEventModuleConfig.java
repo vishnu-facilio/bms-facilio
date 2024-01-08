@@ -2,6 +2,9 @@ package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.RelatedListWidgetUtil;
@@ -537,5 +540,35 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         Condition currentTeamCondition = CriteriaAPI.getCondition("team","TEAM_ID", TeamOperator.CURRENT_PEOPLE_IN_TEAM);
         criteria.addAndCondition(currentTeamCondition);
         return  criteria;
+    }
+
+
+    @Override
+    public List<FacilioForm> getModuleForms() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FlaggedEventModule.MODULE_NAME);
+
+        FacilioForm form = new FacilioForm();
+        form.setDisplayName("Flagged Alarm");
+        form.setName("default_"+ module.getName() +"_web");
+        form.setModule(module);
+        form.setLabelPosition(FacilioForm.LabelPosition.TOP);
+        form.setAppLinkNamesForForm(Arrays.asList(FacilioConstants.ApplicationLinkNames.REMOTE_MONITORING,FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP));
+
+        List<FormField> formFields = new ArrayList<>();
+        formFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED,1, 1));
+        formFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.REQUIRED,2, 1));
+        formFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED,3, 1));
+        formFields.add(new FormField("controller", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Controller", FormField.Required.REQUIRED,4, 1));
+        formFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.REQUIRED,5, 1));
+        formFields.add(new FormField("flaggedAlarmProcess", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Flagged Alarm Process", FormField.Required.REQUIRED,6, 1));
+
+        FormSection section = new FormSection("Default", 1,formFields, false);
+        section.setSectionType(FormSection.SectionType.FIELDS);
+        form.setSections(Collections.singletonList(section));
+        form.setIsSystemForm(true);
+        form.setType(FacilioForm.Type.FORM);
+
+        return Collections.singletonList(form);
     }
 }

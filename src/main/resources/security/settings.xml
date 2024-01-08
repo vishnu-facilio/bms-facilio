@@ -4662,6 +4662,30 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/flaggedEvent/options/:id/fetchPeople" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/assign" method="PATCH">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+            <property name="assignToPeople" type="object">
+                <property name="id" type="number" mandatory="true"/>
+            </property>
+        </requestbody>
+    </request>
+    <request path="/api/v3/flaggedEvent/:id/suspendAlarm" method="PATCH">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+        <requestbody type="object">
+            <property name="id" type="number" mandatory="true"/>
+        </requestbody>
+    </request>
     <request path="/api/v3/flaggedEvent/:id/takecustody" method="PATCH">
         <urlparams>
             <property name="id" type="number" mandatory="true"/>

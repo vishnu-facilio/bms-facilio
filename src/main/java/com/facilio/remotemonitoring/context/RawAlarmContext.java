@@ -39,8 +39,8 @@ public class RawAlarmContext extends V3Context {
         EMAIL("Email"),
         SIMULATOR("Simulator"),
         SYSTEM("System"),
-        ROLLUP("Roll Up");
-
+        ROLLUP("Roll Up"),
+        FDD("FDD");
         @Getter
         @Setter
         private String displayName;

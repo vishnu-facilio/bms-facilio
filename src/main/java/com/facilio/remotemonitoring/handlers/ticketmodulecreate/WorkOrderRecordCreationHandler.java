@@ -77,11 +77,11 @@ public class WorkOrderRecordCreationHandler implements TicketModuleRecordCreatio
                     }
                 }
             }
-            Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEvent.getController().getId());
-            if (controller != null) {
-                workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, controller.getSiteId());
+//            Controller controller = V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTROLLER, flaggedEvent.getController().getId());
+            if (flaggedEvent != null) {
+                workOrderProp.put(FacilioConstants.ContextNames.SITE_ID, flaggedEvent.getSite().getId());
                 ResourceContext resource = new ResourceContext();
-                resource.setId(controller.getSiteId());
+                resource.setId(flaggedEvent.getSite().getId());
                 workOrderProp.put(FacilioConstants.ContextNames.RESOURCE, FieldUtil.getAsProperties(resource));
             }
             if (!workOrderProp.containsKey(RemoteMonitorConstants.SUBJECT)) {

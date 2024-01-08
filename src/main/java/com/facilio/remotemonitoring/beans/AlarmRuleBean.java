@@ -25,5 +25,5 @@ public interface AlarmRuleBean {
     FlaggedEventRuleContext getFlaggedEventRule(@NonNull Long id) throws Exception;
     AlarmAssetTaggingContext getAlarmAssetTagging(@NonNull Long clientId,@NonNull Long alarmDefinitionId,@NonNull Long controllerId) throws Exception;
     AlarmTypeContext getAlarmType(@NonNull String linkname) throws Exception;
-
+    AlarmAssetTaggingContext getAlarmAssetMapping(@NonNull Long clientId, @NonNull Long alarmDefinitionId, @NonNull Long controllerId,@NonNull Long assetId) throws Exception;
 }

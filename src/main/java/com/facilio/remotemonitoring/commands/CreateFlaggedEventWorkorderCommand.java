@@ -23,10 +23,4 @@ public class CreateFlaggedEventWorkorderCommand extends FacilioCommand {
         FlaggedEventUtil.checkAndCreateWorkorderForFlaggedEvent(id,true);
         return false;
     }
-
-    private static void updateTakeActionTimeStampt(Long flaggedEventId) throws Exception {
-        Map<String, Object> updateMap = new HashMap<>();
-        updateMap.put("takeActionTimestamp", System.currentTimeMillis());
-        V3Util.updateBulkRecords(FlaggedEventBureauActionModule.MODULE_NAME, updateMap, Collections.singletonList(flaggedEventId), false);
-    }
 }

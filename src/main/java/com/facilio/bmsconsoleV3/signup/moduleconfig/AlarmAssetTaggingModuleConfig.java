@@ -98,7 +98,7 @@ public class AlarmAssetTaggingModuleConfig extends BaseModuleConfig {
         formFields.add(new FormField("alarmDefinition", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Alarm Definition", FormField.Required.REQUIRED,2, 1));
         formFields.add(new FormField("controller", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Controller", FormField.Required.REQUIRED,3, 1));
         formFields.add(new FormField("asset", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Asset", FormField.Required.REQUIRED,4, 1));
-
+        formFields.add(new FormField("suspendAlarms", FacilioField.FieldDisplayType.DECISION_BOX, "Suspend Alarm", FormField.Required.OPTIONAL,5, 1));
         FormSection section = new FormSection("Default", 1,formFields, false);
         section.setSectionType(FormSection.SectionType.FIELDS);
         form.setSections(Collections.singletonList(section));

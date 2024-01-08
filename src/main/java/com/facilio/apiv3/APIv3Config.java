@@ -776,6 +776,10 @@ import com.facilio.remotemonitoring.signup.FlaggedEventBureauEvaluationModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventModule;
 import com.facilio.remotemonitoring.signup.FlaggedEventRuleModule;
 import com.facilio.remotemonitoring.signup.RawAlarmModule;
+import com.facilio.remotemonitoring.FlaggedEventModuleCustomFieldCount;
+import com.facilio.remotemonitoring.commands.*;
+import com.facilio.remotemonitoring.context.*;
+import com.facilio.remotemonitoring.signup.*;
 import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
 import com.facilio.telemetry.command.FetchNamespaceForTelemetryCriteriaCommand;
 import com.facilio.telemetry.context.TelemetryCriteriaContext;
@@ -4482,15 +4486,14 @@ public class APIv3Config {
         return () -> new V3Config(FlaggedEventRuleContext.class,null)
                 .create()
                 .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand(), new SetFlaggedAlarmProcessTicketModuleIdCommand())
-                .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
-                        new AddFlaggedEventRuleAlarmTypeCommand(), new DeleteFlaggedEventRuleJob(),
+                .afterSave(new AddFlaggedEventRuleAlarmTypeCommand(),new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
+                        new DeleteFlaggedEventRuleJob(),
                         new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
                         new AddOrUpdateEmailRuleForFlaggedEventCommand(), new DeleteBureauEvaluationCommand(),new AddOrUpdateBureauConfigCommand(),
                         new ConstructAddCustomActivityCommandV3(), new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY))
                 .update()
                 .beforeSave(new AddFlaggedEventRuleSiteAndControllerCriteriaCommand(), new SetFlaggedAlarmProcessTicketModuleIdCommand())
-                .afterSave(new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(),
-                        new AddFlaggedEventRuleAlarmTypeCommand(),new DeleteFlaggedEventRuleJob(),
+                .afterSave(new AddFlaggedEventRuleAlarmTypeCommand(),new AddFlaggedEventClosureConfigCommand(),new DeleteAndAddRuleAttachmentsCommand(), new DeleteFlaggedEventEmailNotificationRuleCommand(),new FlaggedEventRuleInvalidateCacheCommand(), new DeleteFlaggedEventRuleJob(),
                         new FlaggedEventRuleJobScheduler(), new AddOrUpdateFlaggedEventWorkorderFieldMappingCommand(),
                         new AddOrUpdateEmailRuleForFlaggedEventCommand(), new DeleteBureauEvaluationCommand(),new AddOrUpdateBureauConfigCommand(),
                         new ConstructUpdateCustomActivityCommandV3(), new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_RULE_ACTIVITY))
@@ -4515,8 +4518,9 @@ public class APIv3Config {
 
     @Module(FlaggedEventModule.MODULE_NAME)
     public static Supplier<V3Config> getFlaggedEventModule(){
-        return () -> new V3Config(FlaggedEventContext.class,null)
+        return () -> new V3Config(FlaggedEventContext.class,new FlaggedEventModuleCustomFieldCount())
                 .create()
+                .beforeSave(new FlaggedEventBeforeCreateCommand())
                 .afterSave(new FlaggedEventBureauInformationCommand(),new BureauEvaluationOrCreateWorkorder(),new FlaggedEventClosureCommand(), new ConstructAddCustomActivityCommandV3(),
                         new AddActivitiesCommandV3(AddSubModuleRelations.FLAGGED_EVENT_ACTIVITY))
                 .preCreate()

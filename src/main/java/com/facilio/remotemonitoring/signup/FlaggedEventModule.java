@@ -14,6 +14,8 @@ public class FlaggedEventModule extends SignUpData {
 
     public static final String MODULE_NAME = "flaggedAlarm";
     public static final String FLAGGED_EVENT_RULE_FIELD_NAME = "flaggedAlarmProcess";
+    public static final String FLAGGED_EVENT_ASSIGNED_PEOPLE_NAME = "assignedPeople";
+
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -177,6 +179,18 @@ public class FlaggedEventModule extends SignUpData {
         rawAlarmFilterAlarmField.setLookupModule(mod);
         modBean.addField(rawAlarmFilterAlarmField);
 
+
+        SystemEnumField sourceTypeField = new SystemEnumField();
+        sourceTypeField.setName("sourceType");
+        sourceTypeField.setDisplayName("Source Type");
+        sourceTypeField.setModule(mod);
+        sourceTypeField.setDataType(FieldType.STRING_SYSTEM_ENUM);
+        sourceTypeField.setDisplayType(FacilioField.FieldDisplayType.TEXTBOX);
+        sourceTypeField.setDefault(true);
+        sourceTypeField.setColumnName("SOURCE_TYPE");
+        sourceTypeField.setEnumName("FlaggedEventSourceType");
+        modBean.addField(sourceTypeField);
+
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));
         modBean.addField(FieldFactory.getSystemField("sysModifiedTime", mod));
@@ -187,6 +201,7 @@ public class FlaggedEventModule extends SignUpData {
     }
 
     private static void addSystemButtons() throws Exception{
+        SystemButtonApi.addCreateButtonWithModuleDisplayName(MODULE_NAME);
         SystemButtonApi.addExportAsCSV(MODULE_NAME);
         SystemButtonApi.addExportAsExcel(MODULE_NAME);
     }

@@ -91,4 +91,13 @@ public class AlarmRuleBeanCacheImpl extends AlarmRuleBeanImpl implements AlarmRu
             return super.getAlarmType(linkname);
         });
     }
+
+    @Override
+    public AlarmAssetTaggingContext getAlarmAssetMapping(@NonNull Long clientId, @NonNull Long alarmDefinitionId, @NonNull Long controllerId,@NonNull Long assetId) throws Exception {
+        FacilioCache<String, AlarmAssetTaggingContext> alarmAssetTaggingCache = LRUCache.getAlarmAssetTaggingCache();
+        String key = CacheUtil.ALARM_ASSET_TAGGING_KEY_WITH_ASSET(AccountUtil.getCurrentOrg().getId(), clientId, controllerId,alarmDefinitionId,assetId);
+        return FWLRUCaches.Util.genericGetFromCacheAndHandleMissLogic(alarmAssetTaggingCache, key, () -> {
+            return super.getAlarmAssetMapping(clientId,alarmDefinitionId,controllerId,assetId);
+        });
+    }
 }

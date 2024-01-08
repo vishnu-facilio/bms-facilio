@@ -4527,4 +4527,15 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddOrUpdateOCRBillTemplateLineItems());
         return c;
 	}
+    public static FacilioChain assignFlaggedEvent() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AssignFlaggedEventCommand());
+        return c;
+    }
+
+    public static FacilioChain suspendAlarm() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new SuspendAlarmCommand());
+        return c;
+    }
 }

@@ -33,44 +33,8 @@ public class FlaggedEventTakeCustodyCommand extends FacilioCommand {
         Long currentPeopleId = AccountUtil.getCurrentUser().getPeopleId();
         FacilioUtil.throwIllegalArgumentException(currentPeopleId == null, "Current People Id Cannot be null");
         FacilioUtil.throwIllegalArgumentException(id == null, "Flagged Event Id Cannot be null");
-        takeCustody(id,currentPeopleId);
+        FlaggedEventUtil.takeCustody(id,currentPeopleId,false);
         return false;
     }
 
-    private static void takeCustody(Long id,Long currentPeopleId) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FlaggedEventContext flaggedEvent = FlaggedEventUtil.getFlaggedEvent(id);
-        if(flaggedEvent != null && flaggedEvent.getCurrentBureauActionDetail() != null) {
-            FlaggedEventBureauActionsContext bureauAction = V3RecordAPI.getRecord(FlaggedEventBureauActionModule.MODULE_NAME, flaggedEvent.getCurrentBureauActionDetail().getId(), FlaggedEventBureauActionsContext.class);
-            if(bureauAction != null) {
-                if(bureauAction.getEventStatus() != null && bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY) {
-                    FacilioUtil.throwIllegalArgumentException(true, "Already Under Custody");
-                }
-                if(bureauAction.getEventStatus() != null && bureauAction.getEventStatus().getState() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionState.INACTIVE) {
-                    FacilioUtil.throwIllegalArgumentException(true, "Restricted action. Event already closed or passed to next bureau");
-                }
-                FlaggedEventBureauActionsContext updateAction = new FlaggedEventBureauActionsContext();
-                updateAction.setId(bureauAction.getId());
-                V3PeopleContext people = new V3PeopleContext();
-                people.setId(AccountUtil.getCurrentUser().getPeopleId());
-                updateAction.setAssignedPeople(people);
-                updateAction.setTakeCustodyTimestamp(System.currentTimeMillis());
-                V3RecordAPI.updateRecord(updateAction,modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Arrays.asList(modBean.getField("eventStatus",FlaggedEventBureauActionModule.MODULE_NAME),modBean.getField("takeCustodyTimestamp",FlaggedEventBureauActionModule.MODULE_NAME),modBean.getField("assignedPeople",FlaggedEventBureauActionModule.MODULE_NAME)));
-                FlaggedEventUtil.updateBureauActionStatus(bureauAction.getId(),FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY);
-                startTakeActionJob(bureauAction);
-            }
-            Map<String,Object> eventUpdateProp = new HashMap<>();
-            Map<String,Object> peopleProp = new HashMap<>();
-            peopleProp.put("id",currentPeopleId);
-            eventUpdateProp.put("assignedPeople",peopleProp);
-            V3Util.updateBulkRecords(FlaggedEventModule.MODULE_NAME, eventUpdateProp,Collections.singletonList(id),false);
-        }
-    }
-
-    private static void startTakeActionJob(FlaggedEventBureauActionsContext action) throws Exception {
-        if(action.getTakeCustodyPeriod() != null && action.getTakeCustodyPeriod() > 0) {
-            Long nextExecutionTime = (System.currentTimeMillis() + action.getTakeCustodyPeriod()) / 1000;
-            FacilioTimer.scheduleOneTimeJobWithTimestampInSec(action.getId(), RemoteMonitorConstants.FLAGGED_EVENT_BUREAU_TAKE_ACTION_JOB, nextExecutionTime, "priority");
-        }
-    }
 }

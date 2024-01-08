@@ -277,6 +277,9 @@ public class CacheUtil {
 	public static String ALARM_ASSET_TAGGING_KEY(long orgId, long clientId,long controllerId,long alarmDefinitionId) {
 		return ORG_KEY(orgId) + KEY_SEPARATOR  + CLIENTID_KEY(clientId) + KEY_SEPARATOR + CONTROLLER + KEY_SEPARATOR + controllerId + KEY_SEPARATOR + ALARM_DEFINITION + KEY_SEPARATOR + alarmDefinitionId;
 	}
+	public static String ALARM_ASSET_TAGGING_KEY_WITH_ASSET(long orgId, long clientId,long controllerId,long alarmDefinitionId,long assetId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR  + CLIENTID_KEY(clientId) + KEY_SEPARATOR + CONTROLLER + KEY_SEPARATOR + controllerId + KEY_SEPARATOR + ALARM_DEFINITION + KEY_SEPARATOR + alarmDefinitionId + KEY_SEPARATOR + assetId;
+	}
 	public static boolean isCacheEnabled() {
 		// return RedisManager.getInstance().isRedisEnabled();
         return false;

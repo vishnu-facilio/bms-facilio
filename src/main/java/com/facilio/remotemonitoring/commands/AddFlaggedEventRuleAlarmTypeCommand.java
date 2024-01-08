@@ -50,6 +50,7 @@ public class AddFlaggedEventRuleAlarmTypeCommand extends FacilioCommand {
                         flaggedEventRuleAlarmTypeRels.add(flaggedEventRuleAlarmTypeRel);
                     }
                     V3Util.createRecord(modBean.getModule(FlaggedEventAlarmTypeRelModule.MODULE_NAME), flaggedEventRuleAlarmTypeRels);
+                    flaggedEventRule.setFlaggedEventRuleAlarmTypeRel(null);
                 }
             }
         }

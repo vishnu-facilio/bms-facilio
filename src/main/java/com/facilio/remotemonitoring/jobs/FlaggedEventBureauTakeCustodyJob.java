@@ -14,6 +14,7 @@ import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import lombok.extern.log4j.Log4j;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Log4j
@@ -21,12 +22,11 @@ public class FlaggedEventBureauTakeCustodyJob extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         long flaggedEventBureauActionId = jc.getJobId();
-
         AlarmRuleBean alarmBean = (AlarmRuleBean) BeanFactory.lookup("AlarmBean");
         if (flaggedEventBureauActionId > -1) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FlaggedEventBureauActionsContext bureauAction = V3RecordAPI.getRecord(FlaggedEventBureauActionModule.MODULE_NAME, flaggedEventBureauActionId, FlaggedEventBureauActionsContext.class);
-            if (bureauAction != null && bureauAction.getFlaggedEvent() != null && bureauAction.getFlaggedEvent().getId() > -1) {
+            if (bureauAction != null && bureauAction.getFlaggedEvent() != null && bureauAction.getFlaggedEvent().getId() > -1 && bureauAction.getEventStatus() != FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY) {
                 FlaggedEventContext flaggedEvent = V3RecordAPI.getRecord(FlaggedEventModule.MODULE_NAME, bureauAction.getFlaggedEvent().getId(), FlaggedEventContext.class);
                 if (flaggedEvent != null) {
                     FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
@@ -36,7 +36,9 @@ public class FlaggedEventBureauTakeCustodyJob extends FacilioJob {
                                 FlaggedEventBureauActionsContext updateAction = new FlaggedEventBureauActionsContext();
                                 updateAction.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
                                 updateAction.setId(bureauAction.getId());
-                                V3RecordAPI.updateRecord(updateAction, modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Collections.singletonList(modBean.getField("eventStatus", FlaggedEventBureauActionModule.MODULE_NAME)));
+                                updateAction.setIsSLABreached(true);
+                                V3RecordAPI.updateRecord(updateAction, modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Arrays.asList(modBean.getField("eventStatus", FlaggedEventBureauActionModule.MODULE_NAME),
+                                        modBean.getField("isSLABreached", FlaggedEventBureauActionModule.MODULE_NAME)));
                             }
                             passToNextBureau(flaggedEvent, bureauAction);
                         }

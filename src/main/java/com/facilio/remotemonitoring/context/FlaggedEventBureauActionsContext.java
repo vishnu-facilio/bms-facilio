@@ -3,9 +3,9 @@ package com.facilio.remotemonitoring.context;
 import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.modules.FacilioStringEnum;
 import com.facilio.remotemonitoring.handlers.timer.*;
-import com.facilio.v3.context.V3Context;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,12 +17,17 @@ public class FlaggedEventBureauActionsContext extends FlaggedEventRuleBureauEval
     private Long takeCustodyTimestamp;
     private Long inhibitTimeStamp;
     private Long evaluationOpenTimestamp;
+    private Boolean isSLABreached;
     private List<BureauInhibitReasonListContext> configuredinhibitReasonList;
     private BureauInhibitReasonListContext inhibitReason;
     private List<BureauCloseIssueReasonOptionContext> closeIssueReasonOptionList;
     private V3PeopleContext assignedPeople;
     private FlaggedEventBureauActionStatus eventStatus;
     private String troubleShootingTips;
+
+    public boolean getIsSLABreached(){
+       return BooleanUtils.isTrue(isSLABreached);
+    }
     public enum FlaggedEventBureauActionState implements FacilioStringEnum {
         ACTIVE("Active"),
         INACTIVE("Inactive");

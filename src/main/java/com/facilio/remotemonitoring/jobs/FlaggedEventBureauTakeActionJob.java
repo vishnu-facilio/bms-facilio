@@ -14,6 +14,7 @@ import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
 import lombok.extern.log4j.Log4j;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Log4j
@@ -30,9 +31,15 @@ public class FlaggedEventBureauTakeActionJob extends FacilioJob {
                 if (flaggedEvent != null) {
                     FlaggedEventRuleContext rule = alarmBean.getFlaggedEventRule(flaggedEvent.getFlaggedAlarmProcess().getId());
                     if (rule != null && (rule.shouldCreateWorkorder() || (bureauAction.getInhibitTimeStamp() != null && bureauAction.getInhibitTimeStamp() > 0)) && flaggedEvent.getStatus() != null && flaggedEvent.getStatus() == FlaggedEventContext.FlaggedEventStatus.OPEN) {
-                        if(bureauAction.getTakeActionTimestamp() != null && bureauAction.getTakeActionTimestamp() > 0) {
+                        if(bureauAction.getTakeActionPeriod() != null && bureauAction.getTakeActionPeriod() > 0) {
                             if (bureauAction.getEventStatus() != null && (bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.UNDER_CUSTODY || bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.OPEN || bureauAction.getEventStatus() == FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.INHIBIT)) {
-                                FlaggedEventUtil.updateBureauActionStatus(bureauAction.getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
+                                FlaggedEventBureauActionsContext updateAction = new FlaggedEventBureauActionsContext();
+                                updateAction.setEventStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
+                                updateAction.setId(bureauAction.getId());
+                                updateAction.setIsSLABreached(true);
+                                V3RecordAPI.updateRecord(updateAction, modBean.getModule(FlaggedEventBureauActionModule.MODULE_NAME), Arrays.asList(modBean.getField("eventStatus", FlaggedEventBureauActionModule.MODULE_NAME),
+                                        modBean.getField("isSLABreached", FlaggedEventBureauActionModule.MODULE_NAME)));
+//                                FlaggedEventUtil.updateBureauActionStatus(bureauAction.getId(), FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus.TIME_OUT);
                             }
                             passToNextBureau(flaggedEvent, bureauAction);
                         }

@@ -13,7 +13,8 @@ import com.facilio.modules.fields.*;
 public class RawAlarmModule extends SignUpData {
 
     public static final String MODULE_NAME = "alarmEvent";
-//    public static final String
+    public static final String FLAGGED_EVENT_FIELD_NAME = "flaggedEvent";
+    //    public static final String
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

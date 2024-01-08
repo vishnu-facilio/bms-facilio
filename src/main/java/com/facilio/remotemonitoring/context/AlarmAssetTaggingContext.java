@@ -14,4 +14,5 @@ public class AlarmAssetTaggingContext extends V3Context {
     private AlarmDefinitionContext alarmDefinition;
     private Controller controller;
     private V3AssetContext asset;
+    private Boolean suspendAlarms;
 }

@@ -39,6 +39,7 @@ public class FlaggedEventRuleContext extends V3Context {
     private V3ClientContext client;
     private FlaggedEventExecutionType executionType;
     private Boolean createWorkorder;
+    private Boolean autoCreateWorkOrder;
     private Long ticketModuleId;
     private String ticketModuleName;
     private Long workorderTemplateId;

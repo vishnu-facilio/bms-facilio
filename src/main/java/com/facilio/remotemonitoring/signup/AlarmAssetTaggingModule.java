@@ -8,16 +8,15 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LargeTextField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.StringField;
+import com.facilio.modules.fields.*;
 import com.facilio.remotemonitoring.RemoteMonitorConstants;
 
 public class AlarmAssetTaggingModule extends SignUpData {
 
     public static final String MODULE_NAME = "alarmAssetMapping";
     public static final String MODULE_DISPLAY_NAME = "Alarm Asset Mapping";
+    public static final String SUSPEND_ALARM = "suspendAlarms";
+
     @Override
     public void addData() throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -77,6 +76,16 @@ public class AlarmAssetTaggingModule extends SignUpData {
         asset.setColumnName("ASSET_ID");
         asset.setLookupModule(modBean.getModule(FacilioConstants.ContextNames.ASSET));
         modBean.addField(asset);
+
+        BooleanField suspendAlarms = new BooleanField();
+        suspendAlarms.setName("suspendAlarms");
+        suspendAlarms.setDisplayName("Suspend Alarms");
+        suspendAlarms.setModule(mod);
+        suspendAlarms.setColumnName("SUSPEND_ALARM");
+        suspendAlarms.setDataType(FieldType.BOOLEAN);
+        suspendAlarms.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
+        suspendAlarms.setDefault(true);
+        modBean.addField(suspendAlarms);
 
         modBean.addField(FieldFactory.getSystemField("sysCreatedTime", mod));
         modBean.addField(FieldFactory.getSystemField("sysCreatedByPeople", mod));

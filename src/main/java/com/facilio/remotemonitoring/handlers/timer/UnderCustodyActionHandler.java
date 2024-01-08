@@ -9,7 +9,7 @@ public class UnderCustodyActionHandler implements TeamActionHandler<FlaggedEvent
         Long currentTime = System.currentTimeMillis();
         if(evaluationContext != null) {
             Long takeCustodyTime = evaluationContext.getTakeCustodyTimestamp();
-            if(takeCustodyTime != null) {
+            if(takeCustodyTime != null && !evaluationContext.getIsSLABreached()) {
                 Long takeActionTimePeriod = evaluationContext.getTakeActionPeriod();
                 if(takeActionTimePeriod != null) {
                     Long timeElapsed = currentTime - takeCustodyTime;

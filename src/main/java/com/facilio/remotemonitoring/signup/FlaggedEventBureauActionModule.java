@@ -104,6 +104,16 @@ public class FlaggedEventBureauActionModule extends SignUpData {
         eventStatus.setDisplayName("Event Status");
         modBean.addField(eventStatus);
 
+        BooleanField isSLABreached = new BooleanField();
+        isSLABreached.setName("isSLABreached");
+        isSLABreached.setModule(mod);
+        isSLABreached.setDisplayName("Is SLA Breached");
+        isSLABreached.setColumnName("IS_SLA_BREACHED");
+        isSLABreached.setDataType(FieldType.BOOLEAN);
+        isSLABreached.setDisplayType(FacilioField.FieldDisplayType.DECISION_BOX);
+        isSLABreached.setDefault(true);
+        modBean.addField(isSLABreached);
+
 
         //Flagged event action in
         LookupField currentBureauActionDetail = new LookupField();
