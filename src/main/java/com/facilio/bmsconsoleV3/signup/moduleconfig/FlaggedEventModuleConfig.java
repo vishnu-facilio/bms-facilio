@@ -435,7 +435,7 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
 
-        FacilioField nameField = moduleBean.getField("name",moduleName);
+//        FacilioField nameField = moduleBean.getField("name",moduleName);
         FacilioField clientField = moduleBean.getField("client",moduleName);
         FacilioField siteField = moduleBean.getField("site", moduleName);
         FacilioField controllerField = moduleBean.getField("controller",moduleName);
@@ -443,17 +443,19 @@ public class FlaggedEventModuleConfig extends BaseModuleConfig {
         FacilioField workorderField = moduleBean.getField("workorder",moduleName);
         FacilioField serviceOrder = moduleBean.getField("serviceOrder",moduleName);
         FacilioField controlAction = moduleBean.getField("controlAction",moduleName);
+        FacilioField closeIssueReasonField = moduleBean.getField("bureauCloseIssues",moduleName);
 
         SummaryWidget pageWidget = new SummaryWidget();
         SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
-        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, clientField, 1, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, siteField, 1, 3, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 4, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, assetField, 2, 1, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, workorderField, 2, 2, 1);
-        addSummaryFieldInWidgetGroup(widgetGroup, serviceOrder, 2,3,1);
-        addSummaryFieldInWidgetGroup(widgetGroup, controlAction, 2, 4, 1);
+//        addSummaryFieldInWidgetGroup(widgetGroup, nameField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, clientField, 1, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, siteField, 1, 2, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controllerField, 1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, assetField, 1, 4, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, workorderField, 2, 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, serviceOrder, 2,2,1);
+        addSummaryFieldInWidgetGroup(widgetGroup, controlAction, 2, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup, closeIssueReasonField, 2, 4, 1);
 
 
         widgetGroup.setName("generalInformation");

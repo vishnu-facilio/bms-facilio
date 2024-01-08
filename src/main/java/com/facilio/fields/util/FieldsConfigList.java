@@ -411,7 +411,7 @@ public class FieldsConfigList {
             "id", "site", "client", "controller", FlaggedEventModule.FLAGGED_EVENT_RULE_FIELD_NAME,
             "status", "workorder", "serviceOrder", "assignedPeople", "team", "asset","controlAction",
             "sysCreatedTime", "sysCreatedByPeople", "sysModifiedTime",
-            "sysModifiedByPeople"
+            "sysModifiedByPeople", "bureauCloseIssues"
     );
 
     public static final List<String> UTILITY_INTEGRATION_CUSTOMER_FIELDS_INCLUDE = Arrays.asList(

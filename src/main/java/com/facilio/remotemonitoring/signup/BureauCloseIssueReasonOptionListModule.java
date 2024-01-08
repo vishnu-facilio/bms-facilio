@@ -53,7 +53,7 @@ public class BureauCloseIssueReasonOptionListModule extends SignUpData {
         bureauCloseIssues.setDisplayName("Bureau Close Issues");
         bureauCloseIssues.setModule(modBean.getModule(FlaggedEventModule.MODULE_NAME));
         bureauCloseIssues.setDataType(FieldType.MULTI_LOOKUP);
-        bureauCloseIssues.setDisplayType(FacilioField.FieldDisplayType.MULTI_SELECTBOX);
+        bureauCloseIssues.setDisplayType(FacilioField.FieldDisplayType.MULTI_LOOKUP_SIMPLE);
         bureauCloseIssues.setLookupModule(mod);
         modBean.addField(bureauCloseIssues);
     }

@@ -27,6 +27,6 @@ public class AlarmLogModuleContext extends V3Context {
 
     public void setAssessmentStatus(FlaggedEventBureauActionsContext.FlaggedEventBureauActionStatus assessmentStatus){
         this.assessmentStatus = assessmentStatus;
-        this.assessmentStatusDisplayName = assessmentStatus.getValue();
+        this.assessmentStatusDisplayName = assessmentStatus != null ? assessmentStatus.getValue() : null;
     }
 }
