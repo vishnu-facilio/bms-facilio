@@ -877,7 +877,7 @@
                 method="fetchTimelineScheduledViewGroupData">
             <param name="translationImpl">V3PickListTranslation</param>
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE,READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 
@@ -891,7 +891,7 @@
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewData">
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE,READ,READ_TEAM,READ_OWN</param>
         </action>
 
         <action name="list"
@@ -903,7 +903,7 @@
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewSelectiveList">
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE,READ,READ_TEAM,READ_OWN</param>
 		</action>
 
         <action name="update"
@@ -915,7 +915,7 @@
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewPatch">
             <param name="moduleName">{1}</param>
-            <param name="permission">POST:CREATE;PATCH:UPDATE</param>
+            <param name="permission">POST:CREATE,READ,READ_TEAM,READ_OWN;PATCH:UPDATE</param>
 		</action>
 
         <action name="unscheduled"
@@ -927,7 +927,7 @@
                 class="com.facilio.bmsconsoleV3.actions.TimelineAction"
                 method="timelineScheduledViewUnScheduledList">
             <param name="moduleName">{1}</param>
-            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE,READ,READ_TEAM,READ_OWN</param>
 		</action>
     </package>
 
