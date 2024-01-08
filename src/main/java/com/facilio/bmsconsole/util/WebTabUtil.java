@@ -265,7 +265,7 @@ public class WebTabUtil {
             String tabName = tab != null ? tab.getName() : null;
 
             //Handled in client - need to check after logs
-            LOGGER.info("Permission interceptor Tab permission missing for : Tab - " + tabName + " reqURI - " + ServletActionContext.getRequest().getRequestURI() + " referrerURI - " + getReferrerUri());
+            LOGGER.info("Permission interceptor Tab permission missing for : Tab - " + tabName + " reqURI - " + ServletActionContext.getRequest().getRequestURI() + " referrerURI - " + getReferrerUri() + " DeviceType - " + ServletActionContext.getRequest().getHeader("X-Device-Type"));
         } catch (Exception e) {
             LOGGER.info("Exception in module permission logs - " + e);
         }

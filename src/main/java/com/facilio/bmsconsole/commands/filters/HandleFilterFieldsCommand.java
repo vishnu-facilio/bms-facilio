@@ -2,13 +2,12 @@ package com.facilio.bmsconsole.commands.filters;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agentv2.AgentConstants;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.MetersAPI;
-import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.context.filters.FilterFieldContext;
 import com.facilio.bmsconsole.context.filters.FilterOperator;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.MetersAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.operators.BuildingOperator;
@@ -19,8 +18,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FieldOption;
-import com.facilio.workflowlog.context.WorkflowLogContext;
 import lombok.NonNull;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -290,7 +287,7 @@ public class HandleFilterFieldsCommand extends FacilioCommand {
 
     private List<FacilioField> getAtreFilterFields(String moduleName, List<FacilioField> fields) throws Exception {
         List<FacilioField> filterFields = null;
-        if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
+        if (AccountUtil.getCurrentOrg().getOrgId() == 418l && AccountUtil.getCurrentApp() != null && AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP)) {
             List<String> atreFields = getAtreFieldMap().get(moduleName);
             if (atreFields != null) {
                 filterFields = fields.stream().filter(field -> atreFields.contains(field.getName())).collect(Collectors.toList());

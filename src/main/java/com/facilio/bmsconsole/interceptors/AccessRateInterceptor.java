@@ -46,8 +46,11 @@ public class AccessRateInterceptor extends AbstractInterceptor {
                 HttpServletResponse response = ServletActionContext.getResponse();
                 response.setHeader("X-Retry-After", String.valueOf(FacilioProperties.getRateLimiterInterval()));
 
-                LOGGER.info("Rate Limiter : API strike limit was reached");
+                LOGGER.info("Rate Limiter : API strike limit was reached for OrgId - "+org.getOrgId());
                 return ErrorUtil.sendError(ErrorUtil.Error.RATE_LIMIT_FOR_API_EXCEED);
+            }
+            if(rateLimiter.getRequestsMade(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey) > 20L){
+                LOGGER.info("Rate Limiter : API strike limit was crossed 20 for OrgId - "+org.getOrgId());
             }
         }
         return invocation.invoke();

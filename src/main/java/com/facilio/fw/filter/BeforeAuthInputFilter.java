@@ -134,7 +134,9 @@ public class BeforeAuthInputFilter implements Filter {
         if (referrer != null && !"".equals(referrer.trim())) {
             URL url = new URL(referrer);
             if(url != null) {
-                message = message.concat(" Tab - "+securityRequestWrapper.getHeader("X-Tab-Id")+" reqURI - " +securityRequestWrapper.getRequestURI()+" referrerURI - "+url.getPath());
+                String deviceTye = securityRequestWrapper.getHeader("X-Device-Type");
+                String OrgId = securityRequestWrapper.getHeader("X-Org-Id");
+                message = message.concat(" Tab - "+securityRequestWrapper.getHeader("X-Tab-Id")+" reqURI - " +securityRequestWrapper.getRequestURI()+" referrerURI - "+url.getPath()+ " DeviceType - " +deviceTye+ " OrgId "+OrgId);
             }
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);

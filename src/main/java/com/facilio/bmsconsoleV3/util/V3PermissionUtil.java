@@ -192,6 +192,9 @@ public class V3PermissionUtil {
         Organization currentOrg = AccountUtil.getCurrentOrg();
         if (FacilioProperties.isProduction()) {
             if(currentOrg != null) {
+                if(ApplicationApi.isRequestFromMobile()){
+                    return false;
+                }
                 return currentOrg.getOrgId() == 1516;
             }
         } else if (FacilioProperties.getEnvironment().equals("stage2")) {
