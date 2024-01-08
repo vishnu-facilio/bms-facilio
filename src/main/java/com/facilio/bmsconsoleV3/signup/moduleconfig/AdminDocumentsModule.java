@@ -1,27 +1,126 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.util.ApplicationApi;
+import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
-import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
-import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.JSONObject;
 
 import java.util.*;
+
+import static com.facilio.util.SummaryWidgetUtil.addSummaryFieldInWidgetGroup;
 
 public class AdminDocumentsModule extends BaseModuleConfig{
     public AdminDocumentsModule(){
         setModuleName(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
     }
+
+
+    @Override
+    public Map<String, List<PagesContext>> fetchSystemPageConfigs() throws Exception{
+        Map<String, List<PagesContext>> appNameVsPage = new HashMap<>();
+        List<String> appLinkNames = new ArrayList<>();
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.TENANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.OCCUPANT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.VENDOR_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.CLIENT_PORTAL_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.FSM_APP);
+        appLinkNames.add(FacilioConstants.ApplicationLinkNames.IWMS_APP);
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
+        for (String appName : appLinkNames) {
+            ApplicationContext app = ApplicationApi.getApplicationForLinkName(appName);
+            appNameVsPage.put(appName, createAdminDocsDefaultPage(app, module));
+        }
+        return appNameVsPage;
+    }
+
+    private List<PagesContext> createAdminDocsDefaultPage(ApplicationContext app, FacilioModule module) throws Exception {
+        return new ModulePages()
+                .addPage("adminDocumentsDefaultPage","Default Admin Documents page","",null, false, true,true)
+                    .addLayout(PagesContext.PageLayoutType.WEB)
+                        .addTab("summary","Summary", PageTabContext.TabType.SIMPLE,true,null)
+                            .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
+                                .addSection("summary","",null)
+                                    .addWidget("summaryFieldsWidget", "Admin Document Details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6", 0, 0, null,getSummaryWidgetDetails(module.getName(),app))
+                                    .widgetDone()
+                                .sectionDone()
+                            .columnDone()
+                        .tabDone()
+                    .layoutDone()
+                .pageDone()
+        .getCustomPages();
+    }
+
+    @Override
+    public void addData() throws Exception {
+        addListButtons();
+    }
+
+    private void addListButtons() throws Exception {
+        SystemButtonApi.addListEditButton(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.ADMIN_DOCUMENTS);
+    }
+
+    public static JSONObject getSummaryWidgetDetails(String moduleName, ApplicationContext app) throws Exception {
+        ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = moduleBean.getModule(moduleName);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(moduleBean.getAllFields(moduleName));
+
+        FacilioField categoryField = fieldMap.get("category");
+        FacilioField fileField = fieldMap.get("file");
+        FacilioField sysCreatedByField = fieldMap.get("sysCreatedBy");
+        FacilioField createdTimeField = fieldMap.get("sysCreatedTime");
+        FacilioField modifiedByField = fieldMap.get("sysModifiedBy");
+        FacilioField modifiedTimeField = fieldMap.get("sysModifiedTime");
+        FacilioField audienceField = fieldMap.get("audience");
+
+        SummaryWidget pageWidget = new SummaryWidget();
+        SummaryWidgetGroup widgetGroup = new SummaryWidgetGroup();
+        widgetGroup.setName("documentDetails");
+        widgetGroup.setDisplayName("Document Details");
+
+        addSummaryFieldInWidgetGroup(widgetGroup, categoryField, 1 , 1, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup,fileField,1,2,1);
+        addSummaryFieldInWidgetGroup(widgetGroup, sysCreatedByField,1, 3, 1);
+        addSummaryFieldInWidgetGroup(widgetGroup,createdTimeField,1,4,1);
+        addSummaryFieldInWidgetGroup(widgetGroup,modifiedByField,2,1,1);
+        addSummaryFieldInWidgetGroup(widgetGroup,modifiedTimeField,2,2,1);
+        widgetGroup.setColumns(4);
+
+        SummaryWidgetGroup audienceGroup = new SummaryWidgetGroup();
+        audienceGroup.setName("accessibility");
+        audienceGroup.setDisplayName("Accessibility");
+
+        addSummaryFieldInWidgetGroup(audienceGroup, audienceField,1, 1, 1);
+        audienceGroup.setColumns(4);
+
+        List<SummaryWidgetGroup> widgetGroupList = new ArrayList<>();
+        widgetGroupList.add(widgetGroup);
+        widgetGroupList.add(audienceGroup);
+
+        pageWidget.setDisplayName("Admin Documents");
+        pageWidget.setModuleId(module.getModuleId());
+        pageWidget.setAppId(app.getId());
+        pageWidget.setGroups(widgetGroupList);
+
+        return FieldUtil.getAsJSON(pageWidget);
+
+    }
+
+
 
     @Override
     public List<Map<String, Object>> getViewsAndGroups() {
