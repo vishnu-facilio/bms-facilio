@@ -2,6 +2,7 @@ package com.facilio.workflowv2.parser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.MailMessageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -279,6 +280,7 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add("workorderHazardPrecaution");
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.PURCHASED_ITEM);
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.PURCHASED_TOOL);
+        scriptWhiteListedModules.add(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
     }
 
     @Override
