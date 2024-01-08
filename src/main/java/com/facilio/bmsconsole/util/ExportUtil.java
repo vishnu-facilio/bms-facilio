@@ -972,12 +972,13 @@ public class ExportUtil {
 			}
 		}
 
+		List<ViewField> removableViewFields = new ArrayList<>();
 		boolean includeNoOfClosedTasks = false;
 		for (int j = 0; j < viewFields.size(); j++) {
 			ViewField viewField = viewFields.get(j);
 			FacilioField field = viewField.getField();
 			if (field != null && field.getDataTypeEnum() != null && field.getDataTypeEnum() == FieldType.FILE) {
-				viewFields.remove(viewFields.get(j));
+				removableViewFields.add(viewField);
 			} else if (viewField.getFieldName() != null && viewField.getFieldName().equals("siteId")) {
 				viewField.setField(FieldFactory.getSiteIdField(module));
 			} else if (field == null) {
@@ -989,6 +990,9 @@ public class ExportUtil {
 			if (moduleName.equals("workorder") && field != null && field.getName().equals("noOfTasks")) {
 				includeNoOfClosedTasks = true;
 			}
+		}
+		if(CollectionUtils.isNotEmpty(removableViewFields)){
+			viewFields.removeAll(removableViewFields);
 		}
 		// could have added in the above if check for WO;
 		// but the field has to be appended at the end of the list
