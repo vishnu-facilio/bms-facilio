@@ -65,9 +65,8 @@ public class SandboxDataMigrationUtil {
         } else if (module.getName().equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
             Set<Long> readingFieldIds = new HashSet<>();
             for (Map<String, Object> prop : propsList) {
-                Integer inputType = (Integer) prop.get("inputType");
                 Long readingFieldId = (Long) prop.get("readingFieldId");
-                if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal() && readingFieldId != null && readingFieldId > 0) {
+                if (readingFieldId != null && readingFieldId > 0) {
                     readingFieldIds.add(readingFieldId);
                 }
             }
@@ -86,9 +85,8 @@ public class SandboxDataMigrationUtil {
                 Map<Long, FacilioField> fieldIdVsFieldObj = readingFieldsList.stream().collect(Collectors.toMap(FacilioField::getFieldId, Function.identity()));
 
                 for (Map<String, Object> prop : propsList) {
-                    Integer inputType = (Integer) prop.get("inputType");
                     Long readingFieldId = (Long) prop.get("readingFieldId");
-                    if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal() && readingFieldId != null && readingFieldId > 0 && fieldIdVsFieldObj.containsKey(readingFieldId)) {
+                    if (readingFieldId != null && readingFieldId > 0 && fieldIdVsFieldObj.containsKey(readingFieldId)) {
                         FacilioField readingField = fieldIdVsFieldObj.get(readingFieldId);
                         String readingFieldModuleNameName = readingField.getModule() != null ? readingField.getModule().getName() : null;
 
@@ -582,10 +580,10 @@ public class SandboxDataMigrationUtil {
         } else if (module.getName().equals(FacilioConstants.ContextNames.TASK) || module.getName().equals(FacilioConstants.ContextNames.JOB_PLAN_TASK)) {
             Map<String, Set<String>> moduleNameVsFieldsNames = new HashMap<>();
             for (Map<String, Object> prop : propsList) {
-                Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
-                if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
-                    String readingFieldName = (String) prop.get("readingFieldName");
-                    String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
+                Long readingFieldId = prop.containsKey("readingFieldId") ? (Long) prop.get("readingFieldId") : null;
+                if (readingFieldId != null && readingFieldId > 0) {
+                    String readingFieldName = prop.containsKey("readingFieldName") ? (String) prop.get("readingFieldName") : null;
+                    String readingFieldModuleNameName = prop.containsKey("readingFieldModuleNameName") ? (String) prop.get("readingFieldModuleNameName") : null;
 
                     if (StringUtils.isNotEmpty(readingFieldName) && StringUtils.isNotEmpty(readingFieldModuleNameName)) {
                         moduleNameVsFieldsNames.computeIfAbsent(readingFieldModuleNameName, k -> new HashSet<>());
@@ -611,10 +609,10 @@ public class SandboxDataMigrationUtil {
                 }
 
                 for (Map<String, Object> prop : propsList) {
-                    Integer inputType = prop.containsKey("inputType") ? Integer.parseInt(prop.get("inputType") + "") : null;
-                    if (inputType != null && inputType == V3TaskContext.InputType.READING.getVal()) {
-                        String readingFieldName = (String) prop.get("readingFieldName");
-                        String readingFieldModuleNameName = (String) prop.get("readingFieldModuleNameName");
+                    Long readingFieldId = prop.containsKey("readingFieldId") ? (Long) prop.get("readingFieldId") : null;
+                    if (readingFieldId != null && readingFieldId > 0) {
+                        String readingFieldName = prop.containsKey("readingFieldName") ? (String) prop.get("readingFieldName") : null;
+                        String readingFieldModuleNameName = prop.containsKey("readingFieldModuleNameName") ? (String) prop.get("readingFieldModuleNameName") : null;
 
                         if (moduleVsFieldsMap.containsKey(readingFieldModuleNameName) && moduleVsFieldsMap.get(readingFieldModuleNameName).containsKey(readingFieldName)) {
                             FacilioModule readingModule = moduleNameVsModuleObj.get(readingFieldModuleNameName);
