@@ -468,13 +468,15 @@
             <param name="buttonPermission">true</param>
             <param name="permission">POST:READ</param>
         </action>
-        <action name="*/*/systemButton/*">
+        <action name="*/*/systemButton/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="recordId">{2}</param>
             <param name="buttonAction">systemButton</param>
             <param name="identifier">{3}</param>
             <param name="buttonPermission">true</param>
-            <param name="deprecated">true</param>
+            <param name="permission">
+                ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
+            </param>
         </action>
     </package>
     <package name="newTimelineV3Api" namespace="/api/v3/modules/timeline" extends="v3Api">
@@ -497,7 +499,7 @@
         <action name="*/view/*" class="com.facilio.bmsconsoleV3.actions.ApprovalV3Action">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ</param>
         </action>
     </package>
 
