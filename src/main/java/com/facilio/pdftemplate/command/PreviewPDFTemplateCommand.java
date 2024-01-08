@@ -38,7 +38,7 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
 
         String pdfTemplateWithCSS = renderedContent + "<style>" + pdfTemplate.getHtmlContentCss() + "</style>";
         context.put(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML, pdfTemplateWithCSS);
-
+        context.put(FacilioConstants.ContextNames.PDF_TEMPLATE_RAW_HTML, renderedContent);
         return false;
     }
 }

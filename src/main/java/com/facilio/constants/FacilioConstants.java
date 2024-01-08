@@ -603,6 +603,7 @@ public class FacilioConstants {
 		public static final String PDF_TEMPLATES = "pdfTemplates";
 
 		public static final String PDF_TEMPLATE_HTML = "pdfTemplateHTML";
+		public static final String PDF_TEMPLATE_RAW_HTML = "pdfTemplateRawHTML";
 
 		public static class DataProcessor {
 			public static final String UNMODELED = "unmodeled";

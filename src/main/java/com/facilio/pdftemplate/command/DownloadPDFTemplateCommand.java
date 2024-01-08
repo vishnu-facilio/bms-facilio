@@ -25,13 +25,17 @@ public class DownloadPDFTemplateCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
 
         PDFTemplate pdfTemplate = (PDFTemplate) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE);
-        String pdfTemplateHtml = (String) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML);
+        String pdfTemplateHtml = (String) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_RAW_HTML);
+        String hideDummyDataCss = "@media print {.dummy-data-wrapper{display: none !important;}}";
+        String pdfTemplateWithCSS = pdfTemplateHtml + "<style>" + pdfTemplate.getHtmlContentCss() + hideDummyDataCss + "</style>";
+        String pdfTemplateHtmlFormatted = pdfTemplateWithCSS.replace("\\n","").replace("\\","").replaceAll("^\"|\"$","").replace("</body>\"", "</body>");
 
         PDFOptions pdfOptions = new PDFOptions();
         pdfOptions.setHeaderTemplate(pdfTemplate.getHeaderTemplate());
         pdfOptions.setFooterTemplate(pdfTemplate.getFooterTemplate());
+        pdfOptions.setPrintBackground(true);
 
-        long fileId = PDFServiceFactory.getPDFService().exportHTML(pdfTemplate.getName() + ".pdf", pdfTemplateHtml , PDFService.ExportType.PDF, pdfOptions);
+        long fileId = PDFServiceFactory.getPDFService().exportHTML(pdfTemplate.getName() + ".pdf", pdfTemplateHtmlFormatted , PDFService.ExportType.PDF, pdfOptions);
         context.put(FacilioConstants.ContextNames.FILE_ID, fileId);
 
         return false;
