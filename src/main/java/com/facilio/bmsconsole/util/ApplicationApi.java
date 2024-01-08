@@ -2521,7 +2521,7 @@ public class ApplicationApi {
         return app;
     }
 
-    public static List<ApplicationContext> getApplicationsForOrgUser(long ouId, String appDomain) throws Exception {
+    public static List<ApplicationContext> getApplicationsForOrgUser(long ouId, String appDomain,boolean fetchMyApps) throws Exception {
         List<FacilioField> fields = new ArrayList<>();
         fields.addAll(FieldFactory.getApplicationFields());
         AppDomain appDomainObj = IAMAppUtil.getAppDomain(appDomain);
@@ -2556,7 +2556,7 @@ public class ApplicationApi {
         List<Map<String, Object>> props = selectBuilder.get();
         if (CollectionUtils.isNotEmpty(props)) {
             List<ApplicationContext> appsList = FieldUtil.getAsBeanListFromMapList(props, ApplicationContext.class);
-            if(isRequestFromMobile()){
+            if(isRequestFromMobile() && fetchMyApps){
                 List<ApplicationContext> mobileAppsList = new ArrayList<ApplicationContext>();
                 for(ApplicationContext app : appsList){
                     if(isMobileApp(app)){

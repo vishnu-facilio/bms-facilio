@@ -503,7 +503,7 @@ public class ApplicationAction extends FacilioAction {
 		User currentUser = AccountUtil.getCurrentUser();
 
 		if(currentUser!=null) {
-			List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(currentUser.getOuid(), request.getServerName());
+			List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(currentUser.getOuid(), request.getServerName(),false);
 			if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
 				defaultAppToLoad = ApplicationApi.getDefaultOrFirstApp(permissibleAppsForThisDomain, currentUser.getOuid());
 			}

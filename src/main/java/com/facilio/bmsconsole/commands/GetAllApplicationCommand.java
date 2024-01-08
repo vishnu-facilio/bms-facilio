@@ -25,7 +25,7 @@ public class GetAllApplicationCommand extends FacilioCommand {
 		String appDomain = (String)context.get(FacilioConstants.ContextNames.APP_DOMAIN);
 		List<ApplicationContext> applications = null;
 		if(fetchCurrentDomain != null && fetchCurrentDomain && StringUtils.isNotEmpty(appDomain)){
-			applications = ApplicationApi.getApplicationsForOrgUser(AccountUtil.getCurrentUser().getOuid(), appDomain);
+			applications = ApplicationApi.getApplicationsForOrgUser(AccountUtil.getCurrentUser().getOuid(), appDomain,fetchCurrentDomain);
 		}
 		else if (moduleName != null) {
 			// temp handing for modules based App

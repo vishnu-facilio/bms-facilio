@@ -175,7 +175,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
                         }
                         //fetching permissible  apps for this user corresponding to this domain
                         //setting the first permissible application(corresponding to this domain) if exists to this user
-                        List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName());
+                        List<ApplicationContext> permissibleAppsForThisDomain = ApplicationApi.getApplicationsForOrgUser(user.getOuid(), request.getServerName(),false);
                         if (CollectionUtils.isNotEmpty(permissibleAppsForThisDomain)) {
                             if(!ApplicationApi.isAuthorisedApplication(permissibleAppsForThisDomain,appId)) {
                                 return ErrorUtil.sendError(ErrorUtil.Error.USER_NOT_IN_APP);
