@@ -34,7 +34,6 @@ public class VendorContactModule extends BaseModuleConfig{
 
     public void addData() throws Exception {
         addActivityModuleForVendorContacts();
-        SignupUtil.addNotesAndAttachmentModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.VENDOR_CONTACT));
         addSystemButtons();
     }
 
@@ -440,10 +439,10 @@ public class VendorContactModule extends BaseModuleConfig{
 
     private static JSONObject getSummaryWidgetGroup(boolean isMobile) throws Exception {
         JSONObject commentWidgetParam = new JSONObject();
-        commentWidgetParam.put("notesModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_NOTES);
+        commentWidgetParam.put("notesModuleName", "peoplenotes");
 
         JSONObject attachmentWidgetParam = new JSONObject();
-        attachmentWidgetParam.put("attachmentsModuleName", FacilioConstants.ContextNames.VENDOR_CONTACT_ATTACHMENTS);
+        attachmentWidgetParam.put("attachmentsModuleName", "peopleattachments");
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

@@ -122,10 +122,10 @@ public class TenantContactTemplatePage implements TemplatePageFactory {
 
     private static JSONObject getWidgetGroup() throws Exception {
         JSONObject notesWidgetParam = new JSONObject();
-        notesWidgetParam.put("notesModuleName", "tenantnotes");
+        notesWidgetParam.put("notesModuleName", "peoplenotes");
 
         JSONObject attachmentsWidgetParam = new JSONObject();
-        attachmentsWidgetParam.put("attachmentsModuleName", "tenantattachments");
+        attachmentsWidgetParam.put("attachmentsModuleName", "peopleattachments");
 
         WidgetGroupContext widgetGroup = new WidgetGroupContext()
                 .addConfig(WidgetGroupConfigContext.ConfigType.TAB)

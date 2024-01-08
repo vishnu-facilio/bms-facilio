@@ -5706,7 +5706,6 @@
             <property name="action" type="string" mandatory="true"/>
         </urlparams>
         <requestbody type="object">
-            <property name="note" type="object"/>
             <property name="note" type="object">
                 <property name="attachments" type="array"/>
                 <property name="body" type="string"/>
@@ -5720,6 +5719,8 @@
                 <property name="id" type="number"/>
             </property>
             <property name="noteId" type="number"/>
+            <property name="module" type="string"/>
+            <property name="parentModuleName" type="string"/>
         </requestbody>
     </request>
 
