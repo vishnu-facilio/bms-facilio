@@ -1,31 +1,30 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.CurrencyContext;
-import com.facilio.command.FacilioCommand;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.util.CurrencyUtil;
-import com.facilio.v3.context.Constants;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormRuleContext;
-import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.forms.FormRuleContext.ExecuteType;
+import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.util.*;
 
 public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 	
@@ -197,7 +196,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			 
 		}
 			
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && executeType != ExecuteType.EDIT) {
 			if (triggerFieldIds != null && !triggerFieldIds.isEmpty()) {
 				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE,executeType);
 				if (updateFormRuleContexts != null && !updateFormRuleContexts.isEmpty()) {
