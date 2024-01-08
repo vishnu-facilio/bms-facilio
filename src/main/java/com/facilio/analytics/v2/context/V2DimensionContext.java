@@ -16,6 +16,7 @@ public class V2DimensionContext {
     public DimensionType dimensionTypeEnum;
     public Long fieldId;
     public int xAggr = BmsAggregateOperators.CommonAggregateOperator.ACTUAL.getValue();
+    public boolean multiMeasureChartType;
 
     public AggregateOperator xAggrEnum;
     public int getxAggr() {

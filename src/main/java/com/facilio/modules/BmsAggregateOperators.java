@@ -10,6 +10,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.util.ExpressionAggregateInterface;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.List;
@@ -639,6 +641,70 @@ public class BmsAggregateOperators {
     {
         return AGGREGATE_VS_CLICK_HOUSE_AGGREGATE_MAP_RIGHT_INCLUSIVE.get(aggr);
     }
+    public static AggregateOperator getCHAggregatedTableOperator(Integer aggr)
+    {
+        return AGGREGATE_VS_CLICK_HOUSE_AGGREGATE_TABLE_MAP.get(aggr);
+    }
+    static final Map<Integer, AggregateOperator> AGGREGATE_VS_CLICK_HOUSE_AGGREGATE_TABLE_MAP = Collections.unmodifiableMap(new UniqueMap<Integer, CHDateAggregateOperatorForAggregatedTable>() {{
+        put(DateAggregateOperator.HOURSOFDAYONLY.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_HOURLY);
+        put(DateAggregateOperator.FULLDATE.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_DAILY);
+        put(DateAggregateOperator.WEEKANDYEAR.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_WEEKLY);
+        put(DateAggregateOperator.MONTHANDYEAR.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_MONTHLY);
+        put(DateAggregateOperator.QUARTERLY.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_QUARTERLY);
+        put(DateAggregateOperator.YEAR.getValue(), CHDateAggregateOperatorForAggregatedTable.AGGR_TABLE_YEARLY);
+    }});
+
+    public enum CHDateAggregateOperatorForAggregatedTable implements AggregateOperator
+    {
+        AGGR_TABLE_HOURLY(69,"Daily Aggregated Table Clickhouse","CH_Aggr_hourly.expr",false, 69),
+        AGGR_TABLE_DAILY(70,"Daily Aggregated Table Clickhouse","CH_Aggr_daily.expr",false, 70),
+        AGGR_TABLE_WEEKLY(71,"Weekly Aggregated Table Clickhouse","CH_Aggr_weekly.expr",false, 71),
+        AGGR_TABLE_MONTHLY(72,"Monthly Aggregated Table Clickhouse","CH_Aggr_monthly.expr",false, 72),
+        AGGR_TABLE_QUARTERLY(73,"Quarterly Aggregated Table Clickhouse","CH_Aggr_quarterly.expr",false, 73),
+        AGGR_TABLE_YEARLY(74,"Yearly Aggregated Table Clickhouse","CH_Aggr_yearly.expr",false, 74);
+
+        @Setter @Getter
+        private int value;
+        @Setter @Getter
+        private String stringValue;
+        @Setter @Getter
+        private String expr;
+        @Setter @Getter
+        private String format;
+        @Setter @Getter
+        private boolean isPublic;
+        @Setter @Getter
+        private int order;
+        CHDateAggregateOperatorForAggregatedTable(Integer value,String stringValue,String expr,boolean isPublic, int order) {
+            this(value, stringValue, expr, null, isPublic, order);
+        }
+        CHDateAggregateOperatorForAggregatedTable(Integer value,String stringValue,String expr, String format,boolean isPublic, int order) {
+            this.value = value;
+            this.stringValue = stringValue;
+            this.expr = DBConf.getInstance().getQuery(expr);
+            this.format = format;
+            this.isPublic = isPublic;
+            this.order = order;
+        }
+        public FacilioField getSelectField(FacilioField field) throws Exception
+        {
+            String selectFieldString = expr.replace("{$place_holder$}", field.getColumnName());
+            FacilioField selectField =  new FacilioField();
+            selectField.setName(field.getName());
+            selectField.setDisplayName(field.getDisplayName());
+            selectField.setColumnName(selectFieldString);
+            selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.STRING);
+            return selectField;
+        }
+
+        @Override
+        public Object getAggregateResult(List<Map<String, Object>> props, String fieldName) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+    };
+
     static final Map<Integer, AggregateOperator> AGGREGATE_VS_CLICK_HOUSE_AGGREGATE_MAP = Collections.unmodifiableMap(new UniqueMap<Integer, CHDateAggregateOperator>(){{
         put(BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY.getValue(), CHDateAggregateOperator.HOURLY);
         put(BmsAggregateOperators.DateAggregateOperator.FULLDATE.getValue(), CHDateAggregateOperator.DAILY);

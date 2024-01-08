@@ -46,6 +46,7 @@ import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -714,7 +715,7 @@ public class V2AnalyticsOldUtil {
         }
         return false;
     }
-    public static void applyOrderByAndLimit(ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr, ReportContext.ReportType reportType)
+    public static void applyOrderByAndLimit(ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, AggregateOperator xAggr, ReportContext.ReportType reportType, String aggregated_table_name)
     {
         if (dataPoint.getOrderBy() != null && !dataPoint.getOrderBy().isEmpty())
         {
@@ -734,7 +735,12 @@ public class V2AnalyticsOldUtil {
         }
         else if (dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dataPoint.getxAxis().getDataTypeEnum() == FieldType.DATE && xAggr != BmsAggregateOperators.CommonAggregateOperator.ACTUAL)
         {
-            selectBuilder.orderBy(dataPoint.getyAxis().getAggr() < 1 ? dataPoint.getxAxis().getField().getCompleteColumnName() : new StringBuilder().append("MIN(").append(dataPoint.getxAxis().getField().getCompleteColumnName()).append(")").toString());
+            if(aggregated_table_name != null) {
+                FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggregated_table_name).append(".DATE").toString(), FieldType.DATE);
+                selectBuilder.orderBy(new StringBuilder().append("MIN(").append(aggr_XField.getColumnName()).append(")").toString());
+            }else {
+                selectBuilder.orderBy(dataPoint.getyAxis().getAggr() < 1 ? dataPoint.getxAxis().getField().getCompleteColumnName() : new StringBuilder().append("MIN(").append(dataPoint.getxAxis().getField().getCompleteColumnName()).append(")").toString());
+            }
         }
     }
 
@@ -814,7 +820,7 @@ public class V2AnalyticsOldUtil {
         }
     }
 
-    public static void applyTimeFilterCriteria(ReportContext report , ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine)throws Exception
+    public static void applyTimeFilterCriteria(ReportContext report , ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, String aggrTableName)throws Exception
     {
         if (report.getDateOperatorEnum() != null && dp.getTypeEnum() != ReportDataPointContext.DataPointType.FIELD)
         {
@@ -824,7 +830,21 @@ public class V2AnalyticsOldUtil {
             if (report.getDateOperatorEnum().isValueNeeded() && (report.getDateValue() == null || report.getDateValue().isEmpty())) {
                 throw new IllegalArgumentException("Date Filter value cannot be null for the Date Operator :  " + report.getDateOperatorEnum());
             }
-            selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), calculateRightInclusiveTimeRange(dp, report, baseLine != null ? baseLine : null).toString(), DateOperators.BETWEEN));
+            if(aggrTableName != null)
+            {
+                DateRange range = calculateRightInclusiveTimeRange(dp, report, baseLine != null ? baseLine : null);
+                if(range != null){
+                    String startDate = DateTimeUtil.getFormattedTime(range.getStartTime(), "yyyy-MM-dd");
+                    String endDate = DateTimeUtil.getFormattedTime(range.getEndTime(), "yyyy-MM-dd");
+                    if(startDate != null && endDate != null)
+                    {
+                        FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggrTableName).append(".DATE").toString(), FieldType.DATE);
+                        selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                    }
+                }
+            }else {
+                selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), calculateRightInclusiveTimeRange(dp, report, baseLine != null ? baseLine : null).toString(), DateOperators.BETWEEN));
+            }
         }
     }
     public static DateRange calculateRightInclusiveTimeRange(ReportDataPointContext dp , ReportContext report, ReportBaseLineContext baseline) throws Exception
@@ -889,8 +909,15 @@ public class V2AnalyticsOldUtil {
             if(dataPoint.getyAxis().getField() != null)
             {
                 Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
-                FacilioField child_field = fieldsMap.get("parentId");
-                applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
+                FacilioField child_field = fieldsMap.get("parentId").clone();
+                /**
+                 * below condition is added to check if (Aggregated Modules is set as base module or not
+                 */
+                if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+                {
+                    child_field.setModule(baseModule);
+                }
+                applyJoin(moduleVsAlias, baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
                 if(picklistJoin) {
                     applyPicklistJoin(moduleVsAlias, baseModule, dataPoint, selectBuilder,addedModules, criteria, filterModule);
                 }else {
@@ -940,7 +967,14 @@ public class V2AnalyticsOldUtil {
     {
         if (xValues != null)
         {
-            selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
+            if(baseModule.getName().equals(xAggrField.getModule().getName()) && !baseModule.getTableName().equals(xAggrField.getModule().getTableName()))
+            {
+                FacilioField resulted_field = xAggrField.clone();
+                resulted_field.setModule(baseModule);
+                selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(resulted_field, xValues));
+            }else {
+                selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
+            }
         }
         if((dataPoint.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex() || dataPoint.getCriteriaType() == V2MeasuresContext.Criteria_Type.SPECIFIC.getIndex()) && dataPoint.getV2Criteria() != null && !dataPoint.getV2Criteria().isEmpty())
         {
@@ -951,8 +985,15 @@ public class V2AnalyticsOldUtil {
                 {
                     ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
                     Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
-                    FacilioField child_field = fieldsMap.get("parentId");
-                    applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
+                    FacilioField child_field = fieldsMap.get("parentId").clone();
+                    /**
+                     * below condition is added to check if (Aggregated Modules is set as base module or not
+                     */
+                    if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+                    {
+                        child_field.setModule(baseModule);
+                    }
+                    applyJoin(moduleVsAlias, baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), dataPoint.getParentReadingModule(), selectBuilder, addedModules);
                     Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(dataPoint.getV2Criteria(), dataPoint.getParentReadingModule());
                     if(parent_criteria != null)
                     {
@@ -1107,8 +1148,15 @@ public class V2AnalyticsOldUtil {
                     {
                         ModuleBean modBean = Constants.getModBean();
                         Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
-                        FacilioField child_field = fieldsMap.get("parentId");
+                        FacilioField child_field = fieldsMap.get("parentId") != null ? fieldsMap.get("parentId").clone() : null;
                         FacilioField parent_field = FieldFactory.getIdField(parentModule);
+                        /**
+                         * below condition is added to check if (Aggregated Modules is set as base module or not
+                         */
+                        if(child_field != null && baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+                        {
+                            child_field.setModule(baseModule);
+                        }
                         String joinOn = new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString();
                         if(parentModule.getName().equals(FacilioConstants.Meter.METER)){
                             joinOn = new StringBuilder(joinOn).append(" AND (Meters.SYS_DELETED IS NULL OR Meters.SYS_DELETED = false )").toString();
@@ -1155,9 +1203,16 @@ public class V2AnalyticsOldUtil {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule criteriaModule = modBean.getModule(filterContext.getModuleName());
             Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
-            FacilioField child_field = fieldsMap.get("parentId");
+            FacilioField child_field = fieldsMap.get("parentId").clone();
             FacilioField parent_field = FieldFactory.getIdField(criteriaModule);
-            applyJoin(null,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), criteriaModule, selectBuilder, addedModules);
+            /**
+             * below condition is added to check if (Aggregated Modules is set as base module or not
+             */
+            if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+            {
+                child_field.setModule(baseModule);
+            }
+            applyJoin(null, baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), criteriaModule, selectBuilder, addedModules);
             Criteria global_criteria = V2AnalyticsOldUtil.setFieldInCriteria(filterContext.getCriteria(), criteriaModule);
             if(global_criteria != null) {
                 selectBuilder.andCriteria(global_criteria);
@@ -1172,8 +1227,15 @@ public class V2AnalyticsOldUtil {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule meterModule = modBean.getModule(FacilioConstants.Meter.METER);
             Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(dataPoint.getyAxis().getField().getModule().getName()));
-            FacilioField child_field = fieldsMap.get("parentId");
+            FacilioField child_field = fieldsMap.get("parentId").clone();
             FacilioField parent_field = FieldFactory.getIdField(meterModule);
+            /**
+             * below condition is added to check if (Aggregated Modules is set as base module or not
+             */
+            if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+            {
+                child_field.setModule(baseModule);
+            }
             applyJoin(null,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), meterModule, selectBuilder, addedModules);
 
             if(dimension.getDimension_type() != V2DimensionContext.DimensionType.ASSET.getIndex() && dimension.getDimension_type() != V2DimensionContext.DimensionType.METER.getIndex()) {

@@ -563,4 +563,8 @@ public class ReportDataPointContext implements  Cloneable{
 	public Long relationship_id;
 	@Setter @Getter
 	public String parent_measure_alias;
+
+	@Setter
+	@Getter
+	public boolean multiMeasureChartType;
 }

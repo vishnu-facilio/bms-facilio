@@ -128,6 +128,7 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                     dataPoint.setParent_measure_alias(measure.getParent_measure_alias());
                 }
             }
+            dataPoint.setMultiMeasureChartType(report.getDimensions().isMultiMeasureChartType());
             dataPoint.setDefaultSortPoint(measure.isDefaultSortPoint());
             dataPoint.setAssetCategoryId(measure.getCategory() != null ? measure.getCategory(): -1);
             dataPoint.setType(ReportDataPointContext.DataPointType.MODULE);
@@ -137,9 +138,10 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 FacilioModule parentModule = modBean.getModule(measure.getParentModuleName());
                 dataPoint.setParentReadingModule(parentModule);
             }
-            if (dataPoint.getxAxis().getField() != null && measure.getOrderByFunction() != null && measure.getOrderByFunction() != ReportDataPointContext.OrderByFunction.NONE) {
+            int orderByFn = measure.getOrderByFunction() != null ? Integer.valueOf(measure.getOrderByFunction()) : -1;
+            if (dataPoint.getxAxis().getField() != null && orderByFn > 0 && orderByFn != ReportDataPointContext.OrderByFunction.NONE.getValue()) {
                 dataPoint.setDefaultSortPoint(true);
-                dataPoint.setOrderByFunc(measure.getOrderByFunction());
+                dataPoint.setOrderByFunc(orderByFn);
                 List<String> orderBy = new ArrayList<>();
                 orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
                 dataPoint.setOrderBy(orderBy);

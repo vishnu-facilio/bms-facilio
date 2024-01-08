@@ -42,6 +42,7 @@ public class V2AnalyticsReportAction extends V3Action {
     private int moduleType;
     private Boolean defaultModules;
     private Boolean isDataNeeded;
+    private boolean clickhouse;
 
     V2AnalyticsContextForDashboardFilter db_filter;
     public String create()throws Exception
@@ -113,6 +114,7 @@ public class V2AnalyticsReportAction extends V3Action {
             FacilioContext context = chain.getContext();
             context.put("reportId", reportId);
             context.put("db_filter", db_filter);
+            context.put("clickhouse", clickhouse);
             chain.execute();
             this.setReportResult(context);
         }
@@ -124,6 +126,7 @@ public class V2AnalyticsReportAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put("report_v2", report);
         context.put("db_filter", db_filter);
+        context.put("clickhouse", clickhouse);
         chain.execute();
         setReportResult(context);
         return V3Action.SUCCESS;

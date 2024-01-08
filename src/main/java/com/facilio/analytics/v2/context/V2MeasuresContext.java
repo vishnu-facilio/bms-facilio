@@ -74,7 +74,6 @@ public class V2MeasuresContext {
     /**
      *  hmAggr key used to identify the chart is heatmap or not
      */
-    private ReportDataPointContext.OrderByFunction orderByFunction;
 
     public void setAggr(int aggr){
         this.aggr = aggr;
@@ -94,12 +93,7 @@ public class V2MeasuresContext {
         this.criteriaTypeEnum = criteriaType;
     }
 
-    public ReportDataPointContext.OrderByFunction getOrderByFunction() {
-        return orderByFunction;
-    }
-    public void setOrderByFunction(int orderByFunction) {
-        this.orderByFunction = ReportDataPointContext.OrderByFunction.valueOf(orderByFunction);;
-    }
+    private String orderByFunction;
 
     public static enum Criteria_Type implements FacilioIntEnum
     {

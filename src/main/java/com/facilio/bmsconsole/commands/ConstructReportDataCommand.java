@@ -5,6 +5,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
+import com.clickhouse.data.value.UnsignedLong;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
@@ -260,6 +261,9 @@ public class ConstructReportDataCommand extends FacilioCommand {
                         xValZdt = xValZdt.plusMonths(1);
                         return DateTimeUtil.getMonthEndTime(xValZdt.getMonthValue(), xValZdt.getYear());
                     }
+                    if(xVal instanceof UnsignedLong){
+                        xVal = ((UnsignedLong)xVal).longValue();
+                    }
                     return (long) xVal + baseLine.getDiff();
                 default:
                     break;
@@ -337,6 +341,9 @@ public class ConstructReportDataCommand extends FacilioCommand {
             case DATE:
             case DATE_TIME:
                 if (aggr != null && aggr instanceof DateAggregateOperator) {
+                    if(val instanceof UnsignedLong){
+                        val = ((UnsignedLong) val).longValue();
+                    }
                     val = ((DateAggregateOperator) aggr).getAdjustedTimestamp((long) val);
                     if(((DateAggregateOperator) aggr) == DateAggregateOperator.WEEKDAY && (long) val > 0 ){
                         ZonedDateTime dateTime = DateTimeUtil.getDateTime((long)val);

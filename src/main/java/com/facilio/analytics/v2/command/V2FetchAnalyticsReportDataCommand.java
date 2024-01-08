@@ -1,5 +1,6 @@
 package com.facilio.analytics.v2.command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2DimensionContext;
@@ -7,16 +8,16 @@ import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
+import com.facilio.ch.ClickhouseUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.readingkpi.context.ReadingKPIContext;
 import com.facilio.report.context.*;
 import com.facilio.report.util.ReportUtil;
@@ -44,10 +45,12 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     private JSONObject dashboard_user_filter=null;
     private V2ReportContext report_v2;
     private int totalRecordCount=0;
+    private Boolean isClickhouseAggrTableEnabled=false;
     private LinkedHashMap<String, String> moduleVsAlias = new LinkedHashMap<String, String>();
     @Override
     public boolean executeCommand(Context context)throws Exception
     {
+        isClickhouseAggrTableEnabled= (Boolean) context.get("clickhouse");
         context.put("isV2Analytics",true);
         report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         dashboard_user_filter = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE);
@@ -156,14 +159,19 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         data.setDataPoints(dataPointList);
         ReportDataPointContext dp = dataPointList.get(0);
         baseModule = dp.getxAxis().getModule();
+        String aggregated_table_name = setCHAggrModuleAsBaseModuleBaseOnAggregation(report_v2, report, baseModule.getTypeEnum(), report.getDateRange());
+        if (aggregated_table_name != null)
+        {
+            baseModule = constructAndGetAggregatedModule(baseModule, aggregated_table_name);
+        }
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation();
         addedModules.add(baseModule);
         V2AnalyticsOldUtil.joinModuleIfRequired(moduleVsAlias, baseModule, dp.getyAxis(), selectBuilder, addedModules);
-        V2AnalyticsOldUtil.applyOrderByAndLimit(dp, selectBuilder, report.getxAggrEnum(), ReportContext.ReportType.READING_REPORT);
+        V2AnalyticsOldUtil.applyOrderByAndLimit(dp, selectBuilder, report.getxAggrEnum(), ReportContext.ReportType.READING_REPORT, aggregated_table_name);
         StringJoiner groupBy = new StringJoiner(",");
-        FacilioField xAggrField = applyAnalyticXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules);
+        FacilioField xAggrField = applyAnalyticXAggregation(dp, report.getxAggrEnum(), groupBy, selectBuilder, fields, addedModules, aggregated_table_name);
         V2AnalyticsOldUtil.setGroupByTimeAggregator(dp, report.getgroupByTimeAggrEnum(), groupBy);
-        applyAnalyticYAggregation(dataPointList, fields);
+        applyAnalyticYAggregation(dataPointList, fields, aggregated_table_name);
         applyGroupByAggregation(groupBy, dataPointList, fields);
         if(groupBy != null) {
             selectBuilder.groupBy(groupBy.toString());
@@ -176,7 +184,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         boolean noMatch = hasSortedDp && (xValues == null || xValues.isEmpty());
         Map<String, List<Map<String, Object>>> props = new HashMap<>();
         baseLineAddedModules.addAll(addedModules);
-        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules);
+        List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, null, xAggrField, xValues, addedModules, aggregated_table_name);
         props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
 
         if (dp.getLimit() != -1 && xValues == null) {
@@ -189,7 +197,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines())
             {
-                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, xValues, baseLineAddedModules));
+                props.put(reportBaseLine.getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, reportBaseLine, xAggrField, xValues, baseLineAddedModules, aggregated_table_name));
                 data.addBaseLine(reportBaseLine.getBaseLine().getName(), reportBaseLine);
             }
         }
@@ -205,7 +213,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         return selectBuilder;
     }
 
-    private FacilioField applyAnalyticXAggregation(ReportDataPointContext dp, AggregateOperator xAggr, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules)throws Exception
+    private FacilioField applyAnalyticXAggregation(ReportDataPointContext dp, AggregateOperator xAggr, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules, String aggregated_table_name)throws Exception
     {
         FacilioField xAggrField = null;
         if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0)
@@ -219,18 +227,44 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             }
             else if(xAggr != null && xAggr instanceof DateAggregateOperator)
             {
-                if(isClickHouseEnabled){
-                    xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : BmsAggregateOperators.getCHAggregateOperator(xAggr.getValue()).getSelectField(dp.getxAxis().getField()).clone();
+                if(isClickHouseEnabled)
+                {
+                    AggregateOperator aggr_table_operator = BmsAggregateOperators.getCHAggregatedTableOperator(xAggr.getValue());
+                    if(aggr_table_operator != null && aggregated_table_name != null)
+                    {
+                        FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggregated_table_name).append(".DATE").toString(), FieldType.DATE);
+                        xAggrField = aggr_table_operator.getSelectField(aggr_XField);
+                        FacilioField select_field = aggr_XField.clone();
+                        select_field.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggregated_table_name).append(".DATE )) * 1000").toString());
+                        fields.add(select_field);
+                    }else {
+                        xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : BmsAggregateOperators.getCHAggregateOperator(xAggr.getValue()).getSelectField(dp.getxAxis().getField()).clone();
+                    }
                 }else{
                     xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : xAggr.getSelectField(dp.getxAxis().getField()).clone();
                 }
-                DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
-                if(dayOfWeek == DayOfWeek.MONDAY && xAggr == DateAggregateOperator.WEEKANDYEAR){
-                    xAggrField = isClickHouseEnabled ? CHDateAggregateOperator.MONDAY_START_WEEKLY.getSelectField(dp.getxAxis().getField()).clone() : DateAggregateOperator.MONDAY_START_WEEKANDYEAR.getSelectField(dp.getxAxis().getField()).clone();
+                if(aggregated_table_name == null)
+                {
+                    DayOfWeek dayOfWeek = DateTimeUtil.getWeekFields().getFirstDayOfWeek();
+                    if (dayOfWeek == DayOfWeek.MONDAY && xAggr == DateAggregateOperator.WEEKANDYEAR) {
+                        xAggrField = isClickHouseEnabled ? CHDateAggregateOperator.MONDAY_START_WEEKLY.getSelectField(dp.getxAxis().getField()).clone() : DateAggregateOperator.MONDAY_START_WEEKANDYEAR.getSelectField(dp.getxAxis().getField()).clone();
+                    }
                 }
             }
-            groupBy.add(xAggrField.getCompleteColumnName());
-            fields.add(xAggr instanceof DateAggregateOperator ? ((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()) : xAggrField);
+
+            if(aggregated_table_name != null && (xAggr == null || !(xAggr instanceof DateAggregateOperator || xAggr instanceof SpaceAggregateOperator)) && !dp.isMultiMeasureChartType())
+            {
+                groupBy.add(new StringBuilder(aggregated_table_name).append(".").append(xAggrField.getColumnName()).toString());
+                FacilioField aggr_XField = FieldFactory.getDefaultField(xAggrField.getName(), xAggrField.getDisplayName(), new StringBuilder().append(aggregated_table_name).append(".").append(xAggrField.getColumnName()).toString(), xAggrField.getDataTypeEnum());
+                fields.add(aggr_XField);
+            }
+            else if(!dp.isMultiMeasureChartType())
+            {
+                groupBy.add(xAggrField.getCompleteColumnName());
+            }
+            if(aggregated_table_name == null || (xAggr != null && xAggr instanceof SpaceAggregateOperator) || dp.isMultiMeasureChartType()){
+                fields.add(xAggr instanceof DateAggregateOperator ? ((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()) : xAggrField);
+            }
         }
         else if(xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()){
             fields.add(dp.getxAxis().getField().clone());
@@ -238,7 +272,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         return xAggrField;
     }
 
-    private void applyAnalyticYAggregation(List<ReportDataPointContext> dpList, List<FacilioField> fields)throws Exception
+    private void applyAnalyticYAggregation(List<ReportDataPointContext> dpList, List<FacilioField> fields, String aggr_tableName)throws Exception
     {
         for (ReportDataPointContext dataPoint : dpList)
         {
@@ -249,6 +283,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             {
                 FacilioField facilioField = dataPoint.getyAxis().getField().clone();
                 FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
+                if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator) {
+                    aggrField = getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
+                }
                 aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
                 fields.add(aggrField);
             }
@@ -275,11 +312,11 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
     }
 
-    private List<Map<String, Object>> fetchAnalyitcsReportData(ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules)throws Exception
+    private List<Map<String, Object>> fetchAnalyitcsReportData(ReportContext report, ReportDataPointContext dataPoint, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext baseLine, FacilioField xAggrField, String xValues, Set<FacilioModule> addedModules, String aggr_table_name)throws Exception
     {
         V2AnalyticsOldUtil.applyResourcesJoinOnMeter(selectBuilder, baseModule, report_v2.getDimensions(), dataPoint, addedModules);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
-        V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine);
+        V2AnalyticsOldUtil.applyTimeFilterCriteria(report, dataPoint, newSelectBuilder, baseLine, aggr_table_name);
         V2AnalyticsOldUtil.applyDashboardUserFilterCriteria(baseModule, dashboard_user_filter, dataPoint, newSelectBuilder,addedModules);
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
@@ -429,10 +466,10 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 selectField.setColumnName(selectFieldString.toString());
                 selectField.setFieldId(field.getFieldId());
                 selectField.setDataType(FieldType.STRING);
-               enum_field_list.add(selectField);
+                enum_field_list.add(selectField);
             }
         }
-      return enum_field_list;
+        return enum_field_list;
     }
     private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
     {
@@ -451,5 +488,67 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
         }
+    }
+    private FacilioModule constructAndGetAggregatedModule(FacilioModule module, String aggregatedTableName)throws Exception
+    {
+        FacilioModule aggregatedModule = new FacilioModule();
+        aggregatedModule.setOrgId(module.getOrgId());
+        aggregatedModule.setName(module.getName());
+        aggregatedModule.setModuleId(module.getModuleId());
+        aggregatedModule.setDisplayName("Aggregated "+module.getDisplayName());
+        aggregatedModule.setTableName(aggregatedTableName);
+        aggregatedModule.setType(FacilioModule.ModuleType.READING);
+        return aggregatedModule;
+    }
+
+    private FacilioField getAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
+    {
+        if(aggr != null)
+        {
+            if(field.getDataTypeEnum().equals(FieldType.DECIMAL) || field.getDataTypeEnum().equals(FieldType.NUMBER))
+            {
+                NumberField numberField =  (NumberField)field.clone();
+                NumberField selectFieldNumber = new NumberField();
+                selectFieldNumber.setMetric(numberField.getMetric());
+                selectFieldNumber.setUnitId(numberField.getUnitId());
+                FacilioField newField = selectFieldNumber;
+
+                newField.setColumnName(new StringBuilder(aggr.toLowerCase()).append("( ").append(aggr_Module.getTableName()).append(".").append(aggr).append("_").append(field.getColumnName()).append(" )").toString());
+                newField.setDisplayName(aggr + " " + field.getDisplayName());
+                newField.setName(field.getName());
+                newField.setDataType(FieldType.DECIMAL);
+                return newField;
+            }
+        }
+        return field;
+    }
+
+    private String setCHAggrModuleAsBaseModuleBaseOnAggregation(V2ReportContext v2Report, ReportContext report, FacilioModule.ModuleType moduleType, DateRange range)throws Exception
+    {
+        String aggregated_table_name = null;
+        if(isClickHouseEnabled && isClickhouseAggrTableEnabled && moduleType == FacilioModule.ModuleType.READING)
+        {
+            if(v2Report.getDimensions().getDimensionTypeEnum() == V2DimensionContext.DimensionType.TIME && report.getxAggrEnum() != null && report.getxAggrEnum() == CommonAggregateOperator.ACTUAL && range != null && range.getStartTime() > 0 && range.getEndTime() > 0)
+            {
+                long diff = range.getEndTime() - range.getStartTime();
+                if(diff > 259200000)
+                {
+                    report.setxAggr(DateAggregateOperator.FULLDATE);
+                    v2Report.getDimensions().setxAggr(DateAggregateOperator.FULLDATE.getValue());
+                }else{
+                    isClickHouseEnabled = false;
+                }
+            }
+
+            if(report.getxAggrEnum() != null && report.getxAggrEnum().getValue() > 0)
+            {
+                if (report.getxAggrEnum() instanceof DateAggregateOperator && report.getxAggrEnum() == DateAggregateOperator.HOURSOFDAYONLY) {
+                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "hourly");
+                } else if(report.getxAggrEnum() instanceof DateAggregateOperator || report.getxAggrEnum() instanceof SpaceAggregateOperator){
+                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "daily");
+                }
+            }
+        }
+        return aggregated_table_name;
     }
 }

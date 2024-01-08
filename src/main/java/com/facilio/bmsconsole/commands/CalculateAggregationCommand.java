@@ -1,15 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.AggregateOperator;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -44,6 +41,21 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		
 		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+
+		Boolean isV2Analytics= (Boolean) context.get("isV2Analytics");
+		JSONObject measure_interval = new JSONObject();
+		if(isV2Analytics != null && isV2Analytics)
+		{
+			reportData.put("intervals", measure_interval);
+			for (ReportDataPointContext dp : report.getDataPoints())
+			{
+				if (dp.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN)
+				{
+					measure_interval.put(dp.getAliases().get("actual"), getDataIntervalForBooleanField(report.getxAggrEnum(), dp));
+				}
+			}
+		}
+
 		if (reportData != null && !reportData.isEmpty()) {
 			Collection<Map<String, Object>> csvData = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			Map<String, Object> reportAggrData = (Map<String, Object>) reportData.get(FacilioConstants.ContextNames.AGGR_KEY);
@@ -80,6 +92,40 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		}
 		LOGGER.debug("Time taken for calculating aggregation is : "+(System.currentTimeMillis() - startTime));
 		return false;
+	}
+
+	private Integer getDataIntervalForBooleanField(AggregateOperator xAggr, ReportDataPointContext dp)throws Exception
+	{
+		Integer dataInterval = 0;
+		if(xAggr != null && xAggr == CommonAggregateOperator.ACTUAL && dp.getyAxis() != null && dp.getyAxis().getDataTypeEnum() == FieldType.BOOLEAN)
+		{
+			Criteria v2_criteria = dp.getV2Criteria();
+			List<Object> parentIds = new ArrayList<>();
+			try {
+				if (v2_criteria != null) {
+					for (String key : v2_criteria.getConditions().keySet()) {
+						Condition condition = v2_criteria.getConditions().get(key);
+						if (condition != null && condition.getValue() != null && !condition.getValue().equals("")) {
+							String conditionValue = condition.getValue();
+							if (condition.getFieldName() != null && condition.getFieldName().equals("id")) {
+								String[] parents = conditionValue.split(",");
+								parentIds.addAll(Arrays.asList(parents));
+								break;
+							}
+						}
+					}
+				}
+			}catch (Exception e){
+				LOGGER.info("error while getting timeinterval");
+			}
+			if(CollectionUtils.isNotEmpty(parentIds) && dp.getyAxis().getField() != null) {
+				Long parentId = Long.valueOf(String.valueOf(parentIds.get(0)));
+				dataInterval = ReadingsAPI.getDataInterval(parentId, dp.getyAxis().getField())*60*1000;
+			}else {
+				dataInterval = ReadingsAPI.getOrgDefaultDataIntervalInMin()*60*1000;
+			}
+		}
+		return dataInterval;
 	}
 	
 	private void doEnumAggr (ReportContext report, ReportDataPointContext dp, Collection<Map<String, Object>> csvData, Map<String, Object> aggrData, String timeAlias) throws Exception {

@@ -487,11 +487,13 @@
         <urlparams>
             <property name="reportId" type="number" mandatory="true"></property>
             <property name="isDataNeeded" type="boolean"></property>
+            <property name="clickhouse" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/analytics/edit/:reportId" method="PUT">
         <urlparams>
             <property name="reportId" type="number" mandatory="true"></property>
+            <property name="clickhouse" type="boolean"></property>
         </urlparams>
     </request>
     <request path="/api/v3/analytics/dimension/modes" method="GET">
