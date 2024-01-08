@@ -970,7 +970,7 @@
         </action>
         <action name="*/*" class="com.facilio.bmsconsoleV3.actions.V3PageAction" method="fetchSummaryFields">
             <param name="permissionModuleName">{1}</param>
-            <param name="moduleName">{1}</param>
+            <param name="moduleName">{2}</param>
             <param name="translationImpl">FieldTranslationV3</param>
             <result name="success" type="json">
                 <param name="excludeNullProperties">true</param>

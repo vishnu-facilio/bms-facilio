@@ -9636,7 +9636,7 @@
 		<action name="*/*/fetchForRecord"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
 			<param name="permissionModuleName">{1}</param>
-			<param name="moduleName">{1}</param>
+			<param name="moduleName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>

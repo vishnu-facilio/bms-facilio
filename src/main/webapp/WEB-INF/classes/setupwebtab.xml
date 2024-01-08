@@ -73,7 +73,7 @@
     </action>
 
      <action name="fields" class="com.facilio.bmsconsole.actions.ModuleAction"
-                method="*/*/fields">
+                method="fields">
             <param name="permission">ALL</param>
             <param name="setupTab">EMAIL_SETTINGS,READINGS,WORKFLOWS,FAULT_IMPACT_TEMPLATE</param>
             <result name="success" type="json">
