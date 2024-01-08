@@ -30,7 +30,8 @@ GetMultiImportModulesCommand extends FacilioCommand {
             FacilioConstants.ContextNames.CLIENT_CONTACT,
             FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,
             FacilioConstants.UTILITY_INTEGRATION_METER,
-            FacilioConstants.UTILITY_INTEGRATION_BILLS
+            FacilioConstants.UTILITY_INTEGRATION_BILLS,
+            FacilioConstants.UTILITY_INTEGRATION_LINE_ITEMS
             /*FacilioConstants.ContextNames.INSURANCE,
             FacilioConstants.ContextNames.BASE_VISIT,
             FacilioConstants.ContextNames.VISITOR_LOG,

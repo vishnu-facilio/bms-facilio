@@ -1243,6 +1243,8 @@ public class MultiImportApi {
                 return Arrays.asList("name");
             case FacilioConstants.UTILITY_INTEGRATION_METER:
                 return Arrays.asList("utilityIntegrationCustomer");
+            case FacilioConstants.UTILITY_INTEGRATION_LINE_ITEMS:
+                return Arrays.asList("name","utilityIntegrationBill");
             default:
                 return null;
         }
