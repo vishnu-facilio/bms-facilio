@@ -264,6 +264,17 @@ public class ConstructReportDataCommand extends FacilioCommand {
                     if(xVal instanceof UnsignedLong){
                         xVal = ((UnsignedLong)xVal).longValue();
                     }
+                    if(xVal != null && aggr != null && aggr instanceof DateAggregateOperator &&
+                            (((DateAggregateOperator) aggr) == DateAggregateOperator.MONTHANDYEAR) && adjustType != null && adjustType == BaseLineContext.AdjustType.MONTH_AND_DATE)
+                    {
+                        long long_value = (long) xVal + baseLine.getDiff();
+                        ZonedDateTime dateTime = DateTimeUtil.getZonedDateTime(long_value);
+                        if(dateTime.getYear() % 4 == 0 && dateTime.getMonthValue() == 1){
+                            return (long) xVal + baseLine.getDiff();
+                        }else{
+                            return (long) xVal + baseLine.getDiff() + 86400000;
+                        }
+                    }
                     return (long) xVal + baseLine.getDiff();
                 default:
                     break;

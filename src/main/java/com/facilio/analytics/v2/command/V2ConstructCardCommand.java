@@ -7,6 +7,7 @@ import com.facilio.analytics.v2.context.*;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
+import com.facilio.ch.ClickhouseUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -31,6 +32,7 @@ import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.module.v2.context.V2ModuleTimeFilterContext;
 import com.facilio.service.FacilioService;
 import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.v3.context.Constants;
@@ -47,9 +49,11 @@ import static com.facilio.readingkpi.ReadingKpiAPI.getResultForDynamicKpi;
 
 public class V2ConstructCardCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(V2ConstructCardCommand.class.getName());
+    private boolean clickhouse=false;
     @Override
     public boolean executeCommand(Context context) throws Exception
     {
+        clickhouse = context.get("clickhouse") != null ? (Boolean) context.get("clickhouse") : false;
         V2CardContext cardContext = (V2CardContext) context.get("cardContext");
         V2AnalyticsContextForDashboardFilter db_filter = (V2AnalyticsContextForDashboardFilter) context.get("db_filter");
         V2ModuleContextForDashboardFilter db_user_filter = (V2ModuleContextForDashboardFilter) context.get("db_user_filter");
@@ -105,13 +109,13 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         timeFilter.setStartTime(range.getStartTime());
                         timeFilter.setEndTime(range.getEndTime());
                     }
-                    FacilioField child_field = fieldMap.get("parentId");
+                    FacilioField child_field = fieldMap.get("parentId").clone();
                     AggregateOperator aggr = AggregateOperator.getAggregateOperator(cardContext.getAggr());
                     /**
                      * Select Builder construction to fetch card data starts here
                      */
 
-                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr);
+                    Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr, field);
                     cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
@@ -121,7 +125,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         DateRange baseline_range = baseline.calculateBaseLineRange(range, baseline.getAdjustTypeEnum());
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
                         cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
-                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter,aggr);
+                        baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter,aggr, field);
                         cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend()));
                     }
                     /**
@@ -181,17 +185,49 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         return result_json;
     }
-    private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter)throws Exception
+    private SelectRecordsBuilder<ModuleBaseWithCustomFields> fetchCardDataSelectBuilder(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter, AggregateOperator aggr, FacilioField field)throws Exception
     {
         Set<FacilioModule> addedModules= new HashSet<>();
+        FacilioModule aggr_base_Module = null;
+        if(clickhouse && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) && aggr != null && !(aggr instanceof BmsAggregateOperators.SpecialAggregateOperator))
+        {
+            aggr_base_Module = getAggrTableNameFromBaseModule(baseModule);
+            if (aggr_base_Module != null)
+            {
+                baseModule = aggr_base_Module;
+                fields = Collections.singletonList(V2AnalyticsOldUtil.getAggregatedYField(field.clone(), baseModule, aggr.getStringValue().toUpperCase(Locale.ROOT)));
+            }
+        }
         addedModules.add(baseModule);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation(baseModule);
         selectBuilder.select(fields);
-        selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
+        if(aggr_base_Module != null)
+        {
+            if(range != null)
+            {
+                String startDate = DateTimeUtil.getFormattedTime(range.getStartTime(), "yyyy-MM-dd");
+                String endDate = DateTimeUtil.getFormattedTime(range.getEndTime(), "yyyy-MM-dd");
+                if(startDate != null && endDate != null)
+                {
+                    FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggr_base_Module.getTableName()).append(".DATE").toString(), FieldType.DATE);
+                    selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                }
+            }
+        }
+        else {
+            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
+        }
         if(cardContext.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex())
         {
             Criteria parent_criteria = V2AnalyticsOldUtil.setFieldInCriteria(cardContext.getCriteria(), parentModuleForCriteria);
             if (parent_criteria != null) {
+                /**
+                 * code added for handling aggregated table name which is defined in clickhouse for basemodule
+                 */
+                if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+                {
+                    child_field.setModule(baseModule);
+                }
                 V2AnalyticsOldUtil.applyJoin(null, baseModule, new StringBuilder(parentModuleIdField.getCompleteColumnName()).append(" = ").append(child_field.getCompleteColumnName()).toString(), parentModuleForCriteria, selectBuilder, addedModules);
                 selectBuilder.andCriteria(parent_criteria);
             }
@@ -207,10 +243,10 @@ public class V2ConstructCardCommand extends FacilioCommand {
         selectBuilder.limit(50);
         return selectBuilder;
     }
-    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter, AggregateOperator aggr)throws Exception
+    private Object fetchCardData(List<FacilioField> fields, FacilioModule baseModule, DateRange range, V2AnalyticsCardWidgetContext cardContext, Map<String, FacilioField> fieldMap, FacilioField parentModuleIdField, FacilioField child_field, FacilioModule parentModuleForCriteria, V2AnalyticsContextForDashboardFilter db_filter, AggregateOperator aggr, FacilioField y_field)throws Exception
     {
         List<Map<String, Object>> props = null;
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter);
+        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr, y_field);
         if(aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
             selectBuilder.limit(1);
             selectBuilder.orderBy("TTIME desc");
@@ -219,6 +255,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
         {
             try {
                 props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE, () -> selectBuilder.getAsProps());
+                LOGGER.debug("CLICKHOUSE SELECT BUILDER " + selectBuilder);
             }
             catch (Exception e)
             {
@@ -380,7 +417,14 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 if(yField != null)
                 {
                     Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
-                    FacilioField child_field = fieldsMap.get("parentId");
+                    FacilioField child_field = fieldsMap.get("parentId").clone();
+                    /**
+                     * code added for handling aggregated table name which is defined in clickhouse for basemodule
+                     */
+                    if(baseModule.getName().equals(child_field.getModule().getName()) && !baseModule.getTableName().equals(child_field.getModule().getTableName()))
+                    {
+                        child_field.setModule(baseModule);
+                    }
                     V2AnalyticsOldUtil.applyJoin(moduleVsAlias,  baseModule, new StringBuilder(parent_field.getCompleteColumnName()).append("=").append(child_field.getCompleteColumnName()).toString(), parentModule, selectBuilder, addedModules);
                     if(picklistJoin) {
                         ReportDataPointContext dataPoint = new ReportDataPointContext();
@@ -529,6 +573,19 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     return valueMap.get("result");
 //                    cardParams.getResult().put("baseline_value", this.setResultJson(baseline.getName(), valueMap.get("result"), null, cardParams.getBaselineTrend()));
                 }
+            }
+        }
+        return null;
+    }
+
+    private FacilioModule getAggrTableNameFromBaseModule(FacilioModule baseModule)throws Exception
+    {
+        String aggr_table_name=null;
+        if(baseModule != null) {
+            aggr_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "daily");
+            if(aggr_table_name != null)
+            {
+                return V2AnalyticsOldUtil.constructAndGetAggregatedModule(baseModule, aggr_table_name);
             }
         }
         return null;

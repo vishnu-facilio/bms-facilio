@@ -160,9 +160,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         ReportDataPointContext dp = dataPointList.get(0);
         baseModule = dp.getxAxis().getModule();
         String aggregated_table_name = setCHAggrModuleAsBaseModuleBaseOnAggregation(report_v2, report, baseModule.getTypeEnum(), report.getDateRange());
-        if (aggregated_table_name != null)
+        if (aggregated_table_name != null && !dp.isHandleEnum())
         {
-            baseModule = constructAndGetAggregatedModule(baseModule, aggregated_table_name);
+            baseModule = V2AnalyticsOldUtil.constructAndGetAggregatedModule(baseModule, aggregated_table_name);
         }
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation();
         addedModules.add(baseModule);
@@ -284,7 +284,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 FacilioField facilioField = dataPoint.getyAxis().getField().clone();
                 FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
                 if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator) {
-                    aggrField = getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
+                    aggrField = V2AnalyticsOldUtil.getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
                 }
                 aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
                 fields.add(aggrField);
@@ -488,39 +488,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
         }
-    }
-    private FacilioModule constructAndGetAggregatedModule(FacilioModule module, String aggregatedTableName)throws Exception
-    {
-        FacilioModule aggregatedModule = new FacilioModule();
-        aggregatedModule.setOrgId(module.getOrgId());
-        aggregatedModule.setName(module.getName());
-        aggregatedModule.setModuleId(module.getModuleId());
-        aggregatedModule.setDisplayName("Aggregated "+module.getDisplayName());
-        aggregatedModule.setTableName(aggregatedTableName);
-        aggregatedModule.setType(FacilioModule.ModuleType.READING);
-        return aggregatedModule;
-    }
-
-    private FacilioField getAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
-    {
-        if(aggr != null)
-        {
-            if(field.getDataTypeEnum().equals(FieldType.DECIMAL) || field.getDataTypeEnum().equals(FieldType.NUMBER))
-            {
-                NumberField numberField =  (NumberField)field.clone();
-                NumberField selectFieldNumber = new NumberField();
-                selectFieldNumber.setMetric(numberField.getMetric());
-                selectFieldNumber.setUnitId(numberField.getUnitId());
-                FacilioField newField = selectFieldNumber;
-
-                newField.setColumnName(new StringBuilder(aggr.toLowerCase()).append("( ").append(aggr_Module.getTableName()).append(".").append(aggr).append("_").append(field.getColumnName()).append(" )").toString());
-                newField.setDisplayName(aggr + " " + field.getDisplayName());
-                newField.setName(field.getName());
-                newField.setDataType(FieldType.DECIMAL);
-                return newField;
-            }
-        }
-        return field;
     }
 
     private String setCHAggrModuleAsBaseModuleBaseOnAggregation(V2ReportContext v2Report, ReportContext report, FacilioModule.ModuleType moduleType, DateRange range)throws Exception

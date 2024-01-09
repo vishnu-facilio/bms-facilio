@@ -1722,4 +1722,36 @@ public class V2AnalyticsOldUtil {
         }
         return false;
     }
+    public static FacilioModule constructAndGetAggregatedModule(FacilioModule module, String aggregatedTableName)throws Exception
+    {
+        FacilioModule aggregatedModule = new FacilioModule();
+        aggregatedModule.setOrgId(module.getOrgId());
+        aggregatedModule.setName(module.getName());
+        aggregatedModule.setModuleId(module.getModuleId());
+        aggregatedModule.setDisplayName("Aggregated "+module.getDisplayName());
+        aggregatedModule.setTableName(aggregatedTableName);
+        aggregatedModule.setType(FacilioModule.ModuleType.READING);
+        return aggregatedModule;
+    }
+    public static FacilioField getAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
+    {
+        if(aggr != null)
+        {
+            if(field.getDataTypeEnum().equals(FieldType.DECIMAL) || field.getDataTypeEnum().equals(FieldType.NUMBER))
+            {
+                NumberField numberField =  (NumberField)field.clone();
+                NumberField selectFieldNumber = new NumberField();
+                selectFieldNumber.setMetric(numberField.getMetric());
+                selectFieldNumber.setUnitId(numberField.getUnitId());
+                FacilioField newField = selectFieldNumber;
+
+                newField.setColumnName(new StringBuilder(aggr.toLowerCase()).append("( ").append(aggr_Module.getTableName()).append(".").append(aggr).append("_").append(field.getColumnName()).append(" )").toString());
+                newField.setDisplayName(aggr + " " + field.getDisplayName());
+                newField.setName(field.getName());
+                newField.setDataType(FieldType.DECIMAL);
+                return newField;
+            }
+        }
+        return field;
+    }
 }
