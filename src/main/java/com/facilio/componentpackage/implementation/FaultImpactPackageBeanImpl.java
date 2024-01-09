@@ -135,7 +135,7 @@ public class FaultImpactPackageBeanImpl implements PackageBean<FaultImpactContex
     }
 
     private static void constructFaultImpactNsFields(XMLBuilder faultElement, FaultImpactContext faultImpactContext) throws Exception {
-        XMLBuilder impactNsBuilder = faultElement.getElement(PackageConstants.NameSpaceConstants.NAMESPACE_FIELD);
+        XMLBuilder impactNsBuilder = faultElement.getElement("Fields");
         if (impactNsBuilder != null) {
             List<NameSpaceField> nsFields = PackageBeanUtil.constructNamespaceFieldsFromBuilder(impactNsBuilder);
             if (CollectionUtils.isNotEmpty(nsFields)) {

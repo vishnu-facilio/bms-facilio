@@ -3958,7 +3958,7 @@
 	<package name="assetReadingsApiv2" namespace="/api/v2/readings/asset" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
 			<param name="moduleName">asset</param>
-			<param name="permission">ADD_READING</param>
+			<param name="permission">POST:ADD_READING</param>
 		</action>
 		<action name="all" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAllAssetReadings">
 			<param name="permission">ASSET_SETTINGS</param>

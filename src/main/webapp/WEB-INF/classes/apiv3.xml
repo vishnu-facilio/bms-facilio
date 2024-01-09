@@ -1761,13 +1761,16 @@
     </package>
     <package name="ReadingKpiHistorical" namespace="/api/v3/readingKpi/historical" extends="v3Api">
         <action name="run" class="com.facilio.readingkpi.ReadingKpiAction" method="runHistorical">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:CREATE</param>
+            <param name="permissionModuleName">readingkpi</param>
 		</action>
         <action name="fetchAssetDetails" class="com.facilio.readingkpi.ReadingKpiAction" method="fetchAssetDetails">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="permissionModuleName">readingkpi</param>
 		</action>
         <action name="getGraphDetailsForKpi" class="com.facilio.readingkpi.ReadingKpiAction" method="getGraphDetailsForKpi">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:VIEW</param>
+            <param name="permissionModuleName">readingkpi</param>
 		</action>
     </package>
 

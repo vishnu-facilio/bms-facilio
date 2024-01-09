@@ -2624,6 +2624,7 @@
             <property name="resourceType" type="number"/>
             <property name="moduleName" type="string"/>
             <property name="assetCategoryId" type="number"/>
+            <property name="searchText" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v1/setup/kpiLogger">
@@ -5246,6 +5247,12 @@
         <urlparams>
         <property name="id" type="number"/>
         <property name="excludeEmptyFields" type="boolean"/>
+        </urlparams>
+    </request>
+    <request path="/api/v1/setup/readings/site" method="GET">
+        <urlparams>
+            <property name="excludeEmptyFields" type="boolean"/>
+            <property name="spaceType" type="string"/>
         </urlparams>
     </request>
     <request path="/api/v3/module/servicePlannedMaintenance/:recordId/systemButton/:identifier" method="POST">

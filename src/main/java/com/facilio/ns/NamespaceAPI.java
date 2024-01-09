@@ -8,6 +8,7 @@ import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.connected.FacilioDataProcessing;
 import com.facilio.connected.IConnectedRule;
 import com.facilio.connected.ResourceType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -327,5 +328,9 @@ public class NamespaceAPI {
             }
         }
         return nsIds;
+    }
+
+    public static boolean isMeterModule(String moduleName){
+        return moduleName.equals(FacilioConstants.Meter.METER);
     }
 }

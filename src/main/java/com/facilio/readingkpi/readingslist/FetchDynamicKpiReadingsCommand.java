@@ -78,21 +78,25 @@ public class FetchDynamicKpiReadingsCommand extends FacilioCommand {
 
     private static GenericSelectRecordBuilder fetchBuilderForKpiSelected(Context context, List<Long> resourceIds, String searchModuleName, boolean fetchCount) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule module = modBean.getModule(searchModuleName);
+        FacilioModule searchModule = modBean.getModule(searchModuleName);
         FacilioModule resourcesModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+        Map<String, FacilioField> fieldsMap = FieldFactory.getAsMap(modBean.getAllFields(searchModule.getName()));
+
+        boolean isMeterModule = NamespaceAPI.isMeterModule(searchModuleName);
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
-                .innerJoin(resourcesModule.getTableName())
-                .on(module.getTableName() + ".ID=" + resourcesModule.getTableName() + ".ID")
-                .andCondition(CriteriaAPI.getIdCondition(resourceIds, module));
+                .table(searchModule.getTableName());
+        builder.andCondition(CriteriaAPI.getIdCondition(resourceIds, searchModule));
 
+        if (!isMeterModule) {
+            builder.innerJoin(resourcesModule.getTableName())
+                    .on(searchModule.getTableName() + ".ID=" + resourcesModule.getTableName() + ".ID");
+        }
 
         ReadingKpiAPI.addFilterToBuilder(context, fieldsMap, builder);
         return fetchCount
-                ? getCountBuilder(builder, module)
-                : getDataBuilder(context, module, fieldsMap, builder);
+                ? getCountBuilder(builder, searchModule)
+                : getDataBuilder(context, searchModule, fieldsMap, builder);
     }
 
 

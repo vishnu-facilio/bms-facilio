@@ -27,10 +27,7 @@ import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
 import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.context.*;
-import com.facilio.readingkpi.readingslist.AssetDataFetcher;
-import com.facilio.readingkpi.readingslist.KpiAnalyticsDataFetcher;
-import com.facilio.readingkpi.readingslist.MeterDataFetcher;
-import com.facilio.readingkpi.readingslist.ReadingKPIDataFetcher;
+import com.facilio.readingkpi.readingslist.*;
 import com.facilio.relation.context.RelationMappingContext;
 import com.facilio.relation.util.RelationUtil;
 import com.facilio.scriptengine.context.ScriptContext;
@@ -362,7 +359,7 @@ public class ReadingKpiAPI {
             FacilioModule module = modBean.getModule(kpi.getReadingModuleId());
             kpi.setReadingModule(module);
             setCategory(kpi);
-            kpi.setMatchedResourcesIds(NamespaceAPI.getMatchedResources(kpi.getNs(), kpi));
+            kpi.setMatchedResourcesIds(NamespaceAPI.getMatchedResources(kpi.getNs()));
         }
         return kpis;
     }
@@ -992,6 +989,8 @@ public class ReadingKpiAPI {
                 return new AssetDataFetcher(module, context, new ArrayList<>());
             case FacilioConstants.Meter.METER:
                 return new MeterDataFetcher(module, context, new ArrayList<>());
+            case FacilioConstants.ContextNames.SITE:
+                return new SiteDataFetcher(module, context, new ArrayList<>());
             default:
                 throw new IllegalArgumentException("Unsupported Module");
         }
@@ -1014,8 +1013,10 @@ public class ReadingKpiAPI {
                 .on(nsModule.getTableName() + ".ID=" + nsInclModule.getTableName() + ".NAMESPACE_ID")
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("type"), String.valueOf(NSType.KPI_RULE.getIndex()), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("resourceType"), String.valueOf(resourceType.getIndex()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS))
                 .andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("status"), String.valueOf(1), NumberOperators.EQUALS));
+        if (categoryId != null) {
+            builder.andCondition(CriteriaAPI.getCondition(nsFieldsMap.get("categoryId"), String.valueOf(categoryId), NumberOperators.EQUALS));
+        }
 
         return builder.get();
     }

@@ -21,8 +21,13 @@ public class ResourceCategory<T extends V3Context> {
         this.ctx = resCtx;
     }
 
+    /**
+     *
+     * @return Category will be null while ResourceType is Other than Meter and Asset
+     * in those cases category will be -1
+     */
     public long fetchId() {
-        return ctx.getId();
+        return ctx != null ? ctx.getId() : -1l;
     }
 
     public String fetchDisplayName() {

@@ -166,9 +166,9 @@
         </requestbody>
     </request>
     <request path="/api/v2/relation/list">
-        <requestbody type="object">
+        <urlparams type="object">
             <property name="moduleName" type="string" />
-        </requestbody>
+        </urlparams>
     </request>
     <request path="/api/v2/relation/:moduleName/list" method="GET">
         <requestbody type="object">

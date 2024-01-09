@@ -153,7 +153,7 @@ public class GetAllSpaceTypeReadingsCommand extends FacilioCommand {
 				}
 			}
 		}
-		List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType, true, true);
+		List<FacilioModule> defaultReadings = SpaceAPI.getDefaultReadings(spaceType, false, true);
 		if (defaultReadings != null) {
 			//moduleMap.put("All", defaultReadings);
 			moduleMap.put(-1L, defaultReadings);
