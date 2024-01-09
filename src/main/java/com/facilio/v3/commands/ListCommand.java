@@ -16,6 +16,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import java.util.Collections;
@@ -197,13 +198,16 @@ public class ListCommand extends FacilioCommand {
     private String getFinalSortQuery(Context context){
         String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
         String orderType= getOrderType(context);
-        if (orderBy != null && !orderBy.isEmpty() && !orderBy.contains(FieldFactory.getIdField(module).getCompleteColumnName())) {
-            orderBy += "," + FieldFactory.getIdField(module).getCompleteColumnName();
+
+        //Add id field as final sort column
+        if (StringUtils.isNotEmpty(orderBy) && !orderBy.contains(FieldFactory.getIdField(module).getCompleteColumnName())) {
+            orderBy += "," + FieldFactory.getIdField(module).getCompleteColumnName() +" "+orderType;
         }
-        else {
-            orderBy = FieldFactory.getIdField(module).getCompleteColumnName();
+
+        //default ID sort
+        if(StringUtils.isEmpty(orderBy)){
+            orderBy = FieldFactory.getIdField(module).getCompleteColumnName() + " "+orderType;
         }
-        orderBy+=" " + orderType;
 
         return orderBy;
     }
