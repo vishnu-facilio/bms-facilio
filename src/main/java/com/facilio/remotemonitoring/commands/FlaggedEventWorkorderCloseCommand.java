@@ -38,7 +38,7 @@ public class FlaggedEventWorkorderCloseCommand extends FacilioCommand {
                                 if (closure != null) {
                                     List<FacilioStatus> workorderRuleStatuses = closure.getWorkorderStatuses();
                                     if (matchingStatus(workorderRuleStatuses, workorder.getModuleState())) {
-                                        FlaggedEventUtil.closeFlaggedEvent(fetchedFlaggedEvent.getId());
+                                        FlaggedEventUtil.closeFlaggedEvent(fetchedFlaggedEvent.getId(),true);
                                     }
                                 }
                             }

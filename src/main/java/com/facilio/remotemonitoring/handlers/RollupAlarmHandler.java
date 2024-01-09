@@ -27,8 +27,7 @@ public class RollupAlarmHandler implements AlarmCriteriaHandler<RawAlarmContext>
     @Override
     public void compute(RawAlarmContext rawAlarm, FilterRuleCriteriaContext filterRuleCriteria) throws Exception {
         if (rawAlarm != null && rawAlarm.getAsset() != null && rawAlarm.getAsset().getId() > 0) {
-            ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-            Long deltaTime = System.currentTimeMillis() - filterRuleCriteria.getAlarmDuration();
+            Long deltaTime = rawAlarm.getOccurredTime() - filterRuleCriteria.getAlarmDuration();
             Criteria criteria = new Criteria();
             criteria.addAndCondition(CriteriaAPI.getCondition("ALARM_TYPE", "alarmType", String.valueOf(rawAlarm.getAlarmType().getId()), NumberOperators.EQUALS));
             criteria.addAndCondition(CriteriaAPI.getCondition("SITE", "site", String.valueOf(rawAlarm.getSite().getId()), NumberOperators.EQUALS));
@@ -62,7 +61,7 @@ public class RollupAlarmHandler implements AlarmCriteriaHandler<RawAlarmContext>
                 if (filterRuleCriteria != null) {
                     RawAlarmUtil.updateFilterCriteriaId(rawAlarm, filterRuleCriteria);
 //                  Create filter alarm directly when roll up alarm is not matched with any of the filter criteria
-                    Long nextExecutionTime = (rawAlarm.getOccurredTime() + filterRuleCriteria.getAlarmDuration()) / 1000;
+                    Long nextExecutionTime = (System.currentTimeMillis() + filterRuleCriteria.getAlarmDuration()) / 1000;
                     FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rawAlarm.getId(), RemoteMonitorConstants.ALARM_OPEN_FOR_DURATION_OF_TIME, nextExecutionTime, RemoteMonitorUtils.getExecutorName("priority"));
                 }
         }

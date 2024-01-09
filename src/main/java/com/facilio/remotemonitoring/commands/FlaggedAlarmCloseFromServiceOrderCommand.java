@@ -37,7 +37,7 @@ public class FlaggedAlarmCloseFromServiceOrderCommand extends FacilioCommand {
                                 if (closure != null) {
                                     List<ServiceOrderTicketStatusContext> serviceOrderStatuses = closure.getServiceOrderStatuses();
                                     if (matchingStatus(serviceOrderStatuses, serviceOrder.getStatus())) {
-                                        FlaggedEventUtil.closeFlaggedEvent(fetchedFlaggedEvent.getId());
+                                        FlaggedEventUtil.closeFlaggedEvent(fetchedFlaggedEvent.getId(),true);
                                     }
                                 }
                             }
