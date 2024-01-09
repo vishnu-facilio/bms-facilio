@@ -58,6 +58,7 @@ import com.facilio.v3.util.V3Util;
 import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
+import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.xml.builder.XMLBuilder;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -1207,7 +1208,6 @@ public class PackageBeanUtil {
                         }
                         parameters.element("workflowFieldType").text(String.valueOf(parameter.getWorkflowFieldType()));
                     }
-                    workflow.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(templateContext.getWorkflow().getWorkflowString());
                 }
                 if (templateContext.getUserWorkflow() != null) {
                     XMLBuilder workFlowElement = templateElement.element(PackageConstants.WorkFlowRuleConstants.USER_WORKFLOW);
@@ -1428,7 +1428,7 @@ public class PackageBeanUtil {
                             }
                         }
                         workflowParamExp.setParameters(parameterContexts);
-                        String workflowString = emailWorkflowElement.getElement(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).getCData();
+                        String workflowString= WorkflowUtil.getXmlStringFromWorkflow(workflowParamExp);
                         workflowParamExp.setWorkflowString(workflowString);
 
                     }
@@ -1547,6 +1547,7 @@ public class PackageBeanUtil {
                                     body.put("name", templateName);
                                     body.put("data", dataObj);
                                     body.put("notification", dataObj);
+                                    body.put("id", valueElement.getElement("id").getText());
                                     templateJson.put(PackageConstants.AppXMLConstants.APPLICATION, appId);
                                     templateJson.put("id", valueElement.getElement("id").getText());
                                     templateJson.put("body", body.toJSONString());

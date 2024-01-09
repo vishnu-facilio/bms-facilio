@@ -249,6 +249,9 @@ public class UserNotificationContext extends V3Context {
         if (notiObj.containsKey("priority")) {
             userNotification.addExtraParam("priority", notiObj.get("priority"));
         }
+        if(notiObj.containsKey("summary_id")){
+            userNotification.addExtraParam("summary_id", notiObj.get("summary_id"));
+        }
 
         return  userNotification;
     }
