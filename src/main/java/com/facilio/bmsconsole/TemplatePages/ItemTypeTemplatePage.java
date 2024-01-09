@@ -144,7 +144,9 @@ public class ItemTypeTemplatePage implements TemplatePageFactory {
         FacilioField description = moduleBean.getField("description", moduleName);
         FacilioField category = moduleBean.getField("category", moduleName);
         FacilioField isApprovalNeeded = moduleBean.getField("isApprovalNeeded", moduleName);
+        isApprovalNeeded.setDisplayName("Approval Needed");
         FacilioField isRotating = moduleBean.getField("isRotating", moduleName);
+        isRotating.setDisplayName("Rotating");
         FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
         FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
 

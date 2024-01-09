@@ -267,7 +267,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INVENTORY_REQUEST,editButton);
 
         SystemButtonRuleContext addInventoryRequestItems = new SystemButtonRuleContext();
-        addInventoryRequestItems.setName("Add Inventory Request Items");
+        addInventoryRequestItems.setName("Select Items");
         addInventoryRequestItems.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         addInventoryRequestItems.setIdentifier(FacilioConstants.ContextNames.ADD_INVENTORY_REQUEST_ITEMS);
         addInventoryRequestItems.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
@@ -276,7 +276,7 @@ public class InventoryRequestModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.INVENTORY_REQUEST,addInventoryRequestItems);
 
         SystemButtonRuleContext addInventoryRequestTools = new SystemButtonRuleContext();
-        addInventoryRequestTools.setName("Add Inventory Request Tools");
+        addInventoryRequestTools.setName("Select Tools");
         addInventoryRequestTools.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         addInventoryRequestTools.setIdentifier(FacilioConstants.ContextNames.ADD_INVENTORY_REQUEST_TOOLS);
         addInventoryRequestTools.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());

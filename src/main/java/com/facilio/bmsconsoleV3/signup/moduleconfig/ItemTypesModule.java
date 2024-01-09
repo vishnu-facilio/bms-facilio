@@ -180,7 +180,9 @@ public class ItemTypesModule extends BaseModuleConfig{
         FacilioField description = moduleBean.getField("description", moduleName);
         FacilioField category = moduleBean.getField("category", moduleName);
         FacilioField isApprovalNeeded = moduleBean.getField("isApprovalNeeded", moduleName);
+        isApprovalNeeded.setDisplayName("Approval Needed");
         FacilioField isRotating = moduleBean.getField("isRotating", moduleName);
+        isRotating.setDisplayName("Rotating");
         FacilioField sysModifiedTime = moduleBean.getField("sysModifiedTime", moduleName);
         FacilioField sysCreatedTime = moduleBean.getField("sysCreatedTime", moduleName);
 
@@ -343,7 +345,7 @@ public class ItemTypesModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ITEM_TYPES,editItemTypes);
 
         SystemButtonRuleContext stockButton = new SystemButtonRuleContext();
-        stockButton.setName("Stock Button");
+        stockButton.setName("Stock");
         stockButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         stockButton.setIdentifier(FacilioConstants.ContextNames.ITEM_STOCK_BUTTON);
         stockButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());

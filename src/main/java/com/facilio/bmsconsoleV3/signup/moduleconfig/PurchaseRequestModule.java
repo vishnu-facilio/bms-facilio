@@ -79,14 +79,14 @@ public class PurchaseRequestModule extends BaseModuleConfig{
         SystemButtonApi.addBulkDeleteButton(FacilioConstants.ContextNames.PURCHASE_REQUEST);
 
         SystemButtonRuleContext convertPrToPoBulkAction = new SystemButtonRuleContext();
-        convertPrToPoBulkAction.setName("CONVERT PR(S) TO PO");
+        convertPrToPoBulkAction.setName("CONVERT TO PO");
         convertPrToPoBulkAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         convertPrToPoBulkAction.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
         convertPrToPoBulkAction.setIdentifier("convert_prs_po");
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.PURCHASE_REQUEST, convertPrToPoBulkAction);
 
         SystemButtonRuleContext convertPrsToRfqBulkAction = new SystemButtonRuleContext();
-        convertPrsToRfqBulkAction.setName("CONVERT PR(S) TO RFQ");
+        convertPrsToRfqBulkAction.setName("CONVERT TO RFQ");
         convertPrsToRfqBulkAction.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         convertPrsToRfqBulkAction.setPositionType(CustomButtonRuleContext.PositionType.LIST_BAR.getIndex());
         convertPrsToRfqBulkAction.setIdentifier("convert_prs_rfq");

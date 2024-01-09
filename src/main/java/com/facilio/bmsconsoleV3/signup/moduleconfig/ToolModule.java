@@ -128,7 +128,7 @@ public class ToolModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.TOOL,editButton);
 
         SystemButtonRuleContext stockButton = new SystemButtonRuleContext();
-        stockButton.setName("Stock Button");
+        stockButton.setName("Stock");
         stockButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         stockButton.setIdentifier(FacilioConstants.ContextNames.TOOL_STOCK_BUTTON);
         stockButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());

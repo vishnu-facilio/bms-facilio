@@ -240,7 +240,7 @@ public class ItemModule extends BaseModuleConfig{
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.ITEM,editButton);
 
         SystemButtonRuleContext stockButton = new SystemButtonRuleContext();
-        stockButton.setName("Stock Button");
+        stockButton.setName("Stock");
         stockButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
         stockButton.setIdentifier(FacilioConstants.ContextNames.ITEM_STOCK_BUTTON);
         stockButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
