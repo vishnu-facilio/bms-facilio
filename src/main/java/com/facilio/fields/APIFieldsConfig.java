@@ -1418,7 +1418,7 @@ public class APIFieldsConfig {
                 .appFieldConfigDone()
 
                 .addConfigForApp(FacilioConstants.ApplicationLinkNames.FSM_APP)
-                .skipFields(Arrays.asList("name","phone","email","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","department","isAssignable","isAppAccess","isLabour","space"))
+                .skipFields(Arrays.asList("phone","mobile","peopleType","locatedSpace","active","isOccupantPortalAccess","employeePortalAccess","moduleState","approvalStatus","currentFreeCapacity","user","labour","department","isAssignable","isAppAccess","isLabour","space"))
                 .appFieldConfigDone()
 
                 .addConfigForApp(FacilioConstants.ApplicationLinkNames.ENERGY_APP)

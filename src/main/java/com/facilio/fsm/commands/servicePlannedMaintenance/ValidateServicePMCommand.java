@@ -31,7 +31,7 @@ public class ValidateServicePMCommand extends FacilioCommand {
                 if(servicePlannedMaintenance.getEstimatedDuration()==null){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Estimated duration is required");
                 }
-                if(servicePlannedMaintenance.getRelations() == null || servicePlannedMaintenance.getRelations().get("servicePMTrigger") == null ){
+                if(servicePlannedMaintenance.getServicePMTrigger()==null && (servicePlannedMaintenance.getRelations() == null || servicePlannedMaintenance.getRelations().get("servicePMTrigger") == null )){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR,"Trigger is required");
                 }
                 servicePlannedMaintenance.setTriggerType(ServicePlannedMaintenanceContext.TriggerType.RECURRING_SCHEDULE.getIndex());

@@ -180,10 +180,10 @@ public class ServiceTaskUtil {
     }
 
     public static void moveToCloseState(Long taskId,String status) throws Exception {
-        moveToCloseState(taskId,status,false);
+        moveToCloseState(taskId,status,false,null);
     }
 
-    public static void moveToCloseState(Long taskId,String status, boolean validate) throws Exception {
+    public static void moveToCloseState(Long taskId,String status, boolean validate,JSONObject bodyParams) throws Exception {
         // used for transitioning task to completed, on-hold, cancelled states alone
 
         String serviceTaskModuleName = FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK;
@@ -220,7 +220,7 @@ public class ServiceTaskUtil {
             //updating service task status
             ServiceTaskStatusContext taskStatus = ServiceOrderAPI.getTaskStatus(status);
             existingTask.setStatus(taskStatus);
-            V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), null, null, null, null, null,null, null, null,null);
+            V3Util.processAndUpdateSingleRecord(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_TASK,taskId, FieldUtil.getAsJSON(existingTask), bodyParams, null, null, null, null,null, null, null,null);
 
             //closes ongoing timesheet when no task is in-progress - an appointment cannot have more than one ongoing timesheet
             boolean inProgress = checkForInProgressTask(tasks);

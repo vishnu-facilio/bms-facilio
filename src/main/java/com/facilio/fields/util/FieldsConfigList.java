@@ -505,10 +505,10 @@ public class FieldsConfigList {
             "name","site","territory","client","category","maintenanceType","priority","space","asset","fieldAgent","status","vendor","preferredStartTime","preferredEndTime","resolutionDueDuration","resolutionDueDate","resolutionDueStatus","sourceType","actualStartTime","actualEndTime","actualDuration","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime", "flaggedEvent"
     );
     public static final List<String> TIME_SHEET_FIELDS_INCLUDE = Arrays.asList(
-            "code","startTime","endTime","fieldAgent","serviceAppointment","serviceOrder"
+            "code","startTime","endTime","fieldAgent","serviceAppointment","serviceOrder","duration"
     );
     public static final List<String> TRIP_FIELDS_INCLUDE = Arrays.asList(
-            "code","people","startTime","endTime","startLocation","serviceOrder"
+            "code","people","startTime","endTime","startLocation","serviceOrder","tripDuration","tripDistance"
     );
     public static final List<String> EMPLOYEE_SORT_FIELDS_INCLUDE = Arrays.asList(
             "name","phone","email","mobile","currentFreeCapacity","rate","sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime"

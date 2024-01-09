@@ -430,7 +430,9 @@ public class ServiceAppointmentUtil {
                                     }
                                 }
                                 if(CollectionUtils.isNotEmpty(oldRecords)) {
-                                    V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, null, null, null, null, null, null, null, null, true, false, null);
+                                    JSONObject bodyParams = new JSONObject();
+                                    bodyParams.put("completeTask", true);
+                                    V3Util.processAndUpdateBulkRecords(serviceTask, oldRecords, updateRecordList, bodyParams, null, null, null, null, null, null, null, true, false, null);
                                 }
                             }
 
