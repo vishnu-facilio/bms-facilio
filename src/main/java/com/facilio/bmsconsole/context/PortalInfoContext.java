@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.context;
 
 import java.io.File;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.identity.client.IdentityClient;
+import com.facilio.identity.client.dto.AppDomain;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 
 public class PortalInfoContext  {
@@ -101,7 +104,18 @@ public class PortalInfoContext  {
 		this.saml_enabled = saml_enabled;
 	}
 	public String getLogin_url() {
-		String login_url = FacilioProperties.getAppProtocol()+ "://" +AccountUtil.getCurrentOrg().getDomain()+"."+PortalAuthInterceptor.getPortalDomain() +"/";
+		// TODO - Remove this after moving this to Generic Handling (getApplicationDetails() chain)
+		Organization currentOrg = AccountUtil.getCurrentOrg();
+		String login_url = FacilioProperties.getAppProtocol() + "://" + currentOrg.getDomain() + "." + PortalAuthInterceptor.getPortalDomain() + "/";
+		if (currentOrg.getOrgType() == Organization.OrgType.SANDBOX.getIndex()) {
+			try {
+				Organization productionOrg = AccountUtil.getOrgBean().getOrg(currentOrg.getProductionOrgId());
+				String sandboxOccupantAppDomain = FacilioProperties.getSandboxOccupantAppDomain();
+				login_url = FacilioProperties.getAppProtocol() + "://" + productionOrg.getDomain() + "." + sandboxOccupantAppDomain + "/";
+			} catch (Exception e) {
+
+			}
+		}
 		return login_url;
 	}
 	
