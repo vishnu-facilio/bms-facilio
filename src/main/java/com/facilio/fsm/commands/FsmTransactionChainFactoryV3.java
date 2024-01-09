@@ -18,6 +18,7 @@ import com.facilio.fsm.commands.serviceOrders.*;
 import com.facilio.fsm.commands.servicePlannedMaintenance.*;
 import com.facilio.fsm.commands.serviceTasks.*;
 import com.facilio.fsm.commands.timeOff.GenerateTimeOffCodeCommand;
+import com.facilio.fsm.commands.timeOff.UpdatePeopleStatusBasedOnTimeOff;
 import com.facilio.fsm.commands.timeSheet.*;
 import com.facilio.fsm.commands.trip.*;
 import com.facilio.remotemonitoring.commands.FlaggedAlarmCloseFromServiceOrderCommand;
@@ -433,6 +434,13 @@ public class FsmTransactionChainFactoryV3 {
     public static FacilioChain createServicePMFromTemplateChain(){
         FacilioChain c = getDefaultChain();
         c.addCommand(new CreateServicePMFromTemplateCommand());
+        return c;
+    }
+
+    public static FacilioChain timeOffAfterCreateChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new UpdatePeopleStatusBasedOnTimeOff());
+        c.addCommand(new AddActivitiesCommand(FacilioConstants.TimeOff.TIME_OFF_ACTIVITY));
         return c;
     }
 }

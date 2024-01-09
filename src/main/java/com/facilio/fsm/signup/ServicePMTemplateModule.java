@@ -63,6 +63,7 @@ public class ServicePMTemplateModule extends BaseModuleConfig {
     private FacilioModule constructServicePMTemplateModule() throws Exception{
         ModuleBean bean = Constants.getModBean();
         FacilioModule module = new FacilioModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PM_TEMPLATE, "Master PM", "Service_PM_Template", FacilioModule.ModuleType.BASE_ENTITY,bean.getModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE),true);
+        module.setDescription("Enables the creation of planned maintenance templates which serves as the foundation for Planned Maintenance schedules for individual assets or spaces as part of field service operations.");
         module.setHideFromParents(true);
 
         List<FacilioField> fields = new ArrayList<>();

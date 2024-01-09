@@ -50,6 +50,7 @@ public class TerritoryModule extends BaseModuleConfig {
         ModuleBean moduleBean = Constants.getModBean();
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule territoryModule = new FacilioModule(FacilioConstants.Territory.TERRITORY, "Territory", "TERRITORY", FacilioModule.ModuleType.BASE_ENTITY, true);
+        territoryModule.setDescription("Optimize and allocate territories for Sites and Employees, ensuring efficient and effective scheduling in the field service operations.");
         List<FacilioField> territoryFields = new ArrayList<>();
 
         NumberField localId = new NumberField(territoryModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);

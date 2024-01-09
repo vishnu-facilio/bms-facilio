@@ -57,6 +57,7 @@ public class ServicePlanModule  extends BaseModuleConfig{
     private FacilioModule constructServicePlanModule() throws Exception {
         ModuleBean bean = Constants.getModBean();
         FacilioModule module = new FacilioModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLAN, "Job Plan", "Service_Plan", FacilioModule.ModuleType.BASE_ENTITY,true);
+        module.setDescription("Create flexible task templates suitable for both planned and reactive maintenance.");
         List<FacilioField> fields = new ArrayList<>();
         FacilioField name = FieldFactory.getDefaultField("name","Name","NAME", FieldType.STRING,true);
         name.setRequired(true);

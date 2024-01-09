@@ -63,6 +63,7 @@ public class ServicePlannedMaintenanceModule extends BaseModuleConfig {
     private FacilioModule constructServicePlannedMaintenanceModule() throws Exception {
         ModuleBean bean = Constants.getModBean();
         FacilioModule module = new FacilioModule(FacilioConstants.ServicePlannedMaintenance.SERVICE_PLANNED_MAINTENANCE, "Planned Maintenance", "Service_Planned_Maintenance", FacilioModule.ModuleType.BASE_ENTITY,bean.getModule(FacilioConstants.ContextNames.SERVICE_ORDER),true);
+        module.setDescription("Plan and execute scheduled maintenance for field service maintenance.");
         module.setHideFromParents(true);
         List<FacilioField> fields = new ArrayList<>();
         FacilioField name = FieldFactory.getDefaultField("pmName","Name","NAME", FieldType.STRING,true);

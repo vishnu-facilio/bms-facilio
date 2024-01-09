@@ -135,6 +135,7 @@ public class TimeOffModule extends BaseModuleConfig {
         ModuleBean moduleBean = Constants.getModBean();
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule timeOffModule = new FacilioModule(FacilioConstants.TimeOff.TIME_OFF,"Time Off","Time_Off", FacilioModule.ModuleType.BASE_ENTITY,true);
+        timeOffModule.setDescription("Manage and coordinate employee time offs effortlessly.");
 
         List<FacilioField> timeOffFields = new ArrayList<>();
 
@@ -203,7 +204,7 @@ public class TimeOffModule extends BaseModuleConfig {
 
         List<FormField> timeOffFormFields = new ArrayList<>();
         timeOffFormFields.add(new FormField("people",FacilioField.FieldDisplayType.LOOKUP_SIMPLE,"Field Agent",FormField.Required.REQUIRED,1,2));
-        timeOffFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Time-Off Type", FormField.Required.REQUIRED,2,2));
+        timeOffFormFields.add(new FormField("type", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Time Off Type", FormField.Required.REQUIRED,2,2));
         timeOffFormFields.add(new FormField("startTime", FacilioField.FieldDisplayType.DATETIME, "Start Time", FormField.Required.REQUIRED, 3, 2));
         timeOffFormFields.add(new FormField("endTime", FacilioField.FieldDisplayType.DATETIME, "End Time", FormField.Required.REQUIRED, 4, 2));
         timeOffFormFields.add(new FormField("comments",FacilioField.FieldDisplayType.TEXTAREA,"Comments",FormField.Required.OPTIONAL,3,1));
@@ -472,7 +473,7 @@ public class TimeOffModule extends BaseModuleConfig {
         List<ViewField> timeOffViewFields = new ArrayList<>();
         timeOffViewFields.add(new ViewField("code","Code"));
         timeOffViewFields.add(new ViewField("people","Field Agent"));
-        timeOffViewFields.add(new ViewField("type","Time-Off Type"));
+        timeOffViewFields.add(new ViewField("type","Time Off Type"));
         timeOffViewFields.add(new ViewField("startTime","Start Time"));
         timeOffViewFields.add(new ViewField("endTime","End Time"));
         timeOffViewFields.add(new ViewField("comments","Comments"));

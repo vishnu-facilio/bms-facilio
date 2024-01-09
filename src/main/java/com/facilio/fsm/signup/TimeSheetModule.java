@@ -39,6 +39,7 @@ public class TimeSheetModule extends BaseModuleConfig {
         List<FacilioModule> modules = new ArrayList<>();
 
         FacilioModule timeSheetModule = new FacilioModule(FacilioConstants.TimeSheet.TIME_SHEET,"Time Sheet","TIME_SHEET", FacilioModule.ModuleType.BASE_ENTITY,true);
+        timeSheetModule.setDescription("Log and manage field agents' work hours with precision, ensuring accurate tracking and streamlined time management for every appointment as part of field service.");
 
         List<FacilioField> timeSheetFields = new ArrayList<>();
 

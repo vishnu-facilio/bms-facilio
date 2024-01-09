@@ -751,7 +751,8 @@ public class PackageConstants {
                 "default_vendor_user",
                 "default_client_user",
                 "default_remotemonitor_client",
-                "default_energy_site"
+                "default_energy_site",
+                "default_fsm_territory"
         );
     }
     public static class UserScopingConstants{

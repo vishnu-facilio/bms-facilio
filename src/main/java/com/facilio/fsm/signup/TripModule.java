@@ -66,6 +66,7 @@ public class TripModule extends BaseModuleConfig {
                 FacilioModule.ModuleType.BASE_ENTITY,
                 true
         );
+        module.setDescription("Log and manage field agents' journeys with the details of the duration, distance and route taken for their appointments.");
 
         List<FacilioField> fields = new ArrayList<>();
 

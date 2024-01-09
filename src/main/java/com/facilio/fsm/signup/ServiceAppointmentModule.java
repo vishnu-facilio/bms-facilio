@@ -11,8 +11,10 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
 import com.facilio.bmsconsoleV3.signup.moduleconfig.BaseModuleConfig;
 import com.facilio.bmsconsoleV3.signup.util.SignupUtil;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -56,6 +58,7 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
         ModuleBean moduleBean = Constants.getModBean();
         List<FacilioModule> modules = new ArrayList<>();
         FacilioModule serviceAppointmentModule = new FacilioModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT,"Appointment","SERVICE_APPOINTMENT", FacilioModule.ModuleType.BASE_ENTITY,true);
+        serviceAppointmentModule.setDescription("Facilitate seamless dispatching by dispatchers and empower field technicians to capture comprehensive work details.");
         List<FacilioField> serviceAppointmentFields = new ArrayList<>();
 
         NumberField localId = new NumberField(serviceAppointmentModule,"localId","Id", FacilioField.FieldDisplayType.NUMBER,"LOCAL_ID",FieldType.NUMBER,false,false,true,false);
@@ -1940,6 +1943,20 @@ public class ServiceAppointmentModule extends BaseModuleConfig {
 
         return statusCriteria;
 
+    }
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields fsmApp = new ScopeVariableModulesFields();
+        fsmApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_fsm_territory"));
+        fsmApp.setModuleId(module.getModuleId());
+        fsmApp.setFieldName("territory");
+
+        scopeConfigList = Arrays.asList(fsmApp);
+        return scopeConfigList;
     }
 
 }

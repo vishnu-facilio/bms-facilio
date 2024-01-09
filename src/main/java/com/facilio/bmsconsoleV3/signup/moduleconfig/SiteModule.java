@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsoleV3.context.ScopeVariableModulesFields;
+import com.facilio.bmsconsoleV3.util.ScopingUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
@@ -981,6 +983,21 @@ public class SiteModule extends BaseModuleConfig {
 
         return FieldUtil.getAsJSON(pageWidget);
 
+    }
+
+    @Override
+    public List<ScopeVariableModulesFields> getGlobalScopeConfig() throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(getModuleName());
+        List<ScopeVariableModulesFields> scopeConfigList;
+
+        ScopeVariableModulesFields fsmApp = new ScopeVariableModulesFields();
+        fsmApp.setScopeVariableId(ScopingUtil.getScopeVariableId("default_fsm_territory"));
+        fsmApp.setModuleId(module.getModuleId());
+        fsmApp.setFieldName("territory");
+
+        scopeConfigList = Arrays.asList(fsmApp);
+        return scopeConfigList;
     }
 }
 

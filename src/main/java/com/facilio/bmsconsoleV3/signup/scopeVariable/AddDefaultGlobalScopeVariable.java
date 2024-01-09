@@ -102,6 +102,19 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         energySiteScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.AccessibleBasespaceValueGenerator").getId());
         scopeBean.addScopeVariable(energySiteScopeVariable);
 
+        //fsm app - Territory
+        GlobalScopeVariableContext fsmTerritoryScopeVariable = new GlobalScopeVariableContext();
+        fsmTerritoryScopeVariable.setLinkName("default_fsm_territory");
+        fsmTerritoryScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.Territory.TERRITORY).getModuleId());
+        fsmTerritoryScopeVariable.setStatus(true);
+        fsmTerritoryScopeVariable.setShowSwitch(true);
+        fsmTerritoryScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP));
+        fsmTerritoryScopeVariable.setDescription("Default Territory Scope Variable");
+        fsmTerritoryScopeVariable.setDisplayName("Territory Scope Variable");
+        fsmTerritoryScopeVariable.setType(GlobalScopeVariableContext.Type.SCOPED.getIndex());
+        fsmTerritoryScopeVariable.setValueGeneratorId(valGenBean.getValueGenerator("com.facilio.modules.TerritoryBasedOnPeopleValueGenerator").getId());
+        scopeBean.addScopeVariable(fsmTerritoryScopeVariable);
+
         //if you default GlobalScopeVariable Please add linkName in PackageConstants.GlobalScopeVariableConstants.DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE also
     }
 }

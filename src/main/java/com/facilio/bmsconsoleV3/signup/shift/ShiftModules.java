@@ -163,6 +163,7 @@ public class ShiftModules extends SignUpData {
                 "Shift",
                 "Shift",
                 FacilioModule.ModuleType.BASE_ENTITY);
+        mod.setDescription("Organize and manage employee work schedules efficiently.");
 
         List<FacilioField> fields = new ArrayList<>();
         FacilioField nameField = FieldFactory.getDefaultField("name","Name", "NAME", FieldType.STRING);
