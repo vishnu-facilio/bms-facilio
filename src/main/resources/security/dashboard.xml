@@ -738,4 +738,10 @@
             <property name="tabId" type="number" mandatory="true"></property>
         </urlparams>
     </request>
+    <request path="/api/v3/dashboard/filter/modules" method="GET">
+        <urlparams>
+            <property name="moduleType" type="number"></property>
+            <property name="defaultModules" type="boolean"></property>
+        </urlparams>
+    </request>
 </config>

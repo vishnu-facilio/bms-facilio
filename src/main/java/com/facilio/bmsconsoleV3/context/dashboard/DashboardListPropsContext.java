@@ -22,6 +22,7 @@ public class DashboardListPropsContext
         public boolean onlyFolders;
         public boolean withTabs;
         public boolean isMigrationDone;
+        public boolean newFlow;
 
         public List<DashboardContext> dashboards = new ArrayList<>();
         public List<Long> published_dashboard_ids = new ArrayList<>();
@@ -31,7 +32,7 @@ public class DashboardListPropsContext
         public List<Long> folder_ids = new ArrayList<>();
 
         public  DashboardListPropsContext(Long appId, boolean withSharing, boolean withFilters, boolean withEmptyFolders,
-               boolean onlyPublished, boolean onlyMobile, boolean onlySelected, boolean onlyFolders, boolean withTabs )throws Exception
+               boolean onlyPublished, boolean onlyMobile, boolean onlySelected, boolean onlyFolders, boolean withTabs, boolean newFlow )throws Exception
         {
                 this.appId = appId;
                 this.withSharing = withSharing;
@@ -42,5 +43,6 @@ public class DashboardListPropsContext
                 this.onlySelected = onlySelected;
                 this.onlyFolders = onlyFolders;
                 this.withTabs = withTabs;
+                this.newFlow = newFlow;
         }
 }

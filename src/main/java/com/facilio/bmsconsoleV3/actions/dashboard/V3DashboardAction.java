@@ -60,6 +60,7 @@ public class V3DashboardAction extends V3Action {
     private boolean onlySelected;
     private boolean onlyFolders;
     private boolean withTabs;
+    private boolean newFlow;
     private Long widgetId;
     /**
      variables for recieving props for dashboard list api ends here
@@ -77,13 +78,7 @@ public class V3DashboardAction extends V3Action {
                 if(cloned_json.get("dashboard_link_name") == null || cloned_json.get("dashboard_link_name").equals("")){
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Link Name can not be empty");
                 }
-                FacilioChain chain = null;
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-                    chain = TransactionChainFactoryV3.getNewCloneDashboardChain();
-                }
-                else{
-                    chain = TransactionChainFactoryV3.getCloneDashboardChain();
-                }
+                FacilioChain chain = TransactionChainFactoryV3.getNewCloneDashboardChain();
                 FacilioContext context = chain.getContext();
                 updateContextToClone(context, cloned_json);
                 chain.execute();
@@ -228,7 +223,7 @@ public class V3DashboardAction extends V3Action {
             {
                 DashboardContext dashboard = (DashboardContext) dashboard_context.get("dashboard");
                 V3DashboardAPIHandler.updateDashboardData(dashboard, data);
-                FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardChainV3(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
+                FacilioChain updateDashboardChain = TransactionChainFactoryV3.getUpdateDashboardChainV3(true);
                 FacilioContext context = updateDashboardChain.getContext();
                 context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
                 context.put(FacilioConstants.ContextNames.IS_FROM_REPORT, dashboard_meta.containsKey("isFromReport") ? (Boolean) dashboard_meta.get("isFromReport"): Boolean.FALSE);
@@ -365,12 +360,10 @@ public class V3DashboardAction extends V3Action {
                     }
                 }
             }
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)) {
-                GetDashboardThumbnailCommand thumbnailCommand = new GetDashboardThumbnailCommand();
-                FacilioContext context = new FacilioContext();
-                context.put(FacilioConstants.ContextNames.DASHBOARD,DashboardUtil.getDashboard((Long) data.get("dashboardId")));
-                thumbnailCommand.executeCommand(context);
-            }
+            GetDashboardThumbnailCommand thumbnailCommand = new GetDashboardThumbnailCommand();
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.DASHBOARD,DashboardUtil.getDashboard((Long) data.get("dashboardId")));
+            thumbnailCommand.executeCommand(context);
             setData("result", "success");
         }
         catch (Exception e)
@@ -422,7 +415,7 @@ public class V3DashboardAction extends V3Action {
 
     public String list()throws Exception
     {
-        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs);
+        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs, newFlow);
         if(dashboard_list_prop == null || dashboard_list_prop.getAppId() == null || dashboard_list_prop.getAppId() <= 0)
         {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please pass at least appId in api");
@@ -455,7 +448,7 @@ public class V3DashboardAction extends V3Action {
     }
     public String mobileList() throws Exception
     {
-        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs);
+        DashboardListPropsContext dashboard_list_prop = new DashboardListPropsContext(appId, withSharing, withFilters, withEmptyFolders, onlyPublished, onlyMobile, onlySelected, onlyFolders, withTabs, newFlow);
         if(dashboard_list_prop == null || dashboard_list_prop.getAppId() == null || dashboard_list_prop.getAppId() <= 0)
         {
             throw new RESTException(ErrorCode.VALIDATION_ERROR, "Please pass at least appId in api");
@@ -631,6 +624,13 @@ public class V3DashboardAction extends V3Action {
         }
         List<Role> rolesList = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRolesForApps(appIds);
         setData("roles",rolesList);
+        return V3Action.SUCCESS;
+    }
+    public String getFilterModules() throws Exception {
+        FacilioChain chain = TransactionChainFactoryV3.getDashboardFilterModules();
+        FacilioContext context = chain.getContext();
+        chain.execute();
+        setData("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return V3Action.SUCCESS;
     }
 }

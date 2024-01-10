@@ -54,6 +54,9 @@ public class V2ConstructModuleReportCommand extends FacilioCommand {
         if(v2_report.getChartState() != null) {
             reportContext.setChartState(v2_report.getChartState());
         }
+        if(v2_report.getReportSettings() != null) {
+            reportContext.setReportSettings(v2_report.getReportSettings());
+        }
         context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 
 

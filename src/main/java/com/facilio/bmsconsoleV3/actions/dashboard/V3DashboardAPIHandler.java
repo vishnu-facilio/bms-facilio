@@ -570,9 +570,7 @@ public class V3DashboardAPIHandler {
 
             /**code to set default and live datetime and user filter details in these objects*/
             V3DashboardAPIHandler.constructTimelineAndUserFilter(dashboard_filter, dashboard_execute_meta);
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-                V3DashboardAPIHandler.constructReadingFilter(dashboard_filter, dashboard_execute_meta);
-            }
+            V3DashboardAPIHandler.constructReadingFilter(dashboard_filter, dashboard_execute_meta);
             if (trigger_widget_Id != null && trigger_widget_Id > 0)
             {
                 /** code to construct dashboard rules data for trigger widget id*/
@@ -677,7 +675,7 @@ public class V3DashboardAPIHandler {
 
         for (DashboardWidgetContext dashboardWidgetContext : widgets)
         {
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && trigger_widget != null && trigger_widget.getId() == dashboardWidgetContext.getId()){
+            if(trigger_widget != null && trigger_widget.getId() == dashboardWidgetContext.getId()){
                 continue;
             }
             if(dashboardWidgetContext.getWidgetType() != null && dashboardWidgetContext.getWidgetType().equals(DashboardWidgetContext.WidgetType.SECTION))
@@ -718,9 +716,7 @@ public class V3DashboardAPIHandler {
         JSONObject actionMeta = new JSONObject();
         V3DashboardAPIHandler.setTimeLineFilterResp(actionMeta, widget_id, dashboard_execute_data.getTimeline_widget_field_map(), dashboard_execute_data.getGlobal_timeline_filter_widget_map());
         V3DashboardAPIHandler.setUserFilterResp(actionMeta, widget_id, dashboard_execute_data.getGlobal_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)) {
-            V3DashboardAPIHandler.setFilterForReadingResp(actionMeta, widget_id, dashboard_execute_data.getReading_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
-        }
+        V3DashboardAPIHandler.setFilterForReadingResp(actionMeta, widget_id, dashboard_execute_data.getReading_filter_widget_map(), dashboard_execute_data.getPlaceHolders());
         if (actionMeta != null && !actionMeta.isEmpty()) {
             widget_json.put("actionMeta", actionMeta);
             dashboard_execute_data.getMain_result_array().add(widget_json);
@@ -761,7 +757,7 @@ public class V3DashboardAPIHandler {
             {
                 long operatorId = dashboard_filter.getDateOperator();
                 String rangeValue = null;
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && addToOperators().contains((int) operatorId)){
+                if(addToOperators().contains((int) operatorId)){
                     rangeValue = dashboard_filter.getDateLabel().split(" ")[1];
                 }
                 DateOperators date_operator = (DateOperators) Operator.getOperator((int) operatorId);

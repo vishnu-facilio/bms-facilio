@@ -45,6 +45,9 @@ public class V2GetModuleReportCommand extends FacilioCommand {
                 }
                 v2_reportContext.setBaseLines(baseLines.toJSONString());
             }
+            if(report.getReportSettings() != null) {
+                v2_reportContext.setReportSettings(report.getReportSettings());
+            }
             v2_reportContext.setAppId(report.getAppId());
             v2_reportContext.setName(report.getName());
             v2_reportContext.setFolderId(report.getReportFolderId());

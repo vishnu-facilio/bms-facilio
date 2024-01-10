@@ -281,15 +281,13 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                     Long customScriptId = WorkflowUtil.addWorkflow(widgetCardContext.getCustomScript());
                     widgetCardContext.setCustomScriptId(customScriptId);
                 }
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-                    JSONObject cardParams = widgetCardContext.getCardParams();
-                    if(cardParams != null) {
-                        widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
-                        Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
-                        long criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
-                        if(criteriaId > 0){
-                            widgetCardContext.setCriteriaId(criteriaId);
-                        }
+                JSONObject cardParams = widgetCardContext.getCardParams();
+                if(cardParams != null) {
+                    widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
+                    Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
+                    long criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
+                    if(criteriaId > 0){
+                        widgetCardContext.setCriteriaId(criteriaId);
                     }
                 }
                 insertBuilder = new GenericInsertRecordBuilder()
@@ -396,7 +394,7 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                     fieldMappingCommand.executeCommand(context);
                 }
                 else{
-                    FacilioChain dbFilterUpdateChain=TransactionChainFactory.getNewAddOrUpdateDashboardFilterChain(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2));
+                    FacilioChain dbFilterUpdateChain=TransactionChainFactory.getNewAddOrUpdateDashboardFilterChain(true);
                     FacilioContext filterContext=dbFilterUpdateChain.getContext();
                     DashboardFilterContext dashboardFilter = filter_widget.getDashboardFilter();
                     filterContext.put(FacilioConstants.ContextNames.WIDGET_ID,widget.getId());

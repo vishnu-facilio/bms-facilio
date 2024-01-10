@@ -104,32 +104,30 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                             widgetCardContext.setCustomScriptId(customScriptId);
                         }
                         Long presentCriteriaId = null;
-                        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-                            long criteriaId = -1;
-                            WidgetCardContext cardContext = (WidgetCardContext) DashboardUtil.getWidget(updatewidget.getId());
-                            JSONObject cardParams = widgetCardContext.getCardParams();
-                            if(cardContext.getCriteriaId() != null && cardContext.getCriteriaId() > 0) {
-                                presentCriteriaId = cardContext.getCriteriaId();
-                                Criteria presentCriteria = CriteriaAPI.getCriteria(cardContext.getCriteriaId());
-                                if(cardParams != null && cardParams.get("criteria") != null) {
-                                    Criteria criteria = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"),Criteria.class);
-                                    if(!presentCriteria.getConditions().equals(criteria.getConditions())){
-                                        criteriaId = DashboardUtil.generateCriteriaId(criteria, (String) cardParams.get("parentModuleName"));
-                                        widgetCardContext.setCriteriaId(criteriaId);
-                                    }
-                                }else {
-                                    widgetCardContext.setCriteriaId(null);
-                                    CriteriaAPI.deleteCriteria(cardContext.getCriteriaId());
-                                }
-                            } else if(cardParams != null && cardParams.get("criteria") != null){
-                                    Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
-                                    criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
+                        long criteriaId = -1;
+                        WidgetCardContext cardContext = (WidgetCardContext) DashboardUtil.getWidget(updatewidget.getId());
+                        JSONObject cardParams = widgetCardContext.getCardParams();
+                        if(cardContext.getCriteriaId() != null && cardContext.getCriteriaId() > 0) {
+                            presentCriteriaId = cardContext.getCriteriaId();
+                            Criteria presentCriteria = CriteriaAPI.getCriteria(cardContext.getCriteriaId());
+                            if(cardParams != null && cardParams.get("criteria") != null) {
+                                Criteria criteria = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"),Criteria.class);
+                                if(!presentCriteria.getConditions().equals(criteria.getConditions())){
+                                    criteriaId = DashboardUtil.generateCriteriaId(criteria, (String) cardParams.get("parentModuleName"));
                                     widgetCardContext.setCriteriaId(criteriaId);
                                 }
-
-                            if(cardParams != null){
-                                widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
+                            }else {
+                                widgetCardContext.setCriteriaId(null);
+                                CriteriaAPI.deleteCriteria(cardContext.getCriteriaId());
                             }
+                        } else if(cardParams != null && cardParams.get("criteria") != null){
+                            Criteria criteriaObj = FieldUtil.getAsBeanFromMap((Map<String, Object>) cardParams.get("criteria"), Criteria.class);
+                            criteriaId = DashboardUtil.generateCriteriaId(criteriaObj, (String) cardParams.get("parentModuleName"));
+                            widgetCardContext.setCriteriaId(criteriaId);
+                        }
+
+                        if(cardParams != null){
+                            widgetCardContext.setCategoryId((Long) cardParams.get("categoryId"));
                         }
                         GenericUpdateRecordBuilder updateWidgetCard = new GenericUpdateRecordBuilder()
                                 .table(ModuleFactory.getWidgetCardModule().getTableName())

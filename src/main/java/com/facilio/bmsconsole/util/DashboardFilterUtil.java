@@ -365,7 +365,7 @@ public class DashboardFilterUtil {
 				 }
 			 }
 		 }
-		 else if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && widget.getWidgetType().equals(WidgetType.FILTER)){
+		 else if(widget.getWidgetType().equals(WidgetType.FILTER)){
 			 DashboardUserFilterContext userFilterContext = DashboardFilterUtil.getDashboardUserFiltersForWidgetId(widget.getId());
 			 if(userFilterContext.getModuleName() != null){
 				 ModuleBean modBean = Constants.getModBean();

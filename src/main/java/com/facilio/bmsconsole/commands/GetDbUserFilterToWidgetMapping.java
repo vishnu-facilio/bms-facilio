@@ -330,7 +330,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 				else
 				{
 					Long fieldId = DashboardFilterUtil.getFieldForMappingOnWidget(filter.getDashboardUserFilterJson(), widgetModule != null ? widgetModule.getName() : null);
-					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && customModulevsFieldMapping != null && customModulevsFieldMapping.containsKey(widgetModule.getModuleId())){
+					if(customModulevsFieldMapping != null && customModulevsFieldMapping.containsKey(widgetModule.getModuleId())){
 						filterApplicableField = customModulevsFieldMapping.get(widgetModule.getModuleId());
 					}
 					else{

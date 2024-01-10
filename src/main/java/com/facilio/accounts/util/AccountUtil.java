@@ -605,6 +605,7 @@ public class AccountUtil {
 
 		CALENDAR_VIEW(140, getExponentValue(13), LicenseMapping.GROUP3LICENSE),//2^13
 		WORK_ORDER_FEATURE_SETTINGS(141,getExponentValue(14),LicenseMapping.GROUP3LICENSE),//2^14
+		@Deprecated
 		DASHBOARD_V2(142, getExponentValue(15), LicenseMapping.GROUP3LICENSE),//2^15
 		ODATA_API(143,getExponentValue(16),LicenseMapping.GROUP3LICENSE),//2^16
 		FIELD_LIST_PERMISSION(144,getExponentValue(17),LicenseMapping.GROUP3LICENSE),//2^17

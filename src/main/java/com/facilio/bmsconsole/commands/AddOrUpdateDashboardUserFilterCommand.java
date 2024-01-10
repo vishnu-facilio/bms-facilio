@@ -99,10 +99,8 @@ public class AddOrUpdateDashboardUserFilterCommand extends FacilioCommand {
 		filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
 		filter_widget.setDashboardId(dashboard_filter.getDashboardId());
 		filter_widget.setHeaderText(userFilterContext.getLabel());
-		if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-			filter_widget.setSectionId(userFilterContext.getSectionId());
-			filter_widget.setMetaJSONString(userFilterContext.getMetaJSON().toJSONString());
-		}
+		filter_widget.setSectionId(userFilterContext.getSectionId());
+		filter_widget.setMetaJSONString(userFilterContext.getMetaJSON().toJSONString());
 		List<DashboardWidgetContext> widgets = new ArrayList<>();
 		widgets.add(filter_widget);
 		V3DashboardAPIHandler.checkAndGenerateWidgetLinkName(widgets, dashboard_filter.getDashboardId(), null);

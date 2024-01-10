@@ -1850,6 +1850,12 @@
                 method="bulkMove">
 			<param name="deprecated">true</param>
 		</action>
+        <action name="filter/modules"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="getFilterModules">
+            <param name="permission">GET:CREATE,EDIT</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
+        </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="get">

@@ -115,26 +115,21 @@ private String cardUserFilters;
 
 	public String getCardData() throws Exception {
 		try {
-			if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-				FacilioChain chain = ReadOnlyChainFactory.getComboCardWorkflowChain();
-				chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
-				chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
-				chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
-				chain.getContext().put(FacilioConstants.ContextNames.CARD_USER_FILTERS, getCardUserFiltersJson());
-				chain.getContext().put(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS, getCustomScriptFilter());
-				chain.execute();
-				List<Map<String,Object>> cardResult = (List<Map<String, Object>>) chain.getContext().get("cardResult");
-				if(cardResult.size() > 1){
-					setResult("cardResult",chain.getContext().get("cardResult"));
-				}
-				else {
-					setResult("cardContext", cardResult.get(0).get("cardContext"));
-					setResult("data", cardResult.get(0).get("data"));
-					setResult("state", cardResult.get(0).get("state"));
-				}
+			FacilioChain chain = ReadOnlyChainFactory.getComboCardWorkflowChain();
+			chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
+			chain.getContext().put(FacilioConstants.ContextNames.CARD_ID, cardId);
+			chain.getContext().put(FacilioConstants.ContextNames.CARD_FILTERS, getCardFilterJson());
+			chain.getContext().put(FacilioConstants.ContextNames.CARD_USER_FILTERS, getCardUserFiltersJson());
+			chain.getContext().put(FacilioConstants.ContextNames.CARD_CUSTOM_SCRIPT_FILTERS, getCustomScriptFilter());
+			chain.execute();
+			List<Map<String,Object>> cardResult = (List<Map<String, Object>>) chain.getContext().get("cardResult");
+			if(cardResult.size() > 1){
+				setResult("cardResult",chain.getContext().get("cardResult"));
 			}
-			else{
-				executeContext();
+			else {
+				setResult("cardContext", cardResult.get(0).get("cardContext"));
+				setResult("data", cardResult.get(0).get("data"));
+				setResult("state", cardResult.get(0).get("state"));
 			}
 		}
 		catch(Exception e){

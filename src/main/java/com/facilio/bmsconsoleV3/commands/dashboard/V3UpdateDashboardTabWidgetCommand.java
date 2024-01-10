@@ -98,15 +98,13 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
             for (int i = 0; i < existingWidgets.size(); i++) {
                 if (!widgetMapping.containsKey(existingWidgets.get(i).getId())) {
                     removedWidgets.add(existingWidgets.get(i).getId());
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
-                        if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
-                            removedFilters.add(existingWidgets.get(i).getId());
-                        }else if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.CARD){
-                            List<WidgetCardContext>childCards = CardUtil.getChildCards(existingWidgets.get(i).getId());
-                            if(childCards != null && childCards.size() > 0){
-                                for(WidgetCardContext childCard : childCards){
-                                    removedWidgets.add(childCard.getId());
-                                }
+                    if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.FILTER){
+                        removedFilters.add(existingWidgets.get(i).getId());
+                    }else if(existingWidgets.get(i).getWidgetType() == DashboardWidgetContext.WidgetType.CARD){
+                        List<WidgetCardContext>childCards = CardUtil.getChildCards(existingWidgets.get(i).getId());
+                        if(childCards != null && childCards.size() > 0){
+                            for(WidgetCardContext childCard : childCards){
+                                removedWidgets.add(childCard.getId());
                             }
                         }
                     }
@@ -146,7 +144,7 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.WIDGET, dashboard_widget);
                 context.put(FacilioConstants.ContextNames.WIDGET_TYPE, dashboard_widget.getWidgetType());
                 addWidgetChain.execute(context);
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+                if(dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
                     createOrUpdateWidgetInCard(context, dashboardTabContext, widget, dashboard_widget);
                 }
             }
@@ -156,7 +154,7 @@ public class V3UpdateDashboardTabWidgetCommand extends FacilioCommand {
                 dashboard_widget.setDashboardTabId(dashboardTabContext.getId());
                 dashboard_widget.setSectionId(widget.getId());
                 update_widget_list.add(dashboard_widget);
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2) && dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
+                if(dashboard_widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)){
                     createOrUpdateWidgetInCard(context, dashboardTabContext, widget, dashboard_widget);
                 }
             }

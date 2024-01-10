@@ -8,6 +8,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportDrilldownPathContext;
+import com.facilio.report.context.ReportSettings;
 import com.facilio.util.FacilioUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -38,7 +39,8 @@ public class V2ModuleReportContext
     private V2ModuleGroupByContext groupBy;
     private V2ModuleTimeFilterContext timeFilter;
     private V2ModuleFilterContext filters;
-    private ReportDrilldownPathContext drillDown;
+    private List<ReportDrilldownPathContext> drillDown;
+    private ReportSettings reportSettings;
     private String baseLines;
     private boolean kpi = false;
     private Long criteriaId;

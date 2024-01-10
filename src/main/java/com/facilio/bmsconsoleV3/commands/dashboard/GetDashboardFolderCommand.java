@@ -30,7 +30,7 @@ public class GetDashboardFolderCommand extends FacilioCommand {
     {
         DashboardListPropsContext dashboard_list_prop = (DashboardListPropsContext) context.get("dashboard_list_prop");
         List<DashboardFolderContext> dashboard_folder_list = new ArrayList<>();
-        getDashboardFolderList(dashboard_list_prop.getAppId(), dashboard_folder_list);
+        getDashboardFolderList(dashboard_list_prop.getAppId(), dashboard_folder_list, dashboard_list_prop.isNewFlow());
         if (dashboard_folder_list != null) {
             List<Long> folder_ids = dashboard_folder_list.stream().map(a -> a.getId()).collect(Collectors.toList());
             dashboard_list_prop.setFolders(dashboard_folder_list);
@@ -39,14 +39,16 @@ public class GetDashboardFolderCommand extends FacilioCommand {
         return false;
     }
 
-    private void getDashboardFolderList(Long appId, List<DashboardFolderContext> dashboard_folder_list)throws Exception
+    private void getDashboardFolderList(Long appId, List<DashboardFolderContext> dashboard_folder_list, boolean newFlow)throws Exception
     {
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getDashboardFolderFields())
                 .table(ModuleFactory.getDashboardFolderModule().getTableName())
                 .andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS));
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.DASHBOARD_V2)){
+        if(newFlow){
              selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.EQUALS));
+        }else {
+            selectBuilder.andCondition(CriteriaAPI.getCondition("IS_NEW","newFlow",String.valueOf(true),NumberOperators.NOT_EQUALS));
         }
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardFolderFields());
         Criteria appCriteria = new Criteria();

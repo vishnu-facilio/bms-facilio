@@ -2573,6 +2573,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new GetDashboardTabListCommand());
         return c;
     }
+    public static FacilioChain getDashboardFilterModules() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetDashboardFilterModulesCommand());
+        return c;
+    }
 
     public static FacilioChain getDeleteAssetTypeChain() {
         FacilioChain chain = getDefaultChain();
