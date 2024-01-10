@@ -281,6 +281,8 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.PURCHASED_ITEM);
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.PURCHASED_TOOL);
         scriptWhiteListedModules.add(MailMessageUtil.EMAIL_CONVERSATION_THREADING_MODULE_NAME);
+        scriptWhiteListedModules.add(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER);
+        scriptWhiteListedModules.add(FacilioConstants.UTILITY_INTEGRATION_BILLS);
     }
 
     @Override

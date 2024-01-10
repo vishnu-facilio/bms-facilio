@@ -159,6 +159,8 @@ public class GetAutomationModulesCommand extends FacilioCommand {
             modules.add(modBean.getModule(FilteredAlarmModule.MODULE_NAME));
             modules.add(modBean.getModule(FlaggedEventModule.MODULE_NAME));
         }
+        modules.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_CUSTOMER));
+        modules.add(modBean.getModule(FacilioConstants.UTILITY_INTEGRATION_BILLS));
 
         context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
         return false;
