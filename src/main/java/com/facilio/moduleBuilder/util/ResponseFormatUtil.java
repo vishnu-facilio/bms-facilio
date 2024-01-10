@@ -3,6 +3,7 @@ package com.facilio.moduleBuilder.util;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.beans.PropertyDescriptor;
 import java.util.HashMap;
@@ -11,19 +12,26 @@ import java.util.Map;
 
 public class ResponseFormatUtil {
 
-    public static Map<String, Object> formatModuleBasedOnResponseFields(FacilioModule module, List<String> responseFieldNames, boolean iterateOverInstance) throws Exception {
-        Map<String, Object> moduleResponse = new HashMap<>();
+    public static final Map<String, PropertyDescriptor> FACILIOMODULE_PROPERTY_DESCRIPTOR = getPropertyDescriptorForBean(new FacilioModule());
+    public static final Map<String, PropertyDescriptor> FACILIOFIELD_PROPERTY_DESCRIPTOR = getPropertyDescriptorForBean(new FacilioField());
 
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(module);
+    private static Map<String, PropertyDescriptor>  getPropertyDescriptorForBean(Object object) {
+        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(object);
         Map<String, PropertyDescriptor> propertyDescriptorMap = new HashMap<>();
 
         for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
             propertyDescriptorMap.put(propertyDescriptor.getName(), propertyDescriptor);
         }
 
+        return MapUtils.unmodifiableMap(propertyDescriptorMap);
+    }
+
+    public static Map<String, Object> formatModuleBasedOnResponseFields(FacilioModule module, List<String> responseFieldNames, boolean iterateOverInstance) throws Exception {
+        Map<String, Object> moduleResponse = new HashMap<>();
+
         for (String fieldName : responseFieldNames) {
-            if (propertyDescriptorMap.containsKey(fieldName)) {
-                Object value = propertyDescriptorMap.get(fieldName).getReadMethod().invoke(module);
+            if (FACILIOMODULE_PROPERTY_DESCRIPTOR.containsKey(fieldName)) {
+                Object value = FACILIOMODULE_PROPERTY_DESCRIPTOR.get(fieldName).getReadMethod().invoke(module);
 
                 if (value instanceof FacilioModule && iterateOverInstance) {
                     value = formatModuleBasedOnResponseFields((FacilioModule) value, responseFieldNames, false);
@@ -58,16 +66,9 @@ public class ResponseFormatUtil {
     public static Map<String, Object> formatFieldsBasedOnResponseFields(FacilioField field, List<String> responseFieldNames, boolean iterateOverInstance) throws Exception {
         Map<String, Object> fieldResponse = new HashMap<>();
 
-        PropertyDescriptor[] propertyDescriptors = PropertyUtils.getPropertyDescriptors(field);
-        Map<String, PropertyDescriptor> propertyDescriptorMap = new HashMap<>();
-
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            propertyDescriptorMap.put(propertyDescriptor.getName(), propertyDescriptor);
-        }
-
         for (String fieldName : responseFieldNames) {
-            if (propertyDescriptorMap.containsKey(fieldName)) {
-                Object value = propertyDescriptorMap.get(fieldName).getReadMethod().invoke(field);
+            if (FACILIOFIELD_PROPERTY_DESCRIPTOR.containsKey(fieldName)) {
+                Object value = FACILIOFIELD_PROPERTY_DESCRIPTOR.get(fieldName).getReadMethod().invoke(field);
 
                 if (value instanceof FacilioField && iterateOverInstance) {
                     value = formatFieldsBasedOnResponseFields((FacilioField) value, responseFieldNames, false);

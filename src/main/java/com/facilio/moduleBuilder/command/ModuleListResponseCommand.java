@@ -17,11 +17,11 @@ public class ModuleListResponseCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         List<String> responseFields = (List<String>) context.get(FacilioConstants.ModuleListConfig.RESPONSE_FIELDS);
+        Map<String, Object> resultMap = (Map<String, Object>) context.getOrDefault(FacilioConstants.ContextNames.RESULT, new HashMap<>());
 
         if(CollectionUtils.isNotEmpty(responseFields)) {
             List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ModuleListConfig.MODULES);
 
-            Map<String, Object> resultMap = new HashMap<>();
             List<Map<String, Object>> modulesMapList = new ArrayList<>();
             if(CollectionUtils.isNotEmpty(modules)) {
                 for(FacilioModule module : modules) {

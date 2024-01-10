@@ -8,6 +8,7 @@ import com.facilio.moduleBuilder.util.ResponseFormatUtil;
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.*;
 
@@ -21,7 +22,10 @@ public class GetSubModulesForTransactionRuleCommand extends FacilioCommand {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         if(CollectionUtils.isNotEmpty(modules)) {
             for(FacilioModule module : modules) {
-                    subModulesMap.put(module.getName(), getSubModules(modBean, module));
+                Map<String, Object> subModules = getSubModules(modBean, module);
+                if(MapUtils.isNotEmpty(subModules)) {
+                    subModulesMap.put(module.getName(), subModules);
+                }
             }
         }
         resultMap.put("subModules", subModulesMap);

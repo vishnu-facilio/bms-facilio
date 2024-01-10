@@ -105,9 +105,8 @@ public class ModuleListConfigChainUtil {
         addIfNotNull(context, FacilioConstants.ModuleListConfig.MODULES_TO_FETCH, fetchModuleList);
 
         chain.addCommand(new GetModuleListFromBuilderCommand());
-        Command afterFetchCommand = moduleListHandler.getAfterFetchCommand();
+        addIfNotNull(chain, moduleListHandler.getAfterFetchCommand());
         chain.addCommand(new ModuleListResponseCommand());
-        addIfNotNull(chain, afterFetchCommand);
 
         return chain;
     }

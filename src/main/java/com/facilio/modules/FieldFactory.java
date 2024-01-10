@@ -1745,7 +1745,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getNumberField("modifiedTime", "MODIFIED_TIME", module));
         fields.add(getNumberField("sourceBundle", "SOURCE_BUNDLE", module));
         fields.add(getNumberField("accessType", "ACCESS_TYPE", module));
-
+        fields.add(getBuildVersionField(module));
 
         return fields;
     }
@@ -1775,7 +1775,6 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("deletedTime", "DELETED_TIME", module, FieldType.NUMBER));
         fields.add(getBooleanField("locked", "IS_LOCKED", module));
         fields.add(getField("exportable","IS_EXPORTABLE",module,FieldType.BOOLEAN));
-        fields.add(getBuildVersionField(module));
 
         return fields;
     }
