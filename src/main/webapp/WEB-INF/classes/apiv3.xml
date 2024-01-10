@@ -559,23 +559,23 @@
         <action name="close"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
                 method="close">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:UPDATE_CLOSE_WORKORDER;PATCH:UPDATE_CLOSE_WORKORDER</param>
 		</action>
 
         <action name="assign"
                 class="com.facilio.bmsconsoleV3.actions.WorkorderAction"
                 method="assign">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:UPDATE_CHANGE_OWNERSHIP;PATCH:UPDATE_CHANGE_OWNERSHIP</param>
 		</action>
 
         <action name="features/*" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="featureSettings">
             <param name="moduleName">workorder</param>
             <param name="recordId">{1}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
         <action name="states/featureSettings" class="com.facilio.bmsconsoleV3.actions.WorkorderAction" method="workOrderFeatureSettingsList">
             <param name="moduleName">workorder</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
 
