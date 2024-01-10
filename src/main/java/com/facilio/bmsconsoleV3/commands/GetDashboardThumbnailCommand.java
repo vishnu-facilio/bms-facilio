@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.commands;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.command.FacilioCommand;
@@ -20,6 +21,9 @@ public class GetDashboardThumbnailCommand  extends FacilioCommand {
         DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
         dashboardObj.put("dashboardId",dashboard.getId());
         dashboardObj.put("appLink", AccountUtil.getCurrentApp().getLinkName());
+        if(AccountUtil.getCurrentOrg().getOrgType() == Organization.OrgType.SANDBOX.getIndex()){
+            dashboardObj.put("sandboxDomain", AccountUtil.getCurrentApp().getLinkName());
+        }
         message.setKey(DashboardUpdateHandler.KEY);
         message.setContent(dashboardObj);
         Messenger.getMessenger().sendMessage(message);

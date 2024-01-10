@@ -28,11 +28,16 @@ public class DashboardUpdateHandler extends ImsHandler {
                 String appLink = (String) messageContent.get("appLink");
                 String fileName = "dashboardThumbNail " + System.currentTimeMillis();
                 DashboardContext dashboard = DashboardUtil.getDashboard(dashboardId);
+                String pageUrl = "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
+                String sandboxDomain = (String) messageContent.get("sandboxDomain");
+                if(sandboxDomain != null && !sandboxDomain.equals("")){
+                    pageUrl = "/" + sandboxDomain + "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
+                }
                 JSONObject options = new JSONObject();
                 options.put("vw",1280);
                 options.put("vh",800);
                 ScreenshotOptions screenshotOptions = FieldUtil.getAsBeanFromJson(options, ScreenshotOptions.class);
-                long fileId = PDFServiceFactory.getPDFService().exportURL(fileName, "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true", PDFService.ExportType.SCREENSHOT, screenshotOptions);
+                long fileId = PDFServiceFactory.getPDFService().exportURL(fileName, pageUrl, PDFService.ExportType.SCREENSHOT, screenshotOptions);
                 JSONObject pageParams = new JSONObject();
                 pageParams.put("linkname",dashboard.getLinkName());
                 GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
