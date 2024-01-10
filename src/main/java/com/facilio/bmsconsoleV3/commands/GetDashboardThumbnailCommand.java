@@ -22,7 +22,7 @@ public class GetDashboardThumbnailCommand  extends FacilioCommand {
         dashboardObj.put("dashboardId",dashboard.getId());
         dashboardObj.put("appLink", AccountUtil.getCurrentApp().getLinkName());
         if(AccountUtil.getCurrentOrg().getOrgType() == Organization.OrgType.SANDBOX.getIndex()){
-            dashboardObj.put("sandboxDomain", AccountUtil.getCurrentApp().getLinkName());
+            dashboardObj.put("sandboxDomain", AccountUtil.getCurrentOrg().getDomain());
         }
         message.setKey(DashboardUpdateHandler.KEY);
         message.setContent(dashboardObj);
