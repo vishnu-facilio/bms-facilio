@@ -1575,25 +1575,34 @@ public class PackageBeanUtil {
         return actionContextList;
     }
 
-    public static List<?> getModuleDataListsForIds(Collection<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
+    public static List<?> getModuleDataListsForIds(List<Long> ids, FacilioModule module, Class<?> clazz) throws Exception {
         return getModuleDataListsForIds(ids, module, clazz, false);
     }
 
-    public static List<?> getModuleDataListsForIds(Collection<Long> ids, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
+    public static List<?> getModuleDataListsForIds(List<Long> ids, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
-                .table(module.getTableName())
-                .module(module)
-                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
-                .select(moduleBean.getAllFields(module.getName()))
-                .andCondition(CriteriaAPI.getIdCondition(ids, module))
-                .skipModuleCriteria();
+        List<ModuleBaseWithCustomFields> props = new ArrayList<>();
+        int fromIndex = 0;
+        int toIndex = Math.min(ids.size(), 5000);
+        List<Long> idsSubList;
+        while (fromIndex < ids.size()) {
+            idsSubList = ids.subList(fromIndex, toIndex);
+            SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<>()
+                    .table(module.getTableName())
+                    .module(module)
+                    .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                    .select(moduleBean.getAllFields(module.getName()))
+                    .andCondition(CriteriaAPI.getIdCondition(idsSubList, module))
+                    .skipModuleCriteria();
 
-        if (fetchDeleted) {
-            builder.fetchDeleted();
+            if (fetchDeleted) {
+                builder.fetchDeleted();
+            }
+            fromIndex = toIndex;
+            toIndex = Math.min((toIndex + 5000), ids.size());
+            props.addAll(builder.get());
         }
-
-        return builder.get();
+        return props;
     }
 
     public static List<?> getModuleDataForId(Long id, FacilioModule module, Class<?> clazz) throws Exception {
@@ -1610,22 +1619,46 @@ public class PackageBeanUtil {
 
     public static List<?> getModuleData(Criteria criteria, FacilioModule module, Class<?> clazz, boolean fetchDeleted) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
-        SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
-                .table(module.getTableName())
-                .module(module)
-                .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
-                .select(moduleBean.getAllFields(module.getName()))
-                .skipModuleCriteria();
+        List<ModuleBaseWithCustomFields> propsList = new ArrayList<>();
+        List<ModuleBaseWithCustomFields> props = new ArrayList<>();
+        int offset = 0;
+        int limit = 5000;
+        boolean obtainedAllRecords = false;
+        do {
+            SelectRecordsBuilder<ModuleBaseWithCustomFields> selectRecordBuilder = new SelectRecordsBuilder<>()
+                    .table(module.getTableName())
+                    .module(module)
+                    .beanClass((Class<ModuleBaseWithCustomFields>) clazz)
+                    .select(moduleBean.getAllFields(module.getName()))
+                    .skipModuleCriteria()
+                    .offset(offset)
+                    .limit(limit + 1);
 
-        if (fetchDeleted) {
-            selectRecordBuilder.fetchDeleted();
-        }
+            if (fetchDeleted) {
+                selectRecordBuilder.fetchDeleted();
+            }
 
-        if (criteria != null && !criteria.isEmpty()) {
-            selectRecordBuilder.andCriteria(criteria);
-        }
+            if (criteria != null && !criteria.isEmpty()) {
+                selectRecordBuilder.andCriteria(criteria);
+            }
 
-        List<ModuleBaseWithCustomFields> propsList = selectRecordBuilder.get();
+            props = selectRecordBuilder.get();
+
+            if (CollectionUtils.isEmpty(props)) {
+                obtainedAllRecords = true;
+                continue;
+            }
+
+            if (props.size() > limit) {
+                props.remove(limit);
+            } else {
+                obtainedAllRecords = true;
+            }
+
+            propsList.addAll(props);
+            offset = offset + limit;
+
+        }while(!obtainedAllRecords);
 
         return propsList;
     }

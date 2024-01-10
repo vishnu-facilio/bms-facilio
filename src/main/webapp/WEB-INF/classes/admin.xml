@@ -463,6 +463,19 @@
 			</result>
 			<param name="skipPermission">true</param>
 		</action>
+		<action name="addSkipComponentFile" class="com.facilio.componentpackage.action.PackageAction" method = "addSkipComponentFile">
+			<result name="success" type="json">
+				<param name="root">result</param>
+				<param name="statusCode">200</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">500</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="excludeNullProperties">true</param>
+				<param name="includeProperties">responseCode, message, stackTrace</param>
+			</result>
+			<param name="skipPermission">true</param>
+		</action>
 		<action name="sandboxRerun" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result type="tiles">adminpage/sandboxRerun.jsp</result>
 			<param name="skipPermission">true</param>

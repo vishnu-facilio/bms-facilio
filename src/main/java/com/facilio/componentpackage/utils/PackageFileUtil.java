@@ -18,7 +18,6 @@ import com.facilio.componentpackage.context.PackageFolderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
-import com.facilio.datasandbox.util.DataPackageFileUtil;
 import com.facilio.db.transaction.NewTransactionService;
 import com.facilio.fs.FileInfo;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
@@ -45,7 +44,6 @@ import org.zeroturnaround.zip.ZipUtil;
 import java.io.*;
 import java.net.URLConnection;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.function.Function;
@@ -211,6 +209,12 @@ public class PackageFileUtil {
             fileContext = PackageFileUtil.addFileToStore(file, contentType);
         }
         return fileContext;
+    }
+    public static FileContext addSkipComponentFile(File file) throws Exception {
+        if(file == null || !URLConnection.guessContentTypeFromName(file.getName()).equals("text/plain")){
+            throw new Exception("Input file should be .txt format");
+        }
+        return addFileToStore(file, "text/plain");
     }
     public static FileContext addFileToStore(File file, String contentType) throws Exception {
         if (contentType == null) {

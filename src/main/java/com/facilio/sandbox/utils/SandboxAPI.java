@@ -20,8 +20,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.NewTransactionService;
-import com.facilio.fw.BeanFactory;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.fs.FileInfo;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
@@ -30,6 +29,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.sandbox.context.SandboxConfigContext;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.util.RequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,6 +42,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -366,27 +371,51 @@ public class SandboxAPI {
         }
         return null;
     }
-    public static List<Integer> getSkippedComponentsFromOrgInfo(long orgId) throws Exception {
-        Map<String, Object> skipComponentsFromOrgInfo = CommonCommandUtil.getOrgInfo(orgId,"skipComponents");
+    public static String getSkippedFileFromStore(long orgId, String key) throws Exception {
+        Map<String, Object> skipComponentsFromOrgInfo = CommonCommandUtil.getOrgInfo(orgId, key);
         if (skipComponentsFromOrgInfo != null && !skipComponentsFromOrgInfo.isEmpty()) {
-            String skipComponentString = (String) skipComponentsFromOrgInfo.get("value");
-            if (skipComponentString != null && !skipComponentString.isEmpty()) {
-                List<Integer> skipComponentIndexes = Arrays.stream(skipComponentString.split(","))
-                        .map(String::trim)
-                        .map(Integer::valueOf)
-                        .collect(Collectors.toList());
-                return skipComponentIndexes;
+            try {
+                Long skipComponentFileId = Long.valueOf((String) skipComponentsFromOrgInfo.get("value"));
+                OrgSwitchBean orgSwitchBean = SandboxUtil.getOrgSwitchBean(orgId);
+                FileStore fs = FacilioFactory.getFileStore();
+                FileInfo fileInfo = fs.getFileInfo(skipComponentFileId);
+                if (fileInfo != null && fileInfo.getContentType().equals("text/plain")) {
+                    try (InputStream inputStream = NewTransactionService.newTransactionWithReturn(() -> orgSwitchBean.getParentOrgFile(orgId, skipComponentFileId))) {
+                        if (inputStream != null) {
+                            String fileContent = readInputStreamAsString(inputStream);
+                            return fileContent;
+                        } else {
+                            return null;
+                        }
+                    }
+                }
+            }catch (Exception e){
+                LOGGER.info(key +" is not configured correctly");
+                return null;
             }
-            return new ArrayList<>();
+        }
+        return null;
+    }
+    private static String readInputStreamAsString(InputStream inputStream) throws IOException  {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            return reader.lines().collect(Collectors.joining());
+        }
+    }
+    public static List<Integer> getSkippedComponentsFromOrgInfo(long orgId, String key) throws Exception {
+        String skipComponentString = getSkippedFileFromStore(orgId, key);
+        if (StringUtils.isNotEmpty(skipComponentString)) {
+            List<Integer> skipComponentIndexes = Arrays.stream(skipComponentString.split(","))
+                    .map(String::trim)
+                    .map(Integer::valueOf)
+                    .collect(Collectors.toList());
+            return skipComponentIndexes;
         }
         return new ArrayList<>();
     }
-    public static Map<Integer, List<Long>> getSkippedComponentIdsFromOrgInfo(long orgId) throws Exception {
+    public static Map<Integer, List<Long>> getSkippedComponentIdsFromOrgInfo(long orgId, String key) throws Exception {
         Map<Integer, List<Long>> skipComponentVsIds = new HashMap<>();
-        Map<String, Object> skipComponentIdsFromOrgInfo = CommonCommandUtil.getOrgInfo(orgId,"skipComponentIds");
-        if (skipComponentIdsFromOrgInfo != null && !skipComponentIdsFromOrgInfo.isEmpty()) {
-            String skipComponentVsIdsString = (String) skipComponentIdsFromOrgInfo.get("value");
-            if (skipComponentVsIdsString != null && !skipComponentVsIdsString.isEmpty()) {
+        String skipComponentVsIdsString = getSkippedFileFromStore(orgId, key);
+        if (StringUtils.isNotEmpty(skipComponentVsIdsString)) {
                 ObjectMapper objectMapper = new ObjectMapper();
                 try {
                     skipComponentVsIds = objectMapper.readValue(
@@ -399,7 +428,6 @@ public class SandboxAPI {
                     return new HashMap<>();
                 }
                 return skipComponentVsIds;
-            }
         }
         return new HashMap<>();
     }

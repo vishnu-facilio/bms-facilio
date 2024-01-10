@@ -213,7 +213,7 @@ public class AssetCategoryPackageBeanImpl implements PackageBean<V3AssetCategory
         return assetCategoryContext;
 
     }
-    public List<V3AssetCategoryContext> getAssetCategoryForIds(Collection<Long> ids) throws Exception {
+    public List<V3AssetCategoryContext> getAssetCategoryForIds(List<Long> ids) throws Exception {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule assetCategoryModule = modBean.getModule("assetcategory");
         List<V3AssetCategoryContext> assetCategories = (List<V3AssetCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetCategoryModule, V3AssetCategoryContext.class, Boolean.TRUE);

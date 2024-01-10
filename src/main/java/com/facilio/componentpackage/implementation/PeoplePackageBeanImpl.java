@@ -620,6 +620,7 @@ public class PeoplePackageBeanImpl implements PackageBean<V3PeopleContextExtende
         if (CollectionUtils.isNotEmpty(props)) {
             for (V3PeopleContext peopleContext : props) {
                 if (StringUtils.isNotEmpty(peopleContext.getEmail()) && !V3PeopleAPI.VALID_EMAIL_ADDRESS_REGEX.matcher(peopleContext.getEmail()).find()) {
+                    LOGGER.info("####Sandbox Tracking - Improper People Info - " + peopleContext.getId() + " Name - " + peopleContext.getName());
                     continue;
                 }
                 peopleIdMap.put(peopleContext.getId(), -1L);

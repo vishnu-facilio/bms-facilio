@@ -4,18 +4,19 @@ import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.FileContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.componentpackage.command.PackageChainFactory;
 import com.facilio.componentpackage.constants.PackageConstants;
 import com.facilio.componentpackage.context.PackageContext;
 import com.facilio.componentpackage.context.PackageFolderContext;
+import com.facilio.componentpackage.utils.PackageFileUtil;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -160,6 +161,7 @@ public class PackageAction extends FacilioAction {
     public String addOrgInfoData() throws Exception {
         OrgBean orgBean = AccountUtil.getOrgBean();
         AccountUtil.setCurrentAccount(orgId);
+        name = name.trim();
         if(orgBean.getOrg(orgId)!=null){
             Map<String, Object> orgProps = CommonCommandUtil.getOrgInfo(orgId,name);
             if(orgProps == null) {
@@ -172,6 +174,32 @@ public class PackageAction extends FacilioAction {
         JSONObject result = new JSONObject();
         result.put("name", name);
         result.put("value", value);
+        ServletActionContext.getResponse().setStatus(200);
+        setResult("result", "success");
+        AccountUtil.cleanCurrentAccount();
+        return SUCCESS;
+    }
+    public String addSkipComponentFile() throws Exception {
+        OrgBean orgBean = AccountUtil.getOrgBean();
+        PackageFileUtil.accountSwitch(orgId);
+        FileContext fileContext = null;
+        try {
+             fileContext = PackageFileUtil.addSkipComponentFile(file);
+        }catch (Exception e){
+            setResult("result", "Input file should be .txt format");
+            ServletActionContext.getResponse().setStatus(200);
+            return SUCCESS;
+        }
+        name = name.trim();
+        if(orgBean.getOrg(orgId) != null){
+            Map<String, Object> orgProps = CommonCommandUtil.getOrgInfo(orgId, name);
+            if(orgProps == null) {
+                CommonCommandUtil.insertOrgInfo(name, String.valueOf(fileContext.getFileId()));
+            }
+            else{
+                CommonCommandUtil.updateOrgInfo(name, String.valueOf(fileContext.getFileId()));
+            }
+        }
         ServletActionContext.getResponse().setStatus(200);
         setResult("result", "success");
         AccountUtil.cleanCurrentAccount();

@@ -148,7 +148,7 @@ public class TicketCategoryPackageBeanImpl implements PackageBean<TicketCategory
         }
         return ticketCategoryIdVsModuleId;
     }
-    public List<TicketCategoryContext> getTicketCategoryForIds(Collection<Long> ids) throws Exception {
+    public List<TicketCategoryContext> getTicketCategoryForIds(List<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketCategoryModule = moduleBean.getModule("ticketcategory");
         List<TicketCategoryContext> ticketCategories = (List<TicketCategoryContext>) PackageBeanUtil.getModuleDataListsForIds(ids,ticketCategoryModule, TicketCategoryContext.class);

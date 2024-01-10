@@ -197,7 +197,7 @@ public class AssetDepartmentPackageBeanImpl implements PackageBean<V3AssetDepart
         }
         return AssetDepartmentIdVsModuleId;
     }
-    public List<V3AssetDepartmentContext> getAssetDepartmentForIds(Collection<Long> ids) throws Exception {
+    public List<V3AssetDepartmentContext> getAssetDepartmentForIds(List<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetDepartmentModule = moduleBean.getModule("assetdepartment");
         List<V3AssetDepartmentContext> assetDepartments = (List<V3AssetDepartmentContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetDepartmentModule, V3AssetDepartmentContext.class);

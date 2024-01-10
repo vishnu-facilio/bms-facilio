@@ -182,7 +182,7 @@ public class TicketPriorityPackageBeanImpl implements PackageBean<TicketPriority
         }
         return ticketPriorityIdVsModuleId;
     }
-    public List<TicketPriorityContext> getTicketPriorityForIds(Collection<Long> ids) throws Exception {
+    public List<TicketPriorityContext> getTicketPriorityForIds(List<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule ticketPriorityModule = moduleBean.getModule("ticketpriority");
         List<TicketPriorityContext> ticketPriorities = (List<TicketPriorityContext>) PackageBeanUtil.getModuleDataListsForIds(ids,ticketPriorityModule, TicketPriorityContext.class );;

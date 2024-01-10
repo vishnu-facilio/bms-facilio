@@ -131,7 +131,7 @@ public class ValidationRulePackageUtil {
 
         // Error Message Placeholder
 
-        if (errorMessagePlaceHolderScript != null && !errorMessagePlaceHolderScript.getWorkflowV2String().isEmpty()) {
+        if (errorMessagePlaceHolderScript != null && StringUtils.isNotEmpty(errorMessagePlaceHolderScript.getWorkflowV2String())) {
 
             validationRuleElement.element(PackageConstants.WorkFlowRuleConstants.IS_V2_SCRIPT).text(String.valueOf(errorMessagePlaceHolderScript.getIsV2Script()));
             validationRuleElement.element(PackageConstants.WorkFlowRuleConstants.WORKFLOW_STRING).cData(String.valueOf(errorMessagePlaceHolderScript.getWorkflowV2String()));

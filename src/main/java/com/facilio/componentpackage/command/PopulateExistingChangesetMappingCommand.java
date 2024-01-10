@@ -10,6 +10,7 @@ import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.sandbox.utils.SandboxAPI;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
@@ -22,9 +23,9 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		List<Integer> skipComponentsFromOrgInfo = SandboxAPI.getSkippedComponentsFromOrgInfo(AccountUtil.getCurrentOrg().getOrgId());
 		List<Integer> skipComponents = (List<Integer>) context.getOrDefault(PackageConstants.SKIP_COMPONENTS, new ArrayList<>());
-		Map<Integer, List<Long>> skipComponentVsIdsFromOrgInfo = SandboxAPI.getSkippedComponentIdsFromOrgInfo(AccountUtil.getCurrentOrg().getOrgId());
+		List<Integer> skipComponentsFromOrgInfo = SandboxAPI.getSkippedComponentsFromOrgInfo(AccountUtil.getCurrentOrg().getOrgId(), "skipComponents");
+		Map<Integer, List<Long>> skipComponentVsIdsFromOrgInfo = SandboxAPI.getSkippedComponentIdsFromOrgInfo(AccountUtil.getCurrentOrg().getOrgId(), "skipComponentIds");
 		skipComponents.addAll(skipComponentsFromOrgInfo);
 		PackageContext packageContext = (PackageContext) context.get(PackageConstants.PACKAGE_CONTEXT);
 		for(ComponentType componentType : ComponentType.ORDERED_COMPONENT_TYPE_LIST) {
@@ -53,7 +54,7 @@ public class PopulateExistingChangesetMappingCommand extends FacilioCommand {
 		return false;
 	}
 	private void removeSkippedIdsFromComponentIds(Map<Integer ,List<Long>> skipComponentVsIdsFromOrgInfo, ComponentType componentType, Map<Long, Long> componentIdVsParentId){
-		if(skipComponentVsIdsFromOrgInfo != null && !skipComponentVsIdsFromOrgInfo.isEmpty()){
+		if(skipComponentVsIdsFromOrgInfo != null && !skipComponentVsIdsFromOrgInfo.isEmpty() && componentIdVsParentId != null && !componentIdVsParentId.isEmpty()){
 			if(skipComponentVsIdsFromOrgInfo.containsKey(componentType.getIndex())){
 				List<Long> skipComponentIds = skipComponentVsIdsFromOrgInfo.get(componentType.getIndex());
 				for (Long id : skipComponentIds) {

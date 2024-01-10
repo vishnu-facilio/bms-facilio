@@ -176,7 +176,7 @@ public class AssetTypePackageBeanImpl implements PackageBean<V3AssetTypeContext>
         }
         return assetTypeIdVsModuleId;
     }
-    public List<V3AssetTypeContext> getAssetTypeForIds(Collection<Long> ids) throws Exception {
+    public List<V3AssetTypeContext> getAssetTypeForIds(List<Long> ids) throws Exception {
         ModuleBean moduleBean = Constants.getModBean();
         FacilioModule assetTypeModule = moduleBean.getModule("assettype");
         List<V3AssetTypeContext> assetTypes = (List<V3AssetTypeContext>) PackageBeanUtil.getModuleDataListsForIds(ids,assetTypeModule, V3AssetTypeContext.class);
