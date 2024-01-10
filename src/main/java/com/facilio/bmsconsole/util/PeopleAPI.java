@@ -1315,7 +1315,8 @@ public class PeopleAPI {
 	public static List<Map<String, Object>> getOrgUserAndApplicationMap(long peopleId) throws Exception{
 		List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		ArrayList<FacilioField> selectFields = new ArrayList<>(Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.OUID),fieldMap.get(FacilioConstants.ContextNames.APPLICATION_ID)));
+
+		ArrayList<FacilioField> selectFields = new ArrayList<>(Arrays.asList(fieldMap.get(FacilioConstants.ContextNames.OUID),fieldMap.get(FacilioConstants.ContextNames.APPLICATION_ID),fieldMap.get("isDefaultApp")));
 		selectFields.add(FieldFactory.getField(FacilioConstants.ContextNames.USER,"ORG_Users.ORG_USERID",FieldType.NUMBER));
 		selectFields.add(FieldFactory.getField(FacilioConstants.ContextNames.PEOPLE,"ORG_Users.PEOPLE_ID",FieldType.NUMBER));
 		return getOrgUserAppsForPeople(peopleId,selectFields);

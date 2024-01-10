@@ -55,7 +55,9 @@ public class GetReservedInventoryRequestLineItems extends FacilioCommand {
                             errorType = "Non-reservable";
                             errorMessage = "Item not available in Storeroom";
                         } else {
-                            availableItemQuantity = tool.getQuantity();
+                            if(tool.getQuantity() != null){
+                                availableItemQuantity = tool.getQuantity();
+                            }
                             storeRoom = tool.getStoreRoom();
                             availableInStoreRoom = true;
                         }
@@ -65,7 +67,9 @@ public class GetReservedInventoryRequestLineItems extends FacilioCommand {
                             errorType = "Non-reservable";
                             errorMessage = "Tool not available in Storeroom";
                         } else {
-                            availableItemQuantity = tool.getQuantity();
+                            if(tool.getQuantity() != null){
+                                availableItemQuantity = tool.getQuantity();
+                            }
                             storeRoom = tool.getStoreRoom();
                             availableInStoreRoom = true;
                         }

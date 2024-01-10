@@ -496,8 +496,8 @@ public class V3InventoryUtil {
             V3ItemContext item = V3ItemsApi.getItem(itemTypeId, storeRoomId);
             if (FacilioUtil.isEmptyOrNull(item)) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Item is not Present in the given storeroom");
-            } else if (item.getQuantity() < quantity
-                    && reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+            } else if (reservationType.getValue().equals(ReservationType.HARD.getValue()) &&
+                    (item.getQuantity() == null || item.getQuantity() < quantity)) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR,
                         "Available quantity in store is less than the requested quantity");
             }
@@ -514,8 +514,8 @@ public class V3InventoryUtil {
             V3ToolContext tool = V3ToolsApi.getTool(toolTypeId, storeRoomId);
             if (FacilioUtil.isEmptyOrNull(tool)) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR, "Tool is not Present in the given storeroom");
-            } else if (tool.getQuantity() < quantity
-                    && reservationType.getValue().equals(ReservationType.HARD.getValue())) {
+            } else if (reservationType.getValue().equals(ReservationType.HARD.getValue()) &&
+                    (tool.getQuantity() == null || tool.getQuantity() < quantity)) {
                 throw new RESTException(ErrorCode.VALIDATION_ERROR,
                         "Available quantity in store is less than the requested quantity");
             }

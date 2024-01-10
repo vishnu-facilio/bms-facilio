@@ -4284,6 +4284,18 @@ public class ApplicationApi {
             if(currentAppId == null){
                 continue;
             }
+            if(orgUser.containsKey("isDefaultApp")){
+                boolean isDefaultApp = FacilioUtil.parseBoolean(orgUser.get("isDefaultApp"));
+                if(isDefaultApp){
+                    return currentAppId;
+                }
+            }
+        }
+        for(Map<String, Object> orgUser: orgUserMap) {
+            Long currentAppId = (Long) orgUser.get(FacilioConstants.ContextNames.APPLICATION_ID);
+            if(currentAppId == null){
+                continue;
+            }
             ApplicationContext app = getApplicationForId(currentAppId);
             if(app.getLinkName().equals(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP)){
                 return currentAppId;
@@ -4291,6 +4303,9 @@ public class ApplicationApi {
             if(appId == null){
                 appId = currentAppId;
             }
+        }
+        if(appId == null) {
+            return  getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.MAINTENANCE_APP);
         }
         return appId;
     }

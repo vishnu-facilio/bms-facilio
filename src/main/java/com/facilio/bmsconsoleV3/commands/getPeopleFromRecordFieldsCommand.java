@@ -126,6 +126,9 @@ public class getPeopleFromRecordFieldsCommand extends FacilioCommand {
                     continue;
                 }
                 User user = FieldUtil.getAsBeanFromMap((Map<String, Object>) recordProp.get(field.getName()),User.class);
+                if(user == null) {
+                    continue;
+                }
                 if(userFieldNameMap.containsKey(user.getOuid())){
                     userFieldNameMap.get(user.getOuid()).add(field.getDisplayName());
                 }else {

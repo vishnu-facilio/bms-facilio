@@ -21,13 +21,15 @@ import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
 import com.facilio.services.factory.FacilioFactory;
 import com.facilio.v3.util.V3Util;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
-
+@Log4j
 public class NotifyCommentMentions extends FacilioCommand implements Serializable {
     private static final String TITLE = "title";
     private static final String BODY = "body";
@@ -35,8 +37,6 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
         List<NoteContext> notes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
         if (notes == null) {
             NoteContext note = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);
@@ -48,6 +48,17 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
         if(notes == null || notes.isEmpty()){
             return false;
         }
+        String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE_NAME);
+        try {
+            notifyMentions(notes, parentModuleName);
+        } catch (Exception e) {
+            LOGGER.info("Error while sending Notification for Mentions", e);
+        }
+        return false;
+    }
+
+    private void notifyMentions(List<NoteContext> notes, String parentModuleName) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule parentModule = modBean.getModule(parentModuleName);
         String name = parentModuleName == FacilioConstants.ContextNames.WORK_ORDER ? FacilioConstants.ContextNames.COMMENT : FacilioConstants.ContextNames.NOTE;
 
@@ -84,7 +95,6 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
                 sendEmailNotification(pplIdsToSendEmail, notificationContent,note,parentModule);
             }
         }
-        return false;
     }
 
     private Set<Long> getFilteredPeopleToSendEmail(Set<Long> peopleIds, List<PeopleNotificationSettings> disabledNotifications) {
@@ -123,6 +133,9 @@ public class NotifyCommentMentions extends FacilioCommand implements Serializabl
 
     private void sendEmailNotification(Set<Long> pplIds, Map<String, String> notificationContent, NoteContext note, FacilioModule parentModule) throws Exception {
         List<V3PeopleContext> ppl = V3RecordAPI.getRecordsList(FacilioConstants.ContextNames.PEOPLE, pplIds, V3PeopleContext.class);
+        if(CollectionUtils.isEmpty(ppl)){
+            throw new Exception("people record not found for peopleIds");
+        }
         long recordId = note.getParent() != null ? note.getParent().getId() : note.getParentId();
         for (V3PeopleContext person: ppl) {
             String summaryURL = V3RecordAPI.getRecordUrlForPeople(person.getId(),parentModule.getName(),recordId);
