@@ -22,19 +22,26 @@ public class GetAvailableSystemButtonsCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         int positionType = (int) context.get(FacilioConstants.ContextNames.POSITION_TYPE);
-        long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
-        FacilioContext summary = V3Util.getSummary(moduleName, Collections.singletonList(recordId));
-        List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summary,moduleName);
-        ModuleBaseWithCustomFields recordData = CollectionUtils.isNotEmpty(moduleBaseWithCustomFields) ? moduleBaseWithCustomFields.get(0) : null;
-
-        if(positionType < 4 && recordData == null){
-            throw new IllegalArgumentException("Invalid record");
-        }
-
         CustomButtonRuleContext.PositionType positionTypeEnum = CustomButtonRuleContext.PositionType.valueOf(positionType);
         if (positionTypeEnum == null) {
             throw new IllegalArgumentException("Position type cannot be empty");
         }
+
+        ModuleBaseWithCustomFields recordData = null;
+        if(positionTypeEnum!= CustomButtonRuleContext.PositionType.LIST_TOP){
+            long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
+            if(recordId<=0){
+                throw new IllegalArgumentException("Invalid recordId:"+recordId);
+            }
+            FacilioContext summary = V3Util.getSummary(moduleName, Collections.singletonList(recordId));
+            List<ModuleBaseWithCustomFields> moduleBaseWithCustomFields = Constants.getRecordListFromContext(summary,moduleName);
+            recordData = CollectionUtils.isNotEmpty(moduleBaseWithCustomFields) ? moduleBaseWithCustomFields.get(0) : null;
+
+            if(recordData == null){
+                throw new IllegalArgumentException("Invalid record");
+            }
+        }
+
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = moduleBean.getModule(moduleName);
         if (module == null){
