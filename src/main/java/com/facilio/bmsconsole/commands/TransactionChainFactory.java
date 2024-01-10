@@ -1654,6 +1654,7 @@ public class TransactionChainFactory {
 		return c;
 	}
 
+	@Deprecated
 	public static FacilioChain getProcessDataChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ProcessDataCommand());
@@ -1665,8 +1666,9 @@ public class TransactionChainFactory {
 	
 	public static FacilioChain getTimeSeriesAddOrUpdateChain() throws Exception {
         FacilioChain chain = getDefaultChain();
-        chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
         chain.addCommand(new UnModeledDataAddCommandV3());
+		chain.addCommand(new ProcessMultiTimeDataCommand());
+		chain.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 		return chain;
 	}
 

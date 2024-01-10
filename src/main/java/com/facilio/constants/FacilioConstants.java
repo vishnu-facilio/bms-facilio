@@ -3845,6 +3845,7 @@ public class FacilioConstants {
 		public static final String PPM_BULKUPDATE = "ppmbulkupdate";
 		public static final String PPM_BULKPUBLISH = "ppmbulkpublish";
 		public static final String CUSTOM_PAGE_LIMIT = "customPageLimit";
+		public static final String PUSH_TIMESERIES_TO_STORM = "pushTimeseriesToStorm";
 	}
 
 	public static class Services {
