@@ -1,11 +1,14 @@
 package com.facilio.storm.command;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
+import com.facilio.common.reading.OperationType;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -14,9 +17,9 @@ import com.facilio.services.messageQueue.MessageQueue;
 import com.facilio.services.messageQueue.MessageQueueFactory;
 import com.facilio.services.procon.message.FacilioRecord;
 import lombok.extern.log4j.Log4j;
-import lombok.val;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.BooleanUtils;
 import org.json.simple.JSONObject;
 
 import java.util.List;
@@ -27,20 +30,26 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+        if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ENABLE_STORM)) {
+            LOGGER.debug("Storm's license is not enabled for this org");
+            return false;
+        }
+
         MessageQueue mq = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
         long startTime = System.currentTimeMillis();
+
+        OperationType operationType = getReadingOperationType(context);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
         try {
             if (MapUtils.isNotEmpty(readingMap)) {
-
-                for (val entry : readingMap.entrySet()) {
+                for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
                     String moduleName = entry.getKey();
                     List<ReadingContext> readingCtxList = entry.getValue();
                     for (ReadingContext readingContext : readingCtxList) {
                         Map<String, Object> readings = readingContext.getReadings();
-                        for (val readingEntry : readings.entrySet()) {
+                        for (Map.Entry<String, Object> readingEntry : readings.entrySet()) {
                             String fieldName = readingEntry.getKey();
                             Object readingVal = readingEntry.getValue();
 
@@ -66,6 +75,7 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                             json.put("value", readingVal);
                             json.put("fieldId", field.getFieldId());
                             json.put("ttime", readingContext.getTtime());
+                            json.put("operationType", operationType.getIndex());
 
                             String partitionKey = "rule-exec/" + readingContext.getOrgId() + "/" + readingContext.getParentId();
 
@@ -74,12 +84,21 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                     }
                 }
             }
-        } finally {
-            LOGGER.debug("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
+        } catch (Exception ex) {
+            LOGGER.error("Error occurred during storm execution of readings. \n" + readingMap, ex);
         }
 
+        LOGGER.debug("Time taken for storm reading process. " + (System.currentTimeMillis() - startTime));
 
         return false;
+    }
+
+    private OperationType getReadingOperationType(Context c) {
+        if(BooleanUtils.isTrue((Boolean) c.get(FacilioConstants.ContextNames.UPDATE_READINGS))) {
+            return OperationType.UPDATE;
+        } else {
+            return OperationType.ADD;
+        }
     }
 
     private String getTopicName() {

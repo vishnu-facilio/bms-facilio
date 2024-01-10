@@ -22,50 +22,44 @@ public class ReadingPostProcessingCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.debug("Executing workflow rules");
 
+        boolean isAddReadings = ! (boolean) context.getOrDefault(FacilioConstants.ContextNames.UPDATE_READINGS, Boolean.FALSE);
+
         executeRules(context);
-        //executeTriggers(context);
 
-        boolean adjustTime = (boolean) context.getOrDefault(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
-        ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.OLD_CONTROLLER);
-        if (controller == null && adjustTime) {
-            executeFormulae(context);
+        if(isAddReadings) {
+            //executeTriggers(context);
+
+            boolean adjustTime = (boolean) context.getOrDefault(FacilioConstants.ContextNames.ADJUST_READING_TTIME, true);
+            ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.OLD_CONTROLLER);
+            if (controller == null && adjustTime) {
+                executeFormulae(context);
+            }
+
+            // sending websocket event for live data update
+            publishReadingChangeMessage(context);
         }
-
-        // sending websocket event for live data update
-        publishReadingChangeMessage(context);
 
         LOGGER.debug("Post processing completed");
         return false;
     }
 
     private void executeRules(Context context) throws Exception {
-        if((boolean)(context.getOrDefault(FacilioConstants.ContextNames.HISTORY_READINGS, false))){
+        if ((boolean) (context.getOrDefault(FacilioConstants.ContextNames.HISTORY_READINGS, false))) {
             LOGGER.debug("Imported reading does not evaluate rules.");
             return;
         }
         boolean isNewReadingRule = AccountUtil.isFeatureEnabled(NEW_READING_RULE);
-        boolean isSensorRuleEnabled=AccountUtil.isFeatureEnabled(SENSOR_RULE);
-        boolean isNewKpiEnabled=AccountUtil.isFeatureEnabled(NEW_KPI);
+        boolean isSensorRuleEnabled = AccountUtil.isFeatureEnabled(SENSOR_RULE);
+        boolean isNewKpiEnabled = AccountUtil.isFeatureEnabled(NEW_KPI);
         LOGGER.debug("Executing rules. storm exec ?? " + isNewReadingRule);
         if (isNewReadingRule || isSensorRuleEnabled || isNewKpiEnabled) {
-            forwardToStorm(context);
+            FacilioChain postProcessingChain = ReadOnlyChainFactory.stormReadingPostProcessingChain();
+            postProcessingChain.setContext((FacilioContext) context);
+            postProcessingChain.execute();
         } else {
             executeWorkflowsRules(context);
         }
     }
-
-    private void forwardToStorm(Context context) {
-        try {
-            FacilioChain postProcessingChain = ReadOnlyChainFactory.stormReadingPostProcessingChain();
-            postProcessingChain.setContext((FacilioContext) context);
-            postProcessingChain.execute();
-        } catch (Exception e) {
-            Map<String, List<ReadingContext>> readingMap = (Map<String, List<ReadingContext>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
-            LOGGER.error("Error occurred during storm execution of readings. \n" + readingMap, e);
-//            CommonCommandUtil.emailException(this.getClass().getName(), "Error occurred during storm execution of readings.", e, String.valueOf(readingMap));
-        }
-    }
-
 
     private void executeWorkflowsRules(Context context) {
         try {

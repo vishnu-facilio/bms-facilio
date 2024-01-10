@@ -1,4 +1,4 @@
-package com.facilio.modules.fields.relations;
+package com.facilio.common.reading.add;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -10,6 +10,8 @@ import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.relations.BaseRelationContext;
+import com.facilio.modules.fields.relations.RelationFieldUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +25,6 @@ import java.util.Map;
 
 @Log4j
 public class CalculateDependencyCommand extends FacilioCommand {
-
     @Override
     public boolean executeCommand(Context context) throws Exception {
         long startTime = System.currentTimeMillis();
@@ -43,10 +44,8 @@ public class CalculateDependencyCommand extends FacilioCommand {
             }
 
             List<ReadingContext> readings = entry.getValue();
-            if (readings != null && !readings.isEmpty()) {
-//                FacilioModule module = modBean.getModule(moduleName); // Commenting out since it's not used
+            if (CollectionUtils.isNotEmpty(readings)) {
                 List<FacilioField> fields = modBean.getAllFields(moduleName);
-//                Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); // Commenting out since it's not used
 
                 List<BaseRelationContext> relations = RelationFieldUtil.getAllRelations(fields);
                 if (CollectionUtils.isNotEmpty(relations)) {

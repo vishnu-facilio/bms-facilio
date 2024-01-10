@@ -58,7 +58,8 @@ public class AddDefaultLicenseCommand extends FacilioCommand {
             AccountUtil.FeatureLicense.PEOPLE,
             AccountUtil.FeatureLicense.DASHBOARD_V2,
             AccountUtil.FeatureLicense.WORKFLOW_RULE_LOG,
-            AccountUtil.FeatureLicense.WEAVE
+            AccountUtil.FeatureLicense.WEAVE,
+            AccountUtil.FeatureLicense.ENABLE_STORM
             // Add new default licenses here
     )));
 

@@ -81,7 +81,7 @@ public class WorkflowV2Util {
 
 	static {
 		try {
-			if(!DBConf.getInstance().getService().equalsIgnoreCase("storm")) {
+			if (!"storm".equalsIgnoreCase(DBConf.getInstance().getService())) {
 				initWorkflowResource();
 			}
 		} catch (Exception e) {

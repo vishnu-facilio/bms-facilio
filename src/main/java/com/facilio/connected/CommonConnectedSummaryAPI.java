@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static com.facilio.modules.FieldFactory.getStringField;
 
 public class CommonConnectedSummaryAPI {
-    private static final List<String> ALARM_EXCLUDE_FIELDS = Arrays.asList("key", "type", "acknowledged", "noOfNotes");
+    private static final List<String> ALARM_EXCLUDE_FIELDS = Arrays.asList("key", "type", "acknowledged", "noOfNotes", "subject", "severity");
     private static final List<String> RULE_EXCLUDE_FIELDS = Arrays.asList("name", "categoryId", "readingModuleId", "readingFieldId", "resourceType", "autoClear", "linkName");
 
     public static List<PagesContext> getNewReadingRuleSystemPage(ApplicationContext app, boolean isTemplate, boolean isDefault) throws Exception {

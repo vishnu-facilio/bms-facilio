@@ -588,7 +588,12 @@ public class ReadOnlyChainFactory {
 	}
 	
 	public static FacilioChain getAddOrUpdateReadingValuesChain() {
+		return getAddOrUpdateReadingValuesChain(false);
+	}
+
+	public static FacilioChain getAddOrUpdateReadingValuesChain(boolean isUpdate) {
 		FacilioChain c = getDefaultChain();
+		c.getContext().put(FacilioConstants.ContextNames.UPDATE_READINGS, isUpdate);
 		c.addCommand(new AddOrUpdateReadingsCommand());
 		return c;
 	}

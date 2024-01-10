@@ -9,23 +9,34 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.commons.lang.BooleanUtils;
 
-import java.text.MessageFormat;
 import java.util.List;
 import java.util.Map;
 
+@Log4j
 public class AddOrUpdateReadingsCommand extends FacilioCommand {
-
-    private static final Logger LOGGER = LogManager.getLogger(AddOrUpdateReadingsCommand.class.getName());
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
         long startTime = System.currentTimeMillis();
-        FacilioChain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
-        addOrUpdateChain.execute(context);
+
+        if(BooleanUtils.isTrue((Boolean) context.get(FacilioConstants.ContextNames.UPDATE_READINGS))) { //update readings
+            TransactionChainFactory.updateOnlyReadingsChain().execute(context);
+            ReadOnlyChainFactory.readingPostProcessingChain().execute(context);
+        } else { //add readings
+            TransactionChainFactory.onlyAddOrUpdateReadingsChain().execute(context);
+            postOperationsForAddReadings(context);
+        }
+
+        LOGGER.debug("AddOrUpdateReadingsCommand time taken " + (System.currentTimeMillis() - startTime));
+        return false;
+    }
+
+    private void postOperationsForAddReadings(Context context) throws Exception {
 
         boolean isReqFromStorm = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CALL_FROM_STORM, Boolean.FALSE);
 
@@ -37,9 +48,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
         boolean forkPostProcessing = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FORK_POST_READING_PROCESSING, false);
         if (forkPostProcessing) {
             try {
-                long time = System.currentTimeMillis();
                 FacilioTimer.scheduleInstantJob("rule", "ReadingPostProcessingJob", (FacilioContext) context);
-                LOGGER.debug(MessageFormat.format("Time taken to create instant job : {0}", (System.currentTimeMillis() - time)));
             } catch (Exception e) {
                 LOGGER.debug("Error occurred while creating instant job for post processing of reading", e);
                 CommonCommandUtil.emailException("AddOrUpdateReadingsCommand", "Post processing instant job failed", e);
@@ -49,9 +58,6 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
             postProcessingChain.setContext((FacilioContext) context);
             postProcessingChain.execute();
         }
-
-        LOGGER.debug("AddOrUpdateReadingsCommand time taken " + (System.currentTimeMillis() - startTime));
-        return false;
     }
 
     private ControllerContext updateCheckPointAndControllerActivity(Context context) throws Exception {

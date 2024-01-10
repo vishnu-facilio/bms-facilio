@@ -792,33 +792,30 @@ public class ReadingsAPI {
 
 //	private static final int CURRENT_TIME_BUFFER = 5 * 60 * 1000; // Having 5 min buffer
 	private static final int CURRENT_TIME_BUFFER = 9 * 60 * 1000; // 9 mins buffer for Temporary fix
-	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
 
-		if(readingList == null || readingList.isEmpty()) {
+	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList, List<ReadingContext> readingList, Map<String, ReadingDataMeta> metaMap) throws SQLException {
+
+		if (CollectionUtils.isEmpty(readingList)) {
 			return null;
 		}
-//		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-		Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fieldsList);
 		Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
-		for(ReadingContext readingContext:readingList) {
-			long resourceId=readingContext.getParentId();
-			long timeStamp=readingContext.getTtime();
+		for (ReadingContext readingContext : readingList) {
+			long resourceId = readingContext.getParentId();
+			long timeStamp = readingContext.getTtime();
 			long readingId = readingContext.getId();
-			Map<String,Object> readings=  readingContext.getReadings();
-			for(Map.Entry<String, Object> reading :readings.entrySet()) {
+			Map<String, Object> readings = readingContext.getReadings();
+			for (Map.Entry<String, Object> reading : readings.entrySet()) {
 				FacilioField fField = fieldMap.get(reading.getKey());
 				if (fField != null) {
 					Object val = FacilioUtil.castOrParseValueAsPerType(fField, reading.getValue());
-//						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134)) {
-//							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
-//						}
 					if (val != null) {
 						long fieldId = fField.getFieldId();
 						String uniqueKey = getRDMKey(resourceId, fField);
 						if (metaMap != null) {
 							ReadingDataMeta meta = metaMap.get(uniqueKey);
-							if(meta != null)
-							{
+							if (meta != null) {
 								Object lastReading = meta.getValue();
 								long lastTimeStamp = meta.getTtime();
 								long currentTime = System.currentTimeMillis();
@@ -829,7 +826,7 @@ public class ReadingsAPI {
 										&& !"-1".equals(meta.getActualValue())
 										&& timeStamp < lastTimeStamp)) {
 
-										LOGGER.debug("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId + ", fieldId: " +fieldId+ ", Meta: "+meta);
+									LOGGER.debug("Not updating RDM: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: " + resourceId + ", fieldId: " + fieldId + ", Meta: " + meta);
 
 									continue;
 								}
@@ -838,7 +835,7 @@ public class ReadingsAPI {
 						String value = val.toString();
 
 						ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
-						if (rdm == null || (rdm.getTtime() <= System.currentTimeMillis() && rdm.getTtime() < timeStamp) ) {
+						if (rdm == null || (rdm.getTtime() <= System.currentTimeMillis() && rdm.getTtime() < timeStamp)) {
 							rdm = new ReadingDataMeta();
 							rdm.setFieldId(fieldId);
 							rdm.setField(fField);
@@ -850,24 +847,15 @@ public class ReadingsAPI {
 							uniqueRDMs.put(uniqueKey, rdm);
 						}
 					}
-//						else {
-//							LOGGER.debug("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
-//						}
 				}
 			}
 		}
 
-//			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
-//			if (AccountUtil.getCurrentOrg().getOrgId() == 104 || AccountUtil.getCurrentOrg().getOrgId() == 134) {
-//				LOGGER.info("Unique RDMs : "+uniqueRDMs);
-//			}
 		if (uniqueRDMs.size() == 0) {
 			return null;
 		}
-//		caseUpdateRDM(uniqueRDMs.values());
 		batchUpdateRDM(uniqueRDMs.values());
 		return uniqueRDMs;
-//		}
 	}
 
 	private static void batchUpdateRDM(Collection<ReadingDataMeta> uniqueRDMs) throws SQLException {

@@ -2757,6 +2757,8 @@ public class FacilioConstants {
 		public static final String RCA_RULE_IDS = "rca_rule_ids";
 		public static final String CALL_FROM_STORM = "req_from_storm_service";
 
+		public static final String UPDATE_READINGS = "UPDATE_READINGS";
+
 		public static final String PLANNEDMAINTENANCE = "plannedmaintenance";
 		public static final String PLANNEDMAINTENANCE_START_TIME = "plannedmaintenanceStartTime";
 		public static final String PLANNEDMAINTENANCE_END_TIME = "plannedmaintenanceEndTime";

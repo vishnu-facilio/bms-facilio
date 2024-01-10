@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.common.reading.add;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.command.FacilioCommand;
@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.MapUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
         long startTime = System.currentTimeMillis();
         Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-        if (metaMap == null || metaMap.isEmpty() || readingMap == null || readingMap.isEmpty()) {
+        if (MapUtils.isEmpty(metaMap) || MapUtils.isEmpty(readingMap)) {
             return false;
         }
 

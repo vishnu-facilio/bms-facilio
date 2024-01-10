@@ -167,14 +167,6 @@ public class ReadingKpiAPI {
         return CollectionUtils.isNotEmpty(readingKpis) ? readingKpis : null;
     }
 
-    public static long adjustTtime(Long ttime, Long interval) {
-        ZoneId zoneId = DBConf.getInstance().getCurrentZoneId();
-        int seconds = (int) (interval / 1000);
-        ZonedDateTime zdt = DateTimeUtil.getDateTime(zoneId, ttime);
-        zdt = zdt.truncatedTo(new SecondsChronoUnit(seconds));
-        return DateTimeUtil.getMillis(zdt, true);
-    }
-
     // only id, fieldId and ns will be set in the context, this is used in storm exec, to form dependency graph
     public static List<IConnectedRule> getReadingKpis(Map<Long, Long> kpiIdVsNsId) throws Exception {
         Map<Long, Long> kpiIdVsFieldId = getKpiIdVsReadingFieldId(new ArrayList<>(kpiIdVsNsId.keySet()));

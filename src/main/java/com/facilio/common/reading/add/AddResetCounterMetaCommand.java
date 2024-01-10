@@ -1,4 +1,4 @@
-package com.facilio.bmsconsole.commands;
+package com.facilio.common.reading.add;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +14,15 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections.CollectionUtils;
 
 public class AddResetCounterMetaCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		// TODO Auto-generated method stub
+
 		List<ResetCounterMetaContext> resetCounterMetaList = (List<ResetCounterMetaContext>) context.get(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST);
-		if(resetCounterMetaList != null && !resetCounterMetaList.isEmpty()){
+		if(CollectionUtils.isNotEmpty(resetCounterMetaList)){
 			FacilioModule module = ModuleFactory.getResetCounterMetaModule();
 			List<Map<String, Object>> props = new ArrayList<>();
 			

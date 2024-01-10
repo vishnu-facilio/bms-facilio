@@ -58,6 +58,8 @@ import com.facilio.cb.command.*;
 import com.facilio.chain.FacilioChain;
 import com.facilio.classification.command.UpdateClassificationStatusCommand;
 import com.facilio.command.FacilioCommand;
+import com.facilio.common.reading.add.*;
+import com.facilio.common.reading.update.UpdateReadingsCommand;
 import com.facilio.connectedapp.commands.AddConnectedAppCommand;
 import com.facilio.connectedapp.commands.AddDefaultConnectedAppFilesCommand;
 import com.facilio.constants.FacilioConstants;
@@ -72,7 +74,6 @@ import com.facilio.energystar.command.*;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.events.commands.NewExecuteEventRulesCommand;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.modules.fields.relations.CalculateDependencyCommand;
 import com.facilio.mv.command.*;
 import com.facilio.ns.command.DeleteRuleNamespacesCommand;
 import com.facilio.pdftemplate.command.AddDefaultPDFTemplatesCommand;
@@ -1564,25 +1565,29 @@ public class TransactionChainFactory {
 			c.addCommand(new EnergyDataDeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
 			c.addCommand(new CalculateDependencyCommand());
-			c.addCommand(new CalculateAggregatedEnergyConsumptionCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
 			c.addCommand(new ExecuteValidationRule());
 			c.addCommand(new AddOrUpdateReadingValuesCommand());
 			c.addCommand(new ValidateAndSetResetCounterMetaCommand());
 			c.addCommand(new AddResetCounterMetaCommand());
 			c.addCommand(new AddMarkedReadingValuesCommand());
-//			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
 
-
+	public static FacilioChain updateOnlyReadingsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetReadingDataMetaCommand());
+		c.addCommand(new ReadingUnitConversionCommand());
+		c.addCommand(new UpdateReadingsCommand());
+		c.addCommand(new ReadingUnitConversionToDisplayUnit());
+		return c;
+	}
 	public static FacilioChain getAddOrUpdateKPICommand() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddOrUpdateKPICommand());
 		return c;
 	}
-
 
 	public static FacilioChain getDeleteKPICommand() {
 		FacilioChain c = getDefaultChain();
