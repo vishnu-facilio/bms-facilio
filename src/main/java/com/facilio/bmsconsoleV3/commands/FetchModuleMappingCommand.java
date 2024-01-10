@@ -10,7 +10,9 @@ public class FetchModuleMappingCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
-        ModuleMappingConfigUtil.getTargetModuleRecords(context);
+        ModuleMappingConfigUtil moduleMappingConfigObj = new ModuleMappingConfigUtil();
+
+        moduleMappingConfigObj.getTargetModuleRecords(context);
 
         return false;
     }

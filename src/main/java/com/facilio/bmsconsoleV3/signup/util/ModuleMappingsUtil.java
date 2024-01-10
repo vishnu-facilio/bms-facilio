@@ -170,7 +170,7 @@ public class ModuleMappingsUtil {
 
         Set<String> siteIdAllowedModules = FieldUtil.getSiteIdAllowedModules();
 
-        setUniqueNameForModuleMappingTemplate(mapping);
+//        setUniqueNameForModuleMappingTemplate(mapping);
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -736,7 +736,7 @@ public class ModuleMappingsUtil {
 
         mappings.setTargetModuleName(moduleMappingTemplateContext.getTargetModule());
 
-        setUniqueNameForModuleMapping(mappings);
+//        setUniqueNameForModuleMapping(mappings);
 
         long id = checkAndGetModuleMappingId(moduleMappingTemplateContext, mappings);
 

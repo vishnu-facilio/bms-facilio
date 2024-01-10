@@ -18,6 +18,7 @@ public class ModuleMappingConfigAction extends V3Action {
     private long templateId;
     private long recordId;
     private JSONObject record;
+    private String templateName;
 
     public String fetchTargetModuleContext() throws Exception {
         FacilioChain chain = TransactionChainFactoryV3.fetchModuleMappingConfig();
@@ -26,6 +27,7 @@ public class ModuleMappingConfigAction extends V3Action {
         context.put(FacilioConstants.ContextNames.ModuleMapping.SOURCE_MODULE, sourceModule);
         context.put(FacilioConstants.ContextNames.ModuleMapping.TARGET_MODULE, targetModule);
         context.put(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_ID, templateId);
+        context.put(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_NAME,templateName);
         context.put(FacilioConstants.ContextNames.ModuleMapping.RECORD_ID, recordId);
         context.put(FacilioConstants.ContextNames.ModuleMapping.RECORD, record);
 
@@ -43,6 +45,7 @@ public class ModuleMappingConfigAction extends V3Action {
         context.put(FacilioConstants.ContextNames.ModuleMapping.SOURCE_MODULE, sourceModule);
         context.put(FacilioConstants.ContextNames.ModuleMapping.TARGET_MODULE, targetModule);
         context.put(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_ID, templateId);
+        context.put(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_NAME,templateName);
         context.put(FacilioConstants.ContextNames.ModuleMapping.RECORD_ID, recordId);
         context.put(FacilioConstants.ContextNames.ModuleMapping.RECORD, record);
 

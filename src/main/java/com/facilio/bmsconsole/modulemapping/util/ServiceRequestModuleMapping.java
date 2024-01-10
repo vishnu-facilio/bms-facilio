@@ -10,7 +10,7 @@ import java.util.*;
 public class ServiceRequestModuleMapping {
 
     public static ModuleMappingContext serviceRequestToWoTemplate() {
-        return new ModuleMappings().addModuleMapping("sr", "saf", "workOrder", true)
+        return new ModuleMappings().addModuleMapping("serviceRequestToWorkorder", "Service Request to Work Order", "workOrder", true)
                 .addFieldMapping("siteId", "siteId")
                 .addFieldMapping("subject", "subject")
                 .addFieldMapping("description", "description")

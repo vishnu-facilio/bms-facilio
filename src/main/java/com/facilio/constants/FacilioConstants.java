@@ -3002,6 +3002,7 @@ public class FacilioConstants {
 			public static final String RECORD_ID = "recordId";
 			public static final String RECORD = "record";
 			public static final String DATA = "data";
+			public static final String TEMPLATE_NAME = "templateName";
 
 		}
 		public static class BooleanMapping{
