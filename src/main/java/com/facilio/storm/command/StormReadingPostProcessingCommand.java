@@ -9,6 +9,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.common.reading.OperationType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -39,7 +40,7 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
         long startTime = System.currentTimeMillis();
 
         OperationType operationType = getReadingOperationType(context);
-
+        long curOrgId = DBConf.getInstance().getCurrentOrgId();
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
         try {
@@ -69,8 +70,9 @@ public class StormReadingPostProcessingCommand extends FacilioCommand {
                                 continue;
                             }
 
+                            long readingOrgId = readingContext.getOrgId() != -1 ? readingContext.getOrgId() : curOrgId;
                             JSONObject json = new JSONObject();
-                            json.put("orgId", readingContext.getOrgId());
+                            json.put("orgId", readingOrgId);
                             json.put("resourceId", readingContext.getParentId());
                             json.put("value", readingVal);
                             json.put("fieldId", field.getFieldId());
