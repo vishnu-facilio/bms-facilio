@@ -38,6 +38,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private int recordsPerBatch = -1;
 	private List<SupplementRecord> insertSupplements;
 	private boolean ignore = false;
+	private boolean generateId = true;
 	private boolean allowSysCreatedFieldsProps = false;
 
 	// TODO to be removed after everything is moved to v3
@@ -180,6 +181,12 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 			throw new IllegalArgumentException("Update first and then get change set.");
 		}
 		return changeSet;
+	}
+
+
+	public InsertRecordBuilder<E> ignoreIdGeneration() {
+		this.generateId = false;
+		return this;
 	}
 
 	public InsertRecordBuilder<E> ignoreSplNullHandling() {
@@ -329,6 +336,9 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					insertBuilder.ignore();
 				}
 
+				if (!generateId) {
+					insertBuilder.ignoreIdGeneration();
+				}
 				if (ignoreSplNullHandling) {
 					insertBuilder.ignoreSplNullHandling();
 				}
