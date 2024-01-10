@@ -19,6 +19,16 @@
         </urlparams>
     </request>
 
+    <request path="/api/v1/setup/application/summary" method="GET">
+        <urlparams>
+            <property name="appId" type="number"/>
+            <property name="roleId" type="number"/>
+            <property name="appName" type="string"/>
+            <property name="considerRole" type="boolean"/>
+            <property name="fetchAllLayouts" type="boolean"/>
+        </urlparams>
+    </request>
+
     <request path="/api/v2/views/:moduleName/:viewName" method="GET">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>

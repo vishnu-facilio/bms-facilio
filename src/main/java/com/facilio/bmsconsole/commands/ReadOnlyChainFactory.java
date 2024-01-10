@@ -2537,6 +2537,13 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	public static FacilioChain getApplicationDetailsForSummaryPage() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new GetApplicationDetails());
+		chain.addCommand(new ConstructSandboxDomainNameForSummaryPage());
+		return chain;
+	}
+
 	public static FacilioChain getAllWebTabGroupChain() {
 		FacilioChain chain = getDefaultChain();
 		chain.addCommand(new GetAllWebTabGroupCommand());

@@ -111,7 +111,7 @@ public class PortalInfoContext  {
 			try {
 				Organization productionOrg = AccountUtil.getOrgBean().getOrg(currentOrg.getProductionOrgId());
 				String sandboxOccupantAppDomain = FacilioProperties.getSandboxOccupantAppDomain();
-				login_url = FacilioProperties.getAppProtocol() + "://" + productionOrg.getDomain() + "." + sandboxOccupantAppDomain + "/";
+				login_url = FacilioProperties.getAppProtocol() + "://" + productionOrg.getDomain() + "." + sandboxOccupantAppDomain + "/" + currentOrg.getDomain() + "/";
 			} catch (Exception e) {
 
 			}

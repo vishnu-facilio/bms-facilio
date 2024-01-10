@@ -127,6 +127,15 @@
         </action>
     </package>
 
+    <package name="applicationSummary" namespace="/api/v1/setup/application" extends="v2Api">
+        <action name="summary" class="com.facilio.bmsconsole.actions.ApplicationAction"
+                method="getApplicationDetailsForSummaryPage">
+            <param name="translationImpl">WebTabTranslation</param>
+            <param name="permission">ALL</param>
+            <param name="setupTab">PORTALS</param>
+        </action>
+    </package>
+
     <package name="moduleSetupApi" namespace="/api/v1/setup/modules" extends="v2Api">
         <action name="add" class="com.facilio.bmsconsole.actions.ModuleAction"
                 method="v2AddModule">

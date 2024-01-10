@@ -327,6 +327,15 @@ public class ApplicationAction extends FacilioAction {
 
 	public String getApplicationDetails() throws Exception {
 		FacilioChain chain = ReadOnlyChainFactory.getApplicationDetails();
+		return getAppDetails(chain);
+	}
+
+	public String getApplicationDetailsForSummaryPage() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.getApplicationDetailsForSummaryPage();
+		return getAppDetails(chain);
+	}
+
+	private String getAppDetails(FacilioChain chain) throws Exception {
 		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.APPLICATION_ID, appId);
 		context.put(FacilioConstants.ContextNames.LAYOUT_APP_TYPE, appName);
