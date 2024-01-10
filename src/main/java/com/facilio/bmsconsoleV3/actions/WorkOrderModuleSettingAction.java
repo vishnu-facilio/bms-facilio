@@ -75,7 +75,7 @@ public class WorkOrderModuleSettingAction extends V3Action {
             facilioChain.getContext().put(FacilioConstants.ContextNames.WORK_ORDER_FEATURE_ALLOWED_STATE_ID, allowedStateId);
         }
 
-        facilioChain.addCommand(new FetchWorkOrderFeatureSettingsCommand());
+        facilioChain.addCommand(new FetchWorkOrderFeatureSettingsSetUpCommand());
         facilioChain.addCommand(new FillTicketStatusInWorkOrderFeatureSettingsCommand());
         facilioChain.execute();
 

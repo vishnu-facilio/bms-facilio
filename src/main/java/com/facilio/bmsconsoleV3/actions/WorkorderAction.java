@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import com.facilio.bmsconsoleV3.context.workorder.setup.FetchWorkOrderFeatureSettingsCommand;
+import com.facilio.bmsconsoleV3.context.workorder.setup.FetchWorkOrderFeatureSettingsSetUpCommand;
 @Getter
 @Setter
 public class WorkorderAction extends V3Action {
@@ -193,7 +193,7 @@ public class WorkorderAction extends V3Action {
         chain.addCommand(new ValidateAndFetchRecordCommand());
         // check if atleast one workorder setting is configured.
         // fetch workorder settings for current module state
-        chain.addCommand(new FetchWorkOrderFeatureSettingsCommand());
+        chain.addCommand(new V3FetchWorkOrderFeatureSettingsCommand());
         // add node for task execution and management
         chain.addCommand(new AddTasksRelatedPermissionCheckCommand());
         chain.addCommand(new AddWorkOrderPlansPermissionCheckCommand());
@@ -238,7 +238,7 @@ public class WorkorderAction extends V3Action {
 
         FacilioChain chain = FacilioChain.getTransactionChain();
         chain.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-        chain.addCommand(new FetchWorkOrderFeatureSettingsCommand());
+        chain.addCommand(new FetchWorkOrderFeatureSettingsSetUpCommand());
         chain.addCommand(new FormatWorkOrderFeatureSettingsBasedOnStates());
         chain.execute();
         Map<Long, ArrayList<V3WorkOrderFeatureSettingsContext>> workOrderStatesFeatureSettings = (Map<Long, ArrayList<V3WorkOrderFeatureSettingsContext>>) chain.getContext().get(FacilioConstants.ContextNames.WORK_ORDER_STATES_FEATURE_SETTINGS);

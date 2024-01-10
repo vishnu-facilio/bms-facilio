@@ -8,16 +8,19 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 @Log4j
-public class FetchWorkOrderFeatureSettingsCommand extends FacilioCommand {
+public class FetchWorkOrderFeatureSettingsSetUpCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         LOGGER.info("FetchWorkOrderFeatureSettingsCommand");
@@ -44,6 +47,14 @@ public class FetchWorkOrderFeatureSettingsCommand extends FacilioCommand {
         List<Map<String, Object>> props = genericSelectRecordBuilder.get();
 
         context.put(FacilioConstants.ContextNames.WORK_ORDER_FEATURE_SETTINGS_LIST_MAP, props);
+
+        List<V3WorkOrderFeatureSettingsContext> workOrderFeatureSettingList = new ArrayList<>();
+        if(CollectionUtils.isNotEmpty(props)) {
+            for (Map<String, Object> prop : props) {
+                workOrderFeatureSettingList.add(FieldUtil.getAsBeanFromMap(prop, V3WorkOrderFeatureSettingsContext.class));
+            }
+        }
+        context.put(FacilioConstants.ContextNames.WORK_ORDER_FEATURE_SETTINGS_LIST, workOrderFeatureSettingList);
 
         return false;
     }

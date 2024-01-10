@@ -13,11 +13,11 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * FetchWorkOrderFeatureSettingsCommand
+ * V3FetchWorkOrderFeatureSettingsCommand
  * - fetches WorkOrder Feature Settings for the record's module state
  * - translates settings as a MAP
  */
-public class FetchWorkOrderFeatureSettingsCommand extends FacilioCommand {
+public class V3FetchWorkOrderFeatureSettingsCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
