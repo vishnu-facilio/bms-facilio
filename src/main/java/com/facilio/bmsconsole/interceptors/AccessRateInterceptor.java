@@ -42,15 +42,17 @@ public class AccessRateInterceptor extends AbstractInterceptor {
                 LOGGER.error("Error while getting rateLimitKey from request", e);
             }
             APIRateLimiter rateLimiter = RateLimiterAPI.getRateLimiter();
-            if (org != null && user != null && !(rateLimiter.allow(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey, maxAllowedReqCount))) {
-                HttpServletResponse response = ServletActionContext.getResponse();
-                response.setHeader("X-Retry-After", String.valueOf(FacilioProperties.getRateLimiterInterval()));
+            if (org != null && user != null) {
+                if (!(rateLimiter.allow(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey, maxAllowedReqCount))) {
+                    HttpServletResponse response = ServletActionContext.getResponse();
+                    response.setHeader("X-Retry-After", String.valueOf(FacilioProperties.getRateLimiterInterval()));
 
-                LOGGER.info("Rate Limiter : API strike limit was reached for OrgId - "+org.getOrgId());
-                return ErrorUtil.sendError(ErrorUtil.Error.RATE_LIMIT_FOR_API_EXCEED);
-            }
-            if(rateLimiter.getRequestsMade(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey) > 20L){
-                LOGGER.info("Rate Limiter : API strike limit was crossed 20 for OrgId - "+org.getOrgId());
+                    LOGGER.info("Rate Limiter : API strike limit was reached for OrgId - " + org.getOrgId());
+                    return ErrorUtil.sendError(ErrorUtil.Error.RATE_LIMIT_FOR_API_EXCEED);
+                }
+                if (rateLimiter.getRequestsMade(request.getRequestURI(), user.getUid(), org.getOrgId(), rateLimitKey) > 20L) {
+                    LOGGER.info("Rate Limiter : API strike limit was crossed 20 for OrgId - " + org.getOrgId());
+                }
             }
         }
         return invocation.invoke();
