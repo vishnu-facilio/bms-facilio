@@ -17,6 +17,8 @@ public class WebMessage extends Message {
 
     private String topic;
 
+    private String redisTopic;
+
     @JsonIgnore
     private LiveSession liveSession;
 

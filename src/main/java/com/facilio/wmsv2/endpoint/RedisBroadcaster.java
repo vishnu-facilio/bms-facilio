@@ -108,7 +108,7 @@ public class RedisBroadcaster extends DefaultBroadcaster {
 
     @Override
     protected void broadcast(WebMessage message) {
-        String topic = message.getTopic();
+        String topic = message.getRedisTopic();
         String content = message.toJson().toJSONString();
         try(Jedis jedis = RedisManager.getInstance().getJedis()) {
             long numSubscribers = jedis.publish(topic, content);

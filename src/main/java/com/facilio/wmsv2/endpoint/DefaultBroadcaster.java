@@ -17,7 +17,7 @@ public abstract class DefaultBroadcaster {
             if(redisTopic == null) {
                 return;
             }
-            message.setTopic(redisTopic);
+            message.setRedisTopic(redisTopic);
             broadcast(message);
         } catch (Exception ex) {
             LOGGER.error("WMS_ERROR :: Send message failed: " + message.toString(), ex);
