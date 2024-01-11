@@ -9,8 +9,10 @@ import com.facilio.fms.message.Message;
 import com.facilio.ims.endpoint.Messenger;
 import com.facilio.ims.handler.DashboardUpdateHandler;
 import org.apache.commons.chain.Context;
+import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import javax.servlet.http.HttpServletRequest;
 
 public class GetDashboardThumbnailCommand  extends FacilioCommand {
 
@@ -24,6 +26,8 @@ public class GetDashboardThumbnailCommand  extends FacilioCommand {
         if(AccountUtil.getCurrentOrg().getOrgType() == Organization.OrgType.SANDBOX.getIndex()){
             dashboardObj.put("sandboxDomain", AccountUtil.getCurrentOrg().getDomain());
         }
+        HttpServletRequest request = ServletActionContext.getRequest();
+        dashboardObj.put("appDomain", request.getServerName());
         message.setKey(DashboardUpdateHandler.KEY);
         message.setContent(dashboardObj);
         Messenger.getMessenger().sendMessage(message);

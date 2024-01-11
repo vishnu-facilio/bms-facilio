@@ -876,12 +876,12 @@ public class DashboardUtil {
 		dashboards.add(dashboard);
 		return getMobileDashboardResponseJson(dashboards, optimize);
 	}
-	public static JSONArray getMobileDashboardTabResponseJson(DashboardTabContext dashboardTab, boolean optimize) {
+	public static JSONArray getMobileDashboardTabResponseJson(DashboardTabContext dashboardTab, boolean optimize) throws Exception {
 		List dashboardTabs = new ArrayList<>();
 		dashboardTabs.add(dashboardTab);
 		return getMobileDashboardTabResponseJson(dashboardTabs, optimize);
 	}
-	public static JSONArray getMobileDashboardTabResponseJson(List<DashboardTabContext> dashboards, boolean optimize) {
+	public static JSONArray getMobileDashboardTabResponseJson(List<DashboardTabContext> dashboards, boolean optimize) throws Exception {
 
 		JSONArray result = new JSONArray();
 
@@ -936,7 +936,7 @@ public class DashboardUtil {
 		tabsList = (List<Map<String, Object>>) context.get("tabsList");
 		return tabsList;
 	}
-	public static JSONObject getDashboardMobileFilterContext(DashboardFilterContext dashboardFilter) {
+	public static JSONObject getDashboardMobileFilterContext(DashboardFilterContext dashboardFilter) throws Exception {
 		JSONObject filterContext = new JSONObject();
 		JSONArray userFilters = new JSONArray();
 		if(dashboardFilter.getDashboardUserFilters() != null && dashboardFilter.getDashboardUserFilters().size() > 0){
@@ -956,7 +956,7 @@ public class DashboardUtil {
 
 		return filterContext;
 	}
-	public static JSONObject getDashboardMobileUserFilterContext(DashboardUserFilterContext filterData) {
+	public static JSONObject getDashboardMobileUserFilterContext(DashboardUserFilterContext filterData) throws Exception {
 		JSONObject filterJson = new JSONObject();
 		filterJson.put("componentTypeEnum",filterData.getComponentTypeEnum());
 		filterJson.put("dateTimeOperator",filterData.getDateTimeOperator());
@@ -972,6 +972,9 @@ public class DashboardUtil {
 		filterJson.put("fieldId",filterData.getFieldId());
 		filterJson.put("field",filterData.getField());
 		filterJson.put("linkName",filterData.getLink_name());
+		if(filterData.getCriteriaId() > 0){
+			filterJson.put("criteria",CriteriaAPI.getCriteria(filterData.getCriteriaId()));
+		}
 
 		return filterJson;
 	}

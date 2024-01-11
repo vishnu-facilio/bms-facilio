@@ -27,6 +27,7 @@ public class GetDashboardFilterModulesCommand extends FacilioCommand {
         List<FacilioModule> moduleList = (List<FacilioModule>) moduleContext.get(FacilioConstants.ContextNames.MODULE_LIST);
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         moduleList.add(modBean.getModule(FacilioConstants.ContextNames.ALARM_SEVERITY));
+        moduleList.add(modBean.getModule(FacilioConstants.ContextNames.GROUPS));
         context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
         return false;
     }

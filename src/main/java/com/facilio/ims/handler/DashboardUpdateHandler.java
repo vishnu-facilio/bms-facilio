@@ -1,5 +1,6 @@
 package com.facilio.ims.handler;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -26,12 +27,16 @@ public class DashboardUpdateHandler extends ImsHandler {
                 Map<String,Object> messageContent = (Map<String, Object>) message.getContent();
                 Long dashboardId = Long.parseLong(messageContent.get("dashboardId").toString());
                 String appLink = (String) messageContent.get("appLink");
+                String appDomain = (String) messageContent.get("appDomain");
+                if(appDomain == null || appDomain.equals("")){
+                    appDomain = FacilioProperties.getAppDomain();
+                }
                 String fileName = "dashboardThumbNail " + System.currentTimeMillis();
                 DashboardContext dashboard = DashboardUtil.getDashboard(dashboardId);
-                String pageUrl = "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
+                String pageUrl = "/" + appDomain + "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
                 String sandboxDomain = (String) messageContent.get("sandboxDomain");
                 if(sandboxDomain != null && !sandboxDomain.equals("")){
-                    pageUrl = "/" + sandboxDomain + "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
+                    pageUrl = "/" + appDomain + "/" + sandboxDomain + "/dashboard/"+ appLink +"/dashboard/"+dashboard.getLinkName()+"?hideHeader=true&hideSidebar=true";
                 }
                 JSONObject options = new JSONObject();
                 options.put("vw",1280);
