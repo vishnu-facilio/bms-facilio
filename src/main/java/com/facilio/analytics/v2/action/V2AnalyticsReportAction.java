@@ -1,5 +1,6 @@
 package com.facilio.analytics.v2.action;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
@@ -114,7 +115,7 @@ public class V2AnalyticsReportAction extends V3Action {
             FacilioContext context = chain.getContext();
             context.put("reportId", reportId);
             context.put("db_filter", db_filter);
-            context.put("clickhouse", true);
+            context.put("clickhouse", AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) ? true : false);
             chain.execute();
             this.setReportResult(context);
         }
@@ -126,7 +127,7 @@ public class V2AnalyticsReportAction extends V3Action {
         FacilioContext context = chain.getContext();
         context.put("report_v2", report);
         context.put("db_filter", db_filter);
-        context.put("clickhouse", true);
+        context.put("clickhouse", AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) ? true : false);
         chain.execute();
         setReportResult(context);
         return V3Action.SUCCESS;

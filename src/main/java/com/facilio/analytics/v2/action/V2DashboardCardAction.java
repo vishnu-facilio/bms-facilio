@@ -1,5 +1,6 @@
 package com.facilio.analytics.v2.action;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.analytics.v2.context.V2AnalyticsContextForDashboardFilter;
 import com.facilio.analytics.v2.context.V2CardContext;
@@ -35,7 +36,7 @@ public class V2DashboardCardAction extends V3Action {
         FacilioChain chain = V2AnalyticsTransactionChain.getCHCardAnalyticsCardData();
         chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
         chain.getContext().put("v2", true);
-        chain.getContext().put("clickhouse", true);
+        chain.getContext().put("clickhouse", AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) ? true : false);
         chain.execute();
 
         V2CardResponseContext response = setCardResponse(chain.getContext());
@@ -117,7 +118,7 @@ public class V2DashboardCardAction extends V3Action {
         chain.getContext().put("v2", true);
         chain.getContext().put("db_filter",dbFilterContext);
         chain.getContext().put("db_user_filter",dbUserFilter);
-        chain.getContext().put("clickhouse",true);
+        chain.getContext().put("clickhouse", AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE) ? true : false);
         chain.execute();
         cardContext = (V2CardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT);
         V2CardResponseContext result =  setCardResponse(chain.getContext());
