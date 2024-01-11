@@ -18,6 +18,7 @@ public class V2AnalyticsTransactionChain
         c.addCommand(new ReportDrilldownCommand());
         c.addCommand(new FilterFieldCommand());
         c.addCommand(new V2FetchAnalyticDataCommand());
+        c.addCommand(new V2ConstructHeatMapResponseCommand());
         c.addCommand(new ConstructReportDataCommand());
         c.addCommand(new CalculateAggregationCommand());
         c.addCommand(new NewTransformReportDataCommand());

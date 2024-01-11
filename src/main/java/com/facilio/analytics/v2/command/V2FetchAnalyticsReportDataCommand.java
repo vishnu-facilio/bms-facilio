@@ -230,12 +230,17 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 if(isClickHouseEnabled)
                 {
                     AggregateOperator aggr_table_operator = BmsAggregateOperators.getCHAggregatedTableOperator(xAggr.getValue());
-                    if(aggr_table_operator != null && aggregated_table_name != null)
+                    if(isClickhouseAggrTableEnabled && aggr_table_operator != null && aggregated_table_name != null)
                     {
                         FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggregated_table_name).append(".DATE").toString(), FieldType.DATE);
                         xAggrField = aggr_table_operator.getSelectField(aggr_XField);
                         FacilioField select_field = aggr_XField.clone();
-                        select_field.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggregated_table_name).append(".DATE )) * 1000").toString());
+                        if(report_v2.getMeasures() != null && report_v2.getMeasures().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null) {
+                            select_field.setName("heatmap_y");
+                            select_field.setColumnName(new StringBuilder("toUnixTimestamp(").append(xAggrField.getCompleteColumnName()).append(") * 1000").toString());
+                        }else{
+                            select_field.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggregated_table_name).append(".DATE )) * 1000").toString());
+                        }
                         fields.add(select_field);
                     }else {
                         xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : BmsAggregateOperators.getCHAggregateOperator(xAggr.getValue()).getSelectField(dp.getxAxis().getField()).clone();
@@ -252,6 +257,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
 
+            if(isClickHouseEnabled && isClickhouseAggrTableEnabled) {
+                this.setXAggrForHeatMapXAggr(report_v2, groupBy, dp.getyAxis().getField(), fields, aggregated_table_name);
+            }
             if(aggregated_table_name != null && (xAggr == null || !(xAggr instanceof DateAggregateOperator || xAggr instanceof SpaceAggregateOperator)) && !dp.isMultiMeasureChartType())
             {
                 groupBy.add(new StringBuilder(aggregated_table_name).append(".").append(xAggrField.getColumnName()).toString());
@@ -285,6 +293,8 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
                 if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator) {
                     aggrField = V2AnalyticsOldUtil.getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
+                } else if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof CommonAggregateOperator && dataPoint.getyAxis().getAggrEnum() == CommonAggregateOperator.COUNT){
+                    aggrField = V2AnalyticsOldUtil.getCountAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
                 }
                 aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
                 fields.add(aggrField);
@@ -338,9 +348,14 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
             V2AnalyticsOldUtil.setPaginationForReportSelectBuilder(report_v2, newSelectBuilder);
-            props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
-                    () -> newSelectBuilder.getAsProps());
-            LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
+            try {
+                props = FacilioService.runAsServiceWihReturn(FacilioConstants.Services.CLICKHOUSE,
+                        () -> newSelectBuilder.getAsProps());
+                LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
+
+            }catch (Exception e) {
+                LOGGER.debug("SELECT BUILDER EXECUTED IN CLICKHOUSE--- " + newSelectBuilder);
+            }
         }
         else
         {
@@ -473,7 +488,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     }
     private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
     {
-        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1)
+        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1 && !isClickhouseAggrTableEnabled)
         {
             V2MeasuresContext measure = v2_report.getMeasures().get(0);
             if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
@@ -485,6 +500,75 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 else if((measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")))
                 {
                     report.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE);
+                }
+            }
+        }
+    }
+
+    private void setXAggrForHeatMapXAggr(V2ReportContext  v2_report, StringJoiner groupBy, FacilioField xField, List<FacilioField> fields, String aggr_table_name)throws Exception
+    {
+        if(xField != null && v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1)
+        {
+            V2MeasuresContext measure = v2_report.getMeasures().get(0);
+            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
+            {
+                FacilioField aggr_Field = null;
+                if(measure.getHmAggr().equals("hours"))
+                {
+                    if(isClickHouseEnabled){
+                        if(aggr_table_name != null){
+                            FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                            aggr_Field = CHDateAggregateOperatorForAggregatedTable.HEAT_MAP_AGGR_TABLE_HOURLY.getSelectField(aggr_XField);
+                        }else {
+                            aggr_Field = CHDateAggregateOperator.HOURS_OF_DAY.getSelectField(xField).clone();
+                        }
+                    }else{
+                        aggr_Field = DateAggregateOperator.HOURSOFDAY.getSelectField(xField).clone();
+                    }
+                }
+                else if((measure.getHmAggr().equals("days")))
+                {
+                    if(isClickHouseEnabled)
+                    {
+                        if(aggr_table_name != null){
+                            FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                            aggr_Field = CHDateAggregateOperatorForAggregatedTable.HEAT_MAP_AGGR_TABLE_DAILY.getSelectField(aggr_XField);
+                        }else {
+                            aggr_Field = CHDateAggregateOperator.DAYS_OF_MONTH.getSelectField(xField).clone();
+                        }
+                    }else{
+                        aggr_Field = DateAggregateOperator.DAYSOFMONTH.getSelectField(xField).clone();
+                    }
+                }
+                else if(measure.getHmAggr().equals("weeks")){
+                    if(isClickHouseEnabled)
+                    {
+                        if(aggr_table_name != null)
+                        {
+                            FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                            aggr_Field = CHDateAggregateOperatorForAggregatedTable.HEAT_MAP_AGGR_TABLE_WEEKLY.getSelectField(aggr_XField);
+                        }else {
+                            aggr_Field = CHDateAggregateOperator.ONLY_WEEKDAY.getSelectField(xField).clone();
+                        }
+                    }else{
+                        aggr_Field = DateAggregateOperator.WEEKDAY.getSelectField(xField).clone();
+                    }
+                }
+                if(aggr_Field != null)
+                {
+                    groupBy.add(aggr_Field.getCompleteColumnName());
+                    aggr_Field.setName("ttime");
+                    FacilioField select_field = aggr_Field.clone();
+                    if(aggr_table_name != null)
+                    {
+                        FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                        aggr_XField.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggr_table_name).append(".DATE )) * 1000").toString());
+                        fields.add(aggr_XField);
+                    }
+                    else{
+                        fields.add(select_field);
+                    }
+
                 }
             }
         }
@@ -509,10 +593,16 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
 
             if(report.getxAggrEnum() != null && report.getxAggrEnum().getValue() > 0)
             {
-                if (report.getxAggrEnum() instanceof DateAggregateOperator && report.getxAggrEnum() == DateAggregateOperator.HOURSOFDAYONLY) {
-                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "hourly");
-                } else if(report.getxAggrEnum() instanceof DateAggregateOperator || report.getxAggrEnum() instanceof SpaceAggregateOperator){
-                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "daily");
+                boolean isHeatMapHourlyTable=false;
+                if(report.getAnalyticsTypeEnum() == ReadingAnalysisContext.AnalyticsType.HEAT_MAP){
+                    if(v2Report.getMeasures().get(0).getHmAggr() != null && v2Report.getMeasures().get(0).getHmAggr().equals("hours")){
+                        isHeatMapHourlyTable = true;
+                    }
+                }
+                if ((report.getxAggrEnum() instanceof DateAggregateOperator && (report.getxAggrEnum() == DateAggregateOperator.HOURSOFDAYONLY) || isHeatMapHourlyTable)) {
+                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), "Europe/London", "hourly");
+                } else if(report.getxAggrEnum() instanceof DateAggregateOperator || report.getxAggrEnum() instanceof SpaceAggregateOperator || report.getxAggrEnum() instanceof CHDateAggregateOperatorForAggregatedTable){
+                    aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), "Europe/London", "daily");
                 }
             }
         }

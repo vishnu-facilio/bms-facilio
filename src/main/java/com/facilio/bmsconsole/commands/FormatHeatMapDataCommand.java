@@ -14,6 +14,7 @@ import com.facilio.analytics.v2.context.V2MeasuresContext;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.modules.*;
+import com.facilio.report.context.ReadingAnalysisContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.xpath.operations.Bool;
@@ -46,6 +47,12 @@ public class FormatHeatMapDataCommand extends FacilioCommand {
 		
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+
+		if(context.containsKey("heatMapData") && reportContext.getAnalyticsTypeEnum() == ReadingAnalysisContext.AnalyticsType.HEAT_MAP)
+		{
+			reportData.put("heatMapData", context.get("heatMapData"));
+			return false;
+		}
 
 		String chartType = null; 
 		if (reportContext.getChartState() != null && reportContext.getChartState() != "null" && !"".equals(reportContext.getChartState())) {

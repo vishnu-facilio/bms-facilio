@@ -661,7 +661,10 @@ public class BmsAggregateOperators {
         AGGR_TABLE_WEEKLY(71,"Weekly Aggregated Table Clickhouse","CH_Aggr_weekly.expr",false, 71),
         AGGR_TABLE_MONTHLY(72,"Monthly Aggregated Table Clickhouse","CH_Aggr_monthly.expr",false, 72),
         AGGR_TABLE_QUARTERLY(73,"Quarterly Aggregated Table Clickhouse","CH_Aggr_quarterly.expr",false, 73),
-        AGGR_TABLE_YEARLY(74,"Yearly Aggregated Table Clickhouse","CH_Aggr_yearly.expr",false, 74);
+        AGGR_TABLE_YEARLY(74,"Yearly Aggregated Table Clickhouse","CH_Aggr_yearly.expr",false, 74),
+        HEAT_MAP_AGGR_TABLE_HOURLY(75,"hourly HM Aggregated Table Clickhouse","CH_HM_Aggr_hourly.expr",false, 74),
+        HEAT_MAP_AGGR_TABLE_DAILY(76,"daily HM Aggregated Table Clickhouse","CH_HM_Aggr_daily.expr",false, 74),
+        HEAT_MAP_AGGR_TABLE_WEEKLY(77,"weekly HM Aggregated Table Clickhouse","CH_HM_Aggr_weekly.expr",false, 74);
 
         @Setter @Getter
         private int value;

@@ -878,18 +878,22 @@ public class V2AnalyticsOldUtil {
                         value.forEach(val -> joiner.add(val));
                         condition.setValue(String.valueOf(joiner));
                         Boolean picklistJoin = false;
-                        String filterModule =  null;
-                        if(alias.equals("parentId")) {
-                            appliedField = modBean.getField("parentId",baseModule.getName());
-                        }else{
-                            if(selected_dp_map.get("moduleName") != null) {
+                        String filterModule = null;
+                        if (alias.equals("parentId")) {
+                            appliedField = modBean.getField("parentId", baseModule.getName()).clone();
+                        } else {
+                            if (selected_dp_map.get("moduleName") != null) {
                                 picklistJoin = true;
                                 filterModule = (String) selected_dp_map.get("moduleName");
-                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName"));
+                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName")).clone();
+                            } else {
+                                appliedField = modBean.getField(alias, dataPoint.getModuleName()).clone();
                             }
-                            else {
-                                appliedField = modBean.getField(alias, dataPoint.getModuleName());
-                            }
+                        }
+                        if (appliedField != null && appliedField.getModule() != null && appliedField.getModule().getName().equals(baseModule.getName()) && !appliedField.getModule().getTableName().equals(baseModule.getTableName()))
+                        {
+                            appliedField = appliedField.clone();
+                            appliedField.setModule(baseModule);
                         }
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);
@@ -1746,6 +1750,27 @@ public class V2AnalyticsOldUtil {
                 FacilioField newField = selectFieldNumber;
 
                 newField.setColumnName(new StringBuilder(aggr.toLowerCase()).append("( ").append(aggr_Module.getTableName()).append(".").append(aggr).append("_").append(field.getColumnName()).append(" )").toString());
+                newField.setDisplayName(aggr + " " + field.getDisplayName());
+                newField.setName(field.getName());
+                newField.setDataType(FieldType.DECIMAL);
+                return newField;
+            }
+        }
+        return field;
+    }
+    public static FacilioField getCountAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
+    {
+        if(aggr != null)
+        {
+            if(field.getDataTypeEnum().equals(FieldType.DECIMAL) || field.getDataTypeEnum().equals(FieldType.NUMBER))
+            {
+                NumberField numberField =  (NumberField)field.clone();
+                NumberField selectFieldNumber = new NumberField();
+                selectFieldNumber.setMetric(numberField.getMetric());
+                selectFieldNumber.setUnitId(numberField.getUnitId());
+                FacilioField newField = selectFieldNumber;
+
+                newField.setColumnName(new StringBuilder("sum(").append(aggr_Module.getTableName()).append(".").append(aggr).append("_").append(field.getColumnName()).append(" )").toString());
                 newField.setDisplayName(aggr + " " + field.getDisplayName());
                 newField.setName(field.getName());
                 newField.setDataType(FieldType.DECIMAL);
