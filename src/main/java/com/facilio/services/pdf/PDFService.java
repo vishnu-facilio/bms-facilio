@@ -69,6 +69,14 @@ public abstract class PDFService {
         String pageURL = StringSubstitutor.replace(templatePageURL, pageParams);
         return pageURL;
     }
+
+    protected String getAppBaseURL(String appDomain) {
+        if (appDomain != null) {
+            return FacilioProperties.getAppProtocol() + "://" + appDomain;
+        }
+        return getAppBaseURL();
+    }
+
     protected String getAppBaseURL() {
         try {
             HttpServletRequest req = ServletActionContext.getRequest();
@@ -107,6 +115,8 @@ public abstract class PDFService {
      * @return fileId
      */
     public abstract long exportURL(String fileName, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception;
+
+    public abstract long exportURL(String fileName, String appDomain, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception;
 
     /**
      * Export connected app widget as PDF/Screenshot

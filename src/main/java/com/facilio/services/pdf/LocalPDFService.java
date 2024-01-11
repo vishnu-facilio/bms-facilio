@@ -47,6 +47,24 @@ public class LocalPDFService extends PDFService {
     }
 
     @Override
+    public long exportURL(String fileName, String appDomain, String pageURL, ExportType exportType, ExportOptions exportOptions) throws Exception {
+        pageURL = getAppBaseURL(appDomain) + pageURL;
+        FileInfo.FileFormat fileFormat = FileInfo.FileFormat.PDF;
+        if (exportType == ExportType.SCREENSHOT) {
+            fileFormat = FileInfo.FileFormat.IMAGE;
+        }
+        String pdfFileLocation = PdfUtil.convertUrlToPdf(pageURL, null, null, fileFormat);
+        if (pdfFileLocation != null) {
+            File pdfFile = new File(pdfFileLocation);
+
+            FileStore fs = FacilioFactory.getFileStoreFromOrg(getOrgId(), getUserId());
+            long fileId = fs.addFile(fileName, pdfFile, fileFormat.getContentType());
+            return fileId;
+        }
+        return -1;
+    }
+
+    @Override
     public long exportWidget(String fileName, String widgetLinkName, ExportType exportType, ExportOptions exportOptions, JSONObject context) throws Exception {
         throw new Exception("Export widget not supported in Local PDF Service.");
     }
