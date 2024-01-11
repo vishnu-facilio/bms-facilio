@@ -580,6 +580,12 @@ public class ReadingAction extends FacilioAction {
 		readingAndValue.put("readingData", readingData);
 		return SUCCESS;
 	}
+
+	public String getPreviousReadingData() throws Exception {
+		List<ReadingContext> previousReading = ReadingsAPI.getReadings(moduleId, parentId, ttime, selectedField);
+		setResult("data", previousReading);
+		return SUCCESS;
+	}
   	
   	private JSONObject readingAndValue;
 	public JSONObject getReadingAndValue() {
@@ -1095,6 +1101,25 @@ public class ReadingAction extends FacilioAction {
 	
 	public long getModuleId() {
 		return this.moduleId;
+	}
+
+	private long ttime = -1;
+	public void setTtime(long ttime) {
+		this.ttime = ttime;
+	}
+
+	public long getTtime() {
+		return this.ttime;
+	}
+
+	private String selectedField;
+
+	public void setSelectedField(String selectedField){
+		this.selectedField = selectedField;
+	}
+
+	public String getSelectedField(){
+		return this.selectedField;
 	}
 	
 	private List<Long> delReadingRulesIds;

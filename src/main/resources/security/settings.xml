@@ -4351,6 +4351,15 @@
         </requestbody>
     </request>
 
+    <request path="api/v2/readings/asset/getPreviousReadings" method="GET">
+        <requestbody type="object">
+            <property name="parentId" type="number" mandatory="true"/>
+            <property name="moduleId" type="number" mandatory="true"/>
+            <property name="ttime" type="number" mandatory="true"/>
+            <property name="selectedField" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
 
     <request path="/api/v1/setup/customButton/get" method="GET">
        <requestbody type="object">

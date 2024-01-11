@@ -18,7 +18,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
-
+import com.facilio.db.criteria.operators.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -53,11 +53,6 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder.BatchUpdateContext;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -1678,6 +1673,42 @@ public class ReadingsAPI {
 		ZonedDateTime zdt = DateTimeUtil.getDateTime(time);
 		zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
 		return DateTimeUtil.getMillis(zdt, true);
+	}
+
+	public static List<ReadingContext> getReadings(Long moduleId, Long parentId, Long ttime, String field) throws Exception {
+
+		try {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = bean.getModule(moduleId);
+			List<FacilioField> allFields = bean.getAllFields(module.getName());
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+			FacilioField selectedField = fieldMap.get(field);
+			FacilioField parentField = fieldMap.get("parentId");
+			FacilioField ttimeField = fieldMap.get("ttime");
+			FacilioField moduleIdField = FieldFactory.getField("moduleId", "MODULEID", FieldType.NUMBER);
+
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(selectedField);
+			fields.add(parentField);
+			fields.add(ttimeField);
+			fields.add(moduleIdField);
+
+			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+					.select(fields)
+					.module(module)
+					.beanClass(ReadingContext.class)
+					.andCondition(CriteriaAPI.getCondition(parentField, String.valueOf(parentId), PickListOperators.IS))
+					.andCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(ttimeField, String.valueOf(ttime), NumberOperators.LESS_THAN))
+					.andCondition(CriteriaAPI.getCondition(selectedField, CommonOperators.IS_NOT_EMPTY))
+					.orderBy("TTIME DESC").limit(1);
+			return selectBuilder.get();
+		}catch (Exception e){
+			LOGGER.error("Fetching previous reading failed", e);
+		}
+
+		return new ArrayList<>();
 	}
 
 }

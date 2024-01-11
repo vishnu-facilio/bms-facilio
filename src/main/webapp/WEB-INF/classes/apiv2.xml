@@ -3981,6 +3981,10 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">ADD_READING</param>
 		</action>
+		<action name="getPreviousReadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getPreviousReadingData">
+			<param name="moduleName">asset</param>
+			<param name="permission">GET:READ</param>
+		</action>
 	</package>
 	<package name="readingsApiv2" namespace="/api/v2/readings" extends="v2Api">
 		<action name="getSubModuleRel" class="com.facilio.bmsconsole.actions.ReadingAction" method="getSubModuleRel">
