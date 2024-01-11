@@ -43,6 +43,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -387,11 +388,17 @@ public class GlobalScopeUtil {
             return null;
         }
         try {
-            Parameter skipSwitchCriteria = ActionContext.getContext().getParameters().get("skipSwitchCriteria");
-            if (skipSwitchCriteria != null && skipSwitchCriteria.getValue() != null && skipSwitchCriteria.getValue().equals("true")) {
-                return null;
+            String switchVariable;
+            if(ApplicationApi.isRequestFromMobile()) {
+                HttpServletRequest request = ServletActionContext.getRequest();
+                switchVariable = request.getHeader("X-Switch-Value");
+            } else {
+                Parameter skipSwitchCriteria = ActionContext.getContext().getParameters().get("skipSwitchCriteria");
+                if (skipSwitchCriteria != null && skipSwitchCriteria.getValue() != null && skipSwitchCriteria.getValue().equals("true")) {
+                    return null;
+                }
+                switchVariable = appLinkNameResolvedSwitch();
             }
-            String switchVariable = appLinkNameResolvedSwitch();
             if (StringUtils.isNotEmpty(switchVariable)) {
                 byte[] decodedBytes = Base64.getDecoder().decode(switchVariable);
                 if (decodedBytes != null) {
