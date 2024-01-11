@@ -1779,4 +1779,26 @@ public class V2AnalyticsOldUtil {
         }
         return field;
     }
+    public static FacilioField getAvgAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
+    {
+        if(aggr != null)
+        {
+            if(field.getDataTypeEnum().equals(FieldType.DECIMAL) || field.getDataTypeEnum().equals(FieldType.NUMBER))
+            {
+                NumberField numberField =  (NumberField)field.clone();
+                NumberField selectFieldNumber = new NumberField();
+                selectFieldNumber.setMetric(numberField.getMetric());
+                selectFieldNumber.setUnitId(numberField.getUnitId());
+                FacilioField newField = selectFieldNumber;
+                //SUM(SUM_COL)/ sum(COUNT_COL)
+
+                newField.setColumnName(new StringBuilder("sum(").append(aggr_Module.getTableName()).append(".").append("SUM").append("_").append(field.getColumnName()).append(" ) / ").append("sum(").append(aggr_Module.getTableName()).append(".").append("COUNT").append("_").append(field.getColumnName()).append(")").toString());
+                newField.setDisplayName(aggr + " " + field.getDisplayName());
+                newField.setName(field.getName());
+                newField.setDataType(FieldType.DECIMAL);
+                return newField;
+            }
+        }
+        return field;
+    }
 }

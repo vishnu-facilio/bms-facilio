@@ -35,7 +35,7 @@ public class V2DashboardCardAction extends V3Action {
         FacilioChain chain = V2AnalyticsTransactionChain.getCHCardAnalyticsCardData();
         chain.getContext().put(FacilioConstants.ContextNames.CARD_CONTEXT, cardContext);
         chain.getContext().put("v2", true);
-        chain.getContext().put("clickhouse", clickhouse);
+        chain.getContext().put("clickhouse", true);
         chain.execute();
 
         V2CardResponseContext response = setCardResponse(chain.getContext());
@@ -117,7 +117,7 @@ public class V2DashboardCardAction extends V3Action {
         chain.getContext().put("v2", true);
         chain.getContext().put("db_filter",dbFilterContext);
         chain.getContext().put("db_user_filter",dbUserFilter);
-        chain.getContext().put("clickhouse",clickhouse);
+        chain.getContext().put("clickhouse",true);
         chain.execute();
         cardContext = (V2CardContext) chain.getContext().get(FacilioConstants.ContextNames.CARD_CONTEXT);
         V2CardResponseContext result =  setCardResponse(chain.getContext());

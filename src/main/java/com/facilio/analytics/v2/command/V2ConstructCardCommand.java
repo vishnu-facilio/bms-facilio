@@ -44,9 +44,6 @@ import org.json.simple.parser.JSONParser;
 
 import java.util.*;
 
-import static com.facilio.readingkpi.ReadingKpiAPI.getReadingKpi;
-import static com.facilio.readingkpi.ReadingKpiAPI.getResultForDynamicKpi;
-
 public class V2ConstructCardCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(V2ConstructCardCommand.class.getName());
     private boolean clickhouse=false;
@@ -210,12 +207,23 @@ public class V2ConstructCardCommand extends FacilioCommand {
                 if(startDate != null && endDate != null)
                 {
                     FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggr_base_Module.getTableName()).append(".DATE").toString(), FieldType.DATE);
-                    selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                    if(range.getStartTime() == range.getEndTime()){
+                        selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" < '").append(endDate).append("'").toString());
+                    }else {
+                        selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                    }
                 }
             }
         }
-        else {
-            selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
+        else
+        {
+            if(range != null && range.getStartTime() == range.getEndTime()){
+                FacilioField time_field = fieldMap.get("ttime").clone();
+                selectBuilder.andCustomWhere(new StringBuilder(" ").append(time_field.getCompleteColumnName()).append(" >= '").append(range.getStartTime()).append("' AND ").append(time_field.getCompleteColumnName()).append(" < '").append(range.getEndTime()).append("'").toString());
+            }
+            else {
+                selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), range.toString(), DateOperators.BETWEEN));
+            }
         }
         if(cardContext.getCriteriaType() == V2MeasuresContext.Criteria_Type.CRITERIA.getIndex())
         {
@@ -328,7 +336,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             List<Long> parentIds = V2AnalyticsOldUtil.getAssetIdsFromCriteria(cardParams.getParentModuleName(), criteria);
             if(parentIds != null && parentIds.size() > 0)
             {
-                Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs());
+                Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
                 cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null));
                 if(cardParams.getBaseline() != null)
                 {
@@ -337,7 +345,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     DateRange baseline_range = baseline.calculateBaseLineRange(dateRange, baseline.getAdjustTypeEnum());
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
-                    Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs());
+                    Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
                     cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend()));
                 }
                 Map<String, Object> parentIdMap = new HashMap<>();

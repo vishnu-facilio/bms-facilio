@@ -291,10 +291,12 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
             {
                 FacilioField facilioField = dataPoint.getyAxis().getField().clone();
                 FacilioField aggrField = dataPoint.getyAxis().getAggrEnum().getSelectField(facilioField).clone();
-                if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator) {
-                    aggrField = V2AnalyticsOldUtil.getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
-                } else if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof CommonAggregateOperator && dataPoint.getyAxis().getAggrEnum() == CommonAggregateOperator.COUNT){
+                if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof CommonAggregateOperator && dataPoint.getyAxis().getAggrEnum() == CommonAggregateOperator.COUNT){
                     aggrField = V2AnalyticsOldUtil.getCountAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
+                }else if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator && dataPoint.getyAxis().getAggrEnum() == NumberAggregateOperator.AVERAGE){
+                    aggrField = V2AnalyticsOldUtil.getAvgAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
+                }else if(aggr_tableName != null && dataPoint.getyAxis().getAggrEnum() instanceof NumberAggregateOperator) {
+                    aggrField = V2AnalyticsOldUtil.getAggregatedYField(facilioField, baseModule, dataPoint.getyAxis().getAggrEnum().getStringValue().toUpperCase());
                 }
                 aggrField.setName(ReportUtil.getAggrFieldName(aggrField, dataPoint.getyAxis().getAggrEnum()));
                 fields.add(aggrField);
@@ -401,10 +403,10 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         if(parentIds != null && parentIds.size() > 0)
         {
             dynamicKpi.setParentId(parentIds);
-            resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs());
+            resultForDynamicKpi = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dateRange, report.getxAggrEnum(), dynKpi.getNs(), isClickhouseAggrTableEnabled);
             props.put(FacilioConstants.Reports.ACTUAL_DATA, resultForDynamicKpi.get(dynamicKpi.getParentId().get(0)));
             if (reportBaseLine!=null) {
-                resultForBaseLine = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs());
+                resultForBaseLine = getResultForDynamicKpi(Collections.singletonList(dynamicKpi.getParentId().get(0)), dynamicBaseLineRange,report.getxAggrEnum(), dynKpi.getNs(), isClickhouseAggrTableEnabled);
                 props.put(reportBaseLine.getBaseLine().getName(), resultForBaseLine.get(dynamicKpi.getParentId().get(0)));
             }
         }

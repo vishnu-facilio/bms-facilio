@@ -1,6 +1,8 @@
 package com.facilio.readingkpi;
 
+import com.clickhouse.data.value.UnsignedLong;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -9,6 +11,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.ch.ClickhouseUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.connected.IConnectedRule;
@@ -490,8 +493,14 @@ public class ReadingKpiAPI {
         return builder.get().stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toSet());
     }
 
-
-    public static Map<Long, List<Map<String, Object>>> getResultForDynamicKpi(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns) throws Exception {
+    public static Map<Long, List<Map<String, Object>>> getResultForDynamicKpi(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns) throws Exception
+    {
+        return getResultForDynamicKpi(parentIds, dateRange, aggr, ns, false);
+    }
+    public static Map<Long, List<Map<String, Object>>> getResultForDynamicKpi(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns, boolean isCHAggregatedTableEnabled) throws Exception {
+        return getResultForDynamicKpi(parentIds, dateRange, aggr, ns, false, false);
+    }
+    public static Map<Long, List<Map<String, Object>>> getResultForDynamicKpi(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns, boolean isCHAggregatedTableEnabled, boolean fromCard) throws Exception {
 
         if (CollectionUtils.isEmpty(parentIds)) {
             // when dimension is chosen as assets, parentIds can be null. Not yet supported from ui
@@ -500,7 +509,7 @@ public class ReadingKpiAPI {
         }
         // data collection
         // < res Id < ttime, <varName, [value]> > >
-        Map<Long, TreeMap<Long, Map<String, List<Double>>>> readingsMap = fetchReadings(parentIds, dateRange, aggr, ns);
+        Map<Long, TreeMap<Long, Map<String, List<Double>>>> readingsMap = fetchReadings(parentIds, dateRange, aggr, ns, isCHAggregatedTableEnabled, fromCard);
 
         // execution
         // < resId, [<ttime, resultObj>] >
@@ -509,6 +518,12 @@ public class ReadingKpiAPI {
     }
 
     private static Map<Long, TreeMap<Long, Map<String, List<Double>>>> fetchReadings(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns) throws Exception {
+        return fetchReadings(parentIds, dateRange, aggr, ns, false);
+    }
+    private static Map<Long, TreeMap<Long, Map<String, List<Double>>>> fetchReadings(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns, boolean isCHAggregatedTableEnabled) throws Exception {
+        return fetchReadings(parentIds, dateRange, aggr, ns, isCHAggregatedTableEnabled, false);
+    }
+    private static Map<Long, TreeMap<Long, Map<String, List<Double>>>> fetchReadings(List<Long> parentIds, DateRange dateRange, AggregateOperator aggr, NameSpaceContext ns, boolean isCHAggregatedTableEnabled, boolean isFromCard) throws Exception {
         Map<Long, TreeMap<Long, Map<String, List<Double>>>> readingsMap = new HashMap<>();
         for (Long parentId : parentIds) {
             // < ttime, <varName, [values]> > - list of values cause, in related case same variable has all the related assets' values
@@ -517,7 +532,7 @@ public class ReadingKpiAPI {
             LOGGER.info("Dynamic KPI : Flattened Ns Fields : " + flattenedNsFields + " for resource : " + parentId + " for kpi : " + ns.getParentRuleId());
             for (NameSpaceField nsField : flattenedNsFields) {
                 if (!Objects.equals(nsField.getResourceId(), DEFAULT_RES_ID)) {
-                    fetchReadingsForNsField(dateRange, aggr, resReadingsMap, nsField);
+                    fetchReadingsForNsField(dateRange, aggr, resReadingsMap, nsField, isCHAggregatedTableEnabled, isFromCard);
                 }
             }
             readingsMap.put(parentId, resReadingsMap);
@@ -588,7 +603,7 @@ public class ReadingKpiAPI {
         return resIds;
     }
 
-    private static void fetchReadingsForNsField(DateRange dateRange, AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, NameSpaceField nsField) throws Exception {
+    private static void fetchReadingsForNsField(DateRange dateRange, AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, NameSpaceField nsField, boolean isCHAggregatedTableEnabled, boolean isFromCard) throws Exception {
         FacilioField field = nsField.getField();
 
         ModuleBean modBean = Constants.getModBean();
@@ -600,17 +615,62 @@ public class ReadingKpiAPI {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
         fieldMap.put("id", FieldFactory.getIdField(module));
 
-        List<FacilioField> selectFields = getSelectFields(aggr, nsField, field, fieldMap);
-        String groupBy = getGroupByString(aggr, nsField.getAggregationType(), module, fieldMap);
+        String aggr_table_name = null;
+        FacilioField cloned_field = null;
+        if(isCHAggregatedTableEnabled && module != null && ((aggr != null && aggr.getValue() > 0) || isFromCard))
+        {
+            if(isFromCard){
+                aggr = BmsAggregateOperators.DateAggregateOperator.YEAR;
+            }
+            if (aggr instanceof BmsAggregateOperators.DateAggregateOperator && aggr == BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY) {
+                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), "Europe/London", "hourly");
+            } else if(aggr instanceof BmsAggregateOperators.DateAggregateOperator || aggr instanceof BmsAggregateOperators.SpaceAggregateOperator){
+                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), "Europe/London", "daily");
+            }
+            if(aggr_table_name != null)
+            {
+                module = V2AnalyticsOldUtil.constructAndGetAggregatedModule(module, aggr_table_name);
+                cloned_field = field.clone();
+                cloned_field.setModule(module);
+            }
+        }
+        List<FacilioField> selectFields = getSelectFields(aggr, nsField, cloned_field != null ? cloned_field : field, fieldMap, aggr_table_name, isCHAggregatedTableEnabled);
+        String  groupBy = getGroupByString(aggr, nsField.getAggregationType(), module, fieldMap, aggr_table_name, isCHAggregatedTableEnabled);
+
         selectRecordBuilder
                 .table(module.getTableName())
                 .select(selectFields)
-                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(field.getModuleId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), Collections.singleton(nsField.getResourceId()), NumberOperators.EQUALS))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
-                .andCondition(CriteriaAPI.getCondition(field, CommonOperators.IS_NOT_EMPTY))
-                .groupBy(groupBy)
-                .limit(20000);
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(field.getModuleId()), NumberOperators.EQUALS));
+                if(aggr_table_name != null){
+                    FacilioField parentId_field = fieldMap.get("parentId").clone();
+                    if(parentId_field != null && parentId_field.getModule() != null && parentId_field.getModule().getName().equals(module.getName()) && !parentId_field.getModule().getTableName().equals(module.getTableName())){
+                        parentId_field.setModule(module);
+                    }
+                    selectRecordBuilder.andCondition(CriteriaAPI.getCondition(parentId_field, Collections.singleton(nsField.getResourceId()), NumberOperators.EQUALS));
+                    if(dateRange != null)
+                    {
+                        String startDate = DateTimeUtil.getFormattedTime(dateRange.getStartTime(), "yyyy-MM-dd");
+                        String endDate = DateTimeUtil.getFormattedTime(dateRange.getEndTime(), "yyyy-MM-dd");
+                        FacilioField ch_aggr_table_date_field = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                        if(dateRange.getStartTime() == dateRange.getEndTime()){
+                            selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append(ch_aggr_table_date_field.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(ch_aggr_table_date_field.getColumnName()).append(" < '").append(endDate).append("'").toString());
+                        }else {
+                            selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append(ch_aggr_table_date_field.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(ch_aggr_table_date_field.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                        }
+                    }
+                    if(groupBy != null) {
+                        selectRecordBuilder.groupBy(groupBy);
+                    }
+                    selectRecordBuilder.limit(20000);
+                }
+                else
+                {
+                    selectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), Collections.singleton(nsField.getResourceId()), NumberOperators.EQUALS))
+                            .andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN))
+                            .andCondition(CriteriaAPI.getCondition(field, CommonOperators.IS_NOT_EMPTY))
+                            .groupBy(groupBy)
+                            .limit(20000);
+                }
 
         List<Map<String, Object>> props = getPropsBasedOnClickHouseLicense(selectRecordBuilder);
         LOGGER.debug("Select Builder Executed for Dynamic KPI " + selectRecordBuilder);
@@ -631,19 +691,53 @@ public class ReadingKpiAPI {
     }
 
     // returns aggregated result field and ttime field
-    private static List<FacilioField> getSelectFields(AggregateOperator aggr, NameSpaceField nsField, FacilioField field, Map<String, FacilioField> fieldMap) throws Exception {
+    private static List<FacilioField> getSelectFields(AggregateOperator aggr, NameSpaceField nsField, FacilioField field, Map<String, FacilioField> fieldMap,String aggr_table_name, boolean isCHAggregatedTableEnabled) throws Exception {
         List<FacilioField> selectFields = new ArrayList<>();
 
-        FacilioField aggrField = aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && nsField.getAggregationType() != AggregationType.COUNT
-                ? field  // high res
-                : getAggregatedField(nsField, field); // normal and dashboard
+        if(isCHAggregatedTableEnabled && aggr_table_name != null)
+        {
+            if( aggr instanceof BmsAggregateOperators.DateAggregateOperator)
+            {
+                FacilioField select_field = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                select_field.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggr_table_name).append(".DATE )) * 1000").toString());
+                selectFields.add(select_field);
+            }
+            else{
+                FacilioField select_field = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                selectFields.add(select_field);
+            }
+            if(aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && nsField.getAggregationType() != AggregationType.COUNT)
+            {
+                selectFields.add(field);
+            }
+            else{
+                AggregateOperator y_aggr = getAggrOperatorForAggrType(nsField.getAggregationType());
+                FacilioField y_aggr_field = null;
+                if(y_aggr == BmsAggregateOperators.CommonAggregateOperator.COUNT){
+                    y_aggr_field = V2AnalyticsOldUtil.getCountAggregatedYField(field, field.getModule(), y_aggr.getStringValue().toUpperCase(Locale.ROOT));
+                }
+                else if(y_aggr == BmsAggregateOperators.NumberAggregateOperator.AVERAGE){
+                    y_aggr_field = V2AnalyticsOldUtil.getAvgAggregatedYField(field, field.getModule(), y_aggr.getStringValue().toUpperCase(Locale.ROOT));
+                }
+                else{
+                    y_aggr_field = V2AnalyticsOldUtil.getAggregatedYField(field, field.getModule(), y_aggr.getStringValue().toUpperCase(Locale.ROOT));
+                }
+                selectFields.add(y_aggr_field);
+            }
+        }
+        else
+        {
+            FacilioField aggrField = aggr == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && nsField.getAggregationType() != AggregationType.COUNT
+                    ? field  // high res
+                    : getAggregatedField(nsField, field); // normal and dashboard
 
-        FacilioField ttimeField = aggr instanceof BmsAggregateOperators.DateAggregateOperator
-                ? ((BmsAggregateOperators.DateAggregateOperator) aggr).getTimestampField(fieldMap.get("ttime"))  // normal
-                : fieldMap.get("ttime"); // for high res and dashboard cases
+            FacilioField ttimeField = aggr instanceof BmsAggregateOperators.DateAggregateOperator
+                    ? ((BmsAggregateOperators.DateAggregateOperator) aggr).getTimestampField(fieldMap.get("ttime"))  // normal
+                    : fieldMap.get("ttime"); // for high res and dashboard cases
 
-        selectFields.add(ttimeField);
-        selectFields.add(aggrField);
+            selectFields.add(ttimeField);
+            selectFields.add(aggrField);
+        }
         return selectFields;
     }
 
@@ -668,8 +762,31 @@ public class ReadingKpiAPI {
         }
     }
 
-    private static String getGroupByString(AggregateOperator aggr, AggregationType nsAggrType, FacilioModule module, Map<String, FacilioField> fieldMap) throws Exception {
-        if (aggr instanceof BmsAggregateOperators.DateAggregateOperator) { // normal
+    private static String getGroupByString(AggregateOperator aggr, AggregationType nsAggrType, FacilioModule module, Map<String, FacilioField> fieldMap, String aggr_table_name, boolean isCHAggregatedTableEnabled) throws Exception {
+        if(isCHAggregatedTableEnabled && aggr_table_name != null)
+        {
+            if (aggr instanceof BmsAggregateOperators.DateAggregateOperator)
+            {
+                AggregateOperator aggr_table_operator = BmsAggregateOperators.getCHAggregatedTableOperator(aggr.getValue());
+                if(aggr_table_operator != null)
+                {
+                    FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggr_table_name).append(".DATE").toString(), FieldType.DATE);
+                    FacilioField xAggrField = aggr_table_operator.getSelectField(aggr_XField);
+                    return xAggrField.getCompleteColumnName();
+                }
+                return null;
+            }
+            else if (aggr == null)
+            { // dashboard
+                FacilioField parentField = fieldMap.get("parentId").clone();
+                if(parentField.getModule().getName().equals(module.getName()) && !parentField.getModule().getTableName().equals(module.getTableName()))
+                {
+                    parentField.setModule(module);
+                }
+                return parentField.getCompleteColumnName();
+            }
+        }
+        else if (aggr instanceof BmsAggregateOperators.DateAggregateOperator) { // normal
             FacilioField groupBy = aggr.getSelectField(fieldMap.get("ttime"));
             if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.CLICKHOUSE)) {
                 groupBy = BmsAggregateOperators.getCHAggregateOperator(aggr.getValue()).getSelectField(fieldMap.get("ttime")).clone();
@@ -700,7 +817,12 @@ public class ReadingKpiAPI {
 
     private static void populateReadingsMapFromProps(AggregateOperator aggr, TreeMap<Long, Map<String, List<Double>>> readingsMap, String varName, FacilioField field, List<Map<String, Object>> props) {
         for (Map<String, Object> prop : props) {
-            Long ttime = (Long) prop.get("ttime");
+            Long ttime=null;
+            if(prop.get("ttime") instanceof UnsignedLong){
+                ttime = ((UnsignedLong) prop.get("ttime")).longValue();
+            }else {
+                ttime = (Long) prop.get("ttime");
+            }
             long adjustedTtime = ttime; // high res
             if (aggr == null) { // for dashboard (time aggr is sent as null), and ttime doesn't matter, since only one value is expected, so ttime is dummy assigned 0
                 adjustedTtime = 0L;
