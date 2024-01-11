@@ -34,7 +34,7 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         JSONObject insights = new JSONObject();
         long floorCount = 0, spaceCount = 0, independantSpaceCount = 0, buildingCount = 0, assetCount = 0, subSpaceCount = 0, meterCount = 0;
-        assetCount = getAssetsCount(spaceId,moduleName);
+        assetCount = SpaceAPI.getAssetsCount(spaceId);
         meterCount = SpaceAPI.getMetersCount(spaceId);
         if (spaceId > 0) {
             switch (moduleName) {
@@ -68,26 +68,6 @@ public class GetSpaceInsightsCommand extends FacilioCommand {
         insights.put("meters", meterCount);
         context.put(FacilioConstants.ContextNames.COUNT, insights);
         return false;
-    }
-
-    private long getAssetsCount(long baseSpaceId, String moduleName) throws Exception{
-        FacilioModule resourceModule = Constants.getModBean().getModule(FacilioConstants.ContextNames.RESOURCE);
-        List<FacilioField> resourceFields = Constants.getModBean().getAllFields(FacilioConstants.ContextNames.RESOURCE);
-        Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(resourceFields);
-        List<Long> spaceIds = getAllSpaceIds(baseSpaceId,moduleName);
-        if(CollectionUtils.isNotEmpty(spaceIds)) {
-            GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-                    .table(resourceModule.getTableName())
-                    .select(FieldFactory.getCountField())
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), EnumOperators.IS))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("space"), spaceIds, StringOperators.IS))
-                    .andCondition(CriteriaAPI.getCondition("SYS_DELETED_TIME", "sysDeletedTime", null, CommonOperators.IS_EMPTY));
-            Map<String, Object> assetCount = builder.fetchFirst();
-            if (MapUtils.isNotEmpty(assetCount) && assetCount.containsKey("count")) {
-                return ((Number) assetCount.get("count")).longValue();
-            }
-        }
-        return 0;
     }
 
     private List<Long> getAllSpaceIds(long parentBaseSpaceId, String moduleName) throws Exception{

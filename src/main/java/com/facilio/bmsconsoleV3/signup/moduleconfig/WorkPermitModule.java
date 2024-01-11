@@ -325,13 +325,13 @@ public class WorkPermitModule extends BaseModuleConfig{
         issuedToUser.setSpecialType("users");
         workPermitFields.add(issuedToUser);
 
-        LookupField people = FieldFactory.getDefaultField("people", "People", "PEOPLE_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SECTION);
+        LookupField people = FieldFactory.getDefaultField("people", "Contact", "PEOPLE_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SECTION);
         people.setModule(workPermitModule);
         people.setDefault(true);
         people.setLookupModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.PEOPLE));
         workPermitFields.add(people);
 
-        LookupField space = FieldFactory.getDefaultField("space", "Space", "BASE_SPACE_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        LookupField space = FieldFactory.getDefaultField("space", "Location", "BASE_SPACE_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         space.setModule(workPermitModule);
         space.setLookupModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE));
         workPermitFields.add(space);
@@ -471,7 +471,7 @@ public class WorkPermitModule extends BaseModuleConfig{
                 .addTab("notesAndInformation","Notes & Information", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", "", null)
-                .addWidget("summaryFieldsWidget", "Term details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6", 0, 0, null, WorkPermitTemplatePageFactory.getSummaryWidgetDetails(module.getName(),app))
+                .addWidget("summaryFieldsWidget", "Permit details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6", 0, 0, null, WorkPermitTemplatePageFactory.getSummaryWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)

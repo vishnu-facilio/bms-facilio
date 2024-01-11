@@ -2271,6 +2271,20 @@
 				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
 			</result>
 		</action>
+		<action name="*/*"
+				class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="v2workOrderList">
+			<param name="moduleName">workorder</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="tabType">Portfolio</param>
+			<param name="viewName">{2}</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.subViewCount.*\.criteria</param>
+			</result>
+		</action>
 	</package>
 
 	<package name="workOrderCalendarListApiV2"

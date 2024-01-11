@@ -44,7 +44,7 @@ public class WorkPermitTemplatePageFactory implements TemplatePageFactory{
                 .addTab("notesAndInformation","Notes & Information", PageTabContext.TabType.SIMPLE,true,null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("summaryfields", "", null)
-                .addWidget("summaryFieldsWidget", "Term details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
+                .addWidget("summaryFieldsWidget", "Permit details",PageWidget.WidgetType.SUMMARY_FIELDS_WIDGET, "flexiblewebsummaryfieldswidget_6", 0, 0, null, getSummaryWidgetDetails(module.getName(),app))
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)
@@ -101,7 +101,7 @@ public class WorkPermitTemplatePageFactory implements TemplatePageFactory{
         FacilioField siteField = FieldFactory.getSiteIdField(module);
         FacilioField spaceField = fieldMap.get("space");
         FacilioField vendorField = fieldMap.get("vendor");
-        FacilioField contactField = fieldMap.get("vendorContact");
+        FacilioField contactField = fieldMap.get("people");
         FacilioField validFromField = fieldMap.get("expectedStartTime");
         FacilioField validToField = fieldMap.get("expectedEndTime");
         FacilioField workorderField = fieldMap.get("ticket"); //need to check
