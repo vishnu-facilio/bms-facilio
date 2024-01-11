@@ -22,6 +22,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,6 +37,16 @@ public class NotesAPI {
 	public static List<NoteContext> fetchNotes(long parentId,long parentNoteId, String moduleName,Boolean onlyFetchParentNotes) throws Exception {
 		List<NoteContext> noteListContext = getListBuilder(parentId,parentNoteId, moduleName, onlyFetchParentNotes).get();
 		return getNotes(Collections.singletonList(parentId), moduleName, noteListContext);
+	}
+
+	public static NoteContext fetchLastReply(long parentId,long parentNoteId, String moduleName) throws Exception {
+		SelectRecordsBuilder<NoteContext> selectBuilder = getListBuilder(parentId, parentNoteId, moduleName, false);
+		FacilioField createdTimeField = Constants.getModBean().getField("createdTime", moduleName);
+		if(createdTimeField == null){
+			return null;
+		}
+		selectBuilder.orderBy(createdTimeField.getColumnName() + " DESC");
+		return selectBuilder.fetchFirst();
 	}
 	
 	
@@ -73,8 +84,6 @@ public class NotesAPI {
 				}
 			}
 		}
-		
-		
 		return noteListContext;	
 		
 	}

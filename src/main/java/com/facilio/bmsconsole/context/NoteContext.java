@@ -172,4 +172,13 @@ public class NoteContext extends ModuleBaseWithCustomFields {
 	}
 
 	private boolean editAvailable = false;
+	private NoteContext lastReply;
+
+	public NoteContext getLastReply() {
+		return lastReply;
+	}
+
+	public void setLastReply(NoteContext lastReply) {
+		this.lastReply = lastReply;
+	}
 }

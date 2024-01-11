@@ -4,9 +4,7 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.util.NotesAPI;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -27,7 +25,7 @@ public class GetNotesCommand extends FacilioCommand {
 			if (notesIds != null && !notesIds.isEmpty()) {
 
 				noteListContext = NotesAPI.fetchNote(notesIds, moduleName);
-				setRepliesCount(noteListContext,moduleName);
+				setRepliesMeta(noteListContext,moduleName);
 				Map<Long, List<NoteContext>> map = new HashMap<>();
 
 				for (NoteContext note : noteListContext) {
@@ -43,7 +41,7 @@ public class GetNotesCommand extends FacilioCommand {
 			else {
 				
 			noteListContext = NotesAPI.fetchNotes(parentId,parentNoteId, moduleName,onlyFetchParentNotes);
-			setRepliesCount(noteListContext,moduleName);
+			setRepliesMeta(noteListContext,moduleName);
 			context.put(FacilioConstants.ContextNames.NOTE_LIST, noteListContext);
 			context.put(FacilioConstants.ContextNames.NEED_COMMENT_SHARING, true);
 			}
@@ -51,15 +49,16 @@ public class GetNotesCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	public List<NoteContext> setRepliesCount(List<NoteContext> noteListContext,String moduleName) throws Exception {
+	public List<NoteContext> setRepliesMeta(List<NoteContext> noteListContext, String moduleName) throws Exception {
 		if(noteListContext.isEmpty()){
 			return null;
 		}
-		for (NoteContext note:noteListContext) { // need to change this to single iteration
+		for (NoteContext note: noteListContext) {
 			long repliesCount = NotesAPI.fetchNotesCount(note.getParentId(), note.getId(), moduleName);
 			note.setReplyCount(repliesCount);
+			NoteContext lastReply = NotesAPI.fetchLastReply(note.getParentId(), note.getId(), moduleName);
+			note.setLastReply(lastReply);
 		}
 		return noteListContext;
 	}
-
 }
