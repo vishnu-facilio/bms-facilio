@@ -2,9 +2,11 @@ package com.facilio.bmsconsoleV3.commands.dashboard;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.AddOrUpdateDashboardFieldMappingCommand;
+import com.facilio.bmsconsole.context.DashboardUserFilterContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
+import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
@@ -151,9 +153,9 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
 
                             Map<String, Object> props = FieldUtil.getAsProperties(filterWidgetContext, true);
                             updateWidgetFilter.update(props);
-
+                            DashboardUserFilterContext userFilter = DashboardFilterUtil.getDashboardUserFiltersForWidgetId((Long) props.get("userFilterId"));
                             AddOrUpdateDashboardFieldMappingCommand fieldMappingCommand = new AddOrUpdateDashboardFieldMappingCommand();
-                            context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,props.get("userFilterId"));
+                            context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,userFilter.getId());
                             context.put("fieldMappings",filterWidgetContext.getFieldMappingMap());
                             fieldMappingCommand.executeCommand(context);
                         }
