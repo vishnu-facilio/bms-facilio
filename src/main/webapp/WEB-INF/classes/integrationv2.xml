@@ -57,7 +57,7 @@
 		</action>
 		<action name="*/create"  class="com.facilio.pdf.actions.PdfAction" method="createPdf">
 			<param name="moduleName">{1}</param>
-			<param name="permission">GET:READ</param>
+			<param name="permission">POST:READ</param>
 		</action>
 
 		<action name="generate"  class="com.facilio.pdf.actions.PdfAction" method="generatePdf">

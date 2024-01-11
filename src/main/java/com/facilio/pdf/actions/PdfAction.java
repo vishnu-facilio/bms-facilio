@@ -8,6 +8,7 @@ import com.facilio.services.filestore.FileStoreFactory;
 import com.facilio.services.pdf.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.log4j.Log4j;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.pdf.PdfUtil;
 
+@Log4j
 public class PdfAction extends FacilioAction {
 
     /**
@@ -42,10 +44,20 @@ public class PdfAction extends FacilioAction {
     public void setDownloadStream(InputStream downloadStream) {
         this.downloadStream = downloadStream;
     }
+	
+    @Getter @Setter
+	private Boolean isNewExport=false;
 
     public String createPdf() throws Exception {
-    	
-        String fileUrl = PdfUtil.exportUrlAsPdf(getUrl(), false, "download-"+System.currentTimeMillis(), additionalInfo, fileFormat != null ? fileFormat : FileFormat.PDF);
+		String fileUrl = null;
+    	if(this.getIsNewExport()){
+			long fileId = PDFServiceFactory.getPDFService().exportURL("download-"+System.currentTimeMillis(),getUrl(), PDFService.ExportType.PDF,null);
+			LOGGER.info("PDFFileId : "+fileId);
+			fileUrl = FileStoreFactory.getInstance().getFileStore().getDownloadUrl(fileId);
+			LOGGER.info("PDFFileURL : "+fileUrl);
+		} else {
+			fileUrl = PdfUtil.exportUrlAsPdf(getUrl(), false, "download-" + System.currentTimeMillis(), additionalInfo, fileFormat != null ? fileFormat : FileFormat.PDF);
+		}
         setResult("fileUrl", fileUrl);
         return SUCCESS;
     }

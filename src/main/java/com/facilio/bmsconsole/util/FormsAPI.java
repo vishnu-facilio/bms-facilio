@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.FormSiteRelationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
@@ -1311,6 +1312,18 @@ public class FormsAPI {
 				fields.add(new FormField("failureClass", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Failure Class", FormField.Required.OPTIONAL, "failureclass",10, 2));
 				fields.add(new FormField("territory",FieldDisplayType.LOOKUP_SIMPLE,"Territory", Required.OPTIONAL,"territory",11,2));
 				break;
+			case FacilioConstants.Inspection.INSPECTION_TEMPLATE:
+				FormField trigger = new FormField("triggers", FieldDisplayType.INSPECTION_TRIGGER, "Triggers", FormField.Required.OPTIONAL, 1, 1);
+				trigger.setVersion(Version.V2.getVersionId());
+				fields.add(trigger);
+				List<FacilioField> allField = modBean.getAllFields(form.getModule().getName());
+				allField = allField.stream().filter(f -> f.isDefault() && !FieldUtil.isSystemUpdatedField(f.getName())).collect(Collectors.toList());
+				List<FacilioModule> subModule = modBean.getSubModules(form.getModule().getName(), ModuleType.ATTACHMENTS);
+				if(CollectionUtils.isNotEmpty(subModule)){
+					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
+				}
+				fields.addAll(getFormFieldsFromFacilioFields(allField, 1));
+				break;
 			case ContextNames.BUILDING:
 			case ContextNames.FLOOR:
 				// Add modules here, if not all fields needs to be shown and only form factory fields are needed
@@ -1318,14 +1331,14 @@ public class FormsAPI {
 				
 				// Add fields here if it has to be shown in unused list and not there in the default form
 				
-				default:
-					List<FacilioField> allFields = modBean.getAllFields(form.getModule().getName());
-					allFields = allFields.stream().filter(f -> f.isDefault() && !FieldUtil.isSystemUpdatedField(f.getName())).collect(Collectors.toList());
-					List<FacilioModule> subModules = modBean.getSubModules(form.getModule().getName(), ModuleType.ATTACHMENTS);
-					if(CollectionUtils.isNotEmpty(subModules)){
-					fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
-					}
-					fields.addAll(getFormFieldsFromFacilioFields(allFields, 1));
+			default:
+				List<FacilioField> allFields = modBean.getAllFields(form.getModule().getName());
+				allFields = allFields.stream().filter(f -> f.isDefault() && !FieldUtil.isSystemUpdatedField(f.getName())).collect(Collectors.toList());
+				List<FacilioModule> subModules = modBean.getSubModules(form.getModule().getName(), ModuleType.ATTACHMENTS);
+				if(CollectionUtils.isNotEmpty(subModules)){
+				fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
+				}
+				fields.addAll(getFormFieldsFromFacilioFields(allFields, 1));
 			}
 		}
 
