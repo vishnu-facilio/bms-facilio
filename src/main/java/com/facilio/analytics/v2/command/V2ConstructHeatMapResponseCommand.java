@@ -381,6 +381,7 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
                 else
                 {
                     LOGGER.debug("provided aggr and xaggr combination is not supported in heatmap"+ hmAggr + " AND "+ report.getxAggrEnum());
+                    break;
                 }
             }
         }
