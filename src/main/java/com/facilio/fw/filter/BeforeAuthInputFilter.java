@@ -82,14 +82,14 @@ public class BeforeAuthInputFilter implements Filter {
             }
             if ( !isAllowed() || exclution.isMatch()) {
                 if(!exclution.isMatch()){
-//                    log(securityRequestWrapper,FacilioProperties.getEnvironment()+" Validation missing for : " + httpServletRequest.getRequestURI());
+                    log(securityRequestWrapper,FacilioProperties.getEnvironment()+" Validation missing for : " + httpServletRequest.getRequestURI());
                 }
                 filterChain.doFilter(servletRequest, servletResponse);
             } else {
-//                log(securityRequestWrapper,"Validation missing for : " + httpServletRequest.getRequestURI());
-//                Map<String, String> errorMap = new HashMap<>();
-//                errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
-                //write(errorMap, 400, servletResponse);
+                log(securityRequestWrapper,"Validation missing for : " + httpServletRequest.getRequestURI());
+                Map<String, String> errorMap = new HashMap<>();
+                errorMap.put("message", "Validation missing for : " + httpServletRequest.getRequestURI());
+                write(errorMap, 400, servletResponse);
             }
             return;
         }
