@@ -49,7 +49,7 @@ public class RollUpTransactionAmountCommand extends FacilioCommand {
         V3TransactionContext record= recordList.get(0);
 
         FacilioField timeFieldCloned = fieldMap.get("transactionDate").clone();
-        FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTH.getSelectField(timeFieldCloned);
+        FacilioField groupingTimeField = BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR.getSelectField(timeFieldCloned);
 
         FacilioField transactionAmountField = fieldMap.get("transactionAmount");
         boolean isTransactionAmountMultiCurrencyField = transactionAmountField.getDataTypeEnum().equals(FieldType.MULTI_CURRENCY_FIELD);
