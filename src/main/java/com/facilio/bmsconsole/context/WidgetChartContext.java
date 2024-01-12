@@ -120,7 +120,11 @@ public class WidgetChartContext extends DashboardWidgetContext {
 //				if(optimize == false) {
 //					dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId(), true));
 //				}
-				dataOptionsJson.put("multiGroup",ReportUtil.checkMultiGroup(newReportId));
+				JSONObject multiGroupObj = ReportUtil.checkMultiGroup(newReportId);
+				if(multiGroupObj!=null){
+					dataOptionsJson.put("multiGroup",multiGroupObj.get("multiGroup"));
+					dataOptionsJson.put("multiGroupHeight",multiGroupObj.get("multiGroupHeight"));
+				}
 				dataOptionsJson.put("moduleName", ReportUtil.getReportModuleName(getNewReportId()));
 				dataOptionsJson.put("reportType", ReportUtil.getReportType(getNewReportId()));
 				dataOptionsJson.put("reportTemplate", getReportTemplate());

@@ -16,6 +16,7 @@ public class V2ModuleTimeFilterContext
     public int operatorId;
     private DateOperators dateOperators;
     private String label;
+    private Long offset;
     public int getDateOperators() {
         return dateOperators != null ? dateOperators.getOperatorId() : -1;
     }

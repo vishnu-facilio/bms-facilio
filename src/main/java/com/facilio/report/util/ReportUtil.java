@@ -871,8 +871,12 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		ReportContext reportContext =  ReportUtil.getReport(reportId,true);
 		return reportContext.getModule().getName();
 	}
-	public static boolean checkMultiGroup(long reportId) throws Exception {
+	public static JSONObject checkMultiGroup(long reportId) throws Exception {
 		boolean multiGroup = false;
+		Integer booleanChart =0;
+		Integer normalChart = 0;
+		Integer multiChartHeight = 0;
+		JSONObject countObj = new JSONObject();
 		ReportContext reportContext =  ReportUtil.getReport(reportId,true);
 		if(reportContext != null && reportContext.getTypeEnum() != ReportContext.ReportType.WORKORDER_REPORT && reportContext.getChartState() != null) {
 			JSONParser parse = new JSONParser();
@@ -883,14 +887,102 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 					String type = (String) visualizationProps.get("type");
 					if(type != null && type.equals("multi")){
 						JSONArray groups = (JSONArray) visualizationProps.get("groups");
-						if(groups != null && groups.size() >1){
+						if(groups != null){
 							multiGroup = true;
+							countObj = getChartCount(groups);
 						}
 					}
 				}
 			}
 		}
-		return multiGroup;
+		if(countObj!=null){
+			booleanChart= (Integer) countObj.get("booleanChart");
+			normalChart = (Integer) countObj.get("normalChart");
+		}
+		if((normalChart!=null && normalChart >0) || (booleanChart!=null && booleanChart>0)) {
+           multiChartHeight = calculateMultiChartHeight(booleanChart,normalChart);
+		}
+		JSONObject multiGroupObj = new JSONObject();
+		multiGroupObj.put("multiGroup",multiGroup);
+		multiGroupObj.put("multiGroupHeight",multiChartHeight);
+		return multiGroupObj;
+	}
+	public static JSONObject getChartCount(JSONArray groups){
+		JSONObject countObj = new JSONObject();
+		int booleanChart = 0;
+		int normalChart = 0;
+		for(Object group : groups){
+			JSONObject groupObj = (JSONObject) group;
+			Boolean isBoolean = isBooleanChart(groupObj);
+			if(isBoolean!=null && isBoolean) {
+				booleanChart+=1;
+			}
+			else{
+				normalChart+=1;
+			}
+		}
+		countObj.put("booleanChart",booleanChart);
+		countObj.put("normalChart",normalChart);
+		return countObj;
+	}
+	public static boolean isBooleanChart(JSONObject group){
+		boolean isBoolean = false;
+		JSONArray measures = (JSONArray) group.get("measures");
+		if(measures!=null && measures.size()==1){
+			JSONObject measure = (JSONObject) measures.get(0);
+			String chartType = measure!=null ? (String) measure.get("chartType") : "";
+			isBoolean = chartType.equals("boolean");
+		}
+		return isBoolean;
+	}
+	public static int calculateMultiChartHeight(Integer booleanChart, Integer normalChart){
+		int multiChartHeight = 0;
+
+		if(normalChart==0){
+			switch(booleanChart){
+				case 1:
+					multiChartHeight =62;
+					break;
+				case 2:
+					multiChartHeight =93;
+					break;
+				case 3:
+					multiChartHeight =124;
+					break;
+				case 4:
+					multiChartHeight = 155;
+					break;
+				case 5:
+					multiChartHeight = 186;
+					break;
+			}
+		}
+		else if(booleanChart==0){
+			switch(normalChart){
+				case 1:
+					multiChartHeight = 93;
+					break;
+				case 2:
+					multiChartHeight = 155;
+					break;
+				case 3:
+					multiChartHeight = 186;
+					break;
+			}
+			if(normalChart>3){
+				multiChartHeight = 186;
+			}
+		}
+		else if(booleanChart == 1 && normalChart ==1){
+			multiChartHeight = 124;
+		}
+		else if(booleanChart == 2 && normalChart ==1){
+			multiChartHeight = 155;
+		}
+		else if(booleanChart >= 1 && normalChart >= 1){
+			multiChartHeight = 186;
+		}
+		return multiChartHeight;
 	}
 	
 	public static List<ReportContext> fetchAllReportsByType(Integer reportType) throws Exception{
