@@ -508,6 +508,22 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         JSONObject criteriaJson = (JSONObject) parser.parse(criteria);
                         criteriaObj = FieldUtil.getAsBeanFromJson(criteriaJson,Criteria.class);
                     }
+                    ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+                    String fieldName = measureContext.getFieldName();
+                    String moduleName = measureContext.getModuleName();
+                    if(fieldName!=null && moduleName!=null) {
+                        FacilioField measureField = modBean.getField(fieldName,moduleName);
+                        if(measureField!=null && measureField instanceof NumberField){
+                            NumberField numberField = (NumberField) measureField;
+                            if(numberField!=null){
+                                resultMap.put("unit", numberField.getUnit());
+                                Unit unitMap = Unit.getUnitFromSymbol(numberField.getUnit());
+                                if(unitMap != null) {
+                                    resultMap.put("unit_map", FieldUtil.getAsJSON(unitMap));
+                                }
+                            }
+                        }
+                    }
                 }
                 V2ModuleTimeFilterContext timeFilterContext = reportContext.getTimeFilter();
                 String dateFieldName = null;
