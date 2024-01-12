@@ -99,7 +99,9 @@ public class GetModuleListCommand extends FacilioCommand {
 			FacilioConstants.Control_Action.CONTROL_ACTION_MODULE_NAME,
 			ContextNames.SAFETY_PLAN,
 			FacilioConstants.UTILITY_INTEGRATION_CUSTOMER,
-			FacilioConstants.UTILITY_INTEGRATION_BILLS
+			FacilioConstants.UTILITY_INTEGRATION_BILLS,
+			ContextNames.SHIFT,
+			ContextNames.BREAK
 	});
 
 	@Override
