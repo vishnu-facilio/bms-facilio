@@ -116,12 +116,12 @@ public class BusinessHoursList  extends ArrayList<BusinessHourContext>{
 				endTime = LocalTime.MAX;
 			}
 
-			ZonedDateTime localTimeDate = getTimeStamp(businessHour.getDayOfWeek(), localTime, cycle);
-			ZonedDateTime startTimeDate = getTimeStamp(businessHour.getDayOfWeek(), startTime, cycle);
+			ZonedDateTime localTimeDate = getTimeStamp(businessHour.getDayOfWeek(), localTime, cycle, time);
+			ZonedDateTime startTimeDate = getTimeStamp(businessHour.getDayOfWeek(), startTime, cycle, time);
 			if (localTimeDate.isBefore(startTimeDate)) {
 				localTimeDate = startTimeDate;
 			}
-			ZonedDateTime endTimeDate = getTimeStamp(businessHour.getDayOfWeek(), endTime, cycle);
+			ZonedDateTime endTimeDate = getTimeStamp(businessHour.getDayOfWeek(), endTime, cycle, time);
 			if (startTime.isAfter(endTime)) {
 				// night shift use case
 				endTimeDate = endTimeDate.plusDays(1);
@@ -152,8 +152,8 @@ public class BusinessHoursList  extends ArrayList<BusinessHourContext>{
 		return newTimeDate.toInstant().toEpochMilli();
 	}
 
-	private ZonedDateTime getTimeStamp(int dayOfWeek, LocalTime localTime, int addWeeks) {
-		ZonedDateTime instance = DateTimeUtil.getDateTime()
+	private ZonedDateTime getTimeStamp(int dayOfWeek, LocalTime localTime, int addWeeks, long time) {
+		ZonedDateTime instance = DateTimeUtil.getDateTime(time)
 				.with(WeekFields.of(DayOfWeek.MONDAY, 1).dayOfWeek(), dayOfWeek)
 				.plusWeeks(addWeeks)
 				.withHour(localTime.getHour())
