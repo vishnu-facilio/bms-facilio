@@ -1,5 +1,6 @@
 package com.facilio.analytics.v2.command;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
@@ -12,6 +13,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -43,6 +45,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class V2ConstructCardCommand extends FacilioCommand {
     private static final Logger LOGGER = Logger.getLogger(V2ConstructCardCommand.class.getName());
@@ -113,7 +116,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                      */
 
                     Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr, field);
-                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null));
+                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null,aggr));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
                     {
@@ -123,7 +126,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
                         cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
                         baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter,aggr, field);
-                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend()));
+                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend(),aggr));
                     }
                     /**
                      * Select Builder construction to fetch card data ends here
@@ -132,7 +135,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
         }
     }
-    private Map<String, Object> setResultJson(String period, Object value, FacilioField field, String trend)throws Exception
+    private Map<String, Object> setResultJson(String period, Object value, FacilioField field, String trend,AggregateOperator aggr)throws Exception
     {
         Map<String, Object> result_json = new HashMap<>();
         result_json.put("dataType", field != null ? field.getDataTypeEnum() : null);
@@ -155,29 +158,49 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         else if (field != null && field.getDataTypeEnum() == FieldType.BOOLEAN && value != null)
         {
-            BooleanField boolField = (BooleanField) field;
-            HashMap<String, String> enumMap = new HashMap<>();
-            if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
-                enumMap.put("1", boolField.getTrueVal());
-                enumMap.put("0", boolField.getFalseVal());
-            }
-            else {
-                enumMap.put("1", "True");
-                enumMap.put("0", "False");
-            }
-            String str_value = value.toString();
-            if (str_value.equals("1") && boolField.getTrueVal() != null) {
-                result_json.put("value", boolField.getTrueVal());
-            } else if (str_value.equals("0") && boolField.getFalseVal() != null) {
-                result_json.put("value", boolField.getFalseVal());
-            }else{
-                result_json.put("value", enumMap.get(str_value));
+            if(aggr != null && aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
+                Map<String, Integer> counts = (Map<String, Integer>) value;
+                String actualString = "";
+                if(counts.keySet().size() > 0) {
+                    Object firstValue = counts.keySet().iterator().next();
+                    if(counts != null && counts.keySet().size() < 2 && counts.get(firstValue) < 2){
+                        actualString = getBooleanValue(field,firstValue);
+                    }
+                    else {
+                        actualString = counts.entrySet().stream().map(e -> {
+                            try {
+                                return e.getValue() + " " + getBooleanValue(field, e.getKey());
+                            } catch (Exception ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        }).collect(Collectors.joining(" & "));
+                    }
+                }
+                result_json.put("actualValue",actualString);
+            } else {
+                result_json.put("value", getBooleanValue(field, value));
             }
         }
         else if (field != null && field instanceof EnumField && value != null) {
-            Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
-            if(enumMap.containsKey(Integer.parseInt(value.toString()))){
-                result_json.put("value", enumMap.get(Integer.parseInt(value.toString())));
+            if(aggr != null && aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
+                Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
+                Map<String, Integer> counts = (Map<String, Integer>) value;
+                String actualString = "";
+                if(enumMap != null && counts.keySet().size() > 0){
+                    Object firstValue = counts.keySet().iterator().next();
+                    if(counts != null && counts.keySet().size() < 2 && counts.get(firstValue) < 2){
+                        actualString = (String) enumMap.get(Integer.parseInt((String) firstValue));
+                    }
+                    else {
+                        actualString = counts.entrySet().stream().map(e ->e.getValue() + " " + enumMap.get(Integer.parseInt(e.getKey()))).collect(Collectors.joining(" & "));
+                    }
+                }
+                result_json.put("actualValue",actualString);
+            } else {
+                Map<Integer, Object> enumMap = ((EnumField) field).getEnumMap();
+                if(enumMap.containsKey(Integer.parseInt(value.toString()))){
+                    result_json.put("value", enumMap.get(Integer.parseInt(value.toString())));
+                }
             }
         }
         return result_json;
@@ -197,7 +220,23 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
         addedModules.add(baseModule);
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = setBaseModuleAggregation(baseModule);
-        selectBuilder.select(fields);
+        if(aggr != null && aggr instanceof BmsAggregateOperators.SpecialAggregateOperator  && (field instanceof EnumField || field instanceof BooleanField)) {
+            List<FacilioField> newFields = new ArrayList<>();
+            for(FacilioField curr_fields : fields) {
+                newFields.add(curr_fields);
+            }
+            FacilioField rowNumberField = new FacilioField();
+            rowNumberField.setName("rn");
+            rowNumberField.setColumnName("ROW_NUMBER() OVER (PARTITION BY " + baseModule.getTableName() + "." +  fieldMap.get("parentId").getColumnName() + "  ORDER BY " + "TTIME DESC)");
+            newFields.add(rowNumberField);
+            newFields.add(fields.get(0));
+
+            newFields.add(fieldMap.get("ttime"));
+            newFields.add(AccountConstants.getOrgIdField(baseModule));
+            selectBuilder.select(newFields);
+        }else {
+            selectBuilder.select(fields);
+        }
         if(aggr_base_Module != null)
         {
             if(range != null)
@@ -255,7 +294,23 @@ public class V2ConstructCardCommand extends FacilioCommand {
     {
         List<Map<String, Object>> props = null;
         SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = this.fetchCardDataSelectBuilder(fields, baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr, y_field);
-        if(aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
+        if(aggr != null && aggr instanceof BmsAggregateOperators.SpecialAggregateOperator && (y_field instanceof EnumField || y_field instanceof BooleanField)) {
+            props = getLastValues(selectBuilder, fields, baseModule);
+            Map<String, Integer> counts = new HashMap<String, Integer>();
+            for(Map<String, Object> prop : props) {
+                if(prop.get(fields.get(0).getName()) != null) {
+                    String value = (String) prop.get(fields.get(0).getName()).toString();
+                    if(counts.containsKey(value)){
+                        Integer count = counts.get(value);
+                        count = count + 1;
+                        counts.put(value,count);
+                    }else {
+                        counts.put(value,1);
+                    }
+                }
+            }
+            return counts;
+        }else if(aggr != null && aggr instanceof BmsAggregateOperators.SpecialAggregateOperator) {
             selectBuilder.limit(1);
             selectBuilder.orderBy("TTIME desc");
         }
@@ -337,7 +392,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             if(parentIds != null && parentIds.size() > 0)
             {
                 Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
-                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null));
+                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null,aggr));
                 if(cardParams.getBaseline() != null)
                 {
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(cardParams.getBaseline());
@@ -346,21 +401,21 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
                     Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
-                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend()));
+                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend(),aggr));
                 }
                 Map<String, Object> parentIdMap = new HashMap<>();
                 parentIdMap.put("parentId", parentIds.get(0));
                 cardParams.getResult().put("parentIds", parentIdMap);
             }
             else {
-                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, null));
+                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, null,aggr));
                 if (cardParams.getBaseline() != null) {
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(cardParams.getBaseline());
                     baseline.setAdjustType(BaseLineContext.AdjustType.NONE);
                     DateRange baseline_range = baseline.calculateBaseLineRange(dateRange, baseline.getAdjustTypeEnum());
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
-                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, cardParams.getBaselineTrend()));
+                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, cardParams.getBaselineTrend(),aggr));
                 }
             }
         }
@@ -613,5 +668,57 @@ public class V2ConstructCardCommand extends FacilioCommand {
             }
         }
         return null;
+    }
+    private List<Map<String, Object>> getLastValues( SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,List<FacilioField> fields, FacilioModule baseModule) throws Exception {
+        List<FacilioField> cloneFields = new ArrayList<>();
+        List<FacilioField> wrapperFields = new ArrayList<>();
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        cloneFields.add(modBean.getField("ttime",baseModule.getName()));
+        String tableName = selectBuilder.constructQueryString();
+
+        FacilioField rowNumberField = new FacilioField();
+        rowNumberField.setName("rn");
+        rowNumberField.setColumnName("rn");
+        cloneFields.add(rowNumberField);
+
+        cloneFields.add(fields.get(0));
+        for (FacilioField field : cloneFields) {
+            if (field.getColumnName().equals("ORGID") || field.getColumnName().contains("ROW_NUMBER") || field.getColumnName() == null) {
+                continue;
+            }
+            FacilioField temp_field = field.clone();
+            temp_field.setColumnName(temp_field.getName());
+            temp_field.setTableAlias("subquery");
+            wrapperFields.add(temp_field);
+        }
+        GenericSelectRecordBuilder newselectBuilder = new GenericSelectRecordBuilder()
+                .table(new StringBuilder("( ").append(tableName).append(" )").toString())
+                .select(wrapperFields)
+                .tableAlias("subquery");
+        newselectBuilder.andCustomWhere("rn = 1");
+        newselectBuilder.limit(2000);
+        return newselectBuilder.get();
+    }
+    public String getBooleanValue(FacilioField field, Object value) throws Exception {
+        BooleanField boolField = (BooleanField) field;
+        HashMap<String, String> enumMap = new HashMap<>();
+        if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
+            enumMap.put("true", boolField.getTrueVal());
+            enumMap.put("false", boolField.getFalseVal());
+        }
+        else {
+            enumMap.put("true", "True");
+            enumMap.put("false", "False");
+        }
+        String str_value = value.toString();
+        if (str_value.equals("true") && boolField.getTrueVal() != null) {
+            return boolField.getTrueVal();
+        } else if (str_value.equals("false") && boolField.getFalseVal() != null) {
+            return boolField.getFalseVal();
+        }else if(enumMap.get(str_value) != null){
+            return enumMap.get(str_value);
+        }else {
+            return str_value;
+        }
     }
 }

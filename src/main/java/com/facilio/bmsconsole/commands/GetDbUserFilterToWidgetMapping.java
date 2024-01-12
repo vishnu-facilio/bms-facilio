@@ -319,7 +319,7 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 		   if (moduleForFilter != null)// enum filter
 		   {	moduleForFilter.setFields(modBean.getAllFields(moduleForFilter.getName()));
 
-			   FacilioField filterApplicableField;
+			   FacilioField filterApplicableField = null;
 
 				//when there are more than one fields which have the same lookup -> users module filter-> workorder module,requestedBy,createdBy etc
 				//take from custom mapping else select first option
@@ -332,8 +332,12 @@ public class GetDbUserFilterToWidgetMapping extends FacilioCommand {
 					Long fieldId = DashboardFilterUtil.getFieldForMappingOnWidget(filter.getDashboardUserFilterJson(), widgetModule != null ? widgetModule.getName() : null);
 					FacilioModule extendedModule = modBean.getModule(widgetModule.getModuleId()).getExtendModule();
 					if(customModulevsFieldMapping != null && (customModulevsFieldMapping.containsKey(widgetModule.getModuleId()) || (extendedModule != null && customModulevsFieldMapping.containsKey(extendedModule.getModuleId())))){
-						long moduleId = extendedModule != null ? extendedModule.getModuleId() : widgetModule.getModuleId();
-						filterApplicableField = customModulevsFieldMapping.get(moduleId);
+						if(extendedModule != null && extendedModule.getModuleId() > 0){
+							filterApplicableField = customModulevsFieldMapping.get(extendedModule.getModuleId());
+						}
+						if(filterApplicableField == null) {
+							filterApplicableField = customModulevsFieldMapping.get(widgetModule.getModuleId());
+						}
 					}
 					else{
 						filterApplicableField =DashboardFilterUtil.getFilterApplicableField(moduleForFilter,widgetModule, fieldId != null && fieldId > 0 ? fieldId : null);
