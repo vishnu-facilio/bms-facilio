@@ -3349,11 +3349,11 @@ public class ApplicationApi {
             groupNameVsWebTabsMap.put("dataadministration", webTabs);
 
 
-//            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
-//            webTabs = new ArrayList<>();
-//            webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null));
-//
-//            groupNameVsWebTabsMap.put("developerspace", webTabs);
+            webTabGroups.add(new WebTabGroupContext("Developer Space", "developerspace", layout.getId(), 3, groupOrder++));
+            webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("API Setup", "apisetup", WebTabContext.Type.API_SETUP, null, appId, null,AccountUtil.FeatureLicense.DEVELOPER_SPACE.getFeatureId()));
+
+            groupNameVsWebTabsMap.put("developerspace", webTabs);
 
 
             for (WebTabGroupContext webTabGroupContext : webTabGroups) {
