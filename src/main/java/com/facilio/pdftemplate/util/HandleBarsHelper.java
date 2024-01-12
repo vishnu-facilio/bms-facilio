@@ -33,6 +33,15 @@ public class HandleBarsHelper {
         registerGroupDataHelper();
         registerPlusOneHelper();
         registerFilterListHelper();
+        registerIsNotEmptyHelper();
+    }
+    private void registerIsNotEmptyHelper(){
+        handlebars.registerHelper("isNotEmpty", new Helper<List>() {
+            @Override
+            public Boolean apply(List list,Options options){
+                return CollectionUtils.isNotEmpty(list);
+            }
+        });
     }
     private void registerGroupDataHelper(){
         handlebars.registerHelper("groupData", new Helper<List<Map<String,Object>>>() {
@@ -40,15 +49,17 @@ public class HandleBarsHelper {
             public Map<Object,List<Map<String,Object>>> apply(List<Map<String,Object>> list,Options options){
                 String groupByField = options.param(0);
                 Map<Object,List<Map<String,Object>>> result = new HashMap<>();
-                for(Map<String,Object> item : list){
-                    if(item.containsKey(groupByField) && !result.containsKey(item.get(groupByField))){
-                        List<Map<String,Object>> values = new ArrayList<>();
-                        values.add(item);
-                        result.put(item.get(groupByField),values);
-                    }else if(result.containsKey(item.get(groupByField))){
-                        List<Map<String,Object>> values = result.get(item.get(groupByField));
-                        values.add(item);
-                        result.put(item.get(groupByField),values);
+                if(CollectionUtils.isNotEmpty(list)) {
+                    for (Map<String, Object> item : list) {
+                        if (item.containsKey(groupByField) && !result.containsKey(item.get(groupByField))) {
+                            List<Map<String, Object>> values = new ArrayList<>();
+                            values.add(item);
+                            result.put(item.get(groupByField), values);
+                        } else if (result.containsKey(item.get(groupByField))) {
+                            List<Map<String, Object>> values = result.get(item.get(groupByField));
+                            values.add(item);
+                            result.put(item.get(groupByField), values);
+                        }
                     }
                 }
                 return result;
@@ -69,7 +80,7 @@ public class HandleBarsHelper {
             public List<Map<String,Object>> apply(List<Map<String,Object>> list,Options options) {
                 String filterFieldName = options.param(0);
                 String filterFieldValue = options.param(1);
-                if(CollectionUtils.isNotEmpty(list)){
+                if(CollectionUtils.isNotEmpty(list) && filterFieldName!=null && filterFieldValue!=null){
                    return list.stream().filter(item -> item.containsKey(filterFieldName) && item.get(filterFieldName).equals(filterFieldValue)).collect(Collectors.toList());
                 }
                 return list;

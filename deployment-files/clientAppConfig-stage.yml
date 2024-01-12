@@ -33,3 +33,6 @@ clientapps:
   - name: dispatcher
     baseUrl: https://static.facilio.in/dispatcher
     stageBaseUrl: https://static.facilio.in/dev
+  - name: pdf-builder
+    baseUrl: https://static.facilio.com
+    stageBaseUrl: https://static.facilio.com/dev

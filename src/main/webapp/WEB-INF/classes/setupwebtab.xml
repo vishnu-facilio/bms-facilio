@@ -1478,6 +1478,10 @@
             <param name="permission">ALL</param>
             <param name="setupTab">PDF_TEMPLATES</param>
         </action>
+        <action name="pdfVersion" class="com.facilio.pdftemplate.action.PDFTemplatesAction" method="pdfVersion">
+            <param name="permission">ALL</param>
+            <param name="setupTab">PDF_TEMPLATES</param>
+        </action>
     </package>
     <package name="peopleSetUp" namespace="/api/v1/setup/people" extends="v3Api">
         <action name="applicationList" class="com.facilio.bmsconsoleV3.actions.V3PeopleAction" method="fetchAppListForPeople">

@@ -4,14 +4,17 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
+import com.facilio.client.app.beans.ClientAppBean;
+import com.facilio.client.app.pojo.ClientAppInfo;
+import com.facilio.client.app.pojo.RequestParams;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdftemplate.context.PDFTemplate;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Action;
-import com.facilio.v3.exception.ErrorCode;
-import com.facilio.v3.exception.RESTException;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
+
+import static com.facilio.client.app.util.ClientAppUtil.clientAppBean;
 
 @Data
 public class PDFTemplatesAction extends V3Action {
@@ -107,6 +110,13 @@ public class PDFTemplatesAction extends V3Action {
         chain.execute();
 
         setData(FacilioConstants.ContextNames.PDF_TEMPLATES, context.get(FacilioConstants.ContextNames.PDF_TEMPLATES));
+        return SUCCESS;
+    }
+    public String pdfVersion() throws Exception{
+        ClientAppBean clientAppBean = clientAppBean();
+        RequestParams params = new RequestParams("pdf-builder",ClientAppBean.DEFAULT_ORG_GROUPING);
+        ClientAppInfo clientAppInfo = clientAppBean.getClientAppInfo(params);
+        setData(FacilioConstants.ContextNames.PDF_BUILDER_VERSION, clientAppInfo.getVersion());
         return SUCCESS;
     }
 }

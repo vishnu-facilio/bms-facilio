@@ -601,6 +601,7 @@ public class FacilioConstants {
 		public static final String WITH_QRURL = "withQrUrl";
 		public static final String PDF_TEMPLATE = "pdfTemplate";
 		public static final String PDF_TEMPLATES = "pdfTemplates";
+		public static final String PDF_BUILDER_VERSION = "pdfBuilderVersion";
 
 		public static final String PDF_TEMPLATE_HTML = "pdfTemplateHTML";
 		public static final String PDF_TEMPLATE_RAW_HTML = "pdfTemplateRawHTML";

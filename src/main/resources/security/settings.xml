@@ -4695,7 +4695,8 @@
             <property name="recordId" type="number" />
         </urlparams>
     </request>
-
+    <request path="/api/v1/setup/pdftemplates/pdfVersion" method="GET">
+    </request>
     <request path="/api/v1/setup/pdftemplates/addOrUpdate" method="POST">
         <urlparams>
             <property name="moduleName" type="string"/>

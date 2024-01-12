@@ -27,3 +27,6 @@ clientapps:
   - name: weave-builder
     baseUrl: https://static.facilio.com/weave-builder
     stageBaseUrl: https://static.facilio.com/dev
+  - name: pdf-builder
+    baseUrl: https://static.facilio.com
+    stageBaseUrl: https://static.facilio.com/dev
