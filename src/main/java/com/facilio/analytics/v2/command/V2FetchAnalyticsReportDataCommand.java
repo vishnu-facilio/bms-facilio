@@ -57,7 +57,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         isClickHouseEnabled = (Boolean) context.get("isClickHouseEnabled");
         modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-        this.setXAggrForHeatMap(report_v2, report);
+//        this.setXAggrForHeatMap(report_v2, report);
         V2AnalyticsOldUtil.calculateBaseLineRange(report);
         List<ReportDataContext> reportData = new ArrayList<>();
         List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
@@ -235,18 +235,27 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                         FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder().append(aggregated_table_name).append(".DATE").toString(), FieldType.DATE);
                         xAggrField = aggr_table_operator.getSelectField(aggr_XField);
                         FacilioField select_field = aggr_XField.clone();
-                        if(report_v2.getMeasures() != null && report_v2.getMeasures().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null) {
+                        if(isHeatMap(report_v2)) {
                             select_field.setName("heatmap_y");
                             select_field.setColumnName(new StringBuilder("toUnixTimestamp(").append(xAggrField.getCompleteColumnName()).append(") * 1000").toString());
                         }else{
                             select_field.setColumnName(new StringBuilder("toUnixTimestamp(MIN( ").append(aggregated_table_name).append(".DATE )) * 1000").toString());
                         }
                         fields.add(select_field);
-                    }else {
+                    }
+                    else {
                         xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveCHAggregateOperator(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : BmsAggregateOperators.getCHAggregateOperator(xAggr.getValue()).getSelectField(dp.getxAxis().getField()).clone();
                     }
-                }else{
+                }
+                else
+                {
                     xAggrField = dp.isRightInclusive() && BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue()) != null ? (BmsAggregateOperators.getRightInclusiveAggr(xAggr.getValue())).getSelectField(dp.getxAxis().getField()).clone() : xAggr.getSelectField(dp.getxAxis().getField()).clone();
+                    if(isHeatMap(report_v2))
+                    {
+                        FacilioField temp_field = xAggrField.clone();
+                        temp_field.setName("heatmap_y");
+                        xAggrField = temp_field.clone();
+                    }
                 }
                 if(aggregated_table_name == null)
                 {
@@ -257,9 +266,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
 
-            if(isClickHouseEnabled && isClickhouseAggrTableEnabled) {
-                this.setXAggrForHeatMapXAggr(report_v2, groupBy, dp.getyAxis().getField(), fields, aggregated_table_name);
-            }
+//            if(isClickHouseEnabled && isClickhouseAggrTableEnabled) {
+                this.setXAggrForHeatMapXAggr(report_v2, groupBy, dp.getxAxis().getField(), fields, aggregated_table_name);
+//            }
             if(aggregated_table_name != null && (xAggr == null || !(xAggr instanceof DateAggregateOperator || xAggr instanceof SpaceAggregateOperator)) && !dp.isMultiMeasureChartType())
             {
                 groupBy.add(new StringBuilder(aggregated_table_name).append(".").append(xAggrField.getColumnName()).toString());
@@ -271,7 +280,11 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 groupBy.add(xAggrField.getCompleteColumnName());
             }
             if(aggregated_table_name == null || (xAggr != null && xAggr instanceof SpaceAggregateOperator) || dp.isMultiMeasureChartType()){
-                fields.add(xAggr instanceof DateAggregateOperator ? ((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()) : xAggrField);
+                if(isHeatMap(report_v2)){
+                    fields.add(xAggrField);
+                }else {
+                    fields.add(xAggr instanceof DateAggregateOperator ? ((DateAggregateOperator) xAggr).getTimestampField(dp.getxAxis().getField()) : xAggrField);
+                }
             }
         }
         else if(xAggr == null || xAggr == CommonAggregateOperator.ACTUAL || dp.isHandleEnum()){
@@ -488,24 +501,24 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
         return enum_field_list;
     }
-    private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
-    {
-        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1 && !isClickhouseAggrTableEnabled)
-        {
-            V2MeasuresContext measure = v2_report.getMeasures().get(0);
-            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
-            {
-                if(measure.getHmAggr().equals("hours"))
-                {
-                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY);
-                }
-                else if((measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")))
-                {
-                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE);
-                }
-            }
-        }
-    }
+//    private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
+//    {
+//        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1 && !isClickhouseAggrTableEnabled)
+//        {
+//            V2MeasuresContext measure = v2_report.getMeasures().get(0);
+//            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
+//            {
+//                if(measure.getHmAggr().equals("hours"))
+//                {
+//                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY);
+//                }
+//                else if((measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")))
+//                {
+//                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE);
+//                }
+//            }
+//        }
+//    }
 
     private void setXAggrForHeatMapXAggr(V2ReportContext  v2_report, StringJoiner groupBy, FacilioField xField, List<FacilioField> fields, String aggr_table_name)throws Exception
     {
@@ -568,6 +581,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                         fields.add(aggr_XField);
                     }
                     else{
+                        select_field.setColumnName(new StringBuilder("MIN( ").append(xField.getCompleteColumnName()).append(")").toString());
                         fields.add(select_field);
                     }
 
@@ -579,7 +593,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
     private String setCHAggrModuleAsBaseModuleBaseOnAggregation(V2ReportContext v2Report, ReportContext report, FacilioModule.ModuleType moduleType, DateRange range)throws Exception
     {
         String aggregated_table_name = null;
-        if(isClickHouseEnabled && isClickhouseAggrTableEnabled && moduleType == FacilioModule.ModuleType.READING)
+        if(isClickHouseEnabled && isClickhouseAggrTableEnabled && (moduleType == FacilioModule.ModuleType.READING || moduleType == FacilioModule.ModuleType.LIVE_FORMULA))
         {
             if(v2Report.getDimensions().getDimensionTypeEnum() == V2DimensionContext.DimensionType.TIME && report.getxAggrEnum() != null && report.getxAggrEnum() == CommonAggregateOperator.ACTUAL && range != null && range.getStartTime() > 0 && range.getEndTime() > 0)
             {
@@ -610,4 +624,9 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
         return aggregated_table_name;
     }
+
+        private boolean isHeatMap(V2ReportContext report_v2)throws Exception
+        {
+            return report_v2.getMeasures() != null && report_v2.getMeasures().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null;
+        }
 }

@@ -1801,4 +1801,31 @@ public class V2AnalyticsOldUtil {
         }
         return field;
     }
+    public static FacilioField getCountBooleanAggregatedYField(FacilioField field, FacilioModule aggr_Module, String aggr)throws Exception
+    {
+        if(aggr != null)
+        {
+            if(field.getDataTypeEnum().equals(FieldType.BOOLEAN))
+            {
+                NumberField newField = new NumberField();
+                if(aggr.equalsIgnoreCase(BmsAggregateOperators.NumberAggregateOperator.SUM.getStringValue())){
+                    newField.setColumnName(new StringBuilder().append("sum (").append(aggr_Module.getTableName()).append(".TRUE_COUNT_").append(field.getColumnName()).append(")").toString());
+                }
+                else if(aggr.equalsIgnoreCase(BmsAggregateOperators.CommonAggregateOperator.COUNT.getStringValue())){
+                    newField.setColumnName(new StringBuilder().append("sum (").append(aggr_Module.getTableName()).append(".TRUE_COUNT_").append(field.getColumnName()).append(") + ").append("sum (").append(aggr_Module.getTableName()).append(".FALSE_COUNT_").append(field.getColumnName()).append(")").toString());
+                }
+                else if(aggr.equalsIgnoreCase(BmsAggregateOperators.NumberAggregateOperator.AVERAGE.getStringValue()))
+                {
+                    String count_bool = new StringBuilder().append("sum (").append(aggr_Module.getTableName()).append(".TRUE_COUNT_").append(field.getColumnName()).append(") + ").append("sum (").append(aggr_Module.getTableName()).append(".FALSE_COUNT_").append(field.getColumnName()).append(")").toString();
+                    String sum_bool = new StringBuilder().append("sum (").append(aggr_Module.getTableName()).append(".TRUE_COUNT_").append(field.getColumnName()).append(")").toString();
+                    newField.setColumnName(new StringBuilder().append(sum_bool).append(" / ").append(count_bool).toString());
+                }
+                newField.setDisplayName(aggr + " " + field.getDisplayName());
+                newField.setName(field.getName());
+                newField.setDataType(FieldType.DECIMAL);
+                return newField;
+            }
+        }
+        return field;
+    }
 }

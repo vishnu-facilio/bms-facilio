@@ -25,6 +25,7 @@ import com.facilio.db.criteria.operators.*;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.NamespaceAPI;
 import com.facilio.ns.context.*;
@@ -615,17 +616,22 @@ public class ReadingKpiAPI {
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
         fieldMap.put("id", FieldFactory.getIdField(module));
 
+        AggregateOperator y_aggr = getAggrOperatorForAggrType(nsField.getAggregationType());
         String aggr_table_name = null;
         FacilioField cloned_field = null;
-        if(isCHAggregatedTableEnabled && module != null && ((aggr != null && aggr.getValue() > 0) || isFromCard))
+        if((field instanceof BooleanField && y_aggr != null && y_aggr instanceof BmsAggregateOperators.NumberAggregateOperator && (y_aggr == BmsAggregateOperators.NumberAggregateOperator.MIN || y_aggr == BmsAggregateOperators.NumberAggregateOperator.MAX)))
+        {
+            aggr_table_name=null;
+        }
+        else if((isCHAggregatedTableEnabled && module != null && ((aggr != null && aggr.getValue() > 0) || isFromCard)))
         {
             if(isFromCard){
                 aggr = BmsAggregateOperators.DateAggregateOperator.YEAR;
             }
             if (aggr instanceof BmsAggregateOperators.DateAggregateOperator && aggr == BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY) {
-                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), "Europe/London", "hourly");
+                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "hourly");
             } else if(aggr instanceof BmsAggregateOperators.DateAggregateOperator || aggr instanceof BmsAggregateOperators.SpaceAggregateOperator){
-                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), "Europe/London", "daily");
+                aggr_table_name = ClickhouseUtil.getAggregatedTableName(module.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "daily");
             }
             if(aggr_table_name != null)
             {
@@ -713,7 +719,12 @@ public class ReadingKpiAPI {
             else{
                 AggregateOperator y_aggr = getAggrOperatorForAggrType(nsField.getAggregationType());
                 FacilioField y_aggr_field = null;
-                if(y_aggr == BmsAggregateOperators.CommonAggregateOperator.COUNT){
+                if(field != null && field instanceof BooleanField)
+                {
+                    y_aggr_field = field.clone();
+                    y_aggr_field = V2AnalyticsOldUtil.getCountBooleanAggregatedYField(y_aggr_field, field.getModule(), y_aggr.getStringValue());
+                }
+                else if(y_aggr == BmsAggregateOperators.CommonAggregateOperator.COUNT){
                     y_aggr_field = V2AnalyticsOldUtil.getCountAggregatedYField(field, field.getModule(), y_aggr.getStringValue().toUpperCase(Locale.ROOT));
                 }
                 else if(y_aggr == BmsAggregateOperators.NumberAggregateOperator.AVERAGE){

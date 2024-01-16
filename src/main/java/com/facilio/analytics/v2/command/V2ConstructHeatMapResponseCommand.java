@@ -31,10 +31,11 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
 
     private static final Logger LOGGER = Logger.getLogger(V2ConstructHeatMapResponseCommand.class.getName());
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.####");
-
+    private boolean isClickhouseEnabled=false;
     @Override
     public boolean executeCommand(Context context) throws Exception {
 
+        isClickhouseEnabled = (Boolean) context.get("isClickHouseEnabled");
         List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
         V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
@@ -82,7 +83,7 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
                     }else if(hmAggr.equals("weeks")){
                         ttime_val = formatVal(dataPoint.getxAxis(), BmsAggregateOperators.DateAggregateOperator.WEEKANDYEAR, heatmap_ttime);
                     }
-                    Object heatmap_y_val = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), heatmap_y);
+                    Object heatmap_y_val = formatVal(dataPoint.getxAxis(), report.getxAggrEnum(), heatmap_y, true);
                     Object yVal = prop.get(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
                     if (yVal != null) {
                         yVal = dataPoint.getDynamicKpi() != null ? DECIMAL_FORMAT.format(yVal) : formatVal(dataPoint.getyAxis(), dataPoint.getyAxis().getAggrEnum(), yVal);
@@ -225,6 +226,9 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
                         String key = new StringBuilder().append(quarter+"").append(" ").append(quarterly_sdf.format(recordDate)).toString();
                         if (quarterlyReportDataMap.containsKey(key)) {
                             mapData = (HashMap) quarterlyReportDataMap.get(key);
+                            if(!isClickhouseEnabled) {
+                                mapData.put("Y", hourStartTime);
+                            }
                         }
                         heatMapData.add(mapData);
                         monthStartZonedTime = monthStartZonedTime.plusHours(1);
@@ -313,6 +317,9 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
                         String key = new StringBuilder().append(yearAndDayQuarter+" ").append(quarterAndDay_sdf.format(weekDayStartTime)).toString();
                         if (quarterAndDayReportDataMap.containsKey(key)) {
                             mapData = (HashMap) quarterAndDayReportDataMap.get(key);
+                            if(!isClickhouseEnabled) {
+                                mapData.put("Y", weekDayStartTime);
+                            }
                         }
                         heatMapData.add(mapData);
                         weekStartZonedTime = weekStartZonedTime.plusDays(1);
@@ -389,11 +396,33 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
     }
 
     private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val) throws Exception {
+        return formatVal(reportFieldContext, aggr, val, false);
+    }
+    private Object formatVal(ReportFieldContext reportFieldContext, AggregateOperator aggr, Object val, boolean isHeatMapYFormat) throws Exception {
         FacilioField field = reportFieldContext.getField();
         if (val == null) {
             return "";
         }
-
+        if(isHeatMapYFormat && val instanceof String)
+        {
+            SimpleDateFormat format = null;
+            if(aggr == BmsAggregateOperators.DateAggregateOperator.FULLDATE) {
+                format = new SimpleDateFormat("yyyy MM dd");
+            }else if(aggr == BmsAggregateOperators.DateAggregateOperator.WEEKANDYEAR){
+                format = new SimpleDateFormat("yyyy ww");
+            }else if(aggr == BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR){
+                format = new SimpleDateFormat("yyyy MM");
+            }
+            else if(aggr == BmsAggregateOperators.DateAggregateOperator.YEAR)
+            {
+                format = new SimpleDateFormat("yyyy");
+            }
+            Date date = format.parse((String) val);
+            val = date.getTime();
+            System.out.print(date);
+        }else if(isHeatMapYFormat && aggr == BmsAggregateOperators.DateAggregateOperator.QUARTERLY){
+            return val;
+        }
         switch (field.getDataTypeEnum()) {
             case DECIMAL:
                 val = DECIMAL_FORMAT.format(val);
