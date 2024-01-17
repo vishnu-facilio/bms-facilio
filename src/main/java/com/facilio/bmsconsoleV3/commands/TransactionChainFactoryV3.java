@@ -4427,4 +4427,9 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddModuleMappingCommand());
         return c;
     }
+    public static FacilioChain getUtilityIntegrationBillsBeforeFetchChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new FetchSupplementsForUtilityIntegrationBillsCommand());
+        return c;
+    }
 }

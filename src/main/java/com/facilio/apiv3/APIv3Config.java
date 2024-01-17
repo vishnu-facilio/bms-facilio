@@ -3591,6 +3591,7 @@ public class APIv3Config {
                 .afterSave(new ConstructAddCustomActivityCommandV3())
                 .afterTransaction(new AddActivitiesCommand(FacilioConstants.UTILITY_INTEGRATION_BILL_ACTIVITY))
                 .list()
+                .beforeFetch(TransactionChainFactoryV3.getUtilityIntegrationBillsBeforeFetchChain())
                 .summary()
                 .afterFetch(new FetchUtilityIntegrationDetailsCommandV3())
                 .build();
