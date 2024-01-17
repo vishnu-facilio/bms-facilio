@@ -272,7 +272,7 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		widgetJson.put("sequence", index);
 		widgetJson.put("cardLayout", getCardLayout());
 		widgetJson.put("widgetSettings",getWidgetSettings());
-		widgetJson.put("cardDrilldown", getCardDrilldown());
+		widgetJson.put("cardDrilldown", CardUtil.getDrillDownObj(getCardDrilldown(),getCardParams(),getId()));
 		if(getChildCards() != null && getChildCards().size() > 0){
 			widgetJson.put("childCards", CardUtil.getChildCardsResponse(getChildCards()));
 		}

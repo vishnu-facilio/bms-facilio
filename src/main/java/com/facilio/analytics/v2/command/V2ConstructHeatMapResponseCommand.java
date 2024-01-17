@@ -39,8 +39,8 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
         List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
         V2ReportContext report_v2 = context.get("report_v2") != null ? (V2ReportContext) context.get("report_v2") : (V2ReportContext) context.get("v2_report");
         ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-        boolean isClickhouseAggrTableEnabled = (Boolean) context.get("clickhouse");
-        if(isClickhouseAggrTableEnabled && reportContext.getDataPoints() != null && reportContext.getDataPoints().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null)
+//        boolean isClickhouseAggrTableEnabled = (Boolean) context.get("clickhouse");
+        if(reportContext.getDataPoints() != null && reportContext.getDataPoints().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null)
         {
             for (ReportDataContext data : reportData)
             {
@@ -419,7 +419,6 @@ public class V2ConstructHeatMapResponseCommand extends FacilioCommand {
             }
             Date date = format.parse((String) val);
             val = date.getTime();
-            System.out.print(date);
         }else if(isHeatMapYFormat && aggr == BmsAggregateOperators.DateAggregateOperator.QUARTERLY){
             return val;
         }

@@ -53,6 +53,9 @@ public class V2GetAnalyticReportCommand extends FacilioCommand {
             if(db_filter != null && db_filter.getDb_user_filter() != null){
                 context.put(FacilioConstants.ContextNames.REPORT_USER_FILTER_VALUE, db_filter.getDb_user_filter());
             }
+            if(db_filter != null && db_filter.getPagination() != null && !db_filter.getPagination().isEmpty()){
+                v2_reportContext.setPagination(db_filter.getPagination());
+            }
         }
         for(ReportDataPointContext dataPoint : report.getDataPoints())
         {

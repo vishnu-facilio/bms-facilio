@@ -56,8 +56,10 @@ public class V2GetReadingsFromCategoryCommand extends FacilioCommand {
             List<FacilioField> fields = new ArrayList<>();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             for (FacilioModule reading : reading_modules) {
-                fields.addAll(modBean.getAllFields(reading.getName()));
-                reading.setFields(new ArrayList<>());
+                if(reading != null && reading.getType() != FacilioModule.ModuleType.LIVE_FORMULA.getValue()) {
+                    fields.addAll(modBean.getAllFields(reading.getName()));
+                    reading.setFields(new ArrayList<>());
+                }
             }
             List<String> default_fields = getDefaultReadingFieldNames();
             for(FacilioField field: fields)

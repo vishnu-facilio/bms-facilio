@@ -10,4 +10,5 @@ public class V2AnalyticsContextForDashboardFilter {
 
     private JSONObject db_user_filter;
     private V2TimeFilterContext  timeFilter;
+    private JSONObject pagination;
 }

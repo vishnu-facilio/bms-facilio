@@ -839,7 +839,11 @@ public class V2AnalyticsOldUtil {
                     if(startDate != null && endDate != null)
                     {
                         FacilioField aggr_XField = FieldFactory.getDefaultField("ttime", "Date", new StringBuilder(aggrTableName).append(".DATE").toString(), FieldType.DATE);
-                        selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                        if(aggrTableName.contains("Hourly_")) {
+                            selectBuilder.andCustomWhere(new StringBuilder(" ").append("toDate(").append(aggr_XField.getColumnName()).append(") >= '").append(startDate).append("' AND toDate(").append(aggr_XField.getColumnName()).append(") <= '").append(endDate).append("'").toString());
+                        }else{
+                            selectBuilder.andCustomWhere(new StringBuilder(" ").append(aggr_XField.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(aggr_XField.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                        }
                     }
                 }
             }else {

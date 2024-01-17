@@ -74,6 +74,7 @@ public class V2AnalyticsAPIAction extends V3Action {
         FacilioChain chain = V2AnalyticsTransactionChain.getAnalyticsKPIChain();
         chain.getContext().put("categoryId", categoryId);
         chain.getContext().put("type", type);
+        chain.getContext().put("searchText", searchText);
         chain.execute();
         if(chain.getContext().containsKey("kpis")) {
             setData("kpis", chain.getContext().get("kpis"));

@@ -236,4 +236,32 @@ public class CardUtil {
 		}
 		return childResponse;
 	}
+	public static JSONObject getDrillDownObj(JSONObject cardDrillDown,JSONObject cardParams, long cardId) {
+		JSONObject resultJson = new JSONObject();
+		if(cardDrillDown != null) {
+			JSONObject drillDownObj = (JSONObject) cardDrillDown.get("default");
+			String action = (String) drillDownObj.get("actionType");
+			if(action != null && !action.equals("") && !action.equalsIgnoreCase("none") && drillDownObj.get("data") != null) {
+				JSONObject data = (JSONObject) drillDownObj.get("data");
+				switch (action.toString()) {
+					case "showReport":
+						if (data.get("type").equals(2l)) {
+							resultJson.put("web_url", "dashboard/" + AccountUtil.getCurrentApp().getLinkName() + "/webView/card/module/" + data.get("reportId"));
+						} else {
+							resultJson.put("web_url", "dashboard/" + AccountUtil.getCurrentApp().getLinkName() + "/webView/card/telemetry/" + data.get("reportId"));
+						}
+						break;
+					case "showListView":
+						resultJson.put("viewName",data.get("view"));
+						resultJson.put("moduleName",cardParams.get("moduleName"));
+						break;
+					case "showTrend":
+						resultJson.put("web_url","dashboard/" + AccountUtil.getCurrentApp().getLinkName() + "/webView/card/trend/" + cardId);
+					default:
+						break;
+				}
+			}
+		}
+		return resultJson;
+	}
 }

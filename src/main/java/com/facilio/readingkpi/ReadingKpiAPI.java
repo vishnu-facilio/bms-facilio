@@ -661,7 +661,11 @@ public class ReadingKpiAPI {
                         if(dateRange.getStartTime() == dateRange.getEndTime()){
                             selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append(ch_aggr_table_date_field.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(ch_aggr_table_date_field.getColumnName()).append(" < '").append(endDate).append("'").toString());
                         }else {
-                            selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append(ch_aggr_table_date_field.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(ch_aggr_table_date_field.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                            if(aggr_table_name.contains("Hourly_")){
+                                selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append("toDate( ").append(ch_aggr_table_date_field.getColumnName()).append(" ) >= '").append(startDate).append("' AND toDate( ").append(ch_aggr_table_date_field.getColumnName()).append(" ) <= '").append(endDate).append("'").toString());
+                            }else {
+                                selectRecordBuilder.andCustomWhere(new StringBuilder(" ").append(ch_aggr_table_date_field.getColumnName()).append(" >= '").append(startDate).append("' AND ").append(ch_aggr_table_date_field.getColumnName()).append(" <= '").append(endDate).append("'").toString());
+                            }
                         }
                     }
                     if(groupBy != null) {
