@@ -4,10 +4,15 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FetchCommentAttachmentsCommand;
+import com.facilio.bmsconsole.commands.FetchCommentMentionsCommand;
+import com.facilio.bmsconsole.commands.FetchCommentSharingCommand;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsole.context.CommentMentionContext;
 import com.facilio.bmsconsole.context.CommentSharingContext;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -22,6 +27,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,14 +45,41 @@ public class NotesAPI {
 		return getNotes(Collections.singletonList(parentId), moduleName, noteListContext);
 	}
 
-	public static NoteContext fetchLastReply(long parentId,long parentNoteId, String moduleName) throws Exception {
+	public static NoteContext getLastReply(long parentId, long parentNoteId, String moduleName) throws Exception {
+		NoteContext lastReply = fetchLastReply(parentId,parentNoteId, moduleName);
+		if(lastReply == null){
+			return null;
+		}
+		NoteContext note = fetchNoteSubordinates(lastReply,moduleName);
+		return note;
+	}
+
+	private static NoteContext fetchLastReply(long parentId, long parentNoteId, String moduleName) throws Exception {
 		SelectRecordsBuilder<NoteContext> selectBuilder = getListBuilder(parentId, parentNoteId, moduleName, false);
-		FacilioField createdTimeField = Constants.getModBean().getField("createdTime", moduleName);
+		ModuleBean modBean = Constants.getModBean();
+		SupplementRecord createdByField = (SupplementRecord) modBean.getField("createdBy", moduleName);
+		if(createdByField != null){
+			selectBuilder.fetchSupplement(createdByField);
+		}
+		FacilioField createdTimeField = modBean.getField("createdTime", moduleName);
 		if(createdTimeField == null){
 			return null;
 		}
 		selectBuilder.orderBy(createdTimeField.getColumnName() + " DESC");
 		return selectBuilder.fetchFirst();
+	}
+	private static NoteContext fetchNoteSubordinates(NoteContext note, String moduleName) throws Exception {
+		FacilioChain chain = new FacilioChain(true);
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.NOTE_LIST,Collections.singletonList(note));
+		context.put(FacilioConstants.ContextNames.NEED_COMMENT_SHARING,false);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+		chain.addCommand(new FetchCommentMentionsCommand());
+		chain.addCommand(new FetchCommentSharingCommand());
+		chain.addCommand(new FetchCommentAttachmentsCommand());
+		chain.execute();
+		List<NoteContext> result = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);
+		return result.get(0);
 	}
 	
 	

@@ -2,27 +2,47 @@
   {
     "components": [
       {
+        "droppable": false,
+        "void": true,
+        "draggable": false,
+        "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg",
+        "classes": [
+          "image-qfm"
+        ],
+        "hoverable": false,
+        "style": "",
+        "attributes": {
+          "placeholder-src": "{{org.logoUrl}}",
+          "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg",
+          "alt": "Upload Image Here",
+          "data-option": "orgLogo",
+          "id": "ifsv"
+        },
+        "type": "my-image"
+      },
+      {
         "custom-width": "full",
         "selectable": false,
         "classes": [
-          "header-normal-text"
+          "text"
         ],
         "style": "",
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "ilch"
+          "id": "i99f"
         },
         "type": "text"
       }
     ],
+    "headerLayoutOption": "image-text-left",
     "removable": false,
     "classes": [
       "pdf-header"
     ],
     "style": "",
     "attributes": {
-      "id": "i4sl"
+      "id": "i5mg"
     },
     "type": "page-header"
   },
@@ -33,11 +53,18 @@
   {
     "components": [
       {
+        "custom-width": "half",
+        "classes": [
+          "custom-text"
+        ],
+        "style": "",
         "attributes": {
-          "id": "iyva8"
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ih5g"
         },
-        "type": "horizontalLine",
-        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
+        "type": "text",
+        "content": "<font size=\"5\"></font><font weight=\"500\"><font size=\"5\">{{ org.name }}</font><div></div></font><div><font size=\"1\">{{ org.city }}</font></div><div><font size=\"1\">{{ org.state }}</font></div><div><font size=\"1\">{{ org.phone }}</font></div>"
       },
       {
         "custom-width": "half",
@@ -48,57 +75,37 @@
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "idjf"
+          "id": "iux1"
         },
         "type": "text",
-        "content": "<font weight=\"500\">{{ org.name }}<div></div></font><div><font size=\"1\">{{ org.city }}</font></div><div><font size=\"1\">{{ org.state }}</font></div><div><font size=\"1\">{{ org.phone }}</font></div>"
-      },
-      {
-        "custom-width": "half",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "i1db"
-        },
-        "type": "text",
-        "content": "<font weight=\"500\"></font><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div><font weight=\"500\" size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div></font><font weight=\"500\"><font size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div></font></font><font weight=\"500\"><font><font size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div></font></font></font><font weight=\"300\"><font><font><font size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div></font></font></font></font><font weight=\"500\"><font><font><font><font size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div></font></font></font></font></font><font weight=\"500\"><font><font><font><font><font weight=\"500\" size=\"5\"><div style=\"text-align: right;\">Request For Quotation</div></font><font size=\"5\"><div style=\"text-align: right;\"><span style=\"font-size: 14px; color: rgb(96, 119, 150); font-weight: var(--fwt-400); letter-spacing: 0.4px; font-family: var(--base-font);\">#{{ requestForQuotation.localId }}</span><br></div></font></font></font></font></font></font>"
+        "content": "<div style=\"text-align: right;\"><span style=\"font-size: 20px; color: var(--base-text-color); letter-spacing: 0.4px; font-family: var(--base-font);\"></span></div><font weight=\"500\"><div style=\"text-align: right;\"><span style=\"font-size: 20px; color: var(--base-text-color); letter-spacing: 0.4px; font-family: var(--base-font);\">Request For Quotation</span></div><font><div></div></font><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"><font color=\"#607796\">#{{ requestForQuotation.localId }}</font></div>"
       }
     ],
     "selectable": false,
     "hoverable": false,
     "attributes": {
-      "id": "iskk",
+      "id": "i73b",
       "data-gjs-type": "customWrapper"
     },
     "highlightable": false,
     "type": "div"
   },
   {
+    "components": [
+      {
+        "attributes": {
+          "id": "ic4w"
+        },
+        "type": "horizontalLine",
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
+      }
+    ],
     "attributes": {
       "data-gjs-spacer": true,
-      "id": "inmjj",
+      "id": "ipe6",
       "data-gjs-type": "customWrapper"
     },
     "type": "div"
-  },
-  {
-    "attributes": {
-      "data-gjs-spacer": true,
-      "id": "i06w9",
-      "data-gjs-type": "customWrapper"
-    },
-    "type": "div"
-  },
-  {
-    "attributes": {
-      "id": "iotrd"
-    },
-    "type": "horizontalLine",
-    "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
   },
   {
     "components": [
@@ -111,38 +118,10 @@
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "i999m"
+          "id": "iq7qg"
         },
         "type": "text",
-        "content": "<font weight=\"500\">Shipping Address</font>"
-      },
-      {
-        "custom-width": "half",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "ig13g"
-        },
-        "type": "text",
-        "content": "<div style=\"text-align: right;\"><font weight=\"500\">Details</font></div>"
-      },
-      {
-        "custom-width": "half",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "i975i"
-        },
-        "type": "text",
-        "content": "<div>{{ requestForQuotation.shipToAddressFormatted }}</div>"
+        "content": "<font weight=\"500\">Shipping Address<div></div></font><div>{{ requestForQuotation.shipToAddressFormatted }}</div><div><br></div><div></div><font weight=\"500\"><div>Storeroom</div><div></div></font><div>{{ requestForQuotation.storeRoomFormatted }}</div>"
       },
       {
         "custom-width": "quarter",
@@ -153,12 +132,39 @@
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "i47p4"
+          "id": "ifkux"
         },
         "type": "text"
       },
       {
         "components": [
+          {
+            "selectable": false,
+            "classes": [
+              "field-title",
+              "text-"
+            ],
+            "name": "field-widget-title",
+            "hoverable": false,
+            "attributes": {
+              "id": "field-title"
+            },
+            "highlightable": false,
+            "type": "div",
+            "content": "Details"
+          },
+          {
+            "selectable": false,
+            "classes": [
+              "placeholder-text",
+              "hidden"
+            ],
+            "name": "placeholder",
+            "hoverable": false,
+            "highlightable": false,
+            "type": "div",
+            "content": "Add Placeholder"
+          },
           {
             "custom-width": "full",
             "editable": false,
@@ -170,7 +176,7 @@
             "attributes": {
               "contentEditable": true,
               "placeholder": "Enter text here...",
-              "id": "ifpfk"
+              "id": "ito5k"
             },
             "type": "text",
             "content": "<div class=\"line-widget-text\">Requested Date</div><div class=\"line-widget-value\"> {{requestForQuotation.requestedDateFormatted}}</div>"
@@ -186,7 +192,7 @@
             "attributes": {
               "contentEditable": true,
               "placeholder": "Enter text here...",
-              "id": "iqc8u"
+              "id": "i1a4g"
             },
             "type": "text",
             "content": "<div class=\"line-widget-text\">RFQ Type</div><div class=\"line-widget-value\"> {{requestForQuotation.rfqTypeFormatted}}</div>"
@@ -200,58 +206,31 @@
         "width": "quarter",
         "hoverable": false,
         "attributes": {
+          "shipToAddress": "",
           "rfqType": "RFQ Type - rfqType ",
-          "id": "izb8c",
+          "id": "ixdlc",
           "requestedDate": "Requested Date - requestedDate "
         },
         "line-height": "28",
         "type": "field-widget",
-        "content": "<div class=\"placeholder-text\">Add placeholder</div>",
+        "title_trait": "Details",
         "text-align": "right"
-      },
-      {
-        "custom-width": "half",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "i7f2o"
-        },
-        "type": "text",
-        "content": "<font weight=\"500\">Ship To</font>"
       }
     ],
     "selectable": false,
     "hoverable": false,
     "attributes": {
-      "id": "iv70d",
+      "id": "i1504",
       "data-gjs-type": "customWrapper"
     },
     "highlightable": false,
     "type": "div"
   },
   {
-    "custom-width": "half",
-    "classes": [
-      "custom-text"
-    ],
-    "style": "",
-    "attributes": {
-      "contentEditable": true,
-      "placeholder": "Enter text here...",
-      "id": "iaxx4"
-    },
-    "type": "text",
-    "content": "<div>{{ requestForQuotation.storeRoomFormatted}}</div>"
-  },
-  {
     "components": [
       {
         "attributes": {
-          "id": "ih0em"
+          "id": "ide4h"
         },
         "type": "horizontalLine",
         "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>"
@@ -259,7 +238,7 @@
     ],
     "attributes": {
       "data-gjs-spacer": true,
-      "id": "idi5h",
+      "id": "isrg3",
       "data-gjs-type": "customWrapper"
     },
     "type": "div"
@@ -275,10 +254,10 @@
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "i8nsh"
+          "id": "itchb"
         },
         "type": "text",
-        "content": "<font weight=\"500\"></font><font weight=\"500\">Subject</font>"
+        "content": "<font weight=\"500\">Subject<div></div></font><div>{{ requestForQuotation.nameFormatted }}</div>"
       },
       {
         "custom-width": "full",
@@ -289,50 +268,25 @@
         "attributes": {
           "contentEditable": true,
           "placeholder": "Enter text here...",
-          "id": "i2t9f"
+          "id": "ig8vc"
         },
         "type": "text",
-        "content": "<div>{{ requestForQuotation.nameFormatted }}</div>"
-      },
-      {
-        "custom-width": "full",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "ip9nb"
-        },
-        "type": "text",
-        "content": "<font weight=\"500\">Description</font>"
-      },
-      {
-        "custom-width": "full",
-        "classes": [
-          "custom-text"
-        ],
-        "style": "",
-        "attributes": {
-          "contentEditable": true,
-          "placeholder": "Enter text here...",
-          "id": "i104v"
-        },
-        "type": "text",
-        "content": "<div>{{ requestForQuotation.descriptionFormatted }}</div>"
+        "content": "<font weight=\"500\">Description<div></div></font><div>{{ requestForQuotation.descriptionFormatted }}</div>"
       }
     ],
     "selectable": false,
     "hoverable": false,
     "attributes": {
-      "id": "i50qz",
+      "id": "iiyug",
       "data-gjs-type": "customWrapper"
     },
     "highlightable": false,
     "type": "div"
   },
   {
+    "attributes": {
+      "id": "itulc"
+    },
     "type": "rfq-line-items",
     "content": "\n  <div class=\"line-item-dummy-data dummy-data-wrapper requestForQuotation\">\n    <table class=\"line-item-table line-item-table-overide\">\n      <thead>\n        <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: left !important;\">UOM</th>\n<th data-key=\"awarded_to\" class=\"table-field\" style=\"text-align: left !important;\">Awarded To</th>\n<th data-key=\"awarded_price\" class=\"table-field\" style=\"text-align: right !important;\">Awarded price</th>\n<th data-key=\"tax_amount\" class=\"table-field\" style=\"text-align: right !important;\">Tax Amount</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount</th>\n</tr>\n      </thead>\n      <tbody>\n        <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n      </tbody>\n    </table>\n  </div>\n  <div class=\"line-item-original-data\">\n    <table class=\"line-item-table line-item-table-overide width-98\">\n      <thead>\n        <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: left !important;\">UOM</th>\n<th data-key=\"awarded_to\" class=\"table-field\" style=\"text-align: left !important;\">Awarded To</th>\n<th data-key=\"awarded_price\" class=\"table-field\" style=\"text-align: right !important;\">Awarded price</th>\n<th data-key=\"tax_amount\" class=\"table-field\" style=\"text-align: right !important;\">Tax Amount</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount</th>\n</tr>\n      </thead>\n     <tbody>\n      {{#each requestForQuotation.requestForQuotationLineItems}}\n        <tr>\n          <td class=\"table-field-data data-border-left\">\n            {{plusOne @index}}\n          </td>\n          <td class=\"table-field-data\">\n            <div>{{name}}</div>\n            <div>{{description}}</div>\n          </td>\n          <td class=\"table-field-data-item\">\n            <div style=\"text-align: right;\">\n              {{quantity}}\n            </div>\n          </td>\n          <td class=\"table-field-data\">\n            <div>\n              {{unitOfMeasureEnum}}\n            </div>\n          </td>\n           <td class=\"table-field-data\">\n            <div>\n              {{awardedTo.name}}\n            </div>\n          </td>\n          <td class=\"table-field-data-item\">\n            <div>\n              {{awardedPrice}}\n            </div>\n          </td>\n          <td class=\"table-field-data-item\">\n            <div>\n              {{taxAmount}}\n            </div>\n          </td>\n          <td class=\"table-field-data-item\">\n            <div>\n              {{totalCost}}\n            </div>\n          </td>\n        </tr>\n      {{/each}}\n     </tbody>\n    </table>\n</div>\n"
   }

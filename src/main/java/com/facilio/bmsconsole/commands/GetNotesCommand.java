@@ -56,7 +56,7 @@ public class GetNotesCommand extends FacilioCommand {
 		for (NoteContext note: noteListContext) {
 			long repliesCount = NotesAPI.fetchNotesCount(note.getParentId(), note.getId(), moduleName);
 			note.setReplyCount(repliesCount);
-			NoteContext lastReply = NotesAPI.fetchLastReply(note.getParentId(), note.getId(), moduleName);
+			NoteContext lastReply = NotesAPI.getLastReply(note.getParentId(), note.getId(), moduleName);
 			note.setLastReply(lastReply);
 		}
 		return noteListContext;
