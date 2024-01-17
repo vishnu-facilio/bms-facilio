@@ -13,6 +13,7 @@ import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -32,7 +33,7 @@ public class AddNewReadingRuleCommand extends FacilioCommand {
                 if (readingRule.getImpact() != null) {
                     readingRule.setImpactId(readingRule.getImpact().getId());
                 }
-                readingRule.setStatus(Boolean.TRUE);
+                readingRule.setStatus(BooleanUtils.toBooleanDefaultIfNull(readingRule.getStatus(), Boolean.TRUE));
                 readingRule.setAutoClear(Boolean.TRUE);
 
                 context.put(NamespaceConstants.NAMESPACE, readingRule.getNs());

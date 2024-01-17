@@ -30,6 +30,7 @@ public abstract class KpiAnalyticsDataFetcher {
     public Map<String, FacilioField> getFieldsMap() throws Exception {
         return FieldFactory.getAsMap(Constants.getModBean().getAllFields(module.getName()));
     }
+
     protected abstract GenericSelectRecordBuilder fetchModuleBuilder() throws Exception;
 
     public GenericSelectRecordBuilder fetchBuilder(Context context, Boolean fetchCount) throws Exception {
@@ -37,11 +38,12 @@ public abstract class KpiAnalyticsDataFetcher {
         if (builder == null) {
             return null;
         }
-        ReadingKpiAPI.addFilterToBuilder(context, fieldsMap , builder);
+        ReadingKpiAPI.addFilterToBuilder(context, fieldsMap, builder);
         return fetchCount
                 ? getCountBuilder(builder, module)
                 : getDataBuilder(context, module, fieldsMap, builder, additionSelectFields);
 
 
     }
+
 }

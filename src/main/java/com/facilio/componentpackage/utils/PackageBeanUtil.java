@@ -1731,6 +1731,7 @@ public class PackageBeanUtil {
 
         nsBuilder.e("execInterval").text(String.valueOf(nsCtx.getExecInterval()));
         nsBuilder.e("type").text(String.valueOf(nsCtx.getType()));
+        nsBuilder.e("status").text(String.valueOf(nsCtx.getStatus()));
 
         XMLBuilder inclAssets = nsBuilder.e("IncludedAssetIds");
         if (CollectionUtils.isNotEmpty(nsCtx.getIncludedAssetIds())) {
@@ -1786,6 +1787,7 @@ public class PackageBeanUtil {
             ns.setExecInterval(execInterval);
         }
         int nsType = Integer.parseInt(namespaceBuilder.getElement("type").getText());
+        boolean nsStatus= Boolean.parseBoolean(namespaceBuilder.getElement("status").getText());
         XMLBuilder nsFieldsElement = namespaceBuilder.getElement("Fields");
 
         if (nsFieldsElement != null) {
@@ -1800,6 +1802,7 @@ public class PackageBeanUtil {
 
             ns.setWorkflowContext(workflowContext);
             ns.setType(nsType);
+            ns.setStatus(nsStatus);
             ns.setFields(nameSpaceFields);
         }
         return ns;

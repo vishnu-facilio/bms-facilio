@@ -186,6 +186,7 @@ public class ReadingKpiPackageBeanImpl implements PackageBean<ReadingKPIContext>
             readingKPI.setReadingFieldId(facilioField.getFieldId());
             readingKPI.setReadingModuleId(facilioField.getModuleId());
             readingKPI.setResourceType(Integer.valueOf(kpiBuilder.getElement("resourceType").getText()));
+            readingKPI.setStatus(Boolean.valueOf(kpiBuilder.getElement(PackageConstants.STATUS).getText()));
         }
 
     }
@@ -224,6 +225,7 @@ public class ReadingKpiPackageBeanImpl implements PackageBean<ReadingKPIContext>
             kpiBuilder.e(PackageConstants.ReadingKPIConstants.METRIC_UNIT).t(String.valueOf(readingKPI.getMetricId()!=null?readingKPI.getMetricId():-1));
             kpiBuilder.e(PackageConstants.ReadingKPIConstants.UNIT).text(String.valueOf(readingKPI.getUnitId()!=null?readingKPI.getUnitId():-1));
             kpiBuilder.e("resourceType").t(String.valueOf(readingKPI.getResourceType()));
+            kpiBuilder.e(PackageConstants.STATUS).t(String.valueOf(readingKPI.getStatus()));
             if (readingKPI.getReadingModuleId() > 0) {
                 FacilioField readingField = Constants.getModBean().getField(readingKPI.getReadingFieldId());
                 kpiBuilder.e(PackageConstants.MODULENAME).text(readingField.getModule().getName());

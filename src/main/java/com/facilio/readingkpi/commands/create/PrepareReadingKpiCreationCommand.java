@@ -3,7 +3,6 @@ package com.facilio.readingkpi.commands.create;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.KPIUtil;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -22,6 +21,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +43,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 } else {
                     kpi.setReadingFieldId(null);
                     kpi.setReadingModuleId(null);
-                }
-                if(kpi.getCategoryId() == null) { //TODO: should be delete this code
-                    kpi.setCategoryId(kpi.getAssetCategoryId());
                 }
                 setReadingParent(kpi, context);
                 addKpiCategory(kpi);
@@ -97,7 +94,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
     private void setReadingParent(ReadingKPIContext kpi, Context context) throws Exception {
         switch (kpi.getResourceTypeEnum()) {
             case ASSET_CATEGORY:
-                setAssetCategory(kpi);//TODO:remove once assetCategory removed
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.ASSET_CATEGORY);
                 context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, kpi.getCategoryId());
                 context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
@@ -112,12 +108,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                 context.put(FacilioConstants.ContextNames.PARENT_MODULE, FacilioConstants.ContextNames.SITE);
                 break;
         }
-    }
-
-    private void setAssetCategory(ReadingKPIContext kpi) {
-        AssetCategoryContext assetCategoryContext=new AssetCategoryContext();
-        assetCategoryContext.setId(kpi.getCategoryId());
-        kpi.setAssetCategory(assetCategoryContext);
     }
 
     public FacilioModule.ModuleType getModuleTypeFromKpiType(KPIType type) {
@@ -140,6 +130,6 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
         context.put(NamespaceConstants.NAMESPACE, kpi.getNs());
         kpi.getNs().setExecInterval(kpi.getFrequencyEnum() != null ? kpi.getFrequencyEnum().getMs() : null);
         kpi.getNs().setType(NSType.KPI_RULE.getIndex());
-        kpi.getNs().setStatus(kpi.getKpiTypeEnum() == KPIType.LIVE);
+        kpi.getNs().setStatus(BooleanUtils.toBooleanDefaultIfNull(kpi.getNs().getStatus(),kpi.getKpiTypeEnum() == KPIType.LIVE));
     }
 }

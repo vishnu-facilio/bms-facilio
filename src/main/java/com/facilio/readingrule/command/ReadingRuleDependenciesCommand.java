@@ -17,6 +17,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +35,7 @@ public class ReadingRuleDependenciesCommand extends FacilioCommand {
             for (NewReadingRuleContext readingRule : list) {
                 readingRule.getNs().getWorkflowContext().setIsV2Script(Boolean.TRUE);
                 readingRule.getNs().setType(NSType.READING_RULE.getIndex());
-                readingRule.getNs().setStatus(true);
+                readingRule.getNs().setStatus(BooleanUtils.toBooleanDefaultIfNull(readingRule.getNs().getStatus(),Boolean.TRUE));
 
                 WorkflowContext workflow = readingRule.getNs().getWorkflowContext();
 

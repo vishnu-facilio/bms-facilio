@@ -41,7 +41,7 @@ public class FetchResourceNamesForKpiLogger extends FacilioCommand {
         ReadingKPIContext kpi = ReadingKpiAPI.getReadingKpi(Collections.singletonList(resourceLogger.getKpiId())).get(0);
         switch (kpi.getResourceTypeEnum()) {
             case METER_CATEGORY:
-                V3MeterContext meterContext = MetersAPI.getMeters(Collections.singletonList(resourceLogger.getResourceId())).get(0);
+                V3MeterContext meterContext = MetersAPI.getMeter(resourceLogger.getResourceId());
                 return meterContext.getName();
             default:
                 ResourceContext resourceContext = ResourceAPI.getResource(resourceLogger.getResourceId());

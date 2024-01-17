@@ -1138,7 +1138,7 @@ public class ReadingsAPI {
 		for(ResourceContext resource:resourcesList) {
 
 			LOGGER.error(++i +" RDM update running for resource -- "+resource.getId());
-			List<FacilioModule>	moduleList=null;
+			List<FacilioModule>	moduleList=new ArrayList<>();
 			int resourceType = resource.getResourceType();
 			long resourceId = resource.getId();
 			FacilioContext context = new FacilioContext();
@@ -1157,7 +1157,7 @@ public class ReadingsAPI {
 			}
 
 			List<FacilioModule>	finalModuleList= new ArrayList<FacilioModule>();
-			if(readingModuleIds!= null && !readingModuleIds.isEmpty()) {
+			if( CollectionUtils.isNotEmpty(readingModuleIds) && CollectionUtils.isNotEmpty(moduleList)) {
 				for(FacilioModule module: moduleList) {
 					if(readingModuleIds.contains(module.getModuleId())) { //filtering user-given modules from allsubmodules
 						finalModuleList.add(module);

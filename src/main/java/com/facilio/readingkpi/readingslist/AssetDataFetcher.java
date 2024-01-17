@@ -5,6 +5,7 @@ import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -47,7 +48,8 @@ public class AssetDataFetcher extends KpiAnalyticsDataFetcher {
                 .innerJoin(resourceModule.getTableName())
                 .on(resourceModule.getTableName() + ".ID=" + module.getTableName() + ".ID")
                 .andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(categoryId), PickListOperators.IS))
-                .orderBy(module.getTableName() + ".ID DESC");
+                .orderBy(module.getTableName() + ".ID DESC")
+                .andCondition(CriteriaAPI.getCondition(resourceModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
         if (CollectionUtils.isNotEmpty(inclResIds)) {
             selectBuilder.andCondition(CriteriaAPI.getIdCondition(inclResIds, module));
         }

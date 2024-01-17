@@ -276,7 +276,7 @@ public class ReadingsPackageBeanImpl implements PackageBean<ReadingsPackageBeanI
         context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
         context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
         context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,tableName);
-        context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
+        context.put(FacilioConstants.ContextNames.READING_MODULE_NAME,moduleName);
         context.put(FacilioConstants.Module.SKIP_EXISTING_MODULE_WITH_SAME_NAME_CHECK, Boolean.TRUE);
 
         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();

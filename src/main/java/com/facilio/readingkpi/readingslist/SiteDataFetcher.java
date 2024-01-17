@@ -5,9 +5,8 @@ import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.v3.context.Constants;
@@ -29,22 +28,23 @@ public class SiteDataFetcher extends KpiAnalyticsDataFetcher {
     @Override
     protected GenericSelectRecordBuilder fetchModuleBuilder() throws Exception {
 
-        List<Map<String, Object>> props =  ReadingKpiAPI.getMatchedResourcesOfAllKpis(null, ResourceType.SITE);
+        List<Map<String, Object>> props = ReadingKpiAPI.getMatchedResourcesOfAllKpis(null, ResourceType.SITE);
         if (props == null || props.isEmpty()) {
             return null;
         }
         Set<Long> inclResIds = getInclResIdsFromProps(props);
         ModuleBean modBean = Constants.getModBean();
-        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SITE);
+        FacilioModule siteModule = modBean.getModule(FacilioConstants.ContextNames.SITE);
         FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-                .table(module.getTableName())
+                .table(siteModule.getTableName())
                 .innerJoin(resourceModule.getTableName())
-                .on(resourceModule.getTableName() + ".ID=" + module.getTableName() + ".ID")
-                .orderBy(module.getTableName() + ".ID DESC");
+                .on(resourceModule.getTableName() + ".ID=" + siteModule.getTableName() + ".ID")
+                .orderBy(siteModule.getTableName() + ".ID DESC")
+                .andCondition(CriteriaAPI.getCondition(resourceModule.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));
         if (CollectionUtils.isNotEmpty(inclResIds)) {
-            selectBuilder.andCondition(CriteriaAPI.getIdCondition(inclResIds, module));
+            selectBuilder.andCondition(CriteriaAPI.getIdCondition(inclResIds, siteModule));
         }
 
         return selectBuilder;

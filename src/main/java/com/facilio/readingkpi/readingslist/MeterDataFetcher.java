@@ -5,6 +5,7 @@ import com.facilio.connected.ResourceType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -21,6 +22,7 @@ import java.util.Set;
 import static com.facilio.readingkpi.ReadingKpiAPI.getInclResIdsFromProps;
 
 public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
+
     public MeterDataFetcher(FacilioModule module, Context context, List<FacilioField> additionSelectFields) throws Exception {
         super(module, context, additionSelectFields);
     }
@@ -41,7 +43,8 @@ public class MeterDataFetcher extends KpiAnalyticsDataFetcher {
         FacilioField utilityTypeField= fieldsMap.get("utilityType");
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getCondition(utilityTypeField, String.valueOf(utilityType), PickListOperators.IS));
+                .andCondition(CriteriaAPI.getCondition(utilityTypeField, String.valueOf(utilityType), PickListOperators.IS))
+                .andCondition(CriteriaAPI.getCondition(module.getTableName() + ".SYS_DELETED", "sysDeleted", String.valueOf(Boolean.FALSE), BooleanOperators.IS));;
         if (CollectionUtils.isNotEmpty(inclResIds)) {
             selectBuilder.andCondition(CriteriaAPI.getIdCondition(inclResIds, module));
         }

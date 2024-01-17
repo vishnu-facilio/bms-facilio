@@ -8,6 +8,7 @@ import com.facilio.util.DisplayNameToLinkNameUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class SetFieldAndModuleCommand extends FacilioCommand {
 
                 setKPILinkName(kpi);
                 kpi.setReadingField(null);
-                kpi.setStatus(true);
+                kpi.setStatus(BooleanUtils.toBooleanDefaultIfNull(kpi.getStatus(), Boolean.TRUE));
             }
         }
         return false;

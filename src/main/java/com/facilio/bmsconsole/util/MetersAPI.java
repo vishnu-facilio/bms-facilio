@@ -258,15 +258,18 @@ public class MetersAPI {
 		return updateBuilder.update(meter);
 	}
 
-	public static V3MeterContext getMeter(Long meterId) throws Exception {
-		List<V3MeterContext> meters = getMeters(Collections.singletonList(meterId));
+	public  static V3MeterContext getMeter(Long meterId) throws Exception {
+		return getMeter(meterId,Boolean.FALSE);
+	}
+	public static V3MeterContext getMeter(Long meterId,boolean fetchDeleted) throws Exception {
+		List<V3MeterContext> meters = getMeters(Collections.singletonList(meterId),fetchDeleted);
 		if (CollectionUtils.isNotEmpty(meters)) {
 			return meters.get(0);
 		}
 		throw new IllegalArgumentException("Invalid meter Id");
 	}
 
-	public static List<V3MeterContext> getMeters(List<Long> meterIds) throws Exception {
+	public static List<V3MeterContext> getMeters(List<Long> meterIds,boolean fetchDeleted) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.METER);
 
@@ -276,6 +279,10 @@ public class MetersAPI {
 				.select(modBean.getAllFields(module.getName()))
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(meterIds, module));
+
+		if(fetchDeleted){
+			selectBuilder.fetchDeleted();
+		}
 
 		List<V3MeterContext> meters = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(meters)) {

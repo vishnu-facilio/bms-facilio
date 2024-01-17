@@ -196,6 +196,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             ruleBuilder.e(PackageConstants.MODULENAME).t(readingField.getModule().getName());
             ruleBuilder.e(PackageConstants.NameSpaceConstants.FIELD_NAME).t(readingField.getName());
             ruleBuilder.e("resourceType").t(String.valueOf(rule.getResourceType()));
+            ruleBuilder.e(PackageConstants.STATUS).t(String.valueOf(rule.getStatus()));
         }
 
         private void convertFaultImpact() throws Exception {
@@ -393,6 +394,7 @@ public class ReadingRulePackageBeanImpl implements PackageBean<NewReadingRuleCon
             rule.setReadingFieldId(facilioField.getFieldId());
             rule.setReadingModuleId(facilioField.getModuleId());
             rule.setResourceType(Integer.valueOf(ruleBuilder.getElement("resourceType").getText()));
+            rule.setStatus(Boolean.valueOf(ruleBuilder.getElement(PackageConstants.STATUS).getText()));
         }
 
         private void convertAssetCategory() throws Exception {

@@ -123,8 +123,8 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 	
 	private FacilioModule createModule(String readingName, Context context) {
 		FacilioModule module = new FacilioModule();
-		if (context.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
-			module.setName((String) context.get(FacilioConstants.ContextNames.MODULE_NAME));
+		if (context.containsKey(FacilioConstants.ContextNames.READING_MODULE_NAME)) {
+			module.setName((String) context.get(FacilioConstants.ContextNames.READING_MODULE_NAME));
 		} else {
 			module.setName(readingName.toLowerCase().replaceAll("[^a-zA-Z0-9]+", ""));
 		}
