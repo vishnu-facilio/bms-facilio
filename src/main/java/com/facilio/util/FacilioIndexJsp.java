@@ -23,7 +23,7 @@ public class FacilioIndexJsp {
         if (!FacilioProperties.isDevelopment() && !DBConf.getInstance().isNewVersion() && request.getAttribute(RequestUtil.REQUEST_APP_NAME) == null) {
             Organization org = (Organization) request.getAttribute(RequestUtil.REQUEST_CURRENT_ORG);
             if (org != null) {
-                redirectToNewVersion = NEW_VERSION_GROUP_NAME.equals(org.getGroupName());
+                redirectToNewVersion = isOrgNewVersion(org);
             }
             String switchVersionCookie = RequestUtil.getCookieValue(request,FacilioCookie.CURRENT_VERSION_COOKIE);
             if(StringUtils.isNotEmpty(switchVersionCookie) && !redirectToNewVersion){
@@ -31,6 +31,10 @@ public class FacilioIndexJsp {
             }
         }
         return redirectToNewVersion;
+    }
+
+    public static boolean isOrgNewVersion (Organization org) {
+        return NEW_VERSION_GROUP_NAME.equals(org.getGroupName());
     }
 
     @SneakyThrows

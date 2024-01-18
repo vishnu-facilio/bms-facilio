@@ -5,6 +5,7 @@ import com.facilio.aws.util.FacilioProperties;
 import com.facilio.services.kafka.FacilioKafkaProducer;
 import com.facilio.services.procon.message.FacilioRecord;
 import com.facilio.services.procon.producer.FacilioProducer;
+import com.facilio.util.FacilioIndexJsp;
 import com.facilio.wms.endpoints.FacilioClientEndpoint;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionSource;
 import com.facilio.wms.endpoints.LiveSession.LiveSessionType;
@@ -89,6 +90,9 @@ public class WmsApi
 		wsURL += "/websocket/connect/" + id + "?" + "type=" + liveSessionType.name() + "&source=" + liveSessionSource.name();
 		if (AccountUtil.getCurrentApp() != null) {
 			wsURL += "&app=" + AccountUtil.getCurrentApp().getLinkName();
+		}
+		if (AccountUtil.getCurrentOrg() != null && FacilioIndexJsp.isOrgNewVersion(AccountUtil.getCurrentOrg())) {
+			wsURL += "&" + FacilioIndexJsp.NEW_SERVER_QUERY_PARAM_KEY + "=" + FacilioIndexJsp.NEW_SERVER_QUERY_PARAM_VAL;
 		}
 		return wsURL;
 	}
