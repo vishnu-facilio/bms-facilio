@@ -266,9 +266,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 }
             }
 
-//            if(isClickHouseEnabled && isClickhouseAggrTableEnabled) {
-                this.setXAggrForHeatMapXAggr(report_v2, groupBy, dp.getxAxis().getField(), fields, aggregated_table_name);
-//            }
+            this.setXAggrForHeatMapXAggr(report_v2, groupBy, dp.getxAxis().getField(), fields, aggregated_table_name);
             if(aggregated_table_name != null && (xAggr == null || !(xAggr instanceof DateAggregateOperator || xAggr instanceof SpaceAggregateOperator)) && !dp.isMultiMeasureChartType())
             {
                 groupBy.add(new StringBuilder(aggregated_table_name).append(".").append(xAggrField.getColumnName()).toString());
@@ -346,6 +344,7 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         V2AnalyticsOldUtil.applyMeasureCriteriaV2(moduleVsAlias, xAggrField, baseModule, dataPoint, newSelectBuilder, xValues, addedModules);
         V2AnalyticsOldUtil.getAndSetRelationShipSubQuery(report.getDataPoints(), dataPoint, newSelectBuilder, moduleVsAlias);
         V2AnalyticsOldUtil.applyAnalyticGlobalFilterCriteria(baseModule, dataPoint, newSelectBuilder, report_v2 != null ? report_v2.getG_criteria() : null, addedModules);
+        V2AnalyticsOldUtil.applyCHDeletedReadingsTableCriteria(isClickHouseEnabled, baseModule, newSelectBuilder, dataPoint , report_v2.getDimensions(), report, baseLine);
         if(addedModules != null && addedModules.size() == 1) {
             V2AnalyticsOldUtil.checkAndApplyJoinForScopingCriteria(newSelectBuilder, addedModules, baseModule);
         }else{
@@ -501,24 +500,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         }
         return enum_field_list;
     }
-//    private void setXAggrForHeatMap(V2ReportContext v2_report, ReportContext report)throws Exception
-//    {
-//        if(v2_report !=null && v2_report.getMeasures() != null && v2_report.getMeasures().size() == 1 && !isClickhouseAggrTableEnabled)
-//        {
-//            V2MeasuresContext measure = v2_report.getMeasures().get(0);
-//            if(measure.getHmAggr() != null && !"".equals(measure.getHmAggr()))
-//            {
-//                if(measure.getHmAggr().equals("hours"))
-//                {
-//                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY);
-//                }
-//                else if((measure.getHmAggr().equals("days") || measure.getHmAggr().equals("weeks")))
-//                {
-//                    report.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE);
-//                }
-//            }
-//        }
-//    }
 
     private void setXAggrForHeatMapXAggr(V2ReportContext  v2_report, StringJoiner groupBy, FacilioField xField, List<FacilioField> fields, String aggr_table_name)throws Exception
     {
@@ -595,18 +576,6 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         String aggregated_table_name = null;
         if(isClickHouseEnabled && isClickhouseAggrTableEnabled && (moduleType == FacilioModule.ModuleType.READING || moduleType == FacilioModule.ModuleType.LIVE_FORMULA))
         {
-            if(v2Report.getDimensions().getDimensionTypeEnum() == V2DimensionContext.DimensionType.TIME && report.getxAggrEnum() != null && report.getxAggrEnum() == CommonAggregateOperator.ACTUAL && range != null && range.getStartTime() > 0 && range.getEndTime() > 0)
-            {
-                long diff = range.getEndTime() - range.getStartTime();
-                if(diff > 259200000)
-                {
-                    report.setxAggr(DateAggregateOperator.FULLDATE);
-                    v2Report.getDimensions().setxAggr(DateAggregateOperator.FULLDATE.getValue());
-                }else{
-                    isClickHouseEnabled = false;
-                }
-            }
-
             if(report.getxAggrEnum() != null && report.getxAggrEnum().getValue() > 0)
             {
                 boolean isHeatMapHourlyTable=false;
@@ -620,6 +589,8 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 } else if(report.getxAggrEnum() instanceof DateAggregateOperator || report.getxAggrEnum() instanceof SpaceAggregateOperator || report.getxAggrEnum() instanceof CHDateAggregateOperatorForAggregatedTable){
                     aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), "Europe/London", "daily");
                 }
+            }else if(v2Report.getDimensions().getxAggr() == CommonAggregateOperator.ACTUAL.getValue() && (v2Report.getDimensions().getDimension_type() == V2DimensionContext.DimensionType.ASSET.getIndex() || v2Report.getDimensions().getDimension_type() == V2DimensionContext.DimensionType.METER.getIndex())){
+                aggregated_table_name = ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "daily");
             }
         }
         return aggregated_table_name;
@@ -629,4 +600,5 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
         {
             return report_v2.getMeasures() != null && report_v2.getMeasures().size() == 1 && report_v2.getMeasures().get(0).getHmAggr() != null;
         }
+
 }

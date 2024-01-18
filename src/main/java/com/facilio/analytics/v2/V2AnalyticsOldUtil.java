@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
+import com.facilio.ch.ClickhouseUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.CommonConnectedUtil;
@@ -1831,5 +1832,28 @@ public class V2AnalyticsOldUtil {
             }
         }
         return field;
+    }
+
+    public static void applyCHDeletedReadingsTableCriteria(boolean isClickhouse,FacilioModule baseModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder,ReportDataPointContext dp, V2DimensionContext  dimension, ReportContext report, ReportBaseLineContext baseLine)throws Exception
+    {
+        if(isClickhouse && dimension.getDimension_type() == V2DimensionContext.DimensionType.TIME.getIndex() && report.getxAggrEnum() != null && report.getxAggrEnum() == BmsAggregateOperators.CommonAggregateOperator.ACTUAL && (baseModule.getTypeEnum() == FacilioModule.ModuleType.READING || baseModule.getTypeEnum() == FacilioModule.ModuleType.LIVE_FORMULA))
+        {
+            String deleted_table_name=  ClickhouseUtil.getAggregatedTableName(baseModule.getTableName(), AccountUtil.getCurrentOrg().getTimezone(), "delete");
+            if(deleted_table_name != null)
+            {
+                FacilioModule deletedModule = constructAndGetAggregatedModule(baseModule, deleted_table_name);
+                GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+                        .table(deleted_table_name)
+                        .select(Collections.singletonList(FieldFactory.getIdField(deletedModule)));
+
+                        if(dp.getDateField().getField() != null)
+                        {
+                            FacilioField dateField = dp.getDateField().getField().clone();
+                            dateField.setModule(deletedModule);
+                            builder.andCondition(CriteriaAPI.getCondition(dateField, V2AnalyticsOldUtil.calculateRightInclusiveTimeRange(dp, report, baseLine != null ? baseLine : null).toString(), DateOperators.BETWEEN));
+                        }
+                selectBuilder.andCustomWhere(FieldFactory.getIdField(baseModule).getCompleteColumnName() + " NOT IN (" + builder.constructSelectStatement() + ")");
+            }
+        }
     }
 }
