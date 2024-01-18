@@ -9766,6 +9766,10 @@
 			<param name="moduleName">meter</param>
 			<param name="permission">GET:READ</param>
 		</action>
+		<action name="getPreviousReadings" class="com.facilio.bmsconsole.actions.ReadingAction" method="getPreviousReadingData">
+			<param name="moduleName">meter</param>
+			<param name="permission">GET:READ</param>
+		</action>
 	</package>
 	<package name="ruleCriteria" namespace="/api/v2/criteria" extends="v2Api">
 		<action name="getConditions" class="com.facilio.bmsconsole.actions.RuleCriteriaAction" method="getCondition">

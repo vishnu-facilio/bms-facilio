@@ -1094,6 +1094,25 @@
                 <property name="createdBy" type="number"/>
                 <property name="modifiedBy" type="number"/>
             </property>
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="fileSize" type="string"/>
+                <property name="name" type="string"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
         </requestbody>
     </request>
 
@@ -1116,6 +1135,14 @@
                 <property name="validatedRows" type="number"/>
                 <property name="createdBy" type="number"/>
                 <property name="modifiedBy" type="number"/>
+            </property>
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="status" type="number"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
             </property>
         </requestbody>
     </request>
@@ -1142,6 +1169,12 @@
         </requestbody>
     </request>
     <request path="/api/v3/readingimport/mylist">
+        <urlparams type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="withCount" type="boolean"/>
+        </urlparams>
     </request>
 
     <request path="/api/v3/readingimport/update">
@@ -1153,6 +1186,24 @@
                 <property name="validatedFiledId" type="number"/>
                 <property name="status" type="number"/>
                 <property name="orgId" type="number"/>
+                <property name="columnHeading" type="string"/>
+                <property name="resourceMapping" type="string"/>
+                <property name="createdTime" type="number"/>
+                <property name="modifiedTime" type="number"/>
+                <property name="importStartTime" type="number"/>
+                <property name="importEndTime" type="number"/>
+                <property name="totalRows" type="number"/>
+                <property name="validatedRows" type="number"/>
+                <property name="createdBy" type="number"/>
+                <property name="modifiedBy" type="number"/>
+            </property>
+            <property name="readingImportData" type="object">
+                <property name="id" type="number"/>
+                <property name="fileId" type="number"/>
+                <property name="orgId" type="number"/>
+                <property name="validatedFiledId" type="number"/>
+                <property name="fieldMapping" type="string"/>
+                <property name="status" type="number"/>
                 <property name="columnHeading" type="string"/>
                 <property name="resourceMapping" type="string"/>
                 <property name="createdTime" type="number"/>
@@ -4338,6 +4389,16 @@
             <property name="aggregateOperator" type="string" mandatory="true"/>
         </requestbody>
     </request>
+
+    <request path="api/v2/readings/meter/getPreviousReadings" method="GET">
+        <requestbody type="object">
+            <property name="parentId" type="number" mandatory="true"/>
+            <property name="moduleId" type="number" mandatory="true"/>
+            <property name="ttime" type="number" mandatory="true"/>
+            <property name="selectedField" type="string" mandatory="true"/>
+        </requestbody>
+    </request>
+
     <request path="/api/v3/readingKpi/analytics/getDynamicKpisForAsset" method="GET">
         <requestbody type="object">
             <property name="assetId" type="number" mandatory="true"/>
