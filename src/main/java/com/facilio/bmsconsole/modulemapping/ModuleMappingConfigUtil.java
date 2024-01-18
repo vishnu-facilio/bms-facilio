@@ -34,34 +34,35 @@ public class ModuleMappingConfigUtil {
         String templateName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_NAME);
         String sourceModuleName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.SOURCE_MODULE);
         String targetModuleName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.TARGET_MODULE);
+        JSONObject rawRecord = (JSONObject) context.get(FacilioConstants.ContextNames.ModuleMapping.RAW_RECORD);
 
         V3Context record;
 
         if (templateId > 0) {
-            record = getRecord(recordId, templateId, true);
+            record = getRecord(recordId, templateId, true, rawRecord);
         } else {
             ModuleMappingValidationUtil.moduleValidation(sourceModuleName, targetModuleName);
             Map<String, Object> sourceTargetMap = getParentId(sourceModuleName, targetModuleName);
 
             Map<String, Object> templateMap = getTemplateMap(FacilioUtil.parseLong(sourceTargetMap.get("id")), templateName);
 
-            record = getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), true, sourceTargetMap);
+            record = getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), true, sourceTargetMap, rawRecord);
         }
 
         context.put(FacilioConstants.ContextNames.ModuleMapping.DATA, record);
 
     }
 
-    private static V3Context getTargetObjectFromSourceObject(long recordId, long templateId, String sourceModuleName, String targetModuleName, boolean viewOnly) throws Exception {
+    private static V3Context getTargetObjectFromSourceObject(long recordId, long templateId, String sourceModuleName, String targetModuleName, boolean viewOnly, JSONObject rawRecord) throws Exception {
 
         List<Map<String, Object>> fieldMappingList = getFieldMapFromModuleMappingTemplate(templateId, false);
 
-        return constructFieldMapping(fieldMappingList, recordId, sourceModuleName, targetModuleName, viewOnly, templateId);
+        return constructFieldMapping(fieldMappingList, recordId, sourceModuleName, targetModuleName, viewOnly, templateId, rawRecord);
 
 
     }
 
-    private static V3Context constructFieldMapping(List<Map<String, Object>> fieldMappingList, long recordId, String sourceModuleName, String targetModuleName, boolean viewOnly, long templateId) throws Exception {
+    private static V3Context constructFieldMapping(List<Map<String, Object>> fieldMappingList, long recordId, String sourceModuleName, String targetModuleName, boolean viewOnly, long templateId, JSONObject rawRecord) throws Exception {
 
         ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -84,6 +85,12 @@ public class ModuleMappingConfigUtil {
 
             Class targetClassBeanName = ChainUtil.getBeanClass(targetModuleConfig, targetModule);
 
+            if (rawRecord!=null && !rawRecord.isEmpty()) {
+                List<String> keys = new ArrayList<>(rawRecord.keySet());
+                for (String key : keys) {
+                    targetRecordObj.put(key, rawRecord.get(key));
+                }
+            }
 
             V3Context targetRecord = (V3Context) FieldUtil.getAsBeanFromJson(targetRecordObj, targetClassBeanName);
 
@@ -382,17 +389,18 @@ public class ModuleMappingConfigUtil {
         String templateName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.TEMPLATE_NAME);
         String sourceModuleName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.SOURCE_MODULE);
         String targetModuleName = (String) context.get(FacilioConstants.ContextNames.ModuleMapping.TARGET_MODULE);
+        JSONObject rawRecord = (JSONObject) context.get(FacilioConstants.ContextNames.ModuleMapping.RAW_RECORD);
 
         V3Context record;
 
         if (templateId > 0) {
-            record = getRecord(recordId, templateId, false);
+            record = getRecord(recordId, templateId, false, rawRecord);
         } else {
             ModuleMappingValidationUtil.moduleValidation(sourceModuleName, targetModuleName);
             Map<String, Object> sourceTargetMap = getParentId(sourceModuleName, targetModuleName);
             Map<String, Object> templateMap = getTemplateMap(FacilioUtil.parseLong(sourceTargetMap.get("id")), templateName);
 
-            record = getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), false, sourceTargetMap);
+            record = getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), false, sourceTargetMap, rawRecord);
         }
 
         context.put(FacilioConstants.ContextNames.ModuleMapping.DATA, record);
@@ -437,11 +445,11 @@ public class ModuleMappingConfigUtil {
 
     }
 
-    public V3Context getRecord(long recordId, long templateId, boolean viewOnly) throws Exception {
-        return getRecord(recordId, templateId, viewOnly, null);
+    public V3Context getRecord(long recordId, long templateId, boolean viewOnly, JSONObject rawRecord) throws Exception {
+        return getRecord(recordId, templateId, viewOnly, null, rawRecord);
     }
 
-    public V3Context getRecord(long recordId, long templateId, boolean viewOnly, Map<String, Object> sourceTargetMap) throws Exception {
+    public V3Context getRecord(long recordId, long templateId, boolean viewOnly, Map<String, Object> sourceTargetMap, JSONObject rawRecord) throws Exception {
         Map<String, Object> prop = null;
 
         if (templateId > 0) {
@@ -465,7 +473,7 @@ public class ModuleMappingConfigUtil {
 
             FacilioModule targetModule = moduleBean.getModule(targetModuleId);
 
-            V3Context record = getTargetObjectFromSourceObject(recordId, templateId, sourceModule.getName(), targetModule.getName(), viewOnly);
+            V3Context record = getTargetObjectFromSourceObject(recordId, templateId, sourceModule.getName(), targetModule.getName(), viewOnly, rawRecord);
 
             return record;
 
@@ -474,17 +482,17 @@ public class ModuleMappingConfigUtil {
     }
 
 
-    public Object getTargetModuleRecordObj(String sourceModule, String targetModule, long recordId, long templateId, String templateName) throws Exception {
+    public Object getTargetModuleRecordObj(String sourceModule, String targetModule, long recordId, long templateId, String templateName, JSONObject rawRecord) throws Exception {
 
         if (templateId > 0) {
-            return getRecord(recordId, templateId, true);
+            return getRecord(recordId, templateId, true, rawRecord);
         } else {
             ModuleMappingValidationUtil.moduleValidation(sourceModule, targetModule);
             Map<String, Object> sourceTargetMap = getParentId(sourceModule, targetModule);
 
             Map<String, Object> templateMap = getTemplateMap(FacilioUtil.parseLong(sourceTargetMap.get("id")), templateName);
 
-            return getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), true, sourceTargetMap);
+            return getRecord(recordId, FacilioUtil.parseLong(templateMap.get("id")), true, sourceTargetMap, rawRecord);
         }
     }
 
@@ -532,16 +540,16 @@ public class ModuleMappingConfigUtil {
         return props;
     }
 
-    public V3Context createTargetModuleRecord(String sourceModule, String targetModule, long sourceRecordId, long templateId, String templateName) throws Exception {
+    public V3Context createTargetModuleRecord(String sourceModule, String targetModule, long sourceRecordId, long templateId, String templateName, JSONObject rawRecord) throws Exception {
 
         if (templateId > 0) {
-            return getRecord(sourceRecordId, templateId, false);
+            return getRecord(sourceRecordId, templateId, false, rawRecord);
         } else {
             ModuleMappingValidationUtil.moduleValidation(sourceModule, targetModule);
             Map<String, Object> sourceTargetMap = getParentId(sourceModule, targetModule);
             Map<String, Object> templateMap = getTemplateMap(FacilioUtil.parseLong(sourceTargetMap.get("id")), templateName);
 
-            return getRecord(sourceRecordId, FacilioUtil.parseLong(templateMap.get("id")), false, sourceTargetMap);
+            return getRecord(sourceRecordId, FacilioUtil.parseLong(templateMap.get("id")), false, sourceTargetMap, rawRecord);
         }
 
     }

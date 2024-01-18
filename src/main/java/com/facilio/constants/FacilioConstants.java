@@ -3004,6 +3004,7 @@ public class FacilioConstants {
 			public static final String TEMPLATE_ID = "templateId";
 			public static final String RECORD_ID = "recordId";
 			public static final String RECORD = "record";
+			public static final String RAW_RECORD="rawRecord";
 			public static final String DATA = "data";
 			public static final String TEMPLATE_NAME = "templateName";
 
