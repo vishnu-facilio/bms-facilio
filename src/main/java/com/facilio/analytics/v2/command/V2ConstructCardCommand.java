@@ -449,16 +449,20 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         Boolean picklistJoin = false;
                         String filterModule =  null;
                         if(alias.equals("parentId")) {
-                            appliedField = modBean.getField("parentId",baseModule.getName());
+                            appliedField = modBean.getField("parentId",baseModule.getName()).clone();
                         }else{
                             if(selected_dp_map.get("moduleName") != null) {
                                 picklistJoin = true;
                                 filterModule = (String) selected_dp_map.get("moduleName");
-                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName"));
+                                appliedField = modBean.getField(alias, (String) selected_dp_map.get("moduleName")).clone();
+                            } else {
+                                appliedField = modBean.getField(alias, cardContext.getType()).clone();
                             }
-                            else {
-                                appliedField = modBean.getField(alias, cardContext.getType());
-                            }
+                        }
+                        if (appliedField != null && appliedField.getModule() != null && appliedField.getModule().getName().equals(baseModule.getName()) && !appliedField.getModule().getTableName().equals(baseModule.getTableName()))
+                        {
+                            appliedField = appliedField.clone();
+                            appliedField.setModule(baseModule);
                         }
                         condition.setField(appliedField);
                         criteria.addAndCondition(condition);

@@ -41,7 +41,7 @@ public class V2AnalyticsGetKPIListCommand extends FacilioCommand {
                 if(searchText != null && !"".equals(searchText) && kpiContext.getName() != null && !kpiContext.getName().toUpperCase().contains(searchText.toUpperCase())){
                     continue;
                 }
-                kpiIdVsKpiContext.put(kpiContext.getId(), new KpiContextWrapper(kpiContext));
+                kpiIdVsKpiContext.put(kpiContext.getId(), new KpiContextWrapper(kpiContext, true));
             }
         }
         return kpiIdVsKpiContext;

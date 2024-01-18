@@ -2,6 +2,7 @@ package com.facilio.readingkpi.context;
 
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.ns.context.NameSpaceField;
+import com.facilio.unitconversion.Unit;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class KpiContextWrapper {
     private FacilioFieldKpiWrapper readingField;
     private KPIType kpiType;
     private Long categoryId;
+    private Unit unit;
 
     public KpiContextWrapper(Long id, String name) {
         this.id = id;
@@ -30,6 +32,19 @@ public class KpiContextWrapper {
         this.categoryId = kpi.getCategoryId();
         if (kpiType != KPIType.DYNAMIC) {
             this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
+        }
+    }
+    public KpiContextWrapper(ReadingKPIContext kpi, boolean isFromAnalytics) throws Exception {
+        this.id = kpi.getId();
+        this.name = kpi.getName();
+        this.kpiType = kpi.getKpiTypeEnum();
+        this.categoryId = kpi.getCategoryId();
+        if (kpiType != KPIType.DYNAMIC) {
+            this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
+        }
+        if(isFromAnalytics && kpiType == KPIType.DYNAMIC && kpi.getUnitId() != null && kpi.getUnitId() > 0)
+        {
+            this.unit = Unit.valueOf(kpi.getUnitId());
         }
     }
 
