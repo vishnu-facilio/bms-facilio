@@ -196,6 +196,7 @@
         <action name="count"
                 class="com.facilio.v3.RESTAPIHandler"
                 method="count">
+            <param name="tabType">Portfolio</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
 
@@ -355,6 +356,7 @@
     <package name="newV3Api" extends="v3Api" namespace="/api/v3/modules">
         <action name="*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="permission">
                 ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
@@ -363,6 +365,7 @@
         <action name="*/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="id">{2}</param>
+            <param name="tabType">Portfolio</param>
             <param name="permission">
                 ALL;GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
             </param>
@@ -376,6 +379,7 @@
         </action>
         <action name="*/view/*" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="viewName">{2}</param>
             <param name="permission">
                 ALL;GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
@@ -385,6 +389,7 @@
         <action name="*/view/*/count" class="com.facilio.v3.action.RestAPIHandlerV3">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
+            <param name="tabType">Portfolio</param>
             <param name="type">count</param>
             <param name="permission">
                 GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK;DELETE:DELETE,DELETE_TEAM,DELETE_OWN
@@ -811,6 +816,7 @@
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
                 method="pickList">
+            <param name="tabType">Portfolio</param>
             <param name="moduleName">{1}</param>
             <param name="translationImpl">V3PickListTranslation</param>
             <param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
@@ -2075,6 +2081,7 @@
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getCurrentWeather">
             <param name="permissionModuleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="permission">GET:READ</param>
         </action>
         <action name="sitestationid"
@@ -2087,6 +2094,7 @@
         <action name="*/sitestationid"
                 class="com.facilio.weather.actions.WeatherAction"
                 method="getAssociatedStationId">
+            <param name="tabType">Portfolio</param>
             <param name="permissionModuleName">{1}</param>
             <param name="permission">GET:READ</param>
         </action>
@@ -2571,6 +2579,7 @@
 			<param name="deprecated">true</param>
 		</action>
         <action name="*/recordPeople/*" class="com.facilio.bmsconsoleV3.actions.V3RecordPeopleAction" method="getPeopleFromRecordFields">
+            <param name="tabType">Portfolio</param>
             <param name="permissionModuleName">{1}</param>
             <param name="recordId">{2}</param>
             <param name="permission">POST:READ</param>
@@ -2765,6 +2774,7 @@
     <package name="glimpseAction" extends="v3Api" namespace="/api/v3/glimpse">
         <action name="*/*/*" class="com.facilio.bmsconsoleV3.actions.GlimpseAction">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="recordId">{2}</param>
             <param name="glimpseFieldName">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
@@ -2774,6 +2784,7 @@
     <package name="glimpseStatus" extends="v3Api" namespace="/api/v3/settings/glimpse">
         <action name="*" class="com.facilio.bmsconsole.actions.ModuleSetupAction" method="getSettingConfigDetails">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
         </action>
     </package>
@@ -2797,6 +2808,7 @@
             <param name="id">{2}</param>
             <param name="relatedModuleName">{3}</param>
             <param name="relatedFieldName">{4}</param>
+            <param name="tabType">Portfolio</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
         </action>
     </package>
@@ -2804,6 +2816,7 @@
     <package name="lookupModuleAction" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/lookupData/*/*" class="com.facilio.bmsconsoleV3.actions.LookupModuleDataAction" method="getLookupListData">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="relatedFieldName">{2}</param>
             <param name="extendedModuleName">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
@@ -2833,6 +2846,7 @@
         </action>
         <action name="/forms/*/*/*" class="com.facilio.bmsconsoleV3.actions.FormPickListAction" method="getPickListData">
             <param name="moduleName">{1}</param>
+            <param name="tabType">Portfolio</param>
             <param name="fieldName">{2}</param>
             <param name="extendedModuleName">{3}</param>
             <param name="permission">GET:READ,READ_TEAM,READ_OWN,CAN_APPROVE</param>

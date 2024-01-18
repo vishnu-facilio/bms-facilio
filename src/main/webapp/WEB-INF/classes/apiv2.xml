@@ -287,17 +287,18 @@
 		</action>
 		<action name="forms"
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">FormTranslation</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">EMAIL_SETTINGS,SERVICE_CATALOGS,SCHEDULER,ASSIGNMENT_RULES,BMS_EVENT_FILTERING,TRANSACTION_RULES,STATEFLOWS,APPROVALS,MODULES</param>
 		</action>
 		<action name="*/forms"
 				class="com.facilio.bmsconsole.actions.FormAction" method="formList">
+			<param name="tabType">Portfolio</param>
 			<param name="moduleName">{1}</param>
 			<param name="translationImpl">FormTranslation</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
-
 		<action name="operators" class="com.facilio.bmsconsole.actions.ModuleAction" method="fetchOperators">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -664,6 +665,7 @@
 		<action name="*/list"
 				class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">StateFlowTranslationV2</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -709,6 +711,7 @@
 		<action name="*/getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.CustomButtonAction" method="getAvailableButtons" >
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">ButtonTranslation</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -746,6 +749,7 @@
 		<action name="*/getAvailableButtons"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableSystemButton">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="getAvailableButtonsForList"
@@ -755,6 +759,7 @@
 		<action name="*/getAvailableButtonsForList"
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
@@ -762,6 +767,7 @@
 				class="com.facilio.bmsconsole.actions.SystemButtonAction" method="getAvailableButtonsForList">
 			<param name="permissionModuleName">{1}</param>
 			<param name="moduleName">{2}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -1000,6 +1006,7 @@
 		<action name="getAvailableState"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="getAvailableState" >
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">StateFlowTranslation</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -1893,6 +1900,7 @@
 		<action name="*/viewList"
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2viewlist">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">ViewTranslation</param>
 			<param name= "permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">EMAIL_LOGS</param>
@@ -1942,6 +1950,7 @@
 				class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="viewName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">TEAMS,USERS</param>
 		</action>
@@ -1949,6 +1958,7 @@
 			class="com.facilio.bmsconsole.actions.ViewAction" method="v2getViewDetail">
 			<param name="translationImpl">ViewColumnTranslation</param>
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="viewName">{2}</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
@@ -1958,6 +1968,7 @@
 			<param name="permissionModuleName">{1}</param>
 			<param name="moduleName">{2}</param>
 			<param name="viewName">{3}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
@@ -2811,6 +2822,8 @@
 				method="addBussinessHours">
 			<param name="permission">POST:CREATE</param>
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
+
 		</action>
 		<action name="edit"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction"
@@ -2833,6 +2846,7 @@
 		<action name="*/list"
 				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 				method="v2getBusinessHoursList">
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ</param>
 			<param name="moduleName">{1}</param>
 		</action>
@@ -2846,6 +2860,7 @@
 				class="com.facilio.bmsconsole.actions.BusinessHoursAction"
 				method="updateBusinessHourInResource">
 			<param name="permission">POST:UPDATE</param>
+			<param name="tabType">Portfolio</param>
 			<param name="moduleName">{1}</param>
 		</action>
 		<action name="*/*"
@@ -3069,6 +3084,7 @@
 		</action>
 		<action name="*/*"
 				class="com.facilio.bmsconsole.actions.ActivityAction" method="getActivityList">
+			<param name="tabType">Portfolio</param>
 			<param name="moduleName">{1}</param>
 			<param name="activityModule">{2}</param>
 			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM;POST:READ,READ_OWN,READ_TEAM</param>
@@ -3368,6 +3384,7 @@
 		</action>
 		<action name="*/executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="setupTab">MODULES</param>
 			<param name="permission">ALL;POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK</param>
 		</action>
@@ -3456,6 +3473,7 @@
 		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="translationImpl">FormFieldTranslation</param>
 			<param name="permission">ALL;GET:READ,READ_OWN,READ_TEAM</param>
 			<param name="setupTab">MODULES</param>
@@ -3836,6 +3854,7 @@
 		<action name="getReadingsRelationships/*"
 				class="com.facilio.bmsconsole.actions.ReadingAction"
 				method="getReadingsRelationships">
+			<param name="tabType">Portfolio</param>
 			<param name="moduleName">{1}</param>
 			<param name="permission">GET:READ</param>
 
@@ -3861,6 +3880,7 @@
 				class="com.facilio.bmsconsole.actions.ReadingAction"
 				method="v2GetLatestReadingData">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="parentId">{2}</param>
 			<param name="permission">GET:READ</param>
 		</action>
@@ -3904,6 +3924,7 @@
 				class="com.facilio.fields.actions.FieldConfigAction" method="fetchFieldList" >
 			<param name="fieldListType">{1}</param>
 			<param name="moduleName">{2}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="config/*/*/*"
@@ -4693,12 +4714,14 @@
 			 extends="v2ApiNullIgnored">
 		<action name="operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="tabType">Portfolio</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
 		<action name="*/operators"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<param name="setupTab">CONDITION_MANAGER,SLA_POLICIES,DATA_SHARING,MODULES,WORKFLOWS,NOTIFICATIONS,ASSIGNMENT_RULES,STATEFLOWS,APPROVALS,EMAIL_LOGS,RULE_LOGS,INBOUND_MAIL_CONVERSION,SCRIPT_LOGS,WORKFLOW_RULE_LOGS</param>
 		</action>
@@ -4732,6 +4755,7 @@
 			 extends="v2ApiNullIgnored">
 		<action name="*"
 				class="com.facilio.bmsconsole.actions.AdvancedFilterAction" method="fetchOperators">
+			<param name="tabType">Portfolio</param>
 			<param name="dataType">{1}</param>
 			<param name="permission">GET:READ,READ_OWN,READ_TEAM</param>
 		</action>
@@ -7695,6 +7719,7 @@
 	<package name="photosV2Api" namespace="/api/v2/photos" extends="v2Api">
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2uploadPhotos">
+			<param name="tabType">Portfolio</param>
 			<param name="isFileApi">true</param>
 			<param name="permission">POST:UPDATE,UPDATE_TEAM,UPDATE_OWN,UPDATE_CHANGE_OWNERSHIP,UPDATE_CLOSE_WORKORDER,UPDATE_TASK,CREATE</param>
 		</action>
@@ -9602,6 +9627,7 @@
 		<action name="*/fetch"
 				class="com.facilio.bmsconsole.actions.PageTabsAction" method="fetchPageTab">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
@@ -9649,6 +9675,7 @@
 		<action name="*/fetchForRecord"
 				class="com.facilio.bmsconsole.actions.CustomPageAction" method="fetchPageForRecord">
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 		<action name="*/*/fetchForRecord"

@@ -1715,6 +1715,7 @@
 		<action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="metadata">
 			 <param name="translationImpl">ModuleTranslation</param>
+			<param name="tabType">Portfolio</param>
 			<param name="setupTab">ASSET_DEPRECIATION,WORKFLOWS,NOTIFICATIONS,APPROVALS,EMAIL_TEMPLATES,PDF_TEMPLATES,MODULES,WEATHER_STATION,EMAIL_LOGS,INBOUND_MAIL_CONVERSION,FAULT_IMPACT_TEMPLATE</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
@@ -1726,6 +1727,7 @@
 				method="metadata">
 			<param name="translationImpl">ModuleTranslation</param>
 			<param name="moduleName">{1}</param>
+			<param name="tabType">Portfolio</param>
 			<param name="permission">ALL;GET:READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
@@ -2741,6 +2743,7 @@
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.CampusAction"
 				method="getSiteInsights">
 			<param name="tabType">Portfolio</param>
+			<param name="moduleName">site</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2807,6 +2810,7 @@
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.BuildingAction"
 				method="getSpaceInsights">
 			<param name="tabType">Portfolio</param>
+			<param name="moduleName">building</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2863,6 +2867,7 @@
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.FloorAction"
 				method="getSpaceInsights">
 			<param name="tabType">Portfolio</param>
+			<param name="moduleName">floor</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
@@ -2946,6 +2951,7 @@
 		<action name="spaceInsights" class="com.facilio.bmsconsole.actions.SpaceAction"
 				method="getSpaceInsights">
 			<param name="tabType">Portfolio</param>
+			<param name="moduleName">space</param>
 			<param name="permission">GET:READ</param>
 			<result name="success" type="json">
 				<param name="includeProperties">reports.*</param>
