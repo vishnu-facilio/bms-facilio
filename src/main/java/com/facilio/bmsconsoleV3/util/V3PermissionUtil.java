@@ -191,8 +191,9 @@ public class V3PermissionUtil {
     public static boolean isAllowedOrg(){
         Organization currentOrg = AccountUtil.getCurrentOrg();
         if (FacilioProperties.isProduction()) {
+            HttpServletRequest request = ServletActionContext.getRequest();
             if(currentOrg != null) {
-                if(ApplicationApi.isRequestFromMobile()){
+                if(ApplicationApi.isRequestFromMobile() || "PDFService".equalsIgnoreCase(request.getHeader("X-Device-Type"))){
                     return false;
                 }
                 return currentOrg.getOrgId() == 1516;

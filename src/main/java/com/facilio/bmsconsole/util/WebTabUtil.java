@@ -82,12 +82,12 @@ public class WebTabUtil {
             params.putAll(extraParameters);
         }
 
-        boolean isMatchedTabType = true;
+        boolean isMatchedTabType = handler instanceof ModuleTypeHandler;
         if (params.containsKey("skipPermission") && Boolean.parseBoolean(params.get("skipPermission"))) {
             return true;
-        } else if (params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))) {
-            List<String> tabType = Arrays.asList(params.get("tabType").split(","));
-            if (!(handler instanceof ModuleTypeHandler)) {
+        } else if (!(isMatchedTabType)) {
+            if (params.containsKey("tabType") && StringUtils.isNotEmpty(params.get("tabType"))) {
+                List<String> tabType = Arrays.asList(params.get("tabType").split(","));
                 isMatchedTabType = (tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.NORMAL) && tabType.contains(tab.getTypeEnum().getName())) || tab.getTypeEnum().getTabType().equals(WebTabContext.TabType.SETUP);
             }
         } else if (params.containsKey("handler") && StringUtils.isNotEmpty(params.get("handler"))) {
