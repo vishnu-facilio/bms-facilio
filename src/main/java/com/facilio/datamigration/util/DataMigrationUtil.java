@@ -14,6 +14,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.mailtracking.MailConstants;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import com.facilio.v3.context.Constants;
@@ -123,10 +124,10 @@ public class DataMigrationUtil {
     public static Criteria getModuleSpecificCriteria(FacilioModule module) {
         Criteria cr = null;
         switch (module.getName()) {
-            case "people":
-                cr = new Criteria();
-                cr.addAndCondition(CriteriaAPI.getCondition("PEOPLE_TYPE", "peopleType", String.valueOf(V3PeopleContext.PeopleType.EMPLOYEE.getIndex()), NumberOperators.NOT_EQUALS));
-                break;
+//            case "people":
+//                cr = new Criteria();
+//                cr.addAndCondition(CriteriaAPI.getCondition("PEOPLE_TYPE", "peopleType", String.valueOf(V3PeopleContext.PeopleType.EMPLOYEE.getIndex()), NumberOperators.NOT_EQUALS));
+//                break;
             default:
                 break;
         }
@@ -146,6 +147,7 @@ public class DataMigrationUtil {
 
                 queryString = module.getTableName() + ".PARENT_TICKET_ID IN (" + valueList + ")";
                 break;
+                
             case "taskInputOpyion":
             case "taskattachments":
                 String columnName = module.getName().equals("taskattachments") ? "PARENT_ID" : "TASK_ID";
@@ -160,6 +162,14 @@ public class DataMigrationUtil {
                 String taskSubQuery = generateSubQuery(taskModule, idFieldFromTaskTable, queryString);
                 queryString = module.getTableName() + "." + columnName + " IN (" + taskSubQuery + ")";
                 break;
+
+            case "outgoingMailAttachments":
+                FacilioModule outgoingMailLoggerModule = modBean.getModule(MailConstants.ModuleNames.OUTGOING_MAIL_LOGGER);
+                String mailLoggerQuery = generateSubQuery(outgoingMailLoggerModule, FieldFactory.getIdField(outgoingMailLoggerModule));
+
+                queryString = module.getTableName() + ".MAIL_ID IN (" + mailLoggerQuery + ")";
+                break;
+
             default:
                 break;
         }

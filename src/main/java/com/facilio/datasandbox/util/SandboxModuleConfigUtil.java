@@ -195,17 +195,18 @@ public class SandboxModuleConfigUtil {
                 details.put("criteria", criteria);
             }
 
-            if (module.getExtendModule() != null) {
-                String parentModuleName = module.getExtendModule().getName();
-                Map<String, Object> parentModuleDetails = moduleNameVsDetails.containsKey(parentModuleName) ? moduleNameVsDetails.get(parentModuleName) : new HashMap();
-                List<Long> childModuleIds = (parentModuleDetails.containsKey("childModuleIds")) ? (List<Long>) parentModuleDetails.get("childModuleIds") : new ArrayList<Long>();
-                List<String> childModuleNames = (parentModuleDetails.containsKey("childModules")) ? (List<String>) parentModuleDetails.get("childModules") : new ArrayList<String>();
+            List<FacilioModule> childModules = modBean.getChildModules(module, null, null, true);
+            if (CollectionUtils.isNotEmpty(childModules)) {
+                List<Long> childModuleIds = new ArrayList<>();
+                List<String> childModuleNames = new ArrayList<>();
 
-                childModuleNames.add(moduleName);
-                parentModuleDetails.put("childModules", childModuleNames);
-                childModuleIds.add(module.getModuleId());
-                parentModuleDetails.put("childModuleIds", childModuleIds);
-                moduleNameVsDetails.put(parentModuleName, parentModuleDetails);
+                for (FacilioModule childModule : childModules) {
+                    childModuleNames.add(childModule.getName());
+                    childModuleIds.add(childModule.getModuleId());
+                }
+
+                details.put("childModules", childModuleNames);
+                details.put("childModuleIds", childModuleIds);
             }
             moduleNameVsDetails.put(moduleName, details);
         }
