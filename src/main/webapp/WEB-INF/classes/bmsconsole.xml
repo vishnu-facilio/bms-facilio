@@ -1400,7 +1400,7 @@
 				<param name="enumAsBean">true</param>
 				<param name="root">readings</param>
 			</result>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ</param>
 		</action>
 		
 		<action name="getassetspecificreadings" class="com.facilio.bmsconsole.actions.ReadingAction"
@@ -4148,7 +4148,7 @@
 	
 	<package name="units" namespace="/api/units" extends="homeApi">
 		<action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
-		<param name="permission">ALL</param>
+		<param name="permission">GET:READ</param>
 		<param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>

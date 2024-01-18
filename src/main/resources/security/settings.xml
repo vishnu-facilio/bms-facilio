@@ -1100,7 +1100,7 @@
                 <property name="orgId" type="number"/>
                 <property name="validatedFiledId" type="number"/>
                 <property name="status" type="number"/>
-                <property name="fileSize" type="string"/>
+                <property name="fileSize" type="number"/>
                 <property name="name" type="string"/>
                 <property name="columnHeading" type="string"/>
                 <property name="resourceMapping" type="string"/>
@@ -4391,12 +4391,12 @@
     </request>
 
     <request path="api/v2/readings/meter/getPreviousReadings" method="GET">
-        <requestbody type="object">
+        <urlparams>
             <property name="parentId" type="number" mandatory="true"/>
             <property name="moduleId" type="number" mandatory="true"/>
             <property name="ttime" type="number" mandatory="true"/>
             <property name="selectedField" type="string" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
     <request path="/api/v3/readingKpi/analytics/getDynamicKpisForAsset" method="GET">
@@ -4413,12 +4413,12 @@
     </request>
 
     <request path="api/v2/readings/asset/getPreviousReadings" method="GET">
-        <requestbody type="object">
+        <urlparams>
             <property name="parentId" type="number" mandatory="true"/>
             <property name="moduleId" type="number" mandatory="true"/>
             <property name="ttime" type="number" mandatory="true"/>
             <property name="selectedField" type="string" mandatory="true"/>
-        </requestbody>
+        </urlparams>
     </request>
 
 

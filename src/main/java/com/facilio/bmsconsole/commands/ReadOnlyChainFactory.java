@@ -619,6 +619,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain importReadingPreProcessingChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new ImportReadingPreProcessingCommand());
+		c.addCommand(new AddOrUpdateReadingsCommand());
+		return c;
+	}
+
 	public static FacilioChain readingPostProcessingChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new ReadingPostProcessingCommand());

@@ -138,11 +138,15 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
     }
 
     public ReadingContext clone() {
-        ReadingContext r = new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId, dataInterval);
+        ReadingContext r = new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId, dataInterval, units);
         r.setId(getId());
         r.setReadings(new HashMap<>(getReadings()));
         return r;
     }
 
     private int dataInterval = -1; // in mins
+
+	@Getter @Setter
+	private Map<String, Integer> units = new HashMap<>();
+
 }

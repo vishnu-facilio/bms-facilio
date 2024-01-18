@@ -2034,27 +2034,27 @@
         <action name="create"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="addImportMeta">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:CREATE</param>
 		</action>
         <action name="summary"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getImportMetaById">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:READ</param>
 		</action>
         <action name="list"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getImportMetaList">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:READ</param>
 		</action>
         <action name="mylist"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="getMyImportMetaList">
-			<param name="deprecated">true</param>
+            <param name="permission">GET:READ</param>
 		</action>
         <action name="update"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"
                 method="updateReadingImportData">
-			<param name="deprecated">true</param>
+            <param name="permission">POST:CREATE</param>
 		</action>
         <action name="delete"
                 class="com.facilio.bmsconsoleV3.actions.readingimportapp.ReadingImportAction"

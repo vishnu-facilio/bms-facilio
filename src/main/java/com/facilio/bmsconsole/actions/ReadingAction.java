@@ -70,7 +70,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.READINGS_MAP , getReadingMap());
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
 		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
-		FacilioChain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioChain importDataChain = ReadOnlyChainFactory.importReadingPreProcessingChain();
 		importDataChain.execute(context);
 		return SUCCESS;
 	}
