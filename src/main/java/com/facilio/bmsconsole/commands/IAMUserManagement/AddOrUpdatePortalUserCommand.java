@@ -62,6 +62,7 @@ public class AddOrUpdatePortalUserCommand extends FacilioCommand {
             V3PeopleContext peopleContext = new V3PeopleContext();
             peopleContext.setId(user.getPeopleId());
             V3PeopleAPI.updatePortalAccess(peopleContext, appLinkName, true);
+            context.put(FacilioConstants.ContextNames.ORG_USER_ID, user.getOrgUserId());
         }
         return false;
     }

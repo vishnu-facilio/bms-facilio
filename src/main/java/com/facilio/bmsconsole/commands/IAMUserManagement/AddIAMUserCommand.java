@@ -18,6 +18,7 @@ public class AddIAMUserCommand extends FacilioCommand {
             long orgId = user.getUser().getOrgId();
             long appId = user.getApplicationId();
             ApplicationUserUtil.addAppUser(orgId,false,user, sendInvitation, password);
+            context.put(FacilioConstants.ContextNames.ORG_USER_ID, user.getOrgUserId());
         }
 
             return false;

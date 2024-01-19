@@ -98,6 +98,7 @@ public class AddAppPortalAccessForPeopleCommand extends FacilioCommand {
                         FacilioChain addUserChain = FacilioChainFactory.addUserChain();
                         addUserChain.execute(userAdditionContext);
                     }
+                    context.put(FacilioConstants.ContextNames.ORG_USER_ID, userAdditionContext.get(FacilioConstants.ContextNames.ORG_USER_ID));
                 } else {
                     throw new RESTException(ErrorCode.VALIDATION_ERROR, "Invalid App Domain");
                 }
