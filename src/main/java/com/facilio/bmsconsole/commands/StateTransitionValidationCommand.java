@@ -27,6 +27,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -138,19 +139,18 @@ public class StateTransitionValidationCommand extends FacilioCommand {
                     if (stateTransition.getLocationLookupFieldId() > 0) {
                         Object recordLocationValue = null;
                         FacilioField locationLookUpField = moduleBean.getField(stateTransition.getLocationLookupFieldId());
+                        Map<String, List<ModuleBaseWithCustomFields>> recordObject=new HashMap<>();
+                        if (value instanceof ModuleBaseWithCustomFields) {
+                            recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList(((ModuleBaseWithCustomFields) value).getId())));
+                        } else if (value instanceof Map) {
+                            recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList((Long) ((Map) value).get("id"))));
+                        }
+                        recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
+
                         if (locationLookUpField instanceof LookupField) {
-                            Map<String, List<ModuleBaseWithCustomFields>> recordObject;
-                            if (value instanceof ModuleBaseWithCustomFields) {
-                                recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList(((ModuleBaseWithCustomFields) value).getId())));
-                                recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
-                            } else if (value instanceof Map) {
-                                recordObject = Constants.getRecordMap(V3Util.getSummary(locationLookUpField.getModule().getName(), Collections.singletonList((Long) ((Map) value).get("id"))));
-                                recordLocationValue = recordObject.get(locationLookUpField.getModule().getName()) != null ? recordObject.get(locationLookUpField.getModule().getName()).get(0) : null;
-                            }
                             coordinates = getCoordinates(getValueFromRecord(recordLocationValue, locationLookUpField));
                         } else {
-                            recordLocationValue = getValueFromRecord(value, locationLookUpField);
-                            coordinates = getCoordinateFromString((String) recordLocationValue);
+                            coordinates = getCoordinateFromString((String)getValueFromRecord(recordLocationValue, locationLookUpField));
                         }
                     } else {
                         coordinates = getCoordinates(value);
