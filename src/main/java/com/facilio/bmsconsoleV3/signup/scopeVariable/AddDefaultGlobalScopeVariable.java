@@ -106,7 +106,7 @@ public class AddDefaultGlobalScopeVariable extends SignUpData {
         GlobalScopeVariableContext fsmTerritoryScopeVariable = new GlobalScopeVariableContext();
         fsmTerritoryScopeVariable.setLinkName("default_fsm_territory");
         fsmTerritoryScopeVariable.setApplicableModuleId(modBean.getModule(FacilioConstants.Territory.TERRITORY).getModuleId());
-        fsmTerritoryScopeVariable.setStatus(true);
+        fsmTerritoryScopeVariable.setStatus(false);
         fsmTerritoryScopeVariable.setShowSwitch(true);
         fsmTerritoryScopeVariable.setAppId(ApplicationApi.getApplicationIdForLinkName(FacilioConstants.ApplicationLinkNames.FSM_APP));
         fsmTerritoryScopeVariable.setDescription("Default Territory Scope Variable");
