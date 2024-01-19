@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.WidgetCardContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.json.simple.JSONObject;
@@ -223,7 +224,7 @@ public class CardUtil {
 		}
 		return childCards;
 	}
-	public static List<JSONObject> getChildCardsResponse(List<WidgetCardContext> childCards) {
+	public static List<JSONObject> getChildCardsResponse(List<WidgetCardContext> childCards) throws Exception {
 		List<JSONObject> childResponse = new ArrayList<>();
 		for(WidgetCardContext childCard : childCards){
 			JSONObject widgetJson = new JSONObject();
@@ -232,11 +233,12 @@ public class CardUtil {
 			widgetJson.put("title", childCard.getHeaderText());
 			widgetJson.put("id", childCard.getId());
 			widgetJson.put("label", childCard.getWidgetName());
+			widgetJson.put("cardDrilldown", CardUtil.getDrillDownObj(childCard.getCardDrilldown(),childCard.getCardParams(),childCard.getId()));
 			childResponse.add(widgetJson);
 		}
 		return childResponse;
 	}
-	public static JSONObject getDrillDownObj(JSONObject cardDrillDown,JSONObject cardParams, long cardId) {
+	public static JSONObject getDrillDownObj(JSONObject cardDrillDown,JSONObject cardParams, long cardId) throws Exception {
 		JSONObject resultJson = new JSONObject();
 		if(cardDrillDown != null) {
 			JSONObject drillDownObj = (JSONObject) cardDrillDown.get("default");
@@ -252,8 +254,16 @@ public class CardUtil {
 						}
 						break;
 					case "showListView":
-						resultJson.put("viewName",data.get("view"));
-						resultJson.put("moduleName",cardParams.get("moduleName"));
+						if(cardParams.get("moduleName") != null) {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							FacilioModule cardModule = modBean.getModule((String) cardParams.get("moduleName"));
+							if(cardModule != null) {
+								resultJson.put("moduleName",cardModule.getName());
+								resultJson.put("displayName",cardModule.getDisplayName());
+								resultJson.put("moduleType",cardModule.getTypeEnum());
+							}
+							resultJson.put("viewName",data.get("view"));
+						}
 						break;
 					case "showTrend":
 						resultJson.put("web_url","dashboard/" + AccountUtil.getCurrentApp().getLinkName() + "/webView/card/trend/" + cardId);

@@ -521,11 +521,11 @@ public class V2ConstructCardCommand extends FacilioCommand {
             if(timeFilter!=null){
                 if(db_filter != null && db_filter.getTimeFilter() != null) {
                     V2TimeFilterContext dbTimeFilter = db_filter.getTimeFilter();
-                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,dbTimeFilter.dateOperator);
+                    context.put(FacilioConstants.ContextNames.CARD_PERIOD,DateOperators.BETWEEN);
                     range =  new DateRange(dbTimeFilter.getStartTime(), dbTimeFilter.getEndTime());
                     timeFilter.setDateLabel(dbTimeFilter.getDateLabel());
-                    timeFilter.setDateOperator(dbTimeFilter.getDateOperator());
-                    timeFilter.setDateOperatorEnum(dbTimeFilter.getDateOperatorEnum());
+                    timeFilter.setDateOperator(DateOperators.BETWEEN.getOperatorId());
+                    timeFilter.setDateOperatorEnum(DateOperators.BETWEEN);
                 }else {
                     context.put(FacilioConstants.ContextNames.CARD_PERIOD,timeFilter.getDateOperatorEnum());
                 }

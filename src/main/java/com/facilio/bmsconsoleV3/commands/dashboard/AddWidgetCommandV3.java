@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.V2ReportAction;
 import com.facilio.bmsconsole.commands.AddOrUpdateDashboardFieldMappingCommand;
 import com.facilio.bmsconsole.commands.FetchReportDataCommand;
+import com.facilio.bmsconsole.util.DashboardFilterUtil;
 import com.facilio.bmsconsoleV3.context.dashboard.WidgetDashboardFilterContext;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -377,7 +378,8 @@ public class AddWidgetCommandV3 extends FacilioCommand {
                     filter_widget.setType(DashboardWidgetContext.WidgetType.FILTER.getValue());
                     filter_widget.setWidget_id(widget.getId());
                     if(filter_widget.getCriteria() != null){
-                        long criteriaId=CriteriaAPI.addCriteria(filter_widget.getCriteria());
+                        Criteria filterCriteria =  DashboardFilterUtil.setFieldInCriteria(filter_widget.getCriteria(),filter_widget.getModuleName());
+                        long criteriaId = CriteriaAPI.addCriteria(filterCriteria);
                         filter_widget.setCriteriaId(criteriaId);
                     }
                     insertBuilder = new GenericInsertRecordBuilder()

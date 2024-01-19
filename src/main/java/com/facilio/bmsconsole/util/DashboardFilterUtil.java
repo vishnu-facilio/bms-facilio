@@ -731,4 +731,22 @@ public static Criteria getUserFilterCriteriaForModule(DashboardCustomScriptFilte
 		}
 		return newFilterContext;
 	}
+	public static Criteria setFieldInCriteria(Criteria criteria, String moduleName)throws Exception
+	{
+		if(criteria != null)
+		{
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			for (String key :  criteria.getConditions().keySet())
+			{
+				Condition condition = criteria.getConditions().get(key);
+				if (module == null || condition == null || condition.getFieldName() == null) continue;
+				FacilioField field = modBean.getField(condition.getFieldName(), module.getName());
+				if(field == null) continue;
+				condition.setField(field);
+			}
+			return criteria;
+		}
+		return null;
+	}
 }

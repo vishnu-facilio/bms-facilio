@@ -411,7 +411,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	}
 	
 	public abstract JSONObject widgetJsonObject(boolean optimize);
-	public abstract JSONObject widgetMobileJsonObject(boolean optimize, int index);
+	public abstract JSONObject widgetMobileJsonObject(boolean optimize, int index) throws Exception;
 	
 	public Long getDashboardTabId() {
 		return dashboardTabId;

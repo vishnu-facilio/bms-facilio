@@ -59,7 +59,7 @@ public class WidgetSectionContext extends DashboardWidgetContext {
         return widgetJson;
     }
     @Override
-    public JSONObject widgetMobileJsonObject(boolean optimize, int sequence) {
+    public JSONObject widgetMobileJsonObject(boolean optimize, int sequence) throws Exception {
 
         JSONObject widgetJson = new JSONObject();
         widgetJson.put("label", getWidgetName());

@@ -260,7 +260,7 @@ public void setCardCustomScriptFilters(DashboardCustomScriptFilter cardCustomScr
 		return widgetJson;
 	}
 	@Override
-	public JSONObject widgetMobileJsonObject(boolean optimize, int index) {
+	public JSONObject widgetMobileJsonObject(boolean optimize, int index) throws Exception {
 
 		JSONObject widgetJson = new JSONObject();
 		widgetJson.put("label", getWidgetName());

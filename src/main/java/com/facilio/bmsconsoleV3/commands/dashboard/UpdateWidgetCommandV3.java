@@ -151,13 +151,18 @@ public class UpdateWidgetCommandV3 extends FacilioCommand {
                                     .fields(FieldFactory.getDashboardUserFilterFields())
                                     .andCondition(CriteriaAPI.getCondition("WIDGET_ID","widget_id", String.valueOf(filterWidgetContext.getId()), NumberOperators.EQUALS));
 
-                            Map<String, Object> props = FieldUtil.getAsProperties(filterWidgetContext, true);
-                            updateWidgetFilter.update(props);
-                            DashboardUserFilterContext userFilter = DashboardFilterUtil.getDashboardUserFiltersForWidgetId((Long) props.get("userFilterId"));
-                            AddOrUpdateDashboardFieldMappingCommand fieldMappingCommand = new AddOrUpdateDashboardFieldMappingCommand();
-                            context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,userFilter.getId());
-                            context.put("fieldMappings",filterWidgetContext.getFieldMappingMap());
-                            fieldMappingCommand.executeCommand(context);
+                           if(filterWidgetContext.getCriteria() != null) {
+                               Criteria filterCriteria =  DashboardFilterUtil.setFieldInCriteria(filterWidgetContext.getCriteria(),filterWidgetContext.getModuleName());
+                               long criteriaId=CriteriaAPI.addCriteria(filterCriteria);
+                               filterWidgetContext.setCriteriaId(criteriaId);
+                           }
+                           Map<String, Object> props = FieldUtil.getAsProperties(filterWidgetContext, true);
+                           updateWidgetFilter.update(props);
+                           DashboardUserFilterContext userFilter = DashboardFilterUtil.getDashboardUserFiltersForWidgetId((Long) props.get("userFilterId"));
+                           AddOrUpdateDashboardFieldMappingCommand fieldMappingCommand = new AddOrUpdateDashboardFieldMappingCommand();
+                           context.put(FacilioConstants.ContextNames.DASHBOARD_USER_FILTER_ID,userFilter.getId());
+                           context.put("fieldMappings",filterWidgetContext.getFieldMappingMap());
+                           fieldMappingCommand.executeCommand(context);
                         }
                     }
                     else if (updatewidget.getType() == DashboardWidgetContext.WidgetType.SECTION.getValue()) {
