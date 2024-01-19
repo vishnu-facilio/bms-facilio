@@ -58,6 +58,7 @@ public class V2AnalyticsTransactionChain
         chain.addCommand(new V2CreateOldAnalyticsReportCommand());
         chain.addCommand(new AddOrUpdateReportCommand());
         chain.addCommand(new V2AddNewAnalyticReportCommand());
+        chain.addCommand(new AddOrUpdateWidgetLegendCommand());
         return chain;
     }
     public static FacilioChain getDeleteAnalyticsReportChain()throws Exception
@@ -74,6 +75,7 @@ public class V2AnalyticsTransactionChain
         if(isDataNeeded == null || (isDataNeeded != null && isDataNeeded == Boolean.TRUE)){
             chain.addCommand(V2AnalyticsTransactionChain.newV2FetchReportDataChain());
         }
+        chain.addCommand(new FetchWidgetLegendConfigurationCommand());
         return chain;
     }
     public static FacilioChain getAnalyticReportListChain()throws Exception

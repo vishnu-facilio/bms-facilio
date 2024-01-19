@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.analytics.v2.context.WidgetLegendGroupContext;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.collections.CollectionUtils;
@@ -936,5 +937,4 @@ public class ReportContext {
 	private String folderName;
 	private String workFlowString;
 	private String linkName;
-
 }

@@ -6088,4 +6088,20 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Currency_Trend");
 		return module;
 	}
+
+	public static FacilioModule getWidgetLegendGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("widgetLegendGroup");
+		module.setDisplayName("Widget Legend Group");
+		module.setTableName("Widget_Legend_Group");
+		return module;
+	}
+
+	public static FacilioModule getWidgetLegendVarianceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("widgetLegendVariance");
+		module.setDisplayName("Widget Legend Variance");
+		module.setTableName("Widget_Legend_Variance");
+		return module;
+	}
 }

@@ -44,6 +44,7 @@ public class V2ReportContext {
     public ReadingAnalysisContext.ReportMode reportModeEnum;
     private boolean showAlarms;
     private JSONObject pagination;
+    private List<WidgetLegendGroupContext> widgetLegendGroup;
     public void setReportMode(int reportMode){
         this.reportMode = reportMode;
         this.setReportModeEnum(ReadingAnalysisContext.ReportMode.valueOf(reportMode));

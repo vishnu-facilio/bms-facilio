@@ -181,12 +181,12 @@ public class ConstructReportDataCommand extends FacilioCommand {
                         }
                         if (report.getgroupByTimeAggr() > 0 && !formattedxVal.equals("deleted")) {
                             key.add(xVal.toString());
-                            constructAndAddData(key.toString(), data, xVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+                            constructAndAddData(prop,key.toString(), data, xVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
 
                         } else {
                             if(!formattedxVal.equals("deleted")) {
                                 key.add(formattedxVal.toString());
-                                constructAndAddData(key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
+                                constructAndAddData(prop,key.toString(), data, formattedxVal, yVal, minYVal, maxYVal, getyAlias(dataPoint, baseLine), report, dataPoint, transformedData, directHelperData);
                             }
 
                         }
@@ -197,11 +197,14 @@ public class ConstructReportDataCommand extends FacilioCommand {
         }
     }
 
-    private void constructAndAddData(String key, Map<String, Object> existingData, Object xVal, Object yVal, Object minYVal, Object maxYVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, Collection<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
+    private void constructAndAddData(Map<String, Object> prop,String key, Map<String, Object> existingData, Object xVal, Object yVal, Object minYVal, Object maxYVal, String yAlias, ReportContext report, ReportDataPointContext dataPoint, Collection<Map<String, Object>> transformedData, Map<String, Object> intermediateData) {
         Map<String, Object> data = (Map<String, Object>) intermediateData.get(key);
         if (data == null) {
             data = existingData == null ? new HashMap<>() : existingData;
             data.put(getxAlias(report), xVal);
+            if(MapUtils.isNotEmpty(prop) && prop.containsKey("ttime")) {
+                data.put("ttime",prop.get("ttime"));
+            }
             intermediateData.put(key, data);
             transformedData.add(data);
         }

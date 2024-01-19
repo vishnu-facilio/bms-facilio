@@ -325,32 +325,38 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			}
 			
 			for (String alias : dp.getAliases().values()) {
-				calculateNumericAggr(data.get(alias), alias, aggrData, isLatest);
+				calculateNumericAggr(data, data.get(alias), alias, aggrData, isLatest);
 			}
 		}
 		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".sum"));
 	}
 	
-	private void calculateNumericAggr (Object value, String alias, Map<String, Object> aggrData, boolean isLatest) {
+	private void calculateNumericAggr (Map<String, Object> data, Object value, String alias, Map<String, Object> aggrData, boolean isLatest) {
 		Double val = getDoubleVal(value);
+		Long ttime = -1l;
+		if(MapUtils.isNotEmpty(data) && data.containsKey("ttime")) {
+			ttime = (Long) data.get("ttime");
+		}
 		if (val != null) {
 			String sumKey = alias+".sum";
 			Double sum = (Double) aggrData.get(sumKey); 
 			if (sum == null) {
-				addFirstTimeAggr(alias, val, aggrData);
+				addFirstTimeAggr(ttime,alias, val, aggrData);
 			}
 			else {
 				sum = sum + val; 
 				aggrData.put(sumKey, sum);
-				
+
 				String minKey = alias+".min";
 				if ((Double) aggrData.get(minKey) > val) {
 					aggrData.put(minKey, val);
+					aggrData.put(minKey+"_ttime", ttime);
 				}
 				
 				String maxKey = alias+".max";
 				if ((Double) aggrData.get(maxKey) < val) {
 					aggrData.put(maxKey, val);
+					aggrData.put(maxKey+"_ttime", ttime);
 				}
 				
 				String countKey = alias+".count";
@@ -360,18 +366,23 @@ public class CalculateAggregationCommand extends FacilioCommand {
 				
 				if (isLatest) {
 					aggrData.put(alias+".lastValue", val);
+					aggrData.put(alias+".lastValue_ttime", ttime);
 				}
 			}
 		}
 	}
 	
-	private void addFirstTimeAggr (String key, Double val, Map<String, Object> aggrData) {
+	private void addFirstTimeAggr (Long ttime, String key, Double val, Map<String, Object> aggrData) {
 		aggrData.put(key+".sum", val);
 		aggrData.put(key+".min", val);
 		aggrData.put(key+".max", val);
 		aggrData.put(key+".count", 1d);
 		aggrData.put(key+".avg", val);
 		aggrData.put(key+".lastValue", val);
+
+		aggrData.put(key+".min_ttime", ttime);
+		aggrData.put(key+".max_ttime", ttime);
+		aggrData.put(key+".lastValue_ttime", ttime);
 	}
 	
 	private Double getDoubleVal (Object val) {

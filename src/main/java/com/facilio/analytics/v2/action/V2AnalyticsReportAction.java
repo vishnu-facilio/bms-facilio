@@ -144,6 +144,9 @@ public class V2AnalyticsReportAction extends V3Action {
             ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
             setData("report", reportContext);
         }
+        if(context.get("widgetLegends") != null){
+            setData("widgetLegends", context.get("widgetLegends"));
+        }
         if(context.get("v2_report") != null){
             setData("v2_report", context.get("v2_report"));
         }

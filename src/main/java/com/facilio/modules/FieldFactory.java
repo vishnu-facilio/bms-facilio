@@ -9515,7 +9515,9 @@ public class FieldFactory extends BaseFieldFactory {
     public static FacilioField getStringField(String name, String colName, FacilioModule module) {
         return getField(name, colName, module, FieldType.STRING);
     }
-
+    public static FacilioField getSystemStringEnumField(String name, String colName, FacilioModule module) {
+        return getField(name, colName, module, FieldType.STRING_SYSTEM_ENUM);
+    }
     public static FacilioField getDateField(String name, String colName, FacilioModule module) {
         return getField(name, colName, module, FieldType.DATE_TIME);
     }
@@ -12813,7 +12815,24 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getStringField("aggregatedTableName", "AGGREGATED_TABLE_NAME", module));
         return fields;
     }
+    public static List<FacilioField> getWidgetLegendGroupFields() {
+        FacilioModule module = ModuleFactory.getWidgetLegendGroupModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getStringField("name", "NAME", module));
+        fields.add(getNumberField("reportId", "REPORT_ID", module));
+        return fields;
+    }
 
+    public static List<FacilioField> getWidgetLegendVarianceFields() {
+        FacilioModule module = ModuleFactory.getWidgetLegendVarianceModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getStringField("alias", "ALIAS", module));
+        fields.add(getNumberField("groupId", "GROUP_ID", module));
+        fields.add(getSystemStringEnumField("variance", "VARIANCE", module));
+        return fields;
+    }
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:
