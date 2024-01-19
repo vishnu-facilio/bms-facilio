@@ -106,10 +106,28 @@ public class SaveSubFormFromLineItemsCommand extends ProcessSubFormLineItemsComm
         if (CollectionUtils.isNotEmpty(subFormDataList)) {
             FacilioContext recordListContext = V3Util.createRecordList(module, subFormDataList, null, null);
             addedRecords = Constants.getRecordList(recordListContext);
+            setRecordIdInSubFormRecord(subFormContextList,addedRecords);
         }
         if (addedRecords == null) {
             addedRecords = new ArrayList<>();
         }
         return addedRecords;
+    }
+    private static void setRecordIdInSubFormRecord(List<SubFormContext> subFormContextList,List<ModuleBaseWithCustomFields> addedRecords) {
+        int index=0;
+        for (SubFormContext subFormContext : subFormContextList) {
+            List<V3Context> recordList = subFormContext.getData();
+            if (CollectionUtils.isEmpty(recordList)) {
+                continue;
+            }
+            for (V3Context record: recordList) {
+                // ignoring patched records
+                if (record.getId() > 0) {
+                    continue;
+                }
+                ModuleBaseWithCustomFields createdRecord = addedRecords.get(index++);
+                record.setId(createdRecord.getId());
+            }
+        }
     }
 }
