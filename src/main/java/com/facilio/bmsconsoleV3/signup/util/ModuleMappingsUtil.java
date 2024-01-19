@@ -736,7 +736,7 @@ public class ModuleMappingsUtil {
 
         mappings.setTargetModuleName(moduleMappingTemplateContext.getTargetModule());
 
-//        setUniqueNameForModuleMapping(mappings);
+        setUniqueNameForModuleMapping(mappings);
 
         long id = checkAndGetModuleMappingId(moduleMappingTemplateContext, mappings);
 
