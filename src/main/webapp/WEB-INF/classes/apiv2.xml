@@ -9722,6 +9722,18 @@
 				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
 			</result>
 		</action>
+		<action name="*/reading/site" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getCategoryReadings">
+			<param name="handler">FormulaBuilderTypeHandler</param>
+			<param name="permissionModuleName">{1}</param>
+			<param name="permission">GET:READ</param>
+			<param name="site">true</param>
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+				<param name="excludeProperties">result.readings.*\.dataTypeEnum.(columnNames)</param>
+			</result>
+		</action>
 		<action name="*/relation/list" class="com.facilio.relation.action.RelationAction" method="list">
 			<param name="handler">FormulaBuilderTypeHandler</param>
 			<param name="permissionModuleName">{1}</param>

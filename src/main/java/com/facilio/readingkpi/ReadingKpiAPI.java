@@ -1172,9 +1172,11 @@ public class ReadingKpiAPI {
     }
 
     public static void setKpiCategoryStr(ReadingKPIContext kpi) throws Exception {
-        KPICategoryContext kpiCategoryContext = KPIUtil.getKPICategoryContext(kpi.getKpiCategory());
-        if (kpiCategoryContext != null) {
-            kpi.setKpiCategoryStr(kpiCategoryContext.getName());
+        if(kpi.getKpiCategory() != null) {
+            KPICategoryContext kpiCategoryContext = KPIUtil.getKPICategoryContext(kpi.getKpiCategory());
+            if (kpiCategoryContext != null) {
+                kpi.setKpiCategoryStr(kpiCategoryContext.getName());
+            }
         }
     }
 }

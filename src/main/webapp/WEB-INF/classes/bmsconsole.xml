@@ -4207,5 +4207,16 @@
 			<param name="deprecated">true</param>
 		</action>
 	</package>
+
+	<package name="readingKpiUnits" namespace="/api/kpiUnits" extends="homeApi">
+	<action name="*/getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
+		<param name="permissionModuleName">{1}</param>
+		<param name="permission">GET:READ</param>
+		<result name="success" type="json">
+			<param name="enumAsBean">true</param>
+			<param name="includeProperties">^metricWithUnits.*,^orgUnitsList.*,^metrics.*</param>
+		</result>
+	</action>
+	</package>
 	
 </struts>

@@ -5662,6 +5662,7 @@
             <property name="orderType" type="string"/>
             <property name="orderBy" type="string"/>
             <property name="force" type="boolean"/>
+            <property name="viewname" type="string" />
         </urlparams>
     </request>
 
@@ -6882,4 +6883,17 @@
             <property name="lng" type="number"/>
         </requestbody>
     </request>
+
+    <request path="/api/module/:permissionModuleName/:moduleName/fields" method="GET" />
+
+    <request path="/api/kpiUnits/:moduleName/getDefaultMetricUnits" method="GET" />
+
+    <request path="/api/v2/formulaBuilder/:permissionModuleName/reading/site" method="GET">
+        <urlparams>
+            <property name="permissionModuleName" type="string"/>
+            <property name="excludeEmptyFields" type="boolean"/>
+            <property name="spaceType" type="string"/>
+        </urlparams>
+    </request>
+
 </config>
