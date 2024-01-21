@@ -272,6 +272,9 @@ public class DataMigrationUtil {
             case "qandaHeadingQuestionRichText":
                 numberFieldsVsFileFields.add("fileId");
                 break;
+            case "vendors":
+                numberFieldsVsFileFields.add("vendorLogoId");
+                break;
             default:
                 break;
         }
@@ -337,6 +340,9 @@ public class DataMigrationUtil {
                 break;
             case "taskattachments":
                 addNumberLookupDetails("parentId", "task", targetModuleNameVsObj, numberFieldsVsLookupModules);
+                break;
+            case "basespacephotos":
+                addNumberLookupDetails("parentId", "basespace", targetModuleNameVsObj, numberFieldsVsLookupModules);
                 break;
             case "workorderLabour":
                 addNumberLookupDetails("parentId", "ticket", targetModuleNameVsObj, numberFieldsVsLookupModules);
@@ -1241,6 +1247,9 @@ public class DataMigrationUtil {
                 }});
                 put("tasksection", new HashMap<String,String>(){{
                     put("parentTicketId",FacilioConstants.ContextNames.TICKET);
+                }});
+                put("basespacephotos", new HashMap<String,String>(){{
+                    put("parentId", "basespace");
                 }});
                 put("craftSkill", new HashMap<String, String>() {{
                     put("parentId", "crafts");

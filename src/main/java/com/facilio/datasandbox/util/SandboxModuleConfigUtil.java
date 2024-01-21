@@ -361,7 +361,7 @@ public class SandboxModuleConfigUtil {
         }
 
         if (!fieldsMap.containsKey(FacilioConstants.ContextNames.FORM_ID)) {
-            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, "FORM_ID", module);
+            FacilioField formIdField = FieldFactory.getNumberField(FacilioConstants.ContextNames.FORM_ID, "FORM_ID", module.getParentModule());
             fieldsMap.put(formIdField.getName(), formIdField);
         }
 
@@ -381,20 +381,26 @@ public class SandboxModuleConfigUtil {
             FacilioField isDeletedField = FieldFactory.getIsDeletedField(parentModule);
             FacilioField sysDeletedTimeField = FieldFactory.getSysDeletedTimeField(parentModule);
             if (!fieldsMap.containsKey(isDeletedField.getName())) {
+                fieldsMap.put(isDeletedField.getName(), isDeletedField);
                 deletedFields.add(isDeletedField);
             }
             if (!fieldsMap.containsKey(sysDeletedTimeField.getName())) {
+                fieldsMap.put(sysDeletedTimeField.getName(), sysDeletedTimeField);
                 deletedFields.add(sysDeletedTimeField);
             }
 
             if(V3RecordAPI.markAsDeleteEnabled(parentModule)) {
                 FacilioField sysDeletedPeopleByField = FieldFactory.getSysDeletedPeopleByField(parentModule);
                 if (!fieldsMap.containsKey(sysDeletedPeopleByField.getName())) {
+                    fieldsMap.put(sysDeletedPeopleByField.getName(), sysDeletedPeopleByField);
                     deletedFields.add(sysDeletedPeopleByField);
                 }
             } else {
                 FacilioField sysDeletedByField = FieldFactory.getSysDeletedByField(parentModule);
                 if (!fieldsMap.containsKey(sysDeletedByField.getName())) {
+                    ((LookupField) sysDeletedByField).setLookupModule(LookupSpecialTypeUtil.getModule(FacilioConstants.ContextNames.USERS));
+                    sysDeletedByField.setDisplayType(FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+                    fieldsMap.put(sysDeletedByField.getName(), sysDeletedByField);
                     deletedFields.add(sysDeletedByField);
                 }
             }
