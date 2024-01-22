@@ -15,6 +15,8 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.time.TimeFormat;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
+import com.facilio.v3.exception.ErrorCode;
+import com.facilio.v3.exception.RESTException;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -30,6 +32,9 @@ public class FormatRecordMapCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         PDFTemplate pdfTemplate = (PDFTemplate) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE);
         long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+        if(pdfTemplate==null){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR,"There is no PDF Template mapped to the page layout");
+        }
         String moduleName = Constants.getModBean().getModule(pdfTemplate.getModuleId()).getName();
         List<Long> recordIds = new ArrayList<>();
         recordIds.add(recordId);

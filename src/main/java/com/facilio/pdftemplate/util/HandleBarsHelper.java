@@ -97,10 +97,11 @@ public class HandleBarsHelper {
         });
     }
     private void registerPublicUrlHelper(){
-        handlebars.registerHelper("publicUrl", new Helper<Long>() {
+        handlebars.registerHelper("publicUrl", new Helper<Object>() {
             @Override
-            public String apply(Long fileId,Options options) {
+            public String apply(Object fileIdValue,Options options) {
                 try{
+                    Long fileId = Long.parseLong(String.valueOf(fileIdValue));
                     if(fileId!=null && fileId>0){
                         FileStore fileStore = FacilioFactory.getFileStore();
                         return fileStore.getOrgiDownloadUrl(fileId);
