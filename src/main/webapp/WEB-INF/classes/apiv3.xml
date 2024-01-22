@@ -1438,7 +1438,8 @@
         <action name="folders"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"
                 method="folders">
-            <param name="deprecated">true</param>
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
         </action>
         <action name="foldersNew"
                 class="com.facilio.bmsconsoleV3.actions.report.V3ReportAction"

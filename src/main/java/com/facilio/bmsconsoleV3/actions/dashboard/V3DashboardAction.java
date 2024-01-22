@@ -6,6 +6,7 @@ import com.facilio.analytics.v2.chain.V2AnalyticsTransactionChain;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.commands.GetDashboardThumbnailCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
@@ -46,6 +47,7 @@ public class V3DashboardAction extends V3Action {
     private String dashboardName;
     private JSONObject dashboard_meta;
     private String linkName;
+    private boolean withDefaultFilters;
     private Long dashboardTabId;
 
     /**
@@ -258,6 +260,17 @@ public class V3DashboardAction extends V3Action {
             if (widget_list != null) {
                 dashboard.setDashboardWidgets(widget_list);
             }
+            if(withDefaultFilters) {
+                DashboardExecuteMetaContext executeContext = new DashboardExecuteMetaContext();
+                FacilioChain chain = TransactionChainFactoryV3.getDashboardRuleExecuteChain();
+                FacilioContext context = chain.getContext();
+                executeContext = DashboardUtil.getDashboardExecuteMeta(dashboard, null);
+                context.put("action_meta", executeContext);
+                chain.execute();
+                if(context.containsKey("result")) {
+                    setData("result", context.get("result"));
+                }
+            }
             setData("dashboardJson", DashboardUtil.getDashboardResponseJson(dashboard, false));
         }catch (Exception e)
         {
@@ -403,6 +416,18 @@ public class V3DashboardAction extends V3Action {
                     dashboardTabContext.setDashboardWidgets(widgets_with_section);
                 }
                 DashboardUtil.getDashboardTabResponseJson(Collections.singletonList(dashboardTabContext));
+
+                if(withDefaultFilters) {
+                    DashboardExecuteMetaContext executeContext = new DashboardExecuteMetaContext();
+                    FacilioChain filterChain = TransactionChainFactoryV3.getDashboardRuleExecuteChain();
+                    FacilioContext filterContext = filterChain.getContext();
+                    executeContext = DashboardUtil.getDashboardExecuteMeta(null, dashboardTabContext);
+                    filterContext.put("action_meta", executeContext);
+                    filterChain.execute();
+                    if(filterContext.containsKey("result")) {
+                        setData("result", filterContext.get("result"));
+                    }
+                }
                 setData("dashboardTabContext", dashboardTabContext);
             }
         }

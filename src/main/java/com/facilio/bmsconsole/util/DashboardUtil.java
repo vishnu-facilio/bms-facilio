@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsoleV3.actions.DashboardExecuteMetaContext;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.WidgetSectionContext;
 import com.facilio.bmsconsoleV3.context.dashboard.DashboardCustomActionContext;
@@ -4478,6 +4479,46 @@ public static void deleteRecords(List<Long> ids,FacilioModule module) throws Exc
 			}
 		}
 		return idVsName;
+	}
+	public static DashboardExecuteMetaContext getDashboardExecuteMeta(DashboardContext dashboard, DashboardTabContext dashboardTab) throws Exception {
+		DashboardExecuteMetaContext executeMetaContext = new DashboardExecuteMetaContext();
+		List<DashboardUserFilterContext> userFilters = new ArrayList<>();
+		if(dashboardTab != null && dashboardTab.getId() > 0) {
+			userFilters = dashboardTab.getDashboardFilter().getDashboardUserFilters();
+			executeMetaContext.setDashboardTabId(dashboardTab.getId());
+			executeMetaContext.setDashboardId(dashboardTab.getDashboardId());
+		} else if(dashboard != null && dashboard.getId() > 0) {
+			userFilters = dashboard.getDashboardFilter().getDashboardUserFilters();
+			executeMetaContext.setDashboardId(dashboard.getId());
+		}
+		if(userFilters != null && userFilters.size() > 0){
+			JSONObject placeHolders = new JSONObject();
+			JSONObject placeHoldersMeta = new JSONObject();
+			for(DashboardUserFilterContext userFilter : userFilters){
+				if(userFilter.getDefaultValues() != null) {
+					JSONObject placeHoldersMetaObj = new JSONObject();
+					JSONObject placeHoldersObj = new JSONObject();
+					if(userFilter.getFieldId() > 0){
+						FacilioField pickField = userFilter.getField();
+						placeHoldersMetaObj.put("fieldName",userFilter.getField().getName());
+						placeHoldersMetaObj.put("moduleName",pickField.getModule().getName());
+					}else {
+						placeHoldersMetaObj.put("fieldName",userFilter.getModuleName());
+						placeHoldersMetaObj.put("moduleName",userFilter.getModuleName());
+					}
+					List<String> values = new ArrayList<>();
+					String[] value = userFilter.getDefaultValues();
+					Arrays.stream(value).forEach(val -> values.add(val));
+					placeHoldersObj.put("value",values);
+					placeHolders.put(userFilter.getLink_name(),placeHoldersObj);
+					placeHoldersMeta.put(userFilter.getLink_name(),placeHoldersMetaObj);
+					executeMetaContext.setTrigger_widget_id(userFilter.getWidget_id());
+				}
+			}
+			executeMetaContext.setPlaceHoldersMeta(placeHoldersMeta);
+			executeMetaContext.setPlaceHolders(placeHolders);
+		}
+		return executeMetaContext;
 	}
 
 	public static Map<Long, Criteria> getIdVsCriteria(String tableName, FacilioField field) throws Exception {
