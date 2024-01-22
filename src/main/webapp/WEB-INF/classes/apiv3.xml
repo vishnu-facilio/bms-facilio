@@ -620,7 +620,7 @@
                 class="com.facilio.bmsconsoleV3.actions.ShiftAction"
                 method="list">
             <param name="permission">GET:READ</param>
-            <param name="tabType">Shift Planner</param>
+            <param name="tabType">Shift Planner,My Attendance,Attendance</param>
         </action>
 
         <action name="update"
@@ -649,15 +649,43 @@
                 class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
                 method="list">
             <param name="permission">GET:READ</param>
-            <param name="moduleName">attendance</param>
+            <param name="tabType">My Attendance,Attendance</param>
+        </action>
+        <action name="list" class="com.facilio.v3.action.RestAPIHandlerV3">
+        <param name="moduleName">attendance</param>
+        <param name="permission">GET:READ</param>
+        <param name="tabType">My Attendance,Attendance</param>
+        </action>
+        <action name="addTransaction" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">attendanceTransaction</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
+            <param name="tabType">My Attendance,Attendance</param>
+        </action>
+        <action name="people/*" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">people</param>
+            <param name="id">{1}</param>
+            <param name="permission">GET:READ</param>
+            <param name="tabType">My Attendance,Attendance</param>
+        </action>
+        <action name="people/list" class="com.facilio.v3.action.RestAPIHandlerV3">
+            <param name="moduleName">people</param>
+            <param name="permission">GET:READ</param>
+            <param name="tabType">My Attendance,Attendance</param>
+        </action>
+        <action name="picklist/break"
+                class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction"
+                method="pickList">
+            <param name="moduleName">break</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ</param>
+            <param name="tabType">My Attendance,Attendance</param>
         </action>
         <action name="transition"
                 class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
                 method="transitionList">
             <param name="permission">GET:READ</param>
-            <param name="moduleName">attendance</param>
+            <param name="tabType">My Attendance,Attendance</param>
         </action>
-
         <action name="settings"
                 class="com.facilio.bmsconsoleV3.actions.AttendanceAction"
                 method="settings">

@@ -2620,6 +2620,48 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/attendance/list" method="GET">
+        <urlparams>
+            <property name="viewName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/attendance/addTransaction" method="POST">
+        <requestbody type="v3fields"/>
+    </request>
+
+    <request path="/api/v3/attendance/people/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="page" type="number"/>
+            <property name="filters" type="string"/>
+            <property name="search" type="string"/>
+            <property name="withCount" type="boolean"/>
+            <property name="perPage" type="number"/>
+            <property name="orderBy" type="string" />
+            <property name="orderType" type="string" />
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/attendance/people/:id" method="GET">
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v3/attendance/picklist/break" method="GET">
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="default" type="string" />
+            <property name="viewName" type="string" />
+        </urlparams>
+    </request>
+
     <request path="/api/v3/attendance/transition" method="GET">
         <urlparams>
             <property name="peopleID" type="number" mandatory="true"/>
@@ -4969,6 +5011,7 @@
             <property name="orderType" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="total" type="number"/>
             <property name="startTime" type="number"/>
             <property name="endTime" type="number"/>
             <property name="boardId" type="number"/>
@@ -4982,6 +5025,7 @@
             <property name="orderType" type="string"/>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
+            <property name="total" type="number"/>
             <property name="startTime" type="number"/>
             <property name="endTime" type="number"/>
             <property name="boardId" type="number"/>

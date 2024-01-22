@@ -33,6 +33,7 @@ import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.CheckAssetDeprecia
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.DeleteAssetDepreciationCalCommand;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.SaveDepreciationLastCalCommand;
 import com.facilio.bmsconsoleV3.commands.assetdepreciationrel.ValidateAssetDepreciationRelCommand;
+import com.facilio.bmsconsoleV3.commands.attendance.FetchAttendanceSupplementsCommand;
 import com.facilio.bmsconsoleV3.commands.basespace.DeleteBasespaceChildrenCommandV3;
 import com.facilio.bmsconsoleV3.commands.basespace.FetchBasespaceChildrenCountCommandV3;
 import com.facilio.bmsconsoleV3.commands.budget.*;
@@ -138,6 +139,7 @@ import com.facilio.bmsconsoleV3.commands.workorder.ValidateWorkOrderLabourPlanCo
 import com.facilio.bmsconsoleV3.commands.workpermit.*;
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.*;
+import com.facilio.bmsconsoleV3.context.attendance.Attendance;
 import com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction;
 import com.facilio.bmsconsoleV3.context.budget.AccountTypeContext;
 import com.facilio.bmsconsoleV3.context.budget.BudgetContext;
@@ -3267,7 +3269,9 @@ public class APIv3Config {
         return () -> new V3Config(Attendance.class, null)
                 .create()
                 .list()
+                .beforeFetch(new FetchAttendanceSupplementsCommand())
                 .summary()
+                .beforeFetch(new FetchAttendanceSupplementsCommand())
                 .delete()
                 .build();
     }

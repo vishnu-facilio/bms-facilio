@@ -3245,8 +3245,8 @@ public class FacilioConstants {
 			classMap.put(TERMS_AND_CONDITIONS, V3TermsAndConditionContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_ASSETS, ContractAssociatedAssetsContext.class);
 			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
-			classMap.put(ATTENDANCE, Attendance.class);
-			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransaction.class);
+			classMap.put(ATTENDANCE, com.facilio.bmsconsoleV3.context.attendance.Attendance.class);
+			classMap.put(ATTENDANCE_TRANSACTIONS, com.facilio.bmsconsoleV3.context.attendance.AttendanceTransaction.class);
 			classMap.put(SHIFT, com.facilio.bmsconsoleV3.context.shift.Shift.class);
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
