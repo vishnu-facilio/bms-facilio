@@ -1579,6 +1579,7 @@ public class TransactionChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetReadingDataMetaCommand());
 		c.addCommand(new ReadingUnitConversionCommand());
+		c.addCommand(new CalculateDeltaCommand());
 		c.addCommand(new UpdateReadingsCommand());
 		c.addCommand(new ReadingUnitConversionToDisplayUnit());
 		return c;

@@ -88,8 +88,10 @@ public class CalculateDeltaCommand extends FacilioCommand {
                                     }
                                 }
                                 if (reading.getId() != -1) {
+                                    fields.add(FieldFactory.getIdField(module));
                                     ReadingContext readingBeforeUpdate = ReadingsAPI.getReading(module, fields, reading.getId());
-                                    if (readingBeforeUpdate.getTtime() != reading.getTtime()) {
+                                    if (readingBeforeUpdate != null && readingBeforeUpdate.getTtime() != reading.getTtime()) {
+                                        reading.setId(readingBeforeUpdate.getId());
                                         ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, readingBeforeUpdate, false, reading.getTtime(), false, rdmMap, ignoreSplNullHandling, isDeltaReset);
                                     }
                                     ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, reading, true, reading.getTtime(), false, rdmMap, ignoreSplNullHandling, isDeltaReset);

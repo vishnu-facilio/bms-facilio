@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Setter
 public class ReadingContext extends ModuleBaseWithCustomFields {
@@ -31,6 +29,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         this.zdt = DateTimeUtil.getDateTime(ttime);
     }
 
+    String date;
     public String getDate() {
         if (zdt != null) {
             return zdt.toLocalDate().toString();
@@ -38,6 +37,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         return null;
     }
 
+    int year;
     public int getYear() {
         if (zdt != null) {
             return zdt.getYear();
@@ -45,6 +45,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         return -1;
     }
 
+    int month;
     public int getMonth() {
         if (zdt != null) {
             return zdt.getMonthValue();
@@ -52,6 +53,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         return -1;
     }
 
+    int week;
     public int getWeek() {
         if (zdt != null) {
             return zdt.get(ChronoField.ALIGNED_WEEK_OF_YEAR);
@@ -59,6 +61,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         return -1;
     }
 
+    int day;
     public int getDay() {
         if (zdt != null) {
             return zdt.getDayOfWeek().getValue();
@@ -66,6 +69,7 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
         return -1;
     }
 
+    int hour;
     public int getHour() {
         if (zdt != null) {
             return zdt.getHour();
@@ -138,9 +142,19 @@ public class ReadingContext extends ModuleBaseWithCustomFields {
     }
 
     public ReadingContext clone() {
-        ReadingContext r = new ReadingContext(actualTtime, ttime, zdt, parentId, marked, parent, newReading, sourceType, sourceId, dataInterval, units);
+        ReadingContext r = new ReadingContext();
         r.setId(getId());
         r.setReadings(new HashMap<>(getReadings()));
+        r.setActualTtime(actualTtime);
+        r.setTtime(ttime);
+        r.setZdt(zdt);
+        r.setParentId(parentId);
+        r.setMarked(marked);
+        r.setParent(parent);
+        r.setNewReading(newReading);
+        r.setSourceType(sourceType);
+        r.setSourceId(sourceId);
+        r.setDataInterval(dataInterval);
         return r;
     }
 
