@@ -40,13 +40,15 @@ public class TimelineViewUtil {
         else {
             Criteria timeCriteria = new Criteria();
             timeCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-            timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
-            mainCriteria.andCriteria(timeCriteria);
+            if (endTimeField != null) {
+                timeCriteria.addOrCondition(CriteriaAPI.getCondition(endTimeField, timelineRequest.getDateValue(), DateOperators.BETWEEN));
+                mainCriteria.andCriteria(timeCriteria);
 
-            Criteria rollOverCriteria = new Criteria();
-            rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.LESS_THAN));
-            rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.GREATER_THAN));
-            mainCriteria.orCriteria(rollOverCriteria);
+                Criteria rollOverCriteria = new Criteria();
+                rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(startTimeField, String.valueOf(timelineRequest.getStartTime()), NumberOperators.LESS_THAN));
+                rollOverCriteria.addAndCondition(CriteriaAPI.getCondition(endTimeField, String.valueOf(timelineRequest.getEndTime()), NumberOperators.GREATER_THAN));
+                mainCriteria.orCriteria(rollOverCriteria);
+            }
         }
 
         if(!getUnscheduledOnly || (getUnscheduledOnly && (timelineRequest.isGetUnGrouped() || CollectionUtils.isNotEmpty(timelineRequest.getGroupIds())))) {

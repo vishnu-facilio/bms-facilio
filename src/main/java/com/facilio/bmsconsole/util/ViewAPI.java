@@ -669,7 +669,8 @@ public class ViewAPI {
 
 				// calendar view is inserted only when calendarView is enabled
 				if (view.isCalendarView()) {
-					validateCalendarView(view.getCalendarViewContext());
+					CalendarViewContext calendarView = view.getCalendarViewContext();
+					validateCommonCalendarViewProps(calendarView.getStartDateFieldId(), calendarView.getEndDateFieldId(), false, -1);
 					Map<String, Object> calendarViewProps = getCalendarViewProps(viewProp);
 					FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(calendarViewProps), "CalendarView props is not defined");
 
@@ -693,7 +694,7 @@ public class ViewAPI {
 
 					Map<String, Object> timeLineViewProps = getTimeLineViewProps(viewProp);
 					FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(timeLineViewProps), "Timeline View props is not defined");
-					validateTimelineScheduledView(timelineScheduledViewContext);
+					validateCommonCalendarViewProps(timelineScheduledViewContext.getStartDateFieldId(), timelineScheduledViewContext.getEndDateFieldId(), true, timelineScheduledViewContext.getGroupByFieldId());
 
 					oldCustomizationId = TimelineViewUtil.getCustomizationIdFromViewId(view.getId());
 					if (oldCustomizationId > 0) {
@@ -806,43 +807,30 @@ public class ViewAPI {
         FacilioField groupByField = moduleBean.getField(view.getGroupByFieldId());
         checkFieldType(groupByField,Arrays.asList(FieldType.LOOKUP,FieldType.ENUM));
 	}
-	private static void validateTimelineScheduledView(TimelineScheduledViewContext view) throws Exception
-	{
-		if(view.getStartDateFieldId() == view.getEndDateFieldId()){
-            throw new Exception("startDate field and endDate field cannot be same");
-        }
-
-		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-        FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
-        checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
-
-        FacilioField endDateField = moduleBean.getField(view.getEndDateFieldId());
-        checkFieldType(endDateField,Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
-
-        FacilioField groupByField = moduleBean.getField(view.getGroupByFieldId());
-        checkFieldType(groupByField,Arrays.asList(FieldType.LOOKUP,FieldType.ENUM));
-	}
 		
 	public static void checkFieldType(FacilioField field,List<FieldType> acceptedFieldType) throws Exception{
 		if(!(acceptedFieldType.contains(field.getDataTypeEnum()))){
 			throw new Exception("Field type doesn't match");
 		}
 	}
-
-	public static void validateCalendarView(CalendarViewContext view) throws Exception {
+	public static void validateCommonCalendarViewProps(long startDateFieldId, long endDataFieldId, boolean isTimeline, long groupByFieldId) throws Exception {
 		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
+		FacilioField startDateField = moduleBean.getField(startDateFieldId);
+		FacilioUtil.throwIllegalArgumentException(startDateField == null, "Start Date Field cannot be empty");
 		checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
-		FacilioUtil.throwIllegalArgumentException(startDateField == null, "Start Date Field cannot be null");
 
-		if (view.getEndDateFieldId() > 0) {
-			if(view.getStartDateFieldId() == view.getEndDateFieldId()){
+		if (endDataFieldId > 0) {
+			if(startDateFieldId == endDataFieldId){
 				throw new Exception("Start Date field and End Date field cannot be same");
 			}
-			FacilioField endDateField = moduleBean.getField(view.getEndDateFieldId());
+			FacilioField endDateField = moduleBean.getField(endDataFieldId);
 			checkFieldType(endDateField,Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
+		}
+		if (isTimeline) {
+			FacilioField groupByField = groupByFieldId > 0 ? moduleBean.getField(groupByFieldId) : null;
+			FacilioUtil.throwIllegalArgumentException(groupByField == null, "Group By Field cannot be empty");
+			checkFieldType(groupByField,Arrays.asList(FieldType.LOOKUP,FieldType.ENUM));
 		}
 	}
 	
