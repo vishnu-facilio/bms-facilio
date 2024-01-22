@@ -1,30 +1,14 @@
 package com.facilio.plannedmaintenance;
 
-import com.amazonaws.services.dynamodbv2.xspec.L;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerV2;
 import com.facilio.bmsconsole.context.PlannedMaintenance;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections.ArrayStack;
-import org.apache.commons.collections.list.AbstractLinkedList;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.time.ZonedDateTime;
 import java.util.*;
 
 public class ScheduleExecutor extends ExecutorBase {

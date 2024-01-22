@@ -44,7 +44,8 @@ public class PlannedMaintenanceAPI {
     public enum ScheduleOperation implements FacilioStringEnum {
         EXTEND(ScheduleExecutor.class),
         REINIT (ScheduleExecutor.class),
-        NIGHTLY (NightlyExecutor.class)
+        NIGHTLY (NightlyExecutor.class),
+        EXTEND_RESOURCE_PLANNER(ScheduleResourcePlannerExecutor.class)
         ;
         
         private Class<? extends ExecutorBase> executorClass;

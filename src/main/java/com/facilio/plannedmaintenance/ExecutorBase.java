@@ -6,25 +6,18 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsoleV3.context.V3TicketContext;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.v3.util.V3Util;
 
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.logging.Logger;
+
 @Log4j
 public abstract class ExecutorBase implements Executor {
     @Override
@@ -37,6 +30,8 @@ public abstract class ExecutorBase implements Executor {
         }
         if(pmPlanner != null) {
             LOGGER.debug("pmPlanner - " + pmPlanner.toString());
+        }else{
+            throw new IllegalArgumentException("Invalid Planner.");
         }
 		
         List<Long> nextExecutionTimes = getNextExecutionTimes(context);
@@ -49,8 +44,8 @@ public abstract class ExecutorBase implements Executor {
         PMTriggerV2 trigger = (PMTriggerV2) context.get("trigger");
         
         if(CollectionUtils.isNotEmpty(nextExecutionTimes)) {
-        	
-        	context.put(FacilioConstants.ContextNames.LAST_EXECUTION_TIME, nextExecutionTimes.get(nextExecutionTimes.size()-1));
+
+            context.put(FacilioConstants.ContextNames.LAST_EXECUTION_TIME, getLastExecutionTime(nextExecutionTimes, pmPlanner.getGeneratedUpto()));
         	
         	for (long nextExecutionTime: nextExecutionTimes) {	// in seconds
             	
@@ -142,7 +137,6 @@ public abstract class ExecutorBase implements Executor {
     
     protected abstract Long getComputedNextExecutionTime(Long nextExecutionTime, PlannedMaintenance plannedMaintenance) throws Exception;
     
-    
     public long computeEndtimeUsingTriggerType(ScheduleInfo scheduleInfo, long cutOffTime) {	// returning milliseconds
         ZonedDateTime dateTime = DateTimeUtil.getDateTime(cutOffTime, false);
         ZonedDateTime zonedEnd = dateTime.plusDays(15);
@@ -170,5 +164,9 @@ public abstract class ExecutorBase implements Executor {
 		
 		// do nothing in general
 	}
+
+    protected long getLastExecutionTime(List<Long> nextExecutionTimes, long generatedUpto){
+        return nextExecutionTimes.get(nextExecutionTimes.size()-1);
+    }
     
 }
