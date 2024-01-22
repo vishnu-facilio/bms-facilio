@@ -20,6 +20,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Log4j
 public class ProcessMultiTimeDataCommand  extends FacilioCommand {
@@ -38,46 +39,24 @@ public class ProcessMultiTimeDataCommand  extends FacilioCommand {
         if (MapUtils.isNotEmpty(readingMap)) {
             MessageQueue queue = MessageQueueFactory.getMessageQueue(MessageSourceUtil.getDefaultSource());
             long orgId = AccountUtil.getCurrentOrg().getId();
-            for(Iterator<Map.Entry<String, List<ReadingContext>>> mapItr = readingMap.entrySet().iterator(); mapItr.hasNext(); ) {
-                Map.Entry<String, List<ReadingContext>> entry = mapItr.next();
-                String moduleName = entry.getKey();
-                List<ReadingContext> readings = entry.getValue();
-                long parentId = -1l;
-                JSONArray estimatedReadings = new JSONArray();
-                for(Iterator<ReadingContext> i = readings.iterator(); i.hasNext();) {
-                    ReadingContext reading = i.next();
-                    if (containsEstimated(reading)) {
-                        Map<String, Object> readingObj = createReadingObj(reading);
-                        estimatedReadings.add(readingObj);
-                        parentId = reading.getParentId();   // Assuming all readings will have same parentId
-                        i.remove();
-                    }
-                }
-
-                if (!estimatedReadings.isEmpty()) {
-                    JSONObject data = new JSONObject();
-                    data.put("orgId", orgId);
-                    data.put("moduleName", moduleName);
-                    data.put("data", estimatedReadings);
-                    queue.put(getTopicName(), new FacilioRecord(orgId + "/" + parentId, data));
-
-                    if (readings.isEmpty()) {
-                        mapItr.remove();
-                    }
-                }
+            for (Map.Entry<String, List<ReadingContext>> e : readingMap.entrySet()) {
+                String moduleName = e.getKey();
+                List<ReadingContext> readings = e.getValue();
+                long parentId = readings.get(0).getParentId(); // Assuming all readings will have same parentId
+                List<Map<String, Object>> readingArray =  readings.stream().map(r -> createReadingObj(r)).collect(Collectors.toList());
+                JSONObject data = new JSONObject();
+                data.put("orgId", orgId);
+                data.put("moduleName", moduleName);
+                data.put("data", readingArray);
+                queue.put(getTopicName(), new FacilioRecord(orgId + "/" + parentId + "/" + moduleName, data));
             }
         }
 
-        return MapUtils.isEmpty(readingMap);
+        return true; // As data is already pushed to storm, no need to continue further
     }
 
     private String getTopicName() {
         return FacilioProperties.getStableEnvironment() + "-timeseries-crud-queue";
-    }
-
-    private boolean containsEstimated(ReadingContext reading) {
-        Set<String> readingNames = reading.getReadings().keySet();
-        return readingNames.contains("energyconsumptionisestimated") || readingNames.contains("generatedenergyisestimated");
     }
 
     private Map<String, Object> createReadingObj(ReadingContext readingContext) {

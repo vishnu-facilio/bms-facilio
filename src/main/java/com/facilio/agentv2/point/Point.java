@@ -97,6 +97,7 @@ public abstract class Point extends FacilioPoint implements Serializable {
     private Long overrideTimeInMillis = 0L;
 
     @Getter @Setter @JsonIgnore
+    // To check if the data is filtered for a timeseries payload
     private boolean isDataFiltered = false;
 
     public Long getModuleId() {

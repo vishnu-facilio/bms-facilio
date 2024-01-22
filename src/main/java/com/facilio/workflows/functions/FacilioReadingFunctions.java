@@ -276,7 +276,7 @@ public class FacilioReadingFunctions {
 
 		reading.setParentId(workflowReadingContext.getParentId());
 
-		FacilioChain updateCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+		FacilioChain updateCurrentReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain(true);
 
 		FacilioContext context = updateCurrentReading.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, field.getModule().getName());
