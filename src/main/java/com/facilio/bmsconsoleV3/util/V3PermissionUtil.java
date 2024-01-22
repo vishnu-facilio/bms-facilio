@@ -21,6 +21,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
+import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -191,13 +192,14 @@ public class V3PermissionUtil {
     public static boolean isAllowedOrg(){
         Organization currentOrg = AccountUtil.getCurrentOrg();
         if (FacilioProperties.isProduction()) {
-            HttpServletRequest request = ServletActionContext.getRequest();
-            if(currentOrg != null) {
+            HttpServletRequest request = ActionContext.getContext() != null ? ServletActionContext.getRequest() : null;
+            if(currentOrg != null && request != null) {
                 if(ApplicationApi.isRequestFromMobile() || "PDFService".equalsIgnoreCase(request.getHeader("X-Device-Type"))){
                     return false;
                 }
                 return currentOrg.getOrgId() == 1516;
             }
+            return false;
         } else if (FacilioProperties.getEnvironment().equals("stage2")) {
             if(currentOrg != null) {
                 return currentOrg.getOrgId() != 418;
