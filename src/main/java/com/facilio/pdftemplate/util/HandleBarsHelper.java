@@ -1,15 +1,23 @@
 package com.facilio.pdftemplate.util;
 
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.PublicFileUtil;
 import com.github.jknack.handlebars.Handlebars;
 import com.github.jknack.handlebars.Helper;
 import com.github.jknack.handlebars.Options;
 import com.github.jknack.handlebars.Template;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+@Log4j
 public class HandleBarsHelper {
 
     private static HandleBarsHelper instance;
@@ -34,6 +42,7 @@ public class HandleBarsHelper {
         registerPlusOneHelper();
         registerFilterListHelper();
         registerIsNotEmptyHelper();
+        registerPublicUrlHelper();
     }
     private void registerIsNotEmptyHelper(){
         handlebars.registerHelper("isNotEmpty", new Helper<List>() {
@@ -84,6 +93,23 @@ public class HandleBarsHelper {
                    return list.stream().filter(item -> item.containsKey(filterFieldName) && item.get(filterFieldName).equals(filterFieldValue)).collect(Collectors.toList());
                 }
                 return list;
+            }
+        });
+    }
+    private void registerPublicUrlHelper(){
+        handlebars.registerHelper("publicUrl", new Helper<Long>() {
+            @Override
+            public String apply(Long fileId,Options options) {
+                try{
+                    if(fileId!=null && fileId>0){
+                        FileStore fileStore = FacilioFactory.getFileStore();
+                        return fileStore.getOrgiDownloadUrl(fileId);
+                    }
+                    return null;
+                }catch (Exception e){
+                    LOGGER.error("Error while generating public url",e);
+                }
+                return null;
             }
         });
     }

@@ -35,14 +35,11 @@ public class SetTaskAttachmentsCountCommand extends FacilioCommand {
                         .select(fields)
                         .table(module.getTableName())
                         .beanClass(AttachmentV3Context.class)
-                        .andCondition(CriteriaAPI.getCondition("PARENT","parentId",String.valueOf(serviceTask.getId()), NumberOperators.EQUALS))
-                        .aggregate(BmsAggregateOperators.CommonAggregateOperator.COUNT, FieldFactory.getIdField(module))
-                        .groupBy("ID");
-                ;
+                        .andCondition(CriteriaAPI.getCondition("PARENT","parentId",String.valueOf(serviceTask.getId()), NumberOperators.EQUALS));
                 List<Map<String, Object>> props = recordsBuilder.getAsProps();
                 Integer count = 0;
                 if (CollectionUtils.isNotEmpty(props)) {
-                    count = ((Number) props.get(0).get("id")).intValue();
+                    count = props.size();
                 }
                 serviceTask.setAttachmentsCount(count);
             }

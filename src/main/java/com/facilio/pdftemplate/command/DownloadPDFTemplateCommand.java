@@ -26,7 +26,7 @@ public class DownloadPDFTemplateCommand extends FacilioCommand {
 
         PDFTemplate pdfTemplate = (PDFTemplate) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE);
         String pdfTemplateHtml = (String) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_RAW_HTML);
-        String hideDummyDataCss = "@media print {.dummy-data-wrapper{display: none !important;}}";
+        String hideDummyDataCss = "@media print {.dummy-data-wrapper{display: none !important;} .component-page-break{page-break-after: always;}}";
         String pdfTemplateWithCSS = pdfTemplateHtml + "<style>" + pdfTemplate.getHtmlContentCss() + hideDummyDataCss + "</style>";
         String pdfTemplateHtmlFormatted = pdfTemplateWithCSS.replace("\\n","").replace("\\","").replaceAll("^\"|\"$","").replace("</body>\"", "</body>");
 
