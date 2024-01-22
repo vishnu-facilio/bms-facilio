@@ -41,6 +41,9 @@ public class KpiContextWrapper {
         this.categoryId = kpi.getCategoryId();
         if (kpiType != KPIType.DYNAMIC) {
             this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
+            if(isFromAnalytics && kpi.getUnitLabel() != null && !"".equals(kpi.getUnitLabel())){
+                this.readingField.setUnit(kpi.getUnitLabel());
+            }
         }
         if(isFromAnalytics && kpiType == KPIType.DYNAMIC && kpi.getUnitId() != null && kpi.getUnitId() > 0)
         {
