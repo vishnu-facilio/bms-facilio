@@ -1,10 +1,10 @@
 package com.facilio.connected.scopeHandler;
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.V3Context;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,7 +26,7 @@ public interface ScopeCommissioningHandler {
 
     Map<Long, String> getChildTypes(Set<Long> ids) throws Exception;
 
-    Map<String, FacilioField> getReadings(Long id, Long parentId) throws Exception;
+    Map<String, FacilioField> getReadings(Long id, Long parentId, AgentConstants.AutoMappingReadingFieldName autoMappingReadingFieldNameEnum) throws Exception;
 
     Pair<Long, Long> getParentIdAndCategoryId(V3Context parent);
 

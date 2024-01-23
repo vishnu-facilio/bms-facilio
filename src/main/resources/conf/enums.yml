@@ -10,6 +10,9 @@ enums:
   - name: AgentAlarmType
     enumClassName: com.facilio.agent.alarms.AgentAlarmContext$AgentAlarmType #If it's static inner class use $
 
+  - name: AutoMappingReadingFieldName
+    enumClassName: com.facilio.agentv2.AgentConstants$AutoMappingReadingFieldName
+
   - name: ReservationDurationType
     enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$DurationType
 

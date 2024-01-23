@@ -435,4 +435,30 @@ public class AgentConstants
     public static Long getLongValue(Object var) {
         return var == null ? null : Long.parseLong(var.toString());
     }
+
+    public enum AutoMappingReadingFieldName implements FacilioIntEnum {
+        NAME("Name"),
+        DISPLAY_NAME("Display Name");
+
+        private String name;
+        AutoMappingReadingFieldName(String name) {
+            this.name = name;
+        }
+
+        public Integer getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        public static AutoMappingReadingFieldName valueOf(Integer value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
 }

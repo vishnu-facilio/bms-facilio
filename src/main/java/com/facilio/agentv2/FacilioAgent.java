@@ -69,6 +69,20 @@ public class FacilioAgent implements Serializable {
     private boolean allowAutoMapping;
     @JsonInclude
     private Integer setPointPriority;
+    @JsonInclude
+    private Integer autoMappingReadingFieldName = AgentConstants.AutoMappingReadingFieldName.NAME.getIndex();
+
+    public Integer getAutoMappingReadingFieldName() {
+        return autoMappingReadingFieldName;
+    }
+
+    public AgentConstants.AutoMappingReadingFieldName getAutoMappingReadingFieldNameEnum() {
+        return AgentConstants.AutoMappingReadingFieldName.valueOf(this.autoMappingReadingFieldName);
+    }
+
+    public void setAutoMappingReadingFieldName(Integer autoMappingReadingFieldName) {
+        this.autoMappingReadingFieldName = autoMappingReadingFieldName;
+    }
 
     public boolean isAllowAutoMapping() {
         return allowAutoMapping;

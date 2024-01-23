@@ -9,6 +9,7 @@ import com.facilio.agentv2.bacnet.BacnetIpPointContext;
 import com.facilio.agentv2.controller.Controller;
 import com.facilio.agentv2.iotmessage.IotMessage;
 import com.facilio.agentv2.iotmessage.IotMessageApiV2;
+import com.facilio.agentv2.misc.MiscPoint;
 import com.facilio.agentv2.modbustcp.ModbusTcpPointContext;
 import com.facilio.agentv2.modbustcp.ModbusUtils;
 import com.facilio.agentv2.rdm.RdmControllerContext;
@@ -16,6 +17,8 @@ import com.facilio.bacnet.BACNetUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.connected.ResourceType;
@@ -25,6 +28,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Unit;
 import com.facilio.util.AckUtil;
 import com.facilio.v3.V3Builder.V3Config;
 import com.facilio.v3.context.V3Context;
@@ -35,9 +39,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -62,6 +64,8 @@ public class PointsUtil {
 
     public static boolean processPoints(JSONObject payload, Controller controller, FacilioAgent agent) throws Exception {
         LOGGER.info("Processing points for controller " + controller.getName());
+        List<ReadingDataMeta> rdmList = new ArrayList<>();
+
         boolean configurePoint = (boolean) payload.getOrDefault("configure", false);
         if (containsValueCheck(AgentConstants.DATA, payload)) {
             JSONArray pointsJSON = (JSONArray) payload.get(AgentConstants.DATA);
@@ -77,6 +81,11 @@ public class PointsUtil {
             List<String> existingPoints = PointsAPI.getPointsFromDb(pointName, controller).stream()
                     .map(name -> name.get(AgentConstants.NAME).toString())
                     .collect(Collectors.toList());
+
+            boolean allowAutoMap = agent.isAllowAutoMapping() && agent.getAutoMappingParentFieldId() > 0;
+            Map<String, FacilioField> readingFieldMap = new HashMap<>();
+            Pair<Long, Long> categoryIdAndParentId = PointsUtil.getCategoryIdAndParentId(agent, controller, payload, readingFieldMap);
+            Long categoryId = categoryIdAndParentId.getLeft(), parentId = categoryIdAndParentId.getRight();
 
             LOGGER.info("Existing Points count : " + existingPoints.size());
             LOGGER.info("New Points count : " + (pointName.size() - existingPoints.size()));
@@ -114,6 +123,10 @@ public class PointsUtil {
                                 JSONObject stateTextEnums = (JSONObject) pointJSON.get(AgentConstants.STATE_TEXT_ENUMS);
                                 point.setStates(stateTextEnums);
                             }
+                            Integer unitId = getUnitId(pointJSON.get(AgentConstants.UNIT));
+                            if(allowAutoMap){
+                                commissionPoint(categoryId, agent.getReadingScope(), parentId, point, readingFieldMap.get(point.getName()), rdmList, unitId);
+                            }
                             Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
 
                             points.add(pointMap);
@@ -137,10 +150,20 @@ public class PointsUtil {
             context.put(AgentConstants.POINTS, points);
             addPointsChain.setContext(context);
             addPointsChain.execute();
+            updateRDMAndAssetConnectedStatus(agent.getReadingScope(), rdmList);
         } else {
             LOGGER.info(" Exception occurred, pointsData missing from payload -> " + payload);
         }
         return true;
+    }
+
+    private static Integer getUnitId(Object unitObj) {
+        Unit unit = null;
+        if(unitObj != null) {
+            unit = Unit.getUnitFromSymbol(unitObj.toString());
+        }
+        Integer unitId = unit != null ? unit.getUnitId() : null;
+        return unitId;
     }
 
     private static void setPointWritable(JSONObject pointJSON, Point point) {
@@ -223,7 +246,8 @@ public class PointsUtil {
         V3Context parent = getParentUsingFieldId(module, fields, parentFieldId, fieldValue);
 
         if (parent == null) {
-            LOGGER.info("Auto Commission :: Parent is not found with field value of " + fieldValue + ", field id " + parentFieldId);
+            LOGGER.info("Auto Commission :: Parent is not found with field value of " + fieldValue + ", field id " + parentFieldId +
+                    " or found more than one record");
             return null;
         }
 
@@ -242,7 +266,7 @@ public class PointsUtil {
                 .andCondition(CriteriaAPI.getCondition(field, fieldValue, StringOperators.IS));
 
         List<V3Context> v3Contexts = selectBuilder.get();
-        if (v3Contexts != null && !v3Contexts.isEmpty()) {
+        if (v3Contexts != null && !v3Contexts.isEmpty() && v3Contexts.size() == 1) {
             return v3Contexts.get(0);
         }
         return null;
@@ -259,5 +283,59 @@ public class PointsUtil {
         fields.add(FieldFactory.getIdField(module));
         fields.add(resourceType.getScopeHandler().getTypeField());
         return fields;
+    }
+
+    public static Pair<Long, Long> getCategoryIdAndParentId(FacilioAgent agent, Controller controller, JSONObject payload, Map<String, FacilioField> readingFieldMap) throws Exception {
+        Pair<Long, Long> categoryIdAndParentId = Pair.of(0L, 0L);
+        try{
+            if (agent.isAllowAutoMapping() && agent.getAutoMappingParentFieldId() > 0) {
+                LOGGER.info("Auto Mapping for agent : " + agent.getDisplayName() + " and controller : " + controller.getName());
+                String fieldValue = getParentIdentifierFieldValue(controller.getName(), payload);
+                categoryIdAndParentId = PointsUtil.getCategoryAndParentId(agent.getReadingScope(), agent.getAutoMappingParentFieldId(), fieldValue);
+                if (categoryIdAndParentId != null) {
+                    Long categoryId = categoryIdAndParentId.getLeft();
+                    Long parentId = categoryIdAndParentId.getRight();
+                    readingFieldMap.putAll(ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId, parentId, agent.getAutoMappingReadingFieldNameEnum()));
+                    LOGGER.info("Category/UtilityType Id " + categoryId + ", Parent Id : " + parentId);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception while fetching CategoryId And ParentId", e);
+        }
+
+        return categoryIdAndParentId;
+    }
+
+    private static String getParentIdentifierFieldValue(String controllerName, JSONObject payload) {
+        if (payload.containsKey(AgentConstants.UNIQUE_ID)) {
+            return payload.get(AgentConstants.UNIQUE_ID).toString();
+        }
+        return controllerName;
+    }
+
+    public static void commissionPoint(Long categoryId, Integer scope, Long parentId, Point point, FacilioField field, List<ReadingDataMeta> rdmList, Integer unitId) {
+        if (categoryId > 0 && parentId > 0) {
+            point.setCategoryId(categoryId);
+            point.setResourceId(parentId);
+            point.setReadingScope(scope);
+            if (field != null) {
+                LOGGER.info("Mapping " + point.getName() + " with field " + field.getName() + ", fieldId " + field.getFieldId());
+                point.setFieldId(field.getFieldId());
+                if(unitId!=null && unitId > 0){
+                    point.setUnit(unitId);
+                }
+                point.setMappedTime(System.currentTimeMillis());
+                point.setMappedType(PointEnum.MappedType.AUTO.getIndex());
+                rdmList.add(PointsUtil.getRDM(point));
+            }
+        }
+    }
+
+    public static void updateRDMAndAssetConnectedStatus(int scope, List<ReadingDataMeta> rdmList) throws Exception {
+        if (!rdmList.isEmpty()) {
+            List<String> fields = Arrays.asList("unit", "inputType", "readingType");
+            ReadingsAPI.updateReadingDataMetaList(rdmList, fields);
+            ResourceType.valueOf(scope).getScopeHandler().updateConnectionStatus(Collections.singleton(rdmList.get(0).getResourceId()),true);
+        }
     }
 }

@@ -124,35 +124,21 @@ public class ProcessDataCommandV3 extends FacilioCommand {
     private Set<String> addNewPoints(Controller controller, FacilioAgent agent, List<String> pointNames, List<Point> pointsFromDb, Set<String> pointsFromDbSet, JSONObject payload, Map<String, Integer> pointNameVsUnitId) throws Exception {
         List<ReadingDataMeta> rdmList = new ArrayList<>();
         boolean allowAutoMap = agent.isAllowAutoMapping() && agent.getReadingScope() > 0 && agent.getAutoMappingParentFieldId() > 0;
-        Long categoryId = 0L, parentId = 0L;
-        Map<String, FacilioField> nameVsField = new HashMap<>();
-        try{
-            if (allowAutoMap) {
-                LOGGER.info("Auto Mapping for agent : " + agent.getDisplayName() + " and controller : " + controller.getName());
-                String fieldValue = getParentIdentifierFieldValue(controller.getName(), payload);
-                Pair<Long, Long> categoryIdAndParentId = PointsUtil.getCategoryAndParentId(agent.getReadingScope(), agent.getAutoMappingParentFieldId(), fieldValue);
-                if (categoryIdAndParentId != null) {
-                    categoryId = categoryIdAndParentId.getKey();
-                    parentId = categoryIdAndParentId.getValue();
-                    nameVsField = ResourceType.valueOf(agent.getReadingScope()).getScopeHandler().getReadings(categoryId, parentId);
-                }
-                LOGGER.info("Category/UtilityType Id " + categoryId + ", Parent Id : " + parentId);
-            }
-        } catch (Exception e) {
-            LOGGER.error("Exception while auto mapping", e);
-        }
+        Map<String, FacilioField> readingFieldMap = new HashMap<>();
+        Pair<Long, Long> categoryIdAndParentId = PointsUtil.getCategoryIdAndParentId(agent, controller, payload, readingFieldMap);
+        Long categoryId = categoryIdAndParentId.getLeft(), parentId = categoryIdAndParentId.getRight();
 
         pointsFromDb.forEach(point -> pointsFromDbSet.add(point.getName()));
         Set<String> pointNamesSet = new HashSet<>(pointNames);
         pointNamesSet.removeAll(pointsFromDbSet);
         List<Map<String, Object>> pointRecordsToAdd = new ArrayList<>();
         for (String name : pointNamesSet) {
-            MiscPoint point = getMiscPoint(controller, agent, name, allowAutoMap, categoryId, parentId, nameVsField.get(name), rdmList, pointNameVsUnitId.get(name));
+            MiscPoint point = getMiscPoint(controller, agent, name, allowAutoMap, categoryId, parentId, readingFieldMap.get(name), rdmList, pointNameVsUnitId.get(name));
             Map<String, Object> pointMap = FieldUtil.getAsProperties(point.toJSON());
             pointRecordsToAdd.add(pointMap);
         }
         bulkAddPoints(controller, pointRecordsToAdd, agent);
-        updateRDMAndAssetConnectedStatus(agent.getReadingScope(), rdmList);
+        PointsUtil.updateRDMAndAssetConnectedStatus(agent.getReadingScope(), rdmList);
         return pointNamesSet;
     }
 
@@ -168,42 +154,9 @@ public class ProcessDataCommandV3 extends FacilioCommand {
         point.setCreatedTime(System.currentTimeMillis());
         point.setAgentWritable(true);
         if (allowAutoMap) {
-            commissionPoint(categoryId, agent.getReadingScope(), parentId, point, field, rdmList, unitId);
+            PointsUtil.commissionPoint(categoryId, agent.getReadingScope(), parentId, point, field, rdmList, unitId);
         }
         return point;
-    }
-
-    private static void commissionPoint(Long categoryId, Integer scope, Long parentId, MiscPoint point, FacilioField field, List<ReadingDataMeta> rdmList, Integer unitId) {
-        if (categoryId > 0 && parentId > 0) {
-            point.setCategoryId(categoryId);
-            point.setResourceId(parentId);
-            point.setReadingScope(scope);
-            if (field != null) {
-                LOGGER.info("Mapping " + point.getName() + " with field " + field.getName() + ", fieldId " + field.getFieldId());
-                point.setFieldId(field.getFieldId());
-                if(unitId!=null && unitId > 0){
-                    point.setUnit(unitId);
-                }
-                point.setMappedTime(System.currentTimeMillis());
-                point.setMappedType(PointEnum.MappedType.AUTO.getIndex());
-                rdmList.add(PointsUtil.getRDM(point));
-            }
-        }
-    }
-
-    private static void updateRDMAndAssetConnectedStatus(int scope, List<ReadingDataMeta> rdmList) throws Exception {
-        if (!rdmList.isEmpty()) {
-            List<String> fields = Arrays.asList("unit", "inputType", "readingType");
-            ReadingsAPI.updateReadingDataMetaList(rdmList, fields);
-            ResourceType.valueOf(scope).getScopeHandler().updateConnectionStatus(Collections.singleton(rdmList.get(0).getResourceId()),true);
-        }
-    }
-
-    private String getParentIdentifierFieldValue(String controllerName, JSONObject payload) {
-        if (payload.containsKey(AgentConstants.UNIQUE_ID)) {
-            return payload.get(AgentConstants.UNIQUE_ID).toString();
-        }
-        return controllerName;
     }
 
     public void bulkAddPoints(Controller controller, List<Map<String, Object>> pointsToBeAdded, FacilioAgent agent) throws Exception {

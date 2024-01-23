@@ -13,6 +13,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -59,7 +60,10 @@ public class DownloadCertFile {
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			addToZip(out, directoryName + FACILIO_CERT_FILE, certificateResult.getCertificatePem());
 			addToZip(out, directoryName + FACILIO_PRIVATE_KEY, certificateResult.getKeyPair().getPrivateKey());
-            addToZip(out, directoryName + ROOT_CRT, getRootCaCertificate());
+            String rootCaCertificate = getRootCaCertificate();
+            if(rootCaCertificate!=null){
+                addToZip(out, directoryName + ROOT_CRT, rootCaCertificate);
+            }
 			out.finish();
 			out.flush();
 			FileStore fs = FacilioFactory.getFileStore();
@@ -72,7 +76,35 @@ public class DownloadCertFile {
 
     public static String getRootCaCertificate() throws Exception {
         String url = "https://www.amazontrust.com/repository/AmazonRootCA1.pem";
-        return FacilioHttpUtilsFW.doHttpGet(url, null, null);
+        StringBuilder response = new StringBuilder();
+
+        try {
+            URL apiUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) apiUrl.openConnection();
+
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line).append("\n");
+                    }
+                }
+
+                LOGGER.info("Response from the server ROOT CA:\n" + response);
+            } else {
+                LOGGER.error("Error ROOT CA: HTTP GET request failed. Response Code: " + responseCode);
+                return null;
+            }
+        } catch (IOException e) {
+            LOGGER.error("Exception while downloading amazon root CA certificate", e);
+            return null;
+        }
+
+        return response.toString();
     }
 
     public static void downloadFileFromUrl(String fileName, String fileUrl)

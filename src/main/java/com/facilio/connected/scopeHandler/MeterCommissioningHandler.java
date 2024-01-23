@@ -1,6 +1,7 @@
 package com.facilio.connected.scopeHandler;
 
 
+import com.facilio.agentv2.AgentConstants;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.util.CommissioningApi;
 import com.facilio.bmsconsole.util.MetersAPI;
@@ -65,7 +66,7 @@ public class MeterCommissioningHandler implements ScopeCommissioningHandler {
     }
 
     @Override
-    public Map<String, FacilioField> getReadings(Long utilityType, Long parentId) throws Exception {
+    public Map<String, FacilioField> getReadings(Long utilityType, Long parentId, AgentConstants.AutoMappingReadingFieldName autoMappingReadingFieldNameEnum) throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.Meter.PARENT_UTILITY_TYPE_ID, utilityType);
         context.put(FacilioConstants.ContextNames.FILTER, "available");
@@ -81,7 +82,9 @@ public class MeterCommissioningHandler implements ScopeCommissioningHandler {
             List<Long> fieldIds = new ArrayList<>();
             List<FacilioField> fields = module.getFields();
             for (FacilioField field : fields) {
-                fieldsMap.put(field.getName(), field);
+                String fieldName = (autoMappingReadingFieldNameEnum == AgentConstants.AutoMappingReadingFieldName.NAME) ?
+                        field.getName() : field.getDisplayName();
+                fieldsMap.put(fieldName, field);
                 fieldIds.add(field.getFieldId());
             }
             LOGGER.info("Module name: " + module.getName() + ", ID : " + module.getModuleId() + ", Field Ids : " + fieldIds);
