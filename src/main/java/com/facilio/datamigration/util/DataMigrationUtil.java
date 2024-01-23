@@ -2,17 +2,13 @@ package com.facilio.datamigration.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsoleV3.context.V3PeopleContext;
 import com.facilio.componentpackage.constants.ComponentType;
 import com.facilio.componentpackage.context.PackageChangeSetMappingContext;
 import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.datamigration.beans.DataMigrationBean;
 import com.facilio.datamigration.context.DataMigrationStatusContext;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mailtracking.MailConstants;
 import com.facilio.modules.*;
@@ -1337,6 +1333,16 @@ public class DataMigrationUtil {
                 put("outgoingMailAttachments", new HashMap<String, String>() {{
                     put("mailId", "outgoingMailLogger");
                 }});
+                put("spaceRating", new HashMap<String, String>() {{
+                    put("parent", "basespace");
+                }});
+                put("facilityBookingInternalAttendee", new HashMap<String, String>() {{
+                    put("left", "facilitybooking");
+                }});
+                put("facilityBookingExternalAttendee", new HashMap<String, String>() {{
+                    put("facilityBooking", "facilitybooking");
+                }});
+
             }}
     );
 

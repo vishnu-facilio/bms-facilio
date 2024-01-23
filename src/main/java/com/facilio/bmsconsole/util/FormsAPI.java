@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.agent.AgentKeys;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -547,6 +548,9 @@ public class FormsAPI {
 	public static void updateFormFields(List<FormField> formFields, List<String> fieldNamesToUpdate) throws Exception {
 		FacilioModule module = ModuleFactory.getFormFieldsModule();
 		List<FacilioField> updateFields = FieldFactory.getFormFieldsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(updateFields);
+		fieldMap.remove(AgentKeys.VERSION);
+		updateFields = new ArrayList<>(fieldMap.values());
 		updateFormRecords(formFields, fieldNamesToUpdate, module, updateFields, FormField.class);
 	}
 	public static void updateFormSections(List<FormSection> formSections, List<String> fieldNamesToUpdate) throws Exception {
