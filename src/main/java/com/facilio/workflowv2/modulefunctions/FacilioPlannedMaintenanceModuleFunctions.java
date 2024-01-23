@@ -29,11 +29,13 @@ import com.facilio.scriptengine.annotation.ScriptModule;
 import com.facilio.scriptengine.context.ScriptContext;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
+import com.google.gson.JsonObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
+import org.json.simple.JSONObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -62,6 +64,14 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
      * @throws Exception
      */
     public String addAssetsToPPMPlanner(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+        if(CollectionUtils.isEmpty(objects)){
+            throw new RuntimeException("Missing params(resourcePlannerObj) in function addAssetsToPPMPlanner.");
+        }
+
+        if(objects.size() != 2){
+            throw new RuntimeException("Please check function params - addAssetsToPPMPlanner(resourcePlannerObj).");
+        }
+
         //objects[moduleName, resourcePlannerObj]
         Object resourcePlannerObj = objects.get(1);
 
@@ -156,7 +166,11 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
             chain.addCommand(new AttachResourcePlannerViaScriptCommand());
             chain.execute();
 
-            return stringBuilder.toString();
+            List<Long> resourcePlannerIDs = (List<Long>) chain.getContext().get("insertedPMResourcePlannerList");
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("resourcePlannerIDs", resourcePlannerIDs);
+            jsonObject.put("message", stringBuilder.toString());
+            return jsonObject.toJSONString();
         }
         throw new RuntimeException("Input not of expected type.");
     }
@@ -187,16 +201,34 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
      * @throws Exception
      */
     public String publishAssetsOfPlanner(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
-        //objects[moduleName, plannerIdObj, resourcePlannerIds]
-        Object plannerIdObj = objects.get(1);
-        Object resourcePlannerIds = objects.get(2);
+        if(CollectionUtils.isEmpty(objects)){
+            throw new RuntimeException("Missing params(pmId, planerId, resourcePlannerIds) in function publishAssetsOfPlanner.");
+        }
 
-        if (plannerIdObj instanceof Long && resourcePlannerIds instanceof List) {
+        if(objects.size() != 4){
+            throw new RuntimeException("Please check function params - publishAssetsOfPlanner(pmId, planerId, resourcePlannerIds).");
+        }
+        //objects[moduleName, pmIdObj, plannerIdObj, resourcePlannerIds]
+        Object pmIdObj = objects.get(1);
+        Object plannerIdObj = objects.get(2);
+        Object resourcePlannerIds = objects.get(3);
+
+        if (pmIdObj instanceof Long && plannerIdObj instanceof Long && resourcePlannerIds instanceof List) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            long pmId = (Long) pmIdObj;
             long plannerId = (Long) plannerIdObj;
             List<Long> resourcePlannerIdList = (List<Long>) resourcePlannerIds;
 
-            // 1. validate planner
+            // 1. validate PM
+            if (pmId < 0) {
+                throw new RuntimeException("Invalid PlannedMaintenance ID.");
+            }
+            PlannedMaintenance plannedMaintenance = V3RecordAPI.getRecord(FacilioConstants.PM_V2.PM_V2_MODULE_NAME, pmId);
+            if (plannedMaintenance == null) {
+                throw new RuntimeException("Invalid PlannedMaintenance.");
+            }
+
+            // 2. validate planner
             if (plannerId < 0) {
                 throw new RuntimeException("Invalid Planner ID.");
             }
@@ -205,7 +237,12 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
                 throw new RuntimeException("Invalid Planner.");
             }
 
-            // 2. validate resource planner
+            if(pmId != pmPlanner.getPmId()){
+                LOGGER.log(Priority.ERROR,"Planner should be from the same PlannedMaintenance.");
+                throw new RuntimeException("Planner should be from the same PlannedMaintenance.");
+            }
+
+            // 3. validate resource planner
             if (CollectionUtils.isEmpty(resourcePlannerIdList)) {
                 throw new RuntimeException("Empty Resource Planner IDs.");
             }
@@ -224,7 +261,6 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
 
             //PMTriggerV2 pmTriggerV2 = V3RecordAPI.getRecord(FacilioConstants.PM_V2.PM_V2_TRIGGER, pmPlanner.getTriggerId());
             PMTriggerV2 pmTriggerV2 = pmPlanner.getTrigger();
-            PlannedMaintenance plannedMaintenance = V3RecordAPI.getRecord(FacilioConstants.PM_V2.PM_V2_MODULE_NAME, pmPlanner.getPmId());
             pmPlanner.setResourcePlanners(new ArrayList<>(resourcePlannerMap.values()));
 
             PlannedMaintenanceAPI.ScheduleOperation operation = PlannedMaintenanceAPI.ScheduleOperation.EXTEND_RESOURCE_PLANNER;

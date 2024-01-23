@@ -18,8 +18,10 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Priority;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Log4j
 public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
@@ -28,6 +30,11 @@ public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
         List<ModuleBaseWithCustomFields> resourcePlannerList = Constants.getRecordMap(context).get(Constants.getModuleName(context));
         if(CollectionUtils.isEmpty(resourcePlannerList)){
             return false;
+        }
+
+        HashSet<Long> resourceIdsSet = new HashSet<>();
+        for(ModuleBaseWithCustomFields resourcePlanner: resourcePlannerList){
+            resourceIdsSet.add(((PMResourcePlanner)resourcePlanner).getResourceId());
         }
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -48,7 +55,7 @@ public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
         criteria.addAndCondition(CriteriaAPI.getCondition(resourcePlannerFieldsMap.get("planner"), plannerId + "", NumberOperators.EQUALS));
 
         SelectRecordsBuilder<PMResourcePlanner> selectRecordsBuilder = new SelectRecordsBuilder<>();
-        selectRecordsBuilder.select(Collections.singleton(resourcePlannerFieldsMap.get("planner")))
+        selectRecordsBuilder.select(resourcePlannerFields)
                 .module(resourcePlannerModule)
                 .beanClass(PMResourcePlanner.class)
                 .andCriteria(criteria);
@@ -57,6 +64,12 @@ public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
         if(CollectionUtils.isEmpty(pmResourcePlannerList)){
             return false;
         }
+
+        List<PMResourcePlanner> insertedPmResourcePlannerList = pmResourcePlannerList.stream().filter(pmResourcePlanner -> {
+            return pmResourcePlanner.getPlanner().getId() == plannerId && resourceIdsSet.contains(pmResourcePlanner.getResourceId());
+        }).collect(Collectors.toList());
+
+        context.put("insertedPMResourcePlannerList", insertedPmResourcePlannerList.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()));
 
         List<FacilioField> plannerFields = modBean.getAllFields(FacilioConstants.PM_V2.PM_V2_PLANNER);
         Map<String, FacilioField> plannerFieldsMap = FieldFactory.getAsMap(plannerFields);
