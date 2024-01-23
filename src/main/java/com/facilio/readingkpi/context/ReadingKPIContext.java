@@ -73,7 +73,7 @@ public class ReadingKPIContext extends V3Context implements IConnectedRule {
     }
 
     public Boolean getStatus() {
-        return status != null ? status : Boolean.FALSE;
+        return status ;
     }
     public ResourceType getResourceTypeEnum() {
         return resourceType;

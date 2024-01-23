@@ -32,7 +32,6 @@ public class SetFieldAndModuleCommand extends FacilioCommand {
 
                 setKPILinkName(kpi);
                 kpi.setReadingField(null);
-                kpi.setStatus(BooleanUtils.toBooleanDefaultIfNull(kpi.getStatus(), Boolean.TRUE));
             }
         }
         return false;

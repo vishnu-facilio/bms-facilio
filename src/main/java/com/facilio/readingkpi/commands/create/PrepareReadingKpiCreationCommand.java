@@ -44,6 +44,7 @@ public class PrepareReadingKpiCreationCommand extends FacilioCommand {
                     kpi.setReadingFieldId(null);
                     kpi.setReadingModuleId(null);
                 }
+                kpi.setStatus(BooleanUtils.toBooleanDefaultIfNull(kpi.getStatus(), Boolean.TRUE));
                 setReadingParent(kpi, context);
                 addKpiCategory(kpi);
                 ReadingKpiAPI.setCategory(kpi);
