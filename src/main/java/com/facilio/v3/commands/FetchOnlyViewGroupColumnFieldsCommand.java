@@ -8,6 +8,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -42,14 +43,16 @@ public class FetchOnlyViewGroupColumnFieldsCommand extends FacilioCommand {
 
     private static void fillSelectableFieldsForWeb(Context context,List<FacilioField> selectableFields) throws Exception {   //filled by viewConfigured fields
         FacilioView view=(FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-
         List<FacilioField> viewFileds=null;
         List<FacilioField>  allFields = getAllFields(context);
         Map<Long,FacilioField> allFieldsMap=null;
         Map<String,FacilioField> fieldsNameVsFacilioFieldMap=null;
+        Map<LookupField,List<LookupField>> parentLookupFieldVsChildLookupFieldsMap;
 
         if(CollectionUtils.isNotEmpty(view.getFields())){
-            viewFileds=view.getFields().stream().map(ViewField::getField).filter(viewFiled->viewFiled!=null).collect(Collectors.toList());
+            viewFileds=view.getFields().stream().filter(viewField -> viewField.getField()!=null && viewField.getParentField()==null)
+                    .map(ViewField::getField).collect(Collectors.toList());
+
             allFieldsMap=allFields.stream().collect(Collectors.toMap(FacilioField::getFieldId,Function.identity()));
             fieldsNameVsFacilioFieldMap=allFields.stream().collect(Collectors.toMap(FacilioField::getName,Function.identity(),(a,b)->b));
             for(FacilioField field:viewFileds){
@@ -58,6 +61,10 @@ public class FetchOnlyViewGroupColumnFieldsCommand extends FacilioCommand {
                 }
             }
 
+            parentLookupFieldVsChildLookupFieldsMap =  view.getFields().stream().filter(viewField -> viewField.getField()!=null && viewField.getParentField()!=null)
+                        .collect(Collectors.groupingBy(v->(LookupField)v.getParentField(), Collectors.mapping(viewField -> (LookupField)viewField.getField(), Collectors.toList())));
+
+           context.put(FacilioConstants.ContextNames.ONE_LEVEL_LOOKUP_FIELD_MAP,parentLookupFieldVsChildLookupFieldsMap);
         }
 
         addExtraSelectableFieldsIfExists(context,selectableFields);

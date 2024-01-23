@@ -38,6 +38,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NonNull;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -251,10 +252,9 @@ public class FieldUtil {
 	}
 
 	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap) throws Exception {
-		return getLookupProps(field, ids, isMap, false);
+		return getLookupProps(field, ids, isMap, false,null,null);
 	}
-
-	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, boolean skipAllScope) throws Exception {
+	public static Map<Long, ? extends Object> getLookupProps(LookupField field, Collection<Long> ids, boolean isMap, boolean skipAllScope,List<FacilioField> selectableFields,Map<BaseLookupField,List<FacilioField>> lookupFieldVsOneLevelSelectableFields) throws Exception {
 		if(CollectionUtils.isNotEmpty(ids)) {
 			if(LookupSpecialTypeUtil.isSpecialType(field.getSpecialType())) {
 				if (isMap) {
@@ -301,13 +301,22 @@ public class FieldUtil {
 						}
 					}
 					if (lookupBeanFields == null) {
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-						lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
+						if(CollectionUtils.isNotEmpty(selectableFields)){
+							lookupBeanFields = selectableFields;
+						}else {
+							ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
+						}
 					}
 					lookupBeanBuilder.select(lookupBeanFields);
 					FacilioField mainField = lookupBeanFields.stream().filter(FacilioField::isMainField).findFirst().orElse(null);
 					if (mainField != null && mainField instanceof LookupField) { // Adding main field as supplement if it's lookup. Doing only one level
 						lookupBeanBuilder.fetchSupplement((SupplementRecord) mainField);
+					}
+					if(MapUtils.isNotEmpty(lookupFieldVsOneLevelSelectableFields)){
+						List<SupplementRecord> supplementRecords = lookupFieldVsOneLevelSelectableFields.keySet().stream().map(SupplementRecord.class::cast).collect(Collectors.toList());
+						lookupBeanBuilder.fetchSupplements(supplementRecords);
+						lookupBeanBuilder.lookupFieldVsSelectableFieldsMap(lookupFieldVsOneLevelSelectableFields);
 					}
 
 					if (isMap || !field.isDefault()) {

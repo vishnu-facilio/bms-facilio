@@ -9,20 +9,20 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.BaseLookupField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
 import com.facilio.util.CurrencyUtil;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.util.V3Util;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ListCommand extends FacilioCommand {
     private FacilioModule module;
@@ -70,6 +70,7 @@ public class ListCommand extends FacilioCommand {
         if (CollectionUtils.isNotEmpty(supplementFields)) {
             selectRecordsBuilder.fetchSupplements(supplementFields);
         }
+        setOneLevelSelectableFields(context,selectRecordsBuilder);
 
         selectRecordsBuilder.select(fields);
         boolean isV4 = Constants.isV4(context);
@@ -132,6 +133,32 @@ public class ListCommand extends FacilioCommand {
         }
 
         context.put(Constants.RECORD_MAP, recordMap);
+    }
+    private void setOneLevelSelectableFields(Context context,SelectRecordsBuilder selectRecordsBuilder) throws Exception {
+        Map<LookupField,List<LookupField>> parentLookupFieldVsChildLookupFieldsMap = (Map<LookupField, List<LookupField>>) context.get(FacilioConstants.ContextNames.ONE_LEVEL_LOOKUP_FIELD_MAP);
+        if(MapUtils.isEmpty(parentLookupFieldVsChildLookupFieldsMap)){
+            return;
+        }
+
+        selectRecordsBuilder.fetchSupplements(parentLookupFieldVsChildLookupFieldsMap.keySet());
+
+        for (LookupField parentLookupField:parentLookupFieldVsChildLookupFieldsMap.keySet()){
+            Map<BaseLookupField, List<FacilioField>> childLookupFieldVsSelectableFieldsMap = new HashMap<>();
+            for (LookupField childLookupField :parentLookupFieldVsChildLookupFieldsMap.get(parentLookupField)){
+                    List<FacilioField> oneLevelSelectableFields = new ArrayList<>();
+                    String lookupModuleName = childLookupField.getLookupModule().getName();
+                    FacilioField primaryField = Constants.getModBean().getPrimaryField(lookupModuleName);
+                    if(primaryField == null){
+                        oneLevelSelectableFields.addAll(Constants.getModBean().getAllFields(lookupModuleName));
+                    }else {
+                        oneLevelSelectableFields.add(primaryField);
+                    }
+                    childLookupFieldVsSelectableFieldsMap.put(childLookupField,oneLevelSelectableFields);
+            }
+            if(MapUtils.isNotEmpty(childLookupFieldVsSelectableFieldsMap)){
+                selectRecordsBuilder.lookupFieldVsOneLevelSelectableFieldsMap(parentLookupField,childLookupFieldVsSelectableFieldsMap);
+            }
+        }
     }
 
     private SelectRecordsBuilder getSelectRecordsBuilder(Context context) throws Exception{

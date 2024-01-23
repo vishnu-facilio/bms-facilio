@@ -693,6 +693,7 @@ public class FacilioConstants {
 		public static final String FETCH_SUPPLEMENTS = "fetchSupplement";
 		public static final String SELECTABLE_FIELDS = "selectableFields";
 		public static final String EXTRA_SELECTABLE_FIELDS = "extraSelectableFields";
+		public static final String ONE_LEVEL_LOOKUP_FIELD_MAP = "oneLevelLookupFieldMap";
 		public static final String EXTRA_ADD_FIELDS = "extraAddFields";
 
 

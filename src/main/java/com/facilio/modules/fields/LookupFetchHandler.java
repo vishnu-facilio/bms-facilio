@@ -1,6 +1,7 @@
 package com.facilio.modules.fields;
 
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SupplementsExtraMetaData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,13 @@ class LookupFetchHandler implements FetchSupplementHandler {
     Map<Long, ? extends Object> lookupObjects = null;
     @Override
     public void fetchSupplements(boolean isMap) throws Exception {
-        lookupObjects = FieldUtil.getLookupProps(field, lookupIds, isMap, true);
+        lookupObjects = FieldUtil.getLookupProps(field, lookupIds, isMap, true,null,null);
+    }
+    @Override
+    public void fetchSupplements(boolean isMap, SupplementsExtraMetaData supplementsExtraMetaData) throws Exception {
+        List<FacilioField> selectableFields = supplementsExtraMetaData.getSelectableFields(field);
+        Map<BaseLookupField, List<FacilioField>> oneLevelSelectableFieldsMap = supplementsExtraMetaData.getOneLevelSelectableFieldsMap(field);
+        lookupObjects = FieldUtil.getLookupProps(field, lookupIds, isMap, true,selectableFields,oneLevelSelectableFieldsMap);
     }
 
     @Override

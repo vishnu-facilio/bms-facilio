@@ -4,7 +4,6 @@ import com.facilio.accounts.dto.AppDomain.AppDomainType;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.apiv3.APIv3Config;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
@@ -17,10 +16,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FetchSupplementHandler;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -31,9 +27,7 @@ import org.apache.log4j.Logger;
 import java.sql.Connection;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 
@@ -47,6 +41,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private List<FacilioField> aggrFields = null;
 	private List<LookupField> fetchLookup = null;
 	private List<SupplementRecord> fetchSupplements;
+	private SupplementsExtraMetaData supplementsExtraMetaData = new SupplementsExtraMetaData();
 	private String moduleName;
 	private FacilioModule module;
 	private boolean fetchDeleted = false;
@@ -330,6 +325,44 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		fetchSupplements.addAll(supplements);
 		return this;
 	}
+	public SelectRecordsBuilder<E> lookupSelectableFields(BaseLookupField baseLookupField,List<FacilioField> selectableFields) {
+		Objects.requireNonNull(baseLookupField, "baseLookupField field cannot be null");
+		Objects.requireNonNull(selectableFields,"selectableFields cannot be null for "+baseLookupField.getName());
+		FacilioUtil.throwIllegalArgumentException(selectableFields.stream().anyMatch(Objects::isNull), "selectableField cannot be null for "+baseLookupField.getName());
+
+		Map<BaseLookupField, List<FacilioField>> lookupFieldVsSelectableFieldsMap = supplementsExtraMetaData.getLookupFieldVsSelectableFieldsMap();
+		if (lookupFieldVsSelectableFieldsMap == null) {
+		    lookupFieldVsSelectableFieldsMap = new HashMap<>();
+			supplementsExtraMetaData.setLookupFieldVsSelectableFieldsMap(lookupFieldVsSelectableFieldsMap);
+		}
+		lookupFieldVsSelectableFieldsMap.put(baseLookupField,selectableFields);
+		return this;
+	}
+	public SelectRecordsBuilder<E> lookupFieldVsSelectableFieldsMap(Map<BaseLookupField, List<FacilioField>> lookupFieldVsSelectableFieldsMap) {
+		Objects.requireNonNull(lookupFieldVsSelectableFieldsMap, "lookupFieldVsSelectableFieldsMap cannot be null");
+		for (BaseLookupField baseLookupField:lookupFieldVsSelectableFieldsMap.keySet()){
+			lookupSelectableFields(baseLookupField,lookupFieldVsSelectableFieldsMap.get(baseLookupField));
+		}
+		return this;
+	}
+	public SelectRecordsBuilder<E> lookupFieldVsOneLevelSelectableFieldsMap(BaseLookupField baseLookupField,Map<BaseLookupField, List<FacilioField>> childLookupFieldVsSelectableFieldsMap) {
+		Objects.requireNonNull(baseLookupField, "baseLookupField field cannot be null");
+		Objects.requireNonNull(childLookupFieldVsSelectableFieldsMap,"childLookupFieldVsSelectableFieldsMap cannot be null for "+baseLookupField.getName());
+		FacilioUtil.throwIllegalArgumentException(childLookupFieldVsSelectableFieldsMap.keySet().stream().anyMatch(Objects::isNull), "one level lookup field cannot be null for "+baseLookupField.getName());
+		FacilioUtil.throwIllegalArgumentException(childLookupFieldVsSelectableFieldsMap.values().stream().anyMatch(Objects::isNull), "one level selectable fields cannot be null for "+baseLookupField.getName());
+		for (BaseLookupField childLookupField:childLookupFieldVsSelectableFieldsMap.keySet()){
+			FacilioUtil.throwIllegalArgumentException(childLookupFieldVsSelectableFieldsMap.get(childLookupField).stream().anyMatch(Objects::isNull), "selectableField cannot be null for child lookup field name:"+childLookupField.getName()
+					+" of parent lookup field name:"+baseLookupField.getName());
+		}
+		Map<BaseLookupField,Map<BaseLookupField, List<FacilioField>>> lookupFieldVsOneLevelSelectableFieldsMap = supplementsExtraMetaData.getLookupFieldVsOneLevelSelectableFieldsMap();
+		if(lookupFieldVsOneLevelSelectableFieldsMap == null){
+			lookupFieldVsOneLevelSelectableFieldsMap = new HashMap<>();
+			supplementsExtraMetaData.setLookupFieldVsOneLevelSelectableFieldsMap(lookupFieldVsOneLevelSelectableFieldsMap);
+		}
+		lookupFieldVsOneLevelSelectableFieldsMap.put(baseLookupField,childLookupFieldVsSelectableFieldsMap);
+		return this;
+	}
+
 
 	private void addCriteriaTableName(String tableName) {
 		if (criteriaJoinTables == null) {
@@ -708,7 +741,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 
 			for (Pair<SupplementRecord, FetchSupplementHandler> handler : handlers) {
-				handler.getRight().fetchSupplements(isMap);
+				handler.getRight().fetchSupplements(isMap, supplementsExtraMetaData);
 			}
 
 			for (Pair<SupplementRecord, FetchSupplementHandler> handler : handlers) {
