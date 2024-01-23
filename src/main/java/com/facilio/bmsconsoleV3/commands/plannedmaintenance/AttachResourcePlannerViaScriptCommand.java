@@ -29,6 +29,7 @@ public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<ModuleBaseWithCustomFields> resourcePlannerList = Constants.getRecordMap(context).get(Constants.getModuleName(context));
         if(CollectionUtils.isEmpty(resourcePlannerList)){
+            LOGGER.log(Priority.INFO, "Empty Resource Planner List");
             return false;
         }
 
@@ -62,6 +63,7 @@ public class AttachResourcePlannerViaScriptCommand extends FacilioCommand {
         List<PMResourcePlanner> pmResourcePlannerList = selectRecordsBuilder.get();
 
         if(CollectionUtils.isEmpty(pmResourcePlannerList)){
+            LOGGER.log(Priority.INFO, "Empty Resource Planner List from DB");
             return false;
         }
 
