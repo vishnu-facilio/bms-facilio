@@ -203,7 +203,13 @@ public class ConstructReportDataCommand extends FacilioCommand {
             data = existingData == null ? new HashMap<>() : existingData;
             data.put(getxAlias(report), xVal);
             if(MapUtils.isNotEmpty(prop) && prop.containsKey("ttime")) {
-                data.put("ttime",prop.get("ttime"));
+                if(prop.get("ttime") instanceof UnsignedLong){
+                    Long ttime = ((UnsignedLong) prop.get("ttime")).longValue();
+                    data.put("ttime",ttime);
+                }else {
+                    Long ttime = (Long) prop.get("ttime");
+                    data.put("ttime",ttime);
+                }
             }
             intermediateData.put(key, data);
             transformedData.add(data);

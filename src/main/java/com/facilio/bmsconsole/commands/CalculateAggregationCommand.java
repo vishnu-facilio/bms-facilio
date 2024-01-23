@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
 
+import com.clickhouse.data.value.UnsignedLong;
 import com.facilio.command.FacilioCommand;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -335,7 +336,11 @@ public class CalculateAggregationCommand extends FacilioCommand {
 		Double val = getDoubleVal(value);
 		Long ttime = -1l;
 		if(MapUtils.isNotEmpty(data) && data.containsKey("ttime")) {
-			ttime = (Long) data.get("ttime");
+			if(data.get("ttime") instanceof UnsignedLong){
+				ttime = ((UnsignedLong) data.get("ttime")).longValue();
+			}else {
+				ttime = (Long) data.get("ttime");
+			}
 		}
 		if (val != null) {
 			String sumKey = alias+".sum";
