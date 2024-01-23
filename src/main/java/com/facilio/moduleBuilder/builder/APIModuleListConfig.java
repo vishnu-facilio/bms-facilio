@@ -63,7 +63,8 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
                         FacilioConstants.ContextNames.QUOTE, FacilioConstants.ContextNames.ANNOUNCEMENT,
                         FacilioConstants.ContextNames.Floorplan.DESKS, FacilioConstants.Survey.SURVEY_RESPONSE,
-                        FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE))
+                        FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE,
+                        FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, FacilioConstants.UTILITY_INTEGRATION_BILLS))
 
                 .addModulesForApp(FacilioConstants.ApplicationLinkNames.FSM_APP, Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
                         FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,
