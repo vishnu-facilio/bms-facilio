@@ -1338,6 +1338,7 @@ public class DataMigrationUtil {
                 }});
                 put("facilityBookingInternalAttendee", new HashMap<String, String>() {{
                     put("left", "facilitybooking");
+                    put("right", "people");
                 }});
                 put("facilityBookingExternalAttendee", new HashMap<String, String>() {{
                     put("facilityBooking", "facilitybooking");

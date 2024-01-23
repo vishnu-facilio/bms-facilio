@@ -312,6 +312,11 @@ public class SandboxModuleConfigUtil {
         ModuleBean modBean = Constants.getModBean();
         FacilioModule module = modBean.getModule(moduleName);
 
+        if (module == null) {
+            LOGGER.info("####Data Migration Tracking - Module not found while getting fields - " + moduleName);
+            return null;
+        }
+
         Criteria fieldsCriteria = new Criteria();
         fieldsCriteria.addAndCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
         fieldsCriteria.addAndCondition(CriteriaAPI.getCondition("NAME", "name", StringUtils.join(fieldsNames, ","), StringOperators.IS));

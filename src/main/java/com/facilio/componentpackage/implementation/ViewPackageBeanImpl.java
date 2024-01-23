@@ -32,10 +32,7 @@ import com.facilio.xml.builder.XMLBuilder;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Log4j
@@ -230,6 +227,9 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             facilioView = constructViewFromXMLBuilder(formElement, appNameVsAppId, moduleBean);
 
             long viewId = ViewAPI.addView(facilioView, facilioView.getOrgId());
+            if (viewId > 0 && CollectionUtils.isNotEmpty(facilioView.getSortFields())) {
+                ViewAPI.customizeViewSortColumns(viewId, facilioView.getSortFields());
+            }
             uniqueIdentifierVsComponentId.put(idVsData.getKey(), viewId);
         }
 
@@ -251,6 +251,9 @@ public class ViewPackageBeanImpl implements PackageBean<FacilioView> {
             XMLBuilder formElement = idVsData.getValue();
 
             facilioView = constructViewFromXMLBuilder(formElement, appNameVsAppId, moduleBean);
+            if (CollectionUtils.isNotEmpty(facilioView.getSortFields())) {
+                ViewAPI.customizeViewSortColumns(viewId, facilioView.getSortFields());
+            }
             facilioView.setId(viewId);
 
             ViewAPI.updateView(viewId, facilioView);

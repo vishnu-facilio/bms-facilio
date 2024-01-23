@@ -38,6 +38,7 @@ public class AddAppPortalAccessForPeopleCommand extends FacilioCommand {
         Long securityPolicyId = (Long) context.getOrDefault(FacilioConstants.ContextNames.SECURITY_POLICY_ID,-99L);
         String password = (String) context.getOrDefault(FacilioConstants.ContextNames.PASSWORD,null);
         boolean sendInvitation=(boolean) context.getOrDefault(FacilioConstants.ContextNames.SEND_INVITE,true);
+        boolean checkOrgUser = (boolean) context.getOrDefault(FacilioConstants.ContextNames.CHECK_ORG_USER, true);
         boolean isSsoEnabled = V3PeopleAPI.isSsoEnabledForApplication(appLinkName);
         if(isSsoEnabled){
             sendInvitation = false;
@@ -90,6 +91,7 @@ public class AddAppPortalAccessForPeopleCommand extends FacilioCommand {
                     userAdditionContext.put(FacilioConstants.ContextNames.SEND_INVITE, sendInvitation);
                     userAdditionContext.put(FacilioConstants.ContextNames.PASSWORD, password);
                     userAdditionContext.put(FacilioConstants.ContextNames.APP_LINKNAME,appLinkName);
+                    userAdditionContext.put(FacilioConstants.ContextNames.CHECK_ORG_USER, checkOrgUser);
 
                     if (app.getAppCategoryEnum() == ApplicationContext.AppCategory.PORTALS){
                         FacilioChain addOrUpdatePortalUserChain = FacilioChainFactory.addOrUpdatePortalUserChain();

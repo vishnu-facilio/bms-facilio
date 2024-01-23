@@ -859,7 +859,7 @@ public class PackageUtil {
         componentNameVsTypes.put(FacilioConstants.ContextNames.TENANT,ComponentType.TENANT);
         componentNameVsTypes.put(FacilioConstants.PeopleGroup.PEOPLE_GROUP,ComponentType.TEAM);
         componentNameVsTypes.put(FacilioConstants.ContextNames.MODULE_STATE,ComponentType.TICKET_STATUS);
-
+        componentNameVsTypes.put(FacilioConstants.ContextNames.REQUESTER, ComponentType.USER);
         return componentNameVsTypes;
     }
 

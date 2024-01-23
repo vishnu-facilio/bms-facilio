@@ -712,6 +712,8 @@ public class FacilioConstants {
 		public static final String PASSWORD = "password";
 		public static final String USER_IDS ="userIds";
 		public static final String PEOPLE_IDS ="peopleIds";
+		public static final String CHECK_ORG_USER = "checkOrgUser";
+
 
 		public static final String IS_ACCESSIBLE = "isAccessible";
 

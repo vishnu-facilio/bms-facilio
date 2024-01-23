@@ -50,7 +50,11 @@ public class ApplicationUserUtil {
         return IdentityClient.getDefaultInstance().getUserBean().getUser(orgId, userName, identifier);
     }
 
-    public static void  addAppUser(long orgId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception{
+    public static void addAppUser(long orgId, boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password) throws Exception {
+        addAppUser(orgId, isPortal, peopleUser, sendInvitation, password, true);
+    }
+
+    public static void  addAppUser(long orgId,boolean isPortal, PeopleUserContext peopleUser, boolean sendInvitation, String password, boolean checkOrgUser) throws Exception{
        User iamUser;
 
         if(sendInvitation)
@@ -63,7 +67,7 @@ public class ApplicationUserUtil {
         peopleUser.setIamOrgUserId(iamUser.getOuid());
         peopleUser.setUid(iamUser.getUid());
         //will remove this once ORG_User deprecated
-        addOrgUser(peopleUser,isPortal);
+        addOrgUser(peopleUser,isPortal,checkOrgUser);
         addOrgUserApps(peopleUser);
     }
 
@@ -87,8 +91,12 @@ public class ApplicationUserUtil {
     }
 
     @Deprecated
-    private static void addOrgUser(PeopleUserContext user,boolean isPortal) throws Exception {
-        Map<String,Object> orgUserMap = getExistingOrgUsers(user.getUid(), user.getUser().getOrgId());
+    private static void addOrgUser(PeopleUserContext user,boolean isPortal, boolean checkOrgUser) throws Exception {
+        Map<String,Object> orgUserMap = null;
+        if (checkOrgUser) {
+            orgUserMap = getExistingOrgUsers(user.getUid(), user.getUser().getOrgId());
+        }
+
         if (orgUserMap == null) {
             int userType=1;
             if(isPortal){
@@ -386,7 +394,7 @@ public class ApplicationUserUtil {
         peopleUser.setIamOrgUserId(iamUser.getOuid());
         peopleUser.setUid(iamUser.getUid());
 
-        addOrgUser(peopleUser, isPortal);
+        addOrgUser(peopleUser, isPortal, false);
 
         if (addAppAccess) {
             addOrgUserApps(peopleUser);
