@@ -2417,6 +2417,11 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new CloneDashboardTabCommand());
         return c;
     }
+    public static FacilioChain getDashboardExportChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DashboardExportCommand());
+        return c;
+    }
     public static FacilioChain getAddLicensingInfoChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddLicensingInfoCommand());

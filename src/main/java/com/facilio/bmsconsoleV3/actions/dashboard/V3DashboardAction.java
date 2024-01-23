@@ -658,4 +658,20 @@ public class V3DashboardAction extends V3Action {
         setData("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
         return V3Action.SUCCESS;
     }
+    public String exportAsPdf() throws Exception {
+        if(linkName  == null || "".equals(linkName)){
+            throw new RESTException(ErrorCode.VALIDATION_ERROR, "Dashboard Name can not be empty");
+        }
+        try {
+            FacilioChain exportChain = TransactionChainFactoryV3.getDashboardExportChain();
+            Context context = exportChain.getContext();
+            context.put(FacilioConstants.ContextNames.LINK_NAME,linkName);
+            exportChain.execute();
+            setData("fileUrl",context.get("fileUrl"));
+        }
+        catch (Exception e) {
+            throw new RESTException(ErrorCode.UNHANDLED_EXCEPTION, "Error while getting dashboard tabs info"+e);
+        }
+        return V3Action.SUCCESS;
+    }
 }

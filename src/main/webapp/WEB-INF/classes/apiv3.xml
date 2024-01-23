@@ -1894,6 +1894,13 @@
             <param name="permission">GET:CREATE,EDIT</param>
             <param name="tabType">Dashboard,New Dashboard</param>
         </action>
+        <action name="export/*"
+                class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
+                method="exportAsPdf">
+            <param name="linkName">{1}</param>
+            <param name="tabType">Dashboard,New Dashboard</param>
+            <param name="permission">GET:VIEW,READ</param>
+        </action>
         <action name="*"
                 class="com.facilio.bmsconsoleV3.actions.dashboard.V3DashboardAction"
                 method="get">
