@@ -33,6 +33,7 @@ import com.facilio.services.pdf.PDFServiceFactory;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
@@ -2583,5 +2584,17 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				userFilter.put("allValues",allValueAsMap);
 			}
 		}
+	}
+
+	public static Long getNewReportId(Long oldReportId) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getV2ReportModule().getTableName())
+				.select(FieldFactory.getV2ReportModuleFields())
+				.andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", String.valueOf(oldReportId), NumberOperators.EQUALS));
+		Map<String, Object> prop = selectRecordBuilder.fetchFirst();
+		if(MapUtils.isNotEmpty(prop) && prop.containsKey("id")) {
+			return (Long) prop.get("id");
+		}
+		return null;
 	}
  }

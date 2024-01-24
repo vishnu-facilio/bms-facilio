@@ -4,31 +4,37 @@ import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.analytics.v2.context.V2ReportContext;
 import com.facilio.analytics.v2.context.WidgetLegendGroupContext;
 import com.facilio.analytics.v2.context.WidgetLegendVarianceContext;
+import com.facilio.bmsconsole.page.Page;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
 
 public class AddOrUpdateWidgetLegendCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
-        Long reportId = (Long) context.get(FacilioConstants.ContextNames.ID);
+        Long reportId = null;
         V2ReportContext v2_report = (V2ReportContext) context.get("report_v2");
         if (v2_report != null) {
             if (reportId == null) {
-                reportId = v2_report.getId();
+                reportId = ReportUtil.getNewReportId(v2_report.getReportId());
             }
             if (reportId != null) {
                 deleteWidgetLegendGroup(reportId);

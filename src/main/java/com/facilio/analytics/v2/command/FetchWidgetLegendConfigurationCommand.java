@@ -14,6 +14,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.util.ReportUtil;
 import com.facilio.util.FacilioUtil;
 import com.google.gson.JsonObject;
 import lombok.extern.log4j.Log4j;
@@ -45,22 +46,25 @@ public class FetchWidgetLegendConfigurationCommand extends FacilioCommand {
         return false;
     }
 
-    private List<WidgetLegendGroupContext> getWidgetLegends(Long reportId) throws Exception {
-        List<FacilioField> fields = new ArrayList<>();
-        fields.addAll(FieldFactory.getWidgetLegendGroupFields());
-        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
-                .select(fields)
-                .table(ModuleFactory.getWidgetLegendGroupModule().getTableName())
-                .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", String.valueOf(reportId), NumberOperators.EQUALS));
-        List<Map<String, Object>> propsList = selectRecordBuilder.get();
-        if (CollectionUtils.isNotEmpty(propsList)) {
-            List<WidgetLegendGroupContext> widgetLegendGroups = FieldUtil.getAsBeanListFromMapList(propsList, WidgetLegendGroupContext.class);
-            List<Long> ids = widgetLegendGroups.stream().map(WidgetLegendGroupContext::getId).collect(Collectors.toList());
-            List<WidgetLegendVarianceContext> varianceContexts = getVarianceList(ids);
-            if (CollectionUtils.isNotEmpty(varianceContexts)) {
-                constructWidgetLegendGroup(widgetLegendGroups, varianceContexts);
+    private List<WidgetLegendGroupContext> getWidgetLegends(Long oldReportId) throws Exception {
+        Long reportId = ReportUtil.getNewReportId(oldReportId);
+        if(reportId != null) {
+            List<FacilioField> fields = new ArrayList<>();
+            fields.addAll(FieldFactory.getWidgetLegendGroupFields());
+            GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+                    .select(fields)
+                    .table(ModuleFactory.getWidgetLegendGroupModule().getTableName())
+                    .andCondition(CriteriaAPI.getCondition("REPORT_ID", "reportId", String.valueOf(reportId), NumberOperators.EQUALS));
+            List<Map<String, Object>> propsList = selectRecordBuilder.get();
+            if (CollectionUtils.isNotEmpty(propsList)) {
+                List<WidgetLegendGroupContext> widgetLegendGroups = FieldUtil.getAsBeanListFromMapList(propsList, WidgetLegendGroupContext.class);
+                List<Long> ids = widgetLegendGroups.stream().map(WidgetLegendGroupContext::getId).collect(Collectors.toList());
+                List<WidgetLegendVarianceContext> varianceContexts = getVarianceList(ids);
+                if (CollectionUtils.isNotEmpty(varianceContexts)) {
+                    constructWidgetLegendGroup(widgetLegendGroups, varianceContexts);
+                }
+                return widgetLegendGroups;
             }
-            return widgetLegendGroups;
         }
         return null;
     }
