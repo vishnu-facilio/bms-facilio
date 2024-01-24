@@ -24,6 +24,7 @@ import com.facilio.identity.client.dto.User;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
@@ -87,8 +88,8 @@ public class ApplicationUserUtil {
 
     @Deprecated
     private static void addOrgUser(PeopleUserContext user,boolean isPortal) throws Exception {
-        long orgUserId = checkIfExistsInOrgUsers(user.getUid(), user.getUser().getOrgId());
-        if (orgUserId <0) {
+        Map<String,Object> orgUserMap = getExistingOrgUsers(user.getUid(), user.getUser().getOrgId());
+        if (orgUserMap == null) {
             int userType=1;
             if(isPortal){
                 userType = 2;
@@ -118,7 +119,13 @@ public class ApplicationUserUtil {
             insertBuilder.addRecord(props);
             insertBuilder.save();
             user.setOrgUserId(id);
-        } else {
+        }
+        else  {
+            long orgUserId = (long) orgUserMap.get("ouid");
+            long existingIamOrgUserId = (long) orgUserMap.get("iamOrgUserId");
+            if(user.getIamOrgUserId() != existingIamOrgUserId){
+                updateExistingIamOrgUserId(user,existingIamOrgUserId);
+            }
             user.setOrgUserId(orgUserId);
         }
     }
@@ -144,7 +151,35 @@ public class ApplicationUserUtil {
         return -1;
     }
 
+    private static Map<String, Object> getExistingOrgUsers(long uId, long orgId) throws Exception {
+        List<FacilioField> orgUserFields = AccountConstants.getAppOrgUserFields();
 
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+                .select(orgUserFields)
+                .table("ORG_Users");
+        selectBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+        selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+        List<Map<String , Object>> mapList = selectBuilder.get();
+        if(CollectionUtils.isNotEmpty(mapList)) {
+            for(Map<String, Object> map : mapList) {
+                return map;
+            }
+        }
+        return null;
+    }
+
+    private static void updateExistingIamOrgUserId(PeopleUserContext user , long existingIamOrgUserId) throws Exception {
+        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+                .table(ModuleFactory.getOrgUserModule().getTableName())
+                .fields(AccountConstants.getAppOrgUserFields())
+                .andCondition(CriteriaAPI.getCondition("USERID","userId",user.getUid()+"",NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("IAM_ORG_USERID","iamOrgUserId",existingIamOrgUserId+"",NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ORGID", "orgId",user.getUser().getOrgId()+"" , NumberOperators.EQUALS));
+
+        Map<String, Object> props = new HashMap<>();
+        props.put("iamOrgUserId",user.getIamOrgUserId());
+        updateRecordBuilder.update(props);
+    }
 
     public static void addOrgUserApps(PeopleUserContext user) throws Exception {
         List<FacilioField> fields = AccountConstants.getOrgUserAppsFields();
