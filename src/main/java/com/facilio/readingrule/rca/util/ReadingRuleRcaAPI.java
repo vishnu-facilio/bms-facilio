@@ -561,11 +561,19 @@ public class ReadingRuleRcaAPI {
      * OR (CREATED_TIME<=startTime AND (CLEARED_TIME IS NULL OR CLEARED_TIME>=endTime))
      * ) GROUP BY ALARM_ID
      */
+
+
     public static List<Map<String, Object>> getAlarmDurationAndCount(List<Long> alarmIds, Long startTime, Long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+        return getAlarmDurationAndCount(alarmIds, startTime, endTime, module);
+    }
+
+    public static List<Map<String, Object>> getAlarmDurationAndCount(List<Long> alarmIds, Long startTime, Long endTime, FacilioModule module) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         List<FacilioField> fields = modBean.getAllFields(module.getName());
         Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
         String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
         String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 
@@ -587,6 +595,9 @@ public class ReadingRuleRcaAPI {
         selectFields.addAll(FieldFactory.getCountField(module));
         selectFields.add(fieldMap.get("alarm"));
         selectFields.add(fieldMap.get("resource"));
+        if (fieldMap.containsKey("rule")) {
+            selectFields.add(fieldMap.get("rule"));
+        }
 
 
         Criteria clearTimeCriteria = new Criteria();
@@ -613,6 +624,7 @@ public class ReadingRuleRcaAPI {
 
         return builder.getAsProps();
     }
+
 
     public static Long getEventCount(Long resourceId, Long ruleId, Long startTime, Long endTime) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -1464,4 +1464,17 @@ public class NewAlarmAPI {
 		viewWorkorderSystemButton.setCriteria(viewWoCriteria);
 		return viewWorkorderSystemButton;
 	}
+
+	public static List<ReadingAlarm> getReadingAlarmsFromResource(Long resourceId) throws Exception {
+		ModuleBean modBean = Constants.getModBean();
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		SelectRecordsBuilder<ReadingAlarm> builder = new SelectRecordsBuilder<ReadingAlarm>()
+				.select(fields)
+				.beanClass(ReadingAlarm.class)
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", String.valueOf(resourceId), NumberOperators.EQUALS));
+		return builder.get();
+	}
+
 }

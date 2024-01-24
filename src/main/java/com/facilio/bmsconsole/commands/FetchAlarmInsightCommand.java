@@ -41,6 +41,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
 import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarms;
+import static com.facilio.bmsconsole.util.NewAlarmAPI.getReadingAlarmsFromResource;
 
 public class FetchAlarmInsightCommand extends FacilioCommand {
 
@@ -74,23 +75,29 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		List<Map<String, Object>> props = null;
-		if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			List<ReadingAlarm> readingAlarms = getReadingAlarms(readingRuleId);
-			props = ReadingRuleRcaAPI.getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), dateRange.getStartTime(), dateRange.getEndTime());
-		}
-		else {
+		List<Map<String, Object>> props = new ArrayList<>();
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			List<ReadingAlarm> readingAlarms = readingRuleId > 0 ? getReadingAlarms(readingRuleId) : getReadingAlarmsFromResource(assetId);
+
+			if (CollectionUtils.isNotEmpty(readingAlarms)) {
+				props = readingRuleId > 0 ? ReadingRuleRcaAPI.getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), dateRange.getStartTime(), dateRange.getEndTime())
+						: ReadingRuleRcaAPI.getAlarmDurationAndCount(readingAlarms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList()), dateRange.getStartTime(), dateRange.getEndTime(), modBean.getModule(ContextNames.READING_ALARM_OCCURRENCE));
+			}
+
+		} else {
 			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator, assetIds);
 		}
 
 		if (assetId > 0) {
 			if (CollectionUtils.isNotEmpty(props)) {
-				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
+				List<Map<String, Object>> ruleMap = props.stream().map(prop -> (Map<String, Object>) prop.get("rule")).collect(Collectors.toList());
+				List<Long> ruleIds = ruleMap.stream().map(m -> (Long) m.get("id")).collect(Collectors.toList());
 				List<NewReadingRuleContext> rulesList = NewReadingRuleAPI.getReadingRules(ruleIds);
 				if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
 					Map<Long, NewReadingRuleContext> rules = rulesList.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
 					for (Map<String, Object> prop : props) {
-						long ruleId = (long) prop.get("ruleId");
+						Map<String,Object> rule= (Map<String, Object>) prop.get("rule");
+						long ruleId = (long) rule.get("id");
 						prop.put("subject", rules.get(ruleId).getName());
 					}
 				}
