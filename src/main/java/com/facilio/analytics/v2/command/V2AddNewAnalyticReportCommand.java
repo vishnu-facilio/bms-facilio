@@ -27,7 +27,8 @@ public class V2AddNewAnalyticReportCommand extends FacilioCommand {
         {
             v2_report.setReportId(report.getId());
             this.generateAndSetMeasureCriteria(v2_report, actionType);
-            V2AnalyticsOldUtil.addNewReportV2(v2_report);
+            Long reportId = V2AnalyticsOldUtil.addNewReportV2(v2_report);
+            context.put(FacilioConstants.ContextNames.ID,reportId);
             if(user_filters != null){
                 V2AnalyticsOldUtil.CREDActionV2UserFilter(report.getId(), user_filters, FacilioConstants.ContextNames.CREATE);
             }

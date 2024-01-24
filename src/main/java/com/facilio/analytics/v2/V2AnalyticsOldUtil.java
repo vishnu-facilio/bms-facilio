@@ -216,13 +216,13 @@ public class V2AnalyticsOldUtil {
         }
         return null;
     }
-    public static void addNewReportV2(V2ReportContext reportContext) throws Exception
+    public static Long addNewReportV2(V2ReportContext reportContext) throws Exception
     {
         GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
                 .table(ModuleFactory.getV2ReportModule().getTableName())
                 .fields(FieldFactory.getV2ReportModuleFields());
         Map<String, Object> props = FieldUtil.getAsProperties(reportContext);
-        insertBuilder.insert(props);
+        Long reportId = insertBuilder.insert(props);
 
         List<V2AnalyticsMeasureContext> context_list =V2AnalyticsOldUtil.getV2AnalyticsMeasureContexts(reportContext.getMeasures(), reportContext.getReportId());
         if(context_list.size() > 0) {
@@ -231,6 +231,7 @@ public class V2AnalyticsOldUtil {
                 V2AnalyticsOldUtil.addReportMeasures(measure_prop);
             }
         }
+        return reportId;
     }
     public static List<V2AnalyticsMeasureContext> getV2AnalyticsMeasureContexts(List<V2MeasuresContext> measures, Long reportId) throws Exception
     {

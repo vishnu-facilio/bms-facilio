@@ -269,20 +269,11 @@ public class ScopeInterceptor extends AbstractInterceptor {
                     currentAccount.getOrg().setPortalId(portalInfo.getPortalId());
                 } else {
                     if (currentAccount.getUser() != null) {
-//						List<Long> accessibleSpace = null;
-//						if (currentAccount.getUser() != null) {
-//							accessibleSpace = currentAccount.getUser().getAccessibleSpace();
-//						}
                         if (currentAccount != null) {
-                            List<Long> sites = CommonCommandUtil.getMySiteIds();
+                            List<Long> sites = CommonCommandUtil.getMySiteIds(2);
                             AccountUtil.setValueGenerator(new HashMap<>());
                             if (sites != null && sites.size() == 1) {
                                AccountUtil.setCurrentSiteId(sites.get(0));
-//								if (accessibleSpace == null) {
-//									accessibleSpace = new ArrayList<>();
-//									accessibleSpace.add(sites.get(0));
-//									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-//								}
                             } else {
                                 String currentSite = null;
                                 boolean setSiteValue = true;
@@ -314,24 +305,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
                                     } catch (NumberFormatException ex) {
                                         // ignore if header value is wrong
                                     }
-                                    if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
-                                        boolean found = false;
-                                        for (long id : sites) {
-                                            if (id == currentSiteId) {
-                                                found = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!found) {
-                                            throw new IllegalArgumentException("Invalid Site.");
-                                        }
-                                    }
-
-//									if (currentSiteId != -1 && accessibleSpace == null) {
-//										accessibleSpace = new ArrayList<>();
-//										accessibleSpace.add(currentSiteId);
-//										currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-//									}
                                 }
                                 AccountUtil.setCurrentSiteId(currentSiteId);
                             }

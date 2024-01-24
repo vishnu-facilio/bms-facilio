@@ -359,7 +359,7 @@ public class CommonCommandUtil {
             // New FacilioException Queue code need to remove condition for Production
             if (FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
                 // LOGGER.debug("#####Facilio Exception Queue is push Msg is Entered"+message);
-                FacilioQueueException.addException(fromClass,message);
+                FacilioQueueException.addException(fromClass, message);
             }
 
 
@@ -482,11 +482,14 @@ public class CommonCommandUtil {
         return result;
     }
 
-    //will be changed soon
     public static List<Long> getMySiteIds() throws Exception {
+        return getMySiteIds(-1);
+    }
+    //will be changed soon
+    public static List<Long> getMySiteIds(int limit) throws Exception {
         boolean skipMaintenanceAppScoping = Boolean.valueOf(CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.SKIP_MAINTENANCE_APP_SCOPING, Boolean.FALSE));
         if ((AccountUtil.isFeatureEnabled(FeatureLicense.SCOPING) && AccountUtil.getCurrentApp() != null && !AccountUtil.getCurrentApp().getLinkName().equals(FacilioConstants.ApplicationLinkNames.FACILIO_MAIN_APP)) && !skipMaintenanceAppScoping) {
-            List<BaseSpaceContext> sites = getMyAccessibleSites();
+            List<BaseSpaceContext> sites = getMyAccessibleSites(limit);
             List<Long> siteIds = new ArrayList<>();
             if (CollectionUtils.isNotEmpty(sites)) {
                 for (BaseSpaceContext site : sites) {
@@ -520,10 +523,9 @@ public class CommonCommandUtil {
         }
     }
 
-    private static List<BaseSpaceContext> getMyAccessibleSites() throws Exception {
+    private static List<BaseSpaceContext> getMyAccessibleSites(int limit) throws Exception {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
-        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE);
 
         List<Long> siteIds = new ArrayList<>();
 
@@ -547,12 +549,16 @@ public class CommonCommandUtil {
         }
 
         SelectRecordsBuilder<BaseSpaceContext> selectBuilder = new SelectRecordsBuilder<BaseSpaceContext>()
-                .select(fields)
+                .select(Collections.singletonList(FieldFactory.getIdField(module)))
                 .module(module)
                 .skipScopeCriteria()
                 .beanClass(BaseSpaceContext.class)
                 .andCondition(CriteriaAPI.getCondition("SPACE_TYPE", "spaceType", String.valueOf(SpaceType.SITE.getIntVal()), NumberOperators.EQUALS));
 
+        if(limit > 0) {
+            selectBuilder.limit(limit);
+            selectBuilder.orderBy(FieldFactory.getIdField(module).getCompleteColumnName() + " desc");
+        }
         List<BaseSpaceContext> accessibleBaseSpace;
         if (siteIds.isEmpty()) {
             accessibleBaseSpace = selectBuilder.get();
