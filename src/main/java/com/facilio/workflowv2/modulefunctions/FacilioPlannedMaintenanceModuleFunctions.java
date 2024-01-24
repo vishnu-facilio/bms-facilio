@@ -227,6 +227,9 @@ public class FacilioPlannedMaintenanceModuleFunctions extends FacilioModuleFunct
             if (plannedMaintenance == null) {
                 throw new RuntimeException("Invalid PlannedMaintenance.");
             }
+            if (plannedMaintenance.getPmStatusEnum() != PlannedMaintenance.PMStatus.ACTIVE){
+                throw new RuntimeException("Can schedule WorkOrders only for active PlannedMaintenance.");
+            }
 
             // 2. validate planner
             if (plannerId < 0) {
