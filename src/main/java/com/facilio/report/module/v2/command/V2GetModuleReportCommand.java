@@ -9,10 +9,13 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.report.module.v2.context.V2ModuleFilterContext;
+import com.facilio.report.module.v2.context.V2ModuleGroupByContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
@@ -20,6 +23,11 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class V2GetModuleReportCommand extends FacilioCommand {
     @Override
@@ -32,10 +40,42 @@ public class V2GetModuleReportCommand extends FacilioCommand {
         V2ModuleReportContext v2_reportContext = V2AnalyticsOldUtil.getV2ModuleReport(reportId);
         if(v2_reportContext != null){
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            String moduleName = null;
             FacilioModule module = modBean.getModule(report.getModuleId());
             if(module != null){
                 v2_reportContext.setModuleName(module.getName());
+                moduleName = module.getName();
             }
+            String lookupModuleName = v2_reportContext.getDimensions()!=null ? v2_reportContext.getDimensions().getLookupModuleName() : null;
+            if(moduleName!=null && lookupModuleName!=null){
+                JSONObject reportFields = ReportFactoryFields.getReportFields(moduleName);
+                Map<String,String> lookupModuleMap = reportFields!=null ?(Map<String, String>) reportFields.get("lookupModuleMap") : new HashMap<>();
+                lookupModuleName = lookupModuleName.equals("Reading Occurrence") ? "Fault Occurrence" : lookupModuleName;
+                if(!lookupModuleName.contains("__")){
+                    if(lookupModuleMap!=null && lookupModuleMap.containsKey(lookupModuleName)){
+                        lookupModuleName = lookupModuleMap.get(lookupModuleName);
+                    }
+                    v2_reportContext.getDimensions().setLookupModuleName(lookupModuleName);
+                }
+                V2ModuleGroupByContext groupBy = v2_reportContext.getGroupBy();
+                if(groupBy!=null){
+                    String groupByModuleName = groupBy.getModuleName();
+                    String groupByFieldName = groupBy.getFieldName();
+                    String groupByLookupModuleName = groupBy.getLookupModuleName();
+                    if(groupByLookupModuleName==null && groupByFieldName!=null && groupByModuleName!=null){
+                        Map<String, List<FacilioField>> dimensions = (Map<String, List<FacilioField>>) reportFields.get("newDimension");
+                        for(Map.Entry<String,List<FacilioField>> dimension : dimensions.entrySet()){
+                            List<FacilioField> fieldList = dimensions.get(dimension.getKey());
+                            List<FacilioField> matchedFields = fieldList.stream().filter(field-> field.getName().equals(groupByFieldName) && field.getModule().getName().equals(groupByModuleName)).collect(Collectors.toList());
+                            if(matchedFields!=null && matchedFields.size()>0){
+                                groupBy.setLookupModuleName(dimension.getKey());
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             if(report.getBaseLines() != null) {
                 JSONArray baseLines = new JSONArray();
                 for(ReportBaseLineContext baseLine : report.getBaseLines()) {

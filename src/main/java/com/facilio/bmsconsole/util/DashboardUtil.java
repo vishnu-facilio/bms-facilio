@@ -696,13 +696,36 @@ public class DashboardUtil {
 					WidgetCardContext cardContext = (WidgetCardContext) dashboardWidgetContext;
 					if(cardContext.getCardLayout().equals(CardLayout.COMBO_CARD.getName())){
 						List<WidgetCardContext> childCards = CardUtil.getChildCards(cardContext.getId());
+						addModuleNameInCards(childCards);
 						cardContext.setChildCards(childCards);
 					}
+					List<WidgetCardContext> widgetList = Arrays.asList(cardContext);
+					addModuleNameInCards(widgetList);
 				}
 				dashboardWidgetContexts.add(dashboardWidgetContext);
 			}
 		}
 		return dashboardWidgetContexts;
+	}
+	public static void addModuleNameInCards(List<WidgetCardContext> widgetsList) throws Exception{
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for(WidgetCardContext childWidget : widgetsList){
+			if(childWidget!=null){
+				String layout = childWidget.getCardLayout()!=null ? childWidget.getCardLayout() : "" ;
+				JSONObject cardParams = childWidget.getCardParams();
+				if(layout.equals("v2_module_card") && cardParams!=null){
+					long moduleId = (long) cardParams.get("moduleId");
+					String moduleName = (String) cardParams.get("moduleName");
+					if(moduleName==null || moduleName.isEmpty()){
+						FacilioModule module = modBean.getModule(moduleId);
+						moduleName = module!=null ? module.getName() : "";
+						cardParams.put("moduleName",moduleName);
+						childWidget.setCardParams(cardParams);
+					}
+				}
+			}
+		}
 	}
 
 	public static List<DashboardWidgetContext> getDashboardWidgetsWithSection(List<DashboardWidgetContext> widget_list)throws Exception

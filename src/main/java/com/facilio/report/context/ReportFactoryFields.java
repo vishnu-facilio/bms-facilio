@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.facilio.modules.fields.MultiCurrencyField;
+import com.facilio.report.util.ReportUtil;
 import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONObject;
 
@@ -40,16 +41,28 @@ public class ReportFactoryFields {
 		}
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		HashMap<String,String> lookUpModuleNames = new HashMap<String,String>();
-		
+		HashMap<String,String> lookupModuleMap = new HashMap<>();
+		Map<String,List<FacilioField>> newDimensionMap = new HashMap<>();
+		Map<String,String> linkNameVsDisplayName = new HashMap<>();
+
+
 		for(String fieldName: fields.keySet()) {
 			FacilioField field = fields.get(fieldName);
 			if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 				LookupField lookupField = (LookupField) field;
 				if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-				if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && lookupField.getLookupModule() != null && lookupField.getLookupModule().getName() != null
-					&& !lookupField.getLookupModule().getName().equals("preventivemaintenance")) {
-					lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
-				}
+					if(!lookUpModuleNames.containsKey(lookupField.getDisplayName()) && lookupField.getLookupModule() != null && lookupField.getLookupModule().getName() != null
+							&& !lookupField.getLookupModule().getName().equals("preventivemaintenance")) {
+						lookUpModuleNames.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+						String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+						lookupModuleMap.put(lookupField.getDisplayName(),uniqueKey.toString());
+						String lookupModuleName = lookupField.getLookupModule().getName();
+						if(lookupModuleName.equals("basespace") || lookupModuleName.equals("resource")){
+							List<FacilioField> resourceFields = ReportUtil.getResourceFields(lookupModuleName,field);
+							newDimensionMap.put(uniqueKey,resourceFields);
+							linkNameVsDisplayName.put(uniqueKey,lookupField.getDisplayName());
+						}
+					}
 				}
 				selectedFields.add(fields.get(fieldName));
 			}
@@ -66,23 +79,44 @@ public class ReportFactoryFields {
 		HashMap<String , List<FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName,lookUpModuleNames, bean);
 		
 		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-		
+		String key = ReportUtil.generateUniqueKey(moduleName,moduleName);
+		newDimensionMap.put(key,dimensionFieldMap.get(facilioModule.getDisplayName()));
+		linkNameVsDisplayName.put(key,facilioModule.getDisplayName());
+		lookupModuleMap.put(facilioModule.getDisplayName(),key);
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
 		if(dimensionFieldMap.get("time") != null) {
-		dimensionListOrder.add("time");
+			dimensionListOrder.add("time");
+			String timeKey =ReportUtil.generateUniqueKey("time","time");
+			newDimensionMap.put(timeKey,dimensionFieldMap.get("time"));
+			linkNameVsDisplayName.put(timeKey,"Time");
+			lookupModuleMap.put("time",timeKey);
 		}
 		dimensionListOrder.add(facilioModule.getDisplayName());
 		
 		for(String module:lookUpModuleNames.keySet()) {
-			dimensionFieldMap.put(module, getDimensionLookupFields((List<FacilioField>) additionalModuleFields.get(lookUpModuleNames.get(module))));
+			String uniqueKey = lookupModuleMap.get(module);
+			List<FacilioField> fieldsList = getDimensionLookupFields( additionalModuleFields.get(lookUpModuleNames.get(module)));
+			dimensionFieldMap.put(module, fieldsList);
 			dimensionListOrder.add(module);
+			if(newDimensionMap.containsKey(uniqueKey)){
+				List<FacilioField> existingFields = newDimensionMap.get(uniqueKey);
+				existingFields.addAll(fieldsList);
+				newDimensionMap.put(uniqueKey,existingFields);
+			}
+			else{
+				newDimensionMap.put(uniqueKey,fieldsList);
+			}
+			linkNameVsDisplayName.put(uniqueKey,module);
 		}
 		
 		
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
 		rearrangedFields.put("displayName",facilioModule.getDisplayName());
-		
+		rearrangedFields.put("newDimension",newDimensionMap);
+		rearrangedFields.put("linkNameVsDisplayName",linkNameVsDisplayName);
+		rearrangedFields.put("lookupModuleMap",lookupModuleMap);
+
 		return rearrangedFields;
 	}
 	
@@ -126,17 +160,24 @@ public class ReportFactoryFields {
 		if(AccountUtil.isFeatureEnabled(FeatureLicense.VENDOR)) {
 			selectedFields.add(fields.get("vendor"));
 		}
-		
+
+		Map<String, List<FacilioField>> newDimensionMap = new HashMap<>();
+		Map<String,String> linkNameVsDisplayName = new HashMap<>();
+		HashMap<String,String> lookupModuleMap = new HashMap<>();
+
+
 		if(customFields.size() != 0) {
 			for(String customFieldName: customFields.keySet()) {
 				selectedFields.add(customFields.get(customFieldName));
 				if(customFields.get(customFieldName).getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
 					LookupField lookupField = (LookupField) customFields.get(customFieldName);
 					if(lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST && !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
-					if(!additonalModules.containsKey(lookupField.getDisplayName())) {
-						additonalModules.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
-						lookUpModuleFieldMap.put(lookupField.getDisplayName().toLowerCase(), lookupField);
-					}
+						if(!additonalModules.containsKey(lookupField.getDisplayName())) {
+							additonalModules.put(lookupField.getDisplayName(),lookupField.getLookupModule().getName());
+							lookUpModuleFieldMap.put(lookupField.getDisplayName().toLowerCase(), lookupField);
+							String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+							lookupModuleMap.put(lookupField.getDisplayName(),uniqueKey);
+						}
 					}
 				}
 			}
@@ -189,7 +230,16 @@ public class ReportFactoryFields {
 		dimensionListOrder.add("time");
 		dimensionListOrder.add("workorder");
 		dimensionListOrder.add("asset");
+		String timeKey = ReportUtil.generateUniqueKey("time","time");
+		String workOrderKey = ReportUtil.generateUniqueKey("workorder","workorder");
+		String assetkey = ReportUtil.generateUniqueKey("asset","asset");
 		HashMap<String, Long> moduleMap = (HashMap<String, Long>) rearrangedFields.get("moduleMap");
+		linkNameVsDisplayName.put(timeKey,"Time");
+		linkNameVsDisplayName.put(workOrderKey,"Work Order");
+		linkNameVsDisplayName.put(assetkey,"Asset");
+		lookupModuleMap.put("time",timeKey);
+		lookupModuleMap.put("workorder",workOrderKey);
+        lookupModuleMap.put("asset",assetkey);
 		for(String module: additonalModules.keySet()) {
 			FacilioModule facilioModule = bean.getModule(additonalModules.get(module));
 			List<FacilioField> moduleFields = bean.getAllFields(additonalModules.get(module));
@@ -200,13 +250,32 @@ public class ReportFactoryFields {
 //			}
 			moduleMap.put(module.toLowerCase(), facilioModule.getModuleId());
 			dimensionFieldMap.put(module, moduleFields);
+			newDimensionMap.put(lookupModuleMap.get(module),moduleFields);
 			dimensionListOrder.add(module);
+			linkNameVsDisplayName.put(lookupModuleMap.get(module),module);
+		}
+		newDimensionMap.put(timeKey,dimensionFieldMap.get("time"));
+		newDimensionMap.put(workOrderKey,dimensionFieldMap.get("workorder"));
+		newDimensionMap.put(assetkey,dimensionFieldMap.get("asset"));
+		if(dimensionFieldMap.containsKey("resource_fields")){
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String,List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null){
+				LookupField lookupField = (LookupField) field.clone();
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey,resourceFields);
+				linkNameVsDisplayName.put(uniqueKey,lookupField.getDisplayName());
+			}
 		}
 		rearrangedFields.put("moduleMap", moduleMap);
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		rearrangedFields.put("parentlookupFileds", lookUpModuleFieldMap);
 		rearrangedFields.put("displayName","workorders");
-		
+		rearrangedFields.put("newDimension",newDimensionMap);
+		rearrangedFields.put("linkNameVsDisplayName",linkNameVsDisplayName);
+		rearrangedFields.put("lookupModuleMap",lookupModuleMap);
+
 		return rearrangedFields;
 	}
 	
@@ -241,10 +310,32 @@ public class ReportFactoryFields {
 				selectedFields.add(customFields.get(customFieldName));
 			}
 		}
-		
-		
+
+		Map<String,String> linkNameVsDisplayName = new HashMap<>();
+		Map<String,List<FacilioField>> newDimensionMap = new HashMap<>();
+		Map<String,String> lookupModuleMap = new HashMap<>();
+		String timeKey =  ReportUtil.generateUniqueKey("time","time");
+		String assetKey = ReportUtil.generateUniqueKey("asset","asset");
 		JSONObject rearrangedFields = rearrangeFields(selectedFields, "asset");
-		
+		Map<String,List<FacilioField>> dimensionMap = (Map<String, List<FacilioField>>) rearrangedFields.get("dimension");
+		newDimensionMap.put(timeKey,dimensionMap.get("time"));
+		newDimensionMap.put(assetKey,dimensionMap.get("asset"));
+		linkNameVsDisplayName.put(timeKey,"Time");
+		linkNameVsDisplayName.put(assetKey,"Asset");
+		lookupModuleMap.put("time",timeKey);
+		lookupModuleMap.put("asset",assetKey);
+		if(dimensionMap.containsKey("resource_fields")){
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null){
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey,resourceFields);
+				linkNameVsDisplayName.put(uniqueKey,lookupField.getDisplayName());
+			}
+		}
+
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
 		dimensionListOrder.add("time");
 		dimensionListOrder.add("asset");
@@ -252,7 +343,11 @@ public class ReportFactoryFields {
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
 		rearrangedFields.put("displayName","assets");
-		
+		rearrangedFields.put("newDimension",newDimensionMap);
+		rearrangedFields.put("linkNameVsDisplayName",linkNameVsDisplayName);
+		rearrangedFields.put("lookupModuleMap",lookupModuleMap);
+
+
 		return rearrangedFields;
 		
 	}
@@ -317,11 +412,44 @@ public class ReportFactoryFields {
 		dimensionListOrder.add("time");
 		dimensionListOrder.add(FacilioConstants.ModuleNames.ASSET_BREAKDOWN);
 		dimensionListOrder.add("asset");
-		
+
+		Map<String,String> linkNameVsDisplayName = new HashMap<>();
+		Map<String,String> lookupModuleMap = new HashMap<>();
+		String timeKey = ReportUtil.generateUniqueKey("time","time");
+		String assetBreakDownKey = ReportUtil.generateUniqueKey("assetbreakdown","assetbreakdown");
+		String assetKey = ReportUtil.generateUniqueKey("asset","asset");
+		linkNameVsDisplayName.put(timeKey,"Time");
+		linkNameVsDisplayName.put(assetBreakDownKey,"Asset Breakdown");
+		linkNameVsDisplayName.put(assetKey,"Asset");
+		lookupModuleMap.put("time",timeKey);
+		lookupModuleMap.put("assetbreakdown",assetBreakDownKey);
+		lookupModuleMap.put("asset",assetKey);
+
+		Map<String,List<FacilioField>> newDimensionMap = new HashMap<>();
+		newDimensionMap.put(timeKey,dimensionFieldMap.get("time"));
+		newDimensionMap.put(assetBreakDownKey,dimensionFieldMap.get("assetbreakdown"));
+		newDimensionMap.put(assetKey,dimensionFieldMap.get("asset"));
+		if(dimensionFieldMap.containsKey("resource_fields")){
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null){
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey,resourceFields);
+				linkNameVsDisplayName.put(uniqueKey,lookupField.getDisplayName());
+			}
+		}
+
+
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
 		
 		rearrangedFields.put("displayName","breakdowns");
-		
+		rearrangedFields.put("newDimension",newDimensionMap);
+		rearrangedFields.put("linkNameVsDisplayName",linkNameVsDisplayName);
+		rearrangedFields.put("lookupModuleMap",lookupModuleMap);
+
+
 		return rearrangedFields;
 		
 	}
@@ -356,44 +484,76 @@ public class ReportFactoryFields {
 		}
 		
 		// loading additional module fields
-				JSONObject rearrangedFields = rearrangeFields(selectedFields, moduleName);
-				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName, bean);
-				
-				setAdditionalModulemap(rearrangedFields, moduleName, bean);
-				
-				List<FacilioField> assetFields = new ArrayList<FacilioField>();
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("moduleState"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
-				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
-				
-				
-				List<FacilioField> spaceFields = new ArrayList<FacilioField>();
-				spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
-				
-				Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
-				
-				dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
-				dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, spaceFields);
-				
-				ArrayList<String> dimensionListOrder = new ArrayList<String>();
-				dimensionListOrder.add("time");
-				dimensionListOrder.add(moduleName);
-				dimensionListOrder.add("asset");
-				
-				rearrangedFields.put("dimensionListOrder", dimensionListOrder);
-				
-				rearrangedFields.put("displayName","alarms");
-		
-		return rearrangedFields;	
+		JSONObject rearrangedFields = rearrangeFields(selectedFields, moduleName);
+		HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName, bean);
+
+		setAdditionalModulemap(rearrangedFields, moduleName, bean);
+
+		List<FacilioField> assetFields = new ArrayList<FacilioField>();
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("category"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("type"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("department"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("moduleState"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("unitPrice"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("purchasedDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("retireDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("warrantyExpiryDate"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingTool"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("rotatingItem"));
+		assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("lastIssuedToUser"));
+
+
+		List<FacilioField> spaceFields = new ArrayList<FacilioField>();
+		spaceFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.SPACE).get("spaceCategory"));
+
+		Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>)rearrangedFields.get("dimension");
+
+		dimensionFieldMap.put(FacilioConstants.ContextNames.ASSET, assetFields);
+		dimensionFieldMap.put(FacilioConstants.ContextNames.SPACE, spaceFields);
+
+		ArrayList<String> dimensionListOrder = new ArrayList<String>();
+		dimensionListOrder.add("time");
+		dimensionListOrder.add(moduleName);
+		dimensionListOrder.add("asset");
+
+		Map<String,String> linkNameVsDisplayName = new HashMap<>();
+		Map<String,String> lookupModuleMap = new HashMap<>();
+		String timeKey = ReportUtil.generateUniqueKey("time","time");
+		String alarmKey = ReportUtil.generateUniqueKey(moduleName,moduleName);
+		String assetKey = ReportUtil.generateUniqueKey("asset","asset");
+		linkNameVsDisplayName.put(timeKey,"Time");
+		FacilioModule module = bean.getModule(moduleName);
+		linkNameVsDisplayName.put(alarmKey,module.getDisplayName());
+		linkNameVsDisplayName.put(assetKey,"Asset");
+		lookupModuleMap.put("time",timeKey);
+		lookupModuleMap.put(moduleName,alarmKey);
+		lookupModuleMap.put("asset",assetKey);
+
+		Map<String,List<FacilioField>> newDimensionMap = new HashMap<>();
+		newDimensionMap.put(ReportUtil.generateUniqueKey("time","time"),dimensionFieldMap.get("time"));
+		newDimensionMap.put(ReportUtil.generateUniqueKey(moduleName,moduleName),dimensionFieldMap.get(moduleName));
+		newDimensionMap.put(ReportUtil.generateUniqueKey("asset","asset"),dimensionFieldMap.get("asset"));
+		if(dimensionFieldMap.containsKey("resource_fields")){
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null){
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(),lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey,resourceFields);
+				linkNameVsDisplayName.put(uniqueKey,lookupField.getDisplayName());
+			}
+		}
+
+
+		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
+		rearrangedFields.put("displayName","alarms");
+		rearrangedFields.put("newDimension",newDimensionMap);
+		rearrangedFields.put("linkNameVsDisplayName",linkNameVsDisplayName);
+		rearrangedFields.put("lookupModuleMap",lookupModuleMap);
+
+		return rearrangedFields;
 	}
 	
 	public static JSONObject getReportFields(String moduleName) throws Exception {
@@ -456,7 +616,7 @@ public class ReportFactoryFields {
 		FacilioField resourceField = getModuleResourceField(module);
 		if(resourceField != null) {
 			addFieldInList(dimensionFieldMap, "resource_fields", resourceField);
-		}		
+		}
 		fieldsObject.put("dimension", dimensionFieldMap);
 		fieldsObject.put("metrics", metricFields);
 		fieldsObject.put("moduleType", addModuleTypes(module));
@@ -496,7 +656,7 @@ public class ReportFactoryFields {
 		FacilioField resourceField = getModuleResourceField(module.getName());
 		if(resourceField != null) {
 			addFieldInList(dimensionFieldMap, "resource_fields", resourceField);
-		}		
+		}
 		fieldsObject.put("dimension", dimensionFieldMap);
 		fieldsObject.put("metrics", metricFields);
 		fieldsObject.put("moduleType", addModuleTypes(module.getName()));
@@ -849,46 +1009,8 @@ public class ReportFactoryFields {
 							|| lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE))) {
 						LookupField siteField = (LookupField) field.clone();
 						selectedFields.add(siteField);
-
-						LookupField lookupsiteField = (LookupField) field.clone();
-						FacilioModule siteModule = bean.getModule("site");
-						lookupsiteField.setLookupModule(siteModule);
-						lookupsiteField.setLookupModuleId(siteModule.getModuleId());
-						lookupsiteField.setDisplayName("Site");
-						selectedFields.add(lookupsiteField);
-
-
-						LookupField buildingField = (LookupField) field.clone();
-						FacilioModule buildingModule = bean.getModule("building");
-						buildingField.setLookupModule(buildingModule);
-						buildingField.setLookupModuleId(buildingModule.getModuleId());
-						buildingField.setDisplayName("Building");
-						selectedFields.add(buildingField);
-
-						LookupField floorField = (LookupField) field.clone();
-						FacilioModule floorModule = bean.getModule("floor");
-						floorField.setLookupModule(floorModule);
-						floorField.setLookupModuleId(floorModule.getModuleId());
-						floorField.setDisplayName("Floor");
-						selectedFields.add(floorField);
-
-						LookupField spaceField = (LookupField) field.clone();
-						FacilioModule spaceModule = bean.getModule("space");
-						spaceField.setLookupModule(spaceModule);
-						spaceField.setLookupModuleId(spaceModule.getModuleId());
-						spaceField.setDisplayName("Space");
-						selectedFields.add(spaceField);
-
-						if (lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE)) {
-							LookupField assetField = (LookupField) field.clone();
-							FacilioModule assetModule = bean.getModule("asset");
-							assetField.setLookupModule(assetModule);
-							assetField.setLookupModuleId(assetModule.getModuleId());
-							assetField.setDisplayName("Asset");
-							selectedFields.add(assetField);
-
-						}
-
+						List<FacilioField> fieldsList = ReportUtil.getResourceFields(lookupModule.getName(),field);
+						selectedFields.addAll(fieldsList);
 					} else {
 						selectedFields.add(field);
 

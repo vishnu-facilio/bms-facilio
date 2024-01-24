@@ -2597,4 +2597,73 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		return null;
 	}
+
+	public static String generateUniqueKey(String fieldName,String moduleName){
+		StringBuilder uniqueKey = new StringBuilder()
+				.append(fieldName)
+				.append("__")
+				.append(moduleName);
+		return uniqueKey.toString();
+	}
+	public static List<FacilioField> getResourceFields(String moduleName ,FacilioField field) throws Exception{
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fieldsList = new ArrayList<>();
+
+		LookupField lookupsiteField = (LookupField) field.clone();
+		FacilioModule siteModule = bean.getModule("site");
+		lookupsiteField.setLookupModule(siteModule);
+		lookupsiteField.setLookupModuleId(siteModule.getModuleId());
+		lookupsiteField.setDisplayName("Site");
+		fieldsList.add(lookupsiteField);
+
+
+		LookupField buildingField = (LookupField) field.clone();
+		FacilioModule buildingModule = bean.getModule("building");
+		buildingField.setLookupModule(buildingModule);
+		buildingField.setLookupModuleId(buildingModule.getModuleId());
+		buildingField.setDisplayName("Building");
+		fieldsList.add(buildingField);
+
+		LookupField floorField = (LookupField) field.clone();
+		FacilioModule floorModule = bean.getModule("floor");
+		floorField.setLookupModule(floorModule);
+		floorField.setLookupModuleId(floorModule.getModuleId());
+		floorField.setDisplayName("Floor");
+		fieldsList.add(floorField);
+
+		LookupField spaceField = (LookupField) field.clone();
+		FacilioModule spaceModule = bean.getModule("space");
+		spaceField.setLookupModule(spaceModule);
+		spaceField.setLookupModuleId(spaceModule.getModuleId());
+		spaceField.setDisplayName("Space");
+		fieldsList.add(spaceField);
+
+		if (moduleName.equals(FacilioConstants.ContextNames.RESOURCE)) {
+			LookupField assetField = (LookupField) field.clone();
+			FacilioModule assetModule = bean.getModule("asset");
+			assetField.setLookupModule(assetModule);
+			assetField.setLookupModuleId(assetModule.getModuleId());
+			assetField.setDisplayName("Asset");
+			fieldsList.add(assetField);
+		}
+		return  fieldsList;
+	}
+	public static List<FacilioField> generateResourceFields(FacilioField field) throws  Exception{
+		List<FacilioField> resourceFields = new ArrayList<>();
+ 		if (field.getDataType() == FieldType.LOOKUP.getTypeAsInt()) {
+			LookupField lookupField = (LookupField) field.clone();
+			if (lookupField.getLookupModule().getTypeEnum() != FacilioModule.ModuleType.PICK_LIST
+					&& !"users".equalsIgnoreCase(lookupField.getLookupModule().getName())) {
+				FacilioModule lookupModule = lookupField.getLookupModule();
+
+				if ((lookupModule.getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+						|| lookupModule.getName().equals(FacilioConstants.ContextNames.RESOURCE))) {
+
+					List<FacilioField> fieldsList = ReportUtil.getResourceFields(lookupModule.getName(),field);
+					resourceFields.addAll(fieldsList);
+				}
+			}
+		}
+		 return resourceFields;
+	}
  }
