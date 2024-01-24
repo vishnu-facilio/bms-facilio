@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -609,15 +608,6 @@ public class FloorModule extends BaseModuleConfig {
         addSpace.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addSpace);
 
-        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
-        addPhoto.setName("Add Photo");
-        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        addPhoto.setIdentifier("addFloorPhoto");
-        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        addPhoto.setPermissionRequired(true);
-        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.FLOOR,addPhoto);
-
         SystemButtonRuleContext floorPlan = new SystemButtonRuleContext();
         floorPlan.setName("Manage Floor Plan");
         floorPlan.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
@@ -735,7 +725,8 @@ public class FloorModule extends BaseModuleConfig {
         defaultFloorForm.setShowInWeb(true);
 
         List<FormField> defaultFloorFormFields = new ArrayList<>();
-        defaultFloorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
+        FormField photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        defaultFloorFormFields.add(photoField);        defaultFloorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultFloorFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultFloorFormFields.add(new FormField("building", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Building", FormField.Required.REQUIRED,  "building",3, 2, true));
         defaultFloorFormFields.add(new FormField("site", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Site", FormField.Required.REQUIRED, "site",3, 3, true));

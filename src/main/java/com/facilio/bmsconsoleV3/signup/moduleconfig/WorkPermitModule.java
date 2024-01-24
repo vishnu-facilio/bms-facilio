@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.TemplatePages.WorkPermitTemplatePageFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -14,8 +15,8 @@ import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
-import com.facilio.cb.util.ChatBotMLUtil;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -63,7 +64,7 @@ public class WorkPermitModule extends BaseModuleConfig{
         workPermitFormDefaultFields.add(new FormField("expectedStartTime", FacilioField.FieldDisplayType.DATETIME, "Valid From", FormField.Required.REQUIRED, 5, 2));
         workPermitFormDefaultFields.add(new FormField("expectedEndTime", FacilioField.FieldDisplayType.DATETIME, "Valid To", FormField.Required.REQUIRED, 5, 3));
         workPermitFormDefaultFields.add(new FormField("ticket", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Work Order", FormField.Required.OPTIONAL, "ticket", 6, 1));
-        workPermitFormDefaultFields.add(new FormField("workPermitType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Permit Type", FormField.Required.OPTIONAL, "workPermitType", 7, 1));
+        workPermitFormDefaultFields.add(new FormField("workPermitType", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Permit Type", FormField.Required.REQUIRED, "workPermitType", 7, 1));
 
         List<FormField> workPermitFormFields = new ArrayList<>();
         workPermitFormFields.addAll(workPermitFormDefaultFields);
@@ -145,6 +146,8 @@ public class WorkPermitModule extends BaseModuleConfig{
         FacilioChain addModuleChain = TransactionChainFactory.getAddFieldsChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, workPermitModuleList);
         addModuleChain.execute();
+        addWPTypeCheckListFields();
+        addWPCheckListCategoryFields();
         LOGGER.info("Added WorkPermit fields");
 
         addSystemButtons(moduleName);
@@ -164,6 +167,33 @@ public class WorkPermitModule extends BaseModuleConfig{
         module.setFields(workPermitCheckListFields);
         return module;
     }
+
+    public void addWPTypeCheckListFields() throws Exception{
+        FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST);
+        FacilioField deletedField = FieldFactory.getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN);
+        deletedField.setVersion(Version.V2.getVersionId());
+        List<FacilioField> allFields = new ArrayList<>();
+        allFields.add(deletedField);
+        FacilioChain addFieldChain = TransactionChainFactory.getAddFieldsChain();
+        FacilioContext addFieldContext = addFieldChain.getContext();
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, allFields);
+        addFieldChain.execute();
+    }
+
+    public void addWPCheckListCategoryFields() throws Exception{
+        FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST_CATEGORY);
+        FacilioField deletedField = FieldFactory.getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN);
+        deletedField.setVersion(Version.V2.getVersionId());
+        List<FacilioField> allFields = new ArrayList<>();
+        allFields.add(deletedField);
+        FacilioChain addFieldChain = TransactionChainFactory.getAddFieldsChain();
+        FacilioContext addFieldContext = addFieldChain.getContext();
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, allFields);
+        addFieldChain.execute();
+    }
+
     private List<FacilioField> getWorkPermitCheckListFields(FacilioModule workPermitCheckListModule) throws Exception {
         List<FacilioField> workPermitCheckListFields = new ArrayList<>();
 
@@ -402,7 +432,8 @@ public class WorkPermitModule extends BaseModuleConfig{
     private Criteria getPrerequisitesNotFilledCriteria(Map<String, FacilioField> fieldMap) {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"),CommonOperators.IS_EMPTY));
-        criteria.setPattern("(1)");
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("workPermitType"),CommonOperators.IS_NOT_EMPTY));
+        criteria.setPattern("(1 AND 2)");
         return criteria;
     }
 
@@ -410,21 +441,24 @@ public class WorkPermitModule extends BaseModuleConfig{
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), WorkPermitContext.PermitStatus.PRE_REQUISITES_FILLED.getIndex().toString(), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), String.valueOf(WorkPermitContext.PermitStatus.PRE_VALIDATION_DONE.getIndex()), NumberOperators.NOT_EQUALS));
-        criteria.setPattern("(1 AND 2)");
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("workPermitType"),CommonOperators.IS_NOT_EMPTY));
+        criteria.setPattern("(1 AND 2 AND 3)");
         return criteria;
     }
     private Criteria getPostCheckListNotFilledCriteria(Map<String, FacilioField> fieldMap) {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), String.valueOf(WorkPermitContext.PermitStatus.PRE_VALIDATION_DONE.getIndex()), NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), WorkPermitContext.PermitStatus.POST_REQUISITES_FILLED.getIndex().toString(), NumberOperators.NOT_EQUALS));
-        criteria.setPattern("(1 AND 2)");
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("workPermitType"),CommonOperators.IS_NOT_EMPTY));
+        criteria.setPattern("(1 AND 2 AND 3)");
         return criteria;
     }
     private Criteria getPostvalidationNotDoneCriteria(Map<String, FacilioField> fieldMap) {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), WorkPermitContext.PermitStatus.POST_REQUISITES_FILLED.getIndex().toString(),  NumberOperators.EQUALS));
         criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("permitStatus"), WorkPermitContext.PermitStatus.POST_VALIDATION_DONE.getIndex().toString(),  NumberOperators.NOT_EQUALS));
-        criteria.setPattern("(1 AND 2)");
+        criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("workPermitType"),CommonOperators.IS_NOT_EMPTY));
+        criteria.setPattern("(1 AND 2 AND 3)");
         return criteria;
     }
 

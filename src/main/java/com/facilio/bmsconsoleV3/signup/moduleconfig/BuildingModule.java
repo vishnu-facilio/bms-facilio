@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
@@ -109,15 +110,6 @@ public class BuildingModule extends BaseModuleConfig {
         addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
         addSpace.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,addSpace);
-
-        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
-        addPhoto.setName("Add Photo");
-        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        addPhoto.setIdentifier("addBuildingPhoto");
-        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        addPhoto.setPermissionRequired(true);
-        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.BUILDING,addPhoto);
 
         SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
         downloadQR.setName("Download QR");
@@ -733,6 +725,8 @@ public class BuildingModule extends BaseModuleConfig {
         defaultBuildingForm.setShowInWeb(true);
 
         List<FormField> defaultBuildingFormfields = new ArrayList<>();
+        FormField photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        defaultBuildingFormfields.add(photoField);
         defaultBuildingFormfields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultBuildingFormfields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultBuildingFormfields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 3, 1));

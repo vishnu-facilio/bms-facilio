@@ -139,15 +139,6 @@ public class SpaceModule extends BaseModuleConfig {
         addSpace.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addSpace);
 
-        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
-        addPhoto.setName("Add Photo");
-        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.EDIT.getIndex());
-        addPhoto.setIdentifier("addSpacePhoto");
-        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        addPhoto.setPermissionRequired(true);
-        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SPACE,addPhoto);
-
         SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
         downloadQR.setName("Download QR");
         downloadQR.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
@@ -705,6 +696,8 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSiteForm.setShowInWeb(true);
 
         List<FormField> defaultSpaceWebSiteFormFields = new ArrayList<>();
+        FormField photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        defaultSpaceWebSiteFormFields.add(photoField);
         defaultSpaceWebSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSpaceWebSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSpaceWebSiteFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
@@ -741,6 +734,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebBuildingForm.setShowInWeb(true);
 
         List<FormField> defaultSpaceWebBuildingFormFields = new ArrayList<>();
+        defaultSpaceWebBuildingFormFields.add(photoField);
         defaultSpaceWebBuildingFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSpaceWebBuildingFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSpaceWebBuildingFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
@@ -777,6 +771,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebFloorForm.setShowInWeb(true);
 
         List<FormField> defaultSpaceWebFloorFormFields = new ArrayList<>();
+        defaultSpaceWebFloorFormFields.add(photoField);
         defaultSpaceWebFloorFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSpaceWebFloorFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSpaceWebFloorFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));
@@ -811,6 +806,7 @@ public class SpaceModule extends BaseModuleConfig {
         defaultSpaceWebSpaceForm.setShowInWeb(true);
 
         List<FormField> defaultSpaceWebSpaceFormFields = new ArrayList<>();
+        defaultSpaceWebSpaceFormFields.add(photoField);
         defaultSpaceWebSpaceFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSpaceWebSpaceFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSpaceWebSpaceFormFields.add(new FormField("spaceCategory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Category", FormField.Required.OPTIONAL,"spacecategory", 3, 1));

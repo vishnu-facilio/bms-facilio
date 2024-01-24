@@ -1,7 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.moduleconfig;
 
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.ModuleSettingConfig.context.GlimpseContext;
 import com.facilio.bmsconsole.ModuleSettingConfig.util.GlimpseUtil;
@@ -116,15 +115,6 @@ public class SiteModule extends BaseModuleConfig {
         addSpace.setPermission(AccountConstants.ModulePermission.CREATE.name());
         addSpace.setPermissionRequired(true);
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addSpace);
-
-        SystemButtonRuleContext addPhoto = new SystemButtonRuleContext();
-        addPhoto.setName("Add Photo");
-        addPhoto.setButtonType(SystemButtonRuleContext.ButtonType.CREATE.getIndex());
-        addPhoto.setIdentifier("addSitePhoto");
-        addPhoto.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
-        addPhoto.setPermission(AccountConstants.ModulePermission.UPDATE.name());
-        addPhoto.setPermissionRequired(true);
-        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.SITE,addPhoto);
 
         SystemButtonRuleContext downloadQR = new SystemButtonRuleContext();
         downloadQR.setName("Download QR");
@@ -537,6 +527,8 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteForm.setShowInWeb(true);
 
         List<FormField> defaultSiteFormFields = new ArrayList<>();
+        FormField photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        defaultSiteFormFields.add(photoField);
         defaultSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSiteFormFields.add(new FormField("location", FacilioField.FieldDisplayType.GEO_LOCATION, "Location", FormField.Required.OPTIONAL, 3, 1));
@@ -569,6 +561,8 @@ public class SiteModule extends BaseModuleConfig {
         fsmSiteForm.setShowInWeb(true);
 
         List<FormField> fsmSiteFormFields = new ArrayList<>();
+        photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        fsmSiteFormFields.add(photoField);
         fsmSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         fsmSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         fsmSiteFormFields.add(new FormField("territory", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Territory", FormField.Required.REQUIRED, 3, 1));
@@ -608,6 +602,8 @@ public class SiteModule extends BaseModuleConfig {
         defaultSiteForm.setShowInWeb(true);
 
         List<FormField> defaultSiteFormFields = new ArrayList<>();
+        FormField photoField = new FormField("photo", FacilioField.FieldDisplayType.IMAGE, "Photo", FormField.Required.OPTIONAL, 0, 1);
+        defaultSiteFormFields.add(photoField);
         defaultSiteFormFields.add(new FormField("name", FacilioField.FieldDisplayType.TEXTBOX, "Name", FormField.Required.REQUIRED, 1, 1));
         defaultSiteFormFields.add(new FormField("description", FacilioField.FieldDisplayType.TEXTAREA, "Description", FormField.Required.OPTIONAL, 2, 1));
         defaultSiteFormFields.add(new FormField("client", FacilioField.FieldDisplayType.LOOKUP_SIMPLE, "Client", FormField.Required.REQUIRED, "client",3, 2));
