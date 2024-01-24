@@ -77,10 +77,20 @@ public class V2ConstructCardCommand extends FacilioCommand {
     {
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         Long fieldId = cardContext.getFieldId();
+        ReadingKPIContext readingKPI=null;
         if(cardContext != null && fieldId > 0)
         {
             FacilioField field = modBean.getField(fieldId);
             FacilioModule baseModule = field.getModule();
+            if(baseModule.getTypeEnum() == FacilioModule.ModuleType.LIVE_FORMULA){
+                Map<Long, Long> field_vs_kpi = ReadingKpiAPI.getReadingFieldIdVsKpiId(new ArrayList<>());
+                if(field_vs_kpi != null){
+                    Long kpiId = field_vs_kpi.get(field.getFieldId());
+                    if(kpiId != null) {
+                        readingKPI = ReadingKpiAPI.getReadingKpi(kpiId);
+                    }
+                }
+            }
             FacilioField parentModuleIdField = FieldFactory.getIdField(modBean.getModule(cardContext.getParentModuleName()));
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(baseModule.getName()));
 
@@ -116,7 +126,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                      */
 
                     Object result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()), baseModule, range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter, aggr, field);
-                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null,aggr));
+                    cardContext.getResult().put("value", this.setResultJson(timeFilter.getDateLabel(), result, field, null,aggr, readingKPI != null ? readingKPI.getUnitLabel() : null));
                     Object baseline_result = null;
                     if(cardContext.getBaseline() != null)
                     {
@@ -126,7 +136,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
                         cardContext.getTimeFilter().setBaselineRange(baseline_range);
                         cardContext.getTimeFilter().setBaselinePeriod(cardContext.getBaseline());
                         baseline_result = this.fetchCardData(Collections.singletonList(aggr.getSelectField(field).clone()) ,baseModule, baseline_range, cardContext, fieldMap, parentModuleIdField, child_field, parentModuleForCriteria,db_filter,aggr, field);
-                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend(),aggr));
+                        cardContext.getResult().put("baseline_value", this.setResultJson(baseline.getName(), baseline_result, field, cardContext.getBaselineTrend(),aggr, readingKPI != null ? readingKPI.getUnitLabel() : null));
                     }
                     /**
                      * Select Builder construction to fetch card data ends here
@@ -136,6 +146,10 @@ public class V2ConstructCardCommand extends FacilioCommand {
         }
     }
     private Map<String, Object> setResultJson(String period, Object value, FacilioField field, String trend,AggregateOperator aggr)throws Exception
+    {
+        return setResultJson(period, value, field, trend, aggr, null);
+    }
+    private Map<String, Object> setResultJson(String period, Object value, FacilioField field, String trend,AggregateOperator aggr, String unitSymbol)throws Exception
     {
         Map<String, Object> result_json = new HashMap<>();
         result_json.put("dataType", field != null ? field.getDataTypeEnum() : null);
@@ -202,6 +216,9 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     result_json.put("value", enumMap.get(Integer.parseInt(value.toString())));
                 }
             }
+        }
+        if(unitSymbol != null){
+            result_json.put("unit", unitSymbol);
         }
         return result_json;
     }
@@ -392,7 +409,7 @@ public class V2ConstructCardCommand extends FacilioCommand {
             if(parentIds != null && parentIds.size() > 0)
             {
                 Map<Long, List<Map<String, Object>>> resultForDynamicKpi = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
-                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null,aggr));
+                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(resultForDynamicKpi, parentIds.get(0)), null, null,aggr, dynKpi.getUnitLabel()));
                 if(cardParams.getBaseline() != null)
                 {
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(cardParams.getBaseline());
@@ -401,21 +418,21 @@ public class V2ConstructCardCommand extends FacilioCommand {
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
                     Map<Long, List<Map<String, Object>>> baseline_dkpi_result = ReadingKpiAPI.getResultForDynamicKpi(Collections.singletonList(parentIds.get(0)), dateRange, null, dynKpi.getNs(), clickhouse, true);
-                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend(),aggr));
+                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, this.getDynamicKpiFinalResult(baseline_dkpi_result, parentIds.get(0)), null, cardParams.getBaselineTrend(),aggr, dynKpi.getUnitLabel()));
                 }
                 Map<String, Object> parentIdMap = new HashMap<>();
                 parentIdMap.put("parentId", parentIds.get(0));
                 cardParams.getResult().put("parentIds", parentIdMap);
             }
             else {
-                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, null,aggr));
+                cardParams.getResult().put("value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, null,aggr, dynKpi.getUnitLabel()));
                 if (cardParams.getBaseline() != null) {
                     BaseLineContext baseline = BaseLineAPI.getBaseLine(cardParams.getBaseline());
                     baseline.setAdjustType(BaseLineContext.AdjustType.NONE);
                     DateRange baseline_range = baseline.calculateBaseLineRange(dateRange, baseline.getAdjustTypeEnum());
                     cardParams.getTimeFilter().setBaselineRange(baseline_range);
                     cardParams.getTimeFilter().setBaselinePeriod(cardParams.getBaseline());
-                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, cardParams.getBaselineTrend(),aggr));
+                    cardParams.getResult().put("baseline_value", this.setResultJson(cardParams.getTimeFilter() != null ? cardParams.getTimeFilter().getDateLabel() : null, null, null, cardParams.getBaselineTrend(),aggr, dynKpi.getUnitLabel()));
                 }
             }
         }
