@@ -23,6 +23,8 @@ public class DashboardExportCommand extends FacilioCommand {
         String fileName = "dashboardPdf-" + System.currentTimeMillis();
         String appLink = AccountUtil.getCurrentApp().getLinkName();
         Map<String,Object> options = new HashMap<>();
+        options.put("landscape",true);
+        options.put("format","A3");
         PDFOptions pdfOptions = FieldUtil.getAsBeanFromMap(options, PDFOptions.class);
         long fileId = PDFServiceFactory.getPDFService().exportURL(fileName, "/dashboard/"+ appLink +"/dashboard/"+linkName+"?hideHeader=true&hideSidebar=true", PDFService.ExportType.PDF, pdfOptions);
         if(fileId > 0) {

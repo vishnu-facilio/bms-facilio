@@ -994,6 +994,16 @@ public class DashboardUtil {
 					sortedArray.addAll(separateArrays.get(yVal));
 				}
 				sectionWidget.setWidgets_in_section(sortedArray);
+				sectionWidget.getWidgets_in_section().sort((f2, f1) -> {
+					if(f1.getxPosition() > f2.getxPosition()) {
+						Long f1MaxHeight = f1.getyPosition() + (Long) f1.getMetaJSON().get("layoutHeight");
+						Long f2MaxHeight = f2.getyPosition() + (Long) f2.getMetaJSON().get("layoutHeight");
+						if(f1MaxHeight >= f2MaxHeight){
+							return -1;
+						}
+					}
+					 return 1;
+				});
 			}
 		}
 	}
