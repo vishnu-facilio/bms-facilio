@@ -44,7 +44,7 @@ public class KpiContextWrapper {
             this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
             if(isFromAnalytics && kpi.getUnitLabel() != null && !"".equals(kpi.getUnitLabel())){
                 this.readingField.setUnit(kpi.getUnitLabel());
-                if(kpi != null && kpi.getUnitId() > 0 ){
+                if(kpi != null && kpi.getUnitId() != null && kpi.getUnitId() > 0 ){
                     Unit kpi_unit = Unit.valueOf(kpi.getUnitId());
                     this.isLeft = kpi_unit!= null ? kpi_unit.getIsLeft() : false;
                 }
@@ -53,7 +53,7 @@ public class KpiContextWrapper {
         if(isFromAnalytics && kpiType == KPIType.DYNAMIC && kpi.getUnitLabel() != null && !"".equals(kpi.getUnitLabel()))
         {
             this.unit = kpi.getUnitLabel();
-            if(kpi != null && kpi.getUnitId() > 0 ){
+            if(kpi != null && kpi.getUnitId() != null && kpi.getUnitId() > 0 ){
                 Unit kpi_unit = Unit.valueOf(kpi.getUnitId());
                 this.isLeft = kpi_unit!= null ? kpi_unit.getIsLeft() : false;
             }
