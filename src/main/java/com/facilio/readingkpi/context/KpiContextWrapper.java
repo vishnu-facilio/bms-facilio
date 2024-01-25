@@ -19,7 +19,8 @@ public class KpiContextWrapper {
     private FacilioFieldKpiWrapper readingField;
     private KPIType kpiType;
     private Long categoryId;
-    private Unit unit;
+    private String unit;
+    private boolean isLeft;
 
     public KpiContextWrapper(Long id, String name) {
         this.id = id;
@@ -43,11 +44,19 @@ public class KpiContextWrapper {
             this.readingField = new FacilioFieldKpiWrapper(Constants.getModBean().getField(kpi.getReadingFieldId()));
             if(isFromAnalytics && kpi.getUnitLabel() != null && !"".equals(kpi.getUnitLabel())){
                 this.readingField.setUnit(kpi.getUnitLabel());
+                if(kpi != null && kpi.getUnitId() > 0 ){
+                    Unit kpi_unit = Unit.valueOf(kpi.getUnitId());
+                    this.isLeft = kpi_unit!= null ? kpi_unit.getIsLeft() : false;
+                }
             }
         }
-        if(isFromAnalytics && kpiType == KPIType.DYNAMIC && kpi.getUnitId() != null && kpi.getUnitId() > 0)
+        if(isFromAnalytics && kpiType == KPIType.DYNAMIC && kpi.getUnitLabel() != null && !"".equals(kpi.getUnitLabel()))
         {
-            this.unit = Unit.valueOf(kpi.getUnitId());
+            this.unit = kpi.getUnitLabel();
+            if(kpi != null && kpi.getUnitId() > 0 ){
+                Unit kpi_unit = Unit.valueOf(kpi.getUnitId());
+                this.isLeft = kpi_unit!= null ? kpi_unit.getIsLeft() : false;
+            }
         }
     }
 

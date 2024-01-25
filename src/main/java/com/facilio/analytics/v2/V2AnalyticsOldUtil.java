@@ -1667,6 +1667,7 @@ public class V2AnalyticsOldUtil {
         if (field instanceof NumberField) {
             NumberField numberField = (NumberField)field;
             details.put("unit", numberField.getUnit());
+            details.put("isLeft", numberField.getUnitEnum() != null ? numberField.getUnitEnum().getIsLeft() : false);
         }
         return details;
     }
