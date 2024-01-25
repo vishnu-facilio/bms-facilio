@@ -3,6 +3,9 @@ package com.facilio.bmsconsole.templates;
 import com.facilio.bmsconsole.context.TemplateUrlContext;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
 import com.facilio.bmsconsole.util.TemplateAttachmentUtil;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.workflowlog.context.WorkflowLogContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import lombok.Getter;
@@ -20,6 +23,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public abstract class Template implements Serializable {
@@ -142,14 +146,16 @@ public abstract class Template implements Serializable {
 		}
 		return false;
 	}
-	
-	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception {
+	public final JSONObject getTemplate(Map<String, Object> parameters) throws Exception{
+		return getTemplate(parameters,null,null);
+	}
+	public final JSONObject getTemplate(Map<String, Object> parameters, WorkflowRuleContext workflowRule,Object currentRecord) throws Exception {
 		JSONObject json = getOriginalTemplate();
 		if (json != null) {
 
 			Map<String, Object> params = new HashMap<>();
 			executeWorkflow(params, parameters);
-			executeUserWorkflow(params, parameters);
+			executeUserWorkflow(params, parameters,workflowRule,(ModuleBaseWithCustomFields) currentRecord);
 			JSONObject parsedJson = getParsedJson(json,params,parameters);
 			if (getIsAttachmentAdded()) {
 				fetchAttachments();
@@ -227,15 +233,23 @@ public abstract class Template implements Serializable {
 		}
 	}
 
-	protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+		protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters, WorkflowRuleContext workflowRule, ModuleBaseWithCustomFields record) throws Exception {
 		if (userWorkflow  != null) {
-			Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters);
+			WorkflowLogContext.WorkflowLogType logRuleType=null;
+			Long recordId=null;
+			if(workflowRule!=null) {
+				userWorkflow.setRecordModuleId(workflowRule.getModuleId());
+				userWorkflow.setLogString(new StringBuilder(workflowRule.getRuleTypeEnum() + " USERWORKFLOW`S  "));
+				List<WorkflowLogContext.WorkflowLogType> workflowLogTypes = Arrays.stream(WorkflowLogContext.WorkflowLogType.values()).filter(i -> i.getRuleType() != null && i.getRuleType().equals(workflowRule.getRuleTypeEnum())).collect(Collectors.toList());
+				logRuleType=CollectionUtils.isNotEmpty(workflowLogTypes)?workflowLogTypes.get(0):null;
+				recordId=record!=null?record.getId():null;
+			}
+			Map<String, Object> userParams = (Map<String, Object>) WorkflowUtil.getWorkflowExpressionResult(userWorkflow, parameters,workflowRule.getId(),recordId,logRuleType);
 			if (userParams != null && !userParams.isEmpty()) {
 				// Replacing the old params via workflow
 				for (String param : userParams.keySet()){
 					params.put(CUSTOM_SCRIPT_NAMESPACE + "." +param, userParams.get(param));
 				}
-
 			}
 		}
 	}

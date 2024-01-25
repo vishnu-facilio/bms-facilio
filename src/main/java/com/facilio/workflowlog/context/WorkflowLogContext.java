@@ -3,7 +3,6 @@ package com.facilio.workflowlog.context;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
@@ -80,8 +79,8 @@ public class WorkflowLogContext extends V3Context {
         CUSTOM_BUTTON_RULE(7, RuleType.CUSTOM_BUTTON,"Custom Button Rule"),
         APPROVAL_STATE_FLOW(8,RuleType.APPROVAL_STATE_FLOW,"Stateflow Rule"),
         APPROVAL_STATE_TRANSITION(9,RuleType.APPROVAL_STATE_TRANSITION,"State Transition Rule"),
-        FLOW(10,RuleType.FLOW,"Flow")
-
+        NOTIFICATION_RULE(10,RuleType.MODULE_RULE_NOTIFICATION,"Notification Rule"),
+        FLOW(11,RuleType.FLOW,"Flow")
         ;
 
         WorkflowLogType(int i,String name) {

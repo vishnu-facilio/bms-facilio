@@ -117,7 +117,12 @@ public class ActionContext implements Serializable {
 		}
 		Boolean result;
 		if(template != null) {
-			JSONObject actionObj = template.getTemplate(placeHolders);
+			JSONObject actionObj=null;
+			try {
+				 actionObj = template.getTemplate(placeHolders,currentRule,currentRecord);
+			}catch (Exception e){
+				return WorkflowRuleActionLogContext.ActionStatus.FAILED;
+			}
 			
 			if (actionObj != null) {
 				if(placeHolders != null) {

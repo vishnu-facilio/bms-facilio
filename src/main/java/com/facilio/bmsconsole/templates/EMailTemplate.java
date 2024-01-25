@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.templates;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.emailtemplate.context.EMailStructure;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.json.simple.JSONObject;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -132,11 +134,11 @@ public class EMailTemplate extends BaseMailTemplate {
 	}
 
 	@Override
-	protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters) throws Exception {
+	protected void executeUserWorkflow(Map<String, Object> params, Map<String, Object> parameters, WorkflowRuleContext workflowRule, ModuleBaseWithCustomFields record) throws Exception {
 		if (emailStructure != null) {
-			emailStructure.executeUserWorkflow(params, parameters);
+			emailStructure.executeUserWorkflow(params, parameters,workflowRule, record);
 		}
-		super.executeUserWorkflow(params, parameters);
+		super.executeUserWorkflow(params, parameters,workflowRule, record);
 	}
 
 	@Override

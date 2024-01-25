@@ -2,15 +2,16 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.moduleBuilder.util.ResponseFormatUtil;
 import com.facilio.v3.context.Constants;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SystemButtonAction extends FacilioAction{
@@ -68,7 +69,13 @@ public class SystemButtonAction extends FacilioAction{
         context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
         chain.execute();
 
-        setResult(FacilioConstants.ContextNames.SYSTEM_BUTTONS,context.get(FacilioConstants.ContextNames.SYSTEM_BUTTONS));
+        List<SystemButtonRuleContext> systemButtonList = (List<SystemButtonRuleContext>) ResponseFormatUtil.formatWorkflowRulesBasedOnResponseFields(
+                (List<SystemButtonRuleContext>) context.get(FacilioConstants.ContextNames.SYSTEM_BUTTONS),
+                Arrays.asList("id","name","description","positionType","positionTypeEnum","status"),
+                false,
+                new SystemButtonRuleContext());
+
+        setResult(FacilioConstants.ContextNames.SYSTEM_BUTTONS,systemButtonList);
         return SUCCESS;
     }
 
