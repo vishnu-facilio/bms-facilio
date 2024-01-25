@@ -11,6 +11,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.*;
 import com.facilio.report.module.v2.context.*;
 import com.facilio.report.util.ReportUtil;
@@ -72,8 +73,16 @@ public class V2ConstructModuleReportCommand extends FacilioCommand {
         FacilioField xField = null;
         if(dimension != null && dimension.getFieldName() != null && dimension.getModuleName() != null)
         {
-            String fieldName = dimension.getFieldName();
-            xField = dimension.isSpecial() ? ReportUtil.getField(modBean, fieldName, modBean.getModule(dimension.getModuleName())): modBean.getField(fieldName, dimension.getModuleName());
+            if(dimension.getFieldName().equalsIgnoreCase("resource") && ReportFactoryFields.getModuleResourceField(v2_report.getModuleName()) != null){
+                FacilioField resourceField = modBean.getField("resource",v2_report.getModuleName());
+                if(resourceField != null && resourceField instanceof LookupField && ((LookupField) resourceField).getLookupModule() != null && ((LookupField) resourceField).getLookupModule().getName().equalsIgnoreCase("resource")){
+                    xField = resourceField;
+                    reportContext.setxAggr(ReportUtil.getSpaceAggOperator(dimension.getModuleName()));
+                }
+            }else {
+                String fieldName = dimension.getFieldName();
+                xField = dimension.isSpecial() ? ReportUtil.getField(modBean, fieldName, modBean.getModule(dimension.getModuleName())): modBean.getField(fieldName, dimension.getModuleName());
+            }
         }
         if(dimension.getSelected_lookup_values()!= null){
             xAxis.setSelectValuesOnly(dimension.getSelected_lookup_values());

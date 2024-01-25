@@ -2666,4 +2666,27 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 		}
 		 return resourceFields;
 	}
+	public static Integer getSpaceAggOperator(String moduleName) throws Exception {
+		AggregateOperator aggr = null;
+		switch (moduleName) {
+			case FacilioConstants.ContextNames.SITE:
+				aggr = SpaceAggregateOperator.SITE;
+				break;
+			case FacilioConstants.ContextNames.BUILDING:
+				aggr = SpaceAggregateOperator.BUILDING;
+				break;
+			case FacilioConstants.ContextNames.FLOOR:
+				aggr = SpaceAggregateOperator.FLOOR;
+				break;
+			case FacilioConstants.ContextNames.SPACE:
+				aggr = SpaceAggregateOperator.SPACE;
+				break;
+			default:
+				break;
+		}
+		if(aggr != null) {
+			return aggr.getValue();
+		}
+		return null;
+	}
  }

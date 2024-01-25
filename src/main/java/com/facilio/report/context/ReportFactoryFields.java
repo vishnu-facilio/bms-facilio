@@ -258,18 +258,14 @@ public class ReportFactoryFields {
 		newDimensionMap.put(workOrderKey,dimensionFieldMap.get("workorder"));
 		newDimensionMap.put(assetkey,dimensionFieldMap.get("asset"));
 		if(dimensionFieldMap.containsKey("resource_fields")){
-			List<FacilioField> resourceFields = dimensionFieldMap.get("resource_fields");
-			if(resourceFields != null && resourceFields.size() >0){
-				FacilioField field = resourceFields.get(0);
-				if(field!=null){
-					List<FacilioField> workOrderFields = dimensionFieldMap.get("workorder");
-					if(workOrderFields == null) {
-						workOrderFields = Arrays.asList(field);
-					}else {
-						workOrderFields.add(field);
-					}
-					newDimensionMap.put(workOrderKey, workOrderFields);
-				}
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String,List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null) {
+				LookupField lookupField = (LookupField) field.clone();
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(), lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey, resourceFields);
+				linkNameVsDisplayName.put(uniqueKey, lookupField.getDisplayName());
 			}
 		}
 		rearrangedFields.put("moduleMap", moduleMap);
@@ -329,18 +325,14 @@ public class ReportFactoryFields {
 		lookupModuleMap.put("time",timeKey);
 		lookupModuleMap.put("asset",assetKey);
 		if(dimensionMap.containsKey("resource_fields")){
-			List<FacilioField> resourceFields = dimensionMap.get("resource_fields");
-			if(resourceFields != null && resourceFields.size() >0){
-				FacilioField field = resourceFields.get(0);
-				if(field!=null){
-					List<FacilioField> assetFields = dimensionMap.get("asset");
-					if(assetFields == null) {
-						assetFields = Arrays.asList(field);
-					}else {
-						assetFields.add(field);
-					}
-					newDimensionMap.put(assetKey, assetFields);
-				}
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null) {
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(), lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey, resourceFields);
+				linkNameVsDisplayName.put(uniqueKey, lookupField.getDisplayName());
 			}
 		}
 		ArrayList<String> dimensionListOrder = new ArrayList<String>();
@@ -436,19 +428,14 @@ public class ReportFactoryFields {
 		newDimensionMap.put(timeKey,dimensionFieldMap.get("time"));
 		newDimensionMap.put(assetBreakDownKey,dimensionFieldMap.get("assetbreakdown"));
 		newDimensionMap.put(assetKey,dimensionFieldMap.get("asset"));
-		if(dimensionFieldMap.containsKey("resource_fields")){
-			List<FacilioField> resourceFields = dimensionFieldMap.get("resource_fields");
-			if(resourceFields != null && resourceFields.size() >0){
-				FacilioField field = resourceFields.get(0);
-				if(field!=null){
-					List<FacilioField> allFields = dimensionFieldMap.get("assetbreakdown");
-					if(allFields == null) {
-						allFields = Arrays.asList(field);
-					}else {
-						allFields.add(field);
-					}
-					newDimensionMap.put(assetBreakDownKey, allFields);
-				}
+		if(dimensionFieldMap.containsKey("resource_fields")){			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null) {
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(), lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey, resourceFields);
+				linkNameVsDisplayName.put(uniqueKey, lookupField.getDisplayName());
 			}
 		}
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
@@ -544,18 +531,14 @@ public class ReportFactoryFields {
 		newDimensionMap.put(ReportUtil.generateUniqueKey(moduleName,moduleName),dimensionFieldMap.get(moduleName));
 		newDimensionMap.put(ReportUtil.generateUniqueKey("asset","asset"),dimensionFieldMap.get("asset"));
 		if(dimensionFieldMap.containsKey("resource_fields")){
-			List<FacilioField> resourceFields = dimensionFieldMap.get("resource_fields");
-			if(resourceFields != null && resourceFields.size() >0){
-				FacilioField field = resourceFields.get(0);
-				if(field!=null){
-					List<FacilioField> alarmFields = dimensionFieldMap.get(moduleName);
-					if(alarmFields == null) {
-						alarmFields = Arrays.asList(field);
-					}else {
-						alarmFields.add(field);
-					}
-					newDimensionMap.put(ReportUtil.generateUniqueKey(moduleName,moduleName), alarmFields);
-				}
+			newDimensionMap.put("resource_fields",new HashMap<>((Map<String, List<FacilioField>>) rearrangedFields.get("dimension")).get("resource_fields"));
+			FacilioField field = newDimensionMap.get("resource_fields").get(0);
+			if(field!=null) {
+				LookupField lookupField = (LookupField) field;
+				String uniqueKey = ReportUtil.generateUniqueKey(lookupField.getName(), lookupField.getModule().getName());
+				List<FacilioField> resourceFields = ReportUtil.generateResourceFields(field);
+				newDimensionMap.put(uniqueKey, resourceFields);
+				linkNameVsDisplayName.put(uniqueKey, lookupField.getDisplayName());
 			}
 		}
 		rearrangedFields.put("dimensionListOrder", dimensionListOrder);
@@ -729,7 +712,7 @@ public class ReportFactoryFields {
 		return dimensionFields;
 	}
 	
-	private static FacilioField getModuleResourceField(String moduleName) throws Exception{
+	public static FacilioField getModuleResourceField(String moduleName) throws Exception{
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleResourceFieldName = new String();
 		switch(moduleName){
