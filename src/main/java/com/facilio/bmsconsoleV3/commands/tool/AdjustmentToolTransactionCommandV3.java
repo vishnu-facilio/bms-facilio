@@ -164,6 +164,7 @@ public class AdjustmentToolTransactionCommandV3  extends FacilioCommand {
         woTool.setParentId(purchasedTool.getId());
         woTool.setParentTransactionId(toolTransactions.getParentTransactionId());
         woTool.setApprovedState(1);
+        woTool.setRemarks(toolTransactions.getRemarks());
         woTool.setRemainingQuantity(0.0);
         return woTool;
     }

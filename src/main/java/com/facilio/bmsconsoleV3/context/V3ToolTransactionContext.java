@@ -14,6 +14,8 @@ import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderToolsContext;
 import com.facilio.bmsconsoleV3.context.reservation.InventoryReservationContext;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -22,8 +24,8 @@ public class V3ToolTransactionContext extends V3Context {
 
     private V3ToolTypesContext toolType;
     private V3BinContext bin;
-
-
+    @Getter @Setter
+    private String remarks;
     public V3ToolTypesContext getToolType() {
         return toolType;
     }
@@ -123,6 +125,8 @@ public class V3ToolTransactionContext extends V3Context {
     public void setTransactionState(int transactionState) {
         this.transactionState = TransactionState.valueOf(transactionState);
     }
+    public String getTransactionStateLabel() { return transactionState.getLabel(); }
+
 
     private Boolean isReturnable;
 

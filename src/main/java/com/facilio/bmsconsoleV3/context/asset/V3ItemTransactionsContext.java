@@ -19,6 +19,8 @@ import com.facilio.fsm.context.ServiceInventoryReservationContext;
 import com.facilio.fsm.context.ServiceOrderContext;
 import com.facilio.fsm.context.ServiceOrderItemsContext;
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -100,6 +102,9 @@ public class V3ItemTransactionsContext extends V3Context {
         }
         return false;
     }
+    @Getter @Setter
+    private String remarks;
+
 
     private TransactionType transactionType;
 
@@ -127,6 +132,8 @@ public class V3ItemTransactionsContext extends V3Context {
     public TransactionState getTransactionStateEnum() {
         return transactionState;
     }
+
+    public String getTransactionStateLabel() { return transactionState.getLabel(); }
 
     public void setTransactionState(TransactionState transactionState) {
         this.transactionState = transactionState;

@@ -41,7 +41,7 @@ public class ItemTypeTemplatePage implements TemplatePageFactory {
                 .widgetDone()
                 .sectionDone()
                 .addSection("itemstoreroom", null, null)
-                .addWidget("itemstoreroom", "Store rooms", PageWidget.WidgetType.STORE_ROOM, "flexiblewebstoreroom_6", 0, 0, null, null)
+                .addWidget("itemstoreroom", "Storeroom", PageWidget.WidgetType.STORE_ROOM, "flexiblewebstoreroom_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("itemtypelineitem", null, null)

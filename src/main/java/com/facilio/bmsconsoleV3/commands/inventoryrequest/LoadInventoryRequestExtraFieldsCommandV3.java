@@ -28,6 +28,7 @@ public class LoadInventoryRequestExtraFieldsCommandV3 extends FacilioCommand {
             List<FacilioField> allFields = modBean.getAllFields(moduleName);
             Map<String, FacilioField> allFieldsAsMap = FieldFactory.getAsMap(allFields);
             extraSelectableFields.add(allFieldsAsMap.get("inventoryRequestReservationStatus"));
+            extraSelectableFields.add(allFieldsAsMap.get("localId"));
             extraSelectableFields = extraSelectableFields.stream().filter(Objects::nonNull).collect(Collectors.toList());
             context.put(FacilioConstants.ContextNames.EXTRA_SELECTABLE_FIELDS,extraSelectableFields);
         }

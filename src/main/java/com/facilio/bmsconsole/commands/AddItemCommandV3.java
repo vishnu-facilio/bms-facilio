@@ -30,7 +30,7 @@ public class AddItemCommandV3 extends FacilioCommand {
 			for (V3ItemContext item : itemRecords) {
 				List<V3PurchasedItemContext> itemPurchasedItems = item.getPurchasedItems();
 				Boolean isFirstBin = !V3ItemsApi.itemHasBin(item);
-
+				V3BinContext newVirtualBin = null;
 				if (itemPurchasedItems != null && !itemPurchasedItems.isEmpty()) {
 					Set<String> binToAdd = new HashSet<>();
 					Set<Long> existingBinIds = new HashSet<>();
@@ -61,9 +61,11 @@ public class AddItemCommandV3 extends FacilioCommand {
 							} else {
 								if (item.getDefaultBin() != null) {
 									bin = item.getDefaultBin();
-								}
-								else {
-									bin = V3ItemsApi.addVirtualBin(item);
+								} else {
+									if(newVirtualBin == null) {
+										newVirtualBin = V3ItemsApi.addVirtualBin(item);
+									}
+									bin = newVirtualBin;
 								}
 							}
 						}

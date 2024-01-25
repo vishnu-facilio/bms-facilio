@@ -179,6 +179,7 @@ public class AdjustmentItemTransactionCommandV3  extends FacilioCommand {
         woItem.setSysModifiedTime(System.currentTimeMillis());
         woItem.setParentId(purchasedItem.getId());
         woItem.setParentTransactionId(itemTransactions.getParentTransactionId());
+        woItem.setRemarks(itemTransactions.getRemarks());
         woItem.setApprovedState(1);
         woItem.setRemainingQuantity(0.0);
         return woItem;

@@ -70,7 +70,7 @@ public class ToolTypesModule extends BaseModuleConfig{
                 .widgetDone()
                 .sectionDone()
                 .addSection("toolstoreroom", null, null)
-                .addWidget("toolstoreroom", "Store rooms", PageWidget.WidgetType.STORE_ROOM, "flexiblewebstoreroom_6", 0, 0, null, null)
+                .addWidget("toolstoreroom", "Storeroom", PageWidget.WidgetType.STORE_ROOM, "flexiblewebstoreroom_6", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .addSection("widgetGroup", null, null)

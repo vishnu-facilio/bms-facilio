@@ -20,7 +20,6 @@ public class V3ItemContext extends V3Context {
     private Double quantity;//available quantity
     private Double currentQuantity;
     private Double reservedQuantity;
-    private Double quantityWithoutBin;
     private List<V3PurchasedItemContext> purchasedItems;
     private Long lastPurchasedDate;
     private Double lastPurchasedPrice;

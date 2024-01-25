@@ -30,6 +30,8 @@ public class LoadItemLookUpCommandV3 extends FacilioCommand {
 
         additionaLookups.add((LookupField) fieldsAsMap.get("itemType"));
         additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));
+        additionaLookups.add((LookupField) fieldsAsMap.get("defaultBin"));
+
         for (FacilioField field : fields) {
             if (!field.isDefault() && field.getDataTypeEnum() == FieldType.LOOKUP) {
                 additionaLookups.add((LookupField) field);
