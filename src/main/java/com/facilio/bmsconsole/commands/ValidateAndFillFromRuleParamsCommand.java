@@ -196,7 +196,7 @@ public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 			 
 		}
 			
-		if (triggerType.equals(TriggerType.FORM_ON_LOAD) && executeType != ExecuteType.EDIT) {
+		if (triggerType.equals(TriggerType.FORM_ON_LOAD)) {
 			if (triggerFieldIds != null && !triggerFieldIds.isEmpty()) {
 				List<FormRuleContext> updateFormRuleContexts = FormRuleAPI.getFormRuleContext(formId, triggerFieldIds, TriggerType.FIELD_UPDATE,executeType);
 				if (updateFormRuleContexts != null && !updateFormRuleContexts.isEmpty()) {
