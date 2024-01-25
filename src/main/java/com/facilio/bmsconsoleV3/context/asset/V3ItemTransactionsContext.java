@@ -133,7 +133,12 @@ public class V3ItemTransactionsContext extends V3Context {
         return transactionState;
     }
 
-    public String getTransactionStateLabel() { return transactionState.getLabel(); }
+    public String getTransactionStateLabel() {
+        if(transactionState == null){
+            return null;
+        }
+        return transactionState.getLabel();
+    }
 
     public void setTransactionState(TransactionState transactionState) {
         this.transactionState = transactionState;

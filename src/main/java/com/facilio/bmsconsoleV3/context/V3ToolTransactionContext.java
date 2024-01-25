@@ -125,7 +125,12 @@ public class V3ToolTransactionContext extends V3Context {
     public void setTransactionState(int transactionState) {
         this.transactionState = TransactionState.valueOf(transactionState);
     }
-    public String getTransactionStateLabel() { return transactionState.getLabel(); }
+    public String getTransactionStateLabel() {
+        if(transactionState == null){
+            return null;
+        }
+        return transactionState.getLabel();
+    }
 
 
     private Boolean isReturnable;
