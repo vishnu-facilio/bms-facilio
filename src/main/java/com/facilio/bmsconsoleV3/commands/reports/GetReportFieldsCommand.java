@@ -17,17 +17,15 @@ public class GetReportFieldsCommand extends FacilioCommand {
         String moduleName = (String) context.get("moduleName");
         if(moduleName != null)
         {
+            List<String> reqFields = Arrays.asList("dimension","lookupModuleMap","moduleMap","moduleType","parentlookupFileds");
             JSONObject reportFields =  ReportFactoryFields.getReportFields(moduleName);
-            Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>) reportFields.get("dimension");
-            if(dimensionFieldMap != null) {
-                for(String alias: dimensionFieldMap.keySet()) {
-                    List<FacilioField> dimensionFields = dimensionFieldMap.get(alias);
-                    List<FacilioField> uniqueFields = SetUniqueList.decorate(dimensionFields);
-                    dimensionFieldMap.put(alias, uniqueFields);
+            JSONObject reqReportFields = new JSONObject();
+            for(Object key : reportFields.keySet()){
+                if(!reqFields.contains(key)){
+                    reqReportFields.put(key,reportFields.get(key));
                 }
-                reportFields.put("dimension",dimensionFieldMap);
             }
-            context.put("reportFields", reportFields);
+            context.put("reportFields", reqReportFields);
         }
         return false;
     }

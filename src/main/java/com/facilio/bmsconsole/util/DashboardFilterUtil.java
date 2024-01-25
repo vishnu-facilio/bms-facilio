@@ -381,7 +381,7 @@ public class DashboardFilterUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if(filterModule.getName().equals(parentModule.getName()) || (filterModule.getExtendModule() != null && filterModule.getExtendModule().getName().equals(parentModule.getName()))){
 			mappingField = modBean.getField("parentId", energyModule.getName());
-		} else if(parentModule.getName().equals(FacilioConstants.ContextNames.METER_MOD_NAME) && filterModule.getName().equals(FacilioConstants.ContextNames.SITE)) {
+		} else if((parentModule.getName().equals(FacilioConstants.ContextNames.METER_MOD_NAME) || parentModule.getName().equals(FacilioConstants.ContextNames.ASSET)) && filterModule.getName().equals(FacilioConstants.ContextNames.SITE)) {
 			mappingField = modBean.getField("siteId", parentModule.getName());
 		}
 		else {
