@@ -146,4 +146,13 @@ public class V3AssetCategoryContext extends V3Context {
             return STATE_MAP;
         }
     }
+
+    private Boolean hasReading;
+
+    public boolean hasReadingData() {
+        if(hasReading == null) {
+            return false;
+        }
+    	return hasReading;
+    }
 }

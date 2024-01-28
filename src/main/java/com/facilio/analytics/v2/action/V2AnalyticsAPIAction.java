@@ -34,6 +34,7 @@ public class V2AnalyticsAPIAction extends V3Action {
     private int perPage = 10;
     private String filters;
     private String moduleName;
+    private boolean filterFields = false;
     public String getModuleFromCategory()throws Exception
     {
         validateInput();
@@ -54,6 +55,7 @@ public class V2AnalyticsAPIAction extends V3Action {
         context.put("category", categoryId);
         context.put("type", type);
         context.put("searchText", searchText);
+        context.put("filterFields",filterFields);
         List<FacilioModule> existingReadings = new ArrayList<>();
         context.put(FacilioConstants.ContextNames.MODULE_LIST, existingReadings);
         if(type != null && type.equals("asset")) {

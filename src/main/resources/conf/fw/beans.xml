@@ -62,4 +62,5 @@
 
 	<bean name="TelemetryCriteriaBean" class="com.facilio.telemetry.beans.TelemetryCriteriaBeanCacheImpl"/>
 
+	<bean name="CategoryReadingFieldsBean" class="com.facilio.readings.bean.CategoryReadingFieldsBeanCacheImpl"/>
 </beans>

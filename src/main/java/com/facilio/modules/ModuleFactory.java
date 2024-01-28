@@ -6104,4 +6104,12 @@ public static FacilioModule getSpaceBookingFormRelationModule(){
 		module.setTableName("Widget_Legend_Variance");
 		return module;
 	}
+
+	public static FacilioModule getAssetCategoryReadingFieldsModule() {
+		FacilioModule mod = new FacilioModule();
+		mod.setName("readingsFieldStatus");
+		mod.setDisplayName("Readings Field Status");
+		mod.setTableName("Readings_Field_Status");
+		return mod;
+	}
 }

@@ -98,6 +98,9 @@ public class CacheUtil {
 		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleId;
 	}
 
+	public static String READING_FIELD_KEY(long orgId, long moduleId,long fieldId) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + MODULES + KEY_SEPARATOR + moduleId + KEY_SEPARATOR + fieldId;
+	}
 	public static String TABGROUPID_KEY(long groupId) {
 		return TAB_GROUP_ID + KEY_SEPARATOR + groupId;
 	}

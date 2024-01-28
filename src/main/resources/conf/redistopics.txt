@@ -39,3 +39,6 @@ alarmFilterRuleCache
 flaggedEventsRuleCache
 flaggedEventRuleCache
 alarmAssetTaggingCache
+meterTypeCache
+assetCategoryCache
+assetCategoryReadingFieldCache

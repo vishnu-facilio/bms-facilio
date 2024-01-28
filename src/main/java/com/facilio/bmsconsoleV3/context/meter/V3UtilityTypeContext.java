@@ -1,6 +1,8 @@
 package com.facilio.bmsconsoleV3.context.meter;
 
 import com.facilio.v3.context.V3Context;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -80,5 +82,14 @@ public class V3UtilityTypeContext extends V3Context {
 	public void setIsDefault(Boolean isDefault) {
 		this.isDefault = isDefault;
 	}
+	@Getter
+	@Setter
+	private Boolean hasReading;
 
+	public boolean hasReadingData() {
+		if(hasReading == null) {
+			return false;
+		}
+		return hasReading;
+	}
 }

@@ -859,6 +859,18 @@
         </action>
     </package>
 
+    <package name="dashboardReadingModulePicklist" namespace="/api/v3/dashboard/reading"
+             extends="v3Api">
+        <action name="picklist/*"
+                class="com.facilio.bmsconsoleV3.actions.picklist.ReadingPicklistAction"
+                method="readingModulePicklist">
+            <param name="moduleName">{1}</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ,VIEW;POST:CREATE,UPDATE</param>
+            <param name="tabType">Dashboard,New Dashboard,Analytics</param>
+        </action>
+    </package>
+
     <package name="bulkActionCreatePMv2" namespace="/api/v3/bulkAction" extends="v3Api">
         <action name="create/plannedmaintenance"
                 class="com.facilio.bmsconsoleV3.actions.utils.BulkActions"

@@ -84,6 +84,7 @@ import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 import com.facilio.readingkpi.commands.create.SetFieldAndModuleCommand;
 import com.facilio.readingrule.command.*;
 
+import com.facilio.readings.commands.FetchCategoriesForReadingFieldsCommand;
 import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
 import com.facilio.utility.commands.*;
 

@@ -382,6 +382,7 @@ public class FacilioConstants {
 		public static final String ERROR_MODULE_DATA = "errorModuleData";
 		public static final String AVATAR_URL = "avatarUrl";
 		public static final String IS_TO_FETCH_DECOMMISSIONED_RESOURCE="isToFetchDecommissionedResource";
+		public static final String FETCH_CONNECTED_ASSETS = "fetchConnectedAssets";
         public static final String COMMISSION_TIME = "commissionedTime";
 		public static final String DECOMMISSIONED_BY = "decommissionedBy";
 		public static final String COMMISSIONED_BY = "commissionedBy";
@@ -3857,6 +3858,10 @@ public class FacilioConstants {
 		public static final String PUSH_TIMESERIES_TO_STORM = "pushTimeseriesToStorm";
 	}
 
+	public static class ReadingFields {
+		public static final String RESOURCE_TYPE = "resourceType";
+		public static final String CATEGORIES = "categories";
+	}
 	public static class Services {
 		public static final String APP_SERVICE = "app";
 		public static final String IAM_SERVICE = "iam";

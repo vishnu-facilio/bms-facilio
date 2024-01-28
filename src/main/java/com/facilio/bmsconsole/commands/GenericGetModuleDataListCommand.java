@@ -11,16 +11,15 @@ import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.SupplementRecord;
@@ -35,10 +34,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -92,6 +88,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 															.beanClass(beanClassName)
 															.select(fields)
 															;
+
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (StringUtils.isEmpty(orderBy)) {
 			orderBy = RecordAPI.getDefaultOrderByForModuleIfAny(moduleName);
@@ -157,7 +154,21 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 				builder.andCriteria(scopeCriteria);
 			}
 		}
-		
+
+		if(module.getName().equals(ContextNames.ASSET) || module.getName().equals(FacilioConstants.Meter.METER)) {
+			Boolean fetchConnectedAssets = (Boolean) context.getOrDefault(ContextNames.FETCH_CONNECTED_ASSETS,false);
+			if(fetchConnectedAssets) {
+				List<Long> fieldIds = (List<Long>) context.get(ContextNames.FIELD_IDS);
+				if(CollectionUtils.isNotEmpty(fieldIds)) {
+					builder.innerJoin("(SELECT DISTINCT RESOURCE_ID from Reading_Data_Meta WHERE Reading_Data_Meta.VALUE != '-1' AND Reading_Data_Meta.FIELD_ID IN ("+StringUtils.join(fieldIds,",")+") ) rdm")
+							.on(String.format("rdm.RESOURCE_ID = %s.ID",module.getTableName()));
+				} else {
+					builder.innerJoin("(SELECT DISTINCT RESOURCE_ID from Reading_Data_Meta WHERE Reading_Data_Meta.VALUE != '-1') rdm")
+							.on(String.format("rdm.RESOURCE_ID = %s.ID",module.getTableName()));
+				}
+			}
+		}
+
 		//TODO remove here and handle in select builder always
 		boolean checkPermission = (boolean) context.getOrDefault("checkPermission", false);
 		if (checkPermission) {

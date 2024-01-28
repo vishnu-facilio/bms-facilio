@@ -12834,6 +12834,16 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getSystemStringEnumField("variance", "VARIANCE", module));
         return fields;
     }
+
+    public static List<FacilioField> getAssetCategoryReadingFieldsFields() {
+        FacilioModule module = ModuleFactory.getAssetCategoryReadingFieldsModule();
+        List<FacilioField> fields = new ArrayList<>();
+        fields.add(getIdField(module));
+        fields.add(getNumberField("categoryModuleId", "CATEGORY_MODULE_ID", module));
+        fields.add(getNumberField("fieldId", "FIELD_ID", module));
+        fields.add(getBooleanField("status", "STATUS", module));
+        return fields;
+    }
     protected static <F extends FacilioField> F getNewFieldObject(FieldType type) {
         switch (type) {
             case LOOKUP:

@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.readings.helper.ReadingFieldsUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -885,6 +886,11 @@ public class ReadingsAPI {
 				.fields(updateFields)
 				.batchUpdate(whereFields, batchUpdateList)
 				;
+		try {
+			ReadingFieldsUtil.rollupReadingFieldsStatus(uniqueRDMs);
+		} catch (Exception e) {
+			LOGGER.error("Error while updating reading fields status", e);
+		}
 	}
 
 	private static void caseUpdateRDM(Collection<ReadingDataMeta> uniqueRDMs) throws SQLException {

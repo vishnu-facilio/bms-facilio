@@ -6,6 +6,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.facilio.bmsconsole.context.ScopingConfigCacheContext;
 import com.facilio.bmsconsole.context.ScopingConfigContext;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsoleV3.context.asset.V3AssetCategoryContext;
+import com.facilio.bmsconsoleV3.context.meter.V3UtilityTypeContext;
 import com.facilio.bmsconsoleV3.context.scoping.GlobalScopeVariableContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorCacheContext;
 import com.facilio.bmsconsoleV3.context.scoping.ValueGeneratorContext;
@@ -14,6 +16,7 @@ import com.facilio.datastructure.dag.DAGCache;
 import com.facilio.ns.context.NameSpaceCacheContext;
 import com.facilio.permission.context.BasePermissionContext;
 import com.facilio.permission.context.PermissionSetContext;
+import com.facilio.readings.context.AssetCategoryReadingFieldContext;
 import com.facilio.remotemonitoring.context.*;
 import com.facilio.telemetry.context.TelemetryCriteriaCacheContext;
 import com.facilio.telemetry.context.TelemetryCriteriaContext;
@@ -79,6 +82,14 @@ public class LRUCache {
 	private static FacilioCache<String, AlarmAssetTaggingContext> alarmAssetTaggingCache = new PubSubLRUCache<>("alarmAssetTaggingCache", 500);
 	@Getter
 	private static FacilioCache<String, TelemetryCriteriaCacheContext> telemetryCriteriaCache = new PubSubLRUCache<>("telemetryCriteriaCache", 500);
+
+	@Getter
+	private static FacilioCache<String, V3AssetCategoryContext> assetCategoryCache = new PubSubLRUCache<>("assetCategoryCache", 1000);
+	@Getter
+	private static FacilioCache<String, V3UtilityTypeContext> meterTypeCache = new PubSubLRUCache<>("meterTypeCache", 1000);
+	@Getter
+	private static FacilioCache<String, AssetCategoryReadingFieldContext> assetCategoryReadingFieldCache = new PubSubLRUCache<>("assetCategoryReadingFieldCache", 1000);
+
 
 	public static void purgeAllCache() {
 		RedisManager.purgeAllCache();
