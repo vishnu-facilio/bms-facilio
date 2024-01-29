@@ -662,6 +662,8 @@
             <property name="viewName" type="string" mandatory="true"/>
             <property name="calendarViewRequest" type="string"/>
             <property name="includeParentFilter" type="boolean"/>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
             <property name="filters" type="string"/>
         </urlparams>
     </request>

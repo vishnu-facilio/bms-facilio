@@ -336,11 +336,11 @@
     <package name="relationv3api" namespace="/api/v3/modules" extends="v3Api">
         <action name="*/associate" class="com.facilio.v3.action.RelationshipDataAction" method="associateRelation">
             <param name="moduleName">{1}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">POST:CREATE,UPDATE;PATCH:UPDATE;</param>
         </action>
         <action name="*/dissociate" class="com.facilio.v3.action.RelationshipDataAction" method="dissociateRelation">
             <param name="moduleName">{1}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">POST:CREATE,UPDATE;PATCH:UPDATE;</param>
         </action>
     </package>
 
@@ -569,7 +569,7 @@
                 method="calendarData">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ</param>
         </action>
 
         <action name="*/view/*/list"
@@ -577,7 +577,7 @@
                 method="calendarList">
             <param name="moduleName">{1}</param>
             <param name="viewName">{2}</param>
-            <param name="deprecated">true</param>
+            <param name="permission">GET:READ</param>
         </action>
 
         <action name="*/view/*/count"
@@ -713,7 +713,8 @@
         <action name="seen"
                 class="com.facilio.bmsconsoleV3.actions.UserNotificationAction"
                 method="updateUserNotificationSeen">
-            <param name="deprecated">true</param>
+            <param name="moduleName">usernotification</param>
+            <param name="permission">GET:READ</param>
         </action>
 
         <action name="markAsRead"

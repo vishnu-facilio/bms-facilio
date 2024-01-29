@@ -1055,7 +1055,7 @@
 		>
 			<param name="moduleName">{1}</param>
 			<param name="id">{2}</param>
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -1063,12 +1063,12 @@
 		<action name="offline/register"
 				class="com.facilio.bmsconsole.actions.OfflineRecordAction" method="registerOfflineRecord"
 		>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="offline/unRegister"
 				class="com.facilio.bmsconsole.actions.OfflineRecordAction" method="unRegisterOfflineRecord"
 		>
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 	</package>
 
@@ -6764,7 +6764,7 @@
 
 		<action name="replacePlaceHolders" class="com.facilio.bmsconsole.actions.WorkflowRuleAction"
 				method="replacePlaceHolders" >
-			<param name="deprecated">true</param>
+			<param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
 		</action>
 
 		<action name="getCount" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
@@ -9654,7 +9654,7 @@
 	<package name="updateFcmToken" namespace="/api/v2/userMobileSetting" extends="v2Api">
 		<action name="updateFcmToken"
 				class="com.facilio.bmsconsole.actions.UpdateFcmTokenAction" method="updateFcmToken">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,UPDATE;PATCH:UPDATE;</param>
 		</action>
 	</package>
 	<package name="siteMapView"  namespace="/api/v2/siteSettings" extends="v2Api">

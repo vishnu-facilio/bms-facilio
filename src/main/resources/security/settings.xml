@@ -920,8 +920,6 @@
         <urlparams>
             <property name="moduleName" type="string" mandatory="true"/>
             <property name="activityModule" type="string" mandatory="true"/>
-            <property name="parentId" type="number" mandatory="true"/>
-            <property name="occurrenceId"  type="number"/>
         </urlparams>
         <requestbody type="object">
             <property name="parentId" type="number" mandatory="true"/>
@@ -1071,6 +1069,22 @@
     <request path="/api/v2/workorders/activity">
         <requestbody type="object">
             <property name="workOrderId" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/module/offline/register" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number"/>
+            <property name="userMobileInstanceId" type="string"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/module/offline/unRegister" method="POST">
+        <requestbody type="object">
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="recordId" type="number"/>
+            <property name="userMobileInstanceId" type="string"/>
         </requestbody>
     </request>
 
@@ -1489,7 +1503,7 @@
            </requestbody>
        </request>-->
 
-    <!--  <request path="/api/v3/approval/:moduleName/view/:viewName" method="GET">
+      <request path="/api/v3/approval/:moduleName/view/:viewName" method="GET">
           <urlparams>
               <property name="moduleName" type="string" mandatory="true"/>
               <property name="viewName" type="string" mandatory="true"/>
@@ -1497,9 +1511,12 @@
               <property name="perPage" type="number"/>
               <property name="orderBy" type="string"/>
               <property name="orderType" type="string"/>
+              <property name="withCount" type="boolean"/>
+              <property name="fetchOnlyViewGroupColumn" type="boolean"/>
+              <property name="includeParentFilter" type="boolean"/>
               <property name="filters" type="string"/>
           </urlparams>
-      </request>-->
+      </request>
 
 
     <!--    <request path="/api/v2/publicFile/addPublicFile">
@@ -3242,7 +3259,20 @@
     <request path="/api/orgLogo">
         <requestbody type="object"></requestbody>
     </request>
-    <request path="/api/v2/module/:moduleName/:id/statetransition/getOfflineStateTransition" method="GET" />
+
+    <request path="/api/v2/state/:moduleName/list" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="parentModuleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/module/:moduleName/:id/statetransition/getOfflineStateTransition" method="GET" >
+        <urlparams>
+            <property name="id" type="number" mandatory="true"/>
+            <property name="moduleName" type="string" mandatory="true"/>
+        </urlparams>
+    </request>
     <request path="/api/v1/setup/decommission/getChild">
         <requestbody type="object">
             <property name="decommission" type="object" mandatory="true">
