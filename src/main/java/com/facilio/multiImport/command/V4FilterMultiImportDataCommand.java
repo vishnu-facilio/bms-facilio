@@ -257,6 +257,10 @@ public class V4FilterMultiImportDataCommand extends FacilioCommand {
         if (!criteria.isEmpty()) {
             builder.andCriteria(criteria);
         }
+        boolean skipModuleCriteria = (boolean) context.getOrDefault(FacilioConstants.ContextNames.SKIP_MODULE_CRITERIA, false);
+        if (skipModuleCriteria) {
+            builder.skipModuleCriteria();
+        }
         ModuleBaseWithCustomFields record = builder.fetchFirst();
 
         return record;

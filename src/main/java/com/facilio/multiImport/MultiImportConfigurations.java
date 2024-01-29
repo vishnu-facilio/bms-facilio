@@ -1,9 +1,6 @@
 package com.facilio.multiImport;
 
 import com.facilio.bmsconsole.context.LocationContext;
-import java.util.Arrays;
-import java.util.function.Supplier;
-
 import com.facilio.bmsconsoleV3.commands.SetLocalIdCommandV3;
 import com.facilio.bmsconsoleV3.commands.SetLocationNameBeforeImportCommand;
 import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
@@ -22,20 +19,8 @@ import com.facilio.bmsconsoleV3.commands.vendor.multi_import.AddVendorUserImport
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.BeforeVendorImportProcessCommand;
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.UpdateVendorUserImportCommand;
 import com.facilio.bmsconsoleV3.commands.vendor.multi_import.ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand;
+import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryCommand;
 import com.facilio.bmsconsoleV3.context.*;
-import com.facilio.bmsconsoleV3.commands.vendor.multi_import.AddVendorUserImportCommand;
-import com.facilio.bmsconsoleV3.commands.vendor.multi_import.BeforeVendorImportProcessCommand;
-import com.facilio.bmsconsoleV3.commands.vendor.multi_import.UpdateVendorUserImportCommand;
-import com.facilio.bmsconsoleV3.commands.vendor.multi_import.ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand;
-import com.facilio.bmsconsoleV3.context.V3BaseSpaceContext;
-import com.facilio.bmsconsoleV3.context.V3BuildingContext;
-import com.facilio.bmsconsoleV3.context.V3FloorContext;
-import com.facilio.bmsconsoleV3.context.V3SiteContext;
-import com.facilio.bmsconsoleV3.context.V3SpaceContext;
-import com.facilio.bmsconsoleV3.context.V3TenantContext;
-import com.facilio.bmsconsoleV3.context.V3TenantUnitSpaceContext;
-import com.facilio.bmsconsoleV3.context.V3VendorContext;
-import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
 import com.facilio.constants.FacilioConstants;
@@ -44,6 +29,9 @@ import com.facilio.multiImport.command.InsertRDMForMultiImportMeterModuleCommand
 import com.facilio.multiImport.command.InsertReadingDataMetaForMultiImportCommand;
 import com.facilio.multiImport.config.ImportConfig;
 
+import java.util.Arrays;
+import java.util.function.Supplier;
+
 public class MultiImportConfigurations {
     @ImportModule("workorder")
     public static Supplier<ImportConfig> getWorkOrderImportConfig() {
@@ -51,6 +39,7 @@ public class MultiImportConfigurations {
                 .setActivityModuleName(FacilioConstants.ContextNames.WORKORDER_ACTIVITY)
                 .importHandler()
                 .loadLookUpExtraSelectFields("workorder", Arrays.asList("status"))
+                .beforeImportCommand(new SkipModuleCriteriaForSummaryCommand())
                 .done()
                 .createHandler()
                 .beforeSaveCommand(TransactionChainFactoryV3.getWorkOrderBeforeCreateImportChain())
