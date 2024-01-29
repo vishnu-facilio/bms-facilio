@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.*;
@@ -44,11 +45,31 @@ public class FormatRecordMapCommand extends FacilioCommand {
         ModuleBean modBean = Constants.getModBean();
         List<FacilioField> fields = modBean.getAllFields(moduleName);
         Map<String,Object> formattedRecordMap =  getMapClone(recordMap);
+        List<LookupField> lookupFields = new ArrayList<>();
         for(FacilioField field :  fields){
             String fieldName = field.getName();
             Object fieldValue = getFieldValue(recordMap,field,context);
             String formattedValue = getFormattedValueBasedOnFieldDisplayType(field,fieldValue,context);
             formattedRecordMap.put(fieldName.concat("Formatted"),formattedValue);
+            if(field.getDataTypeEnum().equals(FieldType.LOOKUP)){
+                lookupFields.add((LookupField) field);
+            }
+        }
+        for(LookupField lookupField: lookupFields){
+            String lookupFieldName = lookupField.getName();
+            String lookupModuleName = lookupField.getLookupModule().getName();
+            List<FacilioField> lookupModuleFields = modBean.getAllFields(lookupModuleName);
+            Map<String,Object> lookupFormattedRecordMap = new HashMap<>();
+            if(recordMap.get(lookupField.getName())!=null){
+                lookupFormattedRecordMap = (Map<String,Object>) recordMap.get(lookupField.getName());
+            }
+            for(FacilioField field :  lookupModuleFields){
+                String fieldName = field.getName();
+                Object fieldValue = getFieldValue(lookupFormattedRecordMap,field,context);
+                String formattedValue = getFormattedValueBasedOnFieldDisplayType(field,fieldValue,context);
+                lookupFormattedRecordMap.put(fieldName.concat("Formatted"),formattedValue);
+            }
+            formattedRecordMap.put(lookupFieldName,lookupFormattedRecordMap);
         }
         context.put(FacilioConstants.ContextNames.FORMATTED_RECORD_MAP,formattedRecordMap);
         return false;
@@ -56,6 +77,9 @@ public class FormatRecordMapCommand extends FacilioCommand {
     private Object getFieldValue(Map<String, Object> recordMap,FacilioField field,Context context) throws Exception{
         String fieldName = field.getName();
         Object fieldValue;
+        if(recordMap == null){
+            return null;
+        }
         switch (field.getDataTypeEnum()){
             case FILE:{
                 fieldValue = recordMap.get(fieldName + "FileName");
@@ -83,8 +107,10 @@ public class FormatRecordMapCommand extends FacilioCommand {
     }
     private Map<String,Object> getMapClone(Map<String, Object> recordMap){
         Map<String,Object> cloneMap = new HashMap<>();
-        for(Map.Entry<String,Object> entry : recordMap.entrySet()){
-            cloneMap.put(entry.getKey(), entry.getValue());
+        if(recordMap!=null){
+            for(Map.Entry<String,Object> entry : recordMap.entrySet()){
+                cloneMap.put(entry.getKey(), entry.getValue());
+            }
         }
         return cloneMap;
     }
@@ -93,7 +119,7 @@ public class FormatRecordMapCommand extends FacilioCommand {
         String formattedValue;
         switch (field.getDataTypeEnum()){
             case NUMBER:{
-                if(field.getDisplayType().equals(FacilioField.FieldDisplayType.DURATION) && value!=null){
+                if(field.getDisplayType()!=null && field.getDisplayType().equals(FacilioField.FieldDisplayType.DURATION) && value!=null){
                     formattedValue = NumberFormatter.relativeTime(Long.parseLong((((Long)value)*1000)+""));
                 }else{
                     formattedValue = value!=null ? value.toString() : "---";
