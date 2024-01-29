@@ -2546,11 +2546,11 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 					allValuesId.add(innerMap.getKey());
 				}
 			}
-			String lookupModuleName = (String) userFilter.get("lookupModuleName");
 			FacilioModule lookUpModule = ((LookupField) field).getLookupModule();
+			String lookupModuleName = userFilter.get("lookupModuleName") != null ? (String) userFilter.get("lookupModuleName") : lookUpModule.getName();
 			int moduleType = lookUpModule.getType();
 			int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
-			if(moduleType == pickListModule && lookupModuleName.equals("ticketstatus")){
+			if(moduleType == pickListModule && lookupModuleName!=null && lookupModuleName.equals("ticketstatus")){
 				if(!chosenValues.isEmpty()){
 					userFilter.put("userFilterChosenValues",chosenValues);
 				}
