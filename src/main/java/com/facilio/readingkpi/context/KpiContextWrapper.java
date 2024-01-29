@@ -46,7 +46,7 @@ public class KpiContextWrapper {
                 this.readingField.setUnit(kpi.getUnitLabel());
                 if(kpi != null && kpi.getUnitId() != null && kpi.getUnitId() > 0 ){
                     Unit kpi_unit = Unit.valueOf(kpi.getUnitId());
-                    this.isLeft = kpi_unit!= null ? kpi_unit.getIsLeft() : false;
+                    this.readingField.setLeft(kpi_unit!= null ? kpi_unit.getIsLeft() : false);
                 }
             }
         }

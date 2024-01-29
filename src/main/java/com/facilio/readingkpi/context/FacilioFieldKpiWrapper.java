@@ -16,6 +16,7 @@ public class FacilioFieldKpiWrapper {
     private String name;
     private String unit;
     private Long resourceId;
+    private boolean isLeft;
 
     public FacilioFieldKpiWrapper(FacilioField fld) {
         this.dataType = fld.getDataType();
