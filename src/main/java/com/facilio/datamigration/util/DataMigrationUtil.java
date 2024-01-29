@@ -1343,7 +1343,18 @@ public class DataMigrationUtil {
                 put("facilityBookingExternalAttendee", new HashMap<String, String>() {{
                     put("facilityBooking", "facilitybooking");
                 }});
-
+                put("qandaMcqMultiOptions", new HashMap<String, String>() {{
+                    put("parentId", "qandaMcqMulti");
+                }});
+                put("assetdepreciationCalculation", new HashMap<String, String>() {{
+                    put("assetId", "asset");
+                }});
+                put("qandaMatrixQuestionColumn", new HashMap<String, String>() {{
+                    put("parentId", "matrixQuestion");
+                }});
+                put("qandaMatrixQuestionRow", new HashMap<String, String>() {{
+                    put("parentId", "matrixQuestion");
+                }});
             }}
     );
 
