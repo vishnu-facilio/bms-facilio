@@ -6,7 +6,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.V3WorkOrderContext;
 import com.facilio.bmsconsoleV3.util.V3RecordAPI;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.scriptengine.context.ScriptContext;
@@ -14,6 +16,7 @@ import com.facilio.v3.util.V3Util;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -249,14 +252,41 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 
 			List<Long> workOrderIdList = (List<Long>) workOrderIds;
 
-
 			HashMap<String, Object> woRecordMap = (HashMap<String, Object>) recordMap;
 			V3WorkOrderContext updateWorkOrderContext = FieldUtil.getAsBeanFromMap(woRecordMap, V3WorkOrderContext.class);
+
+			FacilioModule ticketStatusModule = modBean.getModule(ModuleFactory.getTicketStatusModule().getName());
+			List<FacilioField> ticketStatusFields = modBean.getAllFields(ModuleFactory.getTicketStatusModule().getName());
+			Map<String, FacilioField> ticketStatusFieldMap = FieldFactory.getAsMap(ticketStatusFields);
+
+			SelectRecordsBuilder<FacilioStatus> selectRecordsBuilder = new SelectRecordsBuilder<>();
+			selectRecordsBuilder.module(ticketStatusModule)
+					.select(ticketStatusFields)
+					.beanClass(FacilioStatus.class)
+					.andCondition(CriteriaAPI.getCondition(ticketStatusFieldMap.get("parentModuleId"),woModule.getModuleId() +"", NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition(ticketStatusFieldMap.get("typeCode"), FacilioStatus.StatusType.PRE_OPEN.getIntVal()+"", NumberOperators.EQUALS));
+			List<FacilioStatus> facilioStatuses = selectRecordsBuilder.get();
+
+			if(CollectionUtils.isEmpty(facilioStatuses)){
+				LOGGER.log(Priority.WARN, "Empty Ticket Status");
+			}
+
+			FacilioStatus preOpenStatus = null;
+			for (FacilioStatus status: facilioStatuses){
+				if(status.getType().equals(FacilioStatus.StatusType.PRE_OPEN) && status.getStatus().equals("preopen")){
+					preOpenStatus = status;
+				}
+			}
+
+			if(preOpenStatus == null){
+				throw new RuntimeException("Unable to find preopen status.");
+			}
 
 			UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
 					.module(woModule)
 					.fields(woFieldsList)
 					.andCondition(CriteriaAPI.getIdCondition(workOrderIdList, woModule))
+					.andCondition(CriteriaAPI.getCondition(woFieldsMap.get("status"), preOpenStatus.getId()+"", NumberOperators.EQUALS))
 					.skipModuleCriteria();
 			int updated = updateRecordBuilder.update(updateWorkOrderContext);
 
