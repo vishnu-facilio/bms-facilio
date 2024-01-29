@@ -1808,7 +1808,7 @@
         </action>
     </package>
 
-    <package name="setupAssetApi" namespace="/api/setup/asset" extends="homeApi">
+    <package name="setupAssetApi" namespace="/api/setup/asset" extends="baseV1Api">
         <action name="assetCount" class="com.facilio.bmsconsole.actions.AssetAction"
                 method="assetCount">
             <param name="permission">ALL</param>
@@ -1819,7 +1819,7 @@
         </action>
     </package>
 
-    <package name="setupEventApi" namespace="/api/setup/event" extends="homeApi">
+    <package name="setupEventApi" namespace="/api/setup/event" extends="baseV1Api">
         <action name="allRules" class="com.facilio.events.actions.EventAction" method="eventRules">
             <param name="permission">ALL</param>
             <param name="setupTab">BMS_EVENT_FILTERING</param>
@@ -1861,7 +1861,7 @@
         </action>
     </package>
 
-    <package name="setupModuleApi" namespace="/api/setup/module" extends="homeApi">
+    <package name="setupModuleApi" namespace="/api/setup/module" extends="baseV1Api">
         <action name="meta" class="com.facilio.bmsconsole.actions.ModuleAction" method="metadata">
             <param name="translationImpl">ModuleTranslation</param>
             <param name="setupTab">ASSET_DEPRECIATION,WORKFLOWS,NOTIFICATIONS,APPROVALS,EMAIL_TEMPLATES,PDF_TEMPLATES,MODULES,WEATHER_STATION,EMAIL_LOGS,INBOUND_MAIL_CONVERSION,FAULT_IMPACT_TEMPLATE,SLA_POLICIES</param>
@@ -1908,7 +1908,7 @@
         </action>
     </package>
 
-    <package name="setupReadingApi" namespace="/api/setup/reading" extends="homeApi">
+    <package name="setupReadingApi" namespace="/api/setup/reading" extends="baseV1Api">
         <action name="addsetupreading" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadings">
             <param name="permission">ALL</param>
             <param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
@@ -1950,7 +1950,7 @@
         </action>
     </package>
 
-    <package name="setupServicePortalAPI" namespace="/api/setup/serviceportal" extends="homeApi">
+    <package name="setupServicePortalAPI" namespace="/api/setup/serviceportal" extends="baseV1Api">
         <action name="getportalinfo" class="com.facilio.bmsconsole.actions.PortalInfoAction" method="getPortalInfo">
             <param name="permission">ALL</param>
             <param name="setupTab">PORTALS</param>
@@ -1960,7 +1960,7 @@
         </action>
     </package>
 
-    <package name="setupOrganizationApi" namespace="/api/setup/settings" extends="homeApi">
+    <package name="setupOrganizationApi" namespace="/api/setup/settings" extends="baseV1Api">
         <action name="company" class="com.facilio.bmsconsole.actions.SetupActions" method="orgSettings">
             <param name="permission">ALL</param>
             <param name="setupTab">ORGANIZATION_SETTINGS</param>
@@ -1978,7 +1978,7 @@
         </action>
     </package>
 
-    <package name="setupUnits" namespace="/api/setup/units" extends="homeApi">
+    <package name="setupUnits" namespace="/api/setup/units" extends="baseV1Api">
         <action name="getDefaultMetricUnits" class="com.facilio.bmsconsole.actions.UnitAction" method="getDefaultMetricUnits">
             <param name="permission">ALL</param>
             <param name="setupTab">READINGS,SPACE_ASSET_CUSTOMIZATION</param>
@@ -2082,7 +2082,7 @@
         </action>
     </package>
 
-    <package name="setupV2Api" namespace="/api/v2/setup" extends="v2BaseApi">
+    <package name="setupV2Api" namespace="/api/v2/setup" extends="v2Api">
         <action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction" method="getMySiteList">
             <param name="shouldApplySwitchScope">false</param>
             <param name="permission">ALL</param>
@@ -2639,7 +2639,7 @@
         </action>
     </package>
 
-    <package name="setupPicklistApi" namespace="/api/setup/picklist" extends="homeApi">
+    <package name="setupPicklistApi" namespace="/api/setup/picklist" extends="baseV1Api">
         <action name="addTicketCategory" class="com.facilio.bmsconsole.actions.PickListAction"
                 method="addTicketCategory">
             <param name="moduleName">setup</param>
