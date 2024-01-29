@@ -467,7 +467,7 @@ public class ModuleMappingConfigUtil {
 
             List<V3Context> targetMultiRecordContextList = new ArrayList<>();
 
-            List<Object> targetMultiRecordObj=new ArrayList<>();
+            List<Object> targetMultiRecordObj = new ArrayList<>();
 
 
             FacilioContext recordContext = V3Util.getSummary(sourceModuleName, recordIds);
@@ -592,7 +592,11 @@ public class ModuleMappingConfigUtil {
 
         for (Map<String, Object> fieldMapping : fieldMappingList) {
 
-            Long sourceFieldId = FacilioUtil.parseLong(fieldMapping.get("sourceFieldId"));
+            Long sourceFieldId = null;
+
+            if (fieldMapping.get("sourceFieldId") != null) {
+                sourceFieldId = FacilioUtil.parseLong(fieldMapping.get("sourceFieldId"));
+            }
 
             String sourceFieldName = (String) fieldMapping.get("sourceField");
 

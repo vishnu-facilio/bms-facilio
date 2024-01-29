@@ -3826,7 +3826,7 @@
     </package>
     <package name="modulemappingconfiguration" namespace="/api/v3/modulemapping" extends="v3Api">
         <action name="addOrFetchRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addContextToTargetModule">
-            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
             <param name="moduleName">{1}</param>
             <param name="permissionModuleName">{2}</param>
             <param name="sourceModule">{1}</param>
@@ -3850,7 +3850,7 @@
         </action>
 
         <action name="convert/addOrFetchMultiRecord/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchMultiRecordContext">
-            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
             <param name="moduleName">{1}</param>
             <param name="sourceModule">{1}</param>
             <param name="targetModule">{2}</param>
@@ -3865,7 +3865,7 @@
         </action>
 
         <action name="convert/addOrFetchSingleRecord/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchSingleRecordContext">
-            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="permission">POST:CREATE,UPDATE</param>
             <param name="moduleName">{1}</param>
             <param name="sourceModule">{1}</param>
             <param name="targetModule">{2}</param>
