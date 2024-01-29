@@ -35,6 +35,9 @@ public class AddOrUpdatePortalUserCommandV3 extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         Map<String, List> recordMap = (Map<String, List>) context.get(Constants.RECORD_MAP);
         Map<String, Object> rawInput = Constants.getRawInput(context);
+        if(rawInput == null){
+            rawInput = new HashMap<>();
+        }
         long securityPolicyId = (long) rawInput.getOrDefault("selectedSecuritypolicy",-1L);
         boolean sendInvitation = (boolean) rawInput.getOrDefault("sendInvitation",true);
         String password = (String) rawInput.getOrDefault("password",null);
