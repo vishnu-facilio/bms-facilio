@@ -3854,8 +3854,5 @@
             <param name="targetModule">{2}</param>
         </action>
 
-        <action name="test" class="com.facilio.bmsconsole.Test" method="test">
-        </action>
-
     </package>
 </struts>
