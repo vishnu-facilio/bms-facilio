@@ -29,7 +29,7 @@ public class APIModuleListConfig {
     public static Supplier<ModuleListHandler> getTransactionRuleModules(){
         return () -> new ModuleListHandler()
                 .add(Arrays.asList(FacilioConstants.ContextNames.WORK_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST,
-                        FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.QUOTE))
+                        FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.QUOTE,FacilioConstants.ContextNames.INVOICE))
                 .fetchCustomModules()
                 .afterFetch(new GetSubModulesForTransactionRuleCommand())
                 .done();
@@ -64,7 +64,7 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.QUOTE, FacilioConstants.ContextNames.ANNOUNCEMENT,
                         FacilioConstants.ContextNames.Floorplan.DESKS, FacilioConstants.Survey.SURVEY_RESPONSE,
                         FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE,
-                        FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, FacilioConstants.UTILITY_INTEGRATION_BILLS))
+                        FacilioConstants.UTILITY_INTEGRATION_CUSTOMER, FacilioConstants.UTILITY_INTEGRATION_BILLS,FacilioConstants.ContextNames.INVOICE))
 
                 .addModulesForApp(FacilioConstants.ApplicationLinkNames.FSM_APP, Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
                         FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,
@@ -106,7 +106,7 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.QUOTE, FacilioConstants.ContextNames.ANNOUNCEMENT,
                         FacilioConstants.ContextNames.Floorplan.DESKS, FacilioConstants.Survey.SURVEY_RESPONSE,
                         FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE,
-                        FlaggedEventModule.MODULE_NAME))
+                        FlaggedEventModule.MODULE_NAME,FacilioConstants.ContextNames.INVOICE))
 
                 .addModulesForApp(FacilioConstants.ApplicationLinkNames.FSM_APP, Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
                         FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,
@@ -148,7 +148,7 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.FacilityBooking.FACILITY, FacilioConstants.ContextNames.FacilityBooking.FACILITY_BOOKING,
                         FacilioConstants.ContextNames.QUOTE, FacilioConstants.ContextNames.ANNOUNCEMENT,
                         FacilioConstants.ContextNames.Floorplan.DESKS, FacilioConstants.Survey.SURVEY_RESPONSE,
-                        FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE))
+                        FacilioConstants.ContextNames.JOB_PLAN, FacilioConstants.ContextNames.PLANNEDMAINTENANCE,FacilioConstants.ContextNames.INVOICE))
 
                 .addModulesForApp(FacilioConstants.ApplicationLinkNames.FSM_APP, Arrays.asList(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER,
                         FacilioConstants.TimeOff.TIME_OFF,FacilioConstants.Territory.TERRITORY,
