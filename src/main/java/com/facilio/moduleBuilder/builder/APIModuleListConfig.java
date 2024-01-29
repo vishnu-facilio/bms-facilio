@@ -3,11 +3,13 @@ package com.facilio.moduleBuilder.builder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.moduleBuilder.command.GetModuleListForRelationshipCommand;
 import com.facilio.moduleBuilder.command.GetSubModulesForTransactionRuleCommand;
 import com.facilio.moduleBuilder.command.RemoveStateFlowDisabledModules;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.v3.annotation.Config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
@@ -32,6 +34,29 @@ public class APIModuleListConfig {
                         FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.QUOTE,FacilioConstants.ContextNames.INVOICE))
                 .fetchCustomModules()
                 .afterFetch(new GetSubModulesForTransactionRuleCommand())
+                .done();
+
+    }
+
+    @Feature("relationshipModules")
+    public static Supplier<ModuleListHandler> getRelationshipModules(){
+        return () -> new ModuleListHandler()
+                .add(new ArrayList<String>() {{
+                    add(FacilioConstants.ContextNames.ASSET);
+                    add(FacilioConstants.ContextNames.METER_MOD_NAME);
+                    add(FacilioConstants.ContextNames.SITE);
+                    add(FacilioConstants.ContextNames.BUILDING);
+                    add(FacilioConstants.ContextNames.FLOOR);
+                    add(FacilioConstants.ContextNames.SPACE);
+                    add(FacilioConstants.ContextNames.ITEM);
+                    add(FacilioConstants.ContextNames.WEATHER_READING);
+                    add(FacilioConstants.ModuleNames.WEATHER_STATION);
+                    add(FacilioConstants.ContextNames.CLIENT);
+                    add(FacilioConstants.ContextNames.TENANT);
+                }})
+                .fetchCustomModules()
+                .responseFields(Arrays.asList("displayName","name", "moduleId"))
+                .afterFetch(new GetModuleListForRelationshipCommand())
                 .done();
 
     }

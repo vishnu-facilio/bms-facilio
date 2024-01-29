@@ -1133,7 +1133,7 @@
                 class="com.facilio.moduleBuilder.actions.ModuleListAction" method="fetchModuleList" >
             <param name="feature">{1}</param>
             <param name="permission">ALL</param>
-            <param name="setupTab">BACKGROUND_ACTIVITY</param>
+            <param name="setupTab">BACKGROUND_ACTIVITY,MODULES</param>
         </action>
     </package>
 
