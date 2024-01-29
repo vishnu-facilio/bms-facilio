@@ -12,6 +12,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportFactory;
 import com.facilio.report.module.v2.context.V2ModuleContextForDashboardFilter;
 import com.facilio.report.module.v2.context.V2ModuleMeasureContext;
 import com.facilio.report.module.v2.context.V2ModuleReportContext;
@@ -68,7 +69,14 @@ public class V2GetKpiValueCommand extends FacilioCommand {
                 }
             }
             kpi.setCriteria(kpiCriteria);
-            kpi.setMetric(modBean.getField(measure.getFieldName(),measure.getModuleName()));
+            FacilioField metricField = modBean.getField(measure.getFieldName(),measure.getModuleName());
+            if(metricField == null && measure.isSpecial()) {
+                metricField = ReportFactory.getReportField(measure.getFieldName());
+            }
+            else if(metricField !=null && metricField.getId() < 0){
+                metricField = FieldFactory.getIdField(modBean.getModule(measure.getModuleName()));
+            }
+            kpi.setMetric(metricField);
         }
         if(v2_report.getTimeFilter() != null && v2_report.getTimeFilter().getFieldName() != null){
             DateOperators dateOperator = DateOperators.CURRENT_MONTH;

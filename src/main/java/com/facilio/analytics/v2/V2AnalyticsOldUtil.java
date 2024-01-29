@@ -259,11 +259,11 @@ public class V2AnalyticsOldUtil {
         for(V2ModuleMeasureContext measure : measures)
         {
             FacilioField measureField = modBean.getField(measure.getFieldName(),measure.getModuleName());
-            if(measureField !=null && measureField.getId() < 0){
-                measureField = FieldFactory.getIdField(modBean.getModule(measure.getModuleName()));
-            }
-            else{
+            if(measureField == null && measure.isSpecial()) {
                 measureField = ReportFactory.getReportField(measure.getFieldName());
+            }
+            else if(measureField !=null && measureField.getId() < 0){
+                measureField = FieldFactory.getIdField(modBean.getModule(measure.getModuleName()));
             }
             JSONObject measure_json = FieldUtil.getAsJSON(measure);
             measure_json.keySet().removeAll(MEASURE_KEYS);

@@ -25,6 +25,15 @@ public class GetReportFieldsCommand extends FacilioCommand {
                     reqReportFields.put(key,reportFields.get(key));
                 }
             }
+            Map<String, List<FacilioField>> dimensionFieldMap = (Map<String, List<FacilioField>>) reportFields.get("newDimension");
+            if(dimensionFieldMap != null) {
+                for(String alias: dimensionFieldMap.keySet()) {
+                    List<FacilioField> dimensionFields = dimensionFieldMap.get(alias);
+                    List<FacilioField> uniqueFields = SetUniqueList.decorate(dimensionFields);
+                    dimensionFieldMap.put(alias, uniqueFields);
+                }
+                reqReportFields.put("newDimension",dimensionFieldMap);
+            }
             context.put("reportFields", reqReportFields);
         }
         return false;

@@ -14,6 +14,7 @@ public class V2ModuleMeasureContext {
     private String moduleDisplayName;
     private int sortOrder;
     private int limit;
+    private boolean special;
     private AggregateOperator aggr;
     public String criteria;
     public long criteriaId;
