@@ -26,18 +26,29 @@ public class DownloadPDFTemplateCommand extends FacilioCommand {
 
         PDFTemplate pdfTemplate = (PDFTemplate) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE);
         String pdfTemplateHtml = (String) context.get(FacilioConstants.ContextNames.PDF_TEMPLATE_RAW_HTML);
-        String hideDummyDataCss = "@media print {.dummy-data-wrapper{display: none !important;} .component-page-break{page-break-after: always;}}";
-        String pdfTemplateWithCSS = pdfTemplateHtml + "<style>" + pdfTemplate.getHtmlContentCss() + hideDummyDataCss + "</style>";
+        String customPrintCss = getCustomPrintCss();
+        String pdfTemplateWithCSS = pdfTemplateHtml + "<style>" + customPrintCss + pdfTemplate.getHtmlContentCss() + "</style>";
         String pdfTemplateHtmlFormatted = pdfTemplateWithCSS.replace("\\n","").replace("\\","").replaceAll("^\"|\"$","").replace("</body>\"", "</body>");
+
+        Map<String,String> margin = new HashMap<>();
+        margin.put("top","7mm"); margin.put("bottom","7mm"); margin.put("left","7mm"); margin.put("right","7mm");
 
         PDFOptions pdfOptions = new PDFOptions();
         pdfOptions.setHeaderTemplate(pdfTemplate.getHeaderTemplate());
         pdfOptions.setFooterTemplate(pdfTemplate.getFooterTemplate());
         pdfOptions.setPrintBackground(true);
+        pdfOptions.setMargin(margin);
 
         long fileId = PDFServiceFactory.getPDFService().exportHTML(pdfTemplate.getName() + ".pdf", pdfTemplateHtmlFormatted , PDFService.ExportType.PDF, pdfOptions);
         context.put(FacilioConstants.ContextNames.FILE_ID, fileId);
 
         return false;
+    }
+    private String getCustomPrintCss(){
+        return "@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');" +
+                "@media print {" +
+                ".dummy-data-wrapper{display: none !important;} " +
+                ".component-page-break{page-break-after: always;}" +
+                "}";
     }
 }

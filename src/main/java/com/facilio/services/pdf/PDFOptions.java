@@ -3,6 +3,8 @@ package com.facilio.services.pdf;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Map;
+
 @Getter
 @Setter
 public class PDFOptions extends ExportOptions {
@@ -18,8 +20,5 @@ public class PDFOptions extends ExportOptions {
     private boolean defaultFooter;
     private boolean omitBackground;
     private boolean printBackground;
-    private int marginTop;
-    private int marginBottom;
-    private int marginLeft;
-    private int marginRight;
+    private Map<String,String> margin;
 }
