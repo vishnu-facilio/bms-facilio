@@ -6471,12 +6471,11 @@
             <property name="fromBuilder" type="boolean"/>
         </urlparams>
     </request>
-    <request path="/api/v3/modulemapping/fetchRecord/:moduleName/:targetModule" method="POST">
+
+    <request path="/api/v3/modulemapping/addOrFetchRecord/:moduleName/:targetModule" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true" />
             <property name="targetModule" type="string" mandatory="true" />
-            <property name="templateId" type="number" />
-            <property name="templateName" type="string" />
         </urlparams>
         <requestbody type="object">
             <property name="sourceModule" type="string" />
@@ -6485,15 +6484,13 @@
             <property name="templateName" type="string" />
             <property name="targetValue" type="v3fields"/>
             <property name="recordId" type="number" mandatory="true" />
+            <property name="viewOnly" type="boolean" mandatory="true" />
         </requestbody>
     </request>
-    <request path="/api/v3/modulemapping/addRecord/:moduleName/:targetModule" method="POST">
+
+    <request path="/api/v3/modulemapping/convert/addOrFetchRecord/:moduleName" method="POST">
         <urlparams>
             <property name="moduleName" type="string" mandatory="true" />
-            <property name="targetModule" type="string" mandatory="true" />
-            <property name="templateId" type="number" />
-            <property name="templateName" type="string" />
-            <property name="recordId" type="number" mandatory="true" />
         </urlparams>
         <requestbody type="object">
             <property name="sourceModule" type="string" />
@@ -6502,6 +6499,77 @@
             <property name="templateName" type="string" />
             <property name="targetValue" type="v3fields"/>
             <property name="recordId" type="number" mandatory="true" />
+            <property name="viewOnly" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/modulemapping/addOrFetchMultiRecord/:moduleName/:targetModule" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+            <property name="targetModule" type="string" mandatory="true" />
+        </urlparams>
+        <requestbody type="object">
+            <property name="sourceModule" type="string" />
+            <property name="targetModule" type="string" />
+            <property name="templateId" type="number" />
+            <property name="templateName" type="string" />
+            <property name="targetValue" type="v3fields"/>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="viewOnly" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/modulemapping/convert/addOrFetchMultiRecord/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+        </urlparams>
+        <requestbody type="object">
+            <property name="sourceModule" type="string" />
+            <property name="targetModule" type="string" />
+            <property name="templateId" type="number" />
+            <property name="templateName" type="string" />
+            <property name="targetValue" type="v3fields"/>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="viewOnly" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/modulemapping/addOrFetchSingleRecord/:moduleName/:targetModule" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+            <property name="targetModule" type="string" mandatory="true" />
+        </urlparams>
+        <requestbody type="object">
+            <property name="sourceModule" type="string" />
+            <property name="targetModule" type="string" />
+            <property name="templateId" type="number" />
+            <property name="templateName" type="string" />
+            <property name="targetValue" type="v3fields"/>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="viewOnly" type="boolean" mandatory="true" />
+        </requestbody>
+    </request>
+
+    <request path="/api/v3/modulemapping/convert/addOrFetchSingleRecord/:moduleName" method="POST">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true" />
+        </urlparams>
+        <requestbody type="object">
+            <property name="sourceModule" type="string" />
+            <property name="targetModule" type="string" />
+            <property name="templateId" type="number" />
+            <property name="templateName" type="string" />
+            <property name="targetValue" type="v3fields"/>
+            <property name="recordIds" type="array" mandatory="true">
+                <items type="number"/>
+            </property>
+            <property name="viewOnly" type="boolean" mandatory="true" />
         </requestbody>
     </request>
 

@@ -70,11 +70,9 @@ import com.facilio.bmsconsoleV3.context.spacebooking.*;
 import com.facilio.bmsconsoleV3.plannedmaintenance.ValidatePmResourcePlannerResource;
 import com.facilio.assetcatergoryfeature.commands.FetchAssetCategoryLevelStatusCommand;
 import com.facilio.assetcatergoryfeature.commands.UpdateAssetCategoryLevelStatusCommand;
-import com.facilio.chain.FacilioContext;
 import com.facilio.faults.LoadOccurrenceForAlarmCommand;
 import com.facilio.faults.newreadingalarm.HandleV3AlarmListLookupCommand;
 import com.facilio.connected.commands.AddExecutorCommand;
-import com.facilio.componentpackage.utils.PackageUtil;
 import com.facilio.ns.command.*;
 import com.facilio.plannedmaintenance.FetchPlannerDetails;
 import com.facilio.plannedmaintenance.PreCreateWorkOrderRecord;
@@ -299,9 +297,7 @@ import com.facilio.trigger.command.AddOrUpdateTriggerCommand;
 import com.facilio.trigger.command.DeleteTriggerCommand;
 import com.facilio.trigger.command.ExecuteTriggerCommand;
 import com.facilio.trigger.command.GetAllTriggersCommand;
-import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
-import org.apache.commons.lang3.BooleanUtils;
 
 public class TransactionChainFactoryV3 {
     private static FacilioChain getDefaultChain() {
@@ -4431,6 +4427,12 @@ public class TransactionChainFactoryV3 {
     public static FacilioChain addModuleMappingConfig() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddModuleMappingCommand());
+        return c;
+    }
+
+    public static FacilioChain addOrFetchMultiRecordModuleMappingConfig(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrFetchMultiRecordModuleMappingCommand());
         return c;
     }
     public static FacilioChain getUtilityIntegrationBillsBeforeFetchChain() {

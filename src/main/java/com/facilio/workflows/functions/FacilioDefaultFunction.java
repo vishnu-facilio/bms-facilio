@@ -1186,7 +1186,7 @@ public class FacilioDefaultFunction  {
 
         ModuleMappingConfigUtil moduleMappingConfigUtil = new ModuleMappingConfigUtil();
 
-        Object result = moduleMappingConfigUtil.getTargetModuleRecordObj(sourceModule, targetModule, recordId, templateId,null,null);
+        Object result = moduleMappingConfigUtil.getTargetModuleRecordObj(sourceModule, targetModule, recordId, templateId,null,null,null);
 
         return FieldUtil.getAsProperties(result);
 
@@ -1218,7 +1218,7 @@ public class FacilioDefaultFunction  {
 
         ModuleMappingConfigUtil moduleMappingConfigUtil = new ModuleMappingConfigUtil();
 
-        Object result = moduleMappingConfigUtil.createTargetModuleRecord(sourceModule, targetModule, recordId, templateId,null,null);
+        Object result = moduleMappingConfigUtil.createTargetModuleRecord(sourceModule, targetModule, recordId, templateId,null,null,null);
 
         return FieldUtil.getAsProperties(result);
 

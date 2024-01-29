@@ -3808,19 +3808,53 @@
         </action>
     </package>
     <package name="modulemappingconfiguration" namespace="/api/v3/modulemapping" extends="v3Api">
-        <action name="fetchRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="fetchTargetModuleContext">
+        <action name="addOrFetchRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addContextToTargetModule">
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="permissionModuleName">{2}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+
+        <action name="convert/addOrFetchRecord/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addContextToTargetModule">
+            <param name="permission">POST:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+
+
+        <action name="addOrFetchMultiRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchMultiRecordContext">
             <param name="permission">POST:CREATE,UPDATE</param>
             <param name="moduleName">{1}</param>
             <param name="permissionModuleName">{2}</param>
             <param name="sourceModule">{1}</param>
             <param name="targetModule">{2}</param>
         </action>
-        <action name="addRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addContextToTargetModule">
+
+        <action name="convert/addOrFetchMultiRecord/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchMultiRecordContext">
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+
+        <action name="addOrFetchSingleRecord/*/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchSingleRecordContext">
             <param name="permission">POST:CREATE,UPDATE</param>
             <param name="moduleName">{1}</param>
             <param name="permissionModuleName">{2}</param>
             <param name="sourceModule">{1}</param>
             <param name="targetModule">{2}</param>
+        </action>
+
+        <action name="convert/addOrFetchSingleRecord/*" class="com.facilio.bmsconsoleV3.actions.ModuleMappingConfigAction" method="addOrFetchSingleRecordContext">
+            <param name="permission">GET:CREATE,UPDATE</param>
+            <param name="moduleName">{1}</param>
+            <param name="sourceModule">{1}</param>
+            <param name="targetModule">{2}</param>
+        </action>
+
+        <action name="test" class="com.facilio.bmsconsole.Test" method="test">
         </action>
 
     </package>

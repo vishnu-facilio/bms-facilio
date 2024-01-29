@@ -57,4 +57,28 @@ public class ModuleMappings extends ModuleMappingBaseInfoContext {
 
     }
 
+    public enum Conversion_Type {
+        ONE_TO_ONE(1,"One to One conversion"),
+        MANY_TO_ONE(2,"Many to One conversion"),
+        MANY_TO_MANY(3,"Many to Many conversion"),
+        ;
+
+        int type;
+        String typeName;
+
+        private Conversion_Type(int type,String typeName) {
+            this.type = type;
+            this.typeName = typeName;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public String getTypeName() {
+            return typeName;
+        }
+
+    }
+
 }

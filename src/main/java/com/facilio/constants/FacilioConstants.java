@@ -3007,10 +3007,15 @@ public class FacilioConstants {
 			public static final String TARGET_MODULE = "targetModule";
 			public static final String TEMPLATE_ID = "templateId";
 			public static final String RECORD_ID = "recordId";
+
+			public static final String RECORD_IDS = "recordIds";
+
 			public static final String RECORD = "record";
 			public static final String RAW_RECORD="rawRecord";
 			public static final String DATA = "data";
 			public static final String TEMPLATE_NAME = "templateName";
+			public static final String CONVERSION_TYPE="conversionType";
+			public static final String VIEW_ONLY="viewOnly";
 
 		}
 		public static class BooleanMapping{
