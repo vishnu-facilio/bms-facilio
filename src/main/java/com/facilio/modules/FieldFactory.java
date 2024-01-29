@@ -704,6 +704,26 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("status", "STATUS", module, FieldType.BOOLEAN));
         return fields;
     }
+
+    public static List<FacilioField> getAutoNumberFieldFields(){
+
+        List<FacilioField> fields = new ArrayList<>();
+        FacilioModule module = ModuleFactory.getAutoNumberFieldModule();
+
+        fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
+        fields.add(getField("moduleId", "MODULEID", module, FieldType.NUMBER));
+        fields.add(getField("prefix", "PREFIX", module, FieldType.STRING));
+        fields.add(getField("suffix", "SUFFIX", module, FieldType.STRING));
+        fields.add(getField("idStartsFrom","ID_STARTS_FROM",module,FieldType.NUMBER));
+        fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+        fields.add(getField("lastAutoNumberId", "LAST_AUTO_NUMBER_ID", module, FieldType.NUMBER));
+
+        return fields;
+    }
+
+    public static FacilioField getAutoNumberField(FacilioModule module){
+        return  getField("lastAutoNumberId", "LAST_AUTO_NUMBER_ID", module, FieldType.NUMBER);
+    }
     public static List<FacilioField> getGlimpseFieldsFields(){
 
         List<FacilioField> fields = new ArrayList<>();

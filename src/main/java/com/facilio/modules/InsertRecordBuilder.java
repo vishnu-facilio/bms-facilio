@@ -3,14 +3,12 @@ package com.facilio.modules;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.AutoNumberFieldUtil;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.InsertSupplementHandler;
-import com.facilio.modules.fields.SupplementRecord;
+import com.facilio.modules.fields.*;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -229,12 +227,22 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		int beansSize = records == null ? 0 : records.size(), propsSize = recordProps == null ? 0 : recordProps.size();
 		int totalRecords = beansSize + propsSize;
 		long localId = getLocalId(modules, totalRecords);
+		AutoNumberField autoNumberField = getAutoNumberValueIdProp(fields,totalRecords);
+		int autoNumberIdValue = 0;
+		if(autoNumberField!= null){
+			autoNumberIdValue = autoNumberField.getLastAutoNumberId();
+		}
 		List<Map<String, Object>> props = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(records)) {
 			for(E bean : records) {
 				if (isWithLocalIdModule) {
 					long currentLocalId = ++localId;
 					bean.setLocalId(currentLocalId);
+				}
+				if(autoNumberField != null){
+					String currentAutoNumberValue = AutoNumberFieldUtil.constructAutoNumberValue(autoNumberField,autoNumberIdValue);
+					FieldUtil.setValue(bean,autoNumberField,currentAutoNumberValue);
+					autoNumberIdValue ++;
 				}
 				props.add(getAsProps(bean));
 			}
@@ -245,6 +253,11 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				if (isWithLocalIdModule) {
 					long currentLocalId = ++localId;
 					prop.put("localId", currentLocalId);
+				}
+				if(autoNumberField != null){
+					String currentAutoNumberValue = AutoNumberFieldUtil.constructAutoNumberValue(autoNumberField,autoNumberIdValue);
+					prop.put(autoNumberField.getName(), currentAutoNumberValue);
+					autoNumberIdValue ++;
 				}
 				props.add(prop);
 			}
@@ -384,6 +397,18 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				prop.remove(field.getName());
 			}
 		}
+	}
+
+	private AutoNumberField getAutoNumberValueIdProp(List<FacilioField> fields, int size) throws Exception {
+
+		AutoNumberField autoNumberField = null;
+		if (CollectionUtils.isNotEmpty(fields) && fields.stream().anyMatch(facilioField -> facilioField.getDataTypeEnum() == FieldType.AUTO_NUMBER_FIELD)) {
+			autoNumberField = (AutoNumberField) fields.stream().filter(facilioField -> facilioField.getDataTypeEnum() == FieldType.AUTO_NUMBER_FIELD).collect(Collectors.toList()).get(0);
+			int autoNumberValueId = AutoNumberFieldUtil.getAndUpdateFieldAutoNumberIdProps(autoNumberField, size);
+			autoNumberField.setLastAutoNumberId(autoNumberValueId);
+		}
+
+		return autoNumberField;
 	}
 
 	private long getLocalId (List<Pair<FacilioModule, Long>> modules, int size) throws Exception {

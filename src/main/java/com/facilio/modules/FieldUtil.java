@@ -19,7 +19,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.exception.FacilioObjectMapperException;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.cache.FacilioCache;
@@ -37,7 +36,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.MutableConfigOverride;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -734,6 +732,9 @@ public class FieldUtil {
 						break;
 					case MULTI_CURRENCY_FIELD:
 						facilioField = FieldUtil.getAsBeanFromMap (fieldJson,MultiCurrencyField.class);
+						break;
+					case AUTO_NUMBER_FIELD:
+						facilioField = FieldUtil.getAsBeanFromMap (fieldJson,AutoNumberField.class);
 						break;
 					default:
 						facilioField = ( FacilioField ) FieldUtil.getAsBeanFromMap (fieldJson, FacilioField.class);

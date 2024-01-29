@@ -27,6 +27,7 @@ fieldListType:
       - SCORE
       - BIG_STRING
       - STRING_SYSTEM_ENUM
+      - AUTO_NUMBER_FIELD
     fieldResponseChain:
       - com.facilio.fields.commands.SortableFieldsResponseCommand
 
@@ -59,6 +60,7 @@ fieldListType:
       - STRING_SYSTEM_ENUM
       - URL_FIELD
       - CURRENCY_FIELD
+      - AUTO_NUMBER_FIELD
     fieldResponseChain:
       - com.facilio.fields.commands.ViewFieldsResponseCommand
 
@@ -89,6 +91,7 @@ fieldListType:
       - STRING_SYSTEM_ENUM
       - URL_FIELD
       - CURRENCY_FIELD
+      - AUTO_NUMBER_FIELD
     fieldResponseChain:
       - com.facilio.fields.commands.AdvancedFilterFieldsResponseCommand
 
@@ -126,6 +129,7 @@ fieldListType:
       - STRING_SYSTEM_ENUM
       - URL_FIELD
       - CURRENCY_FIELD
+      - AUTO_NUMBER_FIELD
     fieldResponseChain:
       - com.facilio.fields.commands.SummaryWidgetFieldsResponseCommand
 

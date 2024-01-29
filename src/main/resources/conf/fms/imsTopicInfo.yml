@@ -69,3 +69,8 @@ topics:
     batch-process: true
     keys:
       - { key: __workflow_rule_logs__/#/#/#, handler: com.facilio.ims.handler.WorkFlowRuleLogHandler }
+
+  - topic: auto-number-field
+    keys:
+       - { key: __auto_number_field_handle__/#/#/#, handler: com.facilio.ims.handler.AutoNumberFieldHandler, recordTimeout: 1800  }
+       - { key: __auto_number_field_update_record_handle__/#/#/#, handler: com.facilio.ims.handler.AutoNumberFieldUpdateRecordHandler, recordTimeout: 1800  }

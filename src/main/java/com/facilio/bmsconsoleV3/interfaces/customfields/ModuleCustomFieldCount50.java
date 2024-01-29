@@ -1,11 +1,11 @@
 package com.facilio.bmsconsoleV3.interfaces.customfields;
 
+import com.facilio.modules.FieldType;
+import org.apache.commons.collections4.map.HashedMap;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.modules.FieldType;
-import org.apache.commons.collections4.map.HashedMap;
 
 public class ModuleCustomFieldCount50 implements ModuleCustomFieldsCount {
 
@@ -25,6 +25,7 @@ public class ModuleCustomFieldCount50 implements ModuleCustomFieldsCount {
         customFieldsMap.put(9, new String[]{"FILE_CF1", "FILE_CF2", "FILE_CF3", "FILE_CF4", "FILE_CF5", "FILE_CF6", "FILE_CF7", "FILE_CF8", "FILE_CF9", "FILE_CF10", "FILE_CF11", "FILE_CF12", "FILE_CF13", "FILE_CF14", "FILE_CF15", "FILE_CF16", "FILE_CF17", "FILE_CF18", "FILE_CF19", "FILE_CF20", "FILE_CF21", "FILE_CF22", "FILE_CF23", "FILE_CF24", "FILE_CF25", "FILE_CF26", "FILE_CF27", "FILE_CF28", "FILE_CF29", "FILE_CF30","FILE_CF31", "FILE_CF32", "FILE_CF33", "FILE_CF34", "FILE_CF35","FILE_CF36", "FILE_CF37", "FILE_CF38", "FILE_CF39", "FILE_CF40","FILE_CF41", "FILE_CF42", "FILE_CF43", "FILE_CF44", "FILE_CF45", "FILE_CF46", "FILE_CF47", "FILE_CF48", "FILE_CF49", "FILE_CF50"});
         customFieldsMap.put(15, new String[]{"SCORE_CF1", "SCORE_CF2", "SCORE_CF3", "SCORE_CF4", "SCORE_CF5", "SCORE_CF6", "SCORE_CF7", "SCORE_CF8", "SCORE_CF9", "SCORE_CF10", "SCORE_CF11", "SCORE_CF12", "SCORE_CF13", "SCORE_CF14", "SCORE_CF15", "SCORE_CF16", "SCORE_CF17", "SCORE_CF18", "SCORE_CF19", "SCORE_CF20", "SCORE_CF21", "SCORE_CF22", "SCORE_CF23", "SCORE_CF24", "SCORE_CF25", "SCORE_CF26", "SCORE_CF27", "SCORE_CF28", "SCORE_CF29", "SCORE_CF30","SCORE_CF31", "SCORE_CF32", "SCORE_CF33", "SCORE_CF34", "SCORE_CF35","SCORE_CF36", "SCORE_CF37", "SCORE_CF38", "SCORE_CF39", "SCORE_CF40","SCORE_CF41", "SCORE_CF42", "SCORE_CF43", "SCORE_CF44", "SCORE_CF45", "SCORE_CF46", "SCORE_CF47", "SCORE_CF48", "SCORE_CF49", "SCORE_CF50"});
         customFieldsMap.put(18, new String[]{"BIGSTRING_CF1","BIGSTRING_CF2"});
+        customFieldsMap.put(24,new String[]{"AUTO_NUMBER_CF1"});
 
         return customFieldsMap;
     }

@@ -220,6 +220,16 @@ public class ModuleFactory {
 		return moduleConfiguration;
 	}
 
+	public static FacilioModule getAutoNumberFieldModule(){
+
+		FacilioModule moduleConfiguration = new FacilioModule();
+		moduleConfiguration.setName("autoNumberField");
+		moduleConfiguration.setDisplayName("Auto Number Field");
+		moduleConfiguration.setTableName("AutoNumberFields");
+		return moduleConfiguration;
+
+	}
+
 	public static FacilioModule getGlimpseFieldsModule(){
 
 		FacilioModule glimpseFields = new FacilioModule();

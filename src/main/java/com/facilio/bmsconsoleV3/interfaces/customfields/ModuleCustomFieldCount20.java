@@ -1,11 +1,11 @@
 package com.facilio.bmsconsoleV3.interfaces.customfields;
 
+import com.facilio.modules.FieldType;
+import org.apache.commons.collections4.map.HashedMap;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.modules.FieldType;
-import org.apache.commons.collections4.map.HashedMap;
 
 public class ModuleCustomFieldCount20 implements ModuleCustomFieldsCount {
 
@@ -24,6 +24,7 @@ public class ModuleCustomFieldCount20 implements ModuleCustomFieldsCount {
         customFieldsMap.put(9, new String[]{"FILE_CF1", "FILE_CF2", "FILE_CF3", "FILE_CF4", "FILE_CF5", "FILE_CF6", "FILE_CF7", "FILE_CF8", "FILE_CF9", "FILE_CF10", "FILE_CF11", "FILE_CF12", "FILE_CF13", "FILE_CF14", "FILE_CF15", "FILE_CF16", "FILE_CF17", "FILE_CF18", "FILE_CF19", "FILE_CF20"});
         customFieldsMap.put(15, new String[]{"SCORE_CF1", "SCORE_CF2", "SCORE_CF3", "SCORE_CF4", "SCORE_CF5", "SCORE_CF6", "SCORE_CF7", "SCORE_CF8", "SCORE_CF9", "SCORE_CF10", "SCORE_CF11", "SCORE_CF12", "SCORE_CF13", "SCORE_CF14", "SCORE_CF15", "SCORE_CF16", "SCORE_CF17", "SCORE_CF18", "SCORE_CF19", "SCORE_CF20"});
         customFieldsMap.put(18, new String[]{"BIGSTRING_CF1","BIGSTRING_CF2","BIGSTRING_CF3"});
+        customFieldsMap.put(24,new String[]{"AUTO_NUMBER_CF1"});
 
         return customFieldsMap;
     }

@@ -323,6 +323,12 @@ public class FacilioConstants {
 	public static class FormContextNames {
 		public static final String SUB_FORM = "subForm";
 		public static final String SUB_FORM_MODULE_NAME = "subFormModuleName";
+		public static final String PREFIX = "prefix";
+		public static final String SUFFIX = "suffix";
+		public static final String FIELDID = "fieldId";
+		public static final String AUTO_NUMBER_FIELD = "autoNumberField";
+		public static final String ID_STARTS_FROM =  "idStartsFrom";
+		public static final String LAST_AUTO_NUMBER_ID =  "lastAutoNumberId";
 		public static final String NEXT_FORM_FIELD_ID = "nextFormFieldId";
 		public static final String NEXT_FORM_ID = "nextFormId";
 		public static final String PREVIOUS_FORM_ID = "previousFormId";

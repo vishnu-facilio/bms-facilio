@@ -2,8 +2,8 @@ package com.facilio.beans;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FieldPermissionContext;
+import com.facilio.bmsconsole.util.AutoNumberFieldUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.MultiCurrencyConstants;
@@ -18,7 +18,10 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
 import com.facilio.field.validation.string.StringValidator;
+import com.facilio.fms.message.Message;
 import com.facilio.fw.BeanFactory;
+import com.facilio.ims.endpoint.Messenger;
+import com.facilio.ims.handler.AutoNumberFieldHandler;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.*;
@@ -26,6 +29,7 @@ import com.facilio.util.FacilioDateUtil;
 import com.facilio.util.FacilioNumberUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -624,6 +628,10 @@ public class ModuleBeanImpl implements ModuleBean {
 							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 							field = FieldUtil.getAsBeanFromMap(prop, MultiCurrencyField.class);
 							break;
+						case AUTO_NUMBER_FIELD:
+							prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+							field = FieldUtil.getAsBeanFromMap(prop, AutoNumberField.class);
+							break;
 						default:
 							field = FieldUtil.getAsBeanFromMap(prop, FacilioField.class);
 							break;
@@ -738,6 +746,9 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case MULTI_CURRENCY_FIELD:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getCurrencyFieldsModule (), FieldFactory.getCurrencyFieldFields (), entry.getValue()));
+					break;
+				case AUTO_NUMBER_FIELD:
+					extendedProps.put(entry.getKey(), AutoNumberFieldUtil.getAutoNumberFieldExtendedProps(entry.getValue()));
 					break;
 				default:
 					break;
@@ -1115,6 +1126,9 @@ public class ModuleBeanImpl implements ModuleBean {
 				case ENUM:
 					addEnumField((EnumField) field);
 					break;
+				case AUTO_NUMBER_FIELD:
+					addAutoNumberField((AutoNumberField) field);
+					break;
 				case MULTI_ENUM:
 					if (field instanceof MultiEnumField) {
 						MultiEnumField multiEnumField = (MultiEnumField) field;
@@ -1201,6 +1215,105 @@ public class ModuleBeanImpl implements ModuleBean {
 		else {
 			throw new IllegalArgumentException("Invalid field object for addition");
 		}
+	}
+
+	private void addAutoNumberField(AutoNumberField field) throws Exception {
+
+		validateAutoNumberField(field);
+		addAutoNumberFieldExtendedProps(field);
+		if(field.isChangeExistingIds()){
+			addOrUpdateAutoNumberFieldRecordsJob(field);
+		}
+
+	}
+
+	private void addAutoNumberFieldExtendedProps(AutoNumberField field) throws Exception{
+
+		FacilioModule autoNumberFieldsModule = ModuleFactory.getAutoNumberFieldModule();
+		List<FacilioField> autoNumberFieldFields = FieldFactory.getAutoNumberFieldFields();
+
+		field.setStatus(field.isChangeExistingIds() ? AutoNumberField.AutoNumberFieldStatus.INITIATED : AutoNumberField.AutoNumberFieldStatus.NOT_INITIATED);
+		Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
+		fieldProps.putIfAbsent(FacilioConstants.FormContextNames.ID_STARTS_FROM,field.getIdStartsFrom());
+
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(autoNumberFieldsModule.getTableName())
+				.fields(autoNumberFieldFields)
+				.addRecord(fieldProps);
+
+		insertBuilder.save();
+
+	}
+
+	private void updateAutoNumberField(AutoNumberField field) throws Exception {
+
+		validateAutoNumberField(field);
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getAutoNumberFieldFields())
+				.table(ModuleFactory.getAutoNumberFieldModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", String.valueOf(field.getFieldId()), NumberOperators.EQUALS));
+
+		Map<String, Object> props = selectRecordBuilder.fetchFirst();
+
+		FacilioUtil.throwIllegalArgumentException(MapUtils.isEmpty(props), "Invalid auto number Field");
+
+		AutoNumberField.AutoNumberFieldStatus status = AutoNumberField.AutoNumberFieldStatus.valueOf(Integer.parseInt(props.get("status").toString()));
+
+		FacilioUtil.throwIllegalArgumentException(status == AutoNumberField.AutoNumberFieldStatus.INITIATED, "Auto number Field update already initiated.");
+
+		boolean newChangeExistingRecords = field.isChangeExistingIds();
+		long moduleId = (long) props.get("moduleId");
+		long orgId = (long) props.get("orgId");
+		field.setOrgId(orgId);
+
+		FacilioModule module = getModule(moduleId);
+		field.setModule(module);
+
+		FacilioModule autoNumberFieldsModule = ModuleFactory.getAutoNumberFieldModule();
+		List<FacilioField> autoNumberFieldFields = FieldFactory.getAutoNumberFieldFields();
+		field.setStatus(field.isChangeExistingIds() ? AutoNumberField.AutoNumberFieldStatus.INITIATED : AutoNumberField.AutoNumberFieldStatus.NOT_INITIATED);
+		Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
+		fieldProps.putIfAbsent(FacilioConstants.FormContextNames.ID_STARTS_FROM,0);
+		fieldProps.put(FacilioConstants.FormContextNames.LAST_AUTO_NUMBER_ID,0);
+
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
+				.table(autoNumberFieldsModule.getTableName())
+				.fields(autoNumberFieldFields)
+				.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", String.valueOf(field.getFieldId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(moduleId), NumberOperators.EQUALS));
+
+		updateRecordBuilder.update(fieldProps);
+
+		if (newChangeExistingRecords) {
+			addOrUpdateAutoNumberFieldRecordsJob(field);
+		}
+
+	}
+
+	private void addOrUpdateAutoNumberFieldRecordsJob(AutoNumberField field) throws Exception {
+
+		long orgId = field.getOrgId();
+		long fieldId = field.getFieldId();
+		long moduleId = field.getModuleId();
+
+		if (orgId > 0 && fieldId > 0 && moduleId > 0) {
+			Messenger.getMessenger().sendMessage(new Message()
+					.setKey(AutoNumberFieldHandler.KEY + "/" + orgId + "/" + moduleId + "/" + fieldId)
+					.setOrgId(orgId)
+					.setContent(FieldUtil.getAsJSON(field)));
+		}
+
+	}
+	private void validateAutoNumberField(AutoNumberField field) throws Exception {
+
+		String prefix = field.getPrefix();
+		String suffix = field.getSuffix();
+		int idStartsFrom = field.getIdStartsFrom();
+
+		FacilioUtil.throwIllegalArgumentException(StringUtils.length(prefix) > 25 || StringUtils.length(suffix) > 25, "Prefix or Suffix character limit of 25 exceeds");
+		FacilioUtil.throwIllegalArgumentException(idStartsFrom < 0, "Id starts from cannot be empty");
+
 	}
 
 	private String getBaseCurrencyValueColumn(FacilioModule module, long fieldId) throws Exception{
@@ -1710,6 +1823,8 @@ public class ModuleBeanImpl implements ModuleBean {
 				Map<String, FacilioField> lookupFieldFieldsMap = FieldFactory.getAsMap(lookupFieldFields);
 				FacilioField relatedListDisplayName = lookupFieldFieldsMap.get("relatedListDisplayName");
 				extendendPropsCount = updateExtendedProps(ModuleFactory.getLookupFieldsModule(), Collections.singletonList(relatedListDisplayName), field);
+			} else if (field instanceof AutoNumberField) {
+				updateAutoNumberField((AutoNumberField) field);
 			}
 //			else if (field instanceof ScoreField) {
 //				extendendPropsCount = updateExtendedProps(ModuleFactory.getScoreFieldModule(), FieldFactory.getScoreFieldFields(), field);

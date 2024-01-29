@@ -1,14 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.context.SummaryWidgetGroupFields;
-import com.facilio.command.FacilioCommand;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ApplicationContext;
@@ -20,6 +11,7 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.ApplicationApi;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ApplicationLinkNames;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -28,8 +20,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GetFormMetaCommand extends FacilioCommand {
 
@@ -40,6 +38,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 		Long formId = (Long) context.getOrDefault(FacilioConstants.ContextNames.FORM_ID, -1l);
 		Long appId = (Long) context.getOrDefault(FacilioConstants.ContextNames.APP_ID, -1l);
 		String appLinkName = (String) context.getOrDefault(ContextNames.APP_LINKNAME, null);
+		Boolean forCreate = (context.get(ContextNames.FOR_CREATE) != null) ? (Boolean) context.get(ContextNames.FOR_CREATE): false;
 
 		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
 		FacilioModule formModule = null;
@@ -77,6 +76,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 								}
 							}
 							List<FormField> newFormFields = new ArrayList<FormField>(formFieldMap.values().stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList()));
+							newFormFields.removeIf(formField -> forCreate && formField.getDisplayTypeEnum() == FieldDisplayType.AUTO_NUMBER_FIELD);
 							subFormSection.setFields(newFormFields);
 							subFormFields.addAll((newFormFields));
 							newSubFormSection.add(subFormSection);
@@ -101,6 +101,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 							}
 						}
 						List<FormField> newFormFields = new ArrayList<FormField>(formFieldMap.values().stream().sorted(Comparator.comparingLong(FormField::getSequenceNumber)).collect(Collectors.toList()));
+						newFormFields.removeIf(formField -> forCreate && formField.getDisplayTypeEnum() == FieldDisplayType.AUTO_NUMBER_FIELD);
 						formSection.setFields(newFormFields);
 						formFields.addAll((newFormFields));
 						newFormSection.add(formSection);
