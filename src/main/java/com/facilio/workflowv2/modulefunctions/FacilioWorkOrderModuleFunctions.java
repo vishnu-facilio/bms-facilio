@@ -218,6 +218,58 @@ public class FacilioWorkOrderModuleFunctions extends FacilioModuleFunctionImpl {
 		throw new RuntimeException("Input not of expected type.");
 	}
 
+	/**
+	 * In script this function would look like,
+	 * updatePreOpenWorkOrders(workOrderIds, recordMap)
+	 *
+	 *
+	 */
+	public String updatePreOpenWorkOrders(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
+		String functionParamsMessage = " | This function takes in (workOrderIds, recordMap) only";
+
+		if(objects.size() < 3){
+			if(objects.size() == 1) { // calling empty function
+				throw new RuntimeException("(workOrderIds, recordMap) are required." + functionParamsMessage);
+			}
+			throw new RuntimeException("Please check the parameters." + functionParamsMessage);
+		}else if(objects.size() > 3){
+			throw new RuntimeException("Excess parameters aren't allowed." + functionParamsMessage);
+		}
+
+		//objects[moduleName, workOrderIds, recordMap]
+		Object workOrderIds = objects.get(1);
+		Object recordMap = objects.get(2);
+		if ((workOrderIds instanceof List) && recordMap instanceof HashMap) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule woModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+			List<FacilioField> woFieldsList = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+			Map<String, FacilioField> woFieldsMap = FieldFactory.getAsMap(woFieldsList);
+			woFieldsMap.remove("serialNumber");
+			woFieldsList = new ArrayList<>(woFieldsMap.values());
+
+			List<Long> workOrderIdList = (List<Long>) workOrderIds;
+
+
+			HashMap<String, Object> woRecordMap = (HashMap<String, Object>) recordMap;
+			V3WorkOrderContext updateWorkOrderContext = FieldUtil.getAsBeanFromMap(woRecordMap, V3WorkOrderContext.class);
+
+			UpdateRecordBuilder<V3WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<V3WorkOrderContext>()
+					.module(woModule)
+					.fields(woFieldsList)
+					.andCondition(CriteriaAPI.getIdCondition(workOrderIdList, woModule))
+					.skipModuleCriteria();
+			int updated = updateRecordBuilder.update(updateWorkOrderContext);
+
+			if(updated > 0) {
+				return "Updated WorkOrder with IDs: " + workOrderIdList;
+			}else {
+				return "Not Updated the WorkOrder with IDs: " + workOrderIdList;
+			}
+		}
+		throw new RuntimeException("Input not of expected type.");
+	}
+
+
 	@Override
 	public void add(Map<String, Object> globalParams, List<Object> objects, ScriptContext scriptContext) throws Exception {
 
