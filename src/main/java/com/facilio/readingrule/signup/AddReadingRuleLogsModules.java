@@ -1,5 +1,6 @@
 package com.facilio.readingrule.signup;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -10,6 +11,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
@@ -21,6 +23,11 @@ public class AddReadingRuleLogsModules extends SignUpData {
     public void addData() throws Exception {
         createReadingRuleLogsModule();
         createRuleLogsChildModules();
+        addJobForCleanup();
+    }
+
+    private void addJobForCleanup() throws Exception {
+        FacilioTimer.schedulePeriodicJob(AccountUtil.getCurrentOrg().getId(), "ReadingRuleLogsCleanUp", 5260000, 5260000, "facilio");
     }
 
     private void createReadingRuleLogsModule() throws Exception {
@@ -54,8 +61,6 @@ public class AddReadingRuleLogsModules extends SignUpData {
         );
         List<FacilioField> fields = new ArrayList<>();
 
-        FacilioField ruleName = (FacilioField) FieldFactory.getDefaultField("ruleName", "Rule Name", "RULE_NAME", FieldType.STRING, true);
-        fields.add(ruleName);
 
         LookupField rule = (LookupField) FieldFactory.getDefaultField("rule", "Rule", "RULE_ID", FieldType.LOOKUP);
         rule.setSpecialType(FacilioConstants.ReadingRules.NEW_READING_RULE);
@@ -66,10 +71,6 @@ public class AddReadingRuleLogsModules extends SignUpData {
 
         FacilioField resourceName = (FacilioField) FieldFactory.getDefaultField("resourceName", "Resource Name", "RESOURCE_NAME", FieldType.STRING);
         fields.add(resourceName);
-
-        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
-        resource.setSpecialType(FacilioConstants.ContextNames.RESOURCE);
-        fields.add(resource);
 
         BooleanField ruleResult = (BooleanField) FieldFactory.getDefaultField("ruleResult", "Rule Result", "RULE_RESULT", FieldType.BOOLEAN);
         fields.add(ruleResult);

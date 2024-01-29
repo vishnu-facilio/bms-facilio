@@ -12,9 +12,7 @@ import lombok.Setter;
 public class ReadingKpiLogsContext extends V3Context {
     private ReadingKPIContext kpi;
     private VirtualMeterTemplateReadingContext vmReading;
-    private String kpiName;
     private Long kpiExecTime;
-    private ResourceContext resource;
     private String resourceName;
     private Double kpiResult;
     private ExecutionStatus status;

@@ -9,9 +9,7 @@ import lombok.Setter;
 @Setter
 public class ReadingRuleLogsContext extends V3Context {
     private NewReadingRuleContext rule;
-    private String ruleName;
     private Long ruleExecTime;
-    private ResourceContext resource;
     private String resourceName;
     private Boolean isImpactLog;
     private Boolean ruleResult;

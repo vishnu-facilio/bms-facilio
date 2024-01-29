@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.signup.readingkpi;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
@@ -10,6 +11,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 
 import java.util.ArrayList;
@@ -21,7 +23,13 @@ public class AddReadingKpiLogsModules extends SignUpData {
     public void addData() throws Exception {
         createReadingKpiLogsModule();
         createKpiLogsChildModules();
+        addJobForCleanup();
     }
+
+    private void addJobForCleanup() throws Exception {
+        FacilioTimer.schedulePeriodicJob(AccountUtil.getCurrentOrg().getId(), "ReadingKpiLogsCleanUp", 5260000, 5260000, "facilio");
+    }
+
     private void createReadingKpiLogsModule() throws Exception {
         FacilioChain addModuleChain = TransactionChainFactory.addSystemModuleChain();
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(composeReadingKpiLogsModule()));
@@ -53,9 +61,6 @@ public class AddReadingKpiLogsModules extends SignUpData {
         );
         List<FacilioField> fields = new ArrayList<>();
 
-        FacilioField kpiName = (FacilioField) FieldFactory.getDefaultField("kpiName", "KPI Name", "KPI_NAME", FieldType.STRING);
-        fields.add(kpiName);
-
         LookupField kpi = (LookupField) FieldFactory.getDefaultField("kpi", "KPI", "KPI_ID", FieldType.LOOKUP);
         kpi.setSpecialType(FacilioConstants.ReadingKpi.READING_KPI);
         fields.add(kpi);
@@ -65,10 +70,6 @@ public class AddReadingKpiLogsModules extends SignUpData {
 
         FacilioField resourceName = (FacilioField) FieldFactory.getDefaultField("resourceName", "Resource Name", "RESOURCE_NAME", FieldType.STRING);
         fields.add(resourceName);
-
-        LookupField resource = (LookupField) FieldFactory.getDefaultField("resource", "Resource", "RESOURCE_ID", FieldType.LOOKUP);
-        resource.setSpecialType(FacilioConstants.ContextNames.RESOURCE);
-        fields.add(resource);
 
         FacilioField kpiResult = (FacilioField) FieldFactory.getDefaultField("kpiResult", "KPI Result", "KPI_RESULT", FieldType.DECIMAL);
         fields.add(kpiResult);
