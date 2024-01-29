@@ -16,8 +16,6 @@ public interface UserScopeBean {
 
     public void addScopingConfigForApp(List<ScopingConfigContext> scoping) throws Exception;
 
-    public long addScopingConfigForApp(ScopingConfigContext scoping, boolean getRecordId) throws Exception;
-
     public void deleteScopingConfig(long scopingId) throws Exception;
 
     public long addUserScoping(ScopingContext userScoping) throws Exception;

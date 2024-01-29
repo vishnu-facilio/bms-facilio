@@ -14,10 +14,10 @@ import java.util.Map;
 public interface PermissionSetBean {
     List<PermissionSetGroupingItemContext> getGroupListItemsForLinkName(String linkName) throws Exception;
     List<BasePermissionContext> getPermissionSetItems(long permissionSetId, Long groupId, String groupType) throws Exception;
-    List<BasePermissionContext> readPermissionValuesForPermissionSetType(PermissionSetType.Type type, long permissionSetId, Long groupId) throws Exception;
+    List<BasePermissionContext> readPermissionValuesForPermissionSetType(PermissionSetType.Type type, long permissionSetId, List<BasePermissionContext> permissionLists) throws Exception;
     List<Map<String,Object>> getPermissionValues(PermissionSetType.Type type, Map<String,Long> queryProp, PermissionFieldEnum permissionFieldEnum, Long permissionSetId) throws Exception;
     void deletePermissionsForPermissionSet(Map<String,Long> queryProp, Map<String,FacilioField> fieldsMap,FacilioModule module,Long permissionSetId,String permissionType) throws Exception;
-    void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception;
+    void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception;
     void updateUserPermissionSets(long peopleId,List<Long> permissionSetIds) throws Exception;
     List<PermissionSetContext> getUserPermissionSetMapping(long peopleId,boolean fetchOnlyActive) throws Exception;
     void deletePermissionSet(long id) throws Exception;

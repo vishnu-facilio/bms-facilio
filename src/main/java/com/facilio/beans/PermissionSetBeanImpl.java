@@ -48,20 +48,24 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
     public List<BasePermissionContext> getPermissionSetItems(long permissionSetId, Long groupId, String groupType) throws Exception {
         PermissionSetType.Type type = PermissionSetType.Type.valueOf(groupType.toUpperCase());
         if(type != null) {
-            return readPermissionValuesForPermissionSetType(type,permissionSetId,groupId);
+            return getPermissionLists(type,permissionSetId,groupId);
         }
         return null;
     }
 
-
-    public List<BasePermissionContext> readPermissionValuesForPermissionSetType(PermissionSetType.Type type, long permissionSetId, Long groupId) throws Exception {
+    public List<BasePermissionContext> getPermissionLists(PermissionSetType.Type type, long permissionSetId, Long groupId) throws Exception {
         PermissionSetGroupHandler handler = type.getHandler();
+        List<BasePermissionContext> permissionLists = handler.getPermissions(groupId);
+
+        return readPermissionValuesForPermissionSetType(type,permissionSetId,permissionLists);
+    }
+
+    public List<BasePermissionContext> readPermissionValuesForPermissionSetType(PermissionSetType.Type type, long permissionSetId, List<BasePermissionContext> permissionLists) throws Exception {
         FacilioModule module = type.getModule();
         List<FacilioField> fields = PermissionSetUtil.getAllExtendModuleFields(module);
         Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
         List<String> queryConditionFields = new ArrayList<>(type.getQueryFields());
         queryConditionFields.add("permissionType");
-        List<BasePermissionContext> permissionLists = handler.getPermissions(groupId);
         List<Map<String,Object>> constructedPermissionProps = FieldUtil.getAsMapList(permissionLists,type.getSetClass());
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                 .select(fields)
@@ -162,7 +166,7 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
         }
         deleteRecordBuilder.delete();
     }
-    public void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception {
+    public void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception {
         BasePermissionContext permission = FieldUtil.getAsBeanFromMap(prop, BasePermissionContext.class);
         if(permission != null) {
             PermissionSetType.Type groupType = permission.getType();
@@ -177,12 +181,12 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
                     queryProp.put(queryField, (Long) prop.get(queryField));
                 }
                 deletePermissionsForPermissionSet(queryProp,fieldsMap,module,permission.getPermissionSetId(), (String) prop.get("permissionType"));
-                insertIntoExtendTables(prop,module,insertRecordId);
+                insertIntoExtendTables(prop,module);
             }
         }
     }
 
-    private void insertIntoExtendTables(Map<String,Object> prop, FacilioModule module, Map<String, Long> insertRecordId) throws Exception {
+    private void insertIntoExtendTables(Map<String,Object> prop, FacilioModule module) throws Exception {
         Map<String,FacilioModule> extendModuleMap = PermissionSetConstants.EXTENDED_MODULE_REL;
         FacilioModule extendModule = module;
         List<FacilioModule> joinModules = new ArrayList<>();
@@ -199,9 +203,6 @@ public class PermissionSetBeanImpl implements PermissionSetBean {
                     .table(mod.getTableName())
                     .fields(PermissionSetFieldFactory.MODULE_VS_FIELDS.get(mod.getName()));
             id  = insertRecordBuilder.insert(prop);
-            if(insertRecordId != null){
-                insertRecordId.put(mod.getTableName(), id);
-            }
         }
     }
 

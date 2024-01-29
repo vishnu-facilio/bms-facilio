@@ -21,7 +21,7 @@ public class UpdatePermissionsForPermissionSetCommand extends FacilioCommand {
         PermissionSetBean permissionSetBean = (PermissionSetBean) BeanFactory.lookup("PermissionSetBean");
         if(CollectionUtils.isNotEmpty(permissions)) {
             for(Object permission : permissions) {
-                permissionSetBean.addPermissionsForPermissionSet((Map<String, Object>) permission, null);
+                permissionSetBean.addPermissionsForPermissionSet((Map<String, Object>) permission);
             }
             BasePermissionContext permission = FieldUtil.getAsBeanFromMap((Map<String, Object>) permissions.get(0),BasePermissionContext.class);
             PermissionSetContext ps = permissionSetBean.getPermissionSet(permission.getPermissionSetId());

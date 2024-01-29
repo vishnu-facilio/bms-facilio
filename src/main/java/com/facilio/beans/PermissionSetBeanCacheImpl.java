@@ -61,9 +61,9 @@ public class PermissionSetBeanCacheImpl extends PermissionSetBeanImpl implements
         super.deletePermissionsForPermissionSet(queryProp,fieldsMap,module,permissionSetId,permissionType);
         cache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
-    public void addPermissionsForPermissionSet(Map<String,Object> prop, Map<String, Long> insertRecordId) throws Exception {
+    public void addPermissionsForPermissionSet(Map<String,Object> prop) throws Exception {
         FacilioCache<String, List<Map<String,Object>>> cache = LRUCache.getPermissionSetsTypePermissionCache();
-        super.addPermissionsForPermissionSet(prop, insertRecordId);
+        super.addPermissionsForPermissionSet(prop);
         cache.removeStartsWith(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
     }
 }

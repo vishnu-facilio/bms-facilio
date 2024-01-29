@@ -20,6 +20,7 @@ public class PermissionSetContext implements Serializable {
     private Long sysCreatedBy;
     private Long sysModifiedBy;
     private Long sysDeletedBy;
+    private Boolean deleted;
     private Boolean status;
     private Boolean isPrivileged;
     @Setter @Getter

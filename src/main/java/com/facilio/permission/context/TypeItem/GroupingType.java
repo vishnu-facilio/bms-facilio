@@ -8,7 +8,7 @@ import lombok.Getter;
 @Getter
 public enum GroupingType implements FacilioStringEnum {
     MODULE("Module",new ModuleGroupItemHandler()),
-    APP("Application",null);
+    APP("Application",null);        //  need to handle for sanbox for app groupType for permissionSet feature
 
     String displayName;
     GroupItemHandler handler;

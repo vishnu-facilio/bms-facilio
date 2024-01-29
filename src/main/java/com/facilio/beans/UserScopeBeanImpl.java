@@ -15,10 +15,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -41,11 +38,11 @@ public class UserScopeBeanImpl implements UserScopeBean {
     public List<ScopingConfigCacheContext> getScopingConfig(List<Long> UserScopingConfigIds) throws Exception {
         if(CollectionUtils.isNotEmpty(UserScopingConfigIds)) {
             FacilioModule module = ModuleFactory.getScopingConfigModule();
-
+            FacilioField field = FieldFactory.getField("scopingId", "SCOPING_ID", module, FieldType.NUMBER);
             GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                     .select(FieldFactory.getScopingConfigFields())
                     .table("Scoping_Config")
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), UserScopingConfigIds, NumberOperators.EQUALS));
+                    .andCondition(CriteriaAPI.getCondition(field, UserScopingConfigIds, NumberOperators.EQUALS));
 
             return getScopingConfig(selectBuilder);
         }
@@ -89,13 +86,6 @@ public class UserScopeBeanImpl implements UserScopeBean {
 
         insertBuilder.addRecords(props);
         insertBuilder.save();
-    }
-
-    public long addScopingConfigForApp(ScopingConfigContext scoping, boolean getRecordId) throws Exception {
-        GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder();
-        List<Map<String, Object>> props = constructScopingConfigProp(insertBuilder,Arrays.asList(scoping));
-
-        return insertBuilder.insert(props.get(0));
     }
 
     private List<Map<String, Object>> constructScopingConfigProp (GenericInsertRecordBuilder insertBuilder,List<ScopingConfigContext> scoping) throws Exception {

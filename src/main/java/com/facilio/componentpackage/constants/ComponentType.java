@@ -70,14 +70,9 @@ public enum ComponentType implements FacilioIntEnum {
     READING_KPI(ReadingKpiPackageBeanImpl.class, MODULE,Boolean.FALSE),
     ASSET_READINGS(ReadingsPackageBeanImpl.class,MODULE,Boolean.FALSE),
     CONNECTOR(ConnectorPackageBeanImpl.class,null,false),
-    VALUE_GENERATOR(ValueGeneratorPackageBeanImpl.class,MODULE,false),
     GLOBAL_SCOPE_VARIABLE(GlobalScopingPackageBeanImpl.class,MODULE,false),
     USER_SCOPING(UserScopingPackageBeanImpl.class,MODULE, false),
-    USER_SCOPING_CONFIG(UserScopingConfigPackageBeanImpl.class,MODULE, false),
-    PEOPLE_USER_SCOPING_CONFIG(PeopleUserScopingConfigPackageBeanImpl.class,MODULE, false),
     PERMISSION_SET(PermissionSetPackageBeanImpl.class,MODULE,false),
-    PERMISSION_SET_CONFIG(PermissionSetConfigPackageBeanImpl.class,MODULE,false),
-    PEOPLE_PERMISSION_SET_CONFIG(PeoplePermissionSetConfigPackageBeanImpl.class,MODULE,false),
     SERVICE_CATALOG_GROUP(ServiceCatalogGroupPackageBeanImpl.class,null,false),
     SERVICE_CATALOG_ITEM(ServiceCatalogItemPackageImpl.class,null,false),
     VENDOR(null, null, false),
@@ -148,14 +143,9 @@ public enum ComponentType implements FacilioIntEnum {
             add(READING_RULE);
             add(READING_KPI);
             add(CONNECTOR);
-            add(VALUE_GENERATOR);
             add(GLOBAL_SCOPE_VARIABLE);
             add(USER_SCOPING);
-            add(USER_SCOPING_CONFIG);
-            add(PEOPLE_USER_SCOPING_CONFIG);
             add(PERMISSION_SET);
-            add(PERMISSION_SET_CONFIG);
-            add(PEOPLE_PERMISSION_SET_CONFIG);
             add(SERVICE_CATALOG_GROUP);
             add(SERVICE_CATALOG_ITEM);
             add(MODULE_KPI);

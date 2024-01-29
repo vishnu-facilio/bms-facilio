@@ -744,6 +744,7 @@ public class PackageConstants {
         public static final String APP_LINK_NAME = "App_Link_Name";
         public static final String DELETED = "Deleted";
         public static final String TYPE = "Type";
+        public static final String VALUE_GENERATOR = "Value_Generator";
 
         public static final List<String> DEFAULT_CREATED_GLOBAL_SCOPE_VARIABLE = Arrays.asList(
                 "default_maintenance_site",
@@ -756,14 +757,20 @@ public class PackageConstants {
         );
     }
     public static class UserScopingConstants{
-        public static final String LINK_NAME = "Link_Name";
+        public static final String SCOPE_LINK_NAME = "Scope_Link_Name";
         public static final String DISPLAY_NAME = "Display_Name";
         public static final String DESCRIPTION = "Description";
         public static final String STATUS = "Status";
+        public static final String IS_DEFAULT = "Is_Default";
+        public static final String APPLICATION_NAME = "Application_Name";
+        public static final String USER_SCOPING_CONFIGS = "User_Scoping_Configs";
+        public static final String PEOPLE_USER_SCOPING_CONFIGS = "People_User_Scoping_Configs";
+
     }
 
     public static class UserScopingConfigConstants{
-        public static final String SCOPE_NAME = "Scope_Name";
+        public static final String USER_SCOPING_CONFIG = "User_Scoping_Config";
+        public static final String SCOPE_LINK_NAME = "Scope_Link_Name";
         public static final String MODULE_NAME = "Module_Name";
         public static final String CRITERIA_ID = "Criteria_Id";
         public static final String CRITERIA = "Criteria";
@@ -774,8 +781,7 @@ public class PackageConstants {
     }
 
     public static class PeopleUserScopingConstants{
-        public static final String SCOPE_ID = "Scope_Id";
-        public static final String PEOPLE_ID = "People_Id";
+        public static final String PEOPLE_USER_SCOPING_CONFIG = "People_User_Scoping_Config";
         public static final String SCOPE_LINK_NAME = "Scope_Link_Name";
         public static final String PEOPLE_MAIL = "People_Mail";
     }
@@ -784,10 +790,14 @@ public class PackageConstants {
         public static final String DISPLAY_NAME = "Display_Name";
         public static final String DESCRIPTION = "Description";
         public static final String STATUS = "Status";
-        public static final String IS_PRIVILEGED = "is_Privileged";
+        public static final String IS_PRIVILEGED = "Is_Privileged";
+        public static final String IS_DELETED = "Is_Deleted";
+        public static final String PERMISSION_SET_CONFIGS = "Permission_Set_Configs";
+        public static final String PEOPLE_PERMISSION_SET_CONFIGS = "People_Permission_Set_Configs";
     }
 
     public static class PermissionSetConfig{
+        public static final String PERMISSION_SET_CONFIG = "Permission_Set_Config";
         public static final String MODULE_NAME = "Module_Name";
         public static final String PERMISSION_TYPE = "Permission_Type";
         public static final String TYPE = "Type";
@@ -801,6 +811,7 @@ public class PackageConstants {
     }
 
     public static class PeoplePermissionSetConfig{
+        public static final String PEOPLE_PERMISSION_SET_CONFIG = "People_Permission_Set_Config";
         public static final String PERMISSION_SET_LINK_NAME = "Permission_Set_Link_Name";
         public static final String PEOPLE_MAIL = "People_Mail";
     }
