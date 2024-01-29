@@ -11,6 +11,7 @@ import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.reflections.Reflections;
 import org.reflections.scanners.MethodAnnotationsScanner;
+import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
@@ -64,7 +65,7 @@ public class WmsProcessor {
             Reflections reflections = new Reflections(new ConfigurationBuilder()
                     .forPackages("com.facilio.wmsv2.filters")
                     .filterInputsBy(new FilterBuilder().includePackage("com.facilio.wmsv2.filters"))
-                    .setScanners(new TypeAnnotationsScanner()));
+                    .setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()));
 
 //            Reflections reflections = new Reflections(ClasspathHelper.forPackage("com.facilio.wmsv2.filters"));
             Set<Class<?>> typesAnnotatedWith = reflections.getTypesAnnotatedWith(WMSFilter.class);
