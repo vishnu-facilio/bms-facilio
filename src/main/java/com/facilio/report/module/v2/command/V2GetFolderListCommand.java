@@ -22,10 +22,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class V2GetFolderListCommand extends FacilioCommand {
@@ -102,19 +99,20 @@ public class V2GetFolderListCommand extends FacilioCommand {
                 if(role != null && role.isPrevileged() != null && !role.isPrevileged() && role.getRoleId() == 12836l && folders_list != null && folders_list.size() > 0)
                 {
                     Iterator<JSONObject> iterator = folders_list.iterator();
+                    List<Long> folderIds = Arrays.asList(933l,955l,958l,959l);
                     while (iterator.hasNext())
                     {
                         JSONObject folder_json = iterator.next();
                         if(folder_json != null && folder_json.containsKey("id"))
                         {
                             Long id = (Long) folder_json.get("id");
-                            if(id != null && id > 0 && id == 921)
+                            if(id != null && id > 0 && !folderIds.contains(id))
                             {
                                 role_specific_folders_list.add(folder_json);
-                                return role_specific_folders_list;
                             }
                         }
                     }
+                    return role_specific_folders_list;
                 }
             }
         }

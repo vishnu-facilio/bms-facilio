@@ -26,6 +26,7 @@ public class V2MeasuresContext {
     public Long category;
     public String displayName;
     public Long parent_lookup_fieldId;
+    private boolean left;
     /**
      *  dataType key is used to calcluate aggrgation baseed on datatype
      */
