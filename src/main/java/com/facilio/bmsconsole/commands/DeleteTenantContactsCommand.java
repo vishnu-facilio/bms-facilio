@@ -17,7 +17,6 @@ public class DeleteTenantContactsCommand extends FacilioCommand {
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
         List<Long> peopleIdsTobeDeleted = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(recordIds)){
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
                 for(Long recordId : recordIds){
                     List<TenantContactContext> tenantContacts = PeopleAPI.getTenantContacts(recordId, false);
                     if(CollectionUtils.isNotEmpty(tenantContacts)){
@@ -27,7 +26,7 @@ public class DeleteTenantContactsCommand extends FacilioCommand {
                     }
                 }
 
-            }
+
         }
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, peopleIdsTobeDeleted);
         context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);

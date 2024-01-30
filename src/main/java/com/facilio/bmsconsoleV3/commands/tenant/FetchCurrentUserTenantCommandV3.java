@@ -24,18 +24,10 @@ public class FetchCurrentUserTenantCommandV3 extends FacilioCommand {
         }
         if(fetchCurrentUserTenant) {
             long currentUserId = AccountUtil.getCurrentUser().getOuid();
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                 V3TenantContext tenant = V3PeopleAPI.getTenantForUser(currentUserId);
                 context.put(Constants.RECORD_ID, tenant.getId());
-            }
-            else {
-                V3ContactsContext userContact = V3ContactsAPI.getContactsIdForUser(currentUserId);
-                if(userContact != null) {
-                    if(userContact.getContactType() == V3ContactsContext.ContactType.TENANT.getIndex() && userContact.getTenant() != null) {
-                        context.put(Constants.RECORD_ID, userContact.getTenant().getId());
-                    }
-                }
-            }
+
+
         }
         return false;
     }

@@ -17,7 +17,7 @@ public class DeleteClientContactsCommand extends FacilioCommand {
         List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
         List<Long> peopleIdsTobeDeleted = new ArrayList<>();
         if(CollectionUtils.isNotEmpty(recordIds)){
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
+
                 for(Long recordId : recordIds){
                     List<ClientContactContext> clientContacts = PeopleAPI.getClientContacts(recordId, false);
                     if(CollectionUtils.isNotEmpty(clientContacts)){
@@ -27,7 +27,7 @@ public class DeleteClientContactsCommand extends FacilioCommand {
                     }
                 }
 
-            }
+
         }
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, peopleIdsTobeDeleted);
         return false;

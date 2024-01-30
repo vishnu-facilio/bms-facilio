@@ -71,12 +71,12 @@ public class UpdateTenantUserImportCommand extends FacilioCommand {
                         updatePrimaryContacts.add(existingcontactForPhone);
                     }
                 }
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
+
                     V3TenantContactContext tc = getDefaultTenantContact(tenant);
                     V3TenantContactContext primaryTenantContact = tenantIdVsPrimaryTenantContactMap.get(tc.getTenant().getId());
 
                     V3PeopleAPI.addParentPrimaryContactAsPeople(tc,primaryTenantContact,tc.getTenant().getId(),addTenantContacts,updateTenantContacts,unMarkPrimaryContactTenantIdsInTenantContactModule);
-                }
+
 
             }
             catch (Exception e){

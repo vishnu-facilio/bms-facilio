@@ -57,7 +57,6 @@ public class AddClientUserCommand extends FacilioCommand {
 						}
 					}
 				}
-				if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
 					ClientContactContext cc = getDefaultClientContact(client);
 					List<ClientContactContext> primarycontatsIfAny = PeopleAPI.getClientContacts(cc.getClient().getId(), true);
 					ClientContactContext clientPrimaryContact = null;
@@ -65,7 +64,7 @@ public class AddClientUserCommand extends FacilioCommand {
 						clientPrimaryContact = primarycontatsIfAny.get(0);
 					}
 					PeopleAPI.addParentPrimaryContactAsPeople(cc, ccModule, ccFields, cc.getClient().getId(), clientPrimaryContact);
-				}
+
 			}
 		}
 

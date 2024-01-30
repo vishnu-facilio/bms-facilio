@@ -113,10 +113,6 @@ public class DefaultTabsAndTabGroups {
             new WebTabContext("Client Contact","clientcontact",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT_CONTACT)), null, 33,null,appId),
 //            new WebTabContext("Reports", "clientreports", WebTabContext.Type.REPORT, getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.CLIENT,FacilioConstants.ContextNames.CLIENT_CONTACT)), "{\"type\": \"module_reports\"}", 33,null,appId),
             new WebTabContext("Planned Maintenance","planned-maintenance",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.PLANNEDMAINTENANCE)), null, 81,null,appId),
-            new WebTabContext("Shift","shift",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.SHIFT)), null, 61,null,appId),
-            new WebTabContext("Shift Planner","shiftplanner",WebTabContext.Type.SHIFT_PLANNER,null, null, 61,null,appId),
-            new WebTabContext("Break","break",WebTabContext.Type.MODULE,getModuleIdsListFromModuleNames(Arrays.asList(FacilioConstants.ContextNames.BREAK)), null, 120,null,appId),
-            new WebTabContext("Attendance","attendance",WebTabContext.Type.ATTENDANCE,null, null, 120,null,appId),
             new WebTabContext("Analytics","analytics",WebTabContext.Type.ANALYTICS,null,null,null,null,appId)
         );
         for(WebTabContext webTab : tabs){
@@ -141,8 +137,6 @@ public class DefaultTabsAndTabGroups {
             new WebTabGroupContext(Arrays.asList(tabsMap.get("vendors"),tabsMap.get("vendorcontact"),tabsMap.get("certificateofinsurance")), "Vendor", "vendor", 26, 9, 57l,layoutId,IconType.vendor),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("tenants"),tabsMap.get("tenantcontact"),tabsMap.get("tenantunit")), "Tenant", "tenant", 12, 10, 16l,layoutId,IconType.tenant),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("client"),tabsMap.get("clientcontact")), "Client", "client", 17, 11, 33l,layoutId,IconType.client),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("shift"),tabsMap.get("shiftplanner")), "Shift & Planner", "shiftplanner", 17, 12, 61L,layoutId,IconType.client),
-            new WebTabGroupContext(Arrays.asList(tabsMap.get("break"),tabsMap.get("attendance")), "Attendance", "attendance", 17, 13, 120L,layoutId,IconType.people),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("analytics")),"Analytics","analytics",IconType.analytics.ordinal(),14,null,layoutId,IconType.analytics),
             new WebTabGroupContext(Arrays.asList(tabsMap.get("quote"),tabsMap.get("invoice")), "Financials", "financials", 17, 14, null,layoutId,IconType.invoice)
 

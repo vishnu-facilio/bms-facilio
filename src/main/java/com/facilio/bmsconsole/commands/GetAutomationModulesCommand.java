@@ -139,12 +139,12 @@ public class GetAutomationModulesCommand extends FacilioCommand {
 
         if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.FSM)) {
             modules.add(modBean.getModule(FacilioConstants.ContextNames.FieldServiceManagement.SERVICE_ORDER));
-            modules.add(modBean.getModule(FacilioConstants.TimeOff.TIME_OFF));
             modules.add(modBean.getModule(FacilioConstants.Territory.TERRITORY));
             modules.add(modBean.getModule(FacilioConstants.ServiceAppointment.SERVICE_APPOINTMENT));
             modules.add(modBean.getModule(FacilioConstants.TimeSheet.TIME_SHEET));
             modules.add(modBean.getModule(FacilioConstants.Trip.TRIP));
         }
+        modules.add(modBean.getModule(FacilioConstants.TimeOff.TIME_OFF));
         modules.add(modBean.getModule(FacilioConstants.Meter.METER));
         modules.addAll(modBean.getModuleList(FacilioModule.ModuleType.BASE_ENTITY, true));
 

@@ -57,7 +57,7 @@ public class AddVendorContactsCommandV3 extends FacilioCommand {
                     }
                 }
 
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && !skipPeopleContact) {
+                if (!skipPeopleContact) {
                     V3VendorContactContext vc = getDefaultVendorContact(vendor);
                     List<V3VendorContactContext> primarycontatsIfAny = V3PeopleAPI.getVendorContacts(vc.getVendor().getId(), true);
                     V3VendorContactContext vendorPrimaryContact = null;

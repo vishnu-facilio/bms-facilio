@@ -51,12 +51,10 @@ public class ComputeScheduleForWorkPermitCommandV3 extends FacilioCommand {
                     }
                 }
                 if(permit.getRequestedBy() != null && permit.getRequestedBy().getId() > 0) {
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
                         V3TenantContext tenant = V3PeopleAPI.getTenantForUser(permit.getRequestedBy().getId());
                         if(tenant != null) {
                             permit.setTenant(tenant);
                         }
-                    }
                 }
                 BusinessHoursContext visitTime = permit.getRecurringInfo();
                 if(permit.isRecurring() && visitTime != null) {

@@ -60,7 +60,7 @@ public class AddVendorContactsCommand extends FacilioCommand {
 			}
 		}
 		
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+
 			if(StringUtils.isNotEmpty(vendor.getPrimaryContactName())) {
 				VendorContactContext vc = getDefaultVendorContact(vendor);
 				List<VendorContactContext> primarycontatsIfAny = PeopleAPI.getVendorContacts(vc.getVendor().getId(), true);
@@ -70,7 +70,7 @@ public class AddVendorContactsCommand extends FacilioCommand {
 				}
 				PeopleAPI.addParentPrimaryContactAsPeople(vc, vcModule, vcFields, vc.getVendor().getId(), vendorPrimaryContact);
 			}
-		}
+
 
 		
 		return false;

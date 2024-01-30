@@ -31,7 +31,6 @@ public class AddTenantFilterForVisitsListCommand extends FacilioCommand {
 			//need to change this after people contacts is released and host field is changed in visitor mgmt 
 			//this is temp fix
 			ContactsContext contact = null;
-			if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
 				//need to uncomment when all users are migrated as employees
 				long pplId = PeopleAPI.getPeopleIdForUser(AccountUtil.getCurrentUser().getOuid());
 				if(pplId > 0) {
@@ -40,10 +39,8 @@ public class AddTenantFilterForVisitsListCommand extends FacilioCommand {
 						contact = ContactsAPI.getContact(people.getEmail(), false);
 					}
 				}
-			}
-			else {
-				contact = ContactsAPI.getContactsIdForUser(AccountUtil.getCurrentUser().getOuid());
-			}
+
+
 			if (contact != null) {
 				filterCriteria.addAndCondition(
 						CriteriaAPI.getCondition("HOST", "host", String.valueOf(contact.getId()), PickListOperators.IS));

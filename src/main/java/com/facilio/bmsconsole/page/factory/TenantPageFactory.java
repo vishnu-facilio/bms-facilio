@@ -189,7 +189,7 @@ public class TenantPageFactory extends PageFactory{
 						continue;
 					}
 				}
-				if(subModule.getName().equals(FacilioConstants.ContextNames.CONTACT) && AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
+				if(subModule.getName().equals(FacilioConstants.ContextNames.CONTACT) ) {
 					continue;
 				}
 				if(AccountUtil.getCurrentOrg().getOrgId() == 321l && (subModule.getName().equals("custom_tenantutility") || subModule.getName().equals("custom_tenantbilling"))) {

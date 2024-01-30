@@ -50,7 +50,7 @@ public class ValidateVendorPeopleEmailBeforeAddOrUpdateImportCommand extends Fac
         context.put(FacilioConstants.ContextNames.VENDOR_ID_VS_PRIMARY_TENANT_CONTACT,vendorIdVsPrimaryVendorContactMap);
         context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.VENDOR_ACTIVITY);
 
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) || MapUtils.isEmpty(emailVsPeople)) {
+        if (MapUtils.isEmpty(emailVsPeople)) {
             return false;
         }
 

@@ -45,18 +45,12 @@ public class ComputeScheduleForWorkPermitCommand extends FacilioCommand {
 					}
 				}
 				if(permit.getRequestedBy() != null && permit.getRequestedBy().getId() > 0) {
-					if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
-						ContactsContext contact = ContactsAPI.getContactsIdForUser(permit.getRequestedBy().getId());
-						if (contact != null && contact.getTenant() != null) {
-							permit.setTenant(contact.getTenant());
-						}
-					}
-					else {
+
 						TenantContext tc = PeopleAPI.getTenantForUser(permit.getRequestedBy().getId());
 						if(tc != null){
 							permit.setTenant(tc);
 						}
-					}
+
 				}
 				BusinessHoursContext visitTime = permit.getRecurringInfo();
 				if(permit.isRecurring() && visitTime != null) {

@@ -35,7 +35,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
 
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchContacts"))  {
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+
                 if(quotation.getCustomerType() != null) {
                     if (quotation.getCustomerTypeEnum() == QuotationContext.CustomerType.TENANT) {
                         if (QuotationAPI.lookupValueIsNotEmpty(quotation.getTenant())) {
@@ -60,7 +60,7 @@ public class QuotationFillDetailsCommand extends FacilioCommand {
                             }
                         }
                     }
-                }
+
             }
         }
 

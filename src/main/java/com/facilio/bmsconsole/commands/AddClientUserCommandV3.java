@@ -44,7 +44,7 @@ public class AddClientUserCommandV3 extends FacilioCommand {
 						FacilioModule ccModule = modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT);
 						List<FacilioField> ccFields = modBean.getAllFields(ccModule.getName());
 
-						if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && !skipPeopleContact) {
+						if(!skipPeopleContact) {
 							V3ClientContactContext cc = getDefaultClientContact(client);
 							List<V3ClientContactContext> primarycontatsIfAny = V3PeopleAPI.getClientContacts(cc.getClient().getId(), true);
 							V3ClientContactContext clientPrimaryContact = null;

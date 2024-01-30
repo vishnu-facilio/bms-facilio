@@ -12,14 +12,8 @@ public class AttendanceJob extends FacilioJob {
 
     @Override
     public void execute(JobContext jobContext) throws Exception {
-        if (attendanceLicenseNotEnabled()) {
-            return;
-        }
         LOGGER.debug("marking previous day attendance");
         AttendanceAPI.markAttendanceForPreviousDay();
     }
 
-    private static boolean attendanceLicenseNotEnabled() throws Exception {
-        return !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ATTENDANCE);
-    }
 }

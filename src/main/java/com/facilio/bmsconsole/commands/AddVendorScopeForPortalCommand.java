@@ -30,7 +30,6 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
             if (filterCriteria == null) {
                 filterCriteria = new Criteria();
             }
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                 VendorContext vendorContext = PeopleAPI.getVendorForUser(currentUserId);
                 if (vendorContext != null) {
                     Condition condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(vendorContext.getId()), NumberOperators.EQUALS);
@@ -38,18 +37,7 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
                 } else {
                     throw new IllegalArgumentException("No Valid Vendor Contact Found for this user");
                 }
-            } else {
-                ContactsContext userContact = ContactsAPI.getContactsIdForUser(currentUserId);
-                if (userContact != null) {
-                    if (userContact.getContactType() == ContactsContext.ContactType.VENDOR.getIndex()) {
-                        Condition condition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", String.valueOf(userContact.getVendor().getId()), NumberOperators.EQUALS);
-                        filterCriteria.addAndCondition(condition);
-                    }
 
-                } else {
-                    throw new IllegalArgumentException("No Valid Vendor Contact Found for this user");
-                }
-            }
 
             Condition notEmtpyCondition = CriteriaAPI.getCondition("VENDOR_ID", "vendor", "-1", CommonOperators.IS_NOT_EMPTY);
             filterCriteria.addAndCondition(notEmtpyCondition);
@@ -59,7 +47,7 @@ public class AddVendorScopeForPortalCommand extends FacilioCommand {
         
         // handling tenant scoping temp here...later will be handled in framework
         boolean isTenantPortal = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_TENANT_PORTAL, false);
-        if (isTenantPortal && AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+        if (isTenantPortal ) {
         		long currentUserId = AccountUtil.getCurrentUser().getOuid();
             TenantContext tenantContext = PeopleAPI.getTenantForUser(currentUserId);
             if (tenantContext != null) {

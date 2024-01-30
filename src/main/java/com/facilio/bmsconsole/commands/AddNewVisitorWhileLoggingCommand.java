@@ -52,16 +52,9 @@ public class AddNewVisitorWhileLoggingCommand extends FacilioCommand {
 						}
 					}
 				}
-				if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
 					TenantContext tenant = PeopleAPI.getTenantForUser(vL.getRequestedBy().getOuid());
 					vL.setTenant(tenant);
-				}
-				else {
-					ContactsContext contact = ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-					if (contact != null && contact.getTenant() != null) {
-						vL.setTenant(contact.getTenant());
-					}
-				}
+
 				if(vL.getTenant() == null && vL.getHost() != null) {
 					ContactsContext host = (ContactsContext) RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId());
 					if (host != null) {

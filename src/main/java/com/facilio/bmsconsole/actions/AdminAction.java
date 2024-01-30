@@ -180,7 +180,6 @@ public class AdminAction extends ActionSupport {
 				) {
 					List<AccountUtil.FeatureLicense> FSMRelatedLicenceList = new ArrayList<>();
 					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.INVENTORY);
-					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.SHIFT);
 					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.QUOTATION);
 					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.CLIENT);
 					FSMRelatedLicenceList.add(AccountUtil.FeatureLicense.VENDOR);
@@ -199,15 +198,7 @@ public class AdminAction extends ActionSupport {
 						|| AccountUtil.FeatureLicense.CLIENT.isEnabled(licenseMap)
 						|| AccountUtil.FeatureLicense.VENDOR.isEnabled(licenseMap)
 						|| AccountUtil.FeatureLicense.TENANTS.isEnabled(licenseMap)
-						|| AccountUtil.FeatureLicense.PEOPLE.isEnabled(licenseMap)
 				) {
-					if(!AccountUtil.FeatureLicense.PEOPLE_CONTACTS.isEnabled(licenseMap)) {
-
-						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup(), 0l);
-						sumOfLicense += AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getLicense();
-
-						licenseMap.put(AccountUtil.FeatureLicense.PEOPLE_CONTACTS.getGroup(), sumOfLicense);
-					}
 					if(!AccountUtil.FeatureLicense.SCOPING.isEnabled(licenseMap)) {
 
 						Long sumOfLicense = licenseMap.getOrDefault(AccountUtil.FeatureLicense.SCOPING.getGroup(), 0l);

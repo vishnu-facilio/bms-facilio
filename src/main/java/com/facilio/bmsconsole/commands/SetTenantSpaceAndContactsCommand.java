@@ -32,16 +32,10 @@ public class SetTenantSpaceAndContactsCommand extends FacilioCommand {
 			tenant.setTenantSpaces(spaces);
 			tenant.setSpaces(spaces.stream().map(TenantSpaceContext::getSpace).collect(Collectors.toList()));
 		}
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS)) {
 		  List<TenantContactContext> tenantContacts = PeopleAPI.getTenantContacts(tenant.getId(), false);
 		  tenant.setPeopleTenantContacts(tenantContacts);
-		}
-		else {
-			List<ContactsContext> tenantcontacts = TenantsAPI.getTenantContacts(tenant.getId());
-			if(CollectionUtils.isNotEmpty(tenantcontacts)) {
-				tenant.setTenantContacts(tenantcontacts);
-			}
-		}
+
+
 		
 		return false;
 	}

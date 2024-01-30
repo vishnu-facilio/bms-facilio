@@ -37,15 +37,9 @@ public class SetTenantSpaceAndContactsCommandV3 extends FacilioCommand {
                     	tenant.setTenantSpaces(tenantSpaces);
                         tenant.setSpaces(tenantSpaces.stream().map(V3TenantSpaceContext::getSpace).collect(Collectors.toList()));
                     }
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                     List<V3TenantContactContext> tenantContacts = V3PeopleAPI.getTenantContacts(tenant.getId(), false, false);
                     tenant.setPeopleTenantContacts(tenantContacts);
-                } else {
-                    List<V3ContactsContext> tenantcontacts = V3TenantsAPI.getTenantContacts(tenant.getId());
-                    if (CollectionUtils.isNotEmpty(tenantcontacts)) {
-                        tenant.setTenantContacts(tenantcontacts);
-                    }
-                }
+
             }
         }
         return false;

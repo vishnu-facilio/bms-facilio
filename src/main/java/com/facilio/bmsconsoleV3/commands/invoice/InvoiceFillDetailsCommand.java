@@ -37,7 +37,6 @@ public class InvoiceFillDetailsCommand extends FacilioCommand {
 
         Map<String, Object> queryParams = Constants.getQueryParams(context);
         if (MapUtils.isNotEmpty(queryParams) && queryParams.containsKey("fetchContacts"))  {
-            if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                 if(invoice.getInvoiceType() != null) {
                     if (invoice.getInvoiceTypeEnum() == InvoiceContextV3.InvoiceType.TENANT) {
                         if (InvoiceAPI.lookupValueIsNotEmpty(invoice.getTenant())) {
@@ -64,7 +63,7 @@ public class InvoiceFillDetailsCommand extends FacilioCommand {
                     }
                 }
             }
-        }
+
 
 
         return false;

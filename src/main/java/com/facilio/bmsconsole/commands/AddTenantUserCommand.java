@@ -62,7 +62,7 @@ public class AddTenantUserCommand extends FacilioCommand {
 				}
 			}
 		}
-		if(AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && !spaceUpdate) {
+		if( !spaceUpdate) {
 			if(StringUtils.isNotEmpty(tenant.getPrimaryContactName())) {
 				TenantContactContext tc = getDefaultTenantContact(tenant);
 				List<TenantContactContext> primarycontatsIfAny = PeopleAPI.getTenantContacts(tc.getTenant().getId(), true);

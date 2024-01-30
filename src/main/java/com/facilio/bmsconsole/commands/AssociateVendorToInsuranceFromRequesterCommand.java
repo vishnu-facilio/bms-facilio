@@ -24,7 +24,6 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 		if(CollectionUtils.isNotEmpty(insurances)) {
 			for(InsuranceContext ins : insurances) {
 				if(ins.getAddedBy() != null && ins.getAddedBy().getId() > 0 && ins.getVendor() == null) {
-					if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
 						long pplId = PeopleAPI.getPeopleIdForUser(ins.getAddedBy().getOuid());
 						if(pplId > 0) {
 							VendorContactContext people = (VendorContactContext) RecordAPI.getRecord(FacilioConstants.ContextNames.VENDOR_CONTACT, pplId);
@@ -32,11 +31,7 @@ public class AssociateVendorToInsuranceFromRequesterCommand extends FacilioComma
 								ins.setVendor(people.getVendor());
 							}
 						}
-					}
-					else {
-						ContactsContext contact = ContactsAPI.getContactsIdForUser(ins.getAddedBy().getId());
-						ins.setVendor(contact.getVendor());
-					}
+
 				}
 				if(ins.getVendor() != null) {
 					InsuranceAPI.updateVendorRollUp(ins.getVendor().getId());

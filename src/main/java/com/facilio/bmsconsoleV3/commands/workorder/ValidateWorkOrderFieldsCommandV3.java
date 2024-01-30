@@ -52,7 +52,7 @@ public class ValidateWorkOrderFieldsCommandV3 extends FacilioCommand {
                 woContext.setDescription(woContext.getDescription().trim());
             }
 
-            if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) && AccountUtil.getCurrentUser() != null) {
+            if ( AccountUtil.getCurrentUser() != null) {
                 long currentUserId = AccountUtil.getCurrentUser().getOuid();
                 try {
                     V3TenantContext tenant = V3PeopleAPI.getTenantForUser(currentUserId);

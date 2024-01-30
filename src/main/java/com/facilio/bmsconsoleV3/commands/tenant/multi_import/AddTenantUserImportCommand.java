@@ -52,10 +52,10 @@ public class AddTenantUserImportCommand extends FacilioCommand {
                 V3ContactsContext primaryContact = getDefaultTenantPrimaryContact(tenant);
                 primaryContacts.add(primaryContact);
 
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
+
                     V3TenantContactContext tc = getDefaultTenantContact(tenant);
                     tenantContacts.add(tc);
-                }
+
 
             }
             catch (Exception e){

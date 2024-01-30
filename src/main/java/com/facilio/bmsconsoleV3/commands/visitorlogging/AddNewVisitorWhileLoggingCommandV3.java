@@ -59,16 +59,10 @@ public class AddNewVisitorWhileLoggingCommandV3 extends FacilioCommand {
                         }
                     }
                 }
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                     V3TenantContext tenant = V3PeopleAPI.getTenantForUser(vL.getRequestedBy().getOuid());
                     vL.setTenant(tenant);
-                }
-                else {
-                    V3ContactsContext contact = V3ContactsAPI.getContactsIdForUser(vL.getRequestedBy().getId());
-                    if (contact != null && contact.getTenant() != null) {
-                        vL.setTenant(contact.getTenant());
-                    }
-                }
+
+
                 if(vL.getTenant() == null && vL.getHost() != null) {
                     V3ContactsContext host = (V3ContactsContext) V3RecordAPI.getRecord(FacilioConstants.ContextNames.CONTACT, vL.getHost().getId(), V3ContactsContext.class);
                     if (host != null) {

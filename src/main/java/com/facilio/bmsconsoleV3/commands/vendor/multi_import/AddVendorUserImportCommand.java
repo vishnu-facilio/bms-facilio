@@ -52,10 +52,8 @@ public class AddVendorUserImportCommand extends FacilioCommand {
                 V3ContactsContext primaryContact = getDefaultVendorPrimaryContact(vendor);
                 primaryContacts.add(primaryContact);
 
-                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)) {
                     V3VendorContactContext vc = getDefaultVendorContact(vendor);
                     vendorContacts.add(vc);
-                }
 
             }
             catch (Exception e){

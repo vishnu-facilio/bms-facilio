@@ -50,7 +50,7 @@ public class ValidateTenantPeopleEmailBeforeAddOrUpdateImportCommand extends Fac
         context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.TENANT_ACTIVITY);
 
 
-        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS) || MapUtils.isEmpty(emailVsPeople)) {
+        if ( MapUtils.isEmpty(emailVsPeople)) {
             return false;
         }
 

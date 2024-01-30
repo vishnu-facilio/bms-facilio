@@ -29,12 +29,11 @@ public class AddOrUpdateLocationForVendorCommandV3 extends FacilioCommand {
                 //set vendor source if doesnt have
                 if(v.getRegisteredBy() != null && v.getRegisteredBy().getId() > 0) {
                     v.setVendorSource(1);
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
                         V3TenantContext tenant = V3PeopleAPI.getTenantForUser(v.getRegisteredBy().getId());
                         if(tenant != null && tenant.getId() > 0) {
                             v.setTenant(tenant);
                         }
-                    }
+
                 }
                 //update location
                 LocationContext location = v.getAddress();

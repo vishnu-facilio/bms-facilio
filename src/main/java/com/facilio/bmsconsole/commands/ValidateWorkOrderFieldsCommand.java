@@ -40,7 +40,7 @@ public class ValidateWorkOrderFieldsCommand extends FacilioCommand {
 				woContext.setDueDate((cal.getTimeInMillis())+TicketContext.DEFAULT_DURATION);
 			}
 			
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE_CONTACTS) && AccountUtil.getCurrentUser() != null) {
+			if ( AccountUtil.getCurrentUser() != null) {
 				long currentUserId = AccountUtil.getCurrentUser().getOuid();
 				try {
 					TenantContext tenant = PeopleAPI.getTenantForUser(currentUserId);

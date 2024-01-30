@@ -71,12 +71,10 @@ public class UpdateVendorUserImportCommand extends FacilioCommand {
                         updatePrimaryContacts.add(existingcontactForPhone);
                     }
                 }
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.PEOPLE_CONTACTS)){
                     V3VendorContactContext tc = getDefaultVendorContact(vendor);
                     V3VendorContactContext primaryVendorContact = vendorIdVsPrimaryVendorContactMap.get(tc.getVendor().getId());
 
                     V3PeopleAPI.addParentPrimaryContactAsPeople(tc,primaryVendorContact,tc.getVendor().getId(),addVendorContacts,updateVendorContacts,unMarkPrimaryContactVendorIdsInVendorContactModule);
-                }
 
             }
             catch (Exception e){
