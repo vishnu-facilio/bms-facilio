@@ -1191,6 +1191,13 @@
             <param name="setupTab">MODULES</param>
         </action>
     </package>
+    <package name="checklist" namespace="/api/v1/setup/workpermit" extends="v2Api">
+        <action name="deleteCheckList" class="com.facilio.bmsconsole.actions.WorkPermitAction"
+                method="deleteCheckList">
+            <param name="permission">ALL</param>
+            <param name="setupTab">MODULE</param>
+        </action>
+    </package>
     <package name="flowSetupAPI" namespace="/api/v1/setup/flows" extends="v2Api">
         <action name="addOrUpdate" class="com.facilio.flows.action.FlowAction" method="addOrUpdateFlow">
             <param name="permission">ALL</param>

@@ -6,9 +6,13 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkPermitContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsoleV3.commands.TransactionChainFactoryV3;
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitChecklistContext;
 import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,6 +25,9 @@ import java.util.Map;
 public class WorkPermitAction extends FacilioAction {
 
 private static final long serialVersionUID = 1L;
+
+	@Getter @Setter
+	private long moduleId;
 	
 	private String moduleName;
 	public String getModuleName() {
@@ -177,6 +184,15 @@ private static final long serialVersionUID = 1L;
 		return SUCCESS;
 	}
 
+	public String deleteCheckList() throws Exception{
+		FacilioChain deleteCheckListChain = TransactionChainFactoryV3.getWorkPermitCheckListDeletionChain();
+		FacilioContext deleteCheckListContext = deleteCheckListChain.getContext();
+		deleteCheckListContext.put(FacilioConstants.ContextNames.RECORD_ID,id);
+		deleteCheckListContext.put(FacilioConstants.ContextNames.MODULE_ID,getModuleId());
+		deleteCheckListChain.execute();
+
+		return SUCCESS;
+	}
 	public String deleteWorkPermit() throws Exception {
 		
 		if(!CollectionUtils.isEmpty(workPermitIds)) {

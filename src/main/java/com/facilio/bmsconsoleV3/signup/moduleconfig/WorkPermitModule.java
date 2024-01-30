@@ -366,7 +366,7 @@ public class WorkPermitModule extends BaseModuleConfig{
         space.setLookupModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.BASE_SPACE));
         workPermitFields.add(space);
 
-        LookupField tenant = FieldFactory.getDefaultField("tenant", "Tenant", "'TENANT_ID'", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
+        LookupField tenant = FieldFactory.getDefaultField("tenant", "Tenant", "TENANT_ID", FieldType.LOOKUP, FacilioField.FieldDisplayType.LOOKUP_SIMPLE);
         tenant.setModule(workPermitModule);
         tenant.setLookupModule(Constants.getModBean().getModule(FacilioConstants.ContextNames.TENANT));
         tenant.setDefault(true);

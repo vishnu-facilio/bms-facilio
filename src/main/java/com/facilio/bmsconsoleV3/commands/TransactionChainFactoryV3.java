@@ -4446,4 +4446,10 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new AddTelemetryCriteriaNameSpaceCommand());
         return c;
     }
+
+    public static FacilioChain getWorkPermitCheckListDeletionChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new DeleteWorkPermitCheckListCommand());
+        return c;
+    }
 }

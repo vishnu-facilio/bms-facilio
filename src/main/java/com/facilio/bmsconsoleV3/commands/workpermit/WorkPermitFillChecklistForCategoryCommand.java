@@ -6,6 +6,7 @@ import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistCatego
 import com.facilio.bmsconsoleV3.context.workpermit.WorkPermitTypeChecklistContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -48,7 +49,8 @@ public class WorkPermitFillChecklistForCategoryCommand extends FacilioCommand {
                 .module(module)
                 .beanClass(WorkPermitTypeChecklistContext.class)
                 .select(fields)
-            .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("category"), String.valueOf(categoryId), NumberOperators.EQUALS));
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("category"), String.valueOf(categoryId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldsAsMap.get("deleted"), CommonOperators.IS_EMPTY));
 
         List<WorkPermitTypeChecklistContext> records = builder.get();
 

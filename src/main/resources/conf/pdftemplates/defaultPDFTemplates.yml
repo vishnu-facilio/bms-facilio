@@ -13,6 +13,13 @@ templates:
     css_path: "invoice/template.css"
     settings_path: "invoice/template.json"
 
+  - name: "Default Work Permit Template"
+    description: "Create professional and polished work permit documents with this default template. Customizable for a branded and clear presentation of work permit to vendors."
+    moduleName: "workpermit"
+    html_path: "workPermit/template.html"
+    css_path: "workPermit/template.css"
+    settings_path: "workPermit/template.json"
+
   - name: "Default Rfq Template"
     description: "Create professional and polished Rfq documents with this default template. Customizable for a branded and clear presentation of Rfq to clients."
     moduleName: "requestForQuotation"

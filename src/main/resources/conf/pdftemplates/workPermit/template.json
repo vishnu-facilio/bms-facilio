@@ -1,0 +1,424 @@
+[
+  {
+    "type": "page-header",
+    "removable": false,
+    "style": "",
+    "classes": [
+      "pdf-header"
+    ],
+    "attributes": {
+      "id": "ijpm"
+    },
+    "components": [
+      {
+        "type": "my-image",
+        "removable": false,
+        "draggable": false,
+        "droppable": false,
+        "copyable": false,
+        "hoverable": false,
+        "void": true,
+        "style": "",
+        "classes": [
+          "image-qfm"
+        ],
+        "attributes": {
+          "src": "https://pre-app-stage2.facilio.in//api/v3/files/preview/public?q=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2R1bGVOYW1lIjoib3JnYW5pemF0aW9uIiwibmFtZXNwYWNlIjoiZGVmYXVsdCIsImlzcyI6ImF1dGgwIiwiZXhwaXJlc0F0IjoiMTcwNjUxNTcwNjA5MCIsImZpbGVJZCI6IjUzMzQyNjgyIn0.GGZgIwz_2S6FghzArefVwLxNgB2HX_lf9CFtr8lDrgQ",
+          "placeholder-src": "{{org.originalUrl}}",
+          "alt": "Upload Image Here",
+          "data-option": "orgLogo",
+          "onerror": "this.error=null;this.src='https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg';",
+          "id": "imwr"
+        },
+        "src": "https://pre-app-stage2.facilio.in//api/v3/files/preview/public?q=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2R1bGVOYW1lIjoib3JnYW5pemF0aW9uIiwibmFtZXNwYWNlIjoiZGVmYXVsdCIsImlzcyI6ImF1dGgwIiwiZXhwaXJlc0F0IjoiMTcwNjUxNTcwNjA5MCIsImZpbGVJZCI6IjUzMzQyNjgyIn0.GGZgIwz_2S6FghzArefVwLxNgB2HX_lf9CFtr8lDrgQ"
+      },
+      {
+        "type": "text",
+        "selectable": false,
+        "style": "",
+        "classes": [
+          "text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iwuj"
+        },
+        "custom-width": "full"
+      }
+    ],
+    "headerLayoutOption": "image-text-left"
+  },
+  {
+    "type": "page-footer",
+    "removable": false
+  },
+  {
+    "type": "div",
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i4k5"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<b>{{ org.name }}</b><div>{{ org.city }}</div><div>{{ org.country }}</div><div>{{ org.phone }}</div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ig5e"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><b style=\"font-size: 32px; color: var(--base-text-color); font-family: var(--base-font);\">Work Permit</b></div><div style=\"text-align: right;\">Permit No #{{ workpermit.localId }}</div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iqvi"
+        },
+        "custom-width": "half",
+        "line-height": "32"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ibja"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "iphe"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ix27f"
+    },
+    "components": [
+      {
+        "type": "field-widget",
+        "droppable": false,
+        "badgable": false,
+        "hoverable": false,
+        "classes": [
+          "field-component",
+          "custom-text",
+          "align-left"
+        ],
+        "attributes": {
+          "id": "iqa2h",
+          "vendor": "Vendor - vendor ",
+          "people": "Contact - people "
+        },
+        "components": [
+          {
+            "type": "div",
+            "name": "field-widget-title",
+            "badgable": false,
+            "highlightable": false,
+            "selectable": false,
+            "hoverable": false,
+            "content": "Permit Receiver Details",
+            "classes": [
+              "field-title",
+              "text-flex-start"
+            ],
+            "attributes": {
+              "id": "field-title"
+            }
+          },
+          {
+            "type": "div",
+            "name": "placeholder",
+            "highlightable": false,
+            "selectable": false,
+            "hoverable": false,
+            "content": "Add Placeholder",
+            "classes": [
+              "placeholder-text",
+              "hidden"
+            ]
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Vendor</div><div class=\"line-widget-value\"> {{workpermit.vendorFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "i06ri"
+            },
+            "custom-width": "full"
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Contact</div><div class=\"line-widget-value\"> {{workpermit.peopleFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "iqaxe"
+            },
+            "custom-width": "full"
+          }
+        ],
+        "width": "full",
+        "text-align": "left",
+        "title_trait": "Permit Receiver Details",
+        "justify-content": "flex-start",
+        "line-height": "32"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ipiov"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "ion6y"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i2za3"
+    },
+    "components": [
+      {
+        "type": "field-widget",
+        "droppable": false,
+        "badgable": false,
+        "hoverable": false,
+        "classes": [
+          "field-component",
+          "custom-text",
+          "align-left"
+        ],
+        "attributes": {
+          "id": "ir6yi",
+          "siteId": "Site - siteId ",
+          "space": "Location - space ",
+          "expectedStartTime": "Valid From - expectedStartTime ",
+          "expectedEndTime": "Valid Till - expectedEndTime "
+        },
+        "components": [
+          {
+            "type": "div",
+            "name": "field-widget-title",
+            "badgable": false,
+            "highlightable": false,
+            "selectable": false,
+            "hoverable": false,
+            "content": "Permit Validity",
+            "classes": [
+              "field-title",
+              "text-flex-start"
+            ],
+            "attributes": {
+              "id": "field-title-2"
+            }
+          },
+          {
+            "type": "div",
+            "name": "placeholder",
+            "highlightable": false,
+            "selectable": false,
+            "hoverable": false,
+            "content": "Add Placeholder",
+            "classes": [
+              "placeholder-text",
+              "hidden"
+            ]
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Site</div><div class=\"line-widget-value\"> {{workpermit.siteIdFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "ijf2q"
+            },
+            "custom-width": "full"
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Location</div><div class=\"line-widget-value\"> {{workpermit.spaceFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "ioo52"
+            },
+            "custom-width": "full"
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Valid From</div><div class=\"line-widget-value\"> {{workpermit.expectedStartTimeFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "isnzb"
+            },
+            "custom-width": "full"
+          },
+          {
+            "type": "text",
+            "editable": false,
+            "selectable": false,
+            "content": "<div class=\"line-widget-text\">Valid Till</div><div class=\"line-widget-value\"> {{workpermit.expectedEndTimeFormatted}}</div>",
+            "style": "",
+            "classes": [
+              "field-widget"
+            ],
+            "attributes": {
+              "contentEditable": true,
+              "placeholder": "Enter text here...",
+              "id": "iuhii"
+            },
+            "custom-width": "full"
+          }
+        ],
+        "width": "full",
+        "text-align": "left",
+        "line-height": "32",
+        "title_trait": "Permit Validity",
+        "justify-content": "flex-start"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "igozf"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "imrfi"
+        }
+      }
+    ]
+  },
+  {
+    "type": "spacer",
+    "content": "<div style=\"height: 16px;width: 100%;\"></div>",
+    "attributes": {
+      "style": "width: 100%;",
+      "id": "i7j43"
+    },
+    "height": "16"
+  },
+  {
+    "type": "Pre-work-permit-check-list",
+    "badgable": false,
+    "content": "\n<div class=\"line-item-dummy-data dummy-data-wrapper workpermit\">\n<table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item\" class=\"table-field\" style=\"text-align: left !important;\">Item</th>\n<th data-key=\"compliance\" class=\"table-field\" style=\"text-align: left !important;\">Compliance</th>\n<th data-key=\"remarks\" class=\"table-field\" style=\"text-align: left !important;\">Remarks</th>\n<th data-key=\"reviewed\" class=\"table-field\" style=\"text-align: left !important;\">Reviewed</th>\n<th data-key=\"reviewer_remarks\" class=\"table-field\" style=\"text-align: left !important;\">Reviewer Remarks</th>\n</tr>\n  </thead>\n  <tbody>\n     <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n  </tbody>\n</table>\n</div>\n<div class=\"line-item-original-data\">\n  <template class=\"hbs\" value=\"{{#if (isNotEmpty (filterList workpermit.formattedCheckList 'checkListType' 'Pre'))}}\"></template> \n  <div class=\"requisites-title\"> Prerequisites </div>\n  <table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item\" class=\"table-field\" style=\"text-align: left !important;\">Item</th>\n<th data-key=\"compliance\" class=\"table-field\" style=\"text-align: left !important;\">Compliance</th>\n<th data-key=\"remarks\" class=\"table-field\" style=\"text-align: left !important;\">Remarks</th>\n<th data-key=\"reviewed\" class=\"table-field\" style=\"text-align: left !important;\">Reviewed</th>\n<th data-key=\"reviewer_remarks\" class=\"table-field\" style=\"text-align: left !important;\">Reviewer Remarks</th>\n</tr>\n  </thead>\n  <tbody>\n   <template class=\"hbs\" value=\"{{#each (groupData (filterList workpermit.formattedCheckList 'checkListType' 'Pre') 'categoryName')}}\"></template>\n   <tr class=\"requisites\">\n    <td colspan=\"6\">{{@key}}</td>\n   </tr>\n    <template class=\"hbs\" value=\"{{#each this}}\"></template>\n     <tr>\n      <td class=\"table-field-data-item-left data-border-left\">\n        {{plusOne @index}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        <div>{{itemName}}</div>\n      </td>\n      <td class=\"table-field-data-item-left\">\n        <div>\n          {{requiredEnum}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{remarks}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{reviewedValue}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{remarks}}\n      </td>\n    </tr>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n  </tbody>\n</table>\n<template class=\"hbs\" value=\"{{/if}}\"></template>\n</div>\n",
+    "attributes": {
+      "id": "iipn2"
+    }
+  },
+  {
+    "type": "Post-work-permit-check-list",
+    "badgable": false,
+    "content": "\n<div class=\"line-item-dummy-data dummy-data-wrapper workpermit\">\n<table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item\" class=\"table-field\" style=\"text-align: left !important;\">Item</th>\n<th data-key=\"compliance\" class=\"table-field\" style=\"text-align: left !important;\">Compliance</th>\n<th data-key=\"remarks\" class=\"table-field\" style=\"text-align: left !important;\">Remarks</th>\n<th data-key=\"reviewed\" class=\"table-field\" style=\"text-align: left !important;\">Reviewed</th>\n<th data-key=\"reviewer_remarks\" class=\"table-field\" style=\"text-align: left !important;\">Reviewer Remarks</th>\n</tr>\n  </thead>\n  <tbody>\n     <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n  </tbody>\n</table>\n</div>\n<div class=\"line-item-original-data\">\n  <template class=\"hbs\" value=\"{{#if (isNotEmpty (filterList workpermit.formattedCheckList 'checkListType' 'Post'))}}\"></template> \n  <div class=\"requisites-title\"> Postrequisites </div>\n  <table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item\" class=\"table-field\" style=\"text-align: left !important;\">Item</th>\n<th data-key=\"compliance\" class=\"table-field\" style=\"text-align: left !important;\">Compliance</th>\n<th data-key=\"remarks\" class=\"table-field\" style=\"text-align: left !important;\">Remarks</th>\n<th data-key=\"reviewed\" class=\"table-field\" style=\"text-align: left !important;\">Reviewed</th>\n<th data-key=\"reviewer_remarks\" class=\"table-field\" style=\"text-align: left !important;\">Reviewer Remarks</th>\n</tr>\n  </thead>\n  <tbody>\n   <template class=\"hbs\" value=\"{{#each (groupData (filterList workpermit.formattedCheckList 'checkListType' 'Post') 'categoryName')}}\"></template>\n   <tr class=\"requisites\">\n    <td colspan=\"6\">{{@key}}</td>\n   </tr>\n    <template class=\"hbs\" value=\"{{#each this}}\"></template>\n     <tr>\n      <td class=\"table-field-data-item-left data-border-left\">\n        {{plusOne @index}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        <div>{{itemName}}</div>\n      </td>\n      <td class=\"table-field-data-item-left\">\n        <div>\n          {{requiredEnum}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{remarks}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{reviewedValue}}\n      </td>\n      <td class=\"table-field-data-item-left\">\n        {{remarks}}\n      </td>\n    </tr>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n  </tbody>\n</table>\n<template class=\"hbs\" value=\"{{/if}}\"></template>\n</div>\n",
+    "components": [
+      {
+        "type": "spacer",
+        "content": "<div style=\"height: 16px;width: 100%;\"></div>",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "ire2u"
+        },
+        "height": "16"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ixo9i"
+    }
+  },
+  {
+    "type": "div",
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ik1iq"
+    }
+  }
+]

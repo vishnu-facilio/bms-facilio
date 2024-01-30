@@ -1,0 +1,126 @@
+<body>
+<div id="ijpm" class="pdf-header">
+    <img data-gjs-highlightable="true" id="imwr" data-gjs-type="my-image" src="{{org.originalUrl}}" alt="Upload Image Here" data-option="orgLogo" onerror="null" class="image-qfm">
+    <div contentEditable placeholder="Enter text here..." id="iwuj" class="text"></div>
+</div>
+<div></div>
+<div data-gjs-type="customWrapper" id="i4k5">
+    <div contentEditable placeholder="Enter text here..." id="ig5e" class="custom-text">
+        <b>{{ org.name }}</b>
+        <div>{{ org.city }}</div>
+        <div>{{ org.country }}</div>
+        <div>{{ org.phone }}</div>
+    </div>
+    <div contentEditable placeholder="Enter text here..." id="iqvi" class="custom-text">
+        <div style="text-align: right;"><b style="font-size: 32px; color: var(--base-text-color); font-family: var(--base-font);">Work Permit</b></div>
+        <div style="text-align: right;">Permit No #{{ workpermit.localId }}</div>
+    </div>
+</div>
+<div data-gjs-type="customWrapper" data-gjs-spacer id="ibja">
+    <div id="iphe">
+        <hr class="horizontal-line" style="height:1px;border-width:0;color:gray;background-color: var(--half-white);"/>
+    </div>
+</div>
+<div data-gjs-type="customWrapper" id="ix27f">
+    <div id="iqa2h" vendor="Vendor - vendor " people="Contact - people " class="field-component custom-text align-left">
+        <div id="field-title" class="field-title text-flex-start">Permit Receiver Details</div>
+        <div class="placeholder-text hidden">Add Placeholder</div>
+        <div contentEditable placeholder="Enter text here..." id="i06ri" class="field-widget">
+            <div class="line-widget-text">Vendor</div>
+            <div class="line-widget-value"> {{workpermit.vendorFormatted}}</div>
+        </div>
+        <div contentEditable placeholder="Enter text here..." id="iqaxe" class="field-widget">
+            <div class="line-widget-text">Contact</div>
+            <div class="line-widget-value"> {{workpermit.peopleFormatted}}</div>
+        </div>
+    </div>
+</div>
+<div data-gjs-type="customWrapper" data-gjs-spacer id="ipiov">
+    <div id="ion6y">
+        <hr class="horizontal-line" style="height:1px;border-width:0;color:gray;background-color: var(--half-white);"/>
+    </div>
+</div>
+<div data-gjs-type="customWrapper" id="i2za3">
+    <div id="ir6yi" siteId="Site - siteId " space="Location - space " expectedStartTime="Valid From - expectedStartTime " expectedEndTime="Valid Till - expectedEndTime " class="field-component custom-text align-left">
+        <div id="field-title-2" class="field-title text-flex-start">Permit Validity</div>
+        <div class="placeholder-text hidden">Add Placeholder</div>
+        <div contentEditable placeholder="Enter text here..." id="ijf2q" class="field-widget">
+            <div class="line-widget-text">Site</div>
+            <div class="line-widget-value"> {{workpermit.siteIdFormatted}}</div>
+        </div>
+        <div contentEditable placeholder="Enter text here..." id="ioo52" class="field-widget">
+            <div class="line-widget-text">Location</div>
+            <div class="line-widget-value"> {{workpermit.spaceFormatted}}</div>
+        </div>
+        <div contentEditable placeholder="Enter text here..." id="isnzb" class="field-widget">
+            <div class="line-widget-text">Valid From</div>
+            <div class="line-widget-value"> {{workpermit.expectedStartTimeFormatted}}</div>
+        </div>
+        <div contentEditable placeholder="Enter text here..." id="iuhii" class="field-widget">
+            <div class="line-widget-text">Valid Till</div>
+            <div class="line-widget-value"> {{workpermit.expectedEndTimeFormatted}}</div>
+        </div>
+    </div>
+</div>
+<div data-gjs-type="customWrapper" data-gjs-spacer id="igozf">
+    <div id="imrfi">
+        <hr class="horizontal-line" style="height:1px;border-width:0;color:gray;background-color: var(--half-white);"/>
+    </div>
+</div>
+<vue-spacer id="i7j43">
+    <div style="height: 16px;width: 100%;"></div>
+</vue-spacer>
+<div class="line-item-original-data">
+    {{#if (isNotEmpty (filterList workpermit.formattedCheckList 'checkListType' 'Pre'))}}
+    <div class="requisites-title"> Prerequisites </div>
+    <table class="line-item-table line-item-table-overide">
+        <thead>
+        <tr>
+            <th data-key="s_no" class="table-field" style="text-align: left !important;">S.No</th>
+            <th data-key="item" class="table-field" style="text-align: left !important;">Item</th>
+            <th data-key="compliance" class="table-field" style="text-align: left !important;">Compliance</th>
+            <th data-key="remarks" class="table-field" style="text-align: left !important;">Remarks</th>
+            <th data-key="reviewed" class="table-field" style="text-align: left !important;">Reviewed</th>
+            <th data-key="reviewer_remarks" class="table-field" style="text-align: left !important;">Reviewer Remarks</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each (groupData (filterList workpermit.formattedCheckList 'checkListType' 'Pre') 'categoryName')}}
+        <tr class="requisites">
+            <td colspan="6">{{@key}}</td>
+        </tr>
+        {{#each this}}
+        <tr>
+            <td class="table-field-data-item-left data-border-left">
+                {{plusOne @index}}
+            </td>
+            <td class="table-field-data-item-left">
+                <div>{{itemName}}</div>
+            </td>
+            <td class="table-field-data-item-left">
+                <div>
+                    {{requiredEnum}}
+                </div>
+            </td>
+            <td class="table-field-data-item-left">
+                {{remarks}}
+            </td>
+            <td class="table-field-data-item-left">
+                {{reviewedValue}}
+            </td>
+            <td class="table-field-data-item-left">
+                {{remarks}}
+            </td>
+        </tr>
+        {{/each}}
+        {{/each}}
+        </tbody>
+    </table>
+    {{/if}}
+</div>
+<vue-spacer data-gjs-highlightable="true" id="ire2u" data-gjs-type="spacer" draggable="true" style="width: 100%;">
+    <div style="height: 16px;width: 100%;"></div>
+</vue-spacer>
+<div data-gjs-type="customWrapper" data-gjs-spacer id="ixo9i"></div>
+<div data-gjs-type="customWrapper" data-gjs-spacer id="ik1iq"></div>
+</body>
