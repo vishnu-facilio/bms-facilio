@@ -4059,6 +4059,7 @@ public class DashboardUtil {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String,Object> prop :  props){
 				DashboardContext dashboardContext = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
+				LOGGER.info("DashboardId - "+dashboardContext.getId());
 				if(dashboardContext.getModuleId()>-1){
 					FacilioModule module = modBean.getModule(dashboardContext.getModuleId());
 					String moduleName = module.getName();

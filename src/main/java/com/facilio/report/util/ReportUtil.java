@@ -2113,6 +2113,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String,Object> prop : props){
 				ReportContext report =FieldUtil.getAsBeanFromMap(prop,ReportContext.class);
+				LOGGER.info("reportId - "+report.getId());
 				if(report.getModuleId()>0){
 					FacilioModule moduleObject= modBean.getModule(report.getModuleId());
 					String modName = moduleObject.getName();
@@ -2199,8 +2200,10 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 								}
 								if(initialConfig.get("having")!=null){
 									for(JSONObject dataFilter : (List<JSONObject>) initialConfig.get("having")){
-										FacilioField field = modBean.getField((Long) dataFilter.get("fieldId"));
-										dataFilter.put("moduleName",field.getModule().getName());
+										if( dataFilter.get("fieldId")!=null){
+											FacilioField field = modBean.getField((Long) dataFilter.get("fieldId"));
+											dataFilter.put("moduleName",field.getModule().getName());
+										}
 									}
 								}
 								if(initialConfig.get("reportDrilldownPath")!=null){
@@ -2264,40 +2267,42 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 				String tabularState = report.getTabularState();
 				if(tabularState !=null){
 					JSONObject tabularStateJson = (JSONObject) parse.parse(tabularState);
-					Long dateFieldId = (Long) tabularStateJson.get("dateFieldId");
-					if(dateFieldId!=null && dateFieldId>0){
-						FacilioField field = modBean.getField(dateFieldId);
-						tabularStateJson.put("dateFieldModuleName",field.getModule().getName());
-						tabularStateJson.put("dateFieldName",field.getName());
-					}
+					if(tabularStateJson!=null) {
+						Long dateFieldId = (Long) tabularStateJson.get("dateFieldId");
+						if (dateFieldId != null && dateFieldId > 0) {
+							FacilioField field = modBean.getField(dateFieldId);
+							tabularStateJson.put("dateFieldModuleName", field.getModule().getName());
+							tabularStateJson.put("dateFieldName", field.getName());
+						}
 
-					List<JSONObject> dataList = (List<JSONObject>) tabularStateJson.get("data");
-					if(CollectionUtils.isNotEmpty(dataList)){
-						for(JSONObject data : dataList){
-							pivotDataSerialize(data);
-						}
-						tabularStateJson.put("data",dataList);
-					}
-					List<JSONObject> valuesList = (List<JSONObject>) tabularStateJson.get("values");
-					if(CollectionUtils.isNotEmpty(valuesList)){
-						for(JSONObject value : valuesList){
-                           String valueType = (String) value.get("valueType");
-							if(valueType.equals("DATA")){
-								JSONObject moduleMeasure = (JSONObject) value.get("moduleMeasure");
-								pivotDataSerialize(moduleMeasure);
-								value.put("moduleMeasure",moduleMeasure);
+						List<JSONObject> dataList = (List<JSONObject>) tabularStateJson.get("data");
+						if (CollectionUtils.isNotEmpty(dataList)) {
+							for (JSONObject data : dataList) {
+								pivotDataSerialize(data);
 							}
+							tabularStateJson.put("data", dataList);
 						}
-						tabularStateJson.put("values",valuesList);
-					}
-					List<JSONObject> rows = (List<JSONObject>) tabularStateJson.get("rows");
-					if(CollectionUtils.isNotEmpty(rows)){
-						for(JSONObject row : rows){
-							pivotDataSerialize(row);
+						List<JSONObject> valuesList = (List<JSONObject>) tabularStateJson.get("values");
+						if (CollectionUtils.isNotEmpty(valuesList)) {
+							for (JSONObject value : valuesList) {
+								String valueType = (String) value.get("valueType");
+								if (valueType.equals("DATA")) {
+									JSONObject moduleMeasure = (JSONObject) value.get("moduleMeasure");
+									pivotDataSerialize(moduleMeasure);
+									value.put("moduleMeasure", moduleMeasure);
+								}
+							}
+							tabularStateJson.put("values", valuesList);
 						}
-						tabularStateJson.put("rows",rows);
+						List<JSONObject> rows = (List<JSONObject>) tabularStateJson.get("rows");
+						if (CollectionUtils.isNotEmpty(rows)) {
+							for (JSONObject row : rows) {
+								pivotDataSerialize(row);
+							}
+							tabularStateJson.put("rows", rows);
+						}
+						report.setTabularState(tabularStateJson.toString());
 					}
-					report.setTabularState(tabularStateJson.toString());
 				}
 
 				List<ReportDataPointContext> dataPoints =  report.getDataPoints();
@@ -2493,7 +2498,7 @@ public static FacilioContext Constructpivot(FacilioContext context,long jobId) t
 							Integer moduleType = lookUpModule.getType();
 							JSONObject groupByLabel = (JSONObject) dataPoint.get("groupByLabelValues");
 							JSONObject groupByLabelObj = (JSONObject) groupByLabel.get(String.valueOf(fieldId));
-							Set<String> keys = groupByLabelObj.keySet();
+							Set<String> keys = groupByLabelObj !=null ? groupByLabelObj.keySet() : new HashSet<>();
 							int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
 							if(moduleType == pickListModule && lookUpModule.getName().equals("ticketstatus")&& keys.size()>0){
 								groupBy.put("isPickList", true);
