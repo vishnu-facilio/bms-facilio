@@ -848,6 +848,20 @@
         </action>
     </package>
 
+    <package name="dataloaderV3" namespace="/api/v3/dataloader/validate" extends="v3Api">
+        <action name="meter" class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction" method="pickList">
+            <param name="moduleName">meter</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+
+        <action name="asset" class="com.facilio.bmsconsoleV3.actions.picklist.V3PIckListAction" method="pickList">
+            <param name="moduleName">asset</param>
+            <param name="translationImpl">V3PickListTranslation</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+
     <package name="dashboardPicklistApiv3" namespace="/api/v3/dashboard/picklist"
              extends="v3Api">
         <action name="*"

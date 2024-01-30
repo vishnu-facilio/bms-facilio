@@ -6926,4 +6926,12 @@
         </urlparams>
     </request>
 
+    <request path="/api/v3/dataloader/validate/:moduleName" method="GET" allowedRequest="500">
+        <urlparams>
+            <property name="filters" type="filter"/>
+            <property name="viewName" type="string"/>
+            <property name="moduleName" type="string"/>
+        </urlparams>
+    </request>
+
 </config>
