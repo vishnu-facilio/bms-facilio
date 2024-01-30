@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -25,8 +22,8 @@ public class PreventiveMaintenance extends ResourceContext {
 		return resourcePlanners;
 	}
 	
-	public Map<Long,PMResourcePlannerContext> getResourcePlannersMap() {
-		Map<Long,PMResourcePlannerContext> pmPlannerMap = new HashMap<>();
+	public LinkedHashMap<Long,PMResourcePlannerContext> getResourcePlannersMap() {
+		LinkedHashMap<Long,PMResourcePlannerContext> pmPlannerMap = new LinkedHashMap<>();
 		if(resourcePlanners != null) {
 			for(PMResourcePlannerContext resourcePlanner :resourcePlanners) {
 				pmPlannerMap.put(resourcePlanner.getResourceId(), resourcePlanner);

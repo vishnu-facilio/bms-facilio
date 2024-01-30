@@ -169,11 +169,11 @@ public class PreventiveMaintenanceAPI {
 	}
 	
 	public static void populateResourcePlanner(PreventiveMaintenance pm) throws Exception {
-		Map<Long, PMResourcePlannerContext> resourcePlanners = getPMResourcesPlanner(pm.getId());
+		LinkedHashMap<Long, PMResourcePlannerContext> resourcePlanners = getPMResourcesPlanner(pm.getId());
 		populateResourcePlanner(pm, resourcePlanners);
 	}
 
-	public static void populateResourcePlanner(PreventiveMaintenance pm, Map<Long, PMResourcePlannerContext> resourcePlanners) throws Exception {
+	public static void populateResourcePlanner(PreventiveMaintenance pm, LinkedHashMap<Long, PMResourcePlannerContext> resourcePlanners) throws Exception {
 		Collection<PMResourcePlannerContext> resourcePlannerContexts = resourcePlanners.values();
 		WorkorderTemplate workorderTemplate = pm.getWoTemplate();
 		if (workorderTemplate == null) {
@@ -227,7 +227,10 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		if(resourcePlanners != null) {
-			pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
+			// sort the based on resourcesIds in ASC
+			List<PMResourcePlannerContext> sortedResourcePlanners = new ArrayList<>(resourcePlanners.values());
+			sortedResourcePlanners.sort((o1, o2) -> (int) (o1.getResourceId() - o2.getResourceId()));
+			pm.setResourcePlanners(sortedResourcePlanners);
 		}
 	}
 
@@ -2065,9 +2068,9 @@ public class PreventiveMaintenanceAPI {
 		return getPMResourcesPlanners(pmIds, false);
 	}
 	
-	public static Map<Long, List<PMResourcePlannerContext>> getPMResourcesPlanners(Collection<Long> pmIds, boolean onlyName) throws Exception {
+	public static LinkedHashMap<Long, List<PMResourcePlannerContext>> getPMResourcesPlanners(Collection<Long> pmIds, boolean onlyName) throws Exception {
 		if (pmIds == null || pmIds.isEmpty()) {
-			return Collections.emptyMap();
+			return new LinkedHashMap<>();
 		}
 		FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
 		FacilioField pmIdField = FieldFactory.getField("pmId", "PM_ID", module, FieldType.LOOKUP);
@@ -2079,9 +2082,9 @@ public class PreventiveMaintenanceAPI {
 				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		
-		Map<Long, List<PMResourcePlannerContext>> result = new HashMap<>();
-		Map<Long, PMResourcePlannerContext> resourcePlannerContextMap = new HashMap<>();
+
+		LinkedHashMap<Long, List<PMResourcePlannerContext>> result = new LinkedHashMap<>();
+		LinkedHashMap<Long, PMResourcePlannerContext> resourcePlannerContextMap = new LinkedHashMap<>();
 
 		List<Long> resourcePlannerIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
@@ -2153,18 +2156,18 @@ public class PreventiveMaintenanceAPI {
 		return result;
 	}
 
-	public static Map<Long, PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
+	public static LinkedHashMap<Long, PMResourcePlannerContext> getPMResourcesPlanner(Long pmId) throws Exception {
 		return getPMResourcesPlanner(pmId, false);
 	}
 	
-	public static Map<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId, boolean onlyName) throws Exception {
-		Map<Long, List<PMResourcePlannerContext>> pmMap = getPMResourcesPlanners(Arrays.asList(pmId), onlyName);
+	public static LinkedHashMap<Long,PMResourcePlannerContext> getPMResourcesPlanner(Long pmId, boolean onlyName) throws Exception {
+		LinkedHashMap<Long, List<PMResourcePlannerContext>> pmMap = getPMResourcesPlanners(Arrays.asList(pmId), onlyName);
 		List<PMResourcePlannerContext> resourcePlannerContexts = null;
 		if (pmMap != null) {
 			resourcePlannerContexts = pmMap.get(pmId);
 		}
 
-		Map<Long,PMResourcePlannerContext> result = new HashMap<>();
+		LinkedHashMap<Long,PMResourcePlannerContext> result = new LinkedHashMap<>();
 		if (resourcePlannerContexts == null || resourcePlannerContexts.isEmpty()) {
 			return result;
 		}
