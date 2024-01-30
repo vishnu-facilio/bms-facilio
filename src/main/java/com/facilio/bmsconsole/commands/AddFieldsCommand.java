@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.enums.Version;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldCount50;
-import com.facilio.bmsconsoleV3.interfaces.customfields.ModuleCustomFieldsCount;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -16,7 +16,6 @@ import com.facilio.i18n.util.TranslationUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.MultiCurrencyField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.v3.V3Builder.V3Config;
@@ -118,6 +117,7 @@ public class AddFieldsCommand extends FacilioCommand {
 
 	private void setColumnName (FacilioField field, Map< FieldType, List< String > > existingColumns) throws Exception {
 
+		setVersionType(field);
 		FieldType dataType = field.getDataTypeEnum ();
 		FacilioUtil.throwIllegalArgumentException (dataType == null, "Invalid Data Type Value");
 
@@ -144,6 +144,12 @@ public class AddFieldsCommand extends FacilioCommand {
 				field.setColumnName (newColumnName);
 			}
 			existingColumns.computeIfAbsent(dataType, key -> new ArrayList<>()).add(field.getColumnName());
+		}
+	}
+
+	private void setVersionType(FacilioField field){
+		if(field.getDataTypeEnum()==FieldType.AUTO_NUMBER_FIELD){
+			field.setVersion(Version.V2.getVersionId());
 		}
 	}
 

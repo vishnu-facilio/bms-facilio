@@ -11,11 +11,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.MultiEnumField;
-import com.facilio.util.FacilioUtil;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang.math.NumberUtils;
@@ -429,6 +426,7 @@ public class FilterUtil {
         map.put(FieldType.CURRENCY_FIELD,CurrencyOperator.EQUALS);
         map.put(FieldType.MULTI_CURRENCY_FIELD, MultiCurrencyOperator.EQUALS);
         map.put(FieldType.BIG_STRING,StringOperators.CONTAINS);
+        map.put(FieldType.AUTO_NUMBER_FIELD,StringOperators.CONTAINS);
 
         return map;
     }
