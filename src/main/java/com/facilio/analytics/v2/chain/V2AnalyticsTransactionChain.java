@@ -27,10 +27,7 @@ public class V2AnalyticsTransactionChain
         c.addCommand(new FetchResourcesCommand());
         c.addCommand(new HandleGroupByDataCommand());
         c.addCommand(new FormatHeatMapDataCommand());
-        c.addCommand(new GetTrendLineCommand());
-        c.addCommand(new FormatForTimeDuration());
-        c.addCommand(new FetchCriteriaReportCommand());
-        c.addCommand(new FetchCustomBaselineData());
+        c.addCommand(new V2AnalyticsGraphicalFormattingCommand());
         return c;
     }
     public static FacilioChain getCHAnalyticsDataChain()throws Exception{

@@ -1,15 +1,12 @@
 package com.facilio.analytics.v2.context;
 
-import com.facilio.analytics.v2.V2AnalyticsOldUtil;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.report.context.ReportDataPointContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.struts2.json.annotations.JSON;
 
 import java.util.Map;
 
@@ -27,6 +24,7 @@ public class V2MeasuresContext {
     public String displayName;
     public Long parent_lookup_fieldId;
     private boolean left;
+    private String formatting;
     /**
      *  dataType key is used to calcluate aggrgation baseed on datatype
      */

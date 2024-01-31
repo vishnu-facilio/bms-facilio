@@ -8912,6 +8912,7 @@ public class FieldFactory extends BaseFieldFactory {
         fields.add(getField("measure_field_id", "MEASURE_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("parent_lookup_field_id", "PARENT_LOOKUP_FIELD_ID", module, FieldType.NUMBER));
         fields.add(getField("criteria_id", "CRITERIA_ID", module, FieldType.NUMBER));
+        fields.add(getField("formatting", "FORMATTING_PROPS", module, FieldType.STRING));
         return fields;
     }
     public static List<FacilioField> getV2ReportUserFilterFields()throws Exception
