@@ -53,9 +53,11 @@ public class APIModuleListConfig {
                     add(FacilioConstants.ModuleNames.WEATHER_STATION);
                     add(FacilioConstants.ContextNames.CLIENT);
                     add(FacilioConstants.ContextNames.TENANT);
+                    add(FacilioConstants.ContextNames.TENANT_CONTACT);
+                    add(FacilioConstants.ContextNames.CLIENT_CONTACT);
                 }})
                 .fetchCustomModules()
-                .responseFields(Arrays.asList("displayName","name", "moduleId"))
+                .responseFields(Arrays.asList("displayName","name", "moduleId", "custom"))
                 .afterFetch(new GetModuleListForRelationshipCommand())
                 .done();
 
