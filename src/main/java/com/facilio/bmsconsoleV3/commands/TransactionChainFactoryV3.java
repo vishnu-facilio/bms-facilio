@@ -28,6 +28,7 @@ import com.facilio.bmsconsoleV3.commands.itemtypes.LoadItemTypesLookUpCommandV3;
 import com.facilio.bmsconsoleV3.commands.jobPlanInventory.*;
 import com.facilio.bmsconsoleV3.commands.jobplan.*;
 import com.facilio.bmsconsoleV3.commands.meter.*;
+import com.facilio.bmsconsoleV3.commands.ocr.*;
 import com.facilio.bmsconsoleV3.commands.people.*;
 import com.facilio.bmsconsoleV3.commands.pivot.GetPivotModulesListCommand;
 import com.facilio.bmsconsoleV3.commands.plannedmaintenance.*;
@@ -84,7 +85,6 @@ import com.facilio.permission.commands.UpdatePermissionsForPermissionSetCommand;
 import com.facilio.readingkpi.commands.create.SetFieldAndModuleCommand;
 import com.facilio.readingrule.command.*;
 
-import com.facilio.readings.commands.FetchCategoriesForReadingFieldsCommand;
 import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
 import com.facilio.utility.commands.*;
 
@@ -4441,15 +4441,90 @@ public class TransactionChainFactoryV3 {
         c.addCommand(new FetchSupplementsForUtilityIntegrationBillsCommand());
         return c;
     }
-    public static FacilioChain addTelemetryCriteriaNamespace(){
+    public static FacilioChain addTelemetryCriteriaNamespace() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new AddTelemetryCriteriaNameSpaceCommand());
         return c;
     }
-
+    
     public static FacilioChain getWorkPermitCheckListDeletionChain() {
         FacilioChain c = getDefaultChain();
         c.addCommand(new DeleteWorkPermitCheckListCommand());
         return c;
     }
+
+    public static FacilioChain fillTemplateSupplements(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new TemplateSupplementsCommand());
+        return c;
+    }
+
+    public static FacilioChain getOcrParsedBillChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetOcrParsedBillCommand());
+        return c;
+    }
+    
+    public static FacilioChain getOCRTemplateVariableBeforeSaveChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetOCRTemplateVariableBeforeSaveCommand());
+        return c;
+    }
+
+    public static FacilioChain deleteSupplementRecords(){    // need to be handled
+        FacilioChain c = getDefaultChain();
+        //c.addCommand(new DeleteSupplementRecordsCommand());
+        return c;
+    }
+
+    public static FacilioChain actualBillAfterTransactionChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new PushActualBillToWMSHandlerCommand());
+        return c;
+    }
+    
+    public static FacilioChain parsedBillAfterFetchChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetPreUtilityLineItemsCommand());
+        return c;
+    }
+
+    public static FacilioChain getOCRTemplateBillParserChain(){
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new GetOCRTemplateBillParserCommand());
+        return c;
+    }
+
+    public static FacilioChain getOCRProcessResultChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new OCRConstructDocResultCommand());
+        c.addCommand(new OCRConstructOutputModuleCommand());
+        return c;
+    }
+
+
+    public static FacilioChain getUtilityBillCreateAfterSaveChain() {
+        FacilioChain c = getDefaultChain();
+        c.addCommand(new AddUtilityLineItemsCommand());
+        c.addCommand(new ConstructAddCustomActivityCommandV3());
+        return c;
+    }
+
+	public static Command getOCRTemplateOutputModuleAfterSummaryChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new FillOCRTemplateOutputModuleExtraDetailsCommand());
+        return c;
+	}
+	
+	public static Command getOCRTemplateOutputModuleAfterSaveChain() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new GetOCRTemplateOutputModuleAfterSaveCommand());
+        return c;
+	}
+
+	public static FacilioChain addOrUpdateOCRBillTemplateLineItems() {
+		FacilioChain c = getDefaultChain();
+        c.addCommand(new AddOrUpdateOCRBillTemplateLineItems());
+        return c;
+	}
 }

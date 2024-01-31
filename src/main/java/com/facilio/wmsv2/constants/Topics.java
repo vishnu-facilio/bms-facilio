@@ -23,6 +23,11 @@ public interface Topics {
         String flaggedEventTopic = "__flaggedEvent__";
     }
 
+    interface OcrParseBill {
+        String ocrTemplateBill = "__ocr_template_bill__";
+        String ocrParseBill = "__ocr_parse_bill__";
+    }
+
     interface ControllerOffline {
         String controllerOfflineTopic = "controller__offline__alarm__";
     }

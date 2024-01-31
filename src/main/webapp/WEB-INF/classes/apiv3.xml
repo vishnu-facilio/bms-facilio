@@ -2898,6 +2898,18 @@
         </action>
     </package>
 
+    <package name="ocrBillTemplate" namespace="/api/v3/ocr" extends="v3Api">
+        <action name="/*/billParsing/*" class="com.facilio.bmsconsoleV3.actions.OcrAction" method="getParsedSampleBill">
+            <param name="moduleName">{1}</param>
+            <param name="templateId">{2}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+        <action name="*/addOrUpdateLineItems" class="com.facilio.bmsconsoleV3.actions.OcrAction" method="addOrUpdateLineItems">
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN</param>
+        </action>
+    </package>
+
     <package name="exportscript" namespace="/api/v3/workflow/script" extends="v3Api">
         <action name="export" class="com.facilio.bmsconsoleV3.actions.WorkflowExportAction" method="export">
 			<param name="deprecated">true</param>

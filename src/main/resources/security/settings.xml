@@ -6933,5 +6933,35 @@
             <property name="moduleName" type="string"/>
         </urlparams>
     </request>
+    
+    <request path="/api/v3/ocr/:moduleName/billParsing/:templateId" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="templateId" type="number" mandatory="true"/>
+        </urlparams>
+    </request>
+    
+    <request path="/api/v3/ocr/:moduleName/:templateId/getBillStatusCount" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="templateId" type="number" mandatory="true"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="billingYear" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
+    
+    <request path="/api/v3/ocr/pickList/:moduleName" method="GET">
+        <urlparams>
+            <property name="moduleName" type="string" mandatory="true"/>
+            <property name="page" type="number" mandatory="false"/>
+            <property name="perPage" type="number" mandatory="false"/>
+            <property name="search" type="string" mandatory="false"/>
+            <property name="orderBy" type="string" mandatory="false"/>
+            <property name="orderType" type="string" mandatory="false"/>
+            <property name="filters" type="string" mandatory="false"/>
+            <property name="includeParentFilter" type="boolean" mandatory="false"/>
+            <property name="default" type="string" mandatory="false"/>
+        </urlparams>
+    </request>
 
 </config>

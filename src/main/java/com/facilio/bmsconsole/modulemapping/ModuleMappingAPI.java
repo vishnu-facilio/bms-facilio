@@ -2,8 +2,11 @@ package com.facilio.bmsconsole.modulemapping;
 
 import com.facilio.bmsconsole.context.ModuleMappingContext;
 import com.facilio.bmsconsole.context.ModuleMappings;
+import com.facilio.bmsconsole.modulemapping.util.ParsedBillModuleMapping;
+import com.facilio.bmsconsole.modulemapping.util.PreUtilityLineItemMapping;
 import com.facilio.bmsconsole.modulemapping.util.ServiceRequestModuleMapping;
 import com.facilio.bmsconsole.modulemapping.util.WorkOrderModuleMapping;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.v3.annotation.Config;
 
 import java.util.HashMap;
@@ -47,5 +50,13 @@ public class ModuleMappingAPI {
     public static Supplier<ModuleMappings> getServiceRequestMappings() {
         return null;
     }
+
+//    @ModuleMappingConfig(FacilioConstants.Ocr.PARSED_BILL)
+//    public static Supplier<ModuleMappings> getParsedBillMappings(){
+//        return () -> new ModuleMappings("parsedBillToUtilityBillConversion","Convert To Utility Bill")
+//                .addModuleMapping(ParsedBillModuleMapping.parsedBillToUtilityBillTemplate())
+//                .moduleMappingDone()
+//        ;
+//    }
 }
 

@@ -1,20 +1,26 @@
 package com.facilio.utility.context;
 
+import com.facilio.bmsconsoleV3.context.UtilityAccountBillContext;
 import com.facilio.modules.FacilioIntEnum;
 import com.facilio.v3.context.V3Context;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@Getter @Setter
+@Getter @Setter @NoArgsConstructor
 public class UtilityIntegrationBillContext extends V3Context {
 
     private static final long serialVersionUID = 1L;
+    public UtilityIntegrationBillContext(long id){
+       this.setId(id);
+    };
 
    String billUid;
    String meterUid;
    String customerUid;
+   private UtilityAccountBillContext utilityAccountBill;
    String meta;
    Long createdTime;
    Long updatedTime;
@@ -165,7 +171,7 @@ public class UtilityIntegrationBillContext extends V3Context {
 
    }
 
-      List<UtilityIntegrationLineItemContext> utilityIntegrationLineItemContexts;
+   List<UtilityIntegrationLineItemContext> utilityIntegrationLineItemContexts;
    List<UtilityIntegrationTierItemContext> utilityIntegrationTierItemContexts;
    List<UtilityIntegrationSupplierLineItemContext> utilityIntegrationSupplierLineItemContexts;
    List<UtilityIntegrationTOUContext> utilityIntegrationTOUContexts;

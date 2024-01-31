@@ -534,6 +534,7 @@ public class PageWidget {
 		PLANNED_INVENTORY_LABOR("plannedInventoryLabor"),
 		PLANNED_INVENTORY_TOOLS("plannedInventoryTools"),
 		BUDGET_TRANSACTIONS("budgetTransactions"),
+		OCR_RULE_LOGS("ocrRuleLogs"),
 
 		PLANNED_MAINTENANCE_DETAILS("preventiveMaintenanceDetails"),
 		PM_PLANNER_DETAILS("pmPlannerDetails"),
@@ -594,6 +595,7 @@ public class PageWidget {
 		UTILITY_INTEGRATION_BILL_PREVIEW("utilityIntegrationBillPreviewWidget"),
 		METER_WIDGET("meterWidget"),
 		BILL_SUMMARY_WIDGET("billSummaryWidget"),
+		OCR_LINE_ITEM_WIDGET("ocrLineItemWidget"),
 		CLIENT_CONTACT_LIST_WIDGET("clientcontactListWidget"),
 		OPERATING_HOURS("operatingHours"),
 		UNPLANNED_MAINTENANCE("unPlannedMaintenance"),

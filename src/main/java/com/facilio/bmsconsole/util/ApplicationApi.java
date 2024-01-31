@@ -3841,6 +3841,13 @@ public class ApplicationApi {
             groupNameVsWebTabsMap.put("controls", webTabs);
 
             webTabs = new ArrayList<>();
+            webTabs.add(new WebTabContext("Bill Templates", "billTemplates", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.Ocr.BILL_TEMPLATE).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Bills", "bill", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.Ocr.ACTUAL_BILL).getModuleId()), layout.getApplicationId(), null));
+            webTabs.add(new WebTabContext("Parsed Acount Bills","parsedAccountBill",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.Ocr.PARSED_ACCOUNT_BILL).getModuleId()),layout.getApplicationId(), null));
+            webTabGroups.add(new WebTabGroupContext(webTabs,"Bills", "bills",IconType.contract.ordinal(),groupOrder++,null,layout.getId(),IconType.contract));
+            groupNameVsWebTabsMap.put("bills", webTabs);
+
+            webTabs = new ArrayList<>();
             webTabs.add(new WebTabContext("Client", "client", WebTabContext.Type.MODULE, Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.CLIENT).getModuleId()), layout.getApplicationId(), null, AccountUtil.FeatureLicense.CLIENT.getFeatureId()));
             webTabs.add(new WebTabContext("Client Contact","clientContact",WebTabContext.Type.MODULE,Arrays.asList(modBean.getModule(FacilioConstants.ContextNames.CLIENT_CONTACT).getModuleId()),layout.getApplicationId(), null,AccountUtil.FeatureLicense.CLIENT.getFeatureId()));
             webTabGroups.add(new WebTabGroupContext(webTabs,"Client", "client",IconType.client.ordinal(),groupOrder++,null,layout.getId(),IconType.client));

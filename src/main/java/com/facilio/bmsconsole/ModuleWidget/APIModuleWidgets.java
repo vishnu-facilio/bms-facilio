@@ -1223,6 +1223,20 @@ public class APIModuleWidgets {
                 .addFlexibleWidgetConfig("flexiblewebbudgettransactions_9", "Budget Transactions - 9",9, PagesContext.PageLayoutType.WEB)
                 .done();
     }
+    @WidgetsForModule(FacilioConstants.Ocr.OCR_RULE_LOG)
+    public static Supplier<ModuleWidgets> getOcrRuleLogWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("ocrRuleLogs", "Logs", PageWidget.WidgetType.OCR_RULE_LOGS)
+                .addFlexibleWidgetConfig("flexiblewebocrrulelogs_9", "Logs - 9",9, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
+    @WidgetsForModule(FacilioConstants.Ocr.PARSED_BILL)
+    public static Supplier<ModuleWidgets> getParsedBillWidgets() {
+        return  () -> new ModuleWidgets()
+                .addModuleWidget("parsedBillLineItem", "Bill", PageWidget.WidgetType.OCR_LINE_ITEM_WIDGET)
+                .addFlexibleWidgetConfig("flexiblewebparsedbilllineitem_8", "Bill - 8",8, PagesContext.PageLayoutType.WEB)
+                .done();
+    }
     @WidgetsForModule("shift")
     public static Supplier<ModuleWidgets> getShiftWidgets() {
         return () -> new ModuleWidgets()

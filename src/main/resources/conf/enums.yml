@@ -584,3 +584,42 @@ enums:
 
   - name: InvoiceStatus
     enumClassName: com.facilio.bmsconsoleV3.context.invoice.InvoiceContextV3$InvoiceStatus
+
+  - name: BillFrequencyEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.BillTemplateContext$BillFrequencyEnum
+
+  - name: OCRResultModuleType
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.OCRTemplateOutputModuleContext$OCROutputModuleType
+
+  - name: OCRResultRecordType
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.OCRTemplateOutputModuleContext$OCROutputRecordType
+    
+  - name: OCRTemplateOutputFieldType
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.OCRTemplateOutputFieldContext$TemplateOutputFieldExtractTypeEnum
+    
+  - name: OCRTemplateVariableType
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.OCRTemplateVariableContext$TemplateVariableTypeEnum
+
+  - name: ActualBillStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.ActualBillContext$ActualBillStatus
+
+  - name: ParsedBillStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.ParsedBillContext$ParsedBillStatus
+
+  - name: ParsedAccountBillStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.ParsedAccountBillContext$ParsedAccountBillStatus
+
+  - name: ParsingStatus
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.ParsedBillContext$ParsingStatus
+
+  - name: UtilityProviderEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.BillTemplateContext$UtilityProviderEnum
+
+  - name: ocrTemplateStatusEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.OCRTemplateContext$templateStatusEnum
+
+  - name: OcrAccountTypeEnum
+    enumClassName: com.facilio.bmsconsoleV3.context.ocr.ParsedAccountBillContext$OcrAccountType
+
+  - name: OcrUtilityAccountType
+    enumClassName: com.facilio.bmsconsoleV3.context.UtilityAccountBillContext$OcrUtilityAccountType

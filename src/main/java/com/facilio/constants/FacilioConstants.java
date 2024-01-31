@@ -5071,4 +5071,48 @@ public class FacilioConstants {
 		public static final String SERVICE_PLAN_ATTACHMENTS = "servicePlanAttachments";
 
 	}
+
+	public static class Ocr{
+		public static final String OCR_TEMPLATE = "ocrTemplate";
+		public static final String OCR_TEMPLATE_TABLES = "ocrTemplateTable";
+		public static final String OCR_TEMPLATE_VARIABLES = "ocrTemplateVariables";
+		
+		public static final String OCR_TEMPLATE_OUTPUT_MODULE = "ocrTemplateOutputModule";
+		public static final String OCR_TEMPLATE_OUTPUT_FIELD = "ocrTemplateOutoutField";
+		
+		public static final String OCR_TEMPLATE_PARSED_RESULT = "ocrTemplateParsedResult";
+		public static final String OCR_TEMPLATE_PARSED_RESULT_Table = "ocrTemplateParsedResultTable";
+		
+		public static final String BILL_TEMPLATE = "billTemplate";
+		public static final String TEMPLATE_FIELD_RULE = "templateFieldRule";
+		public static final String LINE_ITEM_RULE = "lineItemRule";
+		public static final String LINE_ITEMS = "lineItems";
+		public static final String LINE_ITEM_FIELD_RULE= "lineItemFieldRules";
+		public static final String SUB_FIELD_RULE = "subFieldRule";
+		public static final String ACTUAL_BILL = "actualBill";
+		public static final String DOC_ID = "docId";
+		public static final String PARENT_RECORD_ID = "parentRecordId";
+		public static final String PARENT_MODULE_ID = "parentDocId";
+		public static final String PARSED_ACCOUNT_BILL = "parsedAccountBill";
+		public static final String UTILITY_ACCOUNT_BILL = "utilityAccountBill";
+		public static final String PARSED_BILL = "parsedBill";
+		public static final String PARSED_BILL_TABLES = "parsedBillTable";
+		public static final String OCR_RULE_LOG = "ocrRuleLog";
+		public static final String LINE_ITEM_RULES = "lineItemRules";
+		public static final String FIELD_RULES = "fieldRules";
+		public static final String FIELD_RULE = "fieldRule";
+		public static final String SUB_FIELD_RULES = "subFieldRules";
+		public static final String PRE_UTILITY_BILL = "preUtilityIntegrationBills";
+		public static final String PRE_UTILITY_LINE_ITEMS = "preUtilityIntegrationLineItems";
+		public static final String DEWA_IMAGE_URL = "https://vectorseek.com/wp-content/uploads/2023/09/Dewa-Logo-Vector.svg-.png";
+		public static final String TEMPLATE_ID = "templateId";
+		public static final String BILLING_YEAR = "billingYear";
+		public static final String PARSED_BILL_ID = "parsedBillId";
+		public static final String ACTUAL_BILL_ID = "actualBillId";
+		public static final String TEXTRACT_RESULT = "textractResultContext";
+		public static final String KEY_VALUE_SEARCH_MAP = "keyValueSearchMap";
+		public static final String TABLE_SEARCH_MAP = "TablevalueSearchMap";
+		public static final String RAW_TEXT = "rawText";
+		public static final String LINE_ITEM_RES = "lineItemRes";
+	}
 }

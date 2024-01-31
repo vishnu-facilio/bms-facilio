@@ -33,17 +33,20 @@ public class CheckAndRaiseDisputeCommand extends FacilioCommand {
             String moduleName= FacilioConstants.UTILITY_INTEGRATION_METER;
             List<FacilioField> fields = modBean.getAllFields(moduleName);
             //get metetuid from meterid
+            if(bill.getUtilityIntegrationMeter()!= null){
+                SelectRecordsBuilder<UtilityIntegrationMeterContext> builder = new SelectRecordsBuilder<UtilityIntegrationMeterContext>()
+                        .moduleName(moduleName)
+                        .select(fields)
+                        .beanClass(UtilityIntegrationMeterContext.class)
+                        .andCondition(CriteriaAPI.getIdCondition(bill.getUtilityIntegrationMeter().getId(),module))
+                        ;
 
-            SelectRecordsBuilder<UtilityIntegrationMeterContext> builder = new SelectRecordsBuilder<UtilityIntegrationMeterContext>()
-                    .moduleName(moduleName)
-                    .select(fields)
-                    .beanClass(UtilityIntegrationMeterContext.class)
-                    .andCondition(CriteriaAPI.getIdCondition(bill.getUtilityIntegrationMeter().getId(),module))
-                    ;
+                UtilityIntegrationMeterContext utilityIntegrationMeterContexts = builder.fetchFirst();
 
-            UtilityIntegrationMeterContext utilityIntegrationMeterContexts = builder.fetchFirst();
+                UtilitySDK.checkAndRaiseDisputes(utilityIntegrationMeterContexts.getId(),bill.getBillStartDate(),bill.getBillEndDate());
+            }
 
-            UtilitySDK.checkAndRaiseDisputes(utilityIntegrationMeterContexts.getId(),bill.getBillStartDate(),bill.getBillEndDate());
+
 
         }
 
