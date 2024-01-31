@@ -66,9 +66,9 @@ public class UtilityIntegrationBillsModule extends BaseModuleConfig {
         StringField customerUid = (StringField) FieldFactory.getDefaultField("customerUid", "Customer UID", "CUSTOMER_UID", FieldType.STRING);
         fields.add(customerUid);
 
-        LookupField utilityAccountBill =  FieldFactory.getDefaultField("utilityAccountBill","Utility Account Bill","UTILITY_ACCOUNT_BILL",FieldType.LOOKUP);
-        utilityAccountBill.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.Ocr.UTILITY_ACCOUNT_BILL),"Utility account bill module doesn't exists."));
-        fields.add(utilityAccountBill);
+//        LookupField utilityAccountBill =  FieldFactory.getDefaultField("utilityAccountBill","Utility Account Bill","UTILITY_ACCOUNT_BILL",FieldType.LOOKUP);
+//        utilityAccountBill.setLookupModule(Objects.requireNonNull(moduleBean.getModule(FacilioConstants.Ocr.UTILITY_ACCOUNT_BILL),"Utility account bill module doesn't exists."));
+//        fields.add(utilityAccountBill);
 
         DateField createdTime =  FieldFactory.getDefaultField("createdTime", "Created Time", "CREATED_TIME", FieldType.DATE_TIME,FacilioField.FieldDisplayType.DATETIME);
         fields.add(createdTime);
