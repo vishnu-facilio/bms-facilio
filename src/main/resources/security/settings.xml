@@ -470,7 +470,33 @@
     </request>
     <request path="/api/v1/setup/servicecataloggroup/list" method="GET"/>
 
+    <request path="/api/v2/servicecataloggroup/list" method="GET"/>
+
+    <request path="/api/v2/servicecataloggroup/detail" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+    <request path="/api/v2/servicecatalog/detail" method="GET">
+        <requestbody type="object">
+            <property name="id" type="number"/>
+        </requestbody>
+    </request>
+
+
     <request path="/api/v1/setup/servicecatalog/list" method="GET">
+        <urlparams>
+            <property name="page" type="number"/>
+            <property name="perPage" type="number"/>
+            <property name="appId" type="number"/>
+            <property name="groupId" type="number"/>
+            <property name="searchString" type="string"/>
+            <property name="fromSetup" type="string"/>
+        </urlparams>
+    </request>
+
+    <request path="/api/v2/servicecatalog/list" method="GET">
         <urlparams>
             <property name="page" type="number"/>
             <property name="perPage" type="number"/>
