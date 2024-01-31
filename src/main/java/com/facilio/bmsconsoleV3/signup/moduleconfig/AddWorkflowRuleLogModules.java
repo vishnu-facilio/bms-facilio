@@ -90,11 +90,10 @@ public class AddWorkflowRuleLogModules extends SignUpData {
         module.setFields(fieldsList);
     }
     public void  addDeleteRecordScheduleJobs() throws Exception{
+
         ScheduleInfo scheduleInfo = new ScheduleInfo();
-        int dateToBeExecuted=1; //1-31 days
         scheduleInfo.setTimes(Collections.singletonList("00:00"));
-        scheduleInfo.setValues(Collections.singletonList(dateToBeExecuted));
-        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
+        scheduleInfo.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
         FacilioTimer.scheduleCalendarJob(AccountUtil.getCurrentOrg().getOrgId(), "DeleteWorkflowRuleLogsRecordsJob", DateTimeUtil.getCurrenTime(), scheduleInfo, "priority");
     }
 }

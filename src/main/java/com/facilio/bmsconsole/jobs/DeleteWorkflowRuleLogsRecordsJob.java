@@ -32,7 +32,7 @@ public class DeleteWorkflowRuleLogsRecordsJob extends FacilioJob {
         FacilioModule module= moduleBean.getModule(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS);
         List<FacilioField> fieldsList=moduleBean.getAllFields(FacilioConstants.ContextNames.WORKFLOW_RULE_LOGS);
         Map<String,FacilioField> fieldMap= FieldFactory.getAsMap(fieldsList);
-        long lastWeek = DateTimeUtil.getDateTime(jobContext.getExecutionTime(), true).minusMonths(1).toInstant().toEpochMilli();
+        long lastWeek = DateTimeUtil.getDateTime(jobContext.getExecutionTime(), true).minusDays(10).toInstant().toEpochMilli();
         List<WorkflowRuleLogContext> recordList=new ArrayList<>();
         do{
             SelectRecordsBuilder builder = new SelectRecordsBuilder()
