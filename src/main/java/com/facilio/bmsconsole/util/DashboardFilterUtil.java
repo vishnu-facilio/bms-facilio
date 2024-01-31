@@ -417,9 +417,15 @@ public class DashboardFilterUtil {
 		return null;
 	}
 
-	public static FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule, Long fieldId){
+	public static FacilioField getFilterApplicableField(FacilioModule filterModule, FacilioModule widgetModule, Long fieldId) throws Exception {
 		
 		//see if module's lookup fields refrer to the filter's lookupmodule.
+		if(filterModule != null && filterModule.getName().equals(FacilioConstants.ContextNames.SITE)){
+			FacilioField siteField = Constants.getModBean().getField("siteId",widgetModule.getName());
+			if(siteField != null) {
+				return siteField;
+			}
+		}
 		List<FacilioField> filterApplicableFields = widgetModule.getFields().stream().filter((FacilioField field) -> {
 			if (field.getDataTypeEnum() == FieldType.LOOKUP) {
 				LookupField lookupField = (LookupField) field;

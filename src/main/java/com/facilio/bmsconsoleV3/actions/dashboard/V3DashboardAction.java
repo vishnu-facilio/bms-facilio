@@ -665,6 +665,7 @@ public class V3DashboardAction extends V3Action {
         try {
             FacilioChain exportChain = TransactionChainFactoryV3.getDashboardExportChain();
             Context context = exportChain.getContext();
+            context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID,dashboardTabId);
             context.put(FacilioConstants.ContextNames.LINK_NAME,linkName);
             exportChain.execute();
             setData("fileUrl",context.get("fileUrl"));

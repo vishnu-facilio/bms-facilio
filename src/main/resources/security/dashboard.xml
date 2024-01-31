@@ -747,6 +747,7 @@
     <request path="/api/v3/dashboard/export/:linkName" method="GET">
         <urlparams>
             <property name="linkName" type="string" mandatory="true"></property>
+            <property name="dashboardTabId" type="number"></property>
         </urlparams>
     </request>
 </config>
