@@ -36,7 +36,7 @@ public class ClientBuildAction extends ActionSupport {
     private String orgGrouping;
 
     public boolean checkIfBuildExists(ClientAppConfig config, String version) throws Exception {
-        String indexUrl = ClientAppUtil.clientAppBean().getClientAppInfo(config.getName(), version, false).getStaticUrl() + config.getAppType().getFileName();
+        String indexUrl = ClientAppUtil.clientAppBean().getClientAppInfo(config.getName(), version, false).getStaticUrl() + "/" +config.getAppType().getFileName();
         try (InputStream inputStream = new URL(indexUrl).openStream())
         {
             String html = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
