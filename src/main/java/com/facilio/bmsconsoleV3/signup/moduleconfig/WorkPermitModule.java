@@ -147,6 +147,7 @@ public class WorkPermitModule extends BaseModuleConfig{
         addModuleChain.getContext().put(FacilioConstants.ContextNames.MODULE_LIST, workPermitModuleList);
         addModuleChain.execute();
         addWPTypeCheckListFields();
+        addWorkPermitTypeModuleFields();
         addWPCheckListCategoryFields();
         LOGGER.info("Added WorkPermit fields");
 
@@ -170,6 +171,19 @@ public class WorkPermitModule extends BaseModuleConfig{
 
     public void addWPTypeCheckListFields() throws Exception{
         FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE_CHECKLIST);
+        FacilioField deletedField = FieldFactory.getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN);
+        deletedField.setVersion(Version.V2.getVersionId());
+        List<FacilioField> allFields = new ArrayList<>();
+        allFields.add(deletedField);
+        FacilioChain addFieldChain = TransactionChainFactory.getAddFieldsChain();
+        FacilioContext addFieldContext = addFieldChain.getContext();
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+        addFieldContext.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, allFields);
+        addFieldChain.execute();
+    }
+
+    public void addWorkPermitTypeModuleFields() throws Exception{
+        FacilioModule module = Constants.getModBean().getModule(FacilioConstants.ContextNames.WorkPermit.WORK_PERMIT_TYPE);
         FacilioField deletedField = FieldFactory.getField("deleted", "IS_DELETED", module, FieldType.BOOLEAN);
         deletedField.setVersion(Version.V2.getVersionId());
         List<FacilioField> allFields = new ArrayList<>();
@@ -233,7 +247,7 @@ public class WorkPermitModule extends BaseModuleConfig{
     }
 
 
-        private List<FacilioField> getWorkPermitFields(FacilioModule workPermitModule) throws Exception {
+    private List<FacilioField> getWorkPermitFields(FacilioModule workPermitModule) throws Exception {
         List<FacilioField> workPermitFields = new ArrayList<>();
         NumberField localIdField = FieldFactory.getDefaultField("localId","ID","LOCAL_ID",FieldType.NUMBER, FacilioField.FieldDisplayType.NUMBER,false);
         localIdField.setDefault(true);
