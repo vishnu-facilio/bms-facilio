@@ -28,5 +28,6 @@ clientapps:
     baseUrl: https://static.facilio.com/weave-builder
     stageBaseUrl: https://static.facilio.com/dev
   - name: pdf-builder
-    baseUrl: https://static.facilio.com
-    stageBaseUrl: https://static.facilio.com/dev
+    appType: cdn-js
+    baseUrl: https://cdnjs.facilio.com/pdf-builder
+    stageBaseUrl: https://cdnjs.facilio.com/pdf-builder
