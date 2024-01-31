@@ -6,6 +6,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.activity.ActivityType;
 import com.facilio.bmsconsole.activity.ImportActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
@@ -170,9 +171,25 @@ public class SetActivityMessageForImportRecordsCommand extends FacilioCommand {
            return ((User) lookupRecordObject).getName();
         } else if (lookupRecordObject instanceof Role) {
             return ((Role) lookupRecordObject).getName();
+        }else if (lookupRecordObject instanceof Map){
+            return getPrimaryValueFromMapObject(lookupField,lookupRecordObject);
         }else {
             throw new UnsupportedOperationException("Un supported lookup field data bean for:"+lookupField.getName());
         }
+    }
+    private  Object getPrimaryValueFromMapObject(LookupField lookupField,Object lookupRecordObject){
+        String moduleName = lookupField.getLookupModule().getName();
+        Map<String,Object> lookupMap = (Map<String, Object>) lookupRecordObject;
+        if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+           if(FacilioConstants.ContextNames.USERS.equals(moduleName) || FacilioConstants.ContextNames.REQUESTER.equals(moduleName) || FacilioConstants.ContextNames.ROLE.equals(moduleName)){
+               return lookupMap.get("name");
+           }
+           else {
+               throw new UnsupportedOperationException("Un supported primary data handling for fieldName:"+lookupField.getName());
+           }
+        }
+        return getMainFieldPropertyFromMap((Map<String, Object>) lookupRecordObject,primaryFieldMap.get(lookupField.getName()));
+
     }
     public static Object getMainFieldProperty(ModuleBaseWithCustomFields lookupRecord, FacilioField primaryField) {
         if (lookupRecord == null || primaryField == null) {
@@ -189,6 +206,24 @@ public class SetActivityMessageForImportRecordsCommand extends FacilioCommand {
             }
         } catch (Exception e) {
             property = lookupRecord.getId();
+        }
+        return property;
+    }
+    public static Object getMainFieldPropertyFromMap(Map<String,Object> lookupRecordMap, FacilioField primaryField) {
+        if (lookupRecordMap == null || primaryField == null) {
+            return null;
+        }
+        Object property;
+        try {
+            property = lookupRecordMap.get(primaryField.getName());
+            if (primaryField instanceof LookupField && ((LookupField) primaryField).getSpecialType() == null) {
+                FacilioField childMainField = Constants.getModBean().getPrimaryField(((LookupField) primaryField).getLookupModule().getName());
+                if (childMainField != null) {
+                    property = getMainFieldPropertyFromMap((Map<String, Object>) property, childMainField);
+                }
+            }
+        } catch (Exception e) {
+            property = lookupRecordMap.get("id");
         }
         return property;
     }

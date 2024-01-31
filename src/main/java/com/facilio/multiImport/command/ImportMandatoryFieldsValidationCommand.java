@@ -3,16 +3,23 @@ package com.facilio.multiImport.command;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.multiImport.config.ImportConfig;
+import com.facilio.multiImport.config.ImportHandler;
+import com.facilio.multiImport.context.ImportFieldMappingContext;
 import com.facilio.multiImport.context.ImportFileSheetsContext;
+import com.facilio.multiImport.context.LookupIdentifierEnum;
 import com.facilio.multiImport.multiImportExceptions.ImportMandatoryFieldsException;
 import com.facilio.multiImport.util.MultiImportApi;
+import com.facilio.multiImport.util.MultiImportChainUtil;
 import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
     @Override
@@ -29,7 +36,7 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
         ImportFileSheetsContext oldSheet = MultiImportApi.getImportSheet(importId,sheetId);
         FacilioUtil.throwIllegalArgumentException(oldSheet == null, "Sheet ID doesn't exists");
 
-
+        validateMandatoryUniqueFields(importSheet);
         boolean skipValidation = (boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
         if (skipValidation){
             return false;
@@ -70,6 +77,50 @@ public class ImportMandatoryFieldsValidationCommand extends FacilioCommand {
         }
 
     }
+    private void validateMandatoryUniqueFields(ImportFileSheetsContext importSheet) throws Exception{
+        Map<String,String> fieldNameVsSheetColumnName = importSheet.getFieldNameVsSheetColumnNameMap();
+        if(MapUtils.isEmpty(fieldNameVsSheetColumnName)){
+            return;
+        }
 
+        ImportConfig importConfig= MultiImportChainUtil.getMultiImportConfig(importSheet.getModuleName());
+        Map<String, List<String>> lookupUniqueFieldsMap = null;
+        if (importConfig!=null){
+            ImportHandler importHandler = importConfig.getImportHandler();
+            if(importHandler!=null){
+                lookupUniqueFieldsMap = importHandler.getLookupUniqueFieldsMap();
+            }
+        }
+        if(MapUtils.isEmpty(lookupUniqueFieldsMap)){
+            return;
+        }
+
+        for (String lookupFieldName:lookupUniqueFieldsMap.keySet()){
+            if(!fieldNameVsSheetColumnName.containsKey(lookupFieldName)){
+                continue;
+            }
+
+            String sheetColumnName = fieldNameVsSheetColumnName.get(lookupFieldName);
+            ImportFieldMappingContext fieldMappingContext = importSheet.getSheetColumnNameVsFieldMapping().get(sheetColumnName);
+            LookupIdentifierEnum lookupIdentifier = fieldMappingContext.getLookupIdentifierEnum();
+
+            if(lookupIdentifier == LookupIdentifierEnum.PRIMARY_FIELD){
+                if (MapUtils.isNotEmpty(lookupUniqueFieldsMap) && lookupUniqueFieldsMap.containsKey(lookupFieldName)) {
+                    List<String> fieldNames = lookupUniqueFieldsMap.get(lookupFieldName);
+                    for (String fieldName : fieldNames) {
+                        if(!fieldName.startsWith("*")){
+                            String uniqueFieldSheetColumnName = fieldNameVsSheetColumnName.get(fieldName);
+                            if(uniqueFieldSheetColumnName == null && fieldName.equals("site")){
+                                uniqueFieldSheetColumnName = fieldNameVsSheetColumnName.get("siteId");
+                            }
+                           FacilioUtil.throwIllegalArgumentException(uniqueFieldSheetColumnName==null,"Mandatory unique field:"+fieldName +" is not mapped");
+                        }
+                    }
+                }
+            }
+        }
+
+
+    }
 
 }
