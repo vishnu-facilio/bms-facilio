@@ -329,6 +329,10 @@ public class DashboardPackageBeanImpl implements PackageBean<DashboardContext> {
             boolean widgetFilterStatus = Boolean.parseBoolean(timeLineFilterElement.getElement(PackageConstants.DashboardConstants.WIDGET_TIMELINE_FILTER_STATUS).getText());
             dashboardFilterContext.setHideFilterInsideWidgets(widgetFilterStatus);
         }
+        if(timeLineFilterElement.getElement(DashboardConstants.LINK_NAME)!=null) {
+            String linkName = timeLineFilterElement.getElement(DashboardConstants.LINK_NAME).getText();
+            dashboardFilterContext.setLinkName(linkName);
+        }
         long dateOperator = Long.parseLong(timeLineFilterElement.getElement(PackageConstants.DashboardConstants.DATE_OPERATOR).getText());
 
         dashboardFilterContext.setDateLabel(dateLabel);
@@ -355,11 +359,12 @@ public class DashboardPackageBeanImpl implements PackageBean<DashboardContext> {
     public static void createFilterAsXML(XMLBuilder dashboardContextElement, DashboardFilterContext filterContext) throws Exception{
         XMLBuilder timeLineFilterElement =  dashboardContextElement.element(DashboardConstants.DASHBOARD_FILTER);
         if(filterContext.getDateValue()!=null){
-            timeLineFilterElement.element(PackageConstants.DashboardConstants.DATE_VALUE).text(filterContext.getDateValue());
+            timeLineFilterElement.element(DashboardConstants.DATE_VALUE).text(filterContext.getDateValue());
         }
-        timeLineFilterElement.element(PackageConstants.DashboardConstants.WIDGET_TIMELINE_FILTER_STATUS).text(String.valueOf(filterContext.isHideFilterInsideWidgets()));
-        timeLineFilterElement.element(PackageConstants.DashboardConstants.TIME_LINE_FILTER_ENABLE).text(String.valueOf(filterContext.getIsTimelineFilterEnabled()));
-        timeLineFilterElement.element(PackageConstants.DashboardConstants.DATE_OPERATOR).text(String.valueOf(filterContext.getDateOperator()));
-        timeLineFilterElement.element(PackageConstants.DashboardConstants.DATE_LABEL).text(filterContext.getDateLabel());
+        timeLineFilterElement.element(DashboardConstants.WIDGET_TIMELINE_FILTER_STATUS).text(String.valueOf(filterContext.isHideFilterInsideWidgets()));
+        timeLineFilterElement.element(DashboardConstants.TIME_LINE_FILTER_ENABLE).text(String.valueOf(filterContext.getIsTimelineFilterEnabled()));
+        timeLineFilterElement.element(DashboardConstants.DATE_OPERATOR).text(String.valueOf(filterContext.getDateOperator()));
+        timeLineFilterElement.element(DashboardConstants.DATE_LABEL).text(filterContext.getDateLabel());
+        timeLineFilterElement.element(DashboardConstants.LINK_NAME).text(filterContext.getLinkName());
     }
 }

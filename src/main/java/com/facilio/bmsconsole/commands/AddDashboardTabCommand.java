@@ -37,15 +37,18 @@ public class AddDashboardTabCommand extends FacilioCommand {
 
 		dashboardTab.setId((Long) prop.get("id"));
 		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTab);
-		AddOrUpdateDashboardFilterCommand tabFilter = new AddOrUpdateDashboardFilterCommand();
-		DashboardFilterContext filter = new DashboardFilterContext();
-		filter.setIsTimelineFilterEnabled(true);
-		filter.setDateOperator(DateOperators.CURRENT_MONTH.getOperatorId());
-		filter.setDateLabel("Current Month");
-		filter.setHideFilterInsideWidgets(false);
-		filter.setDashboardTabId((Long) prop.get("id"));
-		context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER,filter);
-		tabFilter.executeCommand(context);
+		Boolean isSandbox = (Boolean) context.get(FacilioConstants.ContextNames.IS_SANDBOX);
+		if(isSandbox == null){
+			AddOrUpdateDashboardFilterCommand tabFilter = new AddOrUpdateDashboardFilterCommand();
+			DashboardFilterContext filter = new DashboardFilterContext();
+			filter.setIsTimelineFilterEnabled(true);
+			filter.setDateOperator(DateOperators.CURRENT_MONTH.getOperatorId());
+			filter.setDateLabel("Current Month");
+			filter.setHideFilterInsideWidgets(false);
+			filter.setDashboardTabId((Long) prop.get("id"));
+			context.put(FacilioConstants.ContextNames.DASHBOARD_FILTER,filter);
+			tabFilter.executeCommand(context);
+		}
 		return false;
 	}
 	private void getDashboardTabLinkName(DashboardTabContext tab) throws Exception {

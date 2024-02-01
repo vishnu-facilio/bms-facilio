@@ -89,15 +89,17 @@ public class AddOrUpdateDashboardFilterCommand extends FacilioCommand {
 		FacilioModule module = ModuleFactory.getDashboardFilterModule();
 		List<String> linkNames = DashboardUtil.getExistingLinkNames(module.getTableName(),filterLinkName);
 		int i = 1;
-		while(i<1000){
-			String linkName = "filter";
-			linkName = String.valueOf(new StringBuilder(linkName).append(i));
-			if(linkNames.contains(linkName)){
-				i++;
-			}
-			else{
-				filterContext.setLinkName(linkName);
-				break;
+		String linkName = filterContext.getLinkName();
+		if(linkName ==  null){
+			while(i<1000){
+				linkName = "filter";
+				linkName = String.valueOf(new StringBuilder(linkName).append(i));
+				if(linkNames.contains(linkName)){
+					i++;
+				} else{
+					filterContext.setLinkName(linkName);
+					break;
+				}
 			}
 		}
 	}

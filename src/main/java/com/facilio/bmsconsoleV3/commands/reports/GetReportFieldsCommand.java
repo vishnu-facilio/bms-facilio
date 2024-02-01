@@ -1,6 +1,7 @@
 package com.facilio.bmsconsoleV3.commands.reports;
 
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportFactoryFields;
 import org.apache.commons.chain.Context;
@@ -17,9 +18,13 @@ public class GetReportFieldsCommand extends FacilioCommand {
         String moduleName = (String) context.get("moduleName");
         if(moduleName != null)
         {
-            List<String> reqFields = Arrays.asList("dimension","lookupModuleMap","moduleMap","moduleType","parentlookupFileds");
-            JSONObject reportFields =  ReportFactoryFields.getReportFields(moduleName);
+            Boolean isSandbox = (Boolean) context.get(FacilioConstants.ContextNames.IS_SANDBOX);
             JSONObject reqReportFields = new JSONObject();
+            JSONObject reportFields =  ReportFactoryFields.getReportFields(moduleName);
+            List<String> reqFields = new ArrayList<>();
+            if(isSandbox==null) {
+                reqFields = Arrays.asList("dimension", "lookupModuleMap", "moduleMap", "moduleType", "parentlookupFileds");
+            }
             for(Object key : reportFields.keySet()){
                 if(!reqFields.contains(key)){
                     reqReportFields.put(key,reportFields.get(key));

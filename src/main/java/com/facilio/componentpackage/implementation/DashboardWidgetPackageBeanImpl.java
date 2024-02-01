@@ -922,9 +922,11 @@ public class DashboardWidgetPackageBeanImpl implements PackageBean<DashboardWidg
         List<String> integerValues = ids.stream().filter(id-> filterIntegerValue(id,stringValues)).collect(Collectors.toList());
         List<Long> newIntValues =  integerValues.stream().map(id->Long.parseLong(id)).collect(Collectors.toList());
         Map<Long,Long> oldIdVsNewId =   getNewRecordIds(moduleName,newIntValues);
-        List<Long> newIds =  newIntValues.stream().map(id->oldIdVsNewId.get(id)).collect(Collectors.toList());
-        for(Long id : newIds){
-            stringValues.add(String.valueOf(id));
+        if(newIntValues!=null && oldIdVsNewId!=null){
+            List<Long> newIds =  newIntValues.stream().map(id->oldIdVsNewId.get(id)).collect(Collectors.toList());
+            for(Long id : newIds){
+                stringValues.add(String.valueOf(id));
+            }
         }
         return stringValues;
     }

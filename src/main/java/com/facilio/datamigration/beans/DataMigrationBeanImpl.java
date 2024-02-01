@@ -141,7 +141,7 @@ public class DataMigrationBeanImpl implements DataMigrationBean{
     public DataMigrationStatusContext getDataMigrationStatusForCurrentOrg() throws Exception {
         FacilioModule dataMigrationModule = ModuleFactory.getDataMigrationStatusModule();
         List<FacilioField> dataMigrationStatusFields = FieldFactory.getDataMigrationStatusFields();
-        FacilioField idField = FieldFactory.getIdxField(dataMigrationModule);
+        FacilioField idField = FieldFactory.getIdField(dataMigrationModule);
 
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(dataMigrationStatusFields)

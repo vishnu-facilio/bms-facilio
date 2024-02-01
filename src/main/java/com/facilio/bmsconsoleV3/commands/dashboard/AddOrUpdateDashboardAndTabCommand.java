@@ -65,6 +65,7 @@ public class AddOrUpdateDashboardAndTabCommand extends FacilioCommand {
                         FacilioChain addDashboardTabChain = TransactionChainFactory.getAddDashboardTabChain();
                         FacilioContext tabContext = addDashboardTabChain.getContext();
                         tabContext.put(FacilioConstants.ContextNames.DASHBOARD_TAB, tab);
+                        tabContext.put(FacilioConstants.ContextNames.IS_SANDBOX,true);
                         addDashboardTabChain.execute();
                         DashboardTabContext dashboardTab = (DashboardTabContext) tabContext.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
                         DashboardFilterContext filterContext = tab.getDashboardFilter();

@@ -23,6 +23,7 @@ import com.facilio.report.util.ReportUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.xml.builder.XMLBuilder;
+import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -32,6 +33,7 @@ import org.json.simple.parser.JSONParser;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Log4j
 public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
     @Override
     public Map<Long, Long> fetchSystemComponentIdsToPackage() throws Exception {
@@ -290,6 +292,7 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
 
         for (Map.Entry<Long, XMLBuilder> idVsComponent : idVsXMLComponents.entrySet()) {
             XMLBuilder reportElement = idVsComponent.getValue();
+            LOGGER.info("reportName--"+reportElement.getElement("Name").getText());
             Long reportId = idVsComponent.getKey();
             ReportContext reportContext = new ReportContext();
             String moduleName = reportElement.getElement(PackageConstants.DashboardConstants.MODULE_NAME).getText();
@@ -597,8 +600,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 List<Long> buildingIds = (List<Long>) common.get("buildingIds");
                 if(!buildingIds.isEmpty()){
                     Map<Long,Long> buildingIdMap = PackageBeanUtil.getNewRecordIds("building",buildingIds);
-                    List<Long> newBuildingId = buildingIds.stream().map(id->buildingIdMap.get(id)).collect(Collectors.toList());
-                    common.put("buildingIds",newBuildingId);
+                    if(buildingIdMap!=null && !buildingIdMap.isEmpty()){
+                        List<Long> newBuildingId = buildingIds.stream().map(id->buildingIdMap.get(id)).collect(Collectors.toList());
+                        common.put("buildingIds",newBuildingId);
+                    }
                 }
                 if(filters!=null){
                     constructFilterObject(common,filters,assetCategoryNameVsId);
@@ -808,8 +813,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                     parentIds.add((long) parentId);
                 }
                Map<Long,Long> parentIdMap = PackageBeanUtil.getNewRecordIds("resource",parentIds);
-               List<Long> newParentIds = parentIds.stream().map(id->parentIdMap.get(id)).collect(Collectors.toList());
-               metaData.put("parentIds",newParentIds);
+                if(parentIdMap!=null && !parentIdMap.isEmpty()){
+                    List<Long> newParentIds = parentIds.stream().map(id->parentIdMap.get(id)).collect(Collectors.toList());
+                    metaData.put("parentIds",newParentIds);
+                }
             }
             dataPoint.setMetaData(metaData);
         }
@@ -818,8 +825,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             dynamicKpiContext.setDynamicKpi(String.valueOf(kpiId));
             List<Long> parentId = dynamicKpiContext.getParentId();
             Map<Long,Long> parentIdMap = PackageBeanUtil.getNewRecordIds("resource",parentId);
-            List<Long> newParentId = parentId.stream().map(id->parentIdMap.get(id)).collect(Collectors.toList());
-            dynamicKpiContext.setParentId(newParentId);
+            if(parentIdMap!=null && !parentIdMap.isEmpty()){
+                List<Long> newParentId = parentId.stream().map(id->parentIdMap.get(id)).collect(Collectors.toList());
+                dynamicKpiContext.setParentId(newParentId);
+            }
             dataPoint.setDynamicKpi(dynamicKpiContext);
         }
         if(dataPoint.getBuildingId()>0){
@@ -848,8 +857,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             List<String> filterValuesString = Arrays.asList(filterContext.getFilterValue().split(","));
             List<Long> filterValue = filterValuesString.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
             Map<Long,Long> filterMap = PackageBeanUtil.getNewRecordIds("resource",filterValue);
-            List<Long> newFilterValues = filterValue.stream().map(id->filterMap.get(id)).collect(Collectors.toList());
-            filterContext.setFilterValue(StringUtils.join(newFilterValues));
+            if(filterMap!=null && !filterMap.isEmpty()){
+                List<Long> newFilterValues = filterValue.stream().map(id->filterMap.get(id)).collect(Collectors.toList());
+                filterContext.setFilterValue(StringUtils.join(newFilterValues));
+            }
         }
         return filterContext;
     }
@@ -861,6 +872,7 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             FacilioChain chain = TransactionChainFactoryV3.getReportFieldsChain();
             FacilioContext context = chain.getContext();
             context.put("moduleName", reportModule);
+            context.put(FacilioConstants.ContextNames.IS_SANDBOX,true);
             chain.execute();
             JSONObject reportFields = (JSONObject) context.get("reportFields");
             Map<String,ArrayList> dimensionObj  = (Map<String, ArrayList>) reportFields.get("dimension");
@@ -884,24 +896,32 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 String lookUpModule = (String) selectedIdObj.get("lookUpModuleName");
                 int pickListModule = FacilioModule.ModuleType.PICK_LIST.getValue();
                 List<Long> pickListIds = new ArrayList<>();
-                if(moduleType == pickListModule && lookUpModule.equals("ticketstatus")){
+                if(moduleType == pickListModule && lookUpModule.equals("ticketstatus")) {
                     XMLBuilder dimensionPickList = reportElement.getElement(PackageConstants.ReportsConstants.DIMENSION_PICK_LIST);
-                    String values = PackageBeanUtil.pickListValueBuilder(dimensionPickList);
-                    String[] valueArray = values.split(",");
-                    pickListIds.addAll(Arrays.stream(valueArray).map(id->Long.valueOf(id)).collect(Collectors.toList()));
-                    fieldAsJson.put("selectedIds",pickListIds);
+                    if (dimensionPickList != null) {
+                        String values = PackageBeanUtil.pickListValueBuilder(dimensionPickList);
+                        if(values!=null){
+                            String[] valueArray = values.split(",");
+                            pickListIds.addAll(Arrays.stream(valueArray).map(id->Long.valueOf(id)).collect(Collectors.toList()));
+                            fieldAsJson.put("selectedIds",pickListIds);
+                        }
+                    }
                 }
                 else if(moduleType == pickListModule ){
                     List<String> pickListName = (List<String>) selectedIdObj.get("names");
                     Map<String, String> pickListMap = PackageUtil.getNameVsRecordIdForPicklistModule(lookUpModule);
-                    pickListIds.addAll(pickListName.stream().map(name-> Long.valueOf(pickListMap.get(name))).collect(Collectors.toList()));
+                    if(pickListMap!=null && !pickListMap.isEmpty()){
+                        pickListIds.addAll(pickListName.stream().map(name-> Long.valueOf(pickListMap.get(name))).collect(Collectors.toList()));
+                    }
                     fieldAsJson.put("selectedIds",pickListIds);
                 }
                 else{
                     List<Long> oldPickListIds = (List<Long>) selectedIdObj.get("selectedIds");
                     Map<Long,Long> pickListMap = PackageBeanUtil.getNewRecordIds(lookUpModule,oldPickListIds);
-                    pickListIds = oldPickListIds.stream().map(id->pickListMap.get(id)).collect(Collectors.toList());
-                    fieldAsJson.put("selectedIds",pickListIds);
+                    if(pickListMap!=null && !pickListMap.isEmpty()){
+                        pickListIds = oldPickListIds.stream().map(id->pickListMap.get(id)).collect(Collectors.toList());
+                        fieldAsJson.put("selectedIds",pickListIds);
+                    }
                 }
             }
             dimension.put("dimension",actualDimension);
@@ -1162,11 +1182,13 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                                    Set<String> keys = groupByLabelValue.keySet();
                                    List<Long> oldRecordIds = keys.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
                                    Map<Long,Long> newRecordIds = PackageBeanUtil.getNewRecordIds(lookupName,oldRecordIds);
-                                   for (Long id : oldRecordIds){
-                                       newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
-                                   }
-                                   for(JSONObject child : children){
-                                       child.put("fieldId", newRecordIds.get(child.get("fieldId")));
+                                   if(newRecordIds!=null && !newRecordIds.isEmpty()){
+                                       for (Long id : oldRecordIds){
+                                           newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
+                                       }
+                                       for(JSONObject child : children){
+                                           child.put("fieldId", newRecordIds.get(child.get("fieldId")));
+                                       }
                                    }
                                }
                            }
@@ -1183,17 +1205,19 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                          Set<String> keys = groupByLabelValue.keySet();
                          List<Long> oldRecordIds = keys.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
                          Map<Long,Long> newRecordIds = PackageBeanUtil.getNewRecordIds("site",oldRecordIds);
-                         JSONObject newGroupByLabelValue =  new JSONObject();
-                         for (Long id : oldRecordIds){
-                             newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
+                         if(newRecordIds!=null && !newRecordIds.isEmpty()){
+                             JSONObject newGroupByLabelValue =  new JSONObject();
+                             for (Long id : oldRecordIds){
+                                 newGroupByLabelValue.put(String.valueOf(newRecordIds.get(id)),groupByLabelValue.get(id));
+                             }
+                             List<JSONObject> children = (List<JSONObject>) dataPoint.get("children");
+                             for(JSONObject child : children){
+                                 child.put("fieldId", newRecordIds.get(child.get("fieldId")));
+                             }
+                             groupByLabelObject.put(-1,newGroupByLabelValue);
+                             dataPoint.put("children", children);
+                             dataPoint.put("groupByLabelValues",groupByLabelObject);
                          }
-                         List<JSONObject> children = (List<JSONObject>) dataPoint.get("children");
-                         for(JSONObject child : children){
-                             child.put("fieldId", newRecordIds.get(child.get("fieldId")));
-                         }
-                         groupByLabelObject.put(-1,newGroupByLabelValue);
-                        dataPoint.put("children", children);
-                        dataPoint.put("groupByLabelValues",groupByLabelObject);
                     }
                 }
                 dataPoint.put("groupBy", groupByList);
@@ -1221,34 +1245,40 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 XMLBuilder chosenListElement = userFilterElement.getElement(PackageConstants.ReportsConstants.USER_FILTER_CHOSEN_LIST);
                 if(chosenListElement!=null){
                     String values = PackageBeanUtil.pickListValueBuilder(chosenListElement);
-                    String[] stringArray = values.split(",");
-                    List<String> valueArray =  Arrays.asList(stringArray);;
-                    chooseValue.put("values",valueArray);
-                    userFilter.remove("userFilterChosenValues");
-                    userFilter.put("chooseValue",chooseValue);
+                    if(values!=null){
+                        String[] stringArray = values.split(",");
+                        List<String> valueArray =  Arrays.asList(stringArray);;
+                        chooseValue.put("values",valueArray);
+                        userFilter.remove("userFilterChosenValues");
+                        userFilter.put("chooseValue",chooseValue);
+                    }
                 }
                 XMLBuilder defaultListElement = userFilterElement.getElement(PackageConstants.ReportsConstants.USER_FILTER_DEFAULT_LIST);
                 if(defaultListElement!=null){
                     String values = PackageBeanUtil.pickListValueBuilder(defaultListElement);
-                    String[] valueArray = values.split(",");
-                    userFilter.remove("userFilterDefaultValues");
-                    userFilter.put("defaultValues",valueArray);
+                    if(values!=null){
+                        String[] valueArray = values.split(",");
+                        userFilter.remove("userFilterDefaultValues");
+                        userFilter.put("defaultValues",valueArray);
+                    }
                 }
                 XMLBuilder allValueElement = userFilterElement.getElement(PackageConstants.ReportsConstants.USER_FILTER_ALL_LIST);
                 if(allValueElement!=null){
                     String values = PackageBeanUtil.pickListValueBuilder(allValueElement);
-                    String[] valueArray = values.split(",");
-                    List<String> valuesList = Arrays.asList(valueArray);
-                    Map<String,String> allValues  = (Map<String, String>) userFilter.get("allValues");
-                    List<String> oldIds = new ArrayList<>(allValues.keySet());
-                    List<Map<String, String>> valueMap = new ArrayList<>();
-                    for(int i = 0; i<valuesList.size();i++){
-                        Map<String,String> value = new HashMap<>();
-                        value.put(valuesList.get(i),allValues.get(oldIds.get(i)));
-                        valueMap.add(value);
+                    if(values!=null){
+                        String[] valueArray = values.split(",");
+                        List<String> valuesList = Arrays.asList(valueArray);
+                        Map<String,String> allValues  = (Map<String, String>) userFilter.get("allValues");
+                        List<String> oldIds = new ArrayList<>(allValues.keySet());
+                        List<Map<String, String>> valueMap = new ArrayList<>();
+                        for(int i = 0; i<valuesList.size();i++){
+                            Map<String,String> value = new HashMap<>();
+                            value.put(valuesList.get(i),allValues.get(oldIds.get(i)));
+                            valueMap.add(value);
+                        }
+                        userFilter.put("allValues",valueMap);
+                        userFilter.remove("userFilterAllValues");
                     }
-                    userFilter.put("allValues",valueMap);
-                    userFilter.remove("userFilterAllValues");
                 }
             }
             else if(moduleType == pickListModule){
@@ -1278,27 +1308,33 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
                 if(!chosenValues.isEmpty()){
                     List<Long> chosenValueAsLong = chosenValues.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
                     Map<Long, Long> idMap =  PackageBeanUtil.getNewRecordIds(lookupModuleName,chosenValueAsLong);
-                    List<String> newChosenValueAsString = chosenValueAsLong.stream().map(id->String.valueOf(idMap.get(id))).collect(Collectors.toList());
-                    chooseValue.put("values",newChosenValueAsString);
-                    userFilter.put("chooseValue",chooseValue);
+                    if(idMap!=null && !idMap.isEmpty()){
+                        List<String> newChosenValueAsString = chosenValueAsLong.stream().map(id->String.valueOf(idMap.get(id))).collect(Collectors.toList());
+                        chooseValue.put("values",newChosenValueAsString);
+                        userFilter.put("chooseValue",chooseValue);
+                    }
                 }
                 if(!defaultValues.isEmpty()){
                     List<Long> defaultValueAsString = defaultValues.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
                     Map<Long,Long> idMap =  PackageBeanUtil.getNewRecordIds(lookupModuleName,defaultValueAsString);
-                    List<String> newDefaultValueAsString = defaultValueAsString.stream().map(id->String.valueOf(idMap.get(id))).collect(Collectors.toList());
-                    userFilter.put("defaultValues",newDefaultValueAsString);
+                    if(idMap!=null && !idMap.isEmpty()){
+                        List<String> newDefaultValueAsString = defaultValueAsString.stream().map(id->String.valueOf(idMap.get(id))).collect(Collectors.toList());
+                        userFilter.put("defaultValues",newDefaultValueAsString);
+                    }
                 }
                 if(!allValues.isEmpty()){
                     List<String> pickListOld = new ArrayList<>(allValues.keySet());
                     List<Long> pickListString = pickListOld.stream().map(id->Long.valueOf(id)).collect(Collectors.toList());
                     Map<Long,Long> idMap = PackageBeanUtil.getNewRecordIds(lookupModuleName,pickListString);
-                    List<Map<String,String>> valueMap = new ArrayList<>();
-                    for(int i = 0; i<pickListOld.size();i++){
-                        Map<String,String> map = new HashMap<>();
-                        map.put(String.valueOf(idMap.get(pickListOld.get(i))),allValues.get(pickListOld.get(i)));
-                        valueMap.add(map);
+                    if(idMap!=null && !idMap.isEmpty()){
+                        List<Map<String,String>> valueMap = new ArrayList<>();
+                        for(int i = 0; i<pickListOld.size();i++){
+                            Map<String,String> map = new HashMap<>();
+                            map.put(String.valueOf(idMap.get(pickListOld.get(i))),allValues.get(pickListOld.get(i)));
+                            valueMap.add(map);
+                        }
+                        userFilter.put("allValues",valueMap);
                     }
-                    userFilter.put("allValues",valueMap);
                 }
             }
         return userFilter;
@@ -1306,8 +1342,10 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
     public static void replaceFiltersValue(JSONObject filter, List<Long> oldValues,String filterName) throws Exception{
         if(CollectionUtils.isNotEmpty(oldValues)){
             Map<Long,Long> valueMap = PackageBeanUtil.getNewRecordIds("resource",oldValues);
-            List<Long> newBuildingValue = oldValues.stream().map(id->valueMap.get(id)).collect(Collectors.toList());
-            filter.put(filterName,newBuildingValue);
+            if(valueMap!=null && !valueMap.isEmpty()){
+                List<Long> newBuildingValue = oldValues.stream().map(id->valueMap.get(id)).collect(Collectors.toList());
+                filter.put(filterName,newBuildingValue);
+            }
         }
     }
     public static void constructFilterObject(JSONObject common, JSONObject filters,Map<String,String> assetCategoryNameVsId) throws Exception {
@@ -1356,7 +1394,9 @@ public class ReportsPackageBeanImpl implements PackageBean<ReportContext> {
             List<Long> oldId = new ArrayList<>();
             oldId.add(id);
             Map<Long,Long> oldIdVsNewId =  PackageBeanUtil.getNewRecordIds("resource",oldId);
-            resourceId = oldIdVsNewId.get(id) !=null ?oldIdVsNewId.get(id) : -1l ;
+            if(oldIdVsNewId!=null && !oldIdVsNewId.isEmpty()){
+                resourceId = oldIdVsNewId.get(id) !=null ?oldIdVsNewId.get(id) : -1l ;
+            }
         }
         return resourceId;
     }
