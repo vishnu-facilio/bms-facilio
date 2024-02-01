@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.enums.SourceType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.command.FacilioCommand;
@@ -27,6 +28,11 @@ public class ReadingUnitConversionCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
+
+        SourceType readingType = (SourceType) context.get(FacilioConstants.ContextNames.READINGS_SOURCE);
+        if(SourceType.IMPORT.equals(readingType)){
+            return false;
+        }
 
         long startTime = System.currentTimeMillis();
         Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
