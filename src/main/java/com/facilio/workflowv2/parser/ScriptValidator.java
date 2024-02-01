@@ -287,6 +287,7 @@ public class ScriptValidator extends CommonParser<Value> {
         scriptWhiteListedModules.add(FacilioConstants.ContextNames.INVOICE_LINE_ITEMS);
         scriptWhiteListedModules.add("budgetamount");
         scriptWhiteListedModules.add("budgetmonthlyamount");
+        scriptWhiteListedModules.add("safetyPlanHazard");
     }
 
     @Override

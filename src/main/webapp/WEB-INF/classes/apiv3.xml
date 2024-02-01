@@ -2655,6 +2655,18 @@
     </package>
 
     <package name="workOrderLabourV3" namespace="/api/v3/workOrderLabour" extends="v3Api">
+        <action name="actuals/*" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
+                method="actualLabour">
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
+        <action name="plans/*" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
+                method="plannedLabour">
+            <param name="parentModuleName">workorder</param>
+            <param name="moduleName">{1}</param>
+            <param name="permission">GET:READ,READ_TEAM,READ_OWN;POST:CREATE;PATCH:UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+        </action>
         <action name="actuals" class="com.facilio.bmsconsoleV3.commands.workorder.FetchWorkorderLabourAction"
                 method="actualLabour">
             <param name="parentModuleName">workorder</param>
