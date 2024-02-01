@@ -1,11 +1,13 @@
 package com.facilio.v3.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.context.CurrencyContext;
 import com.facilio.bmsconsole.util.ValidationRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ApprovalStateTransitionRuleContext;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -19,7 +21,10 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Log4j
 public class EvaluateFormValidationRuleCommand extends FacilioCommand {
@@ -33,6 +38,8 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         Long customButtonId = org.apache.commons.collections.CollectionUtils.isNotEmpty(customButtonIds) ? (Long) customButtonIds.get(0) : null;
         Long approvalTransitionId = (Long) context.get(FacilioConstants.ContextNames.APPROVAL_TRANSITION_ID);
 
+        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+
         List<Long> buttonIds = new ArrayList<>();
         List<Long> buttonFormIds = new ArrayList<>();
         List<Long> formIds = new ArrayList<>();
@@ -40,39 +47,33 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         if (stateTransitionId != null && stateTransitionId > 0) {
             buttonIds.add(stateTransitionId);
             StateflowTransitionContext stateTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(stateTransitionId);
-            if (stateTransition.getFormId() > 0 && isCurrentModuleForm(stateTransition.getForm(), moduleName)) {
-                buttonFormIds.add(stateTransition.getFormId());
-            }
+            addFormIds(buttonFormIds, moduleName, recordMap, stateTransition.getFormId());
         }
 
         if (customButtonId != null && customButtonId > 0) {
             buttonIds.add(customButtonId);
             CustomButtonRuleContext customButton = (CustomButtonRuleContext) WorkflowRuleAPI.getWorkflowRule(customButtonId);
-            if (customButton.getFormId() > 0 && isCurrentModuleForm(customButton.getForm(), moduleName)) {
-                buttonFormIds.add(customButton.getFormId());
-            }
+            addFormIds(buttonFormIds, moduleName, recordMap, customButton.getFormId());
         }
 
         if (approvalTransitionId != null && approvalTransitionId > 0) {
             buttonIds.add(approvalTransitionId);
             ApprovalStateTransitionRuleContext approvalTransition = (ApprovalStateTransitionRuleContext) WorkflowRuleAPI.getWorkflowRule(approvalTransitionId);
-            if (approvalTransition.getFormId() > 0 && isCurrentModuleForm(approvalTransition.getForm(), moduleName)) {
-                buttonFormIds.add(approvalTransition.getFormId());
-            }
+            addFormIds(buttonFormIds, moduleName, recordMap, approvalTransition.getFormId());
         }
 
         Class beanClass = (Class) context.get(Constants.BEAN_CLASS);
-        if(beanClass == null) {
+        if (beanClass == null) {
             beanClass = FacilioConstants.ContextNames.getClassFromModule(Constants.getModBean().getModule(moduleName));
         }
-        Map<String, List<ModuleBaseWithCustomFields>> recordMap = (Map<String, List<ModuleBaseWithCustomFields>>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
 
-        if(MapUtils.isEmpty(recordMap)){
+        if (MapUtils.isEmpty(recordMap)) {
             return false;
         }
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
-            if (record.getFormId() > 0) {
-                formIds.add(record.getFormId());
+            long formId = getActionOrFormId(record);
+            if (formId > 0) {
+                formIds.add(formId);
             }
         }
 
@@ -88,22 +89,20 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
 
         if (CollectionUtils.isNotEmpty(buttonIds)) {
             validateRecord(recordMap, buttonFormIds, buttonsFormValidationRule, moduleName, beanClass, currencyMap, baseCurrency);
-        }else{
+        } else {
             validateRecordFormId(recordMap, formVsRuleMap, moduleName, beanClass, currencyMap, baseCurrency);
         }
 
         return false;
     }
 
-    private boolean isCurrentModuleForm(FacilioForm form, String moduleName) {
-
-        if (form == null && form.getModule() == null) {
-            return false;
+    private void addFormIds(List<Long> buttonFormIds, String moduleName, Map<String, List<ModuleBaseWithCustomFields>> recordMap, long transitionFormId) throws Exception {
+        for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
+            long formId = getActionOrFormId(record);
+            if (formId > 0 && transitionFormId > 0 && formId == transitionFormId) {
+                buttonFormIds.add(formId);
+            }
         }
-
-        String formModuleName = form.getModule().getName();
-        return Objects.equals(formModuleName, moduleName);
-
     }
 
     private Map<Long, List<ValidationContext>> getValidationContextMap(List<Long> formIds) throws Exception {
@@ -135,14 +134,14 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         }
 
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
             multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
         }
 
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
             for (long formId : formIds) {
                 if (formId > 0 && formVsRuleMap.containsKey(formId)) {
-                    if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
+                    if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
                         Map<String, Object> props = FieldUtil.getAsProperties(record);
                         CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyMap);
                         record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass);
@@ -155,21 +154,21 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
     }
 
     private void validateRecordFormId(Map<String, List<ModuleBaseWithCustomFields>> recordMap, Map<Long, List<ValidationContext>> formVsRuleMap,
-                                      String moduleName,Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
+                                      String moduleName, Class beanClass, Map<String, CurrencyContext> currencyMap, CurrencyContext baseCurrency) throws Exception {
 
         if (MapUtils.isEmpty(formVsRuleMap)) {
             return;
         }
 
         List<FacilioField> multiCurrencyFields = new ArrayList<>();
-        if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY)) {
             multiCurrencyFields = CurrencyUtil.getMultiCurrencyFields(moduleName);
         }
 
         for (ModuleBaseWithCustomFields record : recordMap.get(moduleName)) {
-            long formId = record.getFormId();
+            long formId = getActionOrFormId(record);
             if (formId > 0 && formVsRuleMap.containsKey(formId)) {
-                if(AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
+                if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.MULTI_CURRENCY) && CollectionUtils.isNotEmpty(multiCurrencyFields)) {
                     Map<String, Object> props = FieldUtil.getAsProperties(record);
                     CurrencyUtil.replaceCurrencyValueWithBaseCurrencyValue(props, multiCurrencyFields, baseCurrency, currencyMap);
                     record = (ModuleBaseWithCustomFields) FieldUtil.getAsBeanFromMap(props, beanClass);
@@ -181,4 +180,11 @@ public class EvaluateFormValidationRuleCommand extends FacilioCommand {
         }
     }
 
+    private long getActionOrFormId(ModuleBaseWithCustomFields record) throws Exception {
+        if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.ENABLE_ACTION_FORM)) {
+            return record.getActionFormId();
+        } else {
+            return record.getFormId();
+        }
+    }
 }

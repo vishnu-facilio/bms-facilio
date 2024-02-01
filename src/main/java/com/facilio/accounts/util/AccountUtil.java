@@ -629,7 +629,7 @@ public class AccountUtil {
 		TRIGGER_MAP(162,getExponentValue(35),LicenseMapping.GROUP3LICENSE),//2^35
 		INVOICE(163,getExponentValue(36),new String[]{ContextNames.INVOICE},LicenseMapping.GROUP3LICENSE), //2^36
 		ENABLE_STORM(164, getExponentValue(37), LicenseMapping.GROUP3LICENSE), //2^37
-
+		ENABLE_ACTION_FORM(165, getExponentValue(38), LicenseMapping.GROUP3LICENSE), //2^38
 		;
 
 		public int featureId;
