@@ -23,11 +23,20 @@ import com.facilio.bmsconsoleV3.commands.workorder.SkipModuleCriteriaForSummaryC
 import com.facilio.bmsconsoleV3.context.*;
 import com.facilio.bmsconsoleV3.context.asset.V3AssetContext;
 import com.facilio.bmsconsoleV3.context.meter.V3MeterContext;
+import com.facilio.command.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.multiImport.annotations.ImportModule;
 import com.facilio.multiImport.command.InsertRDMForMultiImportMeterModuleCommand;
 import com.facilio.multiImport.command.InsertReadingDataMetaForMultiImportCommand;
 import com.facilio.multiImport.config.ImportConfig;
+import com.facilio.v3.context.Constants;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Supplier;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
@@ -125,6 +134,17 @@ public class MultiImportConfigurations {
                 .beforeSaveCommand(new AssetCategoryAdditionInExtendModuleV3ImportCommand(),new SetLocalIdCommandV3())
                 .afterSaveCommand(new InsertReadingDataMetaForMultiImportCommand(),new RemoveAssetExtendedModulesFromRecordMap())
                 .done()
+                .updateHandler()
+                .beforeUpdateCommand(new FacilioCommand() {
+                    @Override
+                    public boolean executeCommand(Context context) throws Exception {
+                        List<FacilioField> patchFields = (List<FacilioField>) context.get(Constants.PATCH_FIELDS);
+                        if(CollectionUtils.isNotEmpty(patchFields)){
+                            patchFields.removeIf(field -> field.getName().equals("category"));
+                        }
+                        return false;
+                    }
+                }).done()
                 .build();
     }
 
