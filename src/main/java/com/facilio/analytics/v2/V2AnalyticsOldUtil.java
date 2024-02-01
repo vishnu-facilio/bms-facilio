@@ -94,7 +94,7 @@ public class V2AnalyticsOldUtil {
         report_context.setDateOperator(report.getTimeFilter().getDateOperatorEnum() != null ? report.getTimeFilter().getDateOperatorEnum() : DateOperators.BETWEEN);
         report_context.setDateValue(new StringBuilder().append(report.getTimeFilter().getStartTime()).append(", ").append(report.getTimeFilter().getEndTime()).toString());
         String baseLinesString = report.getBaseLinesString();
-        V2AnalyticsOldUtil.fetchBaseLines(report, baseLinesString,report_context);
+        report_context.setBaseLines(V2AnalyticsOldUtil.fetchBaseLinesForReport(baseLinesString));
         report_context.setChartState(report.getChartState());
         report_context.setDateOperator(report.getTimeFilter().getDateOperator() > 0 ? report.getTimeFilter().getDateOperator() : DateOperators.BETWEEN.getOperatorId());
 
@@ -113,13 +113,14 @@ public class V2AnalyticsOldUtil {
         return report_context;
     }
 
-    public static void fetchBaseLines (V2ReportContext report, String baseLineString, ReportContext reportContext) throws Exception
+    public static List<ReportBaseLineContext> fetchBaseLinesForReport (String baseLineString) throws Exception
     {
-        if(baseLineString != null)
+        List<ReportBaseLineContext> reportBaseLines = null;
+        if (baseLineString != null)
         {
             JSONParser parser = new JSONParser();
             JSONArray reportBaseLine_arr = (JSONArray) parser.parse(baseLineString);
-            List<ReportBaseLineContext> reportBaseLines = FieldUtil.getAsBeanListFromJsonArray(reportBaseLine_arr, ReportBaseLineContext.class);
+            reportBaseLines = FieldUtil.getAsBeanListFromJsonArray(reportBaseLine_arr, ReportBaseLineContext.class);
             if (reportBaseLines != null && !reportBaseLines.isEmpty()) {
                 List<Long> baseLineIds = new ArrayList<>();
                 for (ReportBaseLineContext baseLine : reportBaseLines) {
@@ -146,11 +147,9 @@ public class V2AnalyticsOldUtil {
                         throw new IllegalArgumentException("Give valid baseline id. " + baseLine.getBaseLineId() + " is invalid");
                     }
                 }
-                reportContext.setBaseLines(reportBaseLines);
-            } else {
-                reportContext.setBaseLines(null);
             }
         }
+        return reportBaseLines;
     }
 
     public static void setXAndDateFields(ReportDataPointContext dataPoint, ReadingAnalysisContext.ReportMode mode, Map<String, FacilioField> fieldMap) throws Exception {
@@ -609,6 +608,17 @@ public class V2AnalyticsOldUtil {
             }
         }
     }
+
+    public static void calculateBaseLineRangeForMeasure(ReportContext report, ReportDataPointContext dataPoint)
+    {
+        if (report.getDateRange() != null && dataPoint.getBaseLine() != null)
+        {
+            DateRange baseLineRange = dataPoint.getBaseLine().getBaseLine().calculateBaseLineRange(report.getDateRange(), dataPoint.getBaseLine().getAdjustTypeEnum());
+            dataPoint.getBaseLine().setBaseLineRange(dataPoint.getBaseLine().getBaseLine().calculateBaseLineRange(report.getDateRange(), dataPoint.getBaseLine().getAdjustTypeEnum()));
+            dataPoint.getBaseLine().setDiff(report.getDateRange().getStartTime() - baseLineRange.getStartTime());
+        }
+    }
+
     public static ReportDataPointContext getSortPoint(List<ReportDataPointContext> dataPoints)
     {
         Iterator<ReportDataPointContext> itr = dataPoints.iterator();

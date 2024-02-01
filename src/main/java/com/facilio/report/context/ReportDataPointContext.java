@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.context.report.ReportDynamicKpiContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
@@ -567,4 +568,9 @@ public class ReportDataPointContext implements  Cloneable{
 	@Setter
 	@Getter
 	public boolean multiMeasureChartType;
+
+	@Getter @Setter
+	private ReportBaseLineContext baseLine;
+	@Getter @Setter
+	private DateRange baseLineRange;
 }

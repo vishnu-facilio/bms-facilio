@@ -14,10 +14,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.ns.context.NameSpaceField;
 import com.facilio.readingkpi.context.ReadingKPIContext;
-import com.facilio.report.context.ReadingAnalysisContext;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.*;
 import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -126,6 +123,13 @@ public class V2CreateOldAnalyticsReportCommand extends FacilioCommand {
                 if(measure.getRelationship_id() != null && measure.getRelationship_id() > 0 && measure.getParent_measure_alias() != null){
                     dataPoint.setRelationship_id(measure.getRelationship_id());
                     dataPoint.setParent_measure_alias(measure.getParent_measure_alias());
+                }
+            }
+            if(measure != null && measure.getBaseLineString() != null)
+            {
+                List<ReportBaseLineContext> measureBaseLines = V2AnalyticsOldUtil.fetchBaseLinesForReport(measure.getBaseLineString());
+                if(measureBaseLines != null && measureBaseLines.size() > 0){
+                    dataPoint.setBaseLine(measureBaseLines.get(0));
                 }
             }
             dataPoint.setMultiMeasureChartType(report.getDimensions().isMultiMeasureChartType());

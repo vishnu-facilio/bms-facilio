@@ -132,7 +132,8 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                     && V2AnalyticsOldUtil.isSameTable(rdp, dataPoint)
                     && (!rdp.isRightInclusive() == !dataPoint.isRightInclusive())
                     && Objects.equals(rdp.getV2Criteria() , dataPoint.getV2Criteria())
-                    && Objects.equals(rdp.getDynamicKpi() , dataPoint.getDynamicKpi()))
+                    && Objects.equals(rdp.getDynamicKpi() , dataPoint.getDynamicKpi())
+                    && Objects.equals(rdp.getBaseLine() , dataPoint.getBaseLine()))
 
             {
                 ReportDataPointContext.OrderByFunction rdpFunc = rdp.getOrderByFuncEnum() == null ? ReportDataPointContext.OrderByFunction.NONE : rdp.getOrderByFuncEnum();
@@ -193,7 +194,16 @@ public class V2FetchAnalyticsReportDataCommand extends FacilioCommand
                 noMatch = true;
             }
         }
-        if (report.getBaseLines() != null && !report.getBaseLines().isEmpty())
+        /**
+         *  below code added for supporting the baseline for each measure
+         */
+        if(dp.getBaseLine() != null )
+        {
+            V2AnalyticsOldUtil.calculateBaseLineRangeForMeasure(report, dp);
+            props.put(dp.getBaseLine().getBaseLine().getName(), noMatch ? Collections.EMPTY_LIST : fetchAnalyitcsReportData(report, dp, selectBuilder, dp.getBaseLine(), xAggrField, xValues, baseLineAddedModules, aggregated_table_name));
+            data.addBaseLine(dp.getBaseLine().getBaseLine().getName(), dp.getBaseLine());
+        }
+        else if (report.getBaseLines() != null && !report.getBaseLines().isEmpty())
         {
             for (ReportBaseLineContext reportBaseLine : report.getBaseLines())
             {
