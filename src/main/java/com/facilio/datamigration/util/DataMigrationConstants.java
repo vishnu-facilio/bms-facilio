@@ -12,7 +12,7 @@ import java.util.List;
 public class DataMigrationConstants {
     public static final long MAX_THREAD_TIME = 840000;
     public static final long MAX_RECORDS_PER_FILE = 500000;
-    public static final long MAX_RECORDS_PER_ITERATION = 50000;
+    public static final long MAX_RECORDS_PER_ITERATION = 5000;
     public static final String DATA_PACKAGE = "Data_Package";
 
     public static String getDataPackageFolderName(long orgId) {

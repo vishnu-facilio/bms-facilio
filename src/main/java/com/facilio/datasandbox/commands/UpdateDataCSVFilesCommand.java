@@ -116,9 +116,9 @@ public class UpdateDataCSVFilesCommand extends FacilioCommand {
                         // module data csv creation
                         if (isModuleMigrated || propsForCsv.size() == DataMigrationConstants.MAX_RECORDS_PER_ITERATION) {
                             SandboxDataMigrationUtil.addDataPropsToCSVFile(moduleNameVsCsvFileContext, module, new ArrayList<>(allFields), propsForCsv,
-                                    fileFieldNamesWithId, true, fetchedRecords, toBeFetchRecords, numberLookUps);
+                                    fileFieldNamesWithId, true, fetchedRecords, toBeFetchRecords, numberLookUps, context);
+                            lastCountInCSVFile = SandboxDataMigrationUtil.getMigratedRecordCount(moduleNameVsCsvFileContext.get(moduleName));
                             propsForCsv = new ArrayList<>();
-                            lastCountInCSVFile = offset;
                         }
                     }
                 } while (!isModuleMigrated);

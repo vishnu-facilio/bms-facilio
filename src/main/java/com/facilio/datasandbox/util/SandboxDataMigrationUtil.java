@@ -28,6 +28,7 @@ import com.facilio.v3.context.Constants;
 import com.facilio.xml.builder.XMLBuilder;
 import com.opencsv.CSVReader;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.csv.CSVFormat;
@@ -111,21 +112,36 @@ public class SandboxDataMigrationUtil {
         DataMigrationConstants.getDataMigrationBean(dataMigrationObj.getOrgId()).updateDataMigrationContext(dataMigrationObj);
     }
 
+    public static int getMigratedRecordCount(Stack<ModuleCSVFileContext> moduleCSVFileContexts) {
+        int migratedCount = 0;
+        if (CollectionUtils.isNotEmpty(moduleCSVFileContexts)) {
+            migratedCount = moduleCSVFileContexts.stream().mapToInt(ModuleCSVFileContext::getRecordCount).sum();
+        }
+        return migratedCount;
+    }
+
     public static String addDataPropsToCSVFile(Map<String, Stack<ModuleCSVFileContext>> moduleNameVsCsvFileName, FacilioModule module, List<FacilioField> allFields, List<Map<String, Object>> propsForCsv,
-                                             List<String> fileFieldNamesWithId, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
-                                             Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookUps) throws Exception {
+                                               List<String> fileFieldNamesWithId, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
+                                               Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookUps, Context context) throws Exception {
+
+        if (CollectionUtils.isEmpty(allFields) || CollectionUtils.isEmpty(propsForCsv)) {
+            return null;
+        }
 
         ModuleCSVFileContext fileContextForModule = DataPackageFileUtil.getFileContextForModule(module.getName(), moduleNameVsCsvFileName);
         String fileName = fileContextForModule.getCsvFileName();
         String moduleName = module.getName();
+        int migratedCount;
 
         // module data csv creation
         LOGGER.info("####Data Migration - CSV Creation started for ModuleName - " + moduleName);
 
         if (fileContextForModule.getRecordCount() == 0) {
             // create a new file
-            File moduleCsvFile = exportDataAsCSVFile(module, allFields, propsForCsv, fileName, fileFieldNamesWithId,
-                    getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
+            File moduleCsvFile = DataPackageFileUtil.createTempFileForModule(fileName);
+
+            migratedCount = exportDataAsCSVFile(module, allFields, propsForCsv, moduleCsvFile.getPath(), fileFieldNamesWithId,
+                    getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps, context);
             DataPackageFileUtil.addModuleCSVFile(fileName, moduleCsvFile);
             LOGGER.info("####Data Migration - New CSV File created for ModuleName - " + moduleName);
         } else {
@@ -133,12 +149,12 @@ public class SandboxDataMigrationUtil {
             String sourceFileURL = getCSVFileURL(fileName);
             File tempCsvFile = DataPackageFileUtil.addFileToTempFolder(sourceFileURL, fileName);
 
-            updateDataInCSVFile(tempCsvFile, module, allFields, propsForCsv, fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
+            migratedCount = updateDataInCSVFile(tempCsvFile, module, allFields, propsForCsv, fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps, context);
             DataPackageFileUtil.addModuleCSVFile(fileName, tempCsvFile);
             LOGGER.info("####Data Migration - Old CSV File updated for ModuleName - " + moduleName);
         }
 
-        int recordsSize = fileContextForModule.getRecordCount() + propsForCsv.size();
+        int recordsSize = fileContextForModule.getRecordCount() + migratedCount;
         fileContextForModule.setRecordCount(recordsSize);
 
         LOGGER.info("####Data Migration - CSV Creation completed for ModuleName - " + moduleName);
@@ -255,16 +271,9 @@ public class SandboxDataMigrationUtil {
         }
     }
 
-    public static File exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList, String fileName,
+    public static int exportDataAsCSVFile(FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList, String filePath,
                                            List<String> fileFieldNames, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
-                                           Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups) throws Exception {
-
-        if (org.apache.commons.collections4.CollectionUtils.isEmpty(fields) || org.apache.commons.collections4.CollectionUtils.isEmpty(propsList)) {
-            return null;
-        }
-
-        File csvFile = DataPackageFileUtil.createTempFileForModule(fileName);
-        String filePath = csvFile.getPath();
+                                           Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups, Context context) throws Exception {
 
         // add system fields
         SandboxModuleConfigUtil.addSystemFieldsOnPackageCreation(module, fields);
@@ -284,19 +293,13 @@ public class SandboxDataMigrationUtil {
             writer.append('\n');
 
             // add record data
-            addRecordData(writer, fields, propsList, fileFieldNames, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookups);
+            return addRecordData(writer, fields, propsList, fileFieldNames, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookups, context);
         }
-
-        return csvFile;
     }
 
-    public static void updateDataInCSVFile(File moduleCsvFile, FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList,
+    public static int updateDataInCSVFile(File moduleCsvFile, FacilioModule module, List<FacilioField> fields, List<Map<String, Object>> propsList,
                                            List<String> fileFieldNames, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
-                                           Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups) throws Exception {
-
-        if (org.apache.commons.collections.CollectionUtils.isEmpty(fields) || org.apache.commons.collections.CollectionUtils.isEmpty(propsList)) {
-            return;
-        }
+                                           Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookups, Context context) throws Exception {
 
         // add system fields
         SandboxModuleConfigUtil.addSystemFieldsOnPackageCreation(module, fields);
@@ -308,16 +311,21 @@ public class SandboxDataMigrationUtil {
 
         try (FileWriter writer = new FileWriter(filePath, true)) {
             // add record data
-            addRecordData(writer, fields, propsList, fileFieldNames, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookups);
+            return addRecordData(writer, fields, propsList, fileFieldNames, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookups, context);
         }
     }
 
-    public static void addRecordData(FileWriter writer, List<FacilioField> fields, List<Map<String, Object>> propsList, List<String> fileFieldNames,
+    public static int addRecordData(FileWriter writer, List<FacilioField> fields, List<Map<String, Object>> propsList, List<String> fileFieldNames,
                                      boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords,
-                                     Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails) throws Exception {
+                                     Map<String, List<Long>> toBeFetchRecords, Map<String, Map<String, Object>> numberLookupDetails, Context context) throws Exception {
+
+        int migratedCount = 0;
+        long transactionStartTime = DataMigrationConstants.getTransactionStartTime(context);
+        long transactionTimeOut = (long) context.get(DataMigrationConstants.TRANSACTION_TIME_OUT);
 
         ModuleBean modBean = Constants.getModBean();
         for (Map<String, Object> record : propsList) {
+            migratedCount++;
             StringBuilder str = new StringBuilder();
             for (FacilioField field : fields) {
                 String fieldName = field.getName();
@@ -357,9 +365,15 @@ public class SandboxDataMigrationUtil {
             }
             writer.append(StringUtils.stripEnd(str.toString(), ","));
             writer.append('\n');
+
+            if (DataMigrationConstants.isTransactionTimeOutReached(transactionStartTime, transactionTimeOut)) {
+                break;
+            }
         }
         writer.flush();
         writer.close();
+
+        return migratedCount;
     }
 
     private static String getDataForField(FacilioField field, Object value, boolean getDependantModuleData, Map<String, List<Long>> fetchedRecords, Map<String, List<Long>> toBeFetchRecords) {

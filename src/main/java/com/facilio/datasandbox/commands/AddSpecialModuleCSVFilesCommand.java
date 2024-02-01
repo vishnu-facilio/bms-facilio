@@ -93,6 +93,7 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
             int lastCountInCSVFile = 0;
             if (moduleName.equals(lastModuleName) && offset < dataMigrationObj.getMigratedCount()) {
                 offset = (int) dataMigrationObj.getMigratedCount();
+                lastCountInCSVFile = (int) dataMigrationObj.getMigratedCount();
             } else if (reqOffset > 0) {
                 offset = reqOffset;
             }
@@ -140,17 +141,17 @@ public class AddSpecialModuleCSVFilesCommand extends FacilioCommand {
                         // module data csv creation
                         if (isModuleMigrated || propsForCsv.size() == DataMigrationConstants.MAX_RECORDS_PER_ITERATION) {
                             String fileName = SandboxDataMigrationUtil.addDataPropsToCSVFile(moduleNameVsCsvFileContext, module, new ArrayList<>(allFields), propsForCsv,
-                                    fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps);
+                                    fileFieldNamesWithId, getDependantModuleData, fetchedRecords, toBeFetchRecords, numberLookUps, context);
+                            lastCountInCSVFile = SandboxDataMigrationUtil.getMigratedRecordCount(moduleNameVsCsvFileContext.get(moduleName));
                             propsForCsv = new ArrayList<>();
-                            lastCountInCSVFile = offset;
 
-                            SandboxDataMigrationUtil.updateDataMigrationContextWithModuleName(dataMigrationObj, null, moduleName, fileName, offset);
+                            SandboxDataMigrationUtil.updateDataMigrationContextWithModuleName(dataMigrationObj, null, moduleName, fileName, lastCountInCSVFile);
                         }
                     }
 
                     if (DataMigrationConstants.isTransactionTimeOutReached(DataMigrationConstants.getTransactionStartTime(context), transactionTimeOut)) {
                         SandboxDataMigrationUtil.constructResponse(dataMigrationObj, migrationModuleNameVsDetails, moduleNameVsCsvFileContext);
-                        LOGGER.info("####Data Migration - Fetch - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + offset);
+                        LOGGER.info("####Data Migration - Fetch - Stopped after exceeding transaction timeout with ModuleName - " + moduleName + " Offset - " + lastCountInCSVFile);
                         return true;
                     }
                 } while (!isModuleMigrated);

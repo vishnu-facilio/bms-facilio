@@ -12,7 +12,7 @@ public class ModuleCSVFileContext {
     private String csvFileName;
 
     public boolean isReachedThreshold() {
-        return recordCount == DataMigrationConstants.MAX_RECORDS_PER_FILE;
+        return recordCount >= DataMigrationConstants.MAX_RECORDS_PER_FILE;
     }
 
     public ModuleCSVFileContext(String moduleName, String csvFileName, int order) {
