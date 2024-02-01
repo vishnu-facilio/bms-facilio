@@ -11,8 +11,8 @@ import com.facilio.bmsconsole.commands.LoadViewCommand;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.ViewGroups.ViewGroupType;
-import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.timelineview.context.TimelineScheduledViewContext;
+import com.facilio.bmsconsole.timelineview.context.TimelineViewContext;
 import com.facilio.bmsconsole.view.ColumnFactory;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.FacilioView.ViewType;
@@ -797,7 +797,7 @@ public class ViewAPI {
         }
 
 		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
+
         FacilioField startDateField = moduleBean.getField(view.getStartDateFieldId());
         checkFieldType(startDateField, Arrays.asList(FieldType.DATE,FieldType.DATE_TIME));
 
@@ -921,7 +921,27 @@ public class ViewAPI {
 			}
 
 			deleteViewColumns(viewId);
-			
+
+			Set<Long> fieldIds = new HashSet<>();
+			Set<String> fieldNames = new HashSet<>();
+			List<ViewField> filteredColumns = new ArrayList<>();
+
+			for (ViewField column : columns) {
+				if (column.getFieldId() != -1 && !fieldIds.contains(column.getFieldId())) {
+					fieldIds.add(column.getFieldId());
+					filteredColumns.add(column);
+					if (column.getFieldName() != null) {
+						fieldNames.add(column.getFieldName());
+					}
+				}
+				else if (!fieldIds.contains(column.getFieldId()) && column.getFieldName() != null && !fieldNames.contains(column.getFieldName())) {
+					fieldNames.add(column.getFieldName());
+					filteredColumns.add(column);
+				}
+			}
+
+			columns = filteredColumns;
+
 			List<Map<String, Object>> props = new ArrayList<>();
 			for(ViewField field: columns)
 			{
