@@ -565,8 +565,11 @@ public class LookupSpecialTypeUtil {
             }
             if (CollectionUtils.isNotEmpty(ids)) {
                 if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_READING_RULE)) {
-                    List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getReadingRules((List<Long>) ids);
-                    return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
+                    List<NewReadingRuleContext> newReadingRules = NewReadingRuleAPI.getReadingRules((List<Long>) ids, false);
+					if(CollectionUtils.isNotEmpty(newReadingRules)) {
+						return newReadingRules.stream().collect(Collectors.toMap(NewReadingRuleContext::getId, Function.identity()));
+					}
+					return null;
                 }
                 List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, true);
                 if (CollectionUtils.isNotEmpty(workflowRules)) {

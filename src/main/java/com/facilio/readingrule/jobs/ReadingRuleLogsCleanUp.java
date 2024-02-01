@@ -12,6 +12,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.readingrule.context.ReadingRuleLogsContext;
 import com.facilio.taskengine.job.FacilioJob;
 import com.facilio.taskengine.job.JobContext;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.v3.context.Constants;
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 
 @Log4j
 public class ReadingRuleLogsCleanUp extends FacilioJob {
+
+    public static final long LAST_THREE_MONTHS_IN_MILLIS = 7889400000L;
 
     @Override
     public void execute(JobContext jobContext) throws Exception {
@@ -38,7 +41,7 @@ public class ReadingRuleLogsCleanUp extends FacilioJob {
                 SelectRecordsBuilder<ReadingRuleLogsContext> selectBuilder = new SelectRecordsBuilder<ReadingRuleLogsContext>()
                         .module(readingRuleLogsModule)
                         .select(Collections.singletonList(idField))
-                        .andCondition(CriteriaAPI.getCondition("SYS_CREATED_TIME", "sysCreatedTime", Long.toString(System.currentTimeMillis() - 5259600000L), NumberOperators.LESS_THAN))
+                        .andCondition(CriteriaAPI.getCondition("SYS_CREATED_TIME", "sysCreatedTime", Long.toString(DateTimeUtil.getCurrenTime() - LAST_THREE_MONTHS_IN_MILLIS), NumberOperators.LESS_THAN))
                         .orderBy(idField.getCompleteColumnName())
                         .limit(500);
 
@@ -50,11 +53,9 @@ public class ReadingRuleLogsCleanUp extends FacilioJob {
                             .module(readingRuleLogsModule);
                     int currentDeletedCount = deleteBuilder.batchDeleteById(ids);
                     deletedCount += currentDeletedCount;
-                } else {
-                    LOGGER.info("deleted " + deletedCount + " reading rule logs");
-                    deletedCount = 0;
                 }
             } while (CollectionUtils.isNotEmpty(ids));
+            LOGGER.info("deleted " + deletedCount + " reading rule logs");
             LOGGER.info("Time taken to complete ReadingRuleLogsCleanUp job : " + (System.currentTimeMillis() - startTime));
         }
         catch (Exception ex) {

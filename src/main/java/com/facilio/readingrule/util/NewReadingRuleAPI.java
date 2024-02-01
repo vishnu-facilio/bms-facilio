@@ -178,13 +178,20 @@ public class NewReadingRuleAPI {
     }
 
     public static List<NewReadingRuleContext> getReadingRules(List<Long> recordId) throws Exception {
+        return getReadingRules(recordId, true);
+    }
+
+    public static List<NewReadingRuleContext> getReadingRules(List<Long> recordId, boolean throwException) throws Exception {
         String moduleName = FacilioConstants.ReadingRules.NEW_READING_RULE;
         FacilioContext summary = V3Util.getSummary(moduleName, recordId);
         List<NewReadingRuleContext> readingRules = Constants.getRecordListFromContext(summary, moduleName);
         if (CollectionUtils.isNotEmpty(readingRules)) {
             return readingRules;
         }
-        throw new IllegalArgumentException("No such rules");
+        if(throwException) {
+            throw new IllegalArgumentException("No such rules");
+        }
+        return null;
     }
 
     // only id, fieldId and ns will be set in the context, this is used in storm exec, to form dependency graph
@@ -267,7 +274,7 @@ public class NewReadingRuleAPI {
     public static Map<Long, Map<String, Object>> getReadingRuleNameAndImpactByIds(List<Long> ruleIds) throws Exception {
 
         Map<Long, Map<String, Object>> nameMap = new HashMap<>();
-        List<NewReadingRuleContext> resList = getReadingRules(ruleIds);
+        List<NewReadingRuleContext> resList = getReadingRules(ruleIds, false);
         if (resList != null) {
             for (NewReadingRuleContext props : resList) {
                 Map<String, Object> prop = new HashMap<>();

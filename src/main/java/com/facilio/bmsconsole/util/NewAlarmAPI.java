@@ -1425,7 +1425,7 @@ public class NewAlarmAPI {
 		return acknowledgeAlarmButton;
 	}
 
-	public static SystemButtonRuleContext getCreateWoSystemButton() throws Exception {
+	public static SystemButtonRuleContext getCreateWoSystemButton(String identifier, int positionType) throws Exception {
 		ModuleBean modBean = Constants.getModBean();
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -1433,9 +1433,11 @@ public class NewAlarmAPI {
 		FacilioField severityField = fieldMap.get("severity");
 
 		SystemButtonRuleContext createWorkorderSystemButton = new SystemButtonRuleContext();
-		createWorkorderSystemButton.setIdentifier("alarm_create_workorder");
-		createWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+		createWorkorderSystemButton.setIdentifier(identifier);
+		createWorkorderSystemButton.setPositionType(positionType);
 		createWorkorderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
+		createWorkorderSystemButton.setPermission(AccountConstants.ModulePermission.CREATE_WO.name());
+		createWorkorderSystemButton.setPermissionRequired(true);
 		createWorkorderSystemButton.setName("Create Workorder");
 
 		Criteria createWoCriteria = new Criteria();
@@ -1446,15 +1448,15 @@ public class NewAlarmAPI {
 		return createWorkorderSystemButton;
 	}
 
-	public static SystemButtonRuleContext getViewWoSystemButton() throws Exception {
+	public static SystemButtonRuleContext getViewWoSystemButton(String identifier, int positionType) throws Exception {
 		ModuleBean modBean = Constants.getModBean();
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField lastWoIdField = fieldMap.get("lastWoId");
 
 		SystemButtonRuleContext viewWorkorderSystemButton = new SystemButtonRuleContext();
-		viewWorkorderSystemButton.setIdentifier("alarm_view_workorder");
-		viewWorkorderSystemButton.setPositionType(CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
+		viewWorkorderSystemButton.setIdentifier(identifier);
+		viewWorkorderSystemButton.setPositionType(positionType);
 		viewWorkorderSystemButton.setButtonType(SystemButtonRuleContext.ButtonType.OTHERS.getIndex());
 		viewWorkorderSystemButton.setName("View Workorder");
 

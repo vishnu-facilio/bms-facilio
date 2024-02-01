@@ -28,6 +28,7 @@ import com.facilio.ns.factory.NamespaceModuleAndFieldFactory;
 import com.facilio.readingkpi.ReadingKpiAPI;
 import com.facilio.readingrule.util.NewReadingRuleAPI;
 import com.facilio.storm.InstructionType;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.v3.context.Constants;
 import com.facilio.v3.context.V3Context;
 import com.facilio.v3.util.V3Util;
@@ -568,5 +569,14 @@ public class CommonConnectedUtil {
                 return moduleBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
         }
         return null;
+    }
+
+    public static ScheduleInfo getScheduleForLogsCleanup() {
+        ScheduleInfo schedule = new ScheduleInfo();
+        schedule.addTime("00:00");
+        schedule.setFrequencyType(ScheduleInfo.FrequencyType.QUARTERLY_DAY);
+        schedule.setMonthValue(1);
+        schedule.setValues(Collections.singletonList(1));
+        return schedule;
     }
 }

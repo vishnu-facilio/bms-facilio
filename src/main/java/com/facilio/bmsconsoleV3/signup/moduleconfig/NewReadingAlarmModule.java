@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.SystemButtonApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
+import com.facilio.bmsconsole.workflow.rule.CustomButtonRuleContext;
 import com.facilio.bmsconsole.workflow.rule.SystemButtonRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -248,6 +249,21 @@ public class NewReadingAlarmModule extends BaseModuleConfig {
         addAcknowledgeButton();
         addCreateWorkOrderButton();
         addViewWorkOrderButton();
+        addCreateWorkOrderButtoninList();
+        addViewWorkOrderButtoninList();
+        SystemButtonApi.addListDeleteButton(FacilioConstants.ContextNames.NEW_READING_ALARM);
+    }
+
+    public static void addCreateWorkOrderButtoninList() throws Exception {
+        //BMS Alarm Create Workorder Button in List
+        SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton("alarm_create_workorder_list", CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, createWorkorderSystemButton);
+    }
+
+    public static void addViewWorkOrderButtoninList() throws Exception {
+        //BMS Alarm View Workorder Button in List
+        SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton("alarm_view_workorder_list", CustomButtonRuleContext.PositionType.LIST_ITEM.getIndex());
+        SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, viewWorkorderSystemButton);
     }
 
     public static void addAcknowledgeButton() throws Exception {
@@ -258,13 +274,13 @@ public class NewReadingAlarmModule extends BaseModuleConfig {
 
     public static void addCreateWorkOrderButton() throws Exception {
         //Reading Alarm Create Workorder Button
-        SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton();
+        SystemButtonRuleContext createWorkorderSystemButton = NewAlarmAPI.getCreateWoSystemButton("alarm_create_workorder", CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, createWorkorderSystemButton);
     }
 
     public static void addViewWorkOrderButton() throws Exception {
         //Reading Alarm View Workorder Button
-        SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton();
+        SystemButtonRuleContext viewWorkorderSystemButton = NewAlarmAPI.getViewWoSystemButton("alarm_view_workorder", CustomButtonRuleContext.PositionType.SUMMARY.getIndex());
         SystemButtonApi.addSystemButton(FacilioConstants.ContextNames.NEW_READING_ALARM, viewWorkorderSystemButton);
     }
 }

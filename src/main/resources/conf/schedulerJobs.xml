@@ -303,7 +303,7 @@
 	<job name='ServicePMNightlyScheduler' classname='com.facilio.fsm.jobs.ServicePMNightlyScheduler' transactionTimeout='900000'/>
 
 	<!-- KPI and Rule Logs cleanup jobs -->
-	<job name="ReadingRuleLogsCleanUp" classname="com.facilio.readingrule.jobs.ReadingRuleLogsCleanUp" transactionTimeout="1800000" />
-	<job name="ReadingKpiLogsCleanUp" classname="com.facilio.readingkpi.jobs.ReadingKpiLogsCleanUp" transactionTimeout="1800000" />
+	<job name="ReadingRuleLogsCleanUp" classname="com.facilio.readingrule.jobs.ReadingRuleLogsCleanUp" transactionTimeout="2700000" />
+	<job name="ReadingKpiLogsCleanUp" classname="com.facilio.readingkpi.jobs.ReadingKpiLogsCleanUp" transactionTimeout="2700000" />
 
 </scheduler>

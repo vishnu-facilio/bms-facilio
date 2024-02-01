@@ -85,8 +85,10 @@ public class HandleV3AlarmListLookupCommand extends FacilioCommand {
                 newReadingAlarms.stream().filter(readingAlarm -> readingAlarm.getIsNewReadingRule() && readingAlarm.getRule()!=null).forEach(alarm -> {
                     NewReadingRuleContext rule = (NewReadingRuleContext) alarm.getRule();
                     Map<String, Object> prop = ruleMap.get(rule.getId());
-                    rule.setName((String) prop.get("name"));
-                    rule.setImpact((FaultImpactContext) prop.get("impact"));
+                    if(prop != null) {
+                        rule.setName((String) prop.get("name"));
+                        rule.setImpact((FaultImpactContext) prop.get("impact"));
+                    }
                     alarm.setNewRule(rule);
                 });
             }

@@ -5,12 +5,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsoleV3.signup.SignUpData;
 import com.facilio.chain.FacilioChain;
+import com.facilio.connected.CommonConnectedUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.*;
+import com.facilio.taskengine.ScheduleInfo;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.v3.context.Constants;
 
@@ -27,7 +29,8 @@ public class AddReadingKpiLogsModules extends SignUpData {
     }
 
     private void addJobForCleanup() throws Exception {
-        FacilioTimer.schedulePeriodicJob(AccountUtil.getCurrentOrg().getId(), "ReadingKpiLogsCleanUp", 5260000, 5260000, "facilio");
+        ScheduleInfo schedule = CommonConnectedUtil.getScheduleForLogsCleanup();
+        FacilioTimer.scheduleCalendarJob(AccountUtil.getCurrentOrg().getId(), "ReadingKpiLogsCleanUp", System.currentTimeMillis(), schedule, "facilio");
     }
 
     private void createReadingKpiLogsModule() throws Exception {
