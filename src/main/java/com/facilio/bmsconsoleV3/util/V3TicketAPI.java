@@ -425,6 +425,8 @@ public class V3TicketAPI {
 //        loadTicketTenants(workOrders);
 //        loadTicketVendors(workOrders);
         loadTicketDetails(workOrders);
+        loadParentWorkorder(workOrders);
+
     }
 
 
@@ -542,6 +544,23 @@ public class V3TicketAPI {
             throw e;
         }
 
+    }
+    private static void loadParentWorkorder(Collection<? extends V3TicketContext> workorders) throws Exception {
+        try {
+            if (CollectionUtils.isNotEmpty(workorders)) {
+                for (V3TicketContext workorder : workorders) {
+                    V3WorkOrderContext workOrderContext = (V3WorkOrderContext) workorder;
+                    if (workOrderContext.getParentWO() != null) {
+                        long parentWoId = workOrderContext.getParentWO().getId();
+                        V3WorkOrderContext parentWO = V3RecordAPI.getRecord(FacilioConstants.ContextNames.WORK_ORDER, parentWoId, V3WorkOrderContext.class);
+                        ((V3WorkOrderContext) workorder).setParentWO(parentWO);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("Exception occurred ", e);
+            throw e;
+        }
     }
 
     private static void loadTicketCategory(Collection<? extends V3TicketContext> tickets) throws Exception {
