@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.invoice;
 
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
 public class InvoiceLineItemsContext extends BaseLineItemContext {
 
@@ -21,6 +23,10 @@ public class InvoiceLineItemsContext extends BaseLineItemContext {
     private InvoiceContextV3 invoice;
     private Type type;
 
+    @Getter
+    @Setter
+    private String unitOfMeasureEnum;
+
 
 
     public void setType(Integer type) {
@@ -39,7 +45,7 @@ public class InvoiceLineItemsContext extends BaseLineItemContext {
         return null;
     }
 
-    private enum Type implements FacilioIntEnum {
+    public enum Type implements FacilioIntEnum {
         ITEM_TYPE("Item Type"),
         TOOL_TYPE("Tool Type"),
         SERVICE("Service"),

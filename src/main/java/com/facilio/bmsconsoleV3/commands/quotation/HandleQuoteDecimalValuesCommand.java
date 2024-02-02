@@ -4,8 +4,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ApplicationContext;
 import com.facilio.bmsconsoleV3.context.quotation.NumberFormatContext;
 import com.facilio.bmsconsoleV3.context.quotation.QuotationContext;
+import com.facilio.bmsconsoleV3.context.quotation.QuotationLineItemsContext;
 import com.facilio.bmsconsoleV3.util.QuotationAPI;
 import com.facilio.command.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.v3.context.Constants;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -29,6 +34,9 @@ public class HandleQuoteDecimalValuesCommand extends FacilioCommand {
 
             NumberFormatContext numberFormat = QuotationAPI.fetchNumberFormat();
 
+            FacilioField field = Constants.getModBean().getField("unitOfMeasure", FacilioConstants.ContextNames.QUOTE_LINE_ITEMS);
+            EnumField enumField = (EnumField) field;
+            List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
 
             int numberOfDecimalPoint = 2;
             Boolean canTruncate = false;
@@ -72,6 +80,39 @@ public class HandleQuoteDecimalValuesCommand extends FacilioCommand {
                         }
 
 
+                    }
+
+                    //LineItems Name fill for PDF Template
+                    List<QuotationLineItemsContext> lineItemsContextList = quotation.getLineItems();
+                    for(QuotationLineItemsContext lineItem : lineItemsContextList)
+                    {
+                        if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.LABOUR) && lineItem.getLabour()!= null)
+                        {
+                            lineItem.setDescription(lineItem.getLabour().getName());
+                        }
+                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.SERVICE) && lineItem.getService()!= null)
+                        {
+                            lineItem.setDescription(lineItem.getService().getName());
+                        }
+                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.TOOL_TYPE) && lineItem.getToolType()!= null)
+                        {
+                            lineItem.setDescription(lineItem.getToolType().getName());
+                        }
+                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.ITEM_TYPE) && lineItem.getItemType()!= null)
+                        {
+                            lineItem.setDescription(lineItem.getItemType().getName());
+                        }
+                        //Unit Of Measure Enum Fill
+                        Long unitOfMeasure = lineItem.getUnitOfMeasure();
+                        if (unitOfMeasure == null || unitOfMeasure <= 0) {
+                            continue;
+                        }
+                        EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+
+                        if (value == null) {
+                            continue;
+                        }
+                        lineItem.setUnitOfMeasureEnum(value.getValue());
                     }
                 }
             } else {

@@ -644,6 +644,7 @@ public class ReadOnlyChainFactoryV3 {
         c.addCommand(new HandlePortalInvoiceSettingCommand());
         c.addCommand(new InvoiceFillDetailsCommand());
         c.addCommand(new HandlePortalInvoiceMarkupCommand());
+        c.addCommand(new HandleInvoiceDataFormatting());
         return c;
     }
 

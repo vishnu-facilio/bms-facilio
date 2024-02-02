@@ -1508,7 +1508,7 @@ public class InvoiceModule extends BaseModuleConfig {
         signatureField.setDisplayType(FacilioField.FieldDisplayType.SIGNATURE);
         fields.add(signatureField); //need to verify for type
 
-        FacilioField subTotalField = FieldFactory.getDefaultField("subTotal","Sub Total","SUB_TOTAL",FieldType.NUMBER);
+        FacilioField subTotalField = FieldFactory.getDefaultField("subTotal","Sub Total","SUB_TOTAL",FieldType.DECIMAL);
         fields.add(subTotalField);
 
         FacilioField totalTaxAmountField = FieldFactory.getDefaultField("totalTaxAmount","Total Tax Amount","TOTAL_TAX_AMOUNT",FieldType.DECIMAL);

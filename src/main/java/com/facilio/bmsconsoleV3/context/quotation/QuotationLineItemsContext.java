@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.quotation;
 
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.modules.FacilioIntEnum;
+import lombok.Getter;
+import lombok.Setter;
 
 public class QuotationLineItemsContext extends BaseLineItemContext {
 
@@ -12,6 +14,9 @@ public class QuotationLineItemsContext extends BaseLineItemContext {
 
     private QuotationContext quote;
     private Type type;
+    @Getter
+    @Setter
+    private String unitOfMeasureEnum;
 
     public QuotationContext getQuote() {
         return quote;
@@ -37,7 +42,7 @@ public class QuotationLineItemsContext extends BaseLineItemContext {
         return null;
     }
 
-    private enum Type implements FacilioIntEnum {
+    public enum Type implements FacilioIntEnum {
         ITEM_TYPE("Item Type"),
         TOOL_TYPE("Tool Type"),
         SERVICE("Service"),
