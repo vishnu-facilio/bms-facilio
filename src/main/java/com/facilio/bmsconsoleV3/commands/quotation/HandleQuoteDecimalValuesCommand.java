@@ -84,35 +84,29 @@ public class HandleQuoteDecimalValuesCommand extends FacilioCommand {
 
                     //LineItems Name fill for PDF Template
                     List<QuotationLineItemsContext> lineItemsContextList = quotation.getLineItems();
-                    for(QuotationLineItemsContext lineItem : lineItemsContextList)
-                    {
-                        if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.LABOUR) && lineItem.getLabour()!= null)
-                        {
-                            lineItem.setDescription(lineItem.getLabour().getName());
-                        }
-                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.SERVICE) && lineItem.getService()!= null)
-                        {
-                            lineItem.setDescription(lineItem.getService().getName());
-                        }
-                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.TOOL_TYPE) && lineItem.getToolType()!= null)
-                        {
-                            lineItem.setDescription(lineItem.getToolType().getName());
-                        }
-                        else if(lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.ITEM_TYPE) && lineItem.getItemType()!= null)
-                        {
-                            lineItem.setDescription(lineItem.getItemType().getName());
-                        }
-                        //Unit Of Measure Enum Fill
-                        Long unitOfMeasure = lineItem.getUnitOfMeasure();
-                        if (unitOfMeasure == null || unitOfMeasure <= 0) {
-                            continue;
-                        }
-                        EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+                    if(lineItemsContextList !=null) {
+                        for (QuotationLineItemsContext lineItem : lineItemsContextList) {
+                            if (lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.LABOUR) && lineItem.getLabour() != null) {
+                                lineItem.setDescription(lineItem.getLabour().getName());
+                            } else if (lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.SERVICE) && lineItem.getService() != null) {
+                                lineItem.setDescription(lineItem.getService().getName());
+                            } else if (lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.TOOL_TYPE) && lineItem.getToolType() != null) {
+                                lineItem.setDescription(lineItem.getToolType().getName());
+                            } else if (lineItem.getTypeEnum().equals(QuotationLineItemsContext.Type.ITEM_TYPE) && lineItem.getItemType() != null) {
+                                lineItem.setDescription(lineItem.getItemType().getName());
+                            }
+                            //Unit Of Measure Enum Fill
+                            Long unitOfMeasure = lineItem.getUnitOfMeasure();
+                            if (unitOfMeasure == null || unitOfMeasure <= 0) {
+                                continue;
+                            }
+                            EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
 
-                        if (value == null) {
-                            continue;
+                            if (value == null) {
+                                continue;
+                            }
+                            lineItem.setUnitOfMeasureEnum(value.getValue());
                         }
-                        lineItem.setUnitOfMeasureEnum(value.getValue());
                     }
                 }
             } else {

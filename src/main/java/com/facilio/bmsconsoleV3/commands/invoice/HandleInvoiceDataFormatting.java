@@ -69,35 +69,29 @@ public class HandleInvoiceDataFormatting extends FacilioCommand {
                 }
                 //LineItems Name fill for PDF Template
                 List<InvoiceLineItemsContext> lineItemsContextList = invoice.getLineItems();
-                for(InvoiceLineItemsContext lineItem : lineItemsContextList)
-                {
-                    if(lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.LABOUR) && lineItem.getLabour()!= null)
-                    {
-                        lineItem.setDescription(lineItem.getLabour().getName());
-                    }
-                    else if(lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.SERVICE) && lineItem.getService()!= null)
-                    {
-                        lineItem.setDescription(lineItem.getService().getName());
-                    }
-                    else if(lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.TOOL_TYPE) && lineItem.getToolType()!= null)
-                    {
-                        lineItem.setDescription(lineItem.getToolType().getName());
-                    }
-                    else if(lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.ITEM_TYPE) && lineItem.getItemType()!= null)
-                    {
-                        lineItem.setDescription(lineItem.getItemType().getName());
-                    }
-                    //Unit Of Measure Enum Fill
-                    Long unitOfMeasure = lineItem.getUnitOfMeasure();
-                    if (unitOfMeasure == null || unitOfMeasure <= 0) {
-                        continue;
-                    }
-                    EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+                if(lineItemsContextList != null) {
+                    for (InvoiceLineItemsContext lineItem : lineItemsContextList) {
+                        if (lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.LABOUR) && lineItem.getLabour() != null) {
+                            lineItem.setDescription(lineItem.getLabour().getName());
+                        } else if (lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.SERVICE) && lineItem.getService() != null) {
+                            lineItem.setDescription(lineItem.getService().getName());
+                        } else if (lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.TOOL_TYPE) && lineItem.getToolType() != null) {
+                            lineItem.setDescription(lineItem.getToolType().getName());
+                        } else if (lineItem.getTypeEnum().equals(InvoiceLineItemsContext.Type.ITEM_TYPE) && lineItem.getItemType() != null) {
+                            lineItem.setDescription(lineItem.getItemType().getName());
+                        }
+                        //Unit Of Measure Enum Fill
+                        Long unitOfMeasure = lineItem.getUnitOfMeasure();
+                        if (unitOfMeasure == null || unitOfMeasure <= 0) {
+                            continue;
+                        }
+                        EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
 
-                    if (value == null) {
-                        continue;
+                        if (value == null) {
+                            continue;
+                        }
+                        lineItem.setUnitOfMeasureEnum(value.getValue());
                     }
-                    lineItem.setUnitOfMeasureEnum(value.getValue());
                 }
             }
         } else {
