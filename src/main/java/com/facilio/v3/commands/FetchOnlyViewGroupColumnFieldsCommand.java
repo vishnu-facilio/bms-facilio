@@ -61,10 +61,10 @@ public class FetchOnlyViewGroupColumnFieldsCommand extends FacilioCommand {
                 }
             }
 
-            parentLookupFieldVsChildLookupFieldsMap =  view.getFields().stream().filter(viewField -> viewField.getField()!=null && viewField.getParentField()!=null)
-                        .collect(Collectors.groupingBy(v->(LookupField)v.getParentField(), Collectors.mapping(viewField -> (LookupField)viewField.getField(), Collectors.toList())));
+            parentLookupFieldVsChildLookupFieldsMap =  view.getFields().stream().filter(viewField -> viewField.getField() instanceof LookupField && viewField.getParentField() instanceof LookupField)
+                    .collect(Collectors.groupingBy(v->(LookupField)v.getParentField(), Collectors.mapping(viewField -> (LookupField)viewField.getField(), Collectors.toList())));
 
-           context.put(FacilioConstants.ContextNames.ONE_LEVEL_LOOKUP_FIELD_MAP,parentLookupFieldVsChildLookupFieldsMap);
+            context.put(FacilioConstants.ContextNames.ONE_LEVEL_LOOKUP_FIELD_MAP,parentLookupFieldVsChildLookupFieldsMap);
         }
 
         addExtraSelectableFieldsIfExists(context,selectableFields);
