@@ -26,6 +26,11 @@ public class DashboardExportCommand extends FacilioCommand {
         Map<String,Object> options = new HashMap<>();
 //        options.put("landscape",true);
 //        options.put("format","A3");
+        Long pageHeight = DashboardUtil.getDashboardHeight(linkName,tabId);
+        if(pageHeight != null && pageHeight >0) {
+            options.put("height",pageHeight);
+            options.put("width",800);
+        }
         options.put("printBackground",true);
         PDFOptions pdfOptions = FieldUtil.getAsBeanFromMap(options, PDFOptions.class);
         String pageUrl = "/dashboard/"+ appLink +"/dashboard/pdf/"+linkName;

@@ -4704,7 +4704,8 @@
 	<package name="dashboardCardApiv2" namespace="/api/v2/dashboard/cards"
 		extends="v2Api">
 		<action name="getCardData" class="com.facilio.bmsconsole.actions.CardAction" method="getCardData">
-			<param name="deprecated">true</param>
+			<param name="permission">POST:CREATE,EDIT,VIEW</param>
+			<param name="tabType">Dashboard,New Dashboard</param>
 		</action>
 	</package>
 

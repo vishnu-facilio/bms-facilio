@@ -4732,6 +4732,39 @@ public static void deleteRecords(List<Long> ids,FacilioModule module) throws Exc
 		}
 		return idVsName;
 	}
+	public static Long getDashboardHeight(String linkName ,Long tabId) throws Exception {
+		List<DashboardWidgetContext> widgets = new ArrayList<>();
+		if(tabId != null && tabId > 0) {
+			DashboardTabContext dashboardTabContext = null;
+			FacilioChain chain = TransactionChainFactoryV3.getDashboardDataChain();
+			FacilioContext context = chain.getContext();
+			context.put("tabId", tabId);
+			chain.execute();
+			dashboardTabContext = (DashboardTabContext) context.get("dashboardTabContext");
+			widgets = dashboardTabContext.getDashboardWidgets();
+		} else {
+			DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(linkName,null);
+			widgets = dashboard.getDashboardWidgets();
+		}
+		List<DashboardWidgetContext> widgets_in_section = DashboardUtil.getDashboardWidgetsWithSection(widgets);
+		Long maxHeight = 0l;
+		for(DashboardWidgetContext widget_context : widgets_in_section)
+		{
+			Long sectionHeight = 0l;
+			WidgetSectionContext sectionWidget = (WidgetSectionContext) widget_context;
+			if(sectionWidget.getWidgets_in_section() != null && sectionWidget.getWidgets_in_section().size() > 0 ){
+				for(DashboardWidgetContext child_widget : sectionWidget.getWidgets_in_section()){
+					JSONObject metaJson = child_widget.getMetaJSON();
+					Long widgetHeight = (Long) metaJson.get("layoutHeight") + (Long) metaJson.get("yPosition");
+					sectionHeight = widgetHeight > sectionHeight ? widgetHeight : sectionHeight;
+				}
+				maxHeight += sectionHeight;
+			}else {
+				maxHeight += 40;
+			}
+		}
+		return (maxHeight * 4) + 150l + (widgets_in_section.size() * 40);
+	}
 }
 class dashboardFolderSortByOrder implements Comparator<DashboardFolderContext> 
 { 
