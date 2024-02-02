@@ -1275,7 +1275,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		field.setStatus(field.isChangeExistingIds() ? AutoNumberField.AutoNumberFieldStatus.INITIATED : AutoNumberField.AutoNumberFieldStatus.NOT_INITIATED);
 		Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
 		fieldProps.putIfAbsent(FacilioConstants.FormContextNames.ID_STARTS_FROM,0);
-		fieldProps.put(FacilioConstants.FormContextNames.LAST_AUTO_NUMBER_ID,0);
+		fieldProps.putIfAbsent(FacilioConstants.FormContextNames.LAST_AUTO_NUMBER_ID,0);
 
 		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 				.table(autoNumberFieldsModule.getTableName())
