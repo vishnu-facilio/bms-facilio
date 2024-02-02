@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.commands.purchaserequest;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -56,6 +58,7 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
 									(LookupField) fieldsAsMap.get("toolType"), (LookupField) fieldsAsMap.get("service"), (LookupField) fieldsAsMap.get("tax")));
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
+					setLineItemName(list);
         			purchaseRequestContext.setLineItems(list);
 					Map<String, Object> currencyInfo = CurrencyUtil.getCurrencyInfo();
 					for(V3PurchaseRequestLineItemContext lineItem : list){
@@ -68,5 +71,34 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         }
         
 		return false;
+	}
+
+	private void setLineItemName(List<V3PurchaseRequestLineItemContext> lineItems) {
+		if(CollectionUtils.isEmpty(lineItems)){
+			return;
+		}
+		for (V3PurchaseRequestLineItemContext lineItem: lineItems) {
+			if(lineItem.getInventoryTypeEnum() == null){
+				continue;
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.ITEM){
+				if(lineItem.getItemType() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getItemType().getName());
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.TOOL){
+				if(lineItem.getToolType() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getToolType().getName());
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.SERVICE){
+				if(lineItem.getService() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getService().getName());
+			}
+		}
 	}
 }

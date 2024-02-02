@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.NoteAction;
 import com.facilio.bmsconsole.commands.FetchCommentAttachmentsCommand;
 import com.facilio.bmsconsole.commands.FetchCommentMentionsCommand;
 import com.facilio.bmsconsole.commands.FetchCommentSharingCommand;
@@ -460,4 +461,12 @@ public class NotesAPI {
 	}
 
 
+	public static List<NoteContext> getAllNotes(String notesModuleName, Long recordId, String parentModuleName) throws Exception {
+		NoteAction noteAction = new NoteAction();
+		noteAction.setModule(notesModuleName);
+		noteAction.setParentId(recordId);
+		noteAction.setParentModuleName(parentModuleName);
+		noteAction.getNotesList();
+		return noteAction.getNotes();
+	}
 }

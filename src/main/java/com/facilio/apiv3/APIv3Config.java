@@ -3062,7 +3062,7 @@ public class APIv3Config {
 
     @Module("receivable")
     public static Supplier<V3Config> getReceivable() {
-        return () -> new V3Config(V3ReceivableContext.class, null)
+        return () -> new V3Config(V3ReceivableContext.class, new ModuleCustomFieldCount10())
                 .create()
                 .beforeSave(new SetLocalIdCommandV3())
                 .update()

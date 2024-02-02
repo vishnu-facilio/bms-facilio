@@ -2,6 +2,8 @@ package com.facilio.bmsconsoleV3.context.purchaserequest;
 
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
+import lombok.Getter;
+import lombok.Setter;
 
 public class V3PurchaseRequestLineItemContext extends BaseLineItemContext {
 	
@@ -9,6 +11,8 @@ public class V3PurchaseRequestLineItemContext extends BaseLineItemContext {
 
 	private V3PurchaseRequestContext purchaseRequest;
 	private InventoryType inventoryType;
+	@Getter @Setter
+	private String name;
 
 	public V3PurchaseRequestContext getPurchaseRequest() {
 		return purchaseRequest;
