@@ -141,6 +141,7 @@ publicTables: #Tables without orgId. Error will be thrown if org is not present 
   - Remote_Screens
   - Outgoing_Mail_Mapper
   - Outgoing_Mail_Responses
+  - App_Domain_Users
 
 commonTables: #Tables for which orgId is optional. -1 will be inserted if no org is thread local
   - FacilioFile

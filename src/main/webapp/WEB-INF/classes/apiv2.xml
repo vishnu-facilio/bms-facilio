@@ -9347,13 +9347,13 @@
 			<param name="deprecated">true</param>
 		</action>
 		<action name="createAPIClient" class="com.facilio.bmsconsole.actions.Oauth2Action" method="createAPIClient">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="listApiClients" class="com.facilio.bmsconsole.actions.Oauth2Action" method="listApiClients">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 		<action name="deleteClient" class="com.facilio.bmsconsole.actions.Oauth2Action" method="deleteClient">
-			<param name="deprecated">true</param>
+			<param name="skipPermission">true</param>
 		</action>
 	</package>
 
