@@ -782,6 +782,7 @@ import com.facilio.remotemonitoring.context.*;
 import com.facilio.remotemonitoring.signup.*;
 import com.facilio.telemetry.command.AddTelemetryCriteriaNameSpaceCommand;
 import com.facilio.telemetry.command.FetchNamespaceForTelemetryCriteriaCommand;
+import com.facilio.telemetry.command.UpdateNameSpaceParentIdCommand;
 import com.facilio.telemetry.context.TelemetryCriteriaContext;
 import com.facilio.telemetry.signup.AddTelemetryCriteriaModule;
 import com.facilio.util.FacilioUtil;
@@ -5307,6 +5308,7 @@ public class APIv3Config {
         return () -> new V3Config(TelemetryCriteriaContext.class,null)
                 .create()
                 .beforeSave(new AddTelemetryCriteriaNameSpaceCommand())
+                .afterSave(new UpdateNameSpaceParentIdCommand())
                 .update()
                 .beforeSave(new AddTelemetryCriteriaNameSpaceCommand())
                 .delete()

@@ -11,6 +11,7 @@ import com.facilio.fsm.context.ServicePMTemplateContext;
 import com.facilio.fw.cache.FacilioCache;
 import com.facilio.fw.cache.LRUCache;
 import com.facilio.modules.FacilioModule;
+import com.facilio.ns.context.NSType;
 import com.facilio.ns.context.NameSpaceContext;
 import com.facilio.remotemonitoring.context.FlaggedEventRuleContext;
 import com.facilio.scriptengine.context.ErrorListener;
@@ -44,6 +45,8 @@ public class AddTelemetryCriteriaNameSpaceCommand extends FacilioCommand {
                         Constants.getNsBean().updateNamespace(nameSpaceContext);
                         nsId = telemetryCriteria.getNamespace().getId();
                     } else {
+                        nameSpaceContext.setParentRuleId(0L);
+                        nameSpaceContext.setType(NSType.NAMED_CRITERIA.getIndex());
                         nsId = Constants.getNsBean().addNamespace(nameSpaceContext, null);
                         Constants.getNsBean().addNamespaceFields(nsId,telemetryCriteria.getNamespace().getFields());
                     }
