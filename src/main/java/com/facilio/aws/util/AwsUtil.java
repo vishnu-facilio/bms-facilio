@@ -411,7 +411,7 @@ public class AwsUtil extends BaseAwsUtil{
 					.withEmailAddress(email);
 
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-					.withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).build();
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 
 			VerifyEmailIdentityResult result = client.verifyEmailIdentity(verifyEmailAddressResult);
 
@@ -434,7 +434,7 @@ public class AwsUtil extends BaseAwsUtil{
 					.withIdentities(emails);
 
 			AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
-					.withRegion(getRegion()).withCredentials(getAWSCredentialsProvider()).build();
+					.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 
 			GetIdentityVerificationAttributesResult result = client.getIdentityVerificationAttributes(getIdentityVerificationAttributesRequest);
 
