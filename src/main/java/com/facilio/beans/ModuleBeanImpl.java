@@ -1219,7 +1219,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	private void addAutoNumberField(AutoNumberField field) throws Exception {
 
-		validateAutoNumberField(field);
+		AutoNumberFieldUtil.validateAutoNumberRecords(field,false);
 		addAutoNumberFieldExtendedProps(field);
 		if(field.isChangeExistingIds()){
 			addOrUpdateAutoNumberFieldRecordsJob(field);
@@ -1247,7 +1247,7 @@ public class ModuleBeanImpl implements ModuleBean {
 
 	private void updateAutoNumberField(AutoNumberField field) throws Exception {
 
-		validateAutoNumberField(field);
+		AutoNumberFieldUtil.validateAutoNumberRecords(field,true);
 
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getAutoNumberFieldFields())
@@ -1303,16 +1303,6 @@ public class ModuleBeanImpl implements ModuleBean {
 					.setOrgId(orgId)
 					.setContent(FieldUtil.getAsJSON(field)));
 		}
-
-	}
-	private void validateAutoNumberField(AutoNumberField field) throws Exception {
-
-		String prefix = field.getPrefix();
-		String suffix = field.getSuffix();
-		int idStartsFrom = field.getIdStartsFrom();
-
-		FacilioUtil.throwIllegalArgumentException(StringUtils.length(prefix) > 25 || StringUtils.length(suffix) > 25, "Prefix or Suffix character limit of 25 exceeds");
-		FacilioUtil.throwIllegalArgumentException(idStartsFrom < 0, "Id starts from cannot be empty");
 
 	}
 
