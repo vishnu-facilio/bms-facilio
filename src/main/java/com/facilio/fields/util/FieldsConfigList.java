@@ -44,16 +44,16 @@ public class FieldsConfigList {
 
     public static final List<String> ASSET_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
             "name","category","sysCreatedBy","sysCreatedTime", "department","id",
-            "decommission","manufacturer",
+            "decommission","manufacturer","supplier","serialNumber","model",
             "sysModifiedTime", "sysModifiedBy", "purchasedDate","rotatingItemType",
-            "siteId","space","storeRoom",
-            "type","unitPrice","decommissionedBy","moduleState"
+            "siteId","space","storeRoom","warrantyExpiryDate","retireDate","bin",
+            "type","unitPrice","decommissionedBy","moduleState","currentLocation","downTimeStatus"
     );
     public static final List<String> ASSET_FILTER_FIELDS_EXCLUDE = Arrays.asList( // ADVANCED_FILTER_FIELDS
             "name","category","sysCreatedBy","sysCreatedTime", "department","id",
             "decommission","manufacturer",
             "sysModifiedTime", "sysModifiedBy", "purchasedDate",
-            "siteId",
+            "siteId","bin",
             "type","unitPrice","decommissionedBy","moduleState"
     );
     public static final List<String> SITE_FIELDS_INCLUDE = Arrays.asList( //SORT, ADVANCED_FILTER_FIELDS
@@ -155,15 +155,15 @@ public class FieldsConfigList {
     public static final List<String> ASSET_VIEW_FIELDS = Arrays.asList(
             "name","category","department","manufacturer","moduleState",
             "purchasedDate","rotatingItemType","storeRoom",
-            "type","unitPrice","decommissionedBy","decommission",
-            "sysCreatedBy","sysCreatedTime","sysModifiedTime", "sysModifiedBy",
-            "siteId","space"
+            "type","unitPrice","decommissionedBy","decommission","currentLocation","downTimeStatus",
+            "sysCreatedBy","sysCreatedTime","sysModifiedTime", "sysModifiedBy","bin",
+            "siteId","space","warrantyExpiryDate","serialNumber","retireDate","model","currentPrice","currentLocation"
     );
 
     public static final List<String> ASSET_SUMMARY_FIELDS_INCLUDE = Arrays.asList( //Summary fields
-            "name", "description","category","type","department","storeRoom",
-            "manufacturer","unitPrice","site","rotatingItemType",
-            "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy"
+            "name", "description","category","type","department","storeRoom","unitPrice","supplier","serialNumber","bin",
+            "manufacturer","unitPrice","site","rotatingItemType","space","warrantyExpiryDate","retireDate","model","currentLocation",
+            "sysCreatedBy","sysCreatedTime","sysModifiedBy","sysModifiedTime","decommissionedBy","purchasedDate","currentLocation","downTimeStatus"
     );
 
     public static final List<String> ASSET_RELATIONSHIP_SUMMARY_FIELDS_INCLUDE = Arrays.asList( // Relationship Summary fields

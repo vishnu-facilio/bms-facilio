@@ -9,6 +9,7 @@ import com.facilio.bmsconsoleV3.commands.asset.multi_import.AssetCategoryAdditio
 import com.facilio.bmsconsoleV3.commands.building.multi_import.CreateBuildingAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.floor.multi_import.CreateFloorAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.meter.multi_import.MeterUtilityTypeAdditioninExtendedModuleV3ImportCommand;
+import com.facilio.bmsconsoleV3.commands.site.UpdateQRValueCommandV3;
 import com.facilio.bmsconsoleV3.commands.site.multi_import.CreateSiteAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.space.multi_import.CreateSpaceAfterSaveImport;
 import com.facilio.bmsconsoleV3.commands.tenant.multi_import.AddTenantUserImportCommand;
@@ -66,7 +67,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateSiteAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
+                .afterSaveCommand(new UpdateQRValueCommandV3(),new CreateSiteAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -81,7 +82,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateBuildingAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
+                .afterSaveCommand(new UpdateQRValueCommandV3(),new CreateBuildingAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -96,7 +97,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateFloorAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
+                .afterSaveCommand(new UpdateQRValueCommandV3(),new CreateFloorAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
@@ -118,7 +119,7 @@ public class MultiImportConfigurations {
                 })
                 .done()
                 .createHandler()
-                .afterSaveCommand(new CreateSpaceAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
+                .afterSaveCommand(new UpdateQRValueCommandV3(),new CreateSpaceAfterSaveImport(),new InsertReadingDataMetaForMultiImportCommand())
                 .done()
                 .build();
     }
