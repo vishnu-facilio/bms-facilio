@@ -21,7 +21,8 @@ public class DashboardExportCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         String linkName = (String) context.get(FacilioConstants.ContextNames.LINK_NAME);
         Long tabId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB_ID);
-        String fileName = "dashboardPdf-" + System.currentTimeMillis();
+        DashboardContext dashboard = DashboardUtil.getDashboard(linkName);
+        String fileName = dashboard.getDashboardName();
         String appLink = AccountUtil.getCurrentApp().getLinkName();
         Map<String,Object> options = new HashMap<>();
 //        options.put("landscape",true);
@@ -29,7 +30,7 @@ public class DashboardExportCommand extends FacilioCommand {
         Long pageHeight = DashboardUtil.getDashboardHeight(linkName,tabId);
         if(pageHeight != null && pageHeight >0) {
             options.put("height",pageHeight);
-            options.put("width",800);
+            options.put("width",1400);
         }
         options.put("printBackground",true);
         PDFOptions pdfOptions = FieldUtil.getAsBeanFromMap(options, PDFOptions.class);
