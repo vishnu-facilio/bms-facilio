@@ -26,3 +26,17 @@ templates:
     html_path: "rfq/template.html"
     css_path: "rfq/template.css"
     settings_path: "rfq/template.json"
+
+  - name: "Default Purchase Request Template"
+    description: "Create professional and polished PR documents with this default template. Customizable for a branded and clear presentation of PR to clients."
+    moduleName: "purchaserequest"
+    html_path: "purchaserequest/template.html"
+    css_path: "purchaserequest/template.css"
+    settings_path: "purchaserequest/template.json"
+
+  - name: "Default Purchase Order Template"
+    description: "Create professional and polished PO documents with this default template. Customizable for a branded and clear presentation of PO to clients."
+    moduleName: "purchaseorder"
+    html_path: "purchaseorder/template.html"
+    css_path: "purchaseorder/template.css"
+    settings_path: "purchaseorder/template.json"

@@ -1,0 +1,431 @@
+[
+  {
+    "type": "page-header",
+    "style": "",
+    "classes": [
+      "pdf-header"
+    ],
+    "attributes": {
+      "id": "ipv8"
+    },
+    "components": [
+      {
+        "type": "my-image",
+        "removable": false,
+        "draggable": false,
+        "droppable": false,
+        "copyable": false,
+        "hoverable": false,
+        "void": true,
+        "style": "",
+        "classes": [
+          "image-qfm"
+        ],
+        "attributes": {
+          "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg",
+          "placeholder-src": "{{org.originalUrl}}",
+          "alt": "Upload Image Here",
+          "data-option": "orgLogo",
+          "onerror": "this.error=null;this.src='https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg';",
+          "id": "i9js"
+        },
+        "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg"
+      },
+      {
+        "type": "text",
+        "selectable": false,
+        "style": "",
+        "classes": [
+          "text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iqxs"
+        },
+        "custom-width": "full"
+      }
+    ],
+    "headerLayoutOption": "image-text-left"
+  },
+  {
+    "type": "page-footer"
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "in5w"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font size=\"3\"></font><font weight=\"600\"><font size=\"3\"></font></font><font weight=\"500\"><font><font size=\"3\"></font></font></font><font weight=\"500\"><font><font><font size=\"3\">{{ org.name }}</font><div></div></font><div></div></font><div></div></font><div><font size=\"1\" color=\"#384a62\">{{ org.city }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.state }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.country }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.phone }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ifb2"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div><font weight=\"500\" size=\"5\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div></font><font weight=\"500\"><font size=\"5\" style=\"\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-family: var(--base-font);\"></span></div></font></font><font weight=\"400\"><font><font size=\"5\" style=\"\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-family: var(--base-font);\"></span></div></font></font></font><font weight=\"500\"><font><font><font size=\"5\" style=\"\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-family: var(--base-font);\">Purchase Order</span></div><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"><font color=\"#607796\">#<span style=\"font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\">{{ purchaseorder.localId }}</span></font></div><div style=\"text-align: right;\"><font color=\"#607796\">PO Date:&nbsp;&nbsp;<span style=\"font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\">{{ purchaseorder.orderedTimeFormatted }}</span></font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "i3zm"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ixsi"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "ibn5"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "isgwf"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "i11wp"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ia3eo"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iadtf"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ibs4c"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font weight=\"500\">To</font>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "i8o7n"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"><font weight=\"500\">Ship To</font></span></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "irmzq"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "iskco"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "io0yv"
+        },
+        "height": "4"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "iz8fg"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<div></div><font weight=\"500\"><div>{{ purchaseorder.vendorFormatted }}</div><div></div></font><div><font color=\"#384a62\">{{ purchaseorder.billToAddressFormatted }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iusyq"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div><font weight=\"500\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div></font><font weight=\"500\"><font style=\"\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-family: var(--base-font);\">{{ purchaseorder.storeRoomFormatted }}</span></div></font></font><div style=\"text-align: right;\"><font color=\"#384a62\">{{ purchaseorder.shipToAddressFormatted }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iz8x4"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "il0xn"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "it7vr"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "izd7c"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "iwwol"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i894f"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "i5h9a"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ii9nw"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font weight=\"500\">Subject</font>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "iboek"
+        },
+        "custom-width": "full"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i9zfi"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "iq0wd"
+    }
+  },
+  {
+    "type": "spacer",
+    "attributes": {
+      "style": "width: 100%;",
+      "id": "i6k19"
+    },
+    "height": "4"
+  },
+  {
+    "type": "text",
+    "content": "<div><font weight=\"500\">{{ purchaseorder.nameFormatted }}</font></div><div><font color=\"#384a62\">{{ purchaseorder.descriptionFormatted }}</font></div>",
+    "style": "",
+    "classes": [
+      "custom-text"
+    ],
+    "attributes": {
+      "contentEditable": true,
+      "placeholder": "Enter text here...",
+      "id": "icxay"
+    },
+    "custom-width": "full"
+  },
+  {
+    "type": "purchase-order-line-items",
+    "badgable": false,
+    "content": "\n<div class='line-item-dummy-data dummy-data-wrapper purchase-order'>\n<table class='line-item-table line-item-table-overide'>\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"unit_price\" class=\"table-field\" style=\"text-align: right !important;\">Unit price ({{ org.currency }})</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"tax\" class=\"table-field\" style=\"text-align: right !important;\">Tax (%)</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: right !important;\">UOM</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount ({{ org.currency }})</th>\n</tr>\n  </thead>\n  <tbody>\n    <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n    \n <tr id='controlledRow1' data-key=\"sub_total\">\n    <td colspan='5' style='padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF; font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: top; word-break: break-word;'>\n        <div class='text-right fc-violet fwBold' style='text-align: right;font-weight: var(--fwt-500);display: flex; justify-content: flex-end;padding-top: 3px;padding-bottom: 3px;'>\n          <div>Sub Total ({{ org.currency }})</div>\n        </div>\n    </td>\n    \n <td colspan='3' style='background: unset;padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF;font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: middle; word-break: break-word;'>\n   <div style='font-weight: bold;'>\n     <div style='background: var(--pale-blue);border-radius: 8px;width: 100%; height: 8px;'></div>\n   </div>\n </td>\n\n </tr>\n <tr id='controlledRow2' data-key=\"discount\">\n    <td colspan='5' style='padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF; font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: top; word-break: break-word;'>\n        <div class='text-right fc-violet fwBold' style='text-align: right;font-weight: var(--fwt-500);display: flex; justify-content: flex-end;padding-top: 3px;padding-bottom: 3px;'>\n          <div>Discount</div>\n        </div>\n    </td>\n    \n <td colspan='3' style='background: unset;padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF;font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: middle; word-break: break-word;'>\n   <div style='font-weight: bold;'>\n     <div style='background: var(--pale-blue);border-radius: 8px;width: 100%; height: 8px;'></div>\n   </div>\n </td>\n\n </tr>\n <tr id='controlledRow9' data-key=\"grand_total\">\n    <td colspan='5' style='background: #F0F6FF;padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF; font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: top; word-break: break-word;'>\n      <div class='text-right fc-violet text-uppercase fwBold' style='text-align: right;font-weight: var(--fwt-500);display: flex; justify-content: flex-end;padding-top: 3px;padding-bottom: 3px;'>\n        <div>Grand total ({{ org.currency }})</div>\n      </div>\n    </td>\n    \n <td colspan='3' style='background: #F0F6FF;padding: 3px 10px; border-right: 1px solid #EDF5FF; border-bottom: 1px solid #EDF5FF;font-size: var(--font-medium); font-weight: normal; letter-spacing: 0.4px; color: var(--base-text-color); border-bottom-width: thin; vertical-align: middle; word-break: break-word;'>\n   <div style='font-weight: bold;'>\n     <div style='background: var(--pale-blue);border-radius: 8px;width: 100%; height: 8px;'></div>\n   </div>\n </td>\n\n </tr>\n\n  </tbody>\n</table>\n</div>\n<div class='line-item-original-data'>\n<table class='line-item-table line-item-table-overide'>\n  <thead>\n   <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"unit_price\" class=\"table-field\" style=\"text-align: right !important;\">Unit price ({{ org.currency }})</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"tax\" class=\"table-field\" style=\"text-align: right !important;\">Tax (%)</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: right !important;\">UOM</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount ({{ org.currency }})</th>\n</tr>\n  </thead>\n  <tbody>\n    <template class=\"hbs\" value=\"{{#each purchaseorder.lineItems}}\"></template>\n      <tr>\n        <td class='table-field-data data-border-left'>\n        {{plusOne @index}}\n        </td>\n        <td class='table-field-data'>\n          <div style='font-weight: var(--fwt-600);'>{{name}}</div>\n          <div>{{description}}</div>\n        </td>\n        <td class='table-field-data-item' style='text-align: right;'>\n          <div>\n            {{unitPrice}}\n          </div>\n        </td>\n        <td class='table-field-data-item' style='text-align: right;'>\n          {{quantity}}\n        </td>\n        <td class='table-field-data-item' style='text-align: center;'>\n          {{taxAmount}}\n        </td>\n        <td class='table-field-data-item' style='text-align: left;'>\n          <div>\n            {{unitOfMeasureEnum}}\n          </div>\n        </td>\n        <td class='table-field-data-item' style='text-align: right;'>\n          <div style='text-align: right;'>\n            {{cost}}\n          </div>\n        </td>\n      </tr>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n    <tr id='controlledRow1' class=\"control-rows\" data-key=\"sub_total\">\n      <td colspan='5' class='table-total controlled-row-data data-border-left' style=\"background: var(--very-light-blue)\">\n        <div class='text-right fc-violet fwBold' style='text-align: right;font-weight: var(--fwt-500);padding: 3px 0;'>Sub Total ({{ org.currency }})</div>\n      </td>\n      <td colspan='3' class=\"controlled-row-data-2\" style='vertical-align: middle;'>\n        <div style='font-weight: var(--fwt-600);padding: 3px 0;' class='text-right'>{{purchaseorder.subTotal}} </div>\n      </td>\n    </tr>\n    <tr id='controlledRow2' class=\"control-rows\" data-key=\"discount\">\n      <td colspan='5' class='table-total controlled-row-data data-border-left'>\n        <div class='text-right fc-violet fwBold' style='text-align: right;font-weight: var(--fwt-500);padding: 3px 0;'>Discount</div>\n      </td>\n      <td colspan='3' class=\"controlled-row-data-2\" style='vertical-align: middle;'>\n        <div style='font-weight: var(--fwt-600);padding: 3px 0;' class='text-right'>{{purchaseorder.discountAmount}}</div>\n      </td>\n    </tr>\n    <tr id='controlledRow9' class=\"control-rows\" data-key=\"grand_total\">\n      <td colspan='5' class='table-total controlled-row-data data-border-left' style=\"background: var(--very-light-blue)\">\n        <div class='text-right fc-violet fwBold' style='text-align: right;font-weight: var(--fwt-500);padding: 3px 0;'>Grand total ({{ org.currency }})</div>\n      </td>\n      <td colspan='3' class=\"controlled-row-data-2\" style='vertical-align: middle;'>\n        <div style='font-weight: var(--fwt-600);padding: 3px 0;' class='text-right'> {{purchaseorder.totalCost}}</div>\n      </td>\n    </tr>\n  </tbody>\n</table>\n</div>\n",
+    "attributes": {
+      "id": "i8kif"
+    }
+  },
+  {
+    "type": "termsAndConditionsPurchaseOrder",
+    "badgable": false,
+    "content": "\n  \n<div\n   class='terms-condition-dummy-data dummy-data-wrapper terms-condition-purchase-order'\n   style='margin-top: 10px;margin-bottom: 10px;'\n   >\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n      Terms & Conditions\n   </div>\n   <div>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 50%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 60%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n</div>\n</div>\n\n  \n<div class='terms-condition-original-data'>\n{{#if (isNotEmpty purchaseorder.termsAssociated )}}\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n     Terms & Conditions\n   </div>\n   {{#each purchaseorder.termsAssociated}}\n     <div style='color: var(--blue-gray); padding-bottom: 10px; word-break: break-word;'>{{terms.longDesc}}</div>\n   {{/each}}\n{{/if}}\n</div>\n\n",
+    "attributes": {
+      "id": "iw6pp"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ipdge"
+    }
+  }
+]

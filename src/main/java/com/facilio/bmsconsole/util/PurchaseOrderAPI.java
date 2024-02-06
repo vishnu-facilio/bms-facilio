@@ -19,11 +19,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LargeTextField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.LookupFieldMeta;
+import com.facilio.modules.fields.*;
 import com.facilio.util.CurrencyUtil;
+import com.facilio.v3.context.Constants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -102,7 +100,65 @@ public class PurchaseOrderAPI {
 			item.setNoOfSerialNumbers(getSerialNumberCount(item.getId()));
 			CurrencyUtil.checkAndFillBaseCurrencyToRecord(item, baseCurrencyInfo);
 		}
+		setLineItemName(list);
+		setEnumValues(list);
 		po.setLineItems(list);
+	}
+	private static void setEnumValues(List<V3PurchaseOrderLineItemContext> list) throws Exception {
+		if(CollectionUtils.isEmpty(list)){
+			return;
+		}
+		FacilioField field = Constants.getModBean().getField("unitOfMeasure", FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS);
+		if(field == null){
+			return;
+		}
+		EnumField enumField = (EnumField) field;
+		List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
+		if(CollectionUtils.isEmpty(enumValues)){
+			return;
+		}
+
+		for (V3PurchaseOrderLineItemContext lineItem : list) {
+			Long unitOfMeasure = lineItem.getUnitOfMeasure();
+			if (unitOfMeasure == null || unitOfMeasure <= 0) {
+				continue;
+			}
+			EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+
+			if (value == null) {
+				continue;
+			}
+			lineItem.setUnitOfMeasureEnum(value.getValue());
+		}
+	}
+
+	private static void setLineItemName(List<V3PurchaseOrderLineItemContext> lineItems) {
+		if(CollectionUtils.isEmpty(lineItems)){
+			return;
+		}
+		for (V3PurchaseOrderLineItemContext lineItem: lineItems) {
+			if(lineItem.getInventoryTypeEnum() == null){
+				continue;
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.ITEM){
+				if(lineItem.getItemType() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getItemType().getName());
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.TOOL){
+				if(lineItem.getToolType() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getToolType().getName());
+			}
+			if(lineItem.getInventoryTypeEnum() == InventoryType.SERVICE){
+				if(lineItem.getService() == null){
+					continue;
+				}
+				lineItem.setName(lineItem.getService().getName());
+			}
+		}
 	}
 
 	public static V3PurchaseOrderContext getPoContext(long poId) throws Exception {

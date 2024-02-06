@@ -1,0 +1,631 @@
+[
+  {
+    "type": "page-header",
+    "style": "",
+    "classes": [
+      "pdf-header"
+    ],
+    "attributes": {
+      "id": "ize1"
+    },
+    "components": [
+      {
+        "type": "my-image",
+        "removable": false,
+        "draggable": false,
+        "droppable": false,
+        "copyable": false,
+        "hoverable": false,
+        "void": true,
+        "style": "",
+        "classes": [
+          "image-qfm"
+        ],
+        "attributes": {
+          "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg",
+          "placeholder-src": "{{org.originalUrl}}",
+          "alt": "Upload Image Here",
+          "data-option": "orgLogo",
+          "onerror": "this.error=null;this.src='https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg';",
+          "id": "ione"
+        },
+        "src": "https://static.facilio.com/setup/v1156/10a53ccbae023b46b9211d3725c2236a.svg"
+      },
+      {
+        "type": "text",
+        "selectable": false,
+        "style": "",
+        "classes": [
+          "text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "id37"
+        },
+        "custom-width": "full"
+      }
+    ],
+    "headerLayoutOption": "image-text-left"
+  },
+  {
+    "type": "page-footer"
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i1w3"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<span style=\"font-size: 16px;\"></span><font weight=\"500\"><span style=\"font-size: 16px;\">{{ org.name }}</span><div><font style=\"\" size=\"2\"></font></div><div></div></font><div><font size=\"1\" color=\"#384a62\">{{ org.city }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.state }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.country }}</font></div><div><font size=\"1\" color=\"#384a62\">{{ org.phone }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ib5o"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); font-family: var(--base-font);\"><font weight=\"500\" style=\"\" size=\"5\">Purchase Request</font></span></div><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); font-family: var(--base-font);\"><font weight=\"500\" style=\"\" size=\"5\"></font></span></div><font weight=\"400\" size=\"2\" color=\"#607796\"><div style=\"text-align: right;\"><span style=\"font-weight: var(--fwt-400); font-family: var(--base-font);\">#{{ purchaserequest.localId }}</span></div><div style=\"text-align: right;\"><span style=\"font-weight: var(--fwt-400); font-family: var(--base-font);\">PR Date: {{ purchaserequest.requestedTimeFormatted }}</span></div></font><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-weight: var(--fwt-400); font-family: var(--base-font);\"><font weight=\"500\" style=\"\" size=\"5\"></font></span></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ivcf"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i2e6"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "igyrq"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i2z7j"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ioz3n"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iuo0c"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ic2l9"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "i516v"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "imt5b"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ikkqb"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "iiaq1"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "io5mf"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "iem1h"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i4gfy"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i15b3"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "i0m1q"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ig1sy"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "isxxt"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i8syx"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "ibk06"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ibpe5"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font size=\"2\"><font weight=\"500\">To</font></font>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "i6x4z"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"><font weight=\"500\">Ship To</font></span></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "i9e41"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "icvs9"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ilyek"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ik91w"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iqjok"
+        },
+        "height": "4"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ig5rc"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font weight=\"500\">{{ purchaserequest.vendorFormatted }}<div></div></font><div><font color=\"#384a62\">{{ purchaserequest.billToAddressFormatted }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "isb3i"
+        },
+        "custom-width": "half"
+      },
+      {
+        "type": "text",
+        "content": "<div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div><font weight=\"500\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-weight: var(--fwt-400); font-family: var(--base-font);\"></span></div></font><font weight=\"500\"><font style=\"\"><div style=\"text-align: right;\"><span style=\"color: var(--base-text-color); font-size: var(--font-medium); font-family: var(--base-font);\">{{ purchaserequest.storeRoomFormatted }}</span></div><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"></div></font><div style=\"text-align: right;\"><font color=\"#384a62\">{{ purchaserequest.shipToAddressFormatted }}</font></div>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ihiis"
+        },
+        "custom-width": "half"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "idc8m"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "icswz"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "iiz0a"
+    },
+    "components": [
+      {
+        "type": "horizontalLine",
+        "badgable": false,
+        "content": "<hr class=\"horizontal-line\" style=\"height:1px;border-width:0;color:gray;background-color: var(--half-white);\"/>",
+        "attributes": {
+          "id": "i6ffz"
+        }
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "i2mtj"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "iocjy"
+        },
+        "height": "8"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "is7ur"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<font weight=\"400\"><font weight=\"500\">Subject</font></font>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "ica98"
+        },
+        "custom-width": "full"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "ij8us"
+    },
+    "components": [
+      {
+        "type": "spacer",
+        "attributes": {
+          "style": "width: 100%;",
+          "id": "icq5y"
+        },
+        "height": "4"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "ij316"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "igk6l"
+    }
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "id": "it9kb"
+    },
+    "components": [
+      {
+        "type": "text",
+        "content": "<div></div><font weight=\"500\"><div>{{ purchaserequest.nameFormatted }}</div><font color=\"#384a62\"></font></font><font color=\"#384a62\">{{ purchaserequest.descriptionFormatted }}</font>",
+        "style": "",
+        "classes": [
+          "custom-text"
+        ],
+        "attributes": {
+          "contentEditable": true,
+          "placeholder": "Enter text here...",
+          "id": "igiqk"
+        },
+        "custom-width": "full"
+      }
+    ]
+  },
+  {
+    "type": "div",
+    "badgable": false,
+    "highlightable": false,
+    "selectable": false,
+    "hoverable": false,
+    "attributes": {
+      "data-gjs-type": "customWrapper",
+      "data-gjs-spacer": true,
+      "id": "istbh"
+    }
+  },
+  {
+    "type": "purchase-request-line-items",
+    "badgable": false,
+    "content": "\n<div class=\"line-item-dummy-data dummy-data-wrapper purchase-request\">\n<table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"unit_price\" class=\"table-field\" style=\"text-align: right !important;\">Unit price ({{ org.currency }})</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"tax\" class=\"table-field\" style=\"text-align: right !important;\">Tax (%)</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: right !important;\">UOM</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount ({{ org.currency }})</th>\n</tr>\n  </thead>\n  <tbody>\n    <tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n<tr><td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n<div class=\"table-field-data-shimmer-2\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td>\n<td class=\"table-field-data\">\n<div class=\"table-field-data-shimmer-1\"></div>\n</td></tr>\n    \n<tr id=\"controlledRow1\" data-key=\"sub_total\">\n  <td colspan=\"5\" class=\"controlled-row-data\">\n    <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper-2 wt-600\">\n        <div>Sub Total ({{ org.currency }})</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div class=\"table-field-data-shimmer-1\"></div>\n  </td>\n\n</tr>\n<tr id=\"controlledRow2\" data-key=\"discount\">\n  <td colspan=\"5\" class=\"controlled-row-data\">\n    <div class=\"text-right fc-violet fwBold controlled-row-data-wrapper-2 wt-600\">\n        <div>Discount</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div class=\"table-field-data-shimmer-1\"></div>\n  </td>\n\n</tr>\n<tr id=\"controlledRow9\" data-key=\"grand_total\">\n  <td colspan=\"5\" class=\"controlled-row-data-2\">\n    <div class=\"text-right fc-violet text-uppercase fwBold controlled-row-data-wrapper-2 wt-600\">\n        <div>Grand total ({{ org.currency }})</div>\n    </div>\n  </td>\n  \n  <td colspan=\"3\" class=\"table-data-field\">\n    <div class=\"table-field-data-shimmer-1\"></div>\n  </td>\n\n</tr>\n\n  </tbody>\n</table>\n</div>\n<div class=\"line-item-original-data\">\n <table class=\"line-item-table line-item-table-overide\">\n  <thead>\n    <tr><th data-key=\"s_no\" class=\"table-field\" style=\"text-align: left !important;\">S.No</th>\n<th data-key=\"item_desc\" class=\"table-field\" style=\"text-align: left !important;\">Item and Description</th>\n<th data-key=\"unit_price\" class=\"table-field\" style=\"text-align: right !important;\">Unit price ({{ org.currency }})</th>\n<th data-key=\"qty\" class=\"table-field\" style=\"text-align: right !important;\">Qty</th>\n<th data-key=\"tax\" class=\"table-field\" style=\"text-align: right !important;\">Tax (%)</th>\n<th data-key=\"uom\" class=\"table-field\" style=\"text-align: right !important;\">UOM</th>\n<th data-key=\"amount\" class=\"table-field\" style=\"text-align: right !important;\">Amount ({{ org.currency }})</th>\n</tr>\n  </thead>\n  <tbody>\n  <template class=\"hbs\" value=\"{{#each purchaserequest.lineItems}}\"></template>\n     <tr>\n      <td class=\"table-field-data data-border-left\">\n        {{plusOne @index}}\n      </td>\n      <td class=\"table-field-data\">\n      <div>{{name}}</div>\n      <div>{{description}}</div>\n      </td>\n      <td class=\"table-field-data-item\">\n        <div>\n          {{unitPrice}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item\">\n        {{quantity}}\n      </td>\n      <td class=\"table-field-data-item\" style=\"text-align: center;\">\n        {{taxAmount}}\n      </td>\n      <td class=\"table-field-data-item\" style=\"text-align: left;\">\n        <div>\n          {{unitOfMeasureEnum}}\n        </div>\n      </td>\n      <td class=\"table-field-data-item\">\n        <div style=\"text-align: right;\">\n          {{cost}}\n        </div>\n      </td>\n    </tr>\n    <template class=\"hbs\" value=\"{{/each}}\"></template>\n    <tr id=\"controlledRow1\" class=\"control-rows\" data-key=\"sub_total\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data data-border-left\" style=\"background: var(--very-light-blue)\">\n        <div class=\"text-right fc-violet fwBold controlled-row-data-3 wt-500\">Sub Total ({{ org.currency }})</div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right total-field\">{{purchaserequest.subTotal}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow2\" class=\"control-rows\" data-key=\"discount\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data data-border-left\">\n        <div class=\"text-right fc-violet fwBold controlled-row-data-3 wt-500\">Discount</div>\n      </td>\n      <td colspan=\"3\" class=\"table-data-field\">\n        <div class=\"text-right total-field\">{{purchaserequest.discountAmount}}</div>\n      </td>\n    </tr>\n    <tr id=\"controlledRow9\" class=\"control-rows\" data-key=\"grand_total\">\n      <td colspan=\"5\" class=\"table-total controlled-row-data-2 data-border-left\" style=\"background: var(--very-light-blue)\">\n       <div class=\"text-right fc-violet fwBold controlled-row-data-3 wt-600\"> Grand total ({{ org.currency }}) </div>\n      </td>\n      <td colspan=\"3\" class=\"controlled-row-data\">\n       <div class=\"text-right total-field\"> {{purchaserequest.totalCost}} </div>\n      </td>\n    </tr>\n  </tbody>\n</table>\n</div>\n",
+    "attributes": {
+      "id": "is3ca"
+    }
+  },
+  {
+    "type": "termsAndConditionsPurchaseRequest",
+    "badgable": false,
+    "content": "\n  \n<div\n   class='terms-condition-dummy-data dummy-data-wrapper terms-condition-purchase-request'\n   style='margin-top: 10px;margin-bottom: 10px;'\n   >\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n      Terms & Conditions\n   </div>\n   <div>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 50%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 60%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n   <div style='margin-top: 10px;'>\n      <div\n         style='width: 100%; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n      <div\n         style='width: 70%;margin-top: 5px; background: var(--pale-blue); border-radius: 8px;height: 5px;'\n         ></div>\n   </div>\n</div>\n</div>\n\n  \n<div class='terms-condition-original-data'>\n{{#if (isNotEmpty purchaserequest.termsAssociated )}}\n   <div style='padding-bottom: 10px;font-size: var(--font-medium);font-weight: var(--fwt-500);color: var(--base-text-color);'>\n     Terms & Conditions\n   </div>\n   {{#each purchaserequest.termsAssociated}}\n     <div style='color: var(--blue-gray); padding-bottom: 10px; word-break: break-word;'>{{terms.longDesc}}</div>\n   {{/each}}\n{{/if}}\n</div>\n\n",
+    "attributes": {
+      "id": "izqwe"
+    }
+  }
+]

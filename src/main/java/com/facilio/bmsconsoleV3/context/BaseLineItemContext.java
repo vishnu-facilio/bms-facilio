@@ -1,5 +1,6 @@
 package com.facilio.bmsconsoleV3.context;
 
+import com.azure.core.annotation.Get;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ItemTypesContext;
 import com.facilio.bmsconsoleV3.context.inventory.V3ToolTypesContext;
@@ -24,6 +25,8 @@ public class BaseLineItemContext extends V3Context {
     private String description;
     private Long unitOfMeasure;
 
+    @Getter @Setter
+    private String unitOfMeasureEnum;
     @Getter @Setter
     private Double markup;
 

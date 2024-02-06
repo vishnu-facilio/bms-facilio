@@ -3,6 +3,8 @@ package com.facilio.bmsconsoleV3.context.purchaseorder;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsoleV3.context.BaseLineItemContext;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestLineItemContext;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
@@ -10,7 +12,8 @@ public class V3PurchaseOrderLineItemContext extends BaseLineItemContext {
 	
 	private static final long serialVersionUID = 1L;
 
-
+	@Getter @Setter
+	String name;
 	private V3PurchaseOrderContext purchaseOrder;
 	private InventoryType inventoryType;
 	private Double quantityReceived;

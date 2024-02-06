@@ -3,7 +3,6 @@ package com.facilio.bmsconsoleV3.commands.purchaserequest;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsoleV3.context.requestforquotation.V3RequestForQuotationLineItemsContext;
 import com.facilio.command.FacilioCommand;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.bmsconsoleV3.context.purchaserequest.V3PurchaseRequestContext;
@@ -16,6 +15,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.CurrencyUtil;
@@ -59,6 +60,7 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         		
         			List<V3PurchaseRequestLineItemContext> list = builder.get();
 					setLineItemName(list);
+					setEnumValues(list);
         			purchaseRequestContext.setLineItems(list);
 					Map<String, Object> currencyInfo = CurrencyUtil.getCurrencyInfo();
 					for(V3PurchaseRequestLineItemContext lineItem : list){
@@ -71,6 +73,34 @@ public class FetchPurchaseRequestDetailsCommandV3 extends FacilioCommand {
         }
         
 		return false;
+	}
+
+	private void setEnumValues(List<V3PurchaseRequestLineItemContext> list) throws Exception {
+		if(CollectionUtils.isEmpty(list)){
+			return;
+		}
+		FacilioField field = Constants.getModBean().getField("unitOfMeasure", FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
+		if(field == null){
+			return;
+		}
+		EnumField enumField = (EnumField) field;
+		List<EnumFieldValue<Integer>> enumValues = enumField.getValues();
+		if(CollectionUtils.isEmpty(enumValues)){
+			return;
+		}
+
+		for (V3PurchaseRequestLineItemContext lineItem : list) {
+			Long unitOfMeasure = lineItem.getUnitOfMeasure();
+			if (unitOfMeasure == null || unitOfMeasure <= 0) {
+				continue;
+			}
+			EnumFieldValue<Integer> value = enumValues.stream().filter(e -> e.getIndex() == unitOfMeasure.intValue()).findFirst().orElse(null);
+
+			if (value == null) {
+				continue;
+			}
+			lineItem.setUnitOfMeasureEnum(value.getValue());
+		}
 	}
 
 	private void setLineItemName(List<V3PurchaseRequestLineItemContext> lineItems) {

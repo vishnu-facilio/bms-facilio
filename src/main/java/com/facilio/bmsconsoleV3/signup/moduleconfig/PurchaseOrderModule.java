@@ -257,7 +257,7 @@ public class PurchaseOrderModule extends BaseModuleConfig{
                 .addTab("summary", "Summary", PageTabContext.TabType.SIMPLE, true, null)
                 .addColumn(PageColumnContext.ColumnWidth.FULL_WIDTH)
                 .addSection("purchaseOrderPdfViewer", null, null)
-                .addWidget("purchaseOrderPdfViewerWidget", "", PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
+                .addWidget("purchaseOrderPdfViewerWidget", "Summary", PageWidget.WidgetType.PDF_VIEWER, "flexiblewebpdfviewer_19", 0, 0, null, null)
                 .widgetDone()
                 .sectionDone()
                 .columnDone()
