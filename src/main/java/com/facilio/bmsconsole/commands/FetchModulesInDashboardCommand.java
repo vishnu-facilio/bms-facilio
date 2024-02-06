@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.context.WidgetCardContext;
+import com.facilio.cards.util.CardLayout;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.command.FacilioCommand;
 import org.apache.commons.chain.Context;
 
@@ -38,13 +41,21 @@ public class FetchModulesInDashboardCommand extends FacilioCommand {
 		 {
 			 
 			 try {
-				 long widgetModuleId=-1;
-				 widgetModuleId=DashboardFilterUtil.getModuleIdFromWidget(widget);
-				 	if(widgetModuleId!=-1)
-				 	{
-					 moduleIds.add(widgetModuleId);
-					 
-				 	}
+				 if(widget.getWidgetType().equals(DashboardWidgetContext.WidgetType.CARD)) {
+					 WidgetCardContext cardContext = (WidgetCardContext) widget;
+					 if(cardContext != null && cardContext.getCardLayout().equals(CardLayout.COMBO_CARD.getName())) {
+						 List<WidgetCardContext> childCards  = CardUtil.getChildCards(cardContext.getId());
+						 for(WidgetCardContext child : childCards) {
+							 child.setType(DashboardWidgetContext.WidgetType.CARD.getName());
+							 getWidgetModuleId(child,moduleIds);
+						 }
+					 } else {
+						 getWidgetModuleId(widget,moduleIds);
+					 }
+				 }
+				 else {
+					 getWidgetModuleId(widget,moduleIds);
+				 }
 			 }
 			 catch(Exception e)
 			 {
@@ -71,6 +82,12 @@ public class FetchModulesInDashboardCommand extends FacilioCommand {
 		return false;
 	
 	}
-	
-
+	private static void getWidgetModuleId(DashboardWidgetContext widget, Set<Long> moduleIds) throws Exception {
+		long widgetModuleId=-1;
+		widgetModuleId=DashboardFilterUtil.getModuleIdFromWidget(widget);
+		if(widgetModuleId!=-1)
+		{
+			moduleIds.add(widgetModuleId);
+		}
+	}
 }

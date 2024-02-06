@@ -247,7 +247,9 @@ public class GetDbTimeLineFilterToWidgetMapping extends FacilioCommand {
 									newDateField=new HashMap<>( TIME_LINE_T_TIME_DATE_FIELD);
 								}
 							}
-							widgetTimeLineFilters.put(childCard.getId(),newDateField);
+							if(newDateField != null) {
+								widgetTimeLineFilters.put(childCard.getId(),newDateField);
+							}
 						}
 					}
 				}
