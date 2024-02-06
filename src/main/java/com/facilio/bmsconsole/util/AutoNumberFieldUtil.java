@@ -239,7 +239,7 @@ public class AutoNumberFieldUtil {
                         String trimmedSuffix = trimmedValue.toString().substring(matcher.end());
 
                         if (StringUtils.isNotEmpty(trimmedPrefix)) {
-                            extededCriteria.addAndCondition(CriteriaAPI.getCondition(field, finalPrefix+trimmedPrefix, StringOperators.ISN_T));
+                            extededCriteria.addAndCondition(CriteriaAPI.getCondition(field, finalPrefix+trimmedPrefix, StringOperators.DOESNT_CONTAIN));
                         }
 
                         if (StringUtils.isNotEmpty(trimmedSuffix)) {
