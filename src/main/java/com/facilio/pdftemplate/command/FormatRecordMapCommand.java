@@ -86,6 +86,10 @@ public class FormatRecordMapCommand extends FacilioCommand {
                 break;
             }
             case MULTI_CURRENCY_FIELD:{
+                if(recordMap.get(fieldName)==null){
+                    fieldValue = null;
+                    break;
+                }
                 CurrencyContext baseCurrency = Constants.getBaseCurrency(context);
                 double currencyValue = (double) recordMap.get(fieldName);
                 double exchangeRate = (double) recordMap.get("exchangeRate");

@@ -21,13 +21,10 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
         Map<String, Object> recordMap = (Map<String, Object>) context.get(FacilioConstants.ContextNames.FORMATTED_RECORD_MAP);
 
         String moduleName = Constants.getModBean().getModule(pdfTemplate.getModuleId()).getName();
-        Organization org = AccountUtil.getCurrentOrg();
-        if(org.getCurrency()==null){
-            org.setCurrency("USD");
-        }
+
         Map<String, Map<String, Object>> placeholders = new HashMap<>();
         placeholders.put(moduleName, recordMap);
-        placeholders.put("org", FieldUtil.getAsProperties(org));
+        placeholders.put("org", FieldUtil.getAsProperties(getOrganizationData()));
         placeholders.put("user", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()));
 
         String renderedContent = HandleBarsHelper.getInstance().compile(pdfTemplate.getHtmlContent(),placeholders);
@@ -36,6 +33,16 @@ public class PreviewPDFTemplateCommand extends FacilioCommand {
         context.put(FacilioConstants.ContextNames.PDF_TEMPLATE_HTML, pdfTemplateWithCSS);
         context.put(FacilioConstants.ContextNames.PDF_TEMPLATE_RAW_HTML, renderedContent);
         return false;
+    }
+    private Organization getOrganizationData(){
+        Organization org = AccountUtil.getCurrentOrg();
+        if(org.getCurrency()==null){
+            org.setCurrency("USD");
+        }
+        if(org.getOriginalUrl() == null){
+            org.setOriginalUrl("https://static.facilio.com/setup/v1284/10a53ccbae023b46b9211d3725c2236a.svg");
+        }
+        return org;
     }
 }
 
