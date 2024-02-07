@@ -1,0 +1,19 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[86669],{
+/***/986669:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return Layout}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/pages/firealarm/Layout.vue?vue&type=template&id=57e56a40
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"height100"},[_c("router-view")],1)},staticRenderFns=[],validation=(__webpack_require__(538077),__webpack_require__(260228),__webpack_require__(670560),__webpack_require__(990260)),Layoutvue_type_script_lang_js={data:function(){return{product:{code:"fa",label:"Fire Alarm System",path:"/app/fa",modules:[{label:this.$t("common.header.faults"),path:{path:"/app/fa/faults"},svgicon:"fire",permission:"alarm:READ"},
+// {
+//   label: this.$t('common.header.alarms'),
+//   path: { path: '/app/fa/faults' },
+//   svgicon: 'fire',
+//   permission: 'alarm:READ',
+// },
+{label:this.$t("common.header.outOfSchedules"),path:{path:"/app/fa/outofschedule"},permission:"alarm:READ",license:"OPERATIONAL_ALARM"},{label:this.$t("common.header.anomalies"),path:{path:"/app/fa/anomalies"},permission:"alarm:READ",license:"ANOMALY"},{label:this.$t("common.header.sensorFault"),path:{path:"/app/fa/sensoralarms"},svgicon:"fire",permission:"alarm:READ",hide_if_license:"NEW_READING_RULE"},{label:this.$t("common.header.bmsAlarms"),path:{path:"/app/fa/bmsalarms"},svgicon:"fire",permission:"alarm:READ"},{label:this.$t("common.header.rules"),path:{path:"/app/fa/rules"},permission:"alarmrules:READ",hide_if_license:"NEW_READING_RULE"},{label:this.$t("common.header.rules"),path:{path:"/app/fa/newrules"},permission:"alarmrules:READ",license:"NEW_READING_RULE"},{label:this.$t("common.header.reports"),path:{path:"/app/fa/reports"},icon:"fa fa-bar-chart-o",permission:"alarm:VIEW_REPORTS"}]}}},mounted:function(){this.initProduct()},watch:{$route:function(from,to){this.initProduct()}},computed:{modules:function(){var self=this,_this$$store$state$cu=this.$store.state.currentProduct,currentProduct=void 0===_this$$store$state$cu?{}:_this$$store$state$cu,_ref=currentProduct||{},modules=_ref.modules;if(!(0,validation/* isEmpty */.xb)(modules)){var accessibleModules=modules.filter((function(m){return"undefined"===typeof m.permission||self.$hasPermission(m.permission)?m:void 0}));return accessibleModules}return[]}},methods:{initProduct:function(){var product=this.product;
+// temp
+"jasonsmith@sutherland.com"===this.$account.user.email?product.modules=product.modules.filter((function(m){return"/app/fa/anomalies"!==m.path.path})):339===this.$org.id&&(product.modules=product.modules.filter((function(m){return"/app/fa/bmsalarms"!==m.path.path}))),this.$store.dispatch("switchProduct",product),"/app/fa"===this.$route.path&&this.$router.push(this.modules[0].path)}}},firealarm_Layoutvue_type_script_lang_js=Layoutvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(firealarm_Layoutvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,Layout=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/86669.js.map

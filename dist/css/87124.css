@@ -1,0 +1,48 @@
+.user-myapp-list .fc-setup-summary .fc-setup-summary-card .el-card__body{padding:0px}
+
+.flex-space-between[data-v-0adb3ea8] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+          align-items: baseline;
+}
+.font12[data-v-0adb3ea8] {
+  font-size: 13px;
+}
+.default-app-containter[data-v-0adb3ea8] {
+  display : -webkit-box;
+  display : -ms-flexbox;
+  display : flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 80px;
+  height: 25px;
+  background-color: rgba(74, 170, 183, 0.1);
+  color: #4aaab7;
+  border-radius: 5px;
+  padding : 4px 8px;
+  font-weight: 500;
+  font-size: 13px;
+}
+.default-apps-icons[data-v-0adb3ea8] {
+  display : -webkit-box;
+  display : -ms-flexbox;
+  display : flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  width: 180px;
+}
+

@@ -1,0 +1,18 @@
+{
+  "create": {
+    "new_alarm_rule": "Nuova regola di allarme ",
+    "alarm_conditions": "Condizioni di allarme ",
+    "root_cause_impacts": "Causa principale e impatto sui costi ",
+    "impact": "Impatto  ",
+    "actions": "Azioni",
+    "new_custom_alarm_rule": "Nuova regola di allarme personalizzata ",
+    "root_cause": "Causa principale  ",
+    "cost_impact": "Impatto sui costi",
+    "prerequisite_condition": "Condizione preliminare",
+    "alarm_condition": "Condizioni di allarme",
+    "alarm_clear_condition": "Annulla condizioni",
+    "report_for_downtime": "Segnala un allarme per inattività",
+    "create_wo_alarm_creation": "Crea un ordine di lavoro alla creazione di un allarme",
+    "control_points": "Punti di controllo"
+  }
+}

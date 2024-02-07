@@ -1,0 +1,23 @@
+{
+  "setup": {
+    "add_new": "Add New",
+    "service_catalogs": "Service Catalogs",
+    "service_categories": "Service Categories",
+    "list_of_sc": "List of all Service Catalogs",
+    "emptytext": "No Service Catalogs available.",
+    "emptytext_category": "No Service Categories available",
+    "emptytext_category_item": "No Service items available",
+    "group": "Service Category",
+    "item": "Service Item",
+    "select_category": "Select Category",
+    "category": "Category",
+    "moduledetails": "Module Details",
+    "module_name": "Module Name",
+    "forms": "Forms",
+    "selectmodules": "Select a module",
+    "selectforms": "Select a form",
+    "configure_now": "Configure Now",
+    "external_url": "External URL",
+    "enter_external_url": "Enter the external url"
+  }
+}

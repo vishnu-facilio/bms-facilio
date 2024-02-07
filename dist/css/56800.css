@@ -1,0 +1,17 @@
+
+.table-filters-section,
+.fc-datatable-header-1 {
+  height: 50px;
+}
+.fc-datatable-header-1 {
+  border-bottom: 1px solid #ebeef5;
+  font-size: 13px;
+  padding: 14px 15px;
+  white-space: nowrap;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  color: #333;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+

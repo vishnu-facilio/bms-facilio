@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 74 69" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Floor" transform="translate(-3.000000, -5.000000)">
+            <g id="Group" transform="translate(4.000000, 6.000000)">
+                <polygon id="Rectangle" fill="#DBDBF3" points="0 14.095183 24.6315789 -1.31695879e-13 24.6315789 52.2959924 0 66.5592416"></polygon>
+                <polygon id="Rectangle-Copy" fill="#BCBCE2" transform="translate(35.387338, 33.279621) scale(-1, 1) translate(-35.387338, -33.279621) " points="24.6315789 14.095183 46.1430971 -1.31695879e-13 46.1430971 52.2959924 24.6315789 66.5592416"></polygon>
+                <polygon id="Path-17" fill="#DBDBF3" points="46.1430971 14.095183 71.976582 1.95156635 71.976582 53.5108871 46.1430971 66.5592416"></polygon>
+                <polygon id="Rectangle-Copy-2" stroke="#7176C4" stroke-linejoin="round" transform="translate(35.387338, 33.279621) scale(-1, 1) translate(-35.387338, -33.279621) " points="24.6315789 14.095183 46.1430971 -1.31695879e-13 46.1430971 52.2959924 24.6315789 66.5592416"></polygon>
+                <polygon id="Rectangle-Copy-3" stroke="#7176C4" stroke-linejoin="round" points="0 14.095183 24.6315789 -1.31695879e-13 24.6315789 52.2959924 0 66.5592416"></polygon>
+                <polygon id="Path-17-Copy" stroke="#7176C4" stroke-linejoin="round" points="46.1430971 14.095183 71.976582 1.95156635 71.976582 53.5108871 46.1430971 66.5592416"></polygon>
+                <path d="M5.47855817,57.7579642 L5.47855817,16.249362 L24.6315789,5.60112918 L46.1430971,19.4990588 L66.9901395,9.42048649 L66.9901395,50.7072407 L46.1430971,61.0029609 L24.6315789,46.9738965 L5.47855817,57.7579642 Z" id="Path-18" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1,2"></path>
+                <line x1="5.47855817" y1="37.0476097" x2="20.0434418" y2="29.0328816" id="Path-19" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="20.0434418" y1="8.34649788" x2="20.0434418" y2="18.548426" id="Path-20" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="20.0434418" y1="39.8047288" x2="20.0434418" y2="49.4504156" id="Path-21" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+                <polyline id="Path-22" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" points="34.1052632 52.7974059 34.1052632 37.0476097 46.1430971 44.6275722 66.9901395 34.255404"></polyline>
+                <polyline id="Path-23" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round" points="50.5477013 17.6434321 50.5477013 34.255404 46.1430971 36.1089859 29.8338937 25.7220825 29.8338937 9.28747171"></polyline>
+                <line x1="59.0598395" y1="30.0730289" x2="66.9901395" y2="25.8800082" id="Path-24" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="50.5477013" y1="42.5416564" x2="50.5477013" y2="58.7375255" id="Path-25" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+                <line x1="20.0434418" y1="25.8800082" x2="20.0434418" y2="31.715952" id="Path-26" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round"></line>
+            </g>
+        </g>
+    </g>
+</svg>

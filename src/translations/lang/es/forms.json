@@ -1,0 +1,53 @@
+{
+  "builder": {
+    "new_section": "Nueva sección",
+    "new_subform": "Subformulario",
+    "new_fields": "Nuevos campos",
+    "notes_des": "El contenido de tus notas se mostrará aquí",
+    "switch_to_richtext": "Cambiar a texto enriquecido",
+    "plain_text_mode": "Modo de texto sin formato",
+    "switch_alert": "Perderá el formato cuando cambie al modo de texto sin formato. ¿Está seguro?",
+    "system_label": "Campos del sistema",
+    "custom_label": "Campos personalizados"
+  },
+  "rules": {
+    "add_new_rule": "Añadir regla de formulario",
+    "add_new_subform_rule": "Añadir regla de subformulario",
+    "forms_empty": "No hay formularios disponibles",
+    "subform_criteria": "Criterios del subformulario",
+    "specify_criteria": "Especifique los criterios para esta REGLA",
+    "specify_subform_criteria": "Especificar criterios para el subformulario seleccionado",
+    "edit_actions": "Editar acciones",
+    "reset": "Restablecer",
+    "configured": "Configurado",
+    "show_hide_fields": "Mostrar campos / Ocultar campos",
+    "specify_show_hide": "Especifique los campos a mostrar / ocultar",
+    "enable_disable_field": "Activar campos / Desactivar campos",
+    "specify_enable_disable": "Especifique los campos que desea activar / desactivar",
+    "show_hide_section": "Mostrar secciones / Ocultar secciones",
+    "specify_show_hide_section": "Especifique las secciones que desea mostrar / ocultar",
+    "set_remove_mandatory": "Fijar / Suprimir Obligatorio",
+    "specify_mandatory": "Especifique los campos que desea establecer/eliminar como obligatorios",
+    "set_value": "Establecer valores",
+    "specify_set_value": "Especifique los campos para Fijar valor",
+    "specify_picklist_filter": "Especifique los campos para establecer el filtro de la lista de selección",
+    "execute_script": "Ejecutar script",
+    "specify_execute_script": "El sistema ejecutará el script para devolver las acciones",
+    "cancel": "CANCELAR",
+    "subform_name": "Nombre del subformulario"
+  },
+  "booking": {
+    "time_slot": "Ranuras disponibles",
+    "external_Attendees_Desc": "¿Quiere invitar a asistentes externos?",
+    "external_Attendees": "Asistentes externos",
+    "external_Attendees_msg": "Importe total de las franjas horarias reservadas:",
+    "no_slot_available": "No hay plazas disponibles",
+    "slotHeading": "Desglose de costes",
+    "total": "Total",
+    "no_available_slot": "No hay plazas disponibles",
+    "no_cost_breakdown": "Sin desglose de costes"
+  },
+  "field_permission": {
+    "update_success": "Permiso de campo actualizado correctamente"
+  }
+}

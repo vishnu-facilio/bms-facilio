@@ -1,0 +1,10 @@
+<svg width="9" height="17" viewBox="0 0 9 17">
+  <g fill="#8CA1AD" fill-rule="evenodd">
+    <circle cx="1.5" cy="1.5" r="1.5"/>
+    <circle cx="1.5" cy="8.5" r="1.5"/>
+    <circle cx="1.5" cy="15.5" r="1.5"/>
+    <circle cx="7.5" cy="1.5" r="1.5"/>
+    <circle cx="7.5" cy="8.5" r="1.5"/>
+    <circle cx="7.5" cy="15.5" r="1.5"/>
+  </g>
+</svg>

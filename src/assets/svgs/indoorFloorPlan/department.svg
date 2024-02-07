@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg  viewBox="0 0 8 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>ic_work</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Employee-List_Tooltip_Employee-Desk-Copy-2" transform="translate(-781.000000, -533.000000)" fill="#000000">
+            <g id="Pop-up" transform="translate(771.000000, 464.000000)">
+                <g id="List">
+                    <g id="Department" transform="translate(10.000000, 65.000000)">
+                        <g id="ic_work" transform="translate(0.000000, 4.000000)">
+                            <path d="M7.2,1.6 L5.6,1.6 L5.6,0.8 C5.6,0.356 5.244,0 4.8,0 L3.2,0 C2.756,0 2.4,0.356 2.4,0.8 L2.4,1.6 L0.8,1.6 C0.356,1.6 0.004,1.956 0.004,2.4 L0,6.8 C0,7.244 0.356,7.6 0.8,7.6 L7.2,7.6 C7.644,7.6 8,7.244 8,6.8 L8,2.4 C8,1.956 7.644,1.6 7.2,1.6 L7.2,1.6 Z M4.8,1.6 L3.2,1.6 L3.2,0.8 L4.8,0.8 L4.8,1.6 L4.8,1.6 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

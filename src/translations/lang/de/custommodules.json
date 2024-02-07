@@ -1,0 +1,13 @@
+{
+  "list": {
+    "custom_modules": "Benutzerdefinierte Module",
+    "connected_apps": "Verbundene Apps",
+    "state_flows": "Zustandsfluss",
+    "fields": "Felder",
+    "enabled": "aktiviert",
+    "disabled": "Deaktiviert",
+    "created_date": "Erstellungsdatum",
+    "created_by": "Erstellt von",
+    "description": "Beschreibung"
+  }
+}

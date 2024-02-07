@@ -1,0 +1,88 @@
+
+.signup-progress-container {
+  fill: #4e36a6;
+  width: 500px;
+  margin: 0 auto;
+  border: 1px solid #eee;
+  padding: 50px;
+  text-align: center;
+  margin-top: 100px;
+}
+.signup-progress-container .small-shadow,
+.signup-progress-container .medium-shadow,
+.signup-progress-container .large-shadow {
+  fill: rgba(0, 0, 0, 0.05);
+}
+.signup-progress-container .small {
+  -webkit-animation: counter-rotation 2.5s infinite linear;
+  animation: counter-rotation 2.5s infinite linear;
+  -webkit-transform-origin: 100.136px 225.345px;
+  transform-origin: 100.136px 225.345px;
+}
+.signup-progress-container .small-shadow {
+  -webkit-animation: counter-rotation 2.5s infinite linear;
+  animation: counter-rotation 2.5s infinite linear;
+  -webkit-transform-origin: 110.136px 235.345px;
+  transform-origin: 110.136px 235.345px;
+}
+.signup-progress-container .medium {
+  -webkit-animation: rotation 3.75s infinite linear;
+  animation: rotation 3.75s infinite linear;
+  -webkit-transform-origin: 254.675px 379.447px;
+  transform-origin: 254.675px 379.447px;
+}
+.signup-progress-container .medium-shadow {
+  -webkit-animation: rotation 3.75s infinite linear;
+  animation: rotation 3.75s infinite linear;
+  -webkit-transform-origin: 264.675px 389.447px;
+  transform-origin: 264.675px 389.447px;
+}
+.signup-progress-container .large {
+  -webkit-animation: counter-rotation 5s infinite linear;
+  animation: counter-rotation 5s infinite linear;
+  -webkit-transform-origin: 461.37px 173.694px;
+  transform-origin: 461.37px 173.694px;
+}
+.signup-progress-container .large-shadow {
+  -webkit-animation: counter-rotation 5s infinite linear;
+  animation: counter-rotation 5s infinite linear;
+  -webkit-transform-origin: 471.37px 183.694px;
+  transform-origin: 471.37px 183.694px;
+}
+@-webkit-keyframes rotation {
+from {
+    -webkit-transform: rotate(0deg);
+}
+to {
+    -webkit-transform: rotate(359deg);
+}
+}
+@keyframes rotation {
+from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+to {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+}
+}
+@-webkit-keyframes counter-rotation {
+from {
+    -webkit-transform: rotate(359deg);
+}
+to {
+    -webkit-transform: rotate(0deg);
+}
+}
+@keyframes counter-rotation {
+from {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+}
+to {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+}
+

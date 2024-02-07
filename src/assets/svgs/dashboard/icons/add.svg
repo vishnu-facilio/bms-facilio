@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Zoom_in_20px" data-name="Zoom in 20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <rect x="8.96" class="add-icon" y="1.25" width="2.08" height="17.5" transform="translate(20 0) rotate(90)"/>
+  <rect x="8.96" class="add-icon" y="1.25" width="2.08" height="17.5" transform="translate(20 20) rotate(180)"/>
+  <rect class="cls-1" x="0" y="0" width="20" height="20" transform="translate(20 0) rotate(90)"/>
+</svg>

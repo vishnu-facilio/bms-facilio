@@ -1,0 +1,18 @@
+{
+  "service": {
+    "service": "Service",
+    "new_service": "NEW SERVICE",
+    "new_tandc": "NEW T&C",
+    "no_services": "No Services Available",
+    "create_service": "Create Service",
+    "edit_service": "Edit Service"
+  },
+  "contracts": {
+    "new_purchase_contract": "NEW PURCHASE CONTRACT",
+    "new_labour_contract": "NEW LABOR CONTRACT",
+    "new_renlease_contract": "NEW LEASE/RENTAL CONTRACT",
+    "new_warranty_contract": "NEW WARRANTY CONTRACT",
+    "notification_preference": "NOTIFICATION PREFERENCE",
+    "no_payment_info": "Payment Info is Not Configured"
+  }
+}

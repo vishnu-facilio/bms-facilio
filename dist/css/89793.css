@@ -1,0 +1,17 @@
+
+.upload-space-photos[data-v-159e524a] {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos[data-v-159e524a] {
+  display: block;
+}
+
+.watchlist-summary .widget-header{padding:10px 30px 0px;font-size:12px;font-weight:700;letter-spacing:1px;color:#385571;text-transform:uppercase;background:#f6f8f9;margin-bottom:15px}.watchlist-summary .header-highlighter{border-bottom:2px solid #ee518f;width:30px;margin-top:10px}

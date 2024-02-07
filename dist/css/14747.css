@@ -1,0 +1,91 @@
+
+.dsm-main-container[data-v-425fd26d] {
+  background-color: #f7f8f9;
+  height: 100vh;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  position: relative;
+}
+.dsm-form-wrapper[data-v-425fd26d] {
+  width: 100%;
+}
+.form-empty-container[data-v-425fd26d] {
+  width: 700px;
+  height: calc(100vh - 100px);
+  margin-top: 60px;
+  background-color: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 0 1px rgba(67, 90, 111, 0.3),
+    0 2px 4px -2px rgba(67, 90, 111, 0.47);
+          box-shadow: 0 0 1px rgba(67, 90, 111, 0.3),
+    0 2px 4px -2px rgba(67, 90, 111, 0.47);
+}
+.dsm-form-container[data-v-425fd26d] {
+  z-index: 20;
+  height: calc(100vh - 10px);
+  overflow-y: scroll;
+  padding: 0px 10px;
+  width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.loading-container[data-v-425fd26d] {
+  width: 700px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+.form-switch[data-v-425fd26d] {
+  width: 600px;
+}
+.form-pattern-container[data-v-425fd26d] {
+  width: 100%;
+  height: 100%;
+  opacity: 0.05;
+  top: 0px;
+  z-index: 10;
+  position: absolute;
+}
+.form-background-pattern[data-v-425fd26d] {
+  width: 100%;
+}
+

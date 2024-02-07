@@ -1,0 +1,23 @@
+{
+  "analytics": {
+    "mode": "Modalità",
+    "Category": "Categoria",
+    "xaxis": "X-Axis",
+    "yaxis": "Y-Axis",
+    "assets": "Asset",
+    "rotate_axis": "Ruota asse",
+    "auto": "Auto",
+    "horizontal": "Orizzontale",
+    "vertical": "Verticale",
+    "slanting": "Inclinazione",
+    "tick_direction": "Direzione di spunta",
+    "ymin": "Y-Min",
+    "ymax": "Y-Max",
+    "xmin": "X-Min",
+    "xmax": "X-Max",
+    "y1axis_label": "Y1 - Etichetta dell'asse",
+    "y2axis_label": "Y2 - Etichetta dell'asse",
+    "ticks_count": "Conteggio delle spunte",
+    "decimals": "Decimali"
+  }
+}

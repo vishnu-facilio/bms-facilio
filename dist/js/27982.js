@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[27982],{
+/***/627982:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return Logout}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/auth/Logout.vue?vue&type=template&id=793f46f6
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div")},staticRenderFns=[],api=__webpack_require__(32284),helpers=__webpack_require__(778390),store=__webpack_require__(572602),vue_router_esm=__webpack_require__(578345),Logoutvue_type_script_lang_js={beforeRouteEnter:function(){api/* API */.bl.get("logout",null,{force:!0}).then((function(){store/* default */.Z.commit("LOGIN_REQUIRED",!0);var _router$currentRoute=vue_router_esm/* default */.ZP.currentRoute,_router$currentRoute2=void 0===_router$currentRoute?{}:_router$currentRoute,_router$currentRoute3=_router$currentRoute2.query,query=void 0===_router$currentRoute3?{}:_router$currentRoute3;helpers/* default */.ZP.logout(query.redirect||null)})).catch((function(error){}))}},auth_Logoutvue_type_script_lang_js=Logoutvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(auth_Logoutvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,Logout=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/27982.js.map

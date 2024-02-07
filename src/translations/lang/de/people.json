@@ -1,0 +1,40 @@
+{
+  "attendance": {
+    "users_list": "Benutzerliste",
+    "resume_work": "Die Arbeit wieder aufnehmen",
+    "check_in_caps": "EINCHECKEN",
+    "check_out_caps": "AUSCHECKEN",
+    "check_in": "Einchecken",
+    "check_out": "Auschecken",
+    "add_notes": "Notizen hinzufügen",
+    "break_start": "UNTERBRECHUNG",
+    "no_attendance": "Keine Anwesenheit verfügbar",
+    "attendance_transaction": "Anwesenheitstransaktion"
+  },
+  "shift": {
+    "shift": "SCHICHT",
+    "name": "Name",
+    "from_time": "Von Zeit",
+    "to_time": "Zur Zeit",
+    "weekend_definition": "Wochenende Definition",
+    "cancel": "Stornieren",
+    "break": "Unterbrechung",
+    "break_type": "Pausentyp",
+    "break_duration": "Pausendauer",
+    "applicable_shifts": "Anwendbare Schicht(en)",
+    "shift_rotation": "SCHICHTWECHSEL",
+    "scheduler_name": "Name des Planers",
+    "scheduler_frequency": "Planerhäufigkeit"
+  },
+  "employee": {
+    "update_success": "Erfolgreich geupdated"
+  },
+  "department": {
+    "new_department": "Neue Abteilung",
+    "no_data_department": "Keine Abteilung verfügbar",
+    "department": "Abteilung",
+    "delete_department": "Abteilung löschen",
+    "delete_confirmation_department": "Möchten Sie diese Abteilung(en) wirklich löschen?",
+    "delete_success_department": "Abteilung(en) erfolgreich gelöscht"
+  }
+}

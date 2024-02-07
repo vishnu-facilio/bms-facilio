@@ -1,0 +1,196 @@
+.pagination-arrow.disable[data-v-7641710c]{color:#50506c;font-weight:bold;opacity:.4;background:none}.mT-5[data-v-7641710c]{margin-top:-5px}.button-hover[data-v-7641710c]{border-radius:5px}.button-hover[data-v-7641710c]:hover{background:rgba(202,212,216,.3)}
+.el-pager li.active,.el-pager li:hover{color:#39b2c2}
+
+.in-no-data {
+  height: 100px;
+  width: 100%;
+  text-align: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.invent-table-dialog tbody tr.tablerow.active1 td:first-child {
+  border-left: 3px solid #39b2c2 !important;
+}
+.fc-inv-container-body {
+  height: 50vh;
+  overflow: auto;
+}
+.invent-table-dialog .fc-setting-table-th setting-th-text {
+  padding: 15px 30px;
+}
+.popup-container-new {
+  width: 100%;
+  padding: 18px 30px 18px;
+  border-bottom: 1px solid #edeeef;
+  position: sticky;
+  background: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.text-align-inventory {
+  text-align: center;
+}
+@-webkit-keyframes slide-down {
+0% {
+    opacity: 1;
+    -webkit-transform: translateY(-100%);
+            transform: translateY(-100%);
+}
+100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+}
+}
+@keyframes slide-down {
+0% {
+    opacity: 1;
+    -webkit-transform: translateY(-100%);
+            transform: translateY(-100%);
+}
+100% {
+    opacity: 1;
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+}
+}
+
+
+.item-description[data-v-bb6707b4] {
+  width: 520px;
+  margin: 4px 0 0;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 1.14;
+  letter-spacing: normal;
+  color: #959595;
+}
+.description-content[data-v-bb6707b4] {
+  white-space: pre-line;
+  overflow: hidden;
+  margin-top: 2px;
+}
+.description-content-viewLess[data-v-bb6707b4] {
+  max-height: 32px;
+  -webkit-transition: max-height 0.3s ease-in;
+  transition: max-height 0.3s ease-in;
+  word-break: break-word;
+}
+.description-content-viewMore[data-v-bb6707b4] {
+  max-height: 500px;
+  -webkit-transition: max-height 0.2s ease-in;
+  transition: max-height 0.2s ease-in;
+  word-break: break-word;
+}
+.popover-description[data-v-bb6707b4] {
+  display: -webkit-box;
+  white-space: pre-line;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  word-break: break-word;
+  letter-spacing: 0.5px;
+  line-height: 1.43;
+  margin-top: 2px;
+}
+a[data-v-bb6707b4] {
+  color: #afb5b4;
+}
+.pagination[data-v-bb6707b4] {
+  position: absolute;
+  right: 10px;
+}
+.popup-container[data-v-bb6707b4] {
+  width: 100%;
+  padding: 10px 30px;
+  border-bottom: 1px solid #edeeef;
+  position: sticky;
+  background: #fff;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.search-text[data-v-bb6707b4] {
+  line-height: 0px !important;
+  font-size: 16px !important;
+}
+
+
+.item-add[data-v-7cf47736] {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.inventory-table thead > tr[data-v-7cf47736] {
+  height: 55px;
+  border-top: 1px solid #eceef1;
+  border-bottom: 1px solid #eceef1;
+}
+.inventory-table th[data-v-7cf47736] {
+  white-space: nowrap;
+}
+.inventory-table.pB20.pT20.tbody.tr:hover .el-input__inner[data-v-7cf47736] {
+  border-color: #d0d9e2 !important;
+}
+.inventory-table tbody td .p5[data-v-7cf47736] {
+  padding: 6px;
+  padding-left: 15px;
+}
+.inventory-table td[data-v-7cf47736] {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.inventory-table table > tbody tr[data-v-7cf47736]:last-child {
+  border-bottom: 1px solid #eceef1 !important;
+}
+.inventory-table-body-border-none table > tbody tr[data-v-7cf47736]:last-child {
+  border-bottom: none !important;
+}
+.inventory-table-body-border-none th[data-v-7cf47736]:last-child {
+  border-right: none !important;
+}
+.workItem-quantity[data-v-7cf47736] {
+  width: 80px;
+  text-align: center;
+  height: 40px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-top: 10px;
+  cursor: no-drop;
+}
+.inv-delet-icon[data-v-7cf47736] {
+  color: #e1573f;
+  font-size: 14px;
+}
+.header-width20[data-v-7cf47736] {
+  width: 20%;
+}
+.header-width15[data-v-7cf47736] {
+  width: 15%;
+}
+.header-width10[data-v-7cf47736] {
+  width: 10%;
+}
+
+.field-loading{height:40px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex:1;flex:1;border-radius:3px}
+.search-input-comp .resource-search .el-input__inner{padding-left:15px !important}.fc-lookup-icon{color:#000}.f-lookup-chooser{position:relative}.f-lookup-chooser:hover .flookup-remove-icon{display:-webkit-box;display:-ms-flexbox;display:flex}.f-lookup-chooser .resource-search .el-input .el-input__prefix{right:5px;left:95%;z-index:10}.f-lookup-chooser .resource-search .el-input .el-input__suffix .el-select__caret.el-icon-arrow-up{display:none}.f-lookup-chooser .resource-search .el-input .el-input__suffix .el-icon-circle-close{padding-left:30px}.f-lookup-chooser .skip-disable .el-input__inner:disabled{cursor:auto !important;background-color:#fff;color:#324056}.f-lookup-chooser-container .icon-sm{height:10px;width:10px}.f-lookup-chooser-container .flookup-remove-icon{display:none}.f-lookup-chooser-container .flookup-remove-icon-alignment{height:100%;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:1px 5px}.f-lookup-chooser-container .icon-class-alignment{height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:1px 5px}.f-lookup-chooser-container .flRight{height:100%}
+.lookup-wrapper .handle-wizard-icon .el-select.resource-search .el-input .el-input__prefix{right:5px;left:95%;z-index:10}.lookup-wrapper .handle-wizard-icon .el-select.resource-search .el-input .el-input__suffix .el-icon-circle-close{position:absolute;margin-left:-1.3cm;z-index:10}

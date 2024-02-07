@@ -1,0 +1,44 @@
+{
+  "tenant": {
+    "work_request": "My Requests",
+    "work_permits": "Work Permits",
+    "visitor_invites": "Visitor Invites",
+    "invite_visitor": "Invite Visitor",
+    "vendor": "Vendor",
+    "add_vendor": "Add Vendor",
+    "reports": "Reports",
+    "lease_information": "Lease Information",
+    "other_contact_information": "Other Contact Information",
+    "overview": "Overview"
+  },
+  "empty": {
+    "no_vendor_available": "No Vendor Available"
+  },
+  "contactdirectory": {
+    "add_contact_directory": "Add Contact Directory"
+  },
+  "announcement": {
+    "new_announcement": "New Announcement"
+  },
+  "admin_document": {
+    "add_document": "Add Document"
+  },
+  "webview": {
+    "hi": "Hi",
+    "scope": "Scope",
+    "properties": "Properties",
+    "services": "Services",
+    "show_more": "Show More",
+    "insurance_pending": "Insurance Pending",
+    "admin_workers": "Admin & Workers Onboarded",
+    "induction_pending": "Induction pending",
+    "worker_license": "Worker License & Certificates Pending",
+    "swms_uploaded": "SWMS Uploaded"
+  },
+  "employee_portal": {
+    "hi": "Hi",
+    "homepage": "HOMEPAGE",
+    "service_catalog_layout": "SERVICE CATALOG LAYOUT",
+    "add": "ADD"
+  }
+}

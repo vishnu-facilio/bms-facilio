@@ -1,0 +1,16 @@
+(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[72873],{
+/***/972873:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return WelcomeScreen}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/devices/VisitorKiosk/WelcomeScreen.vue?vue&type=template&id=2d038b68
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",[_c("div",{staticClass:"fc-kiosk-welScreen"},[_c("div",{staticClass:"fc-kiosk-welScreen-con"},[_c("div",[_c("div",{staticClass:"fc-kiosk-welScreen-f42 fc-animated slideInDown"},[_vm._v(" Welcome to ")]),_c("div",{staticClass:"fc-kiosk-welScreen-f46 fc-animated slideInDown"},[_vm._v(" "+_vm._s(_vm.currentAccount.org.name)+" ")]),_c("div",{staticClass:"pT60"},[_c("div",{staticClass:"fc-kiosk-welScreen-f22 fc-animated slideInLeft"},[_vm._v(" I would like to ")]),_c("div",{staticClass:"fc-kiosk-in-out-con"},[_c("div",{staticClass:"fc-kiosk-in-out-bg fc-animated slideInUp",on:{click:function($event){return _vm.$router.push({name:"checkin"})}}},[_c("img",{attrs:{src:__webpack_require__(660025),alt:"",title:"",width:"50",height:"50"}}),_c("div",{staticClass:"fc-check-in-f22 text-center font-bold pT30"},[_vm._v(" CHECK-IN ")])]),_c("div",{staticClass:"fc-kiosk-in-out-bg mL40 fc-animated slideInUp",on:{click:function($event){return _vm.$router.push({name:"checkout"})}}},[_c("img",{attrs:{src:__webpack_require__(424798),alt:"",title:"",width:"50",height:"50"}}),_c("div",{staticClass:"fc-check-in-f22-red pT30 text-center font-bold"},[_vm._v(" CHECK-OUT ")])])])])])])])])},staticRenderFns=[],objectSpread2=__webpack_require__(595082),vuex_esm=__webpack_require__(420629),WelcomeScreenvue_type_script_lang_js={props:["welcomeScreen"],computed:(0,objectSpread2/* default */.Z)({},(0,vuex_esm/* mapGetters */.Se)(["currentAccount"]))},VisitorKiosk_WelcomeScreenvue_type_script_lang_js=WelcomeScreenvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(VisitorKiosk_WelcomeScreenvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,WelcomeScreen=component.exports},
+/***/660025:
+/***/function(module,__unused_webpack_exports,__webpack_require__){module.exports=__webpack_require__.p+"5578ffd4f01b3ab85cec4d5eb26d0358.svg";
+/***/},
+/***/424798:
+/***/function(module,__unused_webpack_exports,__webpack_require__){module.exports=__webpack_require__.p+"a63d363b81ab1c3af8753a1a714fbc3a.svg";
+/***/}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/72873.js.map

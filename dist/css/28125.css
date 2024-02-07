@@ -1,0 +1,10 @@
+.trigger-table th{border-top:solid .5px #f2f5f6;border-bottom:solid .5px #f2f5f6}.trigger-table th>.cell{padding:0px}.trigger-table td{border-bottom:solid .5px #f2f5f6}.trigger-table td.el-table__cell{padding-left:20px}
+
+.widget-heading-triggers {
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: 500;
+  color: #385571;
+  margin-left: 10px;
+}
+

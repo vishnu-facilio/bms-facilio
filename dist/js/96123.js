@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[96123],{
+/***/296123:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return RequestSuccess}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/permalink/pages/public/RequestSuccess.vue?vue&type=template&id=5a587d0a&scoped=true
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"thank-you-container"},[_c("div",{staticClass:"thankyou-bg"},[_c("div",{staticClass:"thank-you-txt"},[_vm._v("Thank You")]),_c("div",{staticClass:"thank-you-desc"},[_vm._v(" Your request has been submitted successfully , your ticket Id is "),_c("span",{staticClass:"ticket-id-blue"},[_vm._v(" # "+_vm._s(_vm.ticketId))]),_vm._v(" "),_c("br"),_vm._v(". ")]),_c("el-button",{staticClass:"go-back-btn mT10",on:{click:_vm.backToSubmit}},[_vm._v(" "+_vm._s(_vm.$t("setup.setupLabel.go_back"))+" ")])],1)])},staticRenderFns=[],RequestSuccessvue_type_script_lang_js=(__webpack_require__(670560),{computed:{ticketId:function(){return this.$route.params.id}},methods:{backToSubmit:function(){this.$router.push({path:"/link/submitrequest"})}}}),public_RequestSuccessvue_type_script_lang_js=RequestSuccessvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(public_RequestSuccessvue_type_script_lang_js,render,staticRenderFns,!1,null,"5a587d0a",null)
+/* harmony default export */,RequestSuccess=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/96123.js.map

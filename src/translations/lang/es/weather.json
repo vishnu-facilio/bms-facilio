@@ -1,0 +1,25 @@
+{
+  "weather_station": "Estación meteorológica",
+  "all_weather_stations": "Estaciones meteorológicas",
+  "weather_service": "Servicio Meteorológico",
+  "all_weather_services": "Servicios Todo Tiempo",
+  "list_of_all_weather_station_and_service": "Lista de todas las estaciones y servicios meteorológicos",
+  "no_weather_stations_available": "No hay estaciones meteorológicas disponibles",
+  "no_weather_services_available": "No hay servicios meteorológicos disponibles",
+  "are_you_sure_to_delete_weather_station": "¿Estás seguro de que quieres borrar esta estación meteorológica?",
+  "weather_station_deleted_successfully": "Estación meteorológica eliminada con éxito",
+  "create": {
+    "create_weather_station": "Nueva estación meteorológica",
+    "edit_weather_station": "Editar Estación Meteorológica",
+    "station_name": "Nombre de la estación",
+    "weather_station_code": "Código de la estación meteorológica",
+    "auto_generated_based_on_location": "Autogenerado en función de la ubicación",
+    "choose_your_locaiton_in_map": "Elija su ubicación en el mapa",
+    "change_your_location_in_map": "Cambia tu ubicación en el mapa",
+    "please_enter_station_name": "Introduzca el nombre de la estación",
+    "please_select_weather_service": "Seleccione el servicio meteorológico",
+    "please_choose_location": "Seleccione el lugar",
+    "weather_station_created_successfully": "Estación meteorológica creada con éxito",
+    "weather_station_edited_successfully": "Estación meteorológica editada con éxito"
+  }
+}

@@ -1,0 +1,194 @@
+// Commissioning related styles
+.commissioning-container {
+  bottom: 0;
+  .header,
+  .tabs-bar {
+    display: flex;
+    border-bottom: solid 1px #ebedf4;
+    overflow: scroll;
+  }
+  .header {
+    background: #fff;
+    padding: 10px 20px;
+    .agent,
+    .controller {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 14px;
+      letter-spacing: 0.3px;
+      color: #8ca1ad;
+      .name {
+        color: #324056;
+      }
+    }
+    .action-btn {
+      margin-left: auto;
+    }
+  }
+  .search-container,
+  .search-result-container {
+    .el-select {
+      &.search-input {
+        .el-input__inner {
+          border: solid 1px #c7d9e1;
+        }
+        .el-input__suffix {
+          top: 5px;
+        }
+      }
+    }
+    .search-input {
+      .el-input__inner {
+        height: 35px;
+        padding-left: 15px;
+        padding-right: 15px;
+        border-radius: 3px;
+        border: solid 1px #c7d9e1;
+        border: solid 1px #017aff;
+        font-size: 14px;
+        letter-spacing: 0.4px;
+        color: #324056;
+        text-overflow: ellipsis;
+        font-weight: 400;
+        white-space: nowrap;
+        &:focus,
+        &:hover {
+          border-color: #017aff !important;
+        }
+      }
+    }
+  }
+  .tabs-bar {
+    .el-tabs__header {
+      margin: 0px;
+      border-bottom: 0px;
+      height: 100%;
+      .el-tabs__nav-wrap {
+        height: 100%;
+        .el-tabs__nav-scroll {
+          height: 100%;
+          .el-tabs__nav {
+            display: flex;
+            border: 0px;
+            height: 100%;
+            .el-tabs__item {
+              display: flex;
+              height: 100%;
+              &.is-active {
+                background: #fff;
+                border-bottom: 0px;
+              }
+              &:last-child {
+                border-right: 1px solid #e4e7ed;
+              }
+            }
+            .el-icon-close {
+              align-self: center;
+            }
+          }
+        }
+      }
+    }
+    .points-count {
+      display: flex;
+      height: 100%;
+      .point {
+        align-self: center;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: solid 2px #ff3c90;
+        background-color: #ff3c90;
+      }
+      .point-text {
+        margin-left: 10px;
+        font-weight: 500;
+        letter-spacing: 0.3px;
+        color: #324056;
+        align-self: center;
+        text-transform: capitalize;
+      }
+    }
+    .search-container {
+      padding: 15px 20px;
+      cursor: pointer;
+      &.active {
+        padding: 15px 10px 15px 20px;
+        background: #fff;
+      }
+      .search-icon {
+        height: 12px;
+        width: 13px;
+        fill: #017aff;
+        margin-right: 10px;
+      }
+      .search-label {
+        font-size: 13px;
+        letter-spacing: 0.3px;
+        color: #017aff;
+      }
+      .search-close-icon {
+        height: 8px;
+        width: 8px;
+        fill: #017aff;
+      }
+    }
+  }
+  .search-result-container {
+    background: #fff;
+    border-bottom: solid 1px #ebedf4;
+    .filtered-points-label {
+      padding: 15px 20px;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 0.3px;
+      color: #324056;
+      align-self: center;
+    }
+    .map-category {
+      padding: 15px 20px;
+      .label {
+        font-size: 14px;
+        letter-spacing: 0.3px;
+        color: #324056;
+        margin-right: 13px;
+      }
+    }
+  }
+  .filters-container {
+    display: flex;
+    padding: 10px 15px;
+    .el-dropdown {
+      .el-button {
+        height: 30px;
+        border-radius: 4px;
+        background-color: #017aff;
+        padding: 0 15px;
+      }
+    }
+  }
+  .hot-table-wrapper-container {
+    .relative {
+      .loading-container {
+        &.el-loading-parent--relative {
+          position: static !important;
+        }
+      }
+    }
+    font-size: 14px;
+    .fc-handson-input,
+    .fc-handson-lookup,
+    .fc-handson-picker {
+      .el-input {
+        &.is-focus,
+        &:hover {
+          .el-input__inner {
+            border: 1px solid #409eff;
+            border-left: 0px;
+          }
+        }
+      }
+    }
+  }
+}

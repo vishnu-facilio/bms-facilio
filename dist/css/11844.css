@@ -1,0 +1,13 @@
+
+text.progress-center-text {
+  font-size: 2em;
+  color: #000;
+}
+.progressParent {
+  margin: auto;
+}
+#f-minichart path {
+  -webkit-transform: rotate(-140deg);
+          transform: rotate(-140deg);
+}
+

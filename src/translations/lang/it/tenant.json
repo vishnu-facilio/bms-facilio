@@ -1,0 +1,165 @@
+{
+  "tenants": {
+    "tenant_name": "Nome locatario",
+    "no_tenant_here": "Nessun locatario presente! ",
+    "new_tenant_name": "Nuovo nome dell'inquilino",
+    "delete_tenant": "Elimina locatario ",
+    "delete_tenant_msg": "Sei sicuro di voler eliminare questo locatario? ",
+    "tenant_delete_success": "Locatario (i) cancellato con successo",
+    "tenant_delete_failed": "Impossibile cancellare il locatario",
+    "tenant_overview": "Tipi di traduzione",
+    "tenant_id": "Traduzione del testo",
+    "users": "Testo di origine",
+    "utilityAssets": "1166 / 5000",
+    "managed_by": "Risultati della traduzione",
+    "area_occupancy": "Panoramica dell'inquilino",
+    "occupancy_period": "ID inquilino",
+    "view_more": "edifici",
+    "contacts": "Risorse di utilità",
+    "unit_name": "Gestito da",
+    "resolved": "Occupazione dell'area",
+    "in_progress": "Periodo di occupazione",
+    "visitor_expected": "Visualizza altro",
+    "visitor_checkedin": "Contatti",
+    "visitor_checkedout": "Unità inquilino",
+    "no_contacts": "Risolto"
+  },
+  "announcement": {
+    "no_data": "In corso",
+    "announcements": "VISITATORI ATTESI OGGI",
+    "new": "VISITATORI EFFETTUATI IN",
+    "powered_by": "VISITATORE VERIFICATO",
+    "submit_request": "Nessun contatto",
+    "login": "Nessun annuncio disponibile",
+    "signup": "Annunci",
+    "signin": "NUOVO",
+    "loading": "Offerto da",
+    "log_acc": "INVIA UNA RICHIESTA",
+    "please_wait": "Login",
+    "signing_in": "Iscriviti",
+    "forgot_pass": "Registrati",
+    "submit_req": "Caricamento in corso...",
+    "logout": "Accedi al tuo account.",
+    "my_profile": "Attendere prego...",
+    "delete": "Registrarsi...",
+    "delete_confirmation": "Ha dimenticato la password?",
+    "delete_success": "Crea richiesta"
+  },
+  "audience": {
+    "no_data": "Nessun pubblico disponibile",
+    "audiences": "Pubblico",
+    "delete": "Elimina pubblico",
+    "delete_confirmation": "Sei sicuro di voler eliminare questo segmento di pubblico?",
+    "delete_success": "Pubblico eliminato con successo"
+  },
+  "neighbourhood": {
+    "no_data": "Disconnettersi",
+    "delete": "Il mio profilo",
+    "delete_confirmation": "Elimina annuncio",
+    "delete_success": "Sei sicuro di voler eliminare questo annuncio?",
+    "add": "Annuncio eliminato con successo",
+    "neighbourhood": "Nessun quartiere disponibile",
+    "overview": "Elimina quartiere",
+    "start_date": "Sei sicuro di voler eliminare questo quartiere?",
+    "expiry_date": "Quartiere eliminato con successo"
+  },
+  "dealsandoffers": {
+    "no_data": "Aggiungi quartiere",
+    "delete": "Quartiere",
+    "delete_confirmation": "Panoramica",
+    "delete_success": "Data d'inizio :",
+    "add": "Data di scadenza :",
+    "deals_offer": "Nessuna offerta/offerta disponibile",
+    "expire": "Elimina affare/offerta"
+  },
+  "news": {
+    "no_data": "Sei sicuro di voler eliminare questo affare/offerta?",
+    "delete": "Offerta/offerta eliminata con successo",
+    "delete_confirmation": "Aggiungi affare/offerta",
+    "delete_success": "Offerte e offerte",
+    "add": "Scade il",
+    "news_info": "Nessuna notizia o informazione trovata",
+    "news": "Elimina notizie"
+  },
+  "profile": {
+    "my_profile": "sei sicuro di voler cancellare questo?",
+    "upload": "Notizie eliminate con successo",
+    "remove": "Aggiungi notizie",
+    "name": "Notizie e informazioni",
+    "email": "notizia",
+    "contact": "Il mio profilo",
+    "chg_pass": "Caricare",
+    "cancel": "Rimuovere",
+    "update": "Nome",
+    "curr_pass": "E-mail",
+    "new_pass": "Contatto",
+    "confirm_pass": "Cambia la password"
+  },
+  "vendor": {
+    "vendor_": "Annulla",
+    "no_vendor_in_area": "Aggiornare",
+    "no_invites_in_view": "password attuale",
+    "invites": "nuova password",
+    "visits": "Confermare",
+    "no_visits": "Venditore "
+  },
+  "work": {
+    "no_work_req": "Ulteriori informazioni su questo testo di origine",
+    "no_work_req_view": "Per avere ulteriori informazioni sulla traduzione è necessario il testo di origine",
+    "work_permit_req": "Invia commenti",
+    "work_permit": "Riquadri laterali"
+  },
+  "accounting": {
+    "budgets": "Budget",
+    "no_data_budget": "Nessun budget disponibile",
+    "new_budget": "Nuovo budget",
+    "delete": "Elimina budget",
+    "delete_confirmation": "sei sicuro di voler cancellare questo?",
+    "delete_success": "Budget eliminato con successo",
+    "chart_of_accounts": "Piano dei conti",
+    "chart_of_account": "Piano dei conti",
+    "no_data_coa": "Nessun piano dei conti disponibile",
+    "new_coa": "Nuovo piano dei conti",
+    "delete_coa": "Elimina piano dei conti",
+    "delete_confirmation_coa": "Sei sicuro di voler eliminare questo piano dei conti?",
+    "delete_success_coa": "Piano dei conti cancellato con successo",
+    "new_acc_type": "Nuovo tipo di conto",
+    "no_data_acc_type": "Nessun tipo di conto disponibile",
+    "account_type": "Tipo di account",
+    "delete_acc_type": "Elimina tipo di account",
+    "delete_confirmation_acc_type": "Sei sicuro di voler eliminare questo/i tipo/i di account?",
+    "delete_success_acc_type": "Tipi di account eliminati con successo"
+  },
+  "booking": {
+    "delete_booking": "Elimina prenotazione",
+    "delete_confirmation_booking": "Sei sicuro di voler eliminare questa/e Prenotazioni?",
+    "delete_success_booking": "Prenotazioni cancellate con successo",
+    "delete_confirmation_facility": "Sei sicuro di voler eliminare questa(e) struttura(i)?",
+    "delete_success_facility": "Strutture eliminate con successo",
+    "new_booking": "Nuova prenotazione",
+    "new_facility": "Nuova struttura",
+    "no_data_booking": "Nessuna prenotazione disponibile",
+    "no_data_facility": "Nessuna struttura disponibile",
+    "book": "Prenota ora"
+  },
+  "amenity": {
+    "new_amenity": "Nuovi servizi",
+    "no_data_amenity": "Nessun servizio disponibile",
+    "amenity": "Servizi",
+    "delete_amenity": "Elimina servizi",
+    "delete_confirmation_amenity": "Sei sicuro di voler eliminare questo(i) servizio(i)?",
+    "delete_success_amenity": "Servizi eliminati con successo"
+  },
+  "contact_directory": {
+    "contact_directory": "Elenco contatti Contact",
+    "no_data": "Nessun contatto disponibile"
+  },
+  "documents": {
+    "admin_documents": "Documenti amministrativi",
+    "no_data": "Nessun documento disponibile"
+  },
+  "faq": {
+    "faq_heading": "Domande frequenti",
+    "no_data": "Nessuna faq disponibile "
+  }
+}

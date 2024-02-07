@@ -1,0 +1,55 @@
+.custom-modules-details {
+  .forms-list-container {
+    margin-top: 40px;
+  }
+  .setting-header2 {
+    background: #fff;
+    padding: 20px;
+  }
+  .subheader-section {
+    margin-left: 0px !important;
+    background: #fff !important;
+    height: 41px !important;
+    padding-top: 10px;
+  }
+  .user-layout {
+    .setting-Rlayout {
+      padding: 0 20px !important;
+    }
+  }
+  .setting-Rlayout {
+    padding: 0 20px !important;
+  }
+  .setup-el-btn {
+    height: 35px !important;
+  }
+  ul {
+    &.subheader-tabs {
+      li {
+        border: none;
+        &.active {
+          a {
+            font-weight: bold;
+          }
+        }
+        a {
+          text-transform: uppercase;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .sh-selection-bar {
+          margin-top: 13px;
+        }
+      }
+      li:first-of-type {
+        padding-left: 0px;
+      }
+    }
+  }
+}
+
+.overview-icon-more-btn {
+  font-size: 20px;
+  transform: rotate(90deg);
+  line-height: 30px;
+}

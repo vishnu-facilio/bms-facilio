@@ -1,0 +1,52 @@
+.assignment-viwe-leagends[data-v-323f6fd7]{position:absolute;bottom:100px;right:20px;border:1px solid rgba(222,231,239,.6);background:#fff;-webkit-box-shadow:1px 1px 7px 0 rgba(0,0,0,.1);box-shadow:1px 1px 7px 0 rgba(0,0,0,.1)}.assignment-viwe-leagends .el-tabs__nav[data-v-323f6fd7]{padding-left:15px;padding-right:15px;border-bottom:1px solid #eee}.assignment-viwe-leagends .el-tabs__active-bar[data-v-323f6fd7]{height:2px}.assignment-viwe-leagends .el-tabs__active-bar[data-v-323f6fd7]{left:20px}.assignment-viwe-leagends .el-tabs__content[data-v-323f6fd7]{padding-left:15px;padding-right:15px;padding-bottom:15px}.assignment-viwe-leagends .el-tabs__header[data-v-323f6fd7]{margin-bottom:10px}.aignment-leagends[data-v-323f6fd7]{padding:0;max-height:400px}.show-leadends-text[data-v-323f6fd7]{position:absolute;bottom:100px;right:20px;padding:8px 15px;background-color:#3ab2c1;border:none;border-radius:5px;cursor:pointer;color:#fff;font-size:13px;font-weight:500;letter-spacing:.4px}.show-leadends-text[data-v-323f6fd7]:hover{-webkit-box-shadow:0px 1px 4px rgba(0,0,0,.3);box-shadow:0px 1px 4px rgba(0,0,0,.3)}.show-leadends-text .el-icon-d-arrow-left[data-v-323f6fd7]{-webkit-transform:rotate(90deg);transform:rotate(90deg);margin-left:5px;font-weight:600}.inactive-desk[data-v-323f6fd7]{opacity:.4}
+
+.card-tab-fixed .el-tabs__header[data-v-323f6fd7] {
+  position: sticky;
+  top: 0;
+  background: #fff;
+  z-index: 1;
+  padding: 10px;
+  margin-bottom: 0;
+}
+.card-tab-fixed .el-tabs__content[data-v-323f6fd7] {
+  padding: 10px;
+}
+.sidebarhide[data-v-323f6fd7] {
+  width: 22px;
+  height: 39px;
+  position: absolute;
+  right: 9px;
+  top: -30px;
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+  cursor: pointer;
+}
+.sidebarhide-bar[data-v-323f6fd7] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background: #fff;
+  height: 100%;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+  -webkit-box-shadow: 1px 1px 7px 0 rgb(0 0 0 / 10%);
+          box-shadow: 1px 1px 7px 0 rgb(0 0 0 / 10%);
+  border: 1px solid rgb(222 231 239 / 60%);
+}
+.sidebarhide-bar i[data-v-323f6fd7] {
+  font-size: 12px;
+  font-weight: bold;
+  color: rgb(50 64 86 / 40%);
+}
+
+
+.booking-leagend-width {
+  min-width: 200px;
+}
+

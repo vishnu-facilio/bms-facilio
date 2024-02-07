@@ -1,0 +1,156 @@
+.fc-login-user-bg {
+  width: 100%;
+  height: 100vh;
+  background-image: linear-gradient(to bottom, #412689, #271556);
+  position: relative;
+  overflow: hidden;
+}
+
+.fc-login-building-img {
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+}
+
+.fc-invite-form-con {
+  width: 420px;
+  border-radius: 15px;
+  background-color: #ffffff;
+}
+
+.fc-img-align-con {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fc-invite-form-bg {
+  background: #fff;
+  padding: 30px 40px 30px;
+  border-radius: 15px;
+  width: 420px;
+
+  input {
+    height: 45px;
+    border-radius: 5px;
+    border: solid 1px #e6e8ef;
+  }
+}
+
+.fc-invite-input-lable {
+  color: #19182e;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: 0.46px;
+  text-align: left;
+}
+
+.fc-invite-black20 {
+  font-size: 20px;
+  font-weight: bold;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: center;
+  color: #19182e;
+}
+
+.fc-invite-black15 {
+  font-size: 15px;
+  font-weight: normal;
+  line-height: normal;
+  letter-spacing: 0.38px;
+  text-align: center;
+  color: #19182e;
+  padding-top: 5px;
+}
+
+.fc-invite-form-con .form-control {
+  font-size: 13px;
+  height: 42px;
+  color: #19182e;
+  letter-spacing: 0.5px;
+  border: 1px solid #e6e8ef;
+}
+
+.fc-invite-form-con .form-control::placeholder {
+  font-size: 13px;
+  font-weight: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  color: #9998b3;
+}
+
+.fc-invite-copyright {
+  font-size: 16px;
+  font-weight: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: center;
+  color: #9486bb;
+  padding-top: 20px;
+}
+
+.fc-invite-form-btn {
+  background-color: #ff2a80;
+  border-color: #ff2a80;
+  width: 100%;
+  font-weight: 400;
+  border-radius: 5px;
+  outline: 0 !important;
+  padding: 14px 16px;
+  font-size: 18px;
+  line-height: 1.3333333;
+  border: 1px solid #ff2a80;
+  margin-top: 10px;
+  cursor: pointer;
+  margin-top: 30px;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: normal;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.fc-invite-msg-white {
+  color: #fff;
+  font-size: 12px;
+  border-radius: 3px;
+  padding: 10px;
+  font-weight: 500;
+  margin-top: 20px;
+}
+
+.invite-show-password {
+  .el-input__suffix {
+    top: 3px;
+  }
+
+  .el-icon-view {
+    color: #c0c2db;
+    font-size: 18px;
+  }
+}
+
+.fc-invite-form-con .el-input.is-disabled .el-input__inner {
+  opacity: 1 !important;
+}
+
+.password-error {
+  font-size: 12px;
+  font-weight: normal;
+  padding-top: 5px;
+  text-align: left;
+  line-height: normal;
+  letter-spacing: 0.43px;
+  color: #e34d4d;
+}
+
+.lock-input-icon {
+  position: absolute;
+  right: 9px;
+  top: 21px;
+  width: 13px;
+  height: 13px;
+}

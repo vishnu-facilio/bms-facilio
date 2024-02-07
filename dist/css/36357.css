@@ -1,0 +1,17 @@
+
+.common-description[data-v-46a231fb] {
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal !important;
+  -webkit-box-direction: normal !important;
+      -ms-flex-direction: row !important;
+          flex-direction: row !important;
+}
+img[data-v-46a231fb] {
+  border-radius: 50%;
+}
+

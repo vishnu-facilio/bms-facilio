@@ -1,0 +1,25 @@
+{
+  "weather_station": "Weather Station",
+  "all_weather_stations": "All Weather Stations",
+  "weather_service": "Weather Service",
+  "all_weather_services": "All Weather Services",
+  "list_of_all_weather_station_and_service": "List of all Weather Station and Service",
+  "no_weather_stations_available": "No Weather Stations Available",
+  "no_weather_services_available": "No Weather Services Available",
+  "are_you_sure_to_delete_weather_station": "Are you sure you want to delete this weather station?",
+  "weather_station_deleted_successfully": "Weather station deleted Successfully",
+  "create": {
+    "create_weather_station": "New Weather Station",
+    "edit_weather_station": "Edit Weather Station",
+    "station_name": "Station Name",
+    "weather_station_code": "Weather Station Code",
+    "auto_generated_based_on_location": "Auto generated based on location",
+    "choose_your_locaiton_in_map": "Choose your location in map",
+    "change_your_location_in_map": "Change your location in map",
+    "please_enter_station_name": "Please enter station name",
+    "please_select_weather_service": "Please select weather service",
+    "please_choose_location": "Please choose location",
+    "weather_station_created_successfully": "Weather Station Created Successfully",
+    "weather_station_edited_successfully": "Weather Station Edited Successfully"
+  }
+}

@@ -1,0 +1,138 @@
+.stateflow-btn-wrapper {
+  .el-button {
+    padding: 14px 25px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    text-align: center;
+  }
+
+  .el-button--primary {
+    box-shadow: 0 2px 4px 0 rgba(230, 230, 230, 0.5) !important;
+    border: solid 1px #39b2c2;
+    background-color: #39b2c2;
+    color: #fff;
+  }
+  .el-button--primary:not(.disabled):hover {
+    background: #3cbfd0 !important;
+    color: #fff;
+  }
+
+  .el-button:not(.el-button--primary) {
+    border: solid 1px #39b2c2;
+    background-color: #ffffff;
+    color: #39b2c2;
+  }
+  .el-button:not(.el-button--primary):not(.disabled):hover {
+    border: solid 1px #39b2c2 !important;
+    background: #3cbfd0 !important;
+    color: #fff;
+  }
+
+  &.el-dropdown {
+    .el-button.el-dropdown__caret-button {
+      padding: 12px 5px;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    .el-button:not(.el-dropdown__caret-button) {
+      padding: 12px 25px;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .asset-el-btn,
+  .portfolio-transition-button {
+    height: 40px !important;
+    line-height: 1;
+    display: inline-block;
+    letter-spacing: 0.7px !important;
+    border-radius: 3px;
+  }
+  .asset-el-btn.disabled:hover,
+  .portfolio-transition-button:hover {
+    border-color: #39b2c2;
+  }
+  .portfolio-transition-button {
+    box-shadow: none !important; //overriden because background will be image
+  }
+}
+
+.state-list-dialog .new-stateflow-modal,
+.new-state-transition-dialog .new-stateflow-modal {
+  // Hack to fix style in list page
+  &.new-body-modal {
+    height: calc(100vh - 100px);
+  }
+}
+.new-state-transition-dialog .el-dialog__body {
+  padding: 0;
+}
+.new-state-transition-dialog .el-dialog__header {
+  display: none;
+}
+
+.state-transition-header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dialog-header-padding .el-dialog__header {
+  padding-left: 30px;
+}
+.fc-input-full-border-select2.notification-txt-area .el-textarea__inner {
+  line-height: 22px !important;
+  padding: 10px 0 0;
+}
+.stateflow-setup-title {
+  font-size: 17px;
+  letter-spacing: 0.69px;
+  color: #334056;
+}
+
+.sidebar-loader {
+  width: 100%;
+  height: 2px;
+  border: none;
+  transition: all 0.25s ease-in-out;
+
+  &.on {
+    background: repeating-linear-gradient(
+      to right,
+      #75b8ff 0%,
+      #0f83ff 25%,
+      #0f83ff 50%,
+      #006adb 75%,
+      #0051a8 100%
+    );
+    background-size: 200% auto;
+    background-position: 0 100%;
+    animation: loader-gradient 1.5s infinite;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+  }
+}
+
+@keyframes loader-gradient {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.stateflow-criteria {
+  .criteria-condition-block {
+    .criteria-alphabet-block {
+      margin-right: 10px;
+    }
+    .creteria-dropdown,
+    .creteria-input {
+      padding-right: 15px;
+    }
+  }
+}

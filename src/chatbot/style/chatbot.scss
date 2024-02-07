@@ -1,0 +1,177 @@
+@import './variables';
+
+.f-chat-bot-container {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 50000;
+
+  margin-bottom: 25px;
+  margin-right: 20px;
+
+  .f-chat-bot-full {
+    background: #ffffff;
+    height: 620px;
+    width: 390px;
+    border-radius: 20px;
+    border: solid 1px $bot-border-color;
+    box-shadow: 0 5px 4px 0 rgba(233, 233, 226, 0.5);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .header {
+    padding: 0px 25px;
+    height: 70px;
+    background-color: $bot-base-color;
+    box-shadow: 0 2px 4px 0 rgba(91, 68, 158, 0.5);
+
+    // border-bottom: solid 1px $bot-border-color;
+    // box-shadow: 0 5px 4px 0 rgba(233, 233, 226, 0.5);
+
+    //border-radius: 20px 20px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+  }
+  .bot-title {
+    margin-left: 20px;
+    margin-bottom: 0px;
+    font-size: 16px;
+    letter-spacing: 0.4;
+    font-weight: normal;
+  }
+  .bot-close {
+    margin-left: auto;
+  }
+  .body {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    position: relative; //when lookup input type expands , its absolutely position and attached is relative to body
+
+    //border-radius: 20px 20px 0 0;
+  }
+
+  .message-scroll-container {
+    // height: calc(100%-150px);
+    border-bottom: solid 1px $bot-border-color;
+    flex-grow: 1;
+    height: 0;
+    overflow-y: scroll;
+    //scroll-behavior: smooth;
+  }
+
+  .bot-input-container {
+    height: 80px;
+    display: flex;
+    align-items: center;
+    position: relative;
+  }
+  .chat-bot-textarea {
+    padding-left: 30px;
+  }
+  .el-textarea__inner {
+    border-bottom: none;
+    background: white !important;
+  }
+
+  .message-container {
+    padding: 25px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    &.suggestions-open {
+      padding-bottom: 60px;
+    }
+  }
+
+  .message-wrapper {
+    margin-bottom: 10px;
+
+    &.user-message {
+      align-self: flex-end;
+
+      .text-message {
+        background-color: $user-message-color;
+        color: #ffffff;
+        border-bottom-right-radius: 4px;
+      }
+    }
+
+    &.bot-message {
+      align-self: flex-start;
+
+      .text-message {
+        background-color: $bot-message-color;
+        border-bottom-left-radius: 4px;
+
+        color: #000000;
+      }
+    }
+
+    .text-message {
+      letter-spacing: 0.5px;
+      padding: 12px 15px;
+      font-size: 14px;
+      line-height: 1.3;
+
+      border-radius: 20px;
+      // margin-bottom: 25px;
+      max-width: 250px;
+    }
+  }
+  .chat-bot-collapsed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    width: 60px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px 0 rgba(91, 68, 158, 0.5);
+    background-color: $bot-base-color;
+  }
+
+  .timestamp {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    color: #aeb0b7;
+    padding: 2px 5px;
+    white-space: nowrap;
+  }
+  .user-message {
+    .timestamp {
+      float: right; //DO NOT USE FLOAT to align
+    }
+  }
+  .bot-message {
+    .timestamp {
+      float: left;
+    }
+  }
+  .bot-back {
+    margin-right: 15px;
+  }
+
+  // QUASER ADDS NOT bad styles to p tag , unset them
+  .vue-markdown p {
+    font-size: inherit;
+    letter-spacing: inherit;
+    margin: 0;
+    line-height: inherit;
+    padding: 0;
+  }
+  .chat-bot-collapsed,
+  .f-chat-bot-full {
+    //only one of the two is visible at a time ,buy slide in effect (using translate ) showing both for a second ,so absoulte position to avoid it
+    position: absolute;
+    right: 0;
+    bottom: 0;
+  }
+  .f-chat-bot-full {
+    z-index: 2;
+  }
+}

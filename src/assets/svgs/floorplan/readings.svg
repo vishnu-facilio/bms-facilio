@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>energy icon</title>
+    <desc>Created with Sketch.</desc>
+    <g id="energy-icon" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <rect id="Rectangle" fill="#D8D8D8" x="0" y="0" width="50" height="50" rx="5"></rect>
+        <g id="image-1">
+            <rect id="Rectangle" fill="#48BA61" fill-rule="nonzero" x="0" y="0" width="50" height="50" rx="5"></rect>
+            <g id="Group-2-Copy-4" transform="translate(13.000000, 13.000000)"></g>
+            <path d="M15.1465592,26.899703 L15.0939908,27.0065603 C14.7685127,27.7603447 15.327085,28.6184909 16.1732093,28.6186899 L24.6191794,28.6216263 L24.6197173,37.0390628 C24.6197173,38.2420116 26.2333257,38.646515 26.8169514,37.6004522 L35.0585155,22.2998314 L35.1108565,22.1940436 C35.4348375,21.447406 34.877684,20.5876069 34.0311116,20.5858166 L25.8211794,20.5676263 L25.8217951,12.1620791 C25.8217951,10.9575106 24.2044764,10.5544528 23.6230922,11.6036372 L15.1465592,26.899703 Z M24.6211794,12.2766263 L24.6217951,21.7663311 L33.9721794,21.7856263 L25.8191794,36.9206263 L25.8197173,27.4219501 L16.2291794,27.4186263 L24.6211794,12.2766263 Z" id="energy" fill="#FFFFFF" fill-rule="nonzero"></path>
+        </g>
+    </g>
+</svg>

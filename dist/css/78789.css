@@ -1,0 +1,128 @@
+
+.valuestatus {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: absolute;
+  bottom: 0px;
+  padding: 10px;
+  left: 0;
+  padding-left: 25px;
+  padding-right: 25px;
+  white-space: nowrap;
+}
+.tripstatus {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+}
+.ahustatus {
+  position: absolute;
+  top: 25%;
+  width: 100%;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.ahuheader {
+  background-color: #816bc5;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  text-align: center;
+  color: #ffffff;
+}
+.ahustatus .data {
+  font-size: 18px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #15a7a6;
+}
+.ahustatus .dataoff {
+  font-size: 18px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #8a8d8d;
+}
+.tripstatus {
+  background-color: #f7f7f7;
+}
+.tripstatus .data {
+  font-size: 13px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #7c7a7f;
+}
+.valuestatus .data {
+  font-size: 15px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #000000;
+}
+.status-spin {
+  -webkit-animation-name: spin;
+          animation-name: spin;
+  -webkit-animation-duration: 1000ms;
+          animation-duration: 1000ms;
+  -webkit-animation-iteration-count: infinite;
+          animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+          animation-timing-function: linear;
+}
+@-webkit-keyframes spin {
+from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+}
+}
+@keyframes spin {
+from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+}
+to {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+}
+}
+.ahu-tool-tip-content {
+  font-size: 11px;
+  padding: 8px;
+  white-space: nowrap;
+  text-transform: uppercase;
+}
+.ahu-tool-tip-body {
+  padding: 10px;
+  border-bottom: 2px solid #816bc5;
+}
+.fahucard,
+.ahu-card-conatiner {
+  height: 100%;
+}
+

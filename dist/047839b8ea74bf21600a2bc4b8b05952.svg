@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="19px" height="29px" viewBox="0 0 19 29" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Path</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="test" transform="translate(-128.000000, -138.000000)" fill="#C2F2FF" fill-rule="nonzero" stroke="#3BB3D4">
+            <path d="M128.707195,144.628348 C128.56899,144.766417 128.5,144.947278 128.5,145.128158 C128.5,145.302676 128.564213,145.477219 128.692618,145.613309 L134.710864,150.571761 L134.710864,148.840021 L140.0431,148.840021 L140.453565,166.264174 L145.872285,165.853709 L145.46182,141.41671 L134.764374,141.41671 L134.150556,139.457744 C133.178284,140.258802 131.522836,141.812881 128.707195,144.628348 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

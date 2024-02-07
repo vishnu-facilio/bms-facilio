@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>next-scheduled-on</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="next-scheduled-on" fill="#A6C1D0" fill-rule="nonzero">
+            <path d="M9.5,10.863636 L9.5,5.681818 C9.5,5.405676 9.723858,5.181818 10,5.181818 C10.276142,5.181818 10.5,5.405676 10.5,5.681818 L10.5,10.363636 L13.454545,10.363636 C13.730688,10.363636 13.954545,10.587494 13.954545,10.863636 C13.954545,11.139779 13.730688,11.363636 13.454545,11.363636 L10,11.363636 C9.723858,11.363636 9.5,11.139779 9.5,10.863636 Z M10,20 C4.477153,20 0,15.522847 0,10 C0,4.477153 4.477153,0 10,0 C15.522847,0 20,4.477153 20,10 C20,15.522847 15.522847,20 10,20 Z M10,19 C14.970563,19 19,14.970563 19,10 C19,5.029437 14.970563,1 10,1 C5.029437,1 1,5.029437 1,10 C1,14.970563 5.029437,19 10,19 Z"></path>
+        </g>
+    </g>
+</svg>

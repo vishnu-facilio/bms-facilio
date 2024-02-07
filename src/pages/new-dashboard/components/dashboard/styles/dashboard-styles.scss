@@ -1,0 +1,32 @@
+@use "sass:math";
+@import 'gridstack/dist/gridstack.min.css';
+.new-dashboard {
+  .grid-stack > .grid-stack-item {
+    $gridstack-columns: 96;
+
+    min-width: math.div(100%, $gridstack-columns);
+
+    @for $i from 0 through $gridstack-columns {
+      &[gs-w='#{$i}'] {
+        width: math.div(100%, $gridstack-columns) * $i;
+      }
+      &[gs-x='#{$i}'] {
+        left: math.div(100%, $gridstack-columns) * $i;
+      }
+      &[gs-min-w='#{$i}'] {
+        min-width: math.div(100%, $gridstack-columns) * $i;
+      }
+      &[gs-max-w='#{$i}'] {
+        max-width: math.div(100%, $gridstack-columns) * $i;
+      }
+    }
+  }
+  .shadow-widget {
+    -webkit-box-shadow: 0 7px 6px 0 rgb(233 233 233 / 50%);
+    -moz-box-shadow: 0 7px 6px 0 rgb(233 233 233 / 50%);
+    box-shadow: 0 7px 6px 0 rgb(233 233 233 / 50%);
+  }
+  .gridstack-container {
+    padding: 5px;
+  }
+}

@@ -1,0 +1,73 @@
+
+.wo-timer .fc-timer div.t-label {
+  font-size: 20px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 30px;
+  letter-spacing: 0.2px;
+  color: #ff3184;
+}
+.wo-timer .fc-timer div.t-sublabel {
+  text-align: center;
+  font-size: 11px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  color: #324056;
+  text-transform: uppercase !important;
+}
+.wo-timer .fc-timer {
+  padding-left: 0;
+}
+.fc-timer.static {
+  padding-left: 10px;
+}
+.fc__wo__sum__timer .wo-timer .fc-timer div.t-label {
+  text-align: left;
+}
+.fc__wo__sum__timer .alarm-timer {
+  padding-left: 10px;
+}
+.fc__wo__sum__timer .fc-timer div.t-mins,
+.fc-timer div.t-secs,
+.fc-timer div.t-hours,
+.fc-timer div.t-days {
+  -webkit-box-flex: inherit;
+      -ms-flex: inherit;
+          flex: inherit;
+}
+.fc__wo__sum__timer .fc-timer span.t-separate {
+  padding-left: 8px;
+  padding-right: 14px;
+}
+
+
+.upload-photos-dialog .el-dialog__body {
+  max-height: 400px;
+  overflow-y: scroll;
+  padding-bottom: 50px;
+}
+
+
+.upload-space-photos {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos {
+  display: block;
+}
+.fc-avatar-carousel .el-carousel__container {
+  height: 120px;
+}
+
+.view-rich-text[data-v-716a5f9b]{font-size:14px;letter-spacing:.5px;color:#2b8bff;cursor:pointer}.view-rich-text[data-v-716a5f9b]:hover{text-decoration:underline}.cursor-point[data-v-716a5f9b]{cursor:pointer}.rate-svg-close[data-v-716a5f9b]{position:absolute;right:11px;top:13px}.pmv2-tag[data-v-716a5f9b]:hover{text-decoration:underline}

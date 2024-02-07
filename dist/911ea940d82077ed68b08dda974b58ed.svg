@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100px" height="101px" viewBox="0 0 100 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>L shaped duct 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="15.1876786%" x2="0%" y2="15.1876786%" id="linearGradient-1">
+            <stop stop-color="#424951" offset="0%"></stop>
+            <stop stop-color="#909CAC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-234.000000, -604.000000)">
+            <g id="L-shaped-duct-4" transform="translate(234.000000, 604.000000)">
+                <g id="Group-Copy-4" transform="translate(0.000000, 6.000000)">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="5 0 5 72.26 0 72.26 0 0"></polygon>
+                    <polygon id="Path-4-Copy" fill="#848E9C" points="0 71.1477376 0 94 70 94 70 71"></polygon>
+                </g>
+                <polygon id="Path-8" fill="#848E9C" points="23.960088 7.12968107 0 30 0 0 23.960088 0"></polygon>
+                <polygon id="Path-8-Copy" fill="url(#linearGradient-1)" points="99.9598784 78.2625973 70 100.29387 70 -5.68434189e-14 99.9598784 -5.68461373e-14"></polygon>
+                <polygon id="Path-9" fill="#5B6777" points="5.01359031 25.1764868 23 7 23 0 70 0 70 77.1477376 5.01359031 77.1477376"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

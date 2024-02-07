@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Parking_20px" data-name="Parking 20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <path d="M5.2,4.1V12.3h1v-2.9h2.75c1.46,0,2.65-1.19,2.65-2.65h0c0-1.46-1.19-2.65-2.65-2.65h-3.75Zm3.75,4.3h-2.75s0-3.3,0-3.3h2.75c.91,0,1.65,.74,1.65,1.65h0c0,.91-.74,1.65-1.65,1.65Z"/>
+  <path d="M1,1V15H15V1H1ZM14,14H2V2H14V14Z"/>
+  <rect class="cls-1" width="16" height="16"/>
+</svg>

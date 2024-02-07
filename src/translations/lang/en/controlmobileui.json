@@ -1,0 +1,16 @@
+{
+  "control-home": {
+    "title": "Devices"
+  },
+  "control-fan": {
+    "fan": "FAN"
+  },
+  "control-light": {
+    "light": "LIGHTNING"
+  },
+  "control-temperature": {
+    "temperature": "TEMPERATURE",
+    "set-point": "SET POINT",
+    "set-temperature": "SET TEMPERATURE"
+  }
+}

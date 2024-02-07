@@ -1,0 +1,175 @@
+{
+  "tenants": {
+    "tenant_name": "Nombre del arrendatario",
+    "no_tenant_here": "No hay inquilinos.",
+    "new_tenant_name": "Nombre del nuevo inquilino",
+    "delete_tenant": "Borrar inquilino",
+    "delete_tenant_msg": "¿Está seguro de que desea eliminar este Inquilino?",
+    "tenant_delete_success": "Inquilino(s) eliminado(s) con éxito",
+    "tenant_delete_failed": "No se puede eliminar este inquilino",
+    "tenant_overview": "Resumen de inquilinos",
+    "tenant_id": "Identificación del inquilino",
+    "users": "Edificios",
+    "utilityAssets": "Activos de servicios públicos",
+    "managed_by": "Gestionado por",
+    "area_occupancy": "Zona Ocupación",
+    "occupancy_period": "Periodo de ocupación",
+    "view_more": "Ver más",
+    "contacts": "Contactos",
+    "unit_name": "Unidad arrendataria",
+    "resolved": "Resuelto",
+    "in_progress": "En curso",
+    "visitor_expected": "SE ESPERAN VISITANTES HOY",
+    "visitor_checkedin": "VISITANTES REGISTRADOS",
+    "visitor_checkedout": "VISITANTE REGISTRADO",
+    "no_contacts": "Sin contactos"
+  },
+  "announcement": {
+    "no_data": "No hay anuncios disponibles",
+    "announcements": "Anuncios",
+    "new": "NUEVO",
+    "powered_by": "Desarrollado por",
+    "submit_request": "ENVIAR UNA SOLICITUD",
+    "login": "Inicio de sesión",
+    "signup": "Inscribirse",
+    "signin": "Iniciar sesión",
+    "loading": "Cargando...",
+    "log_acc": "Conéctese a su cuenta.",
+    "please_wait": "Por favor, espere...",
+    "signing_in": "Iniciar sesión...",
+    "forgot_pass": "¿Ha olvidado su contraseña?",
+    "submit_req": "Crear solicitud",
+    "logout": "Cierre de sesión",
+    "my_profile": "Mi perfil",
+    "delete": "Borrar anuncio",
+    "delete_confirmation": "¿Está seguro de que desea eliminar este anuncio?",
+    "delete_success": "Anuncio borrado con éxito"
+  },
+  "audience": {
+    "no_data": "No hay audiencias disponibles",
+    "audiences": "Audiencias",
+    "delete": "Borrar Audiencia",
+    "delete_confirmation": "¿Seguro que quieres borrar esta Audiencia?",
+    "delete_success": "Audiencia eliminada con éxito"
+  },
+  "neighbourhood": {
+    "no_data": "Ningún barrio disponible",
+    "delete": "Borrar barrio",
+    "delete_confirmation": "¿Está seguro de que desea eliminar este barrio?",
+    "delete_success": "Barrio eliminado con éxito",
+    "add": "Añadir barrio",
+    "neighbourhood": "Barrio",
+    "overview": "Visión general",
+    "start_date": "Fecha de inicio :",
+    "expiry_date": "Fecha de expiración :"
+  },
+  "dealsandoffers": {
+    "no_data": "No hay ofertas disponibles",
+    "delete": "Eliminar oferta",
+    "delete_confirmation": "¿Está seguro de que desea eliminar esta oferta?",
+    "delete_success": "Oferta eliminada con éxito",
+    "add": "Añadir oferta",
+    "deals_offer": "Ofertas y promociones",
+    "expire": "Expira el"
+  },
+  "news": {
+    "no_data": "No se han encontrado noticias ni información",
+    "delete": "Suprimir noticias",
+    "delete_confirmation": "¿Seguro que quieres borrar esto?",
+    "delete_success": "Noticias borradas con éxito",
+    "add": "Añadir noticias",
+    "news_info": "Noticias e información",
+    "news": "Noticias"
+  },
+  "profile": {
+    "curr_pass": "Contraseña actual",
+    "new_pass": "Nueva contraseña",
+    "confirm_pass": "Confirme "
+  },
+  "vendor": {
+    "vendor_": "Vendedor",
+    "no_vendor_in_area": " No tienes vendedores en esta vista.",
+    "no_invites_in_view": "No tienes ninguna invitación en esta vista.",
+    "invites": "Invitaciones de visitantes",
+    "visits": "Visitas",
+    "no_visits": " No tienes visitas en esta vista.",
+    "profile_info": "Información sobre el perfil",
+    "company_info": "Información sobre la empresa"
+  },
+  "work": {
+    "no_work_req": "No se han encontrado solicitudes",
+    "no_work_req_view": "No tienes ninguna petición en esta vista.",
+    "work_permit_req": "Solicitar permiso de trabajo",
+    "work_permit": "Permisos de trabajo"
+  },
+  "accounting": {
+    "budgets": "Presupuestos",
+    "no_data_budget": "No hay presupuestos disponibles",
+    "new_budget": "Nuevo presupuesto",
+    "delete": "Suprimir presupuesto",
+    "delete_confirmation": "¿Seguro que quieres borrar esto?",
+    "delete_success": "Presupuesto suprimido con éxito",
+    "chart_of_accounts": "Plan contable",
+    "chart_of_account": "Plan contable",
+    "no_data_coa": "No hay plan contable disponible",
+    "new_coa": "Nuevo plan contable",
+    "delete_coa": "Borrar el plan contable",
+    "delete_confirmation_coa": "¿Está seguro de que desea eliminar este(os) Plan(es) de Cuenta(s)?",
+    "delete_success_coa": "Plan de cuentas eliminado correctamente",
+    "new_acc_type": "Nuevo tipo de cuenta",
+    "no_data_acc_type": "No hay tipos de cuenta disponibles",
+    "account_type": "Tipo de cuenta",
+    "delete_acc_type": "Borrar tipo de cuenta",
+    "delete_confirmation_acc_type": "¿Está seguro de que desea eliminar este tipo de cuenta?",
+    "delete_success_acc_type": "Tipo(s) de cuenta eliminado(s) correctamente"
+  },
+  "booking": {
+    "delete_booking": "Borrar reserva",
+    "delete_confirmation_booking": "¿Estás seguro de que quieres eliminar esta(s) Reserva(s)?",
+    "delete_success_booking": "Reserva(s) eliminada(s) correctamente",
+    "delete_confirmation_facility": "¿Está seguro de que desea eliminar esta(s) instalación(es)?",
+    "delete_success_facility": "Instalación(es) eliminada(s) con éxito",
+    "new_booking": "Nueva reserva",
+    "new_facility": "Nueva instalación",
+    "no_data_booking": "No hay reservas disponibles",
+    "no_data_facility": "No hay instalaciones disponibles",
+    "book": "Reserve ahora"
+  },
+  "amenity": {
+    "new_amenity": "Nuevo servicio",
+    "no_data_amenity": "No hay servicios disponibles",
+    "amenity": "Servicios",
+    "delete_amenity": "Suprimir Amenidad",
+    "delete_confirmation_amenity": "¿Está seguro de que desea eliminar esta(s) Amenidad(es)?",
+    "delete_success_amenity": "Servicio(s) eliminado(s) correctamente"
+  },
+  "contact_directory": {
+    "contact_directory": "Directorio de contactos",
+    "no_data": "No hay contactos disponibles",
+    "delete": "Borrar contacto",
+    "delete_confirmation": "¿Seguro que quieres borrar esto?",
+    "delete_success": "Contacto(s) eliminado(s) correctamente"
+  },
+  "documents": {
+    "admin_documents": "Documentos administrativos",
+    "no_data": "No hay documentos disponibles",
+    "delete": "Borrar documentos",
+    "delete_confirmation": "¿Seguro que quieres borrar esto?",
+    "delete_success": "Documento(s) eliminado(s) correctamente"
+  },
+  "faq": {
+    "faq_heading": "Preguntas frecuentes",
+    "no_data": "No hay faq disponibles"
+  },
+  "occupant": {
+    "desk": "Escritorio",
+    "work_requests": "Solicitudes de trabajo",
+    "visitor": "Visitante",
+    "booking": "Reservas",
+    "no_visitor": "Ningún visitante",
+    "no_booking": "No Reserva de instalaciones",
+    "service_request": "Solicitud de servicio",
+    "personal_details": "Datos personales",
+    "desk_empty": "Escritorio no disponible"
+  }
+}

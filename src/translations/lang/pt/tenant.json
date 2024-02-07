@@ -1,0 +1,87 @@
+{
+  "tenants": {
+    "tenant_name": "Nome do inquilino",
+    "no_tenant_here": "Nenhum inquilino presente!",
+    "delete_tenant": "Excluir inquilino",
+    "delete_tenant_msg": "Tem certeza de que deseja excluir este inquilino?",
+    "tenant_delete_success": "Inquilino (s) excluído (s) com sucesso",
+    "tenant_delete_failed": "Incapaz de excluir este inquilino",
+    "tenant_overview": "Visão geral do inquilino",
+    "tenant_id": "ID do inquilino",
+    "users": "Edifícios",
+    "utilityAssets": "Ativos utilitários",
+    "managed_by": "Gerenciado por",
+    "area_occupancy": "Ocupação de Área",
+    "occupancy_period": "Período de ocupação"
+  },
+  "announcement": {
+    "no_data": "Nenhum anúncio disponível",
+    "announcements": "Anúncios",
+    "new": "novo",
+    "powered_by": "Distribuído por",
+    "submit_request": "ENVIE UM PEDIDO",
+    "login": "Conecte-se",
+    "signup": "Inscrever-se",
+    "signin": "Assinar em",
+    "loading": "Carregando...",
+    "log_acc": "Faça login na sua conta.",
+    "please_wait": "Por favor, espere...",
+    "signing_in": "Entrando...",
+    "forgot_pass": "Entrando ...",
+    "submit_req": "Enviar pedido",
+    "logout": "Sair"
+  },
+  "audience": {
+    "no_data": "Nenhum público disponível",
+    "audiences": "Audiências",
+    "delete": "Excluir público",
+    "delete_confirmation": "Tem certeza de que deseja excluir este público?",
+    "delete_success": "Público excluído com sucesso"
+  },
+  "neighbourhood": {
+    "no_data": "Nenhum bairro disponível",
+    "delete": "Excluir bairro",
+    "delete_confirmation": "Tem certeza de que deseja excluir este bairro?",
+    "delete_success": "Vizinhança excluída com sucesso ",
+    "add": "Adicionar Bairro",
+    "neighbourhood": "Vizinhança",
+    "overview": "Visão geral"
+  },
+  "dealsandoffers": {
+    "no_data": "Nenhuma transação / oferta disponível",
+    "delete": "Excluir negócio / oferta",
+    "delete_confirmation": "Tem certeza de que deseja excluir este acordo / oferta? ",
+    "delete_success": "Negócio / oferta excluída com sucesso",
+    "add": "Adicionar negócio / oferta",
+    "deals_offer": "Ofertas e oferta",
+    "expire": "Expira em"
+  },
+  "profile": {
+    "my_profile": "Meu perfil",
+    "upload": "Envio",
+    "remove": "Remover",
+    "name": "Nome",
+    "email": "O email",
+    "contact": "Contato",
+    "chg_pass": "Mudar senha",
+    "cancel": "Cancelar",
+    "update": "Atualizar",
+    "curr_pass": "senha atual",
+    "new_pass": "Nova senha",
+    "confirm_pass": "confirme "
+  },
+  "vendor": {
+    "vendor_": "Fornecedor",
+    "no_vendor_in_area": "Você não tem nenhum fornecedor nesta visualização. ",
+    "no_invites_in_view": "Você não tem nenhum convite nesta visualização.",
+    "invites": "Convites de visitantes",
+    "visits": "Visitas",
+    "no_visits": "Você não tem nenhuma visita nesta vista."
+  },
+  "work": {
+    "no_work_req": "Nenhum pedido de trabalho disponível ",
+    "no_work_req_view": "Você não tem nenhuma solicitação de trabalho nesta visualização.",
+    "work_permit_req": "Solicitar autorização de trabalho",
+    "work_permit": "Autorizações de Trabalho"
+  }
+}

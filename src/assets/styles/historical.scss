@@ -1,0 +1,102 @@
+.history-log-page .el-collapse-item__wrap {
+  border-bottom: none;
+}
+.history-log-header {
+  padding: 20px 30px;
+  border-bottom: 1px solid #dbe4ef;
+}
+.history-collapse-child {
+  width: 100%;
+  padding: 0px 30px;
+  border-bottom: 1px solid #f2f5f6;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  .label-txt-black {
+    line-height: 20px;
+  }
+}
+.history-collapse {
+  width: 100%;
+}
+.history-log-page .el-collapse {
+  border-top: none;
+  border-bottom: none;
+}
+.history-log-header-txt {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: normal;
+  letter-spacing: 1px;
+  color: #324056;
+}
+.history-collapse-header {
+  width: 100%;
+  padding: 0px 30px;
+  border-bottom: 1px solid #f2f5f6;
+}
+.history-log-page .el-collapse-item__header {
+  border-bottom: none;
+}
+.history-log-page .el-collapse-item .el-icon-caret-right {
+  color: #324056;
+  font-size: 14px;
+  font-weight: bold;
+  visibility: visible;
+  transition: all 0.3s ease;
+  background: #fff;
+}
+.history-log-page .el-collapse-item .is-active .el-icon-caret-right {
+  visibility: hidden;
+}
+.history-log-page .el-collapse-item .is-active .el-icon-caret-bottom {
+  visibility: visible;
+  color: #324056;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  position: relative;
+  right: 13px;
+  background: #fff;
+  bottom: 1px;
+}
+.history-log-page .el-collapse-item .el-icon-caret-bottom {
+  visibility: hidden;
+}
+.history-log-page .el-collapse-item {
+  margin-top: 20px;
+}
+.history-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-bottom: 60px;
+}
+
+.sub-history-collapse-child {
+  width: 100%;
+  padding: 0px 30px 0px;
+  border-bottom: 1px solid #f2f5f6;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+
+.sub-history-resource-collapse {
+  .el-collapse-item__content {
+    margin-top: 10px;
+  }
+  .el-collapse-item {
+    margin-top: 10px !important;
+  }
+  .history-collapse-child {
+    height: 60px;
+  }
+}
+.history-collapse-header {
+  .el-icon-arrow-right {
+    top: -10px;
+  }
+}

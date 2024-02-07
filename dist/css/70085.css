@@ -1,0 +1,103 @@
+.pagination-arrow.disable[data-v-7641710c]{color:#50506c;font-weight:bold;opacity:.4;background:none}.mT-5[data-v-7641710c]{margin-top:-5px}.button-hover[data-v-7641710c]{border-radius:5px}.button-hover[data-v-7641710c]:hover{background:rgba(202,212,216,.3)}
+.el-pager li.active,.el-pager li:hover{color:#39b2c2}
+
+.controller-filter {
+  margin-left: 30px;
+  margin-top: 30px;
+}
+.controller-filter .el-input__suffix-inner .el-select__caret {
+  color: #333333;
+  font-weight: 900;
+  font-size: 16px;
+}
+.controller-filter-popover {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.bacnet-config .el-input__inner {
+  background: transparent;
+}
+.search-container2 {
+  position: fixed;
+  right: 0;
+  right: 1%;
+  z-index: 2;
+  background: #f8f9fa;
+  margin-top: 3px;
+}
+.search-icon3 {
+  width: 15px;
+  fill: #6f7c87;
+  height: 20px;
+  top: 12px;
+  left: 0;
+  position: absolute;
+}
+.close-icon3 {
+  width: 15px;
+  fill: #6f7c87;
+  height: 20px;
+  position: absolute;
+  right: 5px;
+  top: 13px;
+  cursor: pointer;
+}
+.quick-search-input3 {
+  -webkit-transition: 0.2s linear;
+  transition: 0.2s linear;
+  padding: 10px 40px 8px 20px !important;
+  line-height: 1.8;
+  width: 100%;
+  margin-bottom: 5px;
+  border: none !important;
+  outline: none;
+  background: transparent;
+  border-bottom: 1px solid #6f7c87 !important;
+}
+.fc-list-search-wrapper-reading {
+  background: none !important;
+}
+.bacnet-config .el-tabs__item {
+  padding: 0 22px;
+  height: 40px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  line-height: 40px;
+  display: inline-block;
+  list-style: none;
+  position: relative;
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  font-weight: 500;
+  color: #333333;
+  text-transform: uppercase;
+}
+.bacnet-config .el-tabs__item.is-active {
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  /* letter-spacing: 0.6px;
+  font-size: 12px; */
+}
+.bacnet-config .el-tabs__active-bar {
+  background: #ef4f8f;
+  width: 51px !important;
+}
+.bacnet-config .el-tabs__nav-wrap::after {
+  height: 1px;
+  background-color: #f0f0f0;
+}
+.threshold-value-dialog .threshold-value-item {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+.bacnet-config .search-container3 {
+  position: absolute;
+  right: 27px;
+  top: 120px;
+  z-index: 2;
+}
+

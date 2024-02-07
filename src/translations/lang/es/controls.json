@@ -1,0 +1,20 @@
+{
+  "controlSchedule": {
+    "no_data": "No hay horario de control disponible",
+    "delete_schedule": "Borrar horario",
+    "delete_schedule_confirmation": "¿Estás seguro de que quieres borrar este horario?"
+  },
+  "controlGroups": {
+    "no_data": "No hay grupos de control disponibles",
+    "delete_group": "Borrar grupo",
+    "delete_group_confirmation": "¿Estás seguro de que quieres eliminar este grupo?",
+    "delete_exception": "Borrar cambio de horario",
+    "delete_exception_confirmation": "¿Está seguro de que desea eliminar este cambio de horario?"
+  },
+  "data_command_status": {
+    "sent": "Enviado",
+    "failed": "Fallido",
+    "retrying": "Reintento",
+    "sheduled": "Programado"
+  }
+}

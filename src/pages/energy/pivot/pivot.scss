@@ -1,0 +1,309 @@
+.pivot-add-row-dialog,
+.pivot-add-data-dialog,
+.pivot-add-criteria-dialog {
+  //common styles across pivot components
+  .el-dialog__header {
+    border-bottom: 1px solid #eff1f4;
+  }
+  .el-dialog__body {
+    padding: 0px;
+  }
+  .body {
+    padding: 5px 25px 25px 25px;
+  }
+
+  .title {
+    height: 14px;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #6b7e91;
+  }
+}
+
+/*   USE CASE
+Animate the opening and closing of RESIZABLE LEFT
+while also ensuring, right side canvas area resizes slowly
+*/
+
+.fc-scale-panel-enter-active,
+.fc-scale-panel-leave-active {
+  transition-timing-function: ease;
+  transition-property: width transform;
+  transition-duration: 0.5s;
+  transform-origin: top left;
+}
+
+//using only translate won't make the rest of the layout slowly resize
+
+.fc-scale-panel-enter,
+.fc-scale-panel-leave-to {
+  transform: translateX(-100%);
+  transform-origin: top left;
+  width: 0px;
+}
+
+.fc-scale-panel-enter-to,
+.fc-scale-panel-enter-to {
+  transform: translateX(0);
+  transform-origin: top left;
+  width: 25%;
+}
+
+@mixin pivotTheme($theme: default) {
+  $headerBgColor: #f3f1fc !default;
+  $cellColor1: #f5f6fb !default;
+  $cellColor2: #fefffe !default;
+  $cellHoverColor: #f0f8fb !default;
+  $headerHoverColor: #e3dff0 !default;
+  $headerTextColor: #3f4a5f !default;
+  $cellTextColor: #334157 !default;
+  $borderColor: #eaeff5 !default;
+  @if $theme == blue {
+    $headerBgColor: #1a77bc;
+    $cellColor1: #e5f6fe;
+    $cellColor2: #fffefe;
+    $cellHoverColor: #ebfeff;
+    $headerHoverColor: #3d9dd0;
+    $headerTextColor: #ebfeff;
+    $cellTextColor: #161617;
+    $borderColor: #d5ecfb;
+  } @else if $theme == teal {
+    $headerBgColor: #4b9789;
+    $cellColor1: #e5f7f4;
+    $cellColor2: #fffefe;
+    $cellHoverColor: #b9fbf9;
+    $headerHoverColor: #5ebba8;
+    $headerTextColor: #fffeff;
+    $cellTextColor: #131213;
+    $borderColor: #d7d7d7;
+  } @else if $theme == purple {
+    $headerBgColor: #7f56c2;
+    $cellColor1: #f3edfc;
+    $cellColor2: #fffefe;
+    $cellHoverColor: #fefae1;
+    $headerHoverColor: #9977b1;
+    $headerTextColor: #fafbfe;
+    $cellTextColor: #4e4f4e;
+    $borderColor: #e0dbea;
+  } @else if $theme == black-orange {
+    $headerBgColor: #101110;
+    $cellColor1: #fadfd3;
+    $cellColor2: #fcf3ed;
+    $cellHoverColor: #fef2d3;
+    $cellTextColor: #4e4644;
+    $borderColor: #fcf3ed;
+    $headerHoverColor: #4f4c31;
+    $headerTextColor: #f8f9f8;
+  } @else if $theme == bright-orange {
+    $headerBgColor: #ec743c;
+    $cellColor1: #fcf3ed;
+    $cellColor2: #fefffe;
+    $headerTextColor: #fefafb;
+    $cellTextColor: #4e4f4e;
+    $borderColor: #fbe8e1;
+    $cellHoverColor: #fffae0;
+    $headerHoverColor: #ee8f47;
+  } @else if $theme == yellow {
+    $headerBgColor: #f9c132;
+    $cellColor1: rgba(254, 231, 168, 0.5);
+    $cellColor2: #fefffe;
+    $headerTextColor: #372c14;
+    $cellTextColor: #101110;
+    $borderColor: hsla(43, 94%, 59%, 0.75);
+    $cellHoverColor: rgba(251, 204, 50, 0.5);
+    $headerHoverColor: #fff9cc;
+  } @else if $theme == green {
+    $headerBgColor: #bef19c;
+    $cellColor1: rgba(220, 245, 204, 0.9);
+    $cellColor2: #fefffe;
+    $headerTextColor: #3d4933;
+    $cellTextColor: #262627;
+    $borderColor: #f4f4f5;
+    $cellHoverColor: #f7f8cc;
+    $headerHoverColor: #c5ef7f;
+  } @else if $theme == mid-night {
+    $headerBgColor: #222323;
+    $cellColor1: #101110;
+    $cellColor2: #191918;
+    $headerTextColor: #cfbda1;
+    $cellTextColor: #e0cfaf;
+    $borderColor: #2b2b2a;
+    $cellHoverColor: #3f3f3e;
+    $headerHoverColor: #4c4d4d;
+  } @else if $theme == mac-os {
+    $headerBgColor: #ebeaed;
+    $cellColor1: #f5f4f5;
+    $cellColor2: #fefffe;
+    $headerTextColor: #101110;
+    $cellTextColor: #464746;
+    $borderColor: #cacbce;
+    $cellHoverColor: #f6f5d9;
+    $headerHoverColor: #efecd3;
+  }
+
+  // @else if $theme == soft-default {
+  //   $headerBgColor: #ebeeeb;
+  //   $cellColor1: #f6f7f6;
+  //   $cellColor2: #fefffe;
+  //   $headerTextColor: #252525;
+  //   $cellTextColor: #2d2d2c;
+  //   $borderColor: #f4f4f5;
+  //   $cellHoverColor: #fffae0;
+  //   $headerHoverColor: #f8f7da;
+  // }
+
+  .el-table {
+    border: 1px solid $borderColor !important;
+  }
+
+  .is-leaf:hover {
+    background: $headerHoverColor !important;
+    color: $headerTextColor;
+    font-weight: 700;
+  }
+
+  .el-dropdown {
+    color: $headerTextColor !important;
+  }
+
+  .is-leaf {
+    background: $headerBgColor !important;
+    color: $headerTextColor !important;
+  }
+  .pivot-font-small {
+    .el-table__body tr > td {
+      font-size: 12px !important;
+    }
+    .el-dropdown {
+      font-size: 9px !important;
+    }
+  }
+
+  .pivot-font-medium {
+    .el-table__body tr > td {
+      font-size: 13px !important;
+    }
+    .el-dropdown {
+      font-size: 10px !important;
+    }
+  }
+
+  .pivot-font-large {
+    .el-table__body tr > td {
+      font-size: 14px !important;
+    }
+    .el-dropdown {
+      font-size: 11px !important;
+    }
+  }
+
+  .el-table__body tr > td {
+    background: $cellColor2 !important;
+    color: $cellTextColor !important;
+  }
+  .pivot-stripe-true {
+    .el-table__body :nth-child(even) > td {
+      background: $cellColor1 !important;
+    }
+    .el-table__body tr.hover-row > td:hover {
+      background: $cellHoverColor !important;
+    }
+  }
+  .pivot-stripe-false {
+    .el-table__body tr.hover-row > td:hover {
+      background: $cellHoverColor !important;
+    }
+  }
+
+  .pivot-grid-line-both {
+    .el-table--border .el-table__cell {
+      border-bottom: solid 1px $borderColor !important;
+      border-right: solid 1px $borderColor !important;
+    }
+  }
+  .pivot-grid-line-none {
+    .el-table--border .el-table__cell {
+      border: none;
+    }
+  }
+  .pivot-grid-line-vertical {
+    .el-table--border .el-table__cell {
+      border-right: solid 1px $borderColor !important;
+      border-bottom: 0px;
+    }
+  }
+  .pivot-grid-line-horizontal {
+    .el-table--border .el-table__cell {
+      border-bottom: solid 1px $borderColor !important;
+      border-right: 0px;
+    }
+  }
+
+  // tr > td {
+  //   height: inherit;
+  // }
+
+  // .el-table .cell {
+  //   height: inherit;
+  // }
+
+  .el-table--enable-row-hover .el-table__body tr:hover > td {
+    background: $cellHoverColor !important;
+  }
+
+  .el-table--border::after,
+  .el-table--group::after {
+    width: 0px;
+  }
+}
+
+.pivot-theme-default {
+  @include pivotTheme();
+}
+
+.pivot-theme-blue {
+  @include pivotTheme(blue);
+}
+
+.pivot-theme-teal {
+  @include pivotTheme(teal);
+}
+.pivot-theme-purple {
+  @include pivotTheme(purple);
+}
+.pivot-theme-black-orange {
+  @include pivotTheme(black-orange);
+}
+.pivot-theme-bright-orange {
+  @include pivotTheme(bright-orange);
+}
+.pivot-theme-yellow {
+  @include pivotTheme(yellow);
+}
+.pivot-theme-green {
+  @include pivotTheme(green);
+}
+.pivot-theme-mid-night {
+  @include pivotTheme(mid-night);
+}
+.pivot-theme-mac-os {
+  @include pivotTheme(mac-os);
+}
+.pivot-theme-soft-default {
+  @include pivotTheme(soft-default);
+}
+
+.pivot-icon-hover {
+  padding: 3px;
+}
+.pivot-icon-hover:hover {
+  background-color: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.pivot-tab-hover:hover {
+  background-color: #deebfd;
+  border-radius: 3px;
+  cursor: pointer;
+}

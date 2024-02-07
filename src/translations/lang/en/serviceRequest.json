@@ -1,0 +1,13 @@
+{
+  "error": {
+    "403": "Error - Unsupported Tags while Reply"
+  },
+  "fields": {
+    "classificationType": "Classification Type",
+    "requestDetails": "Request Details",
+    "requester": "Requester",
+    "priority": "Priority",
+    "assignedTo": "Assigned To",
+    "dueDate": "Due Date"
+  }
+}

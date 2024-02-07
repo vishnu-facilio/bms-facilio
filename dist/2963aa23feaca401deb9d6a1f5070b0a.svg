@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="160px" height="100px" viewBox="0 0 160 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Air cool chiller</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="6.46622263%" x2="50%" y2="64.5249645%" id="linearGradient-1">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#B3C1CB" offset="27.9376385%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-806.000000, -107.000000)">
+            <g id="Air-cool-chiller" transform="translate(806.000000, 107.000000)">
+                <path d="M7.37290825,0.534674015 L31.9899019,24.5210448 L149.265039,24.5210448 L124.265236,0.534674015 L7.37290825,0.534674015 Z" id="Path-33-Copy" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M6.66909326,1.19816883 L6.66909326,73.5899083 L31.4523956,98.6280048 L31.4523956,24.9647328 L6.66909326,1.19816883 Z" id="Path-34-Copy" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M10.0360966,13.5590472 L10.0360966,67.6903577 L28.0853922,86.2661387 L28.0853922,31.1914773 L10.0360966,13.5590472 Z" id="Path-34-Copy-2" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M159.5,52.5 L148.5,52.5 L148.5,66.5 L159.5,66.5 L159.5,52.5 Z" id="Path-23" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M18.4367137,42.5 L0.5,42.5 L0.5,56.5 L18.4367137,56.5 C19.8149263,53.4604395 20.5,51.1191982 20.5,49.5 C20.5,47.8808018 19.8149263,45.5395605 18.4367137,42.5 Z" id="Path-23-Copy-3" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M32.4279969,25.2873865 L32.4279969,99.4780059 L150.114685,99.4780059 L150.114685,25.2873865 L32.4279969,25.2873865 Z" id="Path-35-Copy" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M39.1620037,29.7767243 L39.1620037,94.988668 L143.380679,94.988668 L143.380679,29.7767243 L39.1620037,29.7767243 Z" id="Path-35-Copy-2" stroke="#474747" fill="url(#linearGradient-1)"></path>
+                <path d="M39.426056,69.9860769 L143.68031,69.9860769" id="Path-36" stroke="#474747"></path>
+                <path d="M39.426056,72.2307458 L143.68031,72.2307458" id="Path-36-Copy" stroke="#474747"></path>
+                <ellipse id="Oval" stroke="#474747" fill="url(#linearGradient-1)" cx="41.9652076" cy="7.40740741" rx="11.2845118" ry="3.42817059"></ellipse>
+                <ellipse id="Oval-Copy-5" stroke="#474747" fill="url(#linearGradient-1)" cx="52.0662177" cy="16.3860831" rx="11.2845118" ry="3.42817059"></ellipse>
+                <ellipse id="Oval-Copy-7" stroke="#474747" fill="url(#linearGradient-1)" cx="73.3905724" cy="7.40740741" rx="11.2845118" ry="3.42817059"></ellipse>
+                <ellipse id="Oval-Copy-6" stroke="#474747" fill="url(#linearGradient-1)" cx="83.4915825" cy="16.3860831" rx="11.2845118" ry="3.42817059"></ellipse>
+                <ellipse id="Oval-Copy-9" stroke="#474747" fill="url(#linearGradient-1)" cx="104.815937" cy="7.40740741" rx="11.2845118" ry="3.42817059"></ellipse>
+                <ellipse id="Oval-Copy-8" stroke="#474747" fill="url(#linearGradient-1)" cx="114.916947" cy="16.3860831" rx="11.2845118" ry="3.42817059"></ellipse>
+                <polygon id="Path-38" fill="url(#linearGradient-1)" points="39.7300434 30.4016579 60.629475 69.4268446 39.7821567 69.4268446"></polygon>
+                <polygon id="Path-38-Copy-2" fill="url(#linearGradient-1)" transform="translate(132.212968, 49.923185) scale(-1, 1) translate(-132.212968, -49.923185) " points="121.660459 30.4195252 142.765478 69.4268446 121.660459 69.4268446"></polygon>
+                <polygon id="Path-38-Copy" fill="url(#linearGradient-1)" points="90.7202322 30.0650471 109.441519 69.4404505 71.9989453 69.4404505"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

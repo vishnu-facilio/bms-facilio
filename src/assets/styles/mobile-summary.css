@@ -1,0 +1,241 @@
+.list-subject {
+  width: 255px;
+  height: 30px;
+  font-size: 14px;
+  line-height: 1.07;
+  letter-spacing: 0.1px;
+  line-height: 15px;
+  text-align: left;
+  color: #000000;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.list-serialNumber {
+  letter-spacing: 0.8px;
+  font-size: 11px;
+  text-align: left;
+  color: #656464;
+}
+.list-status {
+  height: 17px;
+  font-size: 11px;
+  text-align: left;
+  color: #656464;
+}
+.list-assigned {
+  letter-spacing: 0.1px;
+  font-size: 11px;
+  color: #656464;
+}
+/* .description {
+  background-color: #ffffff;
+  box-shadow: 0 4px 4px 0 rgba(222, 212, 212, 0.5);
+  border: solid 1px #e6e6e6;
+} */
+.fas-row {
+  background: white;
+}
+.fas-detail-row {
+  opacity: 0.6;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+  text-align: left;
+  color: #ffffff;
+  margin-top: 15px;
+  margin-left: 5px;
+}
+.fas-subject {
+  height: 40px;
+  margin-top: 3px;
+  margin-left: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.11;
+  letter-spacing: 0.4px;
+  text-align: left;
+  color: #ffffff;
+}
+.flLeft {
+  float: left;
+}
+.flRight {
+  float: right;
+}
+.status-label {
+  padding: 5px;
+  font-size: 10px;
+  margin-top: 16px;
+  margin-right: 20px;
+  border-radius: 75px;
+  border: solid 1px #ffffff;
+  opacity: 0.8;
+  font-size: 9px;
+  letter-spacing: 0.8px;
+  color: #ffffff;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+.element-btn {
+  background-color: #ffffff;
+  position: fixed;
+  bottom: 0;
+}
+/* .primarybtn {
+padding: 10px;
+width:100%;
+} */
+.center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 50%;
+}
+.cover {
+  height: 149px;
+  background-color: #453a69;
+  position: relative;
+}
+.cover.critical {
+  background-color: #de4747;
+}
+.cover.major {
+  background-color: #f78a00;
+}
+.cover.minor {
+  background-color: #ebb802;
+}
+.cover.info {
+  background-color: #a5a5a5;
+}
+.cover.clear {
+  background-color: #26a666;
+}
+.fas-id {
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  text-align: left;
+  color: #4cdcff;
+  margin-top: 16px;
+  margin-left: 20px;
+}
+.avatar-size {
+  font-size: 11px;
+  height: 30px;
+  line-height: 36px;
+  width: 30px;
+  margin-left: 20px;
+  margin-top: 15px;
+}
+.asset-name {
+  font-size: 13px;
+  letter-spacing: 0.3px;
+  text-align: left;
+  color: #368eb7;
+}
+.space-name {
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #9c9b9b;
+}
+.fab {
+  width: 50px;
+  height: 50px;
+  color: white;
+  font-size: 35px;
+  position: absolute;
+  right: 5%;
+  bottom: -17%;
+  z-index: 100;
+}
+.desc-table {
+  padding-left: 8px;
+  padding-right: 8px;
+  border-spacing: 0px;
+}
+
+.desc-th {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #8e88a5;
+  padding-left: 12px;
+  width: 35%;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f4f1ff;
+}
+.desc-td {
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #333333;
+  padding-top: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f4f1ff;
+}
+.asset-space-img {
+  float: left;
+  margin-right: 5px;
+}
+.desc-date {
+  letter-spacing: 0.6px;
+}
+.postionfab > div > .q-fab-actions.flex.no-wrap.inline.items-center.q-fab-up {
+  position: absolute;
+}
+@media screen and (max-width: 320px) and (min-width: 0px) {
+  .desc-th {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #8e88a5;
+    padding-left: 12px;
+    width: 40%;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f4f1ff;
+  }
+}
+@media screen and (max-width: 375px) and (min-width: 321px) {
+  .desc-th {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #8e88a5;
+    padding-left: 12px;
+    width: 35%;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f4f1ff;
+  }
+}
+@media screen and (max-width: 376px) and (min-width: 425px) {
+  .desc-th {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-align: left;
+    color: #8e88a5;
+    padding-left: 12px;
+    width: 40%;
+    padding-top: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f4f1ff;
+  }
+}
+.comment-header {
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  text-align: left;
+  color: #bfbfbf;
+  border-bottom: 1px solid #f5f2fe;
+  padding-bottom: 10px;
+  margin-left: 20px;
+  margin-right: 20px;
+  margin-bottom: 10px;
+}

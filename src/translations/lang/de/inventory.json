@@ -1,0 +1,18 @@
+{
+  "service": {
+    "service": "Bedienung",
+    "new_service": "NEUER SERVICE",
+    "new_tandc": "NEUE AGB",
+    "no_services": "Keine Dienste verfügbar",
+    "create_service": "Dienst erstellen",
+    "edit_service": "Dienst bearbeiten"
+  },
+  "contracts": {
+    "new_purchase_contract": "NEUER KAUFVERTRAG",
+    "new_labour_contract": "NEUER ARBEITSVERTRAG",
+    "new_renlease_contract": "NEUER MIETER / MIETERVERTRAG",
+    "new_warranty_contract": "NEUER GARANTIEVERTRAG",
+    "notification_preference": "BENACHRICHTIGUNGSPRÄFERENZ",
+    "no_payment_info": "Zahlungsinformationen sind nicht konfiguriert"
+  }
+}

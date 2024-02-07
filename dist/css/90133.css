@@ -1,0 +1,181 @@
+.item-summary-table .el-table th.is-leaf{padding-left:0;padding-right:0}.item-summary-table .el-table th.el-table__cell>.cell{padding-left:0;padding-right:0}.item-summary-table .el-table .right-align-items{text-align:right;padding-right:20px}.item-summary-table .el-table .center-align-element{text-align:center;padding-right:16px}.item-summary-table .el-table .cost-type{text-align:center;padding-right:40px}.item-summary-table .el-table .right-align-ir-items{text-align:right}.item-summary-table .el-table .custom-class-price{background-color:#f7faff}.vendorComparisonDialog .el-table th.is-leaf{padding-left:10px}.vendor-quotes-lineitems-table .el-table .award-column{padding-left:10px}.vendor-quotes-lineitems-table .el-table td{padding-left:20px;padding-right:20px;background-color:#fff}.vendor-quotes-lineitems-table .el-table td.right-align-elements{text-align:right}.vendor-quotes-lineitems-table .el-table .item-name{padding-left:32px;padding-right:10px;text-overflow:ellipsis !important}.vendor-quotes-lineitems-table .el-table__body td.el-table__cell.item-name-vq{padding-left:24px}.vendor-quotes-lineitems-table .el-table th.is-leaf.item-name-vq{padding-left:25px}.vendor-quotes-lineitems-table .el-table th.is-leaf{background-color:#f0f8ff}.vendor-quotes-lineitems-table .vq-award-icon{padding-top:7px;padding-right:6px}.vendor-quotes-lineitems-table .total-amount{position:sticky;top:0;z-index:100;color:#333;font-weight:700;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:right;-ms-flex-pack:right;justify-content:right}.vendor-quotes-lineitems-table .total-amount-row{border:1px solid #ebeef5}.vendor-quotes-lineitems-table .el-table__fixed-right{-webkit-box-shadow:0 0 10px rgba(0,0,0,.12);box-shadow:0 0 10px rgba(0,0,0,.12)}.vendor-quotes-lineitems-table .el-table th.el-table__cell>.cell{padding-left:0;padding-right:0}.transaction-info{color:#333;font-size:11px;letter-spacing:1px;font-weight:700;margin-bottom:0%}.add-record-msg{margin:20px 0 20px;font-size:16px;font-weight:500;line-height:1.5;letter-spacing:.27px;text-align:center;color:#324056}.vendorquote-banner-msg-container{border-top:1px solid #f5f5f5;border-bottom:1px solid #f5f5f5;color:#324056;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;height:40px}.vendorquote-banner-msg-container .vendor-quotes-banner-msg{padding-top:10px}.vendorquote-banner-msg-container .vq-warning-icon{padding-top:8px;padding-right:5px}.vendorquote-discarded-banner{background-color:#f8efde;border-bottom:1px solid #ffb638}.vendorquote-closed-bid-banner{background-color:#e1ebf3;border-bottom:1px solid #0078b9}.delete-btn-container{width:96px;height:40px;padding:2px 25px;border-radius:4px;background-color:#fff;cursor:pointer}.delete-btn-container:hover{background-color:#dde0e4}.reserve{width:46px;height:12px;font-size:12px;font-weight:normal;font-stretch:normal;font-style:normal;line-height:normal;letter-spacing:normal;color:#324056}.widget-card .el-tabs__nav-wrap{padding-left:20px}
+
+.avatar-popover {
+  float: left;
+  width: 38px;
+  padding: 0 !important;
+}
+.avatar-popover-container .el-popover--plain,
+.avatar-popover-container .el-popover {
+  max-width: 383px;
+  padding-bottom: 30px;
+  -webkit-box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border: solid 1px #edeaea;
+  transition-delay: 0.8s;
+  -webkit-transition-delay: 0.8s;
+  padding: 0;
+}
+.avatar-popover-container .el-popover--plain,
+.avatar-popover-container .el-popover:hover {
+  transition-delay: 0.2s;
+  -webkit-transition-delay: 0.2s;
+}
+.popover-content-block {
+  width: 100%;
+  padding-top: 10px;
+}
+.popover-avatar {
+  width: 30%;
+  padding-left: 10px;
+  float: left;
+}
+.popover-avatar-det {
+  width: 70%;
+  float: left;
+  padding-right: 10px;
+}
+.avatar-name-txt {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-align: left;
+  margin-bottom: 10px;
+  color: #333333;
+}
+.mail-txt {
+  width: 300px;
+  max-width: 300px;
+  overflow-x: hidden;
+  word-break: break-all;
+  padding-right: 10px;
+  font-size: 13px;
+  letter-spacing: 0.9px;
+  text-align: left;
+  padding-left: 5px;
+  color: #2b7ec7;
+}
+.popover-footer ul {
+  width: 100%;
+  list-style-type: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-left: 0px;
+  text-align: center;
+  padding-top: 0;
+  padding-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.popover-phone-number {
+  padding-right: 5px;
+  font-size: 13px;
+  letter-spacing: 0.8px;
+  text-align: left;
+  color: #333333;
+}
+.popover-footer-list {
+  width: 33.3%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+.border-RL {
+  border-right: 1px solid #edeaea;
+  border-left: 1px solid #edeaea;
+}
+.popover-footer {
+  width: 100%;
+  clear: both;
+  position: relative;
+  border-top: 1px solid #edeaea;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  line-height: 2;
+}
+.mail-block {
+  display: inline-block;
+  margin-bottom: 9px;
+}
+.popover-avatar-det {
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+.open-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #5dc6d5;
+}
+.result-txt-black {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #333333;
+}
+.overdue-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #e07575;
+}
+.dueday-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #e4ba2d;
+}
+.popover-avatar .fc-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  top: 20px;
+  text-align: center;
+  left: 10px;
+  font-size: 18px;
+}
+.avatar-popover-container .wo-team-txt {
+  margin-left: 10px !important;
+  max-width: 100px !important;
+  overflow-x: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+
+.assignment-avatar-name {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: #333333;
+  max-width: 200px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.wo-team-txt {
+  margin-left: 10px !important;
+  overflow-x: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+
+.info-position[data-v-434b446a] {
+  position: relative;
+  top: 2px;
+}
+

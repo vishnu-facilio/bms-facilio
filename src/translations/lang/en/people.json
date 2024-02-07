@@ -1,0 +1,40 @@
+{
+  "attendance": {
+    "users_list": "User List",
+    "resume_work": "Resume Work",
+    "check_in_caps": "CHECK-IN",
+    "check_out_caps": "CHECK-OUT",
+    "check_in": "Check-in",
+    "check_out": "Check-out",
+    "add_notes": "Add Notes",
+    "break_start": "BREAK",
+    "no_attendance": "No Attendance available",
+    "attendance_transaction": "Attendance Transaction"
+  },
+  "shift": {
+    "shift": "SHIFT",
+    "name": "Name",
+    "from_time": "From Time",
+    "to_time": "To Time",
+    "weekend_definition": "Weekend Definition",
+    "cancel": "Cancel",
+    "break": "Break",
+    "break_type": "Break Type",
+    "break_duration": "Break Duration",
+    "applicable_shifts": "Applicable shift(s)",
+    "shift_rotation": "SHIFT ROTATION",
+    "scheduler_name": "Scheduler Name",
+    "scheduler_frequency": "Scheduler Frequency"
+  },
+  "employee": {
+    "update_success": "Updated successfully"
+  },
+  "department": {
+    "new_department": "New Department",
+    "no_data_department": "No Department Available",
+    "department": "Department",
+    "delete_department": "Delete department",
+    "delete_confirmation_department": "Are you sure you want to delete this department(s)?",
+    "delete_success_department": "Department(s) Deleted Successfully"
+  }
+}

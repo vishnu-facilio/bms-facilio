@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="292px" height="238px" viewBox="0 0 292 238" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>Group 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M2.88000016,0 L267.120011,0 C268.710591,-3.13720024e-14 270.000011,1.28941999 270.000011,2.88000016 L270.000011,213.12 C270.000011,214.71058 268.710591,216 267.120011,216 L2.88000016,216 C1.28941999,216 1.44056446e-14,214.71058 0,213.12 L0,2.88000016 C-1.94789891e-16,1.28941999 1.28941999,2.92184836e-16 2.88000016,0 Z" id="path-1"></path>
+        <filter x="-7.4%" y="-6.0%" width="114.8%" height="118.5%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="7" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="5.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.08 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <linearGradient x1="2.12846805%" y1="88.3729718%" x2="100%" y2="88.3729718%" id="linearGradient-3">
+            <stop stop-color="#1CE6E5" offset="0%"></stop>
+            <stop stop-color="#FFD641" offset="49.2147562%"></stop>
+            <stop stop-color="#FD0071" offset="100%"></stop>
+        </linearGradient>
+        <path d="M131.003333,43.1243988 L166.103335,43.1243988 C166.878743,43.1243988 167.507336,43.7529911 167.507336,44.528399 L167.507336,65.3076004 C167.507336,66.0830083 166.878743,66.7116006 166.103335,66.7116006 L131.003333,66.7116006 C130.227925,66.7116006 129.599333,66.0830083 129.599333,65.3076004 L129.599333,60.5997811 L125.447291,55.1407181 L129.599333,50.3882959 L129.599333,44.528399 C129.599333,43.7529911 130.227925,43.1243988 131.003333,43.1243988 Z" id="path-4"></path>
+        <filter x="-44.0%" y="-48.8%" width="188.0%" height="256.9%" filterUnits="objectBoundingBox" id="filter-5">
+            <feOffset dx="0" dy="7" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.05 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+        <polygon id="path-6" points="122.985005 58.7716094 129.915005 146.071613 116.685005 146.071613"></polygon>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Target-meter_selection-" transform="translate(-736.000000, -287.000000)">
+            <g id="Group-24" transform="translate(53.500000, 58.000000)">
+                <g id="Group-22" transform="translate(369.769632, 220.726822)">
+                    <g id="Group-4" transform="translate(324.000013, 11.945861)">
+                        <g id="Rectangle-Copy-105">
+                            <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                            <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                        </g>
+                        <g id="Group-42-Copy" transform="translate(16.650001, 13.950001)">
+                            <text id="Remaining:-455" font-family="AktivGrotesk-Light" font-size="12.6000005" font-weight="300" fill="#6D7278">
+                                <tspan x="78.6708031" y="174.881615">Remaining:</tspan>
+                                <tspan x="139.932006" y="174.881615" font-family="AktivGrotesk-Medium" font-weight="500">  455</tspan>
+                            </text>
+                            <path d="M67.637332,158.400006 L178.548036,158.400006 C179.296996,158.400006 179.967694,158.863775 180.232119,159.564503 L188.792687,182.250007 L57.3926816,182.250007 L65.9532488,159.564503 C66.2176745,158.863775 66.8883724,158.400006 67.637332,158.400006 Z" id="Rectangle" stroke="#E5E5E5" stroke-width="0.675000027" stroke-linecap="square"></path>
+                            <path d="M10.231918,182.250007 L235.95345,182.250007" id="Line-18" stroke="#E5E5E5" stroke-width="0.675000027" stroke-linecap="square"></path>
+                            <text id="900" font-family="AktivGrotesk-Medium" font-size="12.6000005" font-weight="500" fill="#626262">
+                                <tspan x="206.829728" y="163.450006">900</tspan>
+                            </text>
+                            <text id="Target-Meter-02" font-family="AktivGrotesk-Medium" font-size="10.8000004" font-weight="500" line-spacing="14.4000006" fill="#000000" fill-opacity="0.5">
+                                <tspan x="0.207320641" y="8.08999756">TARGET METER 02</tspan>
+                            </text>
+                            <text id="0-copy-2" font-family="AktivGrotesk-Medium" font-size="12.6000005" font-weight="500" fill="#626262">
+                                <tspan x="27.7481214" y="163.450006">0</tspan>
+                            </text>
+                            <path d="M123.299246,32.4899988 C61.0689919,32.4899988 10.4392387,83.1197521 10.4392387,145.350006 L49.9225495,145.350006 C49.9225495,104.896317 82.8303706,71.9733097 123.299246,71.9733097 C163.755972,71.9733097 196.67746,104.896317 196.67746,145.350006 L236.160771,145.350006 C236.160771,83.1197521 185.531018,32.4899988 123.299246,32.4899988" id="Fill-1-Copy-2" fill="url(#linearGradient-3)"></path>
+                            <g id="Rectangle">
+                                <use fill="black" fill-opacity="1" filter="url(#filter-5)" xlink:href="#path-4"></use>
+                                <path stroke-opacity="0.5" stroke="#E5E5E5" stroke-width="0.702000094" d="M125.899962,55.1560783 L129.950333,60.4814662 L129.950333,65.3076004 C129.950333,65.8891563 130.421777,66.3606005 131.003333,66.3606005 L166.103335,66.3606005 C166.684891,66.3606005 167.156336,65.8891563 167.156336,65.3076004 L167.156336,44.528399 C167.156336,43.9468431 166.684891,43.4753989 166.103335,43.4753989 L131.003333,43.4753989 C130.421777,43.4753989 129.950333,43.9468431 129.950333,44.528399 L129.950333,50.5200278 L125.899962,55.1560783 Z" stroke-linejoin="square" fill="#FFFFFF" fill-rule="evenodd"></path>
+                            </g>
+                            <text id="445" font-family="AktivGrotesk-Bold" font-size="10.8000004" font-weight="bold" fill="#626262">
+                                <tspan x="137.726525" y="58.8059053">445</tspan>
+                            </text>
+                            <mask id="mask-7" fill="white">
+                                <use xlink:href="#path-6"></use>
+                            </mask>
+                            <use id="Rectangle-Copy-101" fill="#3F3B50" xlink:href="#path-6"></use>
+                        </g>
+                        <g id="Group-40-Copy" transform="translate(12.392680, 13.410003)"></g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

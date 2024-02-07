@@ -1,0 +1,44 @@
+{
+  "common": {
+    "status": "Estado",
+    "actions": "Acciones",
+    "month": "Mes",
+    "details": "Detalles",
+    "show_alerts": "Mostrar alertas",
+    "show_bills": "Mostrar facturas",
+    "cancelled": "Cancelado"
+  },
+  "etisalat": {
+    "from": "En",
+    "to": "A",
+    "unit": "Unidad",
+    "rete_in_aed": "Tarifa en AED",
+    "supplier_name": "Nombre del proveedor",
+    "tariff_type": "Tipo de tarifa",
+    "utility_type": "Tipo de utilidad",
+    "cost_type": "Tipo de coste",
+    "water": "Agua",
+    "sewage": "aguas residuales",
+    "show_invoice": "Mostrar nota de pago",
+    "create_invoice": "Crear nota de pago",
+    "total": "Total",
+    "utility_accounts": "Cuentas de servicios públicos",
+    "electricity": "Electricidad",
+    "gas": "Gas",
+    "tariffs": "Aranceles"
+  },
+  "payments": {
+    "invoice_details": "Datos de la nota de pago",
+    "dispute_free": "DISPUTA LIBRE TOTAL",
+    "under_dispute": "En litigio",
+    "cancelled_payments": "Pagos cancelados",
+    "invoice_date": "Fecha de la nota de pago",
+    "region_code": "Código regional",
+    "cost_center": "Centro de costes",
+    "vat_amount": "Importe del IVA",
+    "pending_approval": "Pendiente de aprobación por la DG",
+    "disputes_alerts": "de Controversias/Alertas",
+    "outstanding_amount": "Importe pendiente",
+    "under_review": "En revisión "
+  }
+}

@@ -1,0 +1,285 @@
+.fc-in-req-sum-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+.fc-in-req-cards {
+  height: 182px;
+  box-shadow: 0 3px 7px 0 rgba(233, 233, 226, 0.5);
+  background-color: #ffffff;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  padding: 30px;
+}
+.fc-in-v1-tab .el-tabs__active-bar {
+  left: 20px;
+  width: 40px !important;
+}
+.fc-in-v1-tab .el-tabs__nav {
+  padding-left: 20px;
+}
+.people-user-title {
+  font-size: 15px;
+  line-height: 20px;
+  letter-spacing: 0.4px;
+  font-weight: 500;
+  color: #324056;
+}
+.fc__submenu__section__people {
+  box-sizing: border-box;
+  position: relative;
+}
+.fc__submenu__section__people .label-txt-black {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  padding-left: 20px;
+  padding-right: 20px;
+  line-height: 20px;
+  border-left: 3px solid transparent;
+  border-bottom: 1px solid #f4f6f8;
+  -webkit-transition: all 0.3s ease-in-out;
+  -moz-transition: all 0.3s ease-in-out;
+  -o-transition: all 0.3s ease-in-out;
+  transition: all 0.3s ease-in-out;
+}
+.fc__submenu__section__people .label-txt-black:hover {
+  background: #f3f6f9;
+  cursor: pointer;
+  transition: 0.3s all;
+  -webkit-transition: 0.3s all;
+  -moz-transition: 0.3s all;
+}
+.fc-input-checkin-note .el-input__inner {
+  height: 40px !important;
+  line-height: 40px !important;
+  padding-left: 15px;
+  padding-right: 15px;
+  border-radius: 3px;
+  background-color: #ffffff;
+  border: solid 1px #d0d9e2;
+  font-size: 14px;
+  font-weight: normal;
+  letter-spacing: 0.4px;
+  color: #324056;
+  text-overflow: ellipsis;
+  font-weight: 400;
+  padding-right: 30px;
+  white-space: nowrap;
+  width: 270px;
+}
+.in-no-data {
+  height: 100px;
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+}
+.checkin-popover-btn {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border: 1px solid #39b2c2;
+  color: #ffffff;
+  background-color: #39b2c2;
+  font-weight: 500;
+  letter-spacing: 1px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  text-transform: uppercase;
+  font-size: 12px;
+  &:hover,
+  &:active,
+  &:focus {
+    background: #33a6b5;
+    color: #ffffff;
+    border: 1px solid #33a6b5;
+  }
+}
+.att-break-popover-btn {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border: 1px solid #39b2c2;
+  color: #39b2c2;
+  background-color: #ffffff;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 12px;
+  &:hover,
+  &:active,
+  &:focus {
+    background: #33a6b5;
+    border: 1px solid #33a6b5;
+    color: #ffffff;
+  }
+}
+.attendance-line-seperator {
+  width: 800px;
+  height: 1px;
+  border: solid 1px #eaf0f1;
+}
+.fc-black-people-days {
+  font-size: 12px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.4px;
+  color: #324056 !important;
+}
+.people-header-padding-25-40px {
+  padding: 25px 30px;
+}
+.people-table-border-top {
+  border-top: solid 1px #dbe4ef;
+}
+.select-float-right-text13 {
+  float: right;
+  color: #8492a6;
+  font-size: 13px;
+}
+.attendance-transaction-heading {
+  font-size: 22px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  color: #324056;
+}
+.attendance-transaction-no-data {
+  margin-top: 30px;
+  opacity: 0.7;
+  font-size: 13px;
+  padding-top: 70px;
+  line-height: 25px;
+  text-align: center;
+}
+.payment-info-nodata {
+  opacity: 0.7;
+  text-align: center;
+}
+.contract-notification-form-heading {
+  .el-dialog__header {
+    padding: 20px 20px 10px;
+    border-bottom: 1px solid #ebedf4;
+  }
+}
+.contract-notification-form-heading {
+  .el-dialog__headerbtn {
+    .el-dialog__close {
+      color: #000000;
+      font-size: 21px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+  }
+}
+.facilio-notification-preference-web-form-body {
+  overflow-y: scroll;
+  overflow-x: hidden;
+  text-align: left;
+  margin-bottom: 0px;
+}
+
+.contract-message-box {
+  padding-bottom: 0px;
+  border: 0px;
+}
+.contract-message-box {
+  .el-message-box__header {
+    padding: 20px 15px 10px;
+    border-bottom: 1px solid #eee;
+  }
+  .el-message-box__header {
+    .el-message-box__title {
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      color: #324056;
+      text-transform: uppercase;
+    }
+  }
+  .el-message-box__message {
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    color: #324056;
+    height: 80px;
+    padding-top: 10px;
+  }
+  .el-message-box__btns {
+    padding: 30px 0px 0px 0px;
+  }
+  .el-message-box__btns {
+    .modal-btn-save {
+      margin-left: 0px;
+    }
+  }
+}
+
+// po summary
+
+.po-summary-pdf {
+  .fc-quotation-summary-table th {
+    background-color: #656cb6;
+    border-right: #656cb6;
+  }
+  .fc-quotation-con {
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.po-summary-table-txt {
+  font-size: 12px !important;
+  font-weight: bold !important;
+  line-height: normal !important;
+  letter-spacing: 1px !important;
+  text-align: right !important;
+  color: #656cb6 !important;
+}
+
+.fc-create-btn-align {
+  margin-top: -10px;
+}
+
+.inventory-header {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  height: 90px;
+  box-shadow: 2px 5px 4px 0 rgba(19, 15, 39, 0.02);
+  background-color: #ffffff;
+  align-items: center !important;
+  border-bottom: 1px solid #ebf0f5;
+
+  .custom-header {
+    display: -webkit-box;
+    max-width: 300px;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+.inventory-page-new-con {
+  .fc__main__con__width,
+  .fc__asset__main__header,
+  .fc__layout__has__row {
+    width: 100%;
+  }
+  .fc__layout__asset_main {
+    width: 100%;
+    left: 0;
+    position: inherit;
+  }
+}
+
+.inventory-summary-width {
+  width: calc(100% - 320px);
+}

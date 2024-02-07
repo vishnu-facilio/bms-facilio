@@ -1,0 +1,63 @@
+
+.progressParent {
+  margin: auto;
+}
+.energy-saving {
+  padding: 17%;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.saving-card {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#5d2fbc), to(#3b236e));
+  background-image: linear-gradient(to bottom, #5d2fbc, #3b236e);
+  color: #fff;
+  height: 100%;
+}
+.energy-savings-txt {
+  font-size: 1vw;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #ffffff;
+}
+.savings-txt {
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: center;
+  color: #53c6e3;
+}
+.sv-month {
+  font-size: 0.8vw;
+  font-weight: bold;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #ffffff;
+  line-height: 20px;
+  position: relative;
+  top: -9px;
+}
+.sv-date {
+  font-size: 0.8vw;
+  letter-spacing: 0px;
+  text-align: center;
+  color: #ffffff;
+  opacity: 0.7;
+  position: relative;
+  top: -8px;
+}
+.baseline-aed-kwh {
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  color: #ffffff;
+}
+.baseline-model-txt {
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  color: #ffffff;
+  opacity: 0.7;
+}
+.energy-saving-card .shimmer {
+  height: 100%;
+}
+

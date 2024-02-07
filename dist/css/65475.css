@@ -1,0 +1,30 @@
+
+.fc-viewlayout {
+  padding-top: 20px;
+}
+.fc-viewlayout .q-data-table {
+  background: #fff;
+}
+.fc-create-building {
+  width: 40% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  max-width: 40wv !important;
+}
+.sh-button {
+  background-color: #ff2d81;
+  border: 0;
+  color: #fff;
+  padding: 5px 9px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 10px 2px;
+  cursor: pointer;
+  outline: none;
+}
+.fc-createBuildings {
+  max-width: 40vw !important;
+}
+

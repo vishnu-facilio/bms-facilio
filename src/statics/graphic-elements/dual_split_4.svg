@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="211px" viewBox="0 0 200 211" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Dual Split 4</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-1025.000000, -1409.000000)">
+            <g id="Dual-Split-4" transform="translate(1125.000000, 1514.500000) scale(-1, 1) translate(-1125.000000, -1514.500000) translate(1025.000000, 1409.000000)">
+                <polygon id="Path-2-Copy" fill="#5B6777" points="199 0.0129543141 199 92.8504721 130.465566 92.8504721 123.912981 111.007536 199 111 199 204.950747 90.2073727 204.950747 0 204.950747 0 111.048411 50.7683857 111.048411 90.0844274 0.0129543141"></polygon>
+                <polygon id="Path-4-Copy-3" fill="url(#linearGradient-1)" opacity="0.5" points="90.1118226 0 79.5498731 30 199 30 199 0"></polygon>
+                <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="0.0255302964 111 0.0255302964 141 40.8287396 141 51.1294532 111"></polygon>
+                <polygon id="Path-4-Copy-9" fill="url(#linearGradient-1)" opacity="0.5" points="123.914807 111 112.804003 141 199 141 199 111"></polygon>
+                <polygon id="Path-4-Copy" fill="#848E9C" points="0.0400955613 188 0.0400955613 211 199.010187 211 199.010187 188"></polygon>
+                <polygon id="Path-4-Copy-7" fill="#848E9C" points="135.822275 77 127.911077 100 199 100 199 77"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

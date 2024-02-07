@@ -1,0 +1,28 @@
+
+.graphics-insert-variable-title {
+  padding: 12px;
+  border-bottom: 1px solid #fafafa;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 13px;
+}
+.graphics-insert-variable-filter {
+  padding: 12px;
+}
+.graphics-insert-variable-list {
+  max-height: 300px;
+  overflow: scroll;
+}
+.graphics-insert-variable-list ul {
+  padding: 0;
+  margin: 0;
+}
+.graphics-insert-variable-list ul li {
+  list-style: none;
+  padding: 12px;
+  cursor: pointer;
+}
+.graphics-insert-variable-list ul li:hover {
+  background: #fafafa;
+}
+

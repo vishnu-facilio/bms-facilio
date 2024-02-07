@@ -1,0 +1,156 @@
+
+.dashboard-container .weather {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#10022d), to(#1d1759));
+  background-image: linear-gradient(to bottom, #10022d, #1d1759);
+}
+.h100 {
+  height: 100%;
+}
+.h50 {
+  height: 50%;
+}
+.weather .area {
+  font-size: 1vw;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 2.3px;
+  text-align: left;
+  color: #ffffff;
+}
+.weather .degree {
+  font-size: 2.1vw;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.2px;
+  text-align: center;
+  color: #ffffff;
+}
+.weather .month,
+.carbon-weather .month {
+  font-size: 1vw;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  text-align: left;
+  color: #ffffff;
+  padding-top: 10px;
+  padding-bottom: 3px;
+}
+.weather .sub-text,
+.carbon-weather .sub-text {
+  font-size: 0.9vw;
+  font-weight: 500;
+}
+.weather-layout {
+  padding-left: 20px;
+  padding-top: 5px;
+  position: absolute;
+  top: 9%;
+  width: 100%;
+}
+.sun-icon {
+  text-align: center;
+  width: 35px;
+  padding-top: 0px;
+  position: relative;
+  top: 7px;
+}
+.carbon-icon {
+  text-align: center;
+  width: 40px;
+  padding-top: 0px;
+  position: relative;
+  top: 7px;
+}
+.carbon-weather .degree {
+  font-size: 3.3vw;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: -0.8px;
+  text-align: left;
+  color: #ffffff;
+}
+.carbon-weather .area {
+  font-size: 12px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1.5px;
+  text-align: left;
+  color: #ffffff;
+  padding-top: 6px;
+}
+.carbon-weather .sub-text {
+  padding-left: 10px;
+}
+.carbon-weather {
+  height: 52%;
+  position: absolute;
+  width: 100%;
+  top: 48%;
+}
+.weather {
+  position: absolute;
+  width: 100%;
+}
+.weather-layou1 {
+  padding-left: 20px;
+  padding-top: 5px;
+  position: absolute;
+  top: 5%;
+  width: 100%;
+}
+.dashboard-container .clear-day {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#f3bf5f), to(#e79827));
+  background-image: linear-gradient(to bottom, #f3bf5f, #e79827);
+}
+.dashboard-container .clear-night {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#10022d), to(#1d1759));
+  background-image: linear-gradient(to bottom, #10022d, #1d1759);
+}
+.dashboard-container .rain {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#1d2f4d), to(#0c4c69));
+  background-image: linear-gradient(to bottom, #1d2f4d, #0c4c69);
+}
+.dashboard-container .snow {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#56c1d8), to(#00829c));
+  background-image: linear-gradient(to bottom, #56c1d8, #00829c);
+}
+.dashboard-container .sleet {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#057a93), to(#3b7591));
+  background-image: linear-gradient(to bottom, #057a93, #3b7591);
+}
+.dashboard-container .wind {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#134065), to(#125b89));
+  background-image: linear-gradient(to bottom, #134065, #125b89);
+}
+.dashboard-container .fog {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#005482), to(#13849c));
+  background-image: linear-gradient(to bottom, #005482, #13849c);
+}
+.dashboard-container .cloudy {
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#8abead), to(#008fab));
+  background-image: linear-gradient(to bottom, #8abead, #008fab);
+}
+.dashboard-container .partly-cloudy-day {
+  background-image: -webkit-gradient(linear, right top, left top, from(#8abead), to(#008fab));
+  background-image: linear-gradient(to left, #8abead, #008fab);
+}
+.dashboard-container .partly-cloudy-night {
+  background-image: -webkit-gradient(linear, right top, left top, from(#8abead), to(#008fab));
+  background-image: linear-gradient(to left, #8abead, #008fab);
+}
+.dashboard-container .hail {
+  background-image: -webkit-gradient(linear, right top, left top, from(#8abead), to(#008fab));
+  background-image: linear-gradient(to left, #8abead, #008fab);
+}
+

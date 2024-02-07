@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="8px" viewBox="0 0 14 8" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Path</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Space_Summary_Leftmenu1.2-Copy-2" transform="translate(-156.000000, -385.000000)" fill="#324056" fill-rule="nonzero">
+            <g id="left-panel" transform="translate(61.000000, 70.000000)">
+                <g id="space-copy-3" transform="translate(0.000000, 302.000000)">
+                    <g id="right" transform="translate(102.000000, 17.000000) scale(1, -1) translate(-102.000000, -17.000000) translate(95.000000, 13.000000)">
+                        <path d="M13.8718125,2.63446094 L11.2468125,0.0094609375 L10.6281875,0.628085937 L12.506375,2.50627344 L0.875,2.50627344 C0.450625,2.50627344 0,2.81296094 0,3.38127344 L0,7.31877344 L0.875,7.31877344 L0.875,3.38127344 L12.506375,3.38127344 L10.6281875,5.25946094 L11.2468125,5.87808594 L13.8718125,3.25308594 C14.042875,3.08202344 14.042875,2.80552344 13.8718125,2.63446094 Z" id="Path"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

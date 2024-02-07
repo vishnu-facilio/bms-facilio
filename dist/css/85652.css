@@ -1,0 +1,28 @@
+
+.height40px[data-v-8b7dcfbc] {
+  height: 40px;
+}
+.height30px[data-v-8b7dcfbc] {
+  height: 30px;
+}
+.filter-key[data-v-8b7dcfbc] {
+  background: rgba(234, 236, 238, 0.5) !important;
+  color: rgb(107, 107, 107);
+  font-weight: 400;
+  border: 1px solid #d0d9e2 !important;
+  font-size: 14px;
+}
+.close-icon[data-v-8b7dcfbc] {
+  display: none;
+  color: rgba(133, 153, 172, 1);
+}
+.name-input:hover .close-icon[data-v-8b7dcfbc] {
+  display: block;
+}
+.name-input[data-v-8b7dcfbc] {
+  border-radius: 100px;
+}
+
+.tag[data-v-f039f808]{font-size:13px;font-weight:500;line-height:normal;letter-spacing:.5px;text-align:center;color:#3ab2c2;background-color:#f7feff;border:solid 1px #3ab2c2;border-radius:3px;padding:4px 12px;margin-right:10px;margin-bottom:15px}.more[data-v-f039f808]{color:#3ab2c2;font-size:16px;font-weight:500;line-height:normal;letter-spacing:.5px;text-align:center;margin-top:2px}
+.field-loading{height:40px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-flex:1;-ms-flex:1;flex:1;border-radius:3px}
+.search-input-comp .resource-search .el-input__inner{padding-left:15px !important}.fc-lookup-icon{color:#000}.f-lookup-chooser{position:relative}.f-lookup-chooser:hover .flookup-remove-icon{display:-webkit-box;display:-ms-flexbox;display:flex}.f-lookup-chooser .resource-search .el-input .el-input__prefix{right:5px;left:95%;z-index:10}.f-lookup-chooser .resource-search .el-input .el-input__suffix .el-select__caret.el-icon-arrow-up{display:none}.f-lookup-chooser .resource-search .el-input .el-input__suffix .el-icon-circle-close{padding-left:30px}.f-lookup-chooser .skip-disable .el-input__inner:disabled{cursor:auto !important;background-color:#fff;color:#324056}.f-lookup-chooser-container .icon-sm{height:10px;width:10px}.f-lookup-chooser-container .flookup-remove-icon{display:none}.f-lookup-chooser-container .flookup-remove-icon-alignment{height:100%;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:1px 5px}.f-lookup-chooser-container .icon-class-alignment{height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;margin:1px 5px}.f-lookup-chooser-container .flRight{height:100%}

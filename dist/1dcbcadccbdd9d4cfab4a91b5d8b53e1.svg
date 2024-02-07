@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="14px" viewBox="0 0 18 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 53.1 (72631) - https://sketchapp.com -->
+    <title>Asset</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Asset" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group" transform="translate(0.000000, 0.500000)" stroke="#605E88">
+            <path d="M0.5,6 L0.5,13 L17.5,13 L17.5,6 L12.2071068,6 L11.2071068,7 L6.79289322,7 L5.79289322,6 L0.5,6 Z" id="Rectangle"></path>
+            <rect id="Rectangle" x="7" y="9" width="4" height="2"></rect>
+            <polyline id="Path-14" points="6.24500451e-17 6 2.5 1 5 1 13 1 15.5 1 18 6"></polyline>
+            <polyline id="Path-Copy-2" fill="#FFFFFF" points="5 2 5 -7.10542736e-15 13 -7.10542736e-15 13 2"></polyline>
+            <polyline id="Path" points="3 6 3 4 15 4 15 6"></polyline>
+            <polyline id="Path-Copy" points="4 4 4 2 14 2 14 4"></polyline>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="503" height="260" viewBox="0 0 503 260">
+  <defs>
+    <linearGradient id="model---3-a" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-b" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-c" x1="50%" x2="50%" y1="19.886%" y2="76.379%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="37.148%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-d" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#ABC9DD"/>
+      <stop offset="100%" stop-color="#52758E"/>
+    </linearGradient>
+    <linearGradient id="model---3-e" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-f" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-g" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+    <linearGradient id="model---3-h" x1="50%" x2="50%" y1="0%" y2="100%">
+      <stop offset="0%" stop-color="#AFC4D4"/>
+      <stop offset="32.184%" stop-color="#AECBE1"/>
+      <stop offset="100%" stop-color="#7591A6"/>
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <g transform="translate(0 80.4)">
+      <path fill="url(#model---3-a)" d="M95.1999943,0 C86.142525,0 78.7999953,16.9250273 78.7999953,37.8031066 C78.7999953,58.6811858 86.142525,75.8031043 95.1999943,75.8031043 L16.399999,75.8031043 L16.399999,0 L95.1999943,0 L95.1999943,0 Z"/>
+      <ellipse cx="16.4" cy="37.803" fill="url(#model---3-b)" rx="16.4" ry="37.803"/>
+    </g>
+    <g transform="translate(134)">
+      <rect width="197.013" height="196" x="46.387" fill="#6A889F"/>
+      <polygon fill="#415F76" points="46.388 196 243.4 196 201.19 238 4.17 238"/>
+      <polygon fill="#3C5970" points="243.4 0 243.4 196 201.183 238 201.183 42.008" opacity=".4"/>
+      <polygon fill="#7591A6" points="237.2 23.449 237.2 188.646 207.6 217 207.6 52.672" opacity=".4"/>
+      <polygon fill="#99B3C6" points="46.387 0 46.387 196 4.17 238 4.17 42.008"/>
+      <rect width="197.013" height="196" x="4.17" y="42" fill="#DBE7F0" opacity=".1"/>
+      <polygon fill="#86A2B7" points="4.2 42 .2 42 .2 238 4.2 238"/>
+      <polygon fill="#BACCDA" points="46.388 0 243.4 0 201.19 42 4.17 42" opacity=".7"/>
+      <path stroke="#979797" stroke-width=".5"/>
+    </g>
+    <polygon fill="#9FB7C9" points="180 80.4 95.2 80.4 95.2 156.4 179.483 156.4" opacity=".3"/>
+    <polygon fill="#9FB7C9" points="223.2 80.6 138.4 80.6 138.4 156.6 223.2 156.6" opacity=".2"/>
+    <g transform="matrix(-1 0 0 1 240 80.4)">
+      <ellipse cx="16.4" cy="38.4" stroke="#FFF" stroke-opacity=".266" stroke-width="1.6" rx="15.6" ry="37.6"/>
+      <ellipse cx="18" cy="38" fill="#86A0B3" rx="16.4" ry="38"/>
+    </g>
+    <g transform="matrix(-1 0 0 1 112.8 80.4)">
+      <path fill="#506C81" d="M16.399999,75.8031043 C25.4574684,75.8031043 32.799998,58.6811858 32.799998,37.8031066 C32.799998,16.9250273 25.4574684,0 16.399999,0 C7.34252967,0 0,16.9250273 0,37.8031066 C0,58.6811858 7.34252967,75.8031043 16.399999,75.8031043 Z"/>
+      <path fill="#7491A6" d="M17.9999989,75.8031043 C27.0574683,75.8031043 34.3999979,58.6811858 34.3999979,37.8031066 C34.3999979,16.9250273 27.0574683,0 17.9999989,0 C8.94252957,0 1.5999999,16.9250273 1.5999999,37.8031066 C1.5999999,58.6811858 8.94252957,75.8031043 17.9999989,75.8031043 Z"/>
+    </g>
+    <ellipse cx="356.4" cy="118.8" fill="#002A4B" rx="14" ry="38.4"/>
+    <ellipse cx="354.4" cy="118.8" fill="#98B5CA" opacity=".7" rx="12" ry="38.4"/>
+    <g transform="translate(107.6 175.6)">
+      <rect width="50.76" height="69.12" x="10.8" fill="#6A889F"/>
+      <polygon fill="#415F76" points="10.864 69.12 61.56 69.12 50.698 83.88 0 83.88"/>
+      <polygon fill="#7591A6" points="61.56 0 61.56 69.078 50.76 83.88 50.76 14.805"/>
+      <polygon fill="#99B3C6" points="10.8 0 10.8 69.078 0 83.88 0 14.805" opacity=".9"/>
+      <rect width="50.76" height="69.12" y="14.76" fill="#DBE7F0"/>
+      <polygon fill="#A1B7C8" points="10.864 0 61.56 0 50.698 14.76 0 14.76"/>
+    </g>
+    <g transform="translate(341.2 22)">
+      <path fill="url(#model---3-c)" d="M29.5999982,2.10320638e-12 L64.7999961,54.5606296 L60.5253733,59.0462417 L60.7999964,128.989997 L59.985,129.853 L65.7999961,135.399992 L30.3999982,174.33709 L0,193.550816 L0,29.2225726 L29.5999982,2.10320638e-12 Z" opacity=".8" transform="translate(.4)"/>
+      <g opacity=".1">
+        <polygon fill="#FFF" points="0 29.223 60.525 59.046 64.8 54.561 29.6 0"/>
+        <polygon fill="#1D303F" points="0 193.551 30.4 174.337 66.2 135.4 60.328 129.381"/>
+      </g>
+      <ellipse cx="64.2" cy="95.4" fill="url(#model---3-d)" rx="7" ry="41.4"/>
+      <ellipse cx="66.2" cy="97" fill="url(#model---3-e)" rx="7" ry="38.4"/>
+      <path fill="url(#model---3-f)" d="M144.799991,58.3999965 L144.799991,58.5999965 L144.799991,58.5999965 C135.742522,58.5999965 128.399992,75.7922611 128.399992,96.9999942 C128.399992,118.207727 135.742522,135.399992 144.799991,135.399992 L144.799991,135.399997 L65.9999961,135.399997 L65.9999961,58.5999965 L144.799991,58.3999965 Z" opacity=".85"/>
+      <path fill="url(#model---3-g)" d="M144.799991,135.399997 C153.857461,135.399997 161.19999,118.207727 161.19999,96.9999942 C161.19999,75.7922611 153.857461,58.3999965 144.799991,58.3999965 C135.742522,58.3999965 128.399992,75.7922611 128.399992,96.9999942 C128.399992,118.207727 135.742522,135.399997 144.799991,135.399997 Z" opacity=".85"/>
+      <path fill="url(#model---3-h)" d="M144.599991,58.3999965 C145.167359,58.3999965 145.727742,58.4735232 146.279649,58.6168446 C146.120285,58.605875 145.960417,58.5999965 145.799991,58.5999965 C137.073893,58.5999965 129.999992,75.9922611 129.999992,97.1999942 C129.999992,117.018829 136.17769,133.330924 144.108351,135.382487 C135.609774,134.750554 128.799992,117.808043 128.799992,96.9999942 C128.799992,75.7922611 135.873893,58.3999965 144.599991,58.3999965 Z" opacity=".5"/>
+    </g>
+    <polygon fill="#AFC4D4" points="176.4 0 134.2 42 138.2 42 180.403 0"/>
+    <rect width="4" height="196" x="331.2" y="42" fill="#3C5970" opacity=".2"/>
+    <g transform="translate(142.797 80)">
+      <ellipse cx="18.003" cy="38.8" fill="#506C81" opacity=".7" rx="18" ry="38"/>
+      <ellipse cx="16.003" cy="38.8" fill="#EEE" rx="16" ry="38"/>
+      <path fill="#7491A6" d="M16.4386635,0.00673270393 C23.2650884,-0.287739525 29.1194841,9.10515838 31.603035,22.7293145 L1.02246154,52 C0.363202107,47.9056261 0.00303686832,43.4618502 0.00303686832,38.8075754 C0.00303686832,17.7700235 7.36151757,0.398294534 16.4386635,0.00673270393 Z"/>
+    </g>
+  </g>
+</svg>

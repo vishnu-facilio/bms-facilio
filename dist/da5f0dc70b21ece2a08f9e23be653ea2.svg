@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="70px" height="101px" viewBox="0 0 70 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Filter 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-19.1%" y="-7.1%" width="138.2%" height="114.3%" filterUnits="objectBoundingBox" id="filter-1">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="0.5" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1" result="shadowMatrixOuter1"></feColorMatrix>
+            <feMerge>
+                <feMergeNode in="shadowMatrixOuter1"></feMergeNode>
+                <feMergeNode in="SourceGraphic"></feMergeNode>
+            </feMerge>
+        </filter>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-2">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-102.000000, -627.000000)">
+            <g id="Filter-1" transform="translate(102.000000, 627.000000)">
+                <g id="Group-8">
+                    <g id="Group-6">
+                        <g id="Group-Copy-5">
+                            <polygon id="Path-2-Copy" fill="#5B6777" points="70 0 70 77.26 0 77.26 0 0"></polygon>
+                            <polygon id="Path-4-Copy" fill="#848E9C" points="0 77 0 100 70 100 70 77"></polygon>
+                        </g>
+                    </g>
+                </g>
+                <g id="Group-9">
+                    <g id="Group-10" filter="url(#filter-1)" transform="translate(18.000000, 7.000000)">
+                        <polygon id="Path-10" fill="#FFFFFF" points="20.1537594 0.239216353 0.465481217 19.9274945 13.8690374 19.9274945 33.5573155 0.239216353"></polygon>
+                        <polygon id="Path-11" fill="#EBEBEB" points="0.487842596 19.9447974 0.487842596 90.2516676 13.8713593 90.2516676 13.8713593 19.9447974"></polygon>
+                        <polygon id="Path-12" fill="#F5F5F5" points="33.5313524 0.216037505 33.5313524 69.8050327 13.8019306 90.2729569 13.8019306 19.9410217"></polygon>
+                        <g id="Group-11" transform="translate(0.000000, 5.000000)" opacity="0.200000003" stroke="#979797">
+                            <polyline id="Path-13" points="0.780714815 26.2561771 13.9298722 26.2561771 33.4683757 6.71767354"></polyline>
+                            <polyline id="Path-13-Copy" points="0.780714815 41.2561771 13.9298722 41.2561771 33.4683757 21.7176735"></polyline>
+                            <polyline id="Path-13-Copy-2" points="0.780714815 56.2561771 13.9298722 56.2561771 33.4683757 36.7176735"></polyline>
+                            <polyline id="Path-13-Copy-3" points="0.780714815 71.2561771 13.9298722 71.2561771 33.4683757 51.7176735"></polyline>
+                            <g id="Group-12" transform="translate(7.000000, 0.000000)">
+                                <polyline id="Path-14" points="0.861909553 7.70939042 14.0971278 7.70939042 14.0971278 77.5134845"></polyline>
+                                <polyline id="Path-14-Copy" points="7.86190955 0.709390424 21.0971278 0.709390424 21.0971278 70.5134845"></polyline>
+                            </g>
+                        </g>
+                    </g>
+                    <polygon id="Path-4" fill="url(#linearGradient-2)" opacity="0.5" points="0 0 0 30 70 30 70 0"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

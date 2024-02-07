@@ -1,0 +1,54 @@
+.attendance-transcation-dialog-row {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-top: 1px solid #f7f8f9;
+  border-bottom: 1px solid #f7f8f9;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.attendance-transcation-dialog-row-bb {
+  border-bottom: 1px solid #f6f6fa;
+}
+
+.attendance-status-P-bg {
+  background: #9fca6d;
+}
+.attendance-status-W-bg {
+  background: #71acde;
+}
+.attendance-status-L-bg {
+  background: #dc4343;
+}
+.attendance-status-A-bg {
+  background: #e8798b;
+}
+.fc-att-legend-icon {
+  font-style: normal;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffffff;
+  letter-spacing: 0.4px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 1px; //for font alignment inside circle
+}
+.fc-att-legend-text {
+  font-size: 12px;
+  font-style: normal;
+  letter-spacing: 0.4px;
+  color: #324056 !important;
+}
+.fc-text-pink-break-heading {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 3.17;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--fc-theme-color);
+}

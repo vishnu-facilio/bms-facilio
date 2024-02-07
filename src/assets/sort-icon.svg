@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="16px" viewBox="0 0 18 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
+    <title>Sorty by</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Approval-Task-Page-Copy" transform="translate(-1286.000000, -96.000000)">
+            <g id="Sorty-by" transform="translate(1286.000000, 95.000000)">
+                <path d="M9.2,2.2 L17.2,2.2" id="Line-12" stroke="#50506C" stroke-width="1.4" stroke-linecap="round"></path>
+                <path d="M9.2,5.4 L17.2,5.4" id="Line-12-Copy" stroke="#50506C" stroke-width="1.4" stroke-linecap="round"></path>
+                <path d="M9.2,8.6 L17.2,8.6" id="Line-12-Copy-2" stroke="#50506C" stroke-width="1.4" stroke-linecap="round"></path>
+                <path d="M11.6,11.8 L17.2,11.8" id="Line-12-Copy-3" stroke="#50506C" stroke-width="1.4" stroke-linecap="round"></path>
+                <path d="M10,15 L17.2,15" id="Line-12-Copy-4" stroke="#50506C" stroke-width="1.4" stroke-linecap="round"></path>
+                <g id="left-arrow-(1)" transform="translate(4.566667, 8.933333) rotate(-90.000000) translate(-4.566667, -8.933333) translate(-3.433333, 4.433333)" fill="#50506C" fill-rule="nonzero">
+                    <path d="M14.6154016,3.51777886 L2.87242927,3.52133008 L5.06014959,1.32879024 C5.16727805,1.22174634 5.22604228,1.07673821 5.22604228,0.924543089 C5.22604228,0.772347967 5.16727805,0.628354472 5.06014959,0.521056911 L4.71973984,0.180478049 C4.61269593,0.0734341463 4.47005528,0.0142471545 4.31794472,0.0142471545 C4.16574959,0.0142471545 4.02302439,0.0730113821 3.91598049,0.180055285 L0.16580813,3.92988943 C0.0583414634,4.0373561 -0.000422764228,4.18050407 1.78766304e-17,4.33278374 C-0.000422764228,4.48590894 0.0583414634,4.62914146 0.16580813,4.73643902 L3.91598049,8.48661138 C4.02302439,8.59357073 4.16566504,8.65241951 4.31794472,8.65241951 C4.47005528,8.65241951 4.61269593,8.59348618 4.71973984,8.48661138 L5.06014959,8.14603252 C5.16727805,8.03915772 5.22604228,7.89643252 5.22604228,7.7442374 C5.22604228,7.59212683 5.16727805,7.45692683 5.06014959,7.34996748 L2.84773984,5.14516748 L14.6231805,5.14516748 C14.9366179,5.14516748 15.2,4.87502114 15.2,4.56175285 L15.2,4.08005528 C15.2,3.76678699 14.928839,3.51777886 14.6154016,3.51777886 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

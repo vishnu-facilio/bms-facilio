@@ -1,0 +1,37 @@
+{
+  "email_logs": "Registros de correo electrónico",
+  "description": "Los registros de correo electrónico proporcionan información para determinar el estado de entrega de los correos electrónicos salientes.",
+  "no_email_logs": "Sin registros de correo electrónico",
+  "recipient_count": "Recuento de beneficiarios",
+  "delivered_count": "Recuento de entregas",
+  "bounced_count": "Recuento de rebotes",
+  "source_type": "Tipo de fuente",
+  "record_id": "ID de registro",
+  "files_attached": " archivos adjuntos",
+  "file_attached": " archivo adjunto",
+  "zero": "",
+  "no_records_found": "No se han encontrado registros",
+  "info_tab": {
+    "basic_information": "Información básica",
+    "email_body": "Correo electrónico",
+    "cc": "CC",
+    "bcc": "BCC",
+    "created_time": "Hora de creación"
+  },
+  "email_dialog": {
+    "in_progress": "En curso",
+    "sent": "Enviado",
+    "delivered": "Entregado",
+    "bounced": "Rebotado",
+    "hard_bounce": "Rebote duro",
+    "soft_bounce": "Rebote suave",
+    "unknown_bounce": "Rebote desconocido",
+    "recipient_list": "Lista de beneficiarios",
+    "delivered_list": "Lista entregada",
+    "bounced_list": "Lista de rebotados",
+    "bounce_type": "Tipo de rebote",
+    "bounce_reason": "Razón de rebote",
+    "s_no": "S.No",
+    "search_email": "Buscar correo electrónico"
+  }
+}

@@ -1,0 +1,24 @@
+
+.depreciationcosttrend
+  .bb-shapes.bb-shapes-Current-Price.bb-bars.bb-bars-Current-Price {
+  visibility: hidden;
+}
+/* .depreciationcosttrend
+  .bb-shapes.bb-shapes-Current-Price.bb-bars.bb-bars-Current-Price
+  .bb-bar-0 {
+  visibility: visible;
+} */
+.depreciationcosttrend .bb-axis-x-label,
+.depreciationcosttrend .bb-axis-y-label,
+.depreciationcosttrend .bb-axis-y2-label,
+.depreciationcosttrend .bb .bb-axis-x .tick text,
+.depreciationcosttrend .bb .bb-axis-y .tick text,
+.depreciationcosttrend .bb .bb-axis-y2 .tick text {
+  fill: #324056 !important;
+}
+.depreciationcosttrend .bb .bb-axis-y path.domain,
+.depreciationcosttrend .bb .bb-axis-x path.domain {
+  opacity: 1 !important;
+  stroke: #eceef1 !important;
+}
+

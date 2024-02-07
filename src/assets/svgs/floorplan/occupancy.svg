@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>occupancy</title>
+    <desc>Created with Sketch.</desc>
+    <g id="occupancy" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="image-1">
+            <rect id="Rectangle" fill="#30C5BB" fill-rule="nonzero" x="0" y="0" width="50" height="50" rx="5"></rect>
+            <path d="M30.2480918,29.2162641 C36.1263252,30.7924412 39.0434649,34.0536865 38.9995107,39 L11,39 L11,38.8929125 C11.3532952,33.2436544 14.3667262,30.0780739 20.0402932,29.396171 C23.516905,31.3108197 26.9195045,31.2508507 30.2480918,29.2162641 Z M24.8820532,11.4509901 C29.2104282,11.4509901 31.3746157,13.7700161 31.3746157,18.4080679 C30.9799158,24.9519009 28.7971874,28.1252218 24.8264305,27.9280306 C20.8556736,27.7308393 18.6729452,24.5575185 18.2782453,18.4080679 C18.3524272,13.7700161 20.5536965,11.4509901 24.8820532,11.4509901 Z" id="tenant" stroke="#FFFFFF" stroke-width="1.3"></path>
+        </g>
+    </g>
+</svg>

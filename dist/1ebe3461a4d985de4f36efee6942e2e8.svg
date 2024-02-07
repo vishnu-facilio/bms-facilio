@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="50px" viewBox="0 0 200 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>V.Heat wheel</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#D8E1E7" offset="0%"></stop>
+            <stop stop-color="#AFC0CB" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-977.000000, -1050.000000)">
+            <g id="V.Heat-wheel" transform="translate(1077.000000, 1075.000000) scale(1, -1) rotate(90.000000) translate(-1077.000000, -1075.000000) translate(1052.000000, 975.000000)">
+                <g id="Group-3" transform="translate(0.000000, 0.000000)">
+                    <path d="M19.832772,200 C22.4661418,200 25.731761,200 29.6296296,200 L28.957157,2.66453526e-13 C30.1764587,8.8817842e-14 27.1349971,0 19.832772,0 C8.8794345,0 0,44.771525 0,100 C0,155.228475 8.8794345,200 19.832772,200 Z" id="Oval-Copy-9" fill="#97A2A9"></path>
+                    <ellipse id="Oval" fill="url(#linearGradient-1)" cx="30.0925926" cy="100" rx="19.9074074" ry="100"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

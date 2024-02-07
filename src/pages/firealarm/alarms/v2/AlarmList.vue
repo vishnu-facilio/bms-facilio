@@ -1,0 +1,1144 @@
+<template>
+  <div class="height100 alarm-list-page">
+    <div
+      v-if="openAlarmId === -1"
+      class="pL10 pR10 height100 scrollable mT10"
+      style="padding-bottom: 70px"
+    >
+      <div
+        class="row full-layout-white fc-border-1 scrollbar-style"
+        style="padding-bottom: 20px; overflow-x: scroll; display: block"
+      >
+        <table
+          class="fc-list-view-table fc-list-view-table2 fc-alarm-summary-table"
+        >
+          <thead>
+            <th class="text-left" v-if="canShowColumn('severity')"></th>
+            <th class="text-left uppercase" style="width: 350px">
+              {{ $t('alarm.alarm.message') }}
+            </th>
+            <th
+              class="uppercase"
+              v-for="(field, index) in viewColumns"
+              v-if="!isFixedColumn(field.name)"
+              :key="index"
+            >
+              <div
+                :class="{ 'text-center': field.name === 'noOfOccurrences' }"
+                v-if="field.name === 'noOfOccurrences'"
+                class="p10"
+              ></div>
+              <div
+                :class="{ 'text-center': field.name === 'noOfOccurrences' }"
+                v-else
+              >
+                {{ field.displayName }}
+              </div>
+            </th>
+            <th v-if="canShowColumn('noOfOccurrences')"></th>
+            <th
+              v-if="canShowColumn('acknowledgedBy')"
+              class="text-left uppercase"
+            ></th>
+            <th></th>
+          </thead>
+          <tbody v-if="loading">
+            <tr>
+              <td colspan="100%" class="text-center">
+                <spinner :show="loading" size="80"></spinner>
+              </td>
+            </tr>
+          </tbody>
+          <tbody v-else>
+            <tr class="nowotd" v-if="!alarms.length">
+              <td colspan="100%">
+                <div
+                  class="flex-middle justify-content-center flex-direction-column"
+                >
+                  <inline-svg
+                    src="svgs/emptystate/alarmEmpty"
+                    iconClass="icon text-center icon-xxxxlg"
+                  ></inline-svg>
+                  <div class="nowo-label">
+                    {{ $t('alarm.alarm.no_alarms_found') }}
+                  </div>
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-else
+              class="tablerow"
+              v-for="(alarm, index) in alarms"
+              :key="index"
+            >
+              <td v-if="canShowColumn('severity')">
+                <div
+                  class="q-item-label self-center f10 secondary-color"
+                  v-if="alarm.severity"
+                  style="min-width: 90px; margin-left: 13%"
+                >
+                  <div
+                    class="q-item-label uppercase severityTag"
+                    v-bind:style="{
+                      'background-color': getAlarmSeverity(alarm.severity.id)
+                        .color,
+                    }"
+                  >
+                    {{
+                      alarm.severity.id
+                        ? getAlarmSeverity(alarm.severity.id).displayName
+                        : '---'
+                    }}
+                  </div>
+                </div>
+              </td>
+              <td @click="opensummary(alarm.id)">
+                <div
+                  class="q-item-main q-item-section"
+                  style="min-width: 230px"
+                >
+                  <div
+                    class="q-item-sublabel ellipsis"
+                    style="margin-top: 5px; font-size: 12px"
+                  >
+                    <span class="fc-id">#{{ alarm.id }}</span>
+                  </div>
+                  <div
+                    class="q-item-label fw5"
+                    style="
+                      margin-top: 1px;
+                      font-size: 15px;
+                      letter-spacing: 0.3px;
+                    "
+                  >
+                    {{ alarm.subject }}
+                  </div>
+                  <div
+                    class="ellipsis"
+                    style="font-size: 12px; color: #8a8a8a; margin-top: 5px"
+                  >
+                    <span style>{{ alarm.lastOccurredTime | fromNow }}</span>
+                  </div>
+                </div>
+              </td>
+              <td
+                v-if="!isFixedColumn(field.name)"
+                v-for="(field, index) in viewColumns"
+                :key="index"
+              >
+                <div v-if="field.name === 'alarmType'">
+                  <span
+                    class="q-item-label"
+                    style="font-size: 13px; letter-spacing: 0.4px"
+                    >{{ alarm.alarmTypeVal ? alarm.alarmTypeVal : '---' }}</span
+                  >
+                </div>
+                <div v-else-if="field.name === 'noOfOccurrences'">
+                  <div class="flLeft">
+                    <img
+                      src="~statics/icons/event.svg"
+                      style="width: 15px"
+                      class="flLeft"
+                    />
+                  </div>
+                  <span
+                    class="q-item-label pL5"
+                    style="font-size: 13px; letter-spacing: 0.4px"
+                  >
+                    {{
+                      alarm.noOfOccurrences && alarm.noOfOccurrences > -1
+                        ? alarm.noOfOccurrences
+                        : '0'
+                    }}
+                  </span>
+                  <div style="clear: both"></div>
+                </div>
+                <div v-else-if="field.name === 'readingAlarmCategory'">
+                  <span
+                    class="q-item-label"
+                    style="font-size: 13px; letter-spacing: 0.4px"
+                  >
+                    {{
+                      alarm.readingAlarmCategory &&
+                      alarm.readingAlarmCategory.id > -1
+                        ? getReadingAlarmCategory(alarm.readingAlarmCategory.id)
+                            .name
+                        : '---'
+                    }}
+                  </span>
+                </div>
+                <div
+                  v-else-if="field.name === 'lastOccurredTime'"
+                  @click="opensummary(alarm.id)"
+                  style="min-width: 150px"
+                >
+                  <timer
+                    class="alarm-timer alarm-list-timer p10"
+                    :time="alarm.lastOccurredTime"
+                    :title="alarm.lastOccurredTime | formatDate()"
+                    v-tippy="{
+                      html: '#timer_popover_' + alarm.id,
+                      distance: 0,
+                      interactive: true,
+                      theme: 'light',
+                      animation: 'scale',
+                      arrow: true,
+                    }"
+                  ></timer>
+                  <div :id="'timer_popover_' + alarm.id" class="hide">
+                    <div
+                      style="
+                        font-size: 12px;
+                        letter-spacing: 0.5px;
+                        color: #666666;
+                      "
+                    >
+                      {{ alarm.lastOccurredTime | formatDate() }}
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-else-if="field.name === 'lastCreatedTime'"
+                  @click="opensummary(alarm.id)"
+                  style="min-width: 150px"
+                >
+                  <div :id="'timer_popover_' + alarm.id" class="">
+                    <div
+                      style="
+                        font-size: 12px;
+                        letter-spacing: 0.5px;
+                        color: #666666;
+                      "
+                      v-if="alarm.lastCreatedTime > -1"
+                    >
+                      {{ alarm.lastCreatedTime | formatDate() }}
+                    </div>
+                    <div
+                      style="
+                        font-size: 12px;
+                        letter-spacing: 0.5px;
+                        color: #666666;
+                      "
+                      v-else
+                    >
+                      ---
+                    </div>
+                  </div>
+                </div>
+                <div
+                  v-else
+                  style="
+                    width: 200px;
+                    max-width: 200px;
+                    white-space: nowrap;
+                    text-overflow: ellipsis;
+                    overflow: hidden;
+                  "
+                >
+                  <span
+                    class="q-item-label"
+                    style="font-size: 13px; letter-spacing: 0.4px"
+                    >{{ getColumnDisplayValue(field, alarm) }}</span
+                  >
+                  <div
+                    v-if="
+                      field.name === 'resource' &&
+                        alarm.resource &&
+                        alarm.resource.space &&
+                        alarm.resource.space.id > 0
+                    "
+                    style="padding-top: 5px"
+                  >
+                    <img
+                      src="~statics/space/space-resource.svg"
+                      style="height: 11px; width: 12px; margin-right: 3px"
+                      class="flLeft"
+                    />
+                    <span
+                      class="flLeft q-item-label ellipsis"
+                      v-tippy
+                      small
+                      data-position="bottom"
+                      :title="alarm.resource.space.name"
+                      style="max-width: 85%; font-size: 10px"
+                      >{{ alarm.resource.space.name }}</span
+                    >
+                  </div>
+                </div>
+              </td>
+              <td v-if="canShowColumn('noOfOccurrences')">
+                <div style="width: 55px" v-if="alarm.noOfOccurrences > 0">
+                  <div class="flLeft">
+                    <img
+                      src="~statics/icons/event.svg"
+                      style="width: 15px"
+                      class="flLeft"
+                    />
+                  </div>
+                  <span class="flLeft pL5">{{ alarm.noOfOccurrences }}</span>
+                  <div style="clear: both"></div>
+                </div>
+              </td>
+              <td v-if="canShowColumn('acknowledgedBy')">
+                <div
+                  v-if="$hasPermission('alarm:ACKNOWLEDGE_ALARM')"
+                  class="pull-left"
+                  style="font-size: 13px; color: #383434; white-space: nowrap"
+                >
+                  <q-btn
+                    color="secondary"
+                    class="uppercase fia-alert-btn"
+                    small
+                    outline
+                    @click="
+                      acknowledgeAlarm({
+                        alarm: alarm,
+                        occurrence: {
+                          id:
+                            alarm && alarm.lastOccurrenceId
+                              ? alarm.lastOccurrenceId
+                              : null,
+                        },
+                        acknowledged: true,
+                        acknowledgedBy: $account.user,
+                      })
+                    "
+                    v-if="!alarm.acknowledged && isActiveAlarm(alarm)"
+                    >{{ $t('alarm.alarm.acknowledge') }}</q-btn
+                  >
+                  <span
+                    class="q-item-label"
+                    v-else-if="!isActiveAlarm(alarm)"
+                  ></span>
+                  <span class="q-item-label f11" v-else>
+                    <div
+                      :id="'contentpopup2_' + alarm.id"
+                      class="hide ackhover"
+                    >
+                      <div>
+                        <div class="ackhover-row">
+                          <div class="hover-row">
+                            {{ $t('alarm.alarm.acknowledge_by') }}
+                          </div>
+                          <div class="hover-row">
+                            <span>
+                              <user-avatar
+                                size="sm"
+                                :user="getUserName(alarm.acknowledgedBy.id)"
+                              ></user-avatar>
+                            </span>
+                          </div>
+                          <div class="hover-row">
+                            {{
+                              alarm.acknowledgedTime > 0
+                                ? alarm.acknowledgedTime
+                                : new Date() | fromNow
+                            }}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <span
+                      class="f11 pB10"
+                      style="
+                        font-size: 14px;
+                        letter-spacing: 0.3px;
+                        color: #333333;
+                      "
+                      v-tippy="{
+                        html: 'contentpopup2_' + alarm.id,
+                        interactive: true,
+                        reactive: true,
+                        distance: 15,
+                        theme: 'light',
+                        animation: 'scale',
+                      }"
+                      >{{ $t('alarm.alarm.acknowledged') }}</span
+                    >
+                    <div
+                      style="
+                        font-size: 12px;
+                        letter-spacing: 0.4px;
+                        text-align: left;
+                        color: #8a8a8a;
+                        padding-top: 5px;
+                      "
+                    >
+                      {{
+                        alarm.acknowledgedTime > 0
+                          ? alarm.acknowledgedTime
+                          : new Date() | fromNow
+                      }}
+                    </div>
+                  </span>
+                </div>
+              </td>
+              <td class="self-center secondary-color">
+                <q-icon
+                  slot="right"
+                  name="more_vert"
+                  style="float: right; font-size: 20px; color: #d8d8d8"
+                >
+                  <q-popover ref="moreactionspopover">
+                    <q-list link class="no-border">
+                      <q-item v-if="isActiveAlarm(alarm)">
+                        <q-item-main
+                          :label="$t('alarm.alarm.clear')"
+                          @click="updateAlarmsStatus(alarm)"
+                        />
+                      </q-item>
+                      <q-item v-if="alarm.lastWoId > 0">
+                        <q-item-main
+                          :label="$t('alarm.alarm.view_workorder')"
+                          @click="
+                            viewAlarm(alarm.lastWoId),
+                              $refs.moreactionspopover[index].close()
+                          "
+                        />
+                      </q-item>
+                      <q-item
+                        v-else-if="
+                          $hasPermission('alarm:CREATE_WO') &&
+                            alarm &&
+                            alarm.lastOccurrenceId &&
+                            isActiveAlarm(alarm)
+                        "
+                      >
+                        <q-item-main
+                          :label="$t('alarm.alarm.create_workorder')"
+                          @click="openAlarmWoCreation(alarm.lastOccurrenceId)"
+                        />
+                      </q-item>
+                      <q-item>
+                        <q-item-main
+                          :label="$t('common._common.delete')"
+                          @click="
+                            deleteAlarmConf([alarm.id]),
+                              $refs.moreactionspopover[index].close()
+                          "
+                        />
+                      </q-item>
+                    </q-list>
+                  </q-popover>
+                </q-icon>
+              </td>
+            </tr>
+            <tr v-if="fetchingMore">
+              <td colspan="100%" class="text-center">
+                <spinner :show="fetchingMore" size="50"></spinner>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <span
+          class="view-column-chooser fc-alarm-list-view"
+          @click="showColumnSettings = true"
+        >
+          <img
+            src="~assets/column-setting.svg"
+            style="text-align: center; position: absolute; top: 36%; right: 25%"
+          />
+        </span>
+      </div>
+    </div>
+    <div class="fc-column-view height100 border-border-none" v-else>
+      <div class="row fc-column-view-title height100">
+        <div
+          class="col-4 fc-column-view-left height100"
+          style="max-width: 26.3333%; flex: 0 0 26.3333%"
+        >
+          <div class="row container col-header pL20">
+            <div class="col-12">
+              <div class="pull-left">
+                <i class="el-icon-back fw6 pointer pR10" @click="back"></i>
+                <el-dropdown
+                  @command="openChild"
+                  class="alarm-dp"
+                  trigger="click"
+                  placement="top-end"
+                >
+                  <span class="el-dropdown-link pointer">
+                    {{ currentViewDetail.displayName }}
+                    <i class="el-icon-arrow-down el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown" class="alarm-dropdownmenu">
+                    <div
+                      v-for="(views, idx) in $store.state.view.groupViews"
+                      :key="idx"
+                      v-if="views.name !== 'sensorAlarmViews'"
+                    >
+                      <div class="alarm-view-name-dp pT10">
+                        {{ views.displayName }}
+                      </div>
+                      <el-dropdown-item
+                        v-for="(view, idx) in views.views"
+                        :key="idx"
+                        :command="view.name"
+                        v-if="view.name !== currentViewDetail.name"
+                        >{{ view.displayName }}</el-dropdown-item
+                      >
+                    </div>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+            </div>
+          </div>
+          <v-infinite-scroll
+            :loading="loading"
+            @bottom="nextPage"
+            :offset="20"
+            style="height: 100vh; padding-bottom: 150px; overflow-y: scroll"
+          >
+            <table
+              class="fc-list-view-table"
+              style="
+                height: calc(100vh - 100px);
+                overflow-y: scroll;
+                display: block;
+                padding-bottom: 60px;
+              "
+            >
+              <tbody v-if="alarms.length">
+                <template v-for="(alarm, index) in alarms">
+                  <tr
+                    @click="opensummary(alarm.id)"
+                    class="tablerow"
+                    :key="index"
+                    v-bind:class="{ active: openAlarmId === alarm.id }"
+                  >
+                    <td class="text-left width100 pL5">
+                      <div class="q-item-main q-item-section pL10">
+                        <div
+                          class="fw5 workRequest-heading f14 textoverflow-height-ellipsis"
+                          v-tippy
+                          :title="alarm.Subject"
+                        >
+                          {{ alarm.subject }}
+                        </div>
+                        <div class="flex-middle pT5">
+                          <div class="uppercase fc-id">#{{ alarm.id }}</div>
+                          <div class="separator">|</div>
+                          <div class="fc-grey2-text12">
+                            <img
+                              src="~statics/space/space-resource.svg"
+                              style="
+                                height: 11px;
+                                width: 12px;
+                                margin-right: 3px;
+                              "
+                              class="flLeft"
+                            />
+                            <span v-if="alarm.hasOwnProperty('agent')">{{
+                              alarm.agent ? alarm.agent.name : '--'
+                            }}</span>
+                            <span v-else>{{
+                              alarm.resource ? alarm.resource.name : '--'
+                            }}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-left clearboth" v-if="alarm.severity">
+                      <span class="ellipsis pT5">
+                        <span class="q-item-label">
+                          <i
+                            class="fa fa-circle prioritytag"
+                            v-bind:style="{
+                              color: getAlarmSeverity(alarm.severity.id).color,
+                            }"
+                            aria-hidden="true"
+                          ></i>
+                        </span>
+                        <span
+                          class="q-item-label uppercase secondary-color"
+                          style="
+                            font-size: 10px;
+                            letter-spacing: 0.7px;
+                            color: #333333;
+                          "
+                        >
+                          {{ getAlarmSeverity(alarm.severity.id).displayName }}
+                        </span>
+                      </span>
+                    </td>
+                  </tr>
+                </template>
+              </tbody>
+            </table>
+          </v-infinite-scroll>
+        </div>
+
+        <div
+          class="col-8 fc-column-alarm-right new-alarm-summ-bg"
+          style="max-width: 73.6667%; flex: 0 0 73.6667%"
+        >
+          <div slot="right">
+            <router-view name="summary"></router-view>
+          </div>
+        </div>
+      </div>
+    </div>
+    <q-modal
+      ref="createNewAlarmModel"
+      position="right"
+      content-classes="fc-create-record"
+      @close="closeDialog"
+    >
+      <q-btn flat @click="$refs.createNewAlarmModel.close()">
+        <q-icon name="close" />
+      </q-btn>
+      <new-alarm @closed="closeDialog"></new-alarm>
+    </q-modal>
+    <AlarmWoCreation
+      v-if="canShowAlarmWoCreation"
+      :canShowDialog.sync="canShowAlarmWoCreation"
+      :currentAlarmId.sync="currentAlarmId"
+      @onSuccess="onAlarmWoCreation"
+    ></AlarmWoCreation>
+    <column-customization
+      :visible.sync="showColumnSettings"
+      moduleName="newreadingalarm"
+      :columnConfig="columnConfig"
+      :viewName="currentView"
+    ></column-customization>
+  </div>
+</template>
+<script>
+import VInfiniteScroll from 'v-infinite-scroll'
+import UserAvatar from '@/avatar/User'
+import Timer from '@/Timer'
+import NewAlarm from 'pages/firealarm/alarms/NewAlarm'
+import { mapActions, mapState, mapGetters } from 'vuex'
+import infiniteScroll from 'vue-infinite-scroll'
+import ColumnCustomization from '@/ColumnCustomization'
+import ViewMixinHelper from '@/mixins/ViewMixin'
+import { QList, QItem, QItemMain, QIcon, QPopover, QModal, QBtn } from 'quasar'
+import AlarmWoCreation from 'pages/firealarm/alarms/AlarmWoCreation'
+import { mapStateWithLogging } from 'store/utils/log-map-state'
+
+export default {
+  mixins: [ViewMixinHelper],
+  data() {
+    return {
+      subListLoading: false,
+      createWoIds: [],
+      loading: true,
+      fetchingMore: false,
+      sortConfig: {
+        orderBy: {
+          label: this.$t('alarm.alarm.date_modified'),
+          value: 'lastOccurredTime',
+        },
+        orderType: 'desc',
+        list: [
+          {
+            label: this.$t('maintenance.wr_list.created_on'),
+            value: 'lastCreatedTime',
+          },
+          {
+            label: this.$t('maintenance.wr_list.due_by_time'),
+            value: 'dueDate',
+          },
+          {
+            label: this.$t('maintenance.wr_list.subject'),
+            value: 'subject',
+          },
+        ],
+      },
+      showColumnSettings: false,
+      columnConfig: {
+        fixedColumns: ['subject'],
+        fixedSelectableColumns: [
+          'severity',
+          'noOfOccurrences',
+          'acknowledgedBy',
+        ],
+        availableColumns: [
+          'resource',
+          'lastOccurredTime',
+          'lastCreatedTime',
+          'acknowledgedBy',
+          'acknowledged',
+          'readingalarmcategory',
+          'acknowledgedTime',
+          'severity',
+          'faultType',
+        ],
+        showLookupColumns: false,
+        lookupToShow: ['asset', 'space'],
+      },
+      canShowAlarmWoCreation: false,
+      currentAlarmId: null,
+    }
+  },
+  components: {
+    QList,
+    QItem,
+    QItemMain,
+    QIcon,
+    QPopover,
+    QModal,
+    NewAlarm,
+    Timer,
+    UserAvatar,
+    VInfiniteScroll,
+    QBtn,
+    ColumnCustomization,
+    AlarmWoCreation,
+  },
+  directives: {
+    infiniteScroll,
+  },
+  created() {
+    this.$store.dispatch('loadTicketPriority')
+    this.$store.dispatch('loadTicketCategory')
+    this.$store.dispatch('loadAlarmSeverity')
+    this.$store.dispatch('loadGroups')
+    this.$store.dispatch('loadReadingAlarmCategory')
+  },
+  mounted() {
+    this.loadAlarms()
+    this.loadAlarmCount()
+  },
+  computed: {
+    ...mapState({
+      users: state => state.users,
+      groups: state => state.groups,
+      views: state => state.view.views,
+      severityStatus: state => state.alarmSeverity,
+      currentViewDetail: state => state.view.currentViewDetail,
+    }),
+    ...mapStateWithLogging({
+      spaces: state => state.spaces,
+    }),
+    ...mapGetters([
+      'getTicketCategory',
+      'getReadingAlarmCategory',
+      'getAlarmSeverity',
+    ]),
+    alarms() {
+      return this.$store.state.newAlarm.alarms.filter(n => n)
+    },
+    openAlarmId() {
+      if (this.$route.params.id) {
+        this.$emit('showTag', false)
+        return parseInt(this.$route.params.id)
+      }
+      this.$emit('showTag', true)
+      return -1
+    },
+    currentGroupViewDetails() {
+      return this.getviewtype().filter(d => d.name === this.currentView)
+    },
+    currentView() {
+      if (this.$route.params.viewname) {
+        return this.$route.params.viewname
+      }
+      return 'all'
+    },
+    filters() {
+      if (this.$route.query.search) {
+        return JSON.parse(this.$route.query.search)
+      }
+      return null
+    },
+    sorting() {
+      return this.$store.state.newAlarm.sorting
+    },
+    searchQuery() {
+      return this.$store.state.newAlarm.quickSearchQuery
+    },
+    canLoadMore() {
+      return this.$store.state.newAlarm.canLoadMore
+    },
+    scrollDisabled() {
+      return this.loading || !this.canLoadMore || this.fetchingMore
+    },
+    page() {
+      return this.$route.query.page || 1
+    },
+  },
+  watch: {
+    currentViewDetail: function(newVal, oldVal) {
+      if (oldVal !== newVal) {
+        this.loadAlarms()
+        this.loadAlarmCount()
+      }
+    },
+    filters: function(newVal) {
+      this.loadAlarms()
+      this.loadAlarmCount()
+    },
+    sorting: function(newVal) {
+      this.sortConfig.orderBy = this.sorting.orderBy
+      this.sortConfig.orderType = this.sorting.orderType
+      this.loadAlarms()
+      this.loadAlarmCount()
+    },
+    page: function(newVal, oldVal) {
+      if (oldVal !== newVal && !this.loading) {
+        this.loadAlarms()
+      }
+    },
+    searchQuery: function(newVal) {
+      this.quickSearchQuery = this.searchQuery
+      this.loadAlarms()
+      this.loadAlarmCount()
+    },
+  },
+  methods: {
+    ...mapActions({
+      assignAlarmApi: 'newAlarm/assignAlarm',
+      updateAlarmStatus: 'newAlarm/updateAlarmStatus',
+      notifyAlarm: 'newAlarm/notifyAlarm',
+      acknowledgeAlarm: 'newAlarm/acknowledgeAlarm',
+      createWoFromAlarm: 'newAlarm/createWoFromAlarm',
+      getRelatedWorkorderId: 'newAlarm/getRelatedWorkorderId',
+      deleteAlarm: 'newAlarm/deleteAlarm',
+      deleteAlarmNew: 'newAlarm/deleteAlarmNew',
+    }),
+    getviewtype() {
+      let group = this.$store.state.view.groupViews
+      if (group) {
+        let elem = [],
+          types = []
+        const len = group.length
+        for (let itr = 0; itr < len; itr++) {
+          elem.push(group[itr].views)
+          types = types.concat(elem[itr])
+        }
+        return types
+      }
+    },
+    deleteAlarmConf(id) {
+      this.$dialog
+        .confirm({
+          title: 'Delete Alarm',
+          message: 'Are you sure you want to delete this alarm ?',
+          rbDanger: true,
+          rbLabel: 'Delete',
+        })
+        .then(value => {
+          if (value) {
+            this.$store.dispatch('newAlarm/deleteAlarmNew', id).then(() => {
+              this.$dialog.notify('Alarm deleted successfully')
+            })
+          }
+          this.loadAlarmCount()
+        })
+    },
+    nextPage() {
+      if (!this.scrollDisabled) {
+        this.subListLoading = true
+        this.fetchingMore = true
+        this.loadAlarms(true)
+      }
+    },
+    updateAlarmsStatus(alarm) {
+      this.updateAlarmStatus({
+        occurrence: { id: alarm.lastOccurrenceId },
+        alarm: alarm,
+        clearedTime: Date.now(),
+        severity: this.severityStatus.find(
+          status => status.severity === 'Clear'
+        ),
+      })
+      this.alarms.clearedBy = this.$account.user
+      this.loadAlarms()
+      this.loadAlarmCount()
+    },
+    getName(index) {
+      let ref = 'moreactionspopover'
+      ref += index
+      return ref
+    },
+    closePopover(index) {
+      this.$refs[this.getName(index)].close()
+    },
+    openChild(viewNames) {
+      let url = '/app/fa/faults/' + viewNames + '/newsummary/' + null
+      this.$router.replace({ path: url })
+      let moduleName = this.currentGroupViewDetails
+        ? this.currentGroupViewDetails[0]
+          ? this.currentGroupViewDetails[0].moduleName
+          : 'newreadingalarm'
+        : 'newreadingalarm'
+      let self = this
+      let queryObj = {
+        viewname: viewNames,
+        page: this.page,
+        filters: this.filters,
+        orderBy: this.sortConfig.orderBy.value,
+        orderType: this.sortConfig.orderType,
+        search: this.quickSearchQuery,
+        criteriaIds: this.$route.query.criteriaIds,
+        includeParentFilter: this.includeParentFilter,
+        isNew: true,
+        moduleName: moduleName,
+      }
+      this.$store
+        .dispatch('newAlarm/fetchAlarms', queryObj)
+        .then(function(response) {
+          if (self.$store.state.newAlarm.alarms.length > 0) {
+            self.$router.push({
+              path:
+                '/app/fa/faults/' +
+                viewNames +
+                '/newsummary/' +
+                self.$store.state.newAlarm.alarms[0].id,
+              query: self.$route.query,
+            })
+          } else {
+            let newPath = self.$route.path.substring(
+              0,
+              self.$route.path.indexOf('/alarms/')
+            )
+            newPath += '/alarms/' + viewNames
+            self.$router.push({
+              path: newPath,
+              query: self.$route.query,
+            })
+          }
+        })
+    },
+    createWO(data) {
+      let self = this
+      let fields = {}
+      if (data.category) {
+        fields.category = {
+          id: data.category,
+          name: this.getTicketCategory(data.category).name,
+        }
+      }
+      if (data.priority) {
+        fields.priority = {
+          id: data.priority,
+        }
+      }
+      if (data.assignedTo) {
+        fields.assignedTo = data.assignedTo
+      }
+      if (data.assignmentGroup) {
+        fields.assignmentGroup = data.assignmentGroup
+      }
+      if (data.siteId > 0) {
+        fields.siteId = data.siteId
+      }
+      self.$store
+        .dispatch('newAlarm/createWoFromAlarm', {
+          id: self.createWoIds,
+          fields: fields,
+        })
+        .then(function(d) {
+          if (d.data.responseCode === 1) {
+            self.$message({
+              message: d.data.message,
+              type: 'error',
+            })
+          } else {
+            self.$dialog.notify('Workorder created successfully!')
+            self.$refs['createWOModel'].close()
+          }
+        })
+    },
+    createWoDialog(idList) {
+      this.createWoIds = idList
+      this.$refs['createWOModel'].open()
+      this.$refs.confirmWoModel.reset()
+    },
+    closeWoDialog() {
+      this.$refs['createWOModel'].close()
+    },
+    loadAlarms(subList) {
+      let self = this
+      self.loading = true
+      let moduleName = this.currentGroupViewDetails
+        ? this.currentGroupViewDetails[0]
+          ? this.currentGroupViewDetails[0].moduleName
+          : 'newreadingalarm'
+        : 'newreadingalarm'
+      let queryObj = {
+        viewname: this.currentView,
+        page: subList ? this.$store.state.newAlarm.currentPage + 1 : this.page,
+        filters: this.filters,
+        orderBy: this.sortConfig.orderBy.value,
+        orderType: this.sortConfig.orderType,
+        search: this.quickSearchQuery,
+        criteriaIds: this.$route.query.criteriaIds,
+        includeParentFilter: this.includeParentFilter,
+        isNew: true,
+        subList: subList,
+        moduleName: moduleName,
+      }
+      self.$store
+        .dispatch('newAlarm/fetchAlarms', queryObj)
+        .then(function(response) {
+          self.loading = false
+          self.fetchingMore = false
+        })
+        .catch(function(error) {
+          if (error) {
+            self.loading = false
+            self.fetchingMore = false
+          }
+        })
+
+      self.setTitle(
+        this.currentGroupViewDetails[0]
+          ? this.currentGroupViewDetails[0].displayName
+          : 'Alarm'
+      )
+    },
+    loadAlarmCount() {
+      let self = this
+      let moduleName = this.currentGroupViewDetails
+        ? this.currentGroupViewDetails[0]
+          ? this.currentGroupViewDetails[0].moduleName
+          : 'newreadingalarm'
+        : 'newreadingalarm'
+      let queryObj = {
+        viewname: this.currentView,
+        filters: this.filters,
+        search: this.quickSearchQuery,
+        criteriaIds: this.$route.query.criteriaIds,
+        includeParentFilter: this.includeParentFilter,
+        moduleName: moduleName,
+        count: true,
+      }
+      let url = 'v2/newAlarms/view/' + queryObj.viewname + '?fetchCount=true'
+      let params
+      params = 'isCount=' + queryObj.count
+      if (queryObj.filters) {
+        params =
+          params +
+          '&filters=' +
+          encodeURIComponent(JSON.stringify(queryObj.filters))
+      }
+      params = params + '&alarmModule=' + queryObj.moduleName
+      if (queryObj.search) {
+        params = params + '&search=' + queryObj.search
+      }
+      if (queryObj.criteriaIds) {
+        params = params + '&criteriaIds=' + queryObj.criteriaIds
+      }
+      if (queryObj.includeParentFilter) {
+        params = params + '&includeParentFilter=' + queryObj.includeParentFilter
+      }
+      url = url + '&' + params
+      self.$http
+        .get(url)
+        .then(function(response) {
+          self.listcount = response.data.count
+          self.$emit('syncCount', response.data.result.count)
+        })
+        .catch(function(error) {
+          console.log(error)
+        })
+    },
+    isActiveAlarm(alarm) {
+      if (this.getAlarmSeverity(alarm.severity.id).severity !== 'Clear') {
+        return true
+      }
+      return false
+    },
+    getUserName(id) {
+      if (id !== -1) {
+        if (id) {
+          return this.$store.getters.getUser(id).name
+        } else {
+          return 'Unkown'
+        }
+      } else {
+        return 'Unkown'
+      }
+    },
+    openFromTablesummary(row, col) {
+      if (col.label === 'ID' || col.label === 'message') {
+        this.$router.push({
+          path:
+            '/app/fa/faults/' +
+            this.$route.params.viewname +
+            '/newsummary/' +
+            row.id,
+          query: this.$route.query,
+        })
+      }
+    },
+    opensummary(id) {
+      this.$router.push({
+        path:
+          '/app/fa/faults/' + this.$route.params.viewname + '/newsummary/' + id,
+        query: this.$route.query,
+      })
+    },
+    assignAlarm: function(alarm, userId, userName) {
+      let data = {
+        id: [alarm.id],
+        alarm: {
+          assignedTo: {
+            id: userId,
+            name: userName,
+          },
+        },
+      }
+      this.assignAlarmApi({ data: data, alarm: alarm })
+    },
+    indexMethod(index) {
+      return index * 2
+    },
+    viewAlarm(ticketId) {
+      let self = this
+      self.$router.push({ path: '/app/wo/orders/summary/' + ticketId })
+    },
+    closeDialog() {},
+    loadMore() {
+      this.fetchingMore = true
+      this.loadAlarms(true)
+    },
+    back() {
+      let url = '/app/fa/faults/' + this.$route.params.viewname
+      this.$router.push({ path: url, query: this.$route.query })
+    },
+    openAlarmWoCreation(alarmId) {
+      this.canShowAlarmWoCreation = true
+      this.currentAlarmId = alarmId
+    },
+    onAlarmWoCreation(props) {
+      let { lastOccurenceId, woId } = props
+      let { alarms = [] } = this
+      let selectedAlarm =
+        alarms.find(alarm => alarm.lastOccurrenceId === lastOccurenceId) || {}
+      let selectedAlarmIndex = alarms.indexOf(selectedAlarm)
+      this.$store.commit('newAlarm/UPDATE_ALARM_CREATE_WO', {
+        alarmIndex: selectedAlarmIndex,
+        isWoCreated: true,
+        woId,
+      })
+    },
+  },
+}
+</script>
+<style lang="scss">
+.alarm-list-page {
+  .fc-timer.alarm-timer .t-label {
+    font-size: 16px !important;
+    font-weight: 500;
+    letter-spacing: 0.6px;
+    padding-top: 0;
+  }
+  .fc-timer.alarm-timer .t-sublabel {
+    font-size: 9px !important;
+    letter-spacing: 1.1px;
+    color: #a5a5a5;
+  }
+  .alarm-timer {
+    padding: 0 !important;
+  }
+  .fc-list-view-table2 tbody tr.tablerow td:first-child {
+    width: 10px !important;
+  }
+  .fc-alarm-list-view {
+    height: 43px !important;
+  }
+}
+</style>

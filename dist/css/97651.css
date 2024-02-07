@@ -1,0 +1,20 @@
+
+.warning-alarm[data-v-184a0063] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  margin-top: -18px;
+}
+
+.site-details-card[data-v-e7f783b0]{overflow:scroll}.site-details-card .hv-center-block[data-v-e7f783b0]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.site-details-card .hv-center-inline[data-v-e7f783b0]{display:-webkit-inline-box;display:-ms-inline-flexbox;display:inline-flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.site-details-card .warning-alarm[data-v-e7f783b0]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;margin-top:-18px}.site-details-card .space-card-border-right[data-v-e7f783b0]{border-right:1px solid #f0f0f0}.site-details-card .related-count-container[data-v-e7f783b0]{width:25%;height:55%;min-width:110px}.site-details-card .related-count-container .related-count[data-v-e7f783b0]{font-size:24px;font-weight:500;margin-bottom:5px}.site-details-card .related-count-container .module-icon-container[data-v-e7f783b0]{height:40%;width:30%;margin-bottom:18px}
+.site-details-card .related-count-container .module-icon-container .icon{height:100%;width:100%}

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="306px" height="153px" viewBox="0 0 306 153" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Bypass Duct</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+        <polygon id="path-2" points="86.3904891 58 235.390489 58 219 94.2050306 70 94.2050306"></polygon>
+        <filter x="-13.0%" y="-48.3%" width="129.6%" height="235.3%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="3" dy="7" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="7" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-789.000000, -891.000000)">
+            <g id="Bypass-Duct" transform="translate(789.000000, 891.000000)">
+                <g id="Group-Copy-15">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="247.892063 30 247.892063 107 1 107 1 30"></polygon>
+                    <polygon id="Path-2-Copy-3" fill="#5B6777" points="261.607869 81.1989157 232 153 75.1817466 153 59.1715065 117.029909 48 81"></polygon>
+                    <polygon id="Path-2-Copy-4" fill="#5B6777" transform="translate(153.446032, 36.000000) scale(1, -1) translate(-153.446032, -36.000000) " points="247.892063 5.1159077e-13 247.836883 42 232 72 75.0102401 72 61 34.1206978 59 5.1159077e-13"></polygon>
+                    <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="1.04228883 30 1 60 53.1294532 60 63.8262188 30"></polygon>
+                    <polygon id="Path-4-Copy-3" fill="url(#linearGradient-1)" opacity="0.5" points="75.2241474 0 63.8870285 30 232.001324 30 232.001324 0"></polygon>
+                    <polygon id="Path-4-Copy" fill="#848E9C" points="0.954170835 107 0.954170835 130 62 130 62 107"></polygon>
+                </g>
+                <g id="Group-Copy-16" transform="translate(62.000000, 0.000000)">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="243 30 243 111 185 111 185.417255 30"></polygon>
+                    <polygon id="Path-4-Copy-4" fill="url(#linearGradient-1)" opacity="0.5" points="170 6.82121026e-13 170 29.6258338 185.892063 59.2516676 185.892063 30"></polygon>
+                    <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="185.892063 30 185.892063 60 243 60 243 30"></polygon>
+                    <polygon id="Path-4-Copy" fill="#848E9C" points="189 107 179.484748 130 243.003799 130 243.003799 107"></polygon>
+                    <polygon id="Path-4-Copy-5" fill="#848E9C" points="3.3223613 131 13.1829224 153 170.304196 153 179.530676 130"></polygon>
+                    <polygon id="Path-4-Copy-6" fill="#848E9C" points="0 130 13.1829224 153 13.1829224 131.067326 0 107"></polygon>
+                </g>
+                <g id="Rectangle">
+                    <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                    <use fill="#848E9C" fill-rule="evenodd" xlink:href="#path-2"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

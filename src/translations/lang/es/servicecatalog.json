@@ -1,0 +1,23 @@
+{
+  "setup": {
+    "add_new": "Añadir nuevo",
+    "service_catalogs": "Catálogos de servicios",
+    "service_categories": "Categorías de servicios",
+    "list_of_sc": "Lista de todos los catálogos de servicios",
+    "emptytext": "No hay catálogos de servicios disponibles.",
+    "emptytext_category": "No hay categorías de servicio disponibles",
+    "emptytext_category_item": "No hay artículos de servicio disponibles",
+    "group": "Categoría de servicio",
+    "item": "Servicio",
+    "select_category": "Seleccionar categoría",
+    "category": "Categoría",
+    "moduledetails": "Detalles del módulo",
+    "module_name": "Nombre del módulo",
+    "forms": "Formularios",
+    "selectmodules": "Seleccione un módulo",
+    "selectforms": "Seleccione un formulario",
+    "configure_now": "Configurar ahora",
+    "external_url": "URL externa",
+    "enter_external_url": "Introduzca la url externa"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "list": {
+    "custom_modules": "Módulos personalizados",
+    "connected_apps": "Aplicaciones conectadas",
+    "state_flows": "Flujo estatal",
+    "fields": "campos",
+    "enabled": "Activado",
+    "disabled": "Discapacitados",
+    "created_date": "Fecha de creación",
+    "created_by": "Creado por",
+    "description": "Descripción",
+    "filtered_view": "Vista filtrada",
+    "delete_error": "Se ha producido un error al borrar",
+    "new": "Nuevo",
+    "no": "No",
+    "available": "Disponible",
+    "unable_to_fetch_custom_btn": "No se pueden recuperar los botones personalizados",
+    "unable_to_fetch_count": "No se puede recuperar el recuento total",
+    "list_error": "Se ha producido un error al obtener la lista de registros"
+  },
+  "form": {
+    "widget_error": "Se ha producido un error al recuperar el widget de la aplicación conectada",
+    "form_template_error": "No se pueden obtener plantillas de formularios de módulos",
+    "form_details_error": "Se ha producido un error al obtener los detalles del formulario"
+  },
+  "summary": {
+    "record_summary_error": "Se ha producido un error al obtener el resumen detallado del registro"
+  }
+}

@@ -1,0 +1,10 @@
+
+.h100[data-v-3d49d6af] {
+  height: 100%;
+}
+.spacebooking-card[data-v-3d49d6af] {
+  margin: 20px 20px 0px;
+  width: 40%;
+  height: calc(100vh - 100px);
+}
+

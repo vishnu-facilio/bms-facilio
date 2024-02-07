@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[91114],{
+/***/91114:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return BookingInfo}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/pages/facilitybooking/booking/widgets/BookingInfo.vue?vue&type=template&id=1ec92442
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"booking-info"},[_c("div",{staticClass:"text"},[_vm._v(" Booking Date : "+_vm._s(_vm.$validation.isEmpty(_vm.details.bookingDate)?"---":_vm.$options.filters.formatDate(_vm.details.bookingDate,!0))+" "),_c("span",{staticClass:"separator self-center mL10 mR10"},[_vm._v("|")]),_vm._v(" Attendees : "+_vm._s(_vm.details.noOfAttendees+" "+(_vm.details.noOfAttendees>1?"Members":"Member")||"---")+" ")]),_c("div",{staticClass:"text"},[_c("currency",{attrs:{value:_vm.details.bookingAmount||0}})],1)])},staticRenderFns=[],BookingInfovue_type_script_lang_js={props:["details"]},widgets_BookingInfovue_type_script_lang_js=BookingInfovue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(widgets_BookingInfovue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,BookingInfo=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/91114.js.map

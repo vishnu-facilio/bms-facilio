@@ -1,0 +1,162 @@
+.form-customization-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #f7f8f9;
+  overscroll-behavior-x: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 12;
+  animation: builder-active 0.2s ease-in-out;
+  .header {
+    display: flex;
+    box-shadow: 0 2px 12px 0 rgba(155, 157, 180, 0.1);
+    background-color: #fff;
+    border-color: #e6ecf3;
+    border-width: 0 0 1px 0px;
+    border-style: solid;
+    .title {
+      font-size: 18px;
+      color: #000000;
+      letter-spacing: 0.7px;
+      align-self: center;
+      .saving-container {
+        font-size: 11px;
+        font-weight: 500;
+        font-style: italic;
+        letter-spacing: 0.4px;
+        color: #39b2c2;
+        margin-left: 15px;
+      }
+    }
+  }
+  .customization-tabs {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    .el-tabs {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      .el-tabs__header {
+        padding: 0px 15px;
+        border-bottom: 1px solid #e3e3e3;
+        margin: 0px;
+        background-color: #fff;
+        .el-tabs__nav-wrap {
+          &::after {
+            height: 0px;
+          }
+        }
+      }
+      .el-tabs__content {
+        display: flex;
+        flex-direction: column;
+      }
+      .builder-container {
+        display: flex;
+        overflow: hidden;
+        .fields-section {
+          display: flex;
+          flex-direction: column;
+          flex: 0 0 300px;
+          background: #fff;
+          border-right: 1px solid #e3e3e3;
+          overflow: scroll;
+          .default-fields,
+          .sys-cus-fields {
+            .field-block {
+              padding: 12px 10px;
+              border-radius: 3px;
+              box-shadow: 0 2px 2px 0 rgba(236, 234, 234, 0.5);
+              background-color: #ffffff;
+              border: 1px solid #e3eaed;
+              .field-label {
+                font-size: 0.75rem;
+              }
+              &:hover {
+                background: #39b2c2;
+                cursor: pointer;
+                color: #ffffff;
+                border: 1px solid #39b2c2;
+                transition: all 0.2s ease-in;
+              }
+            }
+          }
+          .default-fields {
+            .container {
+              border-top: 1px solid #e3e3e3;
+              border-bottom: 1px solid #e3e3e3;
+              padding: 20px 15px;
+            }
+          }
+          .sys-cus-fields {
+            .el-tabs {
+              .el-tabs__item {
+                font-weight: 500;
+                font-size: 12px;
+                letter-spacing: 0.3px;
+              }
+            }
+            .container {
+              border-bottom: 1px solid #e3e3e3;
+              padding: 20px 15px 0px;
+            }
+          }
+        }
+        .builder-prop-wrapper {
+          margin: 15px;
+          transition: all 200ms ease-in-out;
+          border: 1px solid #e9ebee;
+          background: #ffffff;
+          display: flex;
+          flex-grow: 1;
+          overflow: hidden;
+          .builder-section {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            .el-form--label-top {
+              .el-form-item__label {
+                padding-bottom: 0;
+              }
+            }
+          }
+          .property-section {
+            flex: 0 0 35%;
+            border-left: 1px solid #e9ebee;
+            flex-direction: column;
+            display: flex;
+            overflow: hidden;
+            .fc-dark-grey-txt13 {
+              font-size: 0.8125rem;
+              font-weight: normal;
+              letter-spacing: 0.6px;
+              color: #385571;
+            }
+            .fc-input-full-border2,
+            .fc-input-full-border-select2,
+            .fc-input-full-border-textarea {
+              .el-input__inner,
+              .el-textarea__inner {
+                font-size: 0.8125rem;
+              }
+              .el-input.is-disabled .el-input__inner {
+                color: #000000;
+              }
+            }
+
+            .fc-input-disabled {
+              .el-input__inner {
+                color: #000;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,69 @@
+
+.fc-timer div.t-label {
+  font-size: 20px;
+  background-color: transparent !important;
+  text-align: center;
+  color: #2f2e49;
+  text-align: center;
+}
+.fc-timer div.t-sublabel {
+  color: rgb(98, 98, 105);
+  text-align: center;
+  padding-top: 3px;
+}
+.fc-timer div.t-mins,
+.fc-timer div.t-secs,
+.fc-timer div.t-hours,
+.fc-timer div.t-days {
+  -webkit-box-flex: 1;
+      -ms-flex: auto;
+          flex: auto;
+}
+.fc-timer .t-separate {
+  color: #939499;
+  text-align: center;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+}
+.t-days {
+  -webkit-box-flex: 1;
+      -ms-flex: auto;
+          flex: auto;
+}
+
+
+.asset-details[data-v-0e840268] {
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  text-align: left;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.asset-details .asset-id[data-v-0e840268] {
+  font-size: 12px;
+  color: #39b2c2;
+}
+.asset-details .asset-name[data-v-0e840268] {
+  font-size: 22px;
+  color: #324056;
+}
+.asset-details .asset-space[data-v-0e840268] {
+  font-size: 13px;
+  color: #8ca1ad;
+}
+.alarm-timer[data-v-0e840268] {
+  position: absolute;
+  right: 20px;
+  top: 70px;
+}
+

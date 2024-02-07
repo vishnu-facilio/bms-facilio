@@ -1,0 +1,71 @@
+
+.kpi-card-1 .reading-card-color-picker {
+  color: #fff;
+}
+.kpi-sections {
+  font-size: 14px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.36;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+.kpi-period {
+  font-size: 12px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1.3px;
+  text-align: center;
+  /* color: #ffffff; */
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+.dragabale-card:hover .color-choose-icon,
+.dragabale-card:hover .reading-card-conditional-formater,
+.dragabale-card:hover .reading-card-color-picker {
+  display: block !important;
+}
+.settings-over {
+  width: 100%;
+  position: absolute;
+  height: 0px;
+  transition: height 0.2s;
+  -webkit-transition: height 0.2s;
+  border-radius: 3px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0px;
+  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+          box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.dragabale-card:hover .settings-over {
+  height: 50px;
+}
+.reading-card-color-picker {
+  position: absolute;
+  top: 16px;
+  right: 40px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+  display: none;
+  opacity: 1;
+}
+.reading-card-conditional-formater {
+  position: absolute;
+  top: 16px;
+  right: 74px;
+  color: #fff;
+  font-weight: 500;
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 10;
+  display: none;
+  opacity: 1;
+}
+

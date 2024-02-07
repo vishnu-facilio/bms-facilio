@@ -1,0 +1,33 @@
+{
+  "general": {
+    "bookingpolicies": "Booking policies",
+    "newbookingpolicies": "New Booking policies",
+    "description": "Description",
+    "add_policy": "Add Booking Policies",
+    "policy": "Policy",
+    "id": "ID",
+    "name": " NAME",
+    "criteriaId": "CRITERIA ID",
+    "policydescription": "DESCRIPTION",
+    "moduleName": "MODULENAME",
+    "bookingpolicy": "POLICY"
+  },
+  "policies": {
+    "enterpoliciesname": "Enter policies Name",
+    "description": "The objective of the Bookings Policy is to provide a strategic framework for the orderly and fair booking of community facilities."
+  },
+  "policy_status": {
+    "added": "Policy added successfully",
+    "updated": "Policy updated successfully",
+    "delete_policy": "Are you sure to delete this policy ?",
+    "delete_title": "Delete Booking Policy",
+    "deleted": "Policy deleted successfully",
+    "no_policy": "No Policy Available"
+  },
+  "form_relation": {
+    "add": "ADD",
+    "formrelations": "Form Relation",
+    "description": "The objective of the Form Relation is to provide a relation between space categories and space booking form types.",
+    "no_form_relation": "No Form Relation Available"
+  }
+}

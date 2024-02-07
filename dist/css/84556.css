@@ -1,0 +1,282 @@
+
+.fc-pm-history-table .el-table__body,
+.fc-pm-history-table .el-table__empty-block {
+  width: 100% !important;
+}
+.fc-pm-history-table-con .el-table td {
+  padding: 17px 20px;
+}
+.fc-pm-history-table-con .fc-pm-history-table {
+  height: calc(100vh - 280px) !important;
+  margin-bottom: 100px;
+}
+.fc-pm-history-table-con {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.fc-pm-history-table {
+  border-left: 1px solid #f7f8f9;
+  border-right: 1px solid #f7f8f9;
+}
+.fc-pm-history-table th {
+  background-color: #f7fafa !important;
+  font-size: 11px;
+  font-weight: bold;
+}
+.el-icon-arrow-right.disable {
+  color: #50506c;
+  font-weight: bold;
+  opacity: 0.4;
+}
+.fc-dropdown-menu-border.disable {
+  visibility: hidden;
+}
+.el-icon-arrow-left.disable {
+  color: #50506c;
+  font-weight: bold;
+  opacity: 0.4;
+}
+.work-progress-txt {
+  color: #3d8bc4;
+}
+.overdue-overstart {
+  color: #da6a1d;
+}
+.wo-error-status {
+  color: #da6a1c;
+}
+
+.pm-summary-planner .facilio-resource-planner .table-container{height:calc(100vh - 320px)}
+
+.trigger-overview-scroll {
+  max-width: 840px;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 100px;
+}
+.fc-pm-summary-chart-block .report-userFilter {
+  position: absolute;
+}
+.fc-pm-summary-chart-block .report-userFilter .mL20 {
+  margin-left: 30px !important;
+}
+.fc-pm-summary-chart-block .fc-input-full-border-h35 {
+  position: absolute;
+  top: 0px;
+  z-index: 2;
+}
+.fc-pm-summary-chart-block .f-singlechart .f-chart-type-single {
+  margin-right: 30px;
+  position: absolute;
+  top: -56px !important;
+  right: -3px !important;
+}
+.fc-pm-summary-chart-block .report-graph-header {
+  height: inherit;
+}
+.fc-pm-summary-chart-block .f-singlechart .fc-new-chart-type-single {
+  top: -55px !important;
+  right: 0 !important;
+}
+.asset-one {
+  position: absolute;
+  top: 70px;
+  z-index: 2;
+  left: 20px;
+  font-size: 14px;
+  color: #324056;
+  font-weight: 500;
+}
+.pm-trigger-notify {
+  position: absolute;
+  top: 110px;
+  z-index: 100;
+  right: 0;
+  left: 0;
+}
+.pm-reading-vs-task-switch {
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: right;
+  color: #396dc2;
+  position: absolute;
+  top: 55px;
+  right: 0;
+  cursor: pointer;
+}
+.pm-layout-full-wdith {
+  width: 100% !important;
+}
+.pm-layout-half-wdith {
+  width: 70.5% !important;
+}
+.pm-tabs .el-tabs__nav-wrap::after {
+  display: none;
+}
+.trigger-tab .el-tabs__nav-wrap::after {
+  display: block !important;
+}
+.pm-sum-btn-green {
+  width: 50%;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  cursor: pointer;
+  background-color: #39b2c2;
+  border: transparent;
+  letter-spacing: 1.1px !important;
+  text-align: center;
+  color: #ffffff;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  border-radius: 0;
+  float: right;
+  line-height: 16px;
+  cursor: pointer;
+  margin-left: 0 !important;
+}
+
+
+.fc-pm-history-table .el-table__body,
+.fc-pm-history-table .el-table__empty-block {
+  width: 100% !important;
+}
+.fc-pm-history-table-con .el-table td {
+  padding: 17px 20px;
+}
+.fc-pm-history-table-con .fc-pm-history-table {
+  height: calc(100vh - 280px) !important;
+  margin-bottom: 100px;
+}
+.fc-pm-history-table-con {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+.fc-pm-history-table {
+  border-left: 1px solid #f7f8f9;
+  border-right: 1px solid #f7f8f9;
+}
+.fc-pm-history-table th {
+  background-color: #f7fafa !important;
+  font-size: 11px;
+  font-weight: bold;
+}
+.el-icon-arrow-right.disable {
+  color: #50506c;
+  font-weight: bold;
+  opacity: 0.4;
+}
+.fc-dropdown-menu-border.disable {
+  visibility: hidden;
+}
+.el-icon-arrow-left.disable {
+  color: #50506c;
+  font-weight: bold;
+  opacity: 0.4;
+}
+.work-progress-txt {
+  color: #3d8bc4;
+}
+.overdue-overstart {
+  color: #da6a1d;
+}
+.wo-error-status {
+  color: #da6a1c;
+}
+
+.pm-summary-planner .facilio-resource-planner .table-container{height:calc(100vh - 320px)}
+
+.trigger-overview-scroll {
+  max-width: 840px;
+  height: 100%;
+  overflow-y: scroll;
+  padding-bottom: 100px;
+}
+.fc-pm-summary-chart-block .report-userFilter {
+  position: absolute;
+}
+.fc-pm-summary-chart-block .report-userFilter .mL20 {
+  margin-left: 30px !important;
+}
+.fc-pm-summary-chart-block .fc-input-full-border-h35 {
+  position: absolute;
+  top: 0px;
+  z-index: 2;
+}
+.fc-pm-summary-chart-block .f-singlechart .f-chart-type-single {
+  margin-right: 30px;
+  position: absolute;
+  top: -56px !important;
+  right: -3px !important;
+}
+.fc-pm-summary-chart-block .report-graph-header {
+  height: inherit;
+}
+.fc-pm-summary-chart-block .f-singlechart .fc-new-chart-type-single {
+  top: -55px !important;
+  right: 0 !important;
+}
+.asset-one {
+  position: absolute;
+  top: 70px;
+  z-index: 2;
+  left: 20px;
+  font-size: 14px;
+  color: #324056;
+  font-weight: 500;
+}
+.pm-trigger-notify {
+  position: absolute;
+  top: 110px;
+  z-index: 100;
+  right: 0;
+  left: 0;
+}
+.pm-reading-vs-task-switch {
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: right;
+  color: #396dc2;
+  position: absolute;
+  top: 55px;
+  right: 0;
+  cursor: pointer;
+}
+.pm-layout-full-wdith {
+  width: 100% !important;
+}
+.pm-layout-half-wdith {
+  width: 70.5% !important;
+}
+.pm-tabs .el-tabs__nav-wrap::after {
+  display: none;
+}
+.trigger-tab .el-tabs__nav-wrap::after {
+  display: block !important;
+}
+.pm-sum-btn-green {
+  width: 50%;
+  padding-top: 18px;
+  padding-bottom: 18px;
+  cursor: pointer;
+  background-color: #39b2c2;
+  border: transparent;
+  letter-spacing: 1.1px !important;
+  text-align: center;
+  color: #ffffff;
+  text-transform: uppercase !important;
+  font-weight: 500 !important;
+  border-radius: 0;
+  float: right;
+  line-height: 16px;
+  cursor: pointer;
+  margin-left: 0 !important;
+}
+

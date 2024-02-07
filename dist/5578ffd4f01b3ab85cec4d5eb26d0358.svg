@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="22px" viewBox="0 0 20 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Kiosk-Icons" transform="translate(-138.000000, -115.000000)">
+            <g id="Group-3" transform="translate(139.000000, 116.000000)">
+                <polygon id="Rectangle" fill="#00D9B8" transform="translate(12.146240, 11.547241) scale(-1, 1) translate(-12.146240, -11.547241) " points="8.97936198 5.43505859 15.3131185 3.09448242 15.3131185 20 8.97936198 17.0961914"></polygon>
+                <path d="M3.3663784,6.85649742 L6.17009878,9.87556214 C6.35589109,10.0756245 6.34684493,10.3877361 6.14977715,10.5767018 L3.34605677,13.265152 C3.14674034,13.4562739 2.83022756,13.4496309 2.63910568,13.2503144 C2.54983956,13.157221 2.5,13.0332338 2.5,12.9042577 L2.5,7.19674272 C2.5,6.92060034 2.72385763,6.69674272 3,6.69674272 C3.13902503,6.69674272 3.27177318,6.75462588 3.3663784,6.85649742 Z" id="Rectangle-Copy-9" fill="#00D9B8"></path>
+                <polygon id="Rectangle-Copy-10" stroke="#733C9A" stroke-width="2" stroke-linejoin="round" points="8.36230469 0 17.3623047 3.80952381 17.3623047 16.1904762 8.36230469 20"></polygon>
+                <polyline id="Path-Copy-3" stroke="#733C9A" stroke-width="2" stroke-linejoin="round" points="5 16 0 16 0 4 0 4 5 4"></polyline>
+                <circle id="Oval-Copy-3" stroke="#FFFFFF" cx="11.6462402" cy="10" r="1"></circle>
+            </g>
+        </g>
+    </g>
+</svg>

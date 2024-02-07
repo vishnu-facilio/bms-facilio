@@ -1,0 +1,26 @@
+
+.fa-exclamation-triangle[data-v-dca5fbce] {
+  color: #efa82e;
+  font-size: 22px;
+  margin-right: 10px;
+}
+.dialog-heading[data-v-dca5fbce] {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #2d2d51;
+}
+.dialog-content[data-v-dca5fbce] {
+  font-size: 14px;
+  line-height: 1.31;
+  letter-spacing: 0.5px;
+  color: #2d2d51;
+  word-break: break-word;
+}
+.height180[data-v-dca5fbce] {
+  height: 195px !important;
+  overflow-y: scroll;
+}
+
+.create-btn[data-v-4b4a9eeb]{margin-top:-10px}.cm-sidebar-list-item[data-v-4b4a9eeb]{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;padding:20px;font-size:12px;cursor:pointer}
+.jp-delete-dialog .f-dialog-header{display:none}.jp-delete-dialog .f-dialog-content{padding-top:15px;padding-left:30px;padding-right:10px;min-height:170px;width:650px;text-align:justify}.jp-delete-dialog .f-dialog-body{padding:0px}.jp-delete-dialog .del-cancel-btn{width:50%}.jp-delete-dialog .jp-delete-dialog-btn{width:50%;background-color:#39b2c2 !important;border:rgba(0,0,0,0);margin-left:0;padding-top:20px;padding-bottom:20px;border-radius:0;font-size:13px;font-weight:bold;letter-spacing:1.1px;text-align:center;color:#fff}.jp-delete-dialog .jp-delete-dialog-btn:hover{background-color:#3cbfd0 !important}

@@ -1,0 +1,11 @@
+{
+  "builder": {
+    "new_section": "Neuer Abschnitt",
+    "new_subform": "Unterformular",
+    "new_fields": "Neue Felder",
+    "notes_des": "Der Inhalt Ihrer Notizen wird hier angezeigt",
+    "switch_to_richtext": "Zu Rich-Text wechseln",
+    "plain_text_mode": "Nur-Text-Modus",
+    "switch_alert": "Die Formatierung geht verloren, wenn Sie in den Nur-Text-Modus wechseln. Bist du sicher?"
+  }
+}

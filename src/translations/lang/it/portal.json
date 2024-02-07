@@ -1,0 +1,17 @@
+{
+  "tenant": {
+    "work_request": "Mia Richiesta",
+    "work_permits": "Permesso di lavoro",
+    "visitor_invites": "Inviti visitatori",
+    "invite_visitor": "Invita visitatore",
+    "vendor": "Fornitore",
+    "add_vendor": "Aggiungi fornitore",
+    "reports": "Rapporti",
+    "lease_information": "Informazioni sul contratto di locazione ",
+    "other_contact_information": "Altre informazioni di contatto",
+    "overview": "Panoramica"
+  },
+  "empty": {
+    "no_vendor_available": "Nessun fornitore disponibile "
+  }
+}

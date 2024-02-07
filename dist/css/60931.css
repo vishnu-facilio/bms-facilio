@@ -1,0 +1,572 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .dragabale-card svg {
+  zoom: 73%;
+} */
+.prev-val {
+  font-size: 11px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #ffffff;
+}
+.cost-lastmonth {
+  padding-bottom: 35px;
+  position: absolute;
+  width: 100%;
+  top: 73%;
+}
+.cost-lastmonth-span {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.4px;
+}
+.energy-cost-divider {
+  -ms-flex-item-align: center;
+      align-self: center;
+  padding-top: 10px;
+  position: absolute;
+  width: 100%;
+  top: 65%;
+}
+.h100 {
+  height: 100%;
+}
+.gauage-graph {
+  position: absolute;
+  width: 100%;
+  top: 20%;
+}
+
+/* gauge chart update */
+.gauge-container {
+  width: 280px;
+  height: 140px;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  overflow: hidden;
+  text-align: center;
+  -webkit-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.gauge-bg {
+  z-index: 4;
+  position: absolute;
+  background-color: #4a1b80;
+  width: 80%;
+  height: 80%;
+  top: 20%;
+  left: 10%;
+  right: 10%;
+  border-radius: 250px 250px 0px 0px;
+}
+.gauge-a {
+  z-index: 1;
+  position: absolute;
+  background-color: #4a1b80;
+  width: 95%;
+  height: 95%;
+  top: 8%;
+  left: 3%;
+  right: 10%;
+  border-radius: 250px 250px 0px 0px;
+}
+.gauge-b {
+  z-index: 7;
+  position: absolute;
+  background-color: #4a1b80;
+  width: 72%;
+  height: 72%;
+  left: 14.4%;
+  top: 28%;
+  border-radius: 250px 250px 0px 0px;
+}
+.gauge-cg {
+  z-index: 2;
+  position: absolute;
+  /* background-color:rgb(76, 42, 118); */
+  background-image: -webkit-gradient(linear, right top, left top, from(#7039a9), to(#7039a9));
+  background-image: linear-gradient(to left, #7039a9, #7039a9);
+  width: 86%;
+  height: 86%;
+  top: 100%;
+  left: 7%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0px 0px 200px 200px;
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+  -webkit-transition: all 1.3s ease-in-out;
+  transition: all 1.3s ease-in-out;
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+  opacity: 0.4;
+}
+.gauge-c {
+  z-index: 3;
+  position: absolute;
+  /* background-color: #f866a0; */
+  background-image: -webkit-gradient(linear, right top, left top, from(#f866a0), to(#f73b6a));
+  background-image: linear-gradient(to left, #f866a0, #f73b6a);
+  width: 86%;
+  height: 86%;
+  top: 100%;
+  left: 7%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0px 0px 200px 200px;
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+  -webkit-transition: all 1.3s ease-in-out;
+  transition: all 1.3s ease-in-out;
+}
+.gauge-d {
+  z-index: 6;
+  position: absolute;
+  /* background-color: #59adac; */
+  background-image: -webkit-gradient(linear, right top, left top, from(#59adac), to(#1a98ac));
+  background-image: linear-gradient(to left, #59adac, #1a98ac);
+  width: 75%;
+  height: 75%;
+  top: 100%;
+  left: 13%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0px 0px 200px 200px;
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+  -webkit-transition: all 1.3s ease-in-out;
+  transition: all 1.3s ease-in-out;
+}
+.gauge-datag {
+  z-index: 8;
+  position: absolute;
+  /* background-color: #2d3f67; */
+  background-image: -webkit-gradient(linear, right top, left top, from(#7039a9), to(#4a2973));
+  background-image: linear-gradient(to left, #7039a9, #4a2973);
+  width: 62%;
+  height: 62%;
+  left: 19%;
+  top: 38%;
+  border-radius: 250px 250px 0px 0px;
+}
+.gauge-dg {
+  z-index: 5;
+  position: absolute;
+  /* background-color: rgb(76, 42, 118); */
+  background-image: -webkit-gradient(linear, right top, left top, from(#7039a9), to(#7039a9));
+  background-image: linear-gradient(to left, #7039a9, #7039a9);
+  width: 75%;
+  height: 75%;
+  top: 100%;
+  left: 13%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 0px 0px 200px 200px;
+  -webkit-transform-origin: center top;
+  transform-origin: center top;
+  -webkit-transition: all 1.3s ease-in-out;
+  transition: all 1.3s ease-in-out;
+  -webkit-transform: rotate(180deg);
+          transform: rotate(180deg);
+  opacity: 0.4;
+}
+/* .gauge-container:hover .gauge-c  {  transform:rotate(130deg);
+}
+ .gauge-container:hover .gauge-d {  transform:rotate(80deg);} */
+.gauge-container:hover .gauge-data {
+  color: rgba(255, 255, 255, 1);
+}
+.gauge-data {
+  z-index: 10;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 1em;
+  line-height: 25px;
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  top: 25%;
+  left: 10%;
+  margin-left: auto;
+  margin-right: auto;
+  -webkit-transition: all 1s ease-out;
+  transition: all 1s ease-out;
+}
+.inner-unit .value {
+  font-size: 1.7vw;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #ffffff;
+  border: none;
+}
+.inner-unit .unit {
+  font-size: 0.8vw;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #ffffff;
+}
+.gauge-data .thisMonth {
+  font-size: 0.8vw;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #f866a0;
+}
+.gauge-data .date {
+  opacity: 0.7;
+}
+.gauge-data .date,
+.cost-lastmonth .date {
+  font-size: 0.8vw;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: center;
+  color: #ffffff;
+  opacity: 0.7;
+}
+.gauge-data {
+  top: 47%;
+  position: absolute;
+}
+.cost-lastmonth .lastmonth-value {
+  font-size: 1.7vw;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #ffffff;
+}
+.cost-lastmonth .lastmonth {
+  font-size: 0.8vw;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.9px;
+  text-align: center;
+  color: #61dbe4;
+}
+.cost-lastmonth .prev-val {
+  font-size: 0.7vw;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0px;
+  text-align: left;
+  color: #ffffff;
+}
+.d-radius {
+  position: relative;
+  background: #2198ac;
+  top: -2px;
+  z-index: 12;
+  width: 4px;
+  height: 4px;
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+.c-radius {
+  position: relative;
+  background: #f73c6a;
+  top: -3px;
+  z-index: 12;
+  width: 9px;
+  height: 9px;
+  border-top-right-radius: 11px;
+  border-top-left-radius: 11px;
+}
+

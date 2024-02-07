@@ -1,0 +1,84 @@
+{
+  "list": {
+    "add_view": "Añadir vista",
+    "add_folder": "Añadir carpeta",
+    "views_manager": "Administrador de vistas",
+    "manage_views": "Gestionar vistas",
+    "back": "Volver",
+    "success": "¡Vista actualizada con éxito!",
+    "error": "Algo salió mal al compartir esta opinión",
+    "module_list": "Lista de módulos",
+    "no_view_config": "No hay vista configurada"
+  },
+  "customize": {
+    "heading_name": "Personalizar columnas",
+    "updated": "Actualizado",
+    "error": "No se puede personalizar",
+    "drag_drop_text": "Añada las columnas que desee guardar en esta vista",
+    "available_columns": "Columnas disponibles",
+    "selected_columns": "Columnas seleccionadas"
+  },
+  "sharing_permission": {
+    "add_here": "Añadir aquí",
+    "heading_name": "Compartir con",
+    "title": "Compartir",
+    "desc": "Utilice esta opción para compartir con los usuarios y grupos pertinentes",
+    "share_with": "Compartido con",
+    "only_me": "Sólo yo",
+    "everyone": "Todo el mundo",
+    "specific": "Usuario / Equipo / Función específicos",
+    "specific_user": "Usuario específico",
+    "permission_desc": "No permitir que los usuarios compartidos editen esta vista",
+    "selected_user": "Usuario seleccionado",
+    "available_user": "Usuario disponible",
+    "add_columns_desc": "Añadir usuarios para compartir esta vista",
+    "select_user": "Seleccionar usuario",
+    "reorder": "Reordenar"
+  },
+  "folder": {
+    "edit_folder": "Editar carpeta",
+    "add_new_folder": "Añadir nueva carpeta",
+    "error_creation": "Algo ha ido mal al crear el grupo",
+    "success_creation": "El grupo se ha creado correctamente",
+    "edit_creation": "El grupo se ha editado correctamente"
+  },
+  "schedules": {
+    "no_view_schedules_available": " No hay horarios disponibles",
+    "schedule_deletion_succesfully": "Programa borrado con éxito",
+    "schedule_deletion_failed": "Error en la eliminación del programa",
+    "schedule_views": "Vista de horarios",
+    "view": "Ver",
+    "select_view": "Seleccionar vista",
+    "select_user": "Seleccionar usuarios",
+    "subject_empty": "El asunto está vacío",
+    "specify_criteria_for_this_view_to_teams_and_users": "Especificar criterios para esta vista a equipos y usuarios"
+  },
+  "views": {
+    "edit_view": "Editar Ver",
+    "save_as_new_view": "Guardar como nueva vista",
+    "delete_view": "Borrar vista",
+    "delete_view_confirmation": "¿Seguro que quieres borrar esta vista?",
+    "delete": "borrar",
+    "delete_view_sucess": "Ver eliminado correctamente",
+    "delete_view_error": "No se puede eliminar la vista",
+    "delete_group": "Eliminar carpeta",
+    "delete_group_confirmation": "¿Está seguro de que desea eliminar esta carpeta?",
+    "delete_group_sucess": "Carpeta eliminada correctamente",
+    "delete_group_error": "No se puede eliminar la carpeta"
+  },
+  "naming": {
+    "heading_name": "Nombrar",
+    "display_name": "Ver nombre para mostrar",
+    "folder_name": "Nombre de la carpeta"
+  },
+  "sorting": {
+    "heading_name": "Clasificación",
+    "field": "Campo"
+  },
+  "criteria": {
+    "heading_name": "Especifique los criterios"
+  },
+  "calender": {
+    "add_weekend": "Añadir fin de semana"
+  }
+}

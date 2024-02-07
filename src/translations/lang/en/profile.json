@@ -1,0 +1,10 @@
+{
+  "signature": {
+    "addSignature": "Add Signature",
+    "saveKey": "Save",
+    "signature": "Signature",
+    "success": "Signature saved",
+    "deletekey": "Delete",
+    "deleteSuccess": "Signature deleted successfully"
+  }
+}

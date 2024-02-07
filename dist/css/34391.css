@@ -1,0 +1,33 @@
+
+.avatar-size-tenant[data-v-50cbe910] {
+  font-size: 20px;
+  height: 70px;
+  line-height: 30px;
+  width: 70px;
+}
+.avatar-size-tenant-unit[data-v-50cbe910] {
+  font-size: 28px;
+  height: 120px;
+  line-height: 30px;
+  width: 120px;
+}
+
+
+.tenant-avatar[data-v-102276b7] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
+}
+.tenant-primary-icon[data-v-102276b7] {
+  height: 10px;
+  margin-top: 3px;
+  margin-right: 8px;
+}
+

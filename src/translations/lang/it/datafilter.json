@@ -1,0 +1,8 @@
+{
+  "conditions": {
+    "match_any": "Qualsiasi abbinamento",
+    "match_all": "Abbina tutto",
+    "reading": "Lettura",
+    "operator": "Operatore"
+  }
+}

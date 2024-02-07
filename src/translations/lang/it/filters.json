@@ -1,0 +1,19 @@
+{
+  "search": {
+    "by": "da",
+    "search_fields": "Campi di ricerca"
+  },
+  "tags": {
+    "clear_all": "cancella tutto",
+    "save_view": "salva vista",
+    "save_view_as": "salva come",
+    "save_as_new": "salva come nuova vista",
+    "save_to_existing": "salvare su esistente"
+  },
+  "views": {
+    "confirm_edit": "Sei sicuro di voler modificare la vista?",
+    "edit_success": "Vista Modificata con successo!",
+    "existing_filters": "Filtri Esistenti",
+    "new_filters": "Nuovi Filtri"
+  }
+}

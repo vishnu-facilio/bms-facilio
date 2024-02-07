@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>CALENDER Copy 2@3x</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Item-Types_Summary_Revamp-2-Copy" transform="translate(-1102.000000, -387.000000)">
+            <g id="Mid" transform="translate(372.000000, 363.000000)">
+                <g id="Card-1-Copy-2" transform="translate(710.000000, 0.000000)">
+                    <g id="CALENDER-Copy-2" transform="translate(20.000000, 24.000000)">
+                        <circle id="Oval" fill="#6EA972" cx="20" cy="20" r="20"></circle>
+                        <g id="price_check_black_24dp" transform="translate(8.000000, 8.000000)">
+                            <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                            <g id="Group" transform="translate(7.000000, 3.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                                <path d="M10.5,15 L10.5,9 C10.5,8.175 9.825,7.5 9,7.5 L3,7.5 L3,4.5 L10.5,4.5 L10.5,1.5 L6.75,1.5 L6.75,0 L3.75,0 L3.75,1.5 L1.5,1.5 C0.675,1.5 0,2.175 0,3 L0,9 C0,9.825 0.675,10.5 1.5,10.5 L7.5,10.5 L7.5,13.5 L0,13.5 L0,16.5 L3.75,16.5 L3.75,18 L6.75,18 L6.75,16.5 L9,16.5 C9.825,16.5 10.5,15.825 10.5,15 Z" id="Path"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

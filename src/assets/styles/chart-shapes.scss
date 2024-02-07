@@ -1,0 +1,29 @@
+.fc-chart-shape-rectangle {
+  width: 7px;
+  height: 7px;
+  background-color: #f69292;
+}
+
+.fc-chart-shape-circle {
+  width: 8px;
+  height: 8px;
+  background-color: #f69292;
+  border-radius: 50%;
+}
+
+.fc-chart-shape-triangle {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 10px solid #f69292;
+}
+
+.fc-chart-shape-diamond {
+  width: 7px;
+  height: 7px;
+  position: relative;
+  transform: rotate(45deg);
+  margin-top: -1px;
+  background-color: #f69292;
+}

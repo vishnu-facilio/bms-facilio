@@ -1,0 +1,40 @@
+{
+  "attendance": {
+    "users_list": "Lista de usuarios",
+    "resume_work": "Reanudar el trabajo",
+    "check_in_caps": "REGISTRO",
+    "check_out_caps": "CHECK-OUT",
+    "check_in": "Facturación",
+    "check_out": "Salida",
+    "add_notes": "Añadir notas",
+    "break_start": "DESCANSO",
+    "no_attendance": "No hay asistencia disponible",
+    "attendance_transaction": "Transacción de asistencia"
+  },
+  "shift": {
+    "shift": "CAMBIO",
+    "name": "Nombre",
+    "from_time": "Del Tiempo",
+    "to_time": "Al tiempo",
+    "weekend_definition": "Fin de semana Definición",
+    "cancel": "Cancelar",
+    "break": "Pausa",
+    "break_type": "Tipo de rotura",
+    "break_duration": "Duración de la pausa",
+    "applicable_shifts": "Turno(s) aplicable(s)",
+    "shift_rotation": "ROTACIÓN DEL CAMBIO",
+    "scheduler_name": "Nombre del programador",
+    "scheduler_frequency": "Programador Frecuencia"
+  },
+  "employee": {
+    "update_success": "Actualizado con éxito"
+  },
+  "department": {
+    "new_department": "Nuevo departamento",
+    "no_data_department": "No hay departamento disponible",
+    "department": "Departamento",
+    "delete_department": "Suprimir departamento",
+    "delete_confirmation_department": "¿Está seguro de que desea eliminar este departamento?",
+    "delete_success_department": "Departamento(s) eliminado(s) con éxito"
+  }
+}

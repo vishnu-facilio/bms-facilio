@@ -1,0 +1,55 @@
+
+.lines[data-v-b2639826] {
+  height: 15px;
+  border-radius: 5px;
+}
+.height40[data-v-b2639826] {
+  height: 40px !important;
+}
+
+
+.setting-list-view-table .setting-table-th[data-v-38a5d87c] {
+  vertical-align: middle;
+  background-color: #fff;
+  border: none;
+}
+.body-row[data-v-38a5d87c] {
+  border: 1px solid transparent;
+  border-bottom: 1px solid #f2f5f6;
+  background-color: #fff;
+}
+.body-row[data-v-38a5d87c]:hover {
+  background-color: #fff;
+  border: 1px solid #b0dbe1;
+  z-index: 1;
+}
+.body-row[data-v-38a5d87c]:first-of-type {
+  border-top: 1px solid #f2f5f6;
+}
+.body-row[data-v-38a5d87c]:first-of-type:hover {
+  border: 1px solid #b0dbe1;
+}
+.body-row-cell[data-v-38a5d87c] {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  color: #333;
+  font-size: 14px;
+  border-collapse: separate;
+  padding: 15px 30px;
+  letter-spacing: 0.6px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.body-row-cell[data-v-38a5d87c]:first-of-type {
+  padding-left: 30px;
+}
+.body-row .actions[data-v-38a5d87c] {
+  visibility: hidden;
+}
+.body-row:hover .actions[data-v-38a5d87c] {
+  visibility: visible;
+}
+

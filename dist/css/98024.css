@@ -1,0 +1,120 @@
+
+.fc-attachments .dropbox2 {
+  outline: 1px dashed #e1e1ed;
+  /* outline-offset: -10px; */
+  color: #999999;
+  padding: 57px 10px;
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+}
+.fc-attachments .dropbox2 .input-file {
+  width: 100%;
+  height: 200px;
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
+  left: 0;
+  top: 0;
+}
+.fc-attachments .dropbox2:hover {
+  outline: 1px dashed #e1e1ed;
+}
+.fc-attachments .dropbox2 p {
+  font-size: 13px;
+  text-align: center;
+  letter-spacing: 0.9px;
+  color: #999999;
+}
+.fc-attachments .fc-attachment-row {
+  border-bottom: 1px solid #e2e2e2;
+  padding: 5px;
+}
+.fc-attachments {
+  font-size: 13px;
+}
+.fc-attachments .fc-attachment-row .attachment-sublabel,
+.fc-attachments .fc-attachment-row .attachment-progress {
+  color: rgb(163, 162, 177);
+  font-size: 12px;
+}
+.fc-attachments .fc-attachment-row div {
+  padding: 2px;
+}
+.fc-attachments .fc-attachment-row .remove {
+  margin-top: -30px;
+}
+.fc-attachments .fc-attachment-row:last-child {
+  border: none;
+}
+
+
+.oddEven:nth-child(odd) {
+  background: rgb(248, 250, 250);
+}
+
+
+.newtemplatesize {
+  width: 40% !important;
+}
+/* .bill-upload{
+      margin-left: 10px;
+    } */
+/* .bill-container{
+      padding-left: 20px;
+      padding-top: 20px;
+    } */
+
+
+.Cell {
+  display: table-cell;
+  border-width: thin;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+.generateBill {
+  width: 46% !important;
+}
+.el-date-editor .el-range-separator {
+  padding: 0 5px;
+  line-height: 32px;
+  width: 8% !important;
+  color: #2d2f33;
+}
+.temp {
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  text-align: center;
+  margin-top: 40px;
+  color: #bdbdbd;
+}
+
+
+.fc-list-view-table tbody tr.tablerow:hover {
+  background: #fafbfc;
+}
+.tablerow {
+  cursor: pointer;
+}
+.tablerow.active {
+  background: #f3f4f7 !important;
+  border-left: 3px solid #ff2d81 !important;
+  border-right: 1px solid rgba(232, 232, 232, 0.35) !important;
+  border-top: 1px solid rgba(232, 232, 232, 0.35) !important;
+  border-bottom: 1px solid rgba(232, 232, 232, 0.35) !important;
+}
+.fc-white-theme .tablerow.selected {
+  background: #e2f1ef;
+  border-left: 3px solid #28b2a4;
+  border-right: 1px solid rgba(232, 232, 232, 0.35);
+  border-top: 1px solid rgba(232, 232, 232, 0.35);
+  border-bottom: 1px solid rgba(232, 232, 232, 0.35) !important;
+}
+.fc-black-theme .tablerow.selected {
+  background: hsla(0, 0%, 100%, 0.1) !important;
+  border-left: 3px solid #28b2a4;
+  border-right: 1px solid rgba(232, 232, 232, 0.35);
+  border-top: 1px solid rgba(232, 232, 232, 0.35);
+  border-bottom: 1px solid rgba(232, 232, 232, 0.35) !important;
+}
+

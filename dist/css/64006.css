@@ -1,0 +1,183 @@
+
+.fcu-list-container th,
+.fcu-list-container td {
+  padding: 10px;
+}
+.fcu-list-container th {
+  font-size: 11px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1px;
+  color: #324056;
+  text-transform: uppercase;
+  white-space: nowrap;
+  padding-bottom: 15px;
+  padding-top: 15px;
+}
+td.fcu-td {
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 40px;
+  letter-spacing: 0.6px;
+  color: #324056;
+  white-space: nowrap;
+}
+.fcu-list-view {
+  overflow: auto;
+  height: 100%;
+}
+.low-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: right;
+  color: #46a6d8;
+}
+.medium-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: right;
+  color: #33bb9d;
+}
+.high-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: right;
+  color: #f3bd47;
+}
+.off-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: right;
+  color: #e41f1f;
+}
+.fcu-id {
+  /* padding-bottom: 7px; */
+}
+.fcu-name {
+  font-weight: 500;
+  min-width: 200px;
+}
+.fcu-list-header {
+  border-bottom: solid 1px #e6ecf3;
+}
+.fcu-list-header tr {
+  background: #fff !important;
+}
+.fcu-list-container table {
+  width: 100%;
+}
+.fcu-table-name {
+  font-size: 13px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  text-align: left;
+  color: #324056;
+  text-transform: uppercase;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-top: 17px;
+  padding-left: 20px;
+}
+.fcu-table-header {
+  height: 50px;
+  border-bottom: solid 1px #f6f6f7;
+}
+.fcu-select-level .el-input .el-input__inner,
+.fcu-select-level .el-textarea .el-textarea__inner {
+  border: 0px;
+}
+.fcu-select-level {
+  padding-top: 10px;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding-right: 80px;
+}
+/* .fcu-select-level i.el-select__caret.el-input__icon.el-icon-arrow-up {
+    position: relative !important;
+    top: 5px !important;
+    height: 20px !important;
+} */
+.fcu-list-container tr:nth-child(odd) {
+  background-color: #fbfbfb;
+}
+.fcu-list-container tr th:first-child,
+.fcu-list-container tr td:first-child {
+  padding-left: 20px;
+}
+.fcu-list-container tr th:last-child,
+.fcu-list-container tr td:last-child {
+  padding-right: 20px;
+}
+.fcu-list-container .el-icon-arrow-up:before {
+  position: relative !important;
+  bottom: -2px !important;
+}
+.fcu-list-container
+  i.el-select__caret.el-input__icon.el-icon-arrow-up.is-reverse {
+  position: relative !important;
+  top: -4px !important;
+}
+.fcu-list-container
+  i.el-select__caret.el-input__icon.el-icon-arrow-up.is-reverse {
+  position: relative !important;
+  top: -2px !important;
+}
+.fcu-select-level .el-input__icon {
+  line-height: 22px !important;
+}
+.mobile-dashboard-container .fcu-table-name {
+  text-align: left;
+}
+.mobile-dashboard-container .fcu-table-header.row > .col-10 {
+  max-width: 66.6667%;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 66.6667%;
+          flex: 0 0 66.6667%;
+}
+.mobile-dashboard-container .fcu-table-header.row > .col-2 {
+  max-width: 33.3333%;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 33.3333%;
+          flex: 0 0 33.3333%;
+  padding-top: 10px;
+}
+.mobile-dashboard-container .fcu-select-level {
+  padding-top: 5px;
+  padding-right: 20px;
+}
+.fcu-mobile-table-body {
+  height: calc(100% - 50px);
+  overflow: auto;
+}
+.fcu-mobile-list-view {
+  overflow: hidden;
+}
+

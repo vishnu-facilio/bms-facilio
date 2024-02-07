@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="49px" height="40px" viewBox="0 0 49 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>DP Sensor</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="13.2104032%" y1="20.339157%" x2="89.1221551%" y2="81.6238571%" id="linearGradient-1">
+            <stop stop-color="#FAD164" offset="0%"></stop>
+            <stop stop-color="#C57D16" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-789.000000, -260.000000)">
+            <g id="DP-Sensor" transform="translate(788.000000, 260.000000)">
+                <polygon id="Path-5-Copy-3" fill="#B17201" points="1.9969351 15.2068546 1.9969351 39.8222392 3.9969351 39.8222392 3.9969351 15.2068546"></polygon>
+                <polygon id="Path-5-Copy-2" fill="#F09B04" points="0.996935096 15.2068546 0.996935096 39.8222392 2.9969351 39.8222392 2.9969351 15.2068546"></polygon>
+                <rect id="Rectangle" fill="#F09B04" x="1" y="13.0081301" width="48" height="3.00187617"></rect>
+                <ellipse id="Oval-Copy" fill="url(#linearGradient-1)" cx="27" cy="9.00562852" rx="9" ry="9.00562852"></ellipse>
+                <ellipse id="Oval-Copy-2" fill="url(#linearGradient-1)" cx="25" cy="11.0068793" rx="9" ry="9.00562852"></ellipse>
+                <ellipse id="Oval-Copy-3" fill="url(#linearGradient-1)" cx="23" cy="13.0081301" rx="9" ry="9.00562852"></ellipse>
+                <ellipse id="Oval" fill="#EE9A00" cx="23" cy="13.0081301" rx="9" ry="9.00562852"></ellipse>
+                <text id="DP" font-family="ProximaNova-Bold, Proxima Nova" font-size="8" font-weight="bold" letter-spacing="0.3288889" fill="#000000">
+                    <tspan x="17.8031111" y="16.0084428">DP</tspan>
+                </text>
+                <polygon id="Path-5-Copy-5" fill="#B17201" points="46.9969351 13.0106502 46.9969351 39.6773168 49.0395393 39.6773168 49.0395393 13.0106502"></polygon>
+                <polygon id="Path-5-Copy-4" fill="#F09B04" points="45.9969351 13.0106502 45.9969351 39.6773168 48.0395393 39.6773168 48.0395393 13.0106502"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

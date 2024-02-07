@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="100%" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 7</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="20" height="16" rx="1.20000005"></rect>
+    </defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-878.000000, -98.000000)">
+        <g id="Group-7" transform="translate(878.000000, 98.000000)">
+            <g id="Rectangle-8">
+                <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-1"></use>
+                <rect stroke="#EF508F" stroke-width="0.8" x="0.4" y="0.4" width="19.2" height="15.2" rx="1.20000005"></rect>
+            </g>
+            <polyline id="Path-2" stroke="#EF508F" stroke-width="0.8" stroke-linecap="round" points="3 13 5.93548387 8.90909091 8.4516129 10.5454545 11.8064516 5.22727273 13.9032258 6.86363636 16 4"></polyline>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="15px" height="1px" viewBox="0 0 15 1" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>minus icon</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="smart_control_dialog_3" transform="translate(-863.000000, -560.000000)" fill="#808BA9" fill-rule="nonzero">
+            <g id="Group-4" transform="translate(438.000000, 198.000000)">
+                <g id="setup" transform="translate(416.000000, 145.000000)">
+                    <g id="plus-copy" transform="translate(0.000000, 201.000000)">
+                        <path d="M16.5,9.5 C16.7454599,9.5 16.9496084,9.67687516 16.9919443,9.91012437 L17,10 L17,23 C17,23.2761424 16.7761424,23.5 16.5,23.5 C16.2545401,23.5 16.0503916,23.3231248 16.0080557,23.0898756 L16,23 L16,10 C16,9.72385763 16.2238576,9.5 16.5,9.5 Z" id="minus-icon" transform="translate(16.500000, 16.500000) rotate(90.000000) translate(-16.500000, -16.500000) "></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

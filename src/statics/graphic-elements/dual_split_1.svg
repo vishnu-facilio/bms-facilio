@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="210px" viewBox="0 0 200 210" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Dual Split 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-789.000000, -1175.000000)">
+            <g id="Dual-Split-1" transform="translate(789.000000, 1175.000000)">
+                <polygon id="Path-4-Copy-8" fill="#848E9C" points="98 187 98 210 200 210 200 187"></polygon>
+                <polygon id="Path-2-Copy" fill="#5B6777" points="200 36 200 92.8504721 92.1085811 92.8504721 86.7515789 108 -1.42108547e-14 108 -1.42108547e-14 61.0548341 52.7683857 61.0548341 62.7128935 36"></polygon>
+                <polygon id="Path-2-Copy-3" fill="#5B6777" points="200 110 200 187 101 187 51.5557083 139 7.10542736e-13 133.574722 3.12423698e-13 92.8092953 135.82108 92.8092953 132.960088 100 149.3296 110"></polygon>
+                <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="149.46732 110 141.23188 140 200 140 200 110"></polygon>
+                <polygon id="Path-2-Copy-4" fill="#5B6777" transform="translate(131.000000, 36.000000) scale(1, -1) translate(-131.000000, -36.000000) " points="200 1.42108547e-13 200 72 78.0102401 72 62.5471328 35.4491111 62 3.97903932e-13"></polygon>
+                <polygon id="Path-4-Copy-3" fill="url(#linearGradient-1)" opacity="0.5" points="78.2241474 1.13686838e-13 65.3223613 30 200 30 200 1.13686838e-13"></polygon>
+                <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="0.0255302964 61 0.0255302964 86 42.4256115 86 53.1294532 61"></polygon>
+                <polygon id="Path-4-Copy" fill="#848E9C" points="2.84217094e-14 133 2.84217094e-14 155 51.4348598 155 53.1294532 133"></polygon>
+                <polygon id="Path-4-Copy-7" fill="#848E9C" points="141.960963 77 133 100 200 100 200 77"></polygon>
+                <polygon id="Path-4-Copy-3" fill="url(#linearGradient-1)" opacity="0.5" points="133 100 122.268941 125 141.209081 140 149.52997 110.099601"></polygon>
+                <polygon id="Path-4-Copy-6" fill="#848E9C" points="51.2389225 154.850169 97.9598784 210 101 187 53.1294532 132.914132"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

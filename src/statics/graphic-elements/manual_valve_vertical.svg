@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Manual valva 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="129.331989%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-846.000000, -639.000000)">
+            <g id="Manual-valva-2" transform="translate(866.000000, 659.000000) rotate(90.000000) translate(-866.000000, -659.000000) translate(846.000000, 639.000000)">
+                <path d="M16,17 L18.3033652,17 C18.6780102,17 19.0212285,17.2094109 19.1926059,17.5425604 L22,23 L23,23 C23.5522847,23 24,23.4477153 24,24 L28,24 L28,39 L24,39 C24,39.5522847 23.5522847,40 23,40 L5,40 C4.44771525,40 4,39.5522847 4,39 L0,39 L0,24 L4,24 C4,23.4477153 4.44771525,23 5,23 L6,23 L8.82757666,17.5401275 C8.99941282,17.2083226 9.34190118,17 9.71556159,17 L12,17 L12,12 L16,12 L16,17 Z" id="Combined-Shape" fill="url(#linearGradient-1)"></path>
+                <path d="M25.0019736,0.0388902632 L38.5194451,0.0388902632 C39.337133,0.0388902632 40,0.701757257 40,1.51944513 L40,1.51944513 C40,2.33713301 39.337133,3 38.5194451,3 L25.0019736,3 L25.0019736,0.0388902632 Z" id="Rectangle" fill="#D3251C"></path>
+                <path d="M24.6322089,0.542874844 L24.6322089,2.77993066 L19.176329,9.47403472 L13.4955214,9.47403472 C12.9432367,9.47403472 12.4955214,9.92174997 12.4955214,10.4740347 L12.4955214,11.6964869 L20.149302,11.6964869 L27.46281,2.77993066 L27.46281,0.542874844 L24.6322089,0.542874844 Z" id="Path-59" stroke="#3A342C" fill="#39342D"></path>
+            </g>
+        </g>
+    </g>
+</svg>

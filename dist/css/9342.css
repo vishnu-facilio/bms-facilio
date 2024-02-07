@@ -1,0 +1,8 @@
+.connection-form-dialog .el-dialog__body{height:400px;overflow:scroll;padding:0px 30px 70px}
+.connection-dialog .fc-input-select .el-input .el-input__inner{width:100% !important}.connection-dialog .connection-select .el-input .el-input__inner{width:100%}.connection-dialog .connection-icon{border-color:#d5d5d5;border-style:solid;border-width:1px;border-radius:1%;border-left:none;background-color:#f5f7fa;cursor:pointer}.connection-dialog .connection-icon:hover{opacity:.6}
+
+.width250[data-v-004e12f4] {
+  width: 250px;
+}
+
+.fc-agent-overview-page .agent-overview-header{padding:30px 20px}.fc-agent-overview-page .fc-agent-overview-container{width:calc(100% - 40px);height:calc(100vh - 150px);overflow-x:hidden;overflow-y:scroll;-webkit-box-flex:0;-ms-flex:0 0 100%;flex:0 0 100%;margin-left:20px;padding-bottom:50px}.fc-agent-overview-page .fc-agent-white-card .fc-grey5-13,.fc-agent-overview-page .fc-agent-white-card .fc-agent-black48,.fc-agent-overview-page .fc-agent-white-card .f14{color:#fff !important}.fc-agent-overview-page .analytics-section .chart-icon{margin-top:10px}.fc-agent-overview-page .analytics-section .chart-icon .el-select .el-input .el-select__caret{line-height:20px}.fc-agent-overview-page .height550{height:550px !important}

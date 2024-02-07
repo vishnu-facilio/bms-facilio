@@ -1,0 +1,35 @@
+{
+  "summary": {
+    "ecm_option_measurement": "Opción Ecm Medición",
+    "reporting_period": "Período de referencia",
+    "description": "descripción",
+    "project_owner": "Propietario del proyecto",
+    "site_name": "Nombre del emplazamiento",
+    "asset_name": "Nombre del activo",
+    "baselineperiod": "Período de referencia ajustado",
+    "savings": "Ahorro",
+    "target_savings": "Objetivo de ahorro",
+    "actual_energy": "Energía real",
+    "baseline_energy": "Energía de referencia ajustada",
+    "carbon_emissions": "Ahorro de carbono",
+    "baseline_equation": "Ecuación de referencia ajustada",
+    "enrgy_cost": "Consumo de energía frente a coste",
+    "adjustments_equation": "Ecuación de ajuste",
+    "adjustments_period": "Período de adaptación",
+    "adjustments_constant": "Constantes",
+    "name": "Nombre",
+    "date_range": "Intervalo de fechas",
+    "baseline": "Línea de base",
+    "ecm_period": "Periodo Ecm",
+    "nodescription": "No hay descripción disponible",
+    "consumption_vs_cost": "Consumo de energía frente a coste"
+  },
+  "creation": {
+    "project_details": "Detalles del proyecto",
+    "adjusted_baseline": "Base de referencia ajustada",
+    "non_routine_adjustments": "Ajustes no rutinarios",
+    "define_reporting_period": "Definir el período del informe",
+    "define_baseline": "Definir la línea de base ajustada",
+    "baseline_expression": "Expresión basal ajustada"
+  }
+}

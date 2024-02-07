@@ -1,0 +1,35 @@
+{
+  "analytics": {
+    "mode": "Modo",
+    "Category": "Categoría",
+    "xaxis": "Eje X",
+    "yaxis": "Eje Y",
+    "assets": "Activos",
+    "rotate_axis": "Eje de rotación",
+    "auto": "Auto",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "slanting": "Inclinación",
+    "tick_direction": "Dirección de la garrapata",
+    "ymin": "Y-Min",
+    "ymax": "Y-Max",
+    "xmin": "X-Min",
+    "xmax": "X-Max",
+    "y1axis_label": "Y1 - Etiqueta del eje",
+    "y2axis_label": "Y2 - Etiqueta del eje",
+    "ticks_count": "Recuento de garrapatas",
+    "decimals": "Decimales"
+  },
+  "custom_baseline": {
+    "custom_baseline": "Línea de base personalizada",
+    "add_point": "Añadir punto",
+    "modify_point": "Modificar punto",
+    "delete": "Borrar",
+    "cancel": "Cancelar",
+    "done": "hecho",
+    "add_baseline": "Añadir punto de referencia",
+    "modify_baseline_point": "Modificar el punto de partida",
+    "x_value": "Valor X",
+    "y_value": "Valor Y"
+  }
+}

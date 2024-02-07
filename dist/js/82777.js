@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[82777],{
+/***/682777:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return ShiftBreaks}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/page/widget/shift/ShiftBreaks.vue?vue&type=template&id=6c78950a&scoped=true
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"box"},[_c("div",{staticClass:"label"},[_vm._v(_vm._s(_vm.$t("common.shift.breaks")))]),_c("h3",[_vm._v(_vm._s(_vm.breaks))])])},staticRenderFns=[],validation=__webpack_require__(990260),ShiftBreaksvue_type_script_lang_js={props:["details"],name:"ShiftBreaks",computed:{widgetTitle:function(){return"ShiftBreaks"},shift:function(){return this.details},breaks:function(){var associatedBreaks=this.shift.associatedBreaks;return(0,validation/* isEmpty */.xb)(associatedBreaks)?0:associatedBreaks}}},shift_ShiftBreaksvue_type_script_lang_js=ShiftBreaksvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(shift_ShiftBreaksvue_type_script_lang_js,render,staticRenderFns,!1,null,"6c78950a",null)
+/* harmony default export */,ShiftBreaks=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/82777.js.map

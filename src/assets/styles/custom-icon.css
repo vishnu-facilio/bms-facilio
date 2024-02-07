@@ -1,0 +1,26 @@
+.el-icon-arrow-down-black {
+  font-size: 16px;
+  color: #333333;
+  font-weight: bold;
+}
+.fc-more-icon {
+  color: #b1bdc9;
+  font-size: 16px;
+  font-weight: 600;
+}
+.right-icon-inactive {
+  color: #e3e3e3;
+  font-size: 12px;
+}
+.left-icon-inactive {
+  color: #e3e3e3;
+  font-size: 12px;
+}
+.edit-icon-grey {
+  color: #000000;
+  opacity: 0.25;
+}
+.edit-icon {
+  color: #319aa8;
+  font-size: 16px;
+}

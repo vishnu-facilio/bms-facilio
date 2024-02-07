@@ -1,0 +1,37 @@
+{
+  "email_logs": "Email Logs",
+  "description": "Email logs provide insights to determine the delivery status of outbound emails",
+  "no_email_logs": "No Email Logs",
+  "recipient_count": "Recipient Count",
+  "delivered_count": "Delivered Count",
+  "bounced_count": "Bounced Count",
+  "source_type": "Source Type",
+  "record_id": "Record ID",
+  "files_attached": " files attached",
+  "file_attached": " file attached",
+  "zero": "0",
+  "no_records_found": "No Records Found",
+  "info_tab": {
+    "basic_information": "Basic Information",
+    "email_body": "Email Body",
+    "cc": "CC",
+    "bcc": "BCC",
+    "created_time": "Created Time"
+  },
+  "email_dialog": {
+    "in_progress": "In progress",
+    "sent": "Sent",
+    "delivered": "Delivered",
+    "bounced": "Bounced",
+    "hard_bounce": "Hard Bounce",
+    "soft_bounce": "Soft Bounce",
+    "unknown_bounce": "Unknown Bounce",
+    "recipient_list": "Recipient List",
+    "delivered_list": "Delivered List",
+    "bounced_list": "Bounced List",
+    "bounce_type": "Bounce Type",
+    "bounce_reason": "Bounce Reason",
+    "s_no": "S.No",
+    "search_email": "Search Email"
+  }
+}

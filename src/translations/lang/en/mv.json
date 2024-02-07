@@ -1,0 +1,35 @@
+{
+  "summary": {
+    "ecm_option_measurement": "Ecm Option Measurement",
+    "reporting_period": "Reporting Period",
+    "description": "description",
+    "project_owner": "Project Owner",
+    "site_name": "Site Name",
+    "asset_name": "Asset Name",
+    "baselineperiod": "Adjusted Baseline Period",
+    "savings": "Savings",
+    "target_savings": "Target Savings",
+    "actual_energy": "Actual Energy",
+    "baseline_energy": "Adjusted Baseline Energy",
+    "carbon_emissions": "Carbon Savings",
+    "baseline_equation": "Adjusted Baseline Equation",
+    "enrgy_cost": "Energy Consumptions vs Cost",
+    "adjustments_equation": "Adjustment Equation",
+    "adjustments_period": "Adjustment Period",
+    "adjustments_constant": "Constants",
+    "name": "Name",
+    "date_range": "Date Range",
+    "baseline": "Baseline",
+    "ecm_period": "Ecm Period",
+    "nodescription": "No Description Available",
+    "consumption_vs_cost": "Energy Consumption Vs Cost"
+  },
+  "creation": {
+    "project_details": "Project Details",
+    "adjusted_baseline": "Adjusted Baseline",
+    "non_routine_adjustments": "Non-Routine Adjustments",
+    "define_reporting_period": "Define Reporting Period",
+    "define_baseline": "Define Adjusted Baseline",
+    "baseline_expression": "Adjusted Baseline Expression"
+  }
+}

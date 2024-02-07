@@ -1,0 +1,373 @@
+.markdown-style {
+  font-size: 13px;
+  line-height: 20px;
+  text-align: left;
+  max-width: 100%;
+  clear: both;
+  margin-left: 0px;
+  margin-top: 5px;
+  word-wrap: break-word;
+  line-height: 1.5;
+  letter-spacing: 0.6px;
+  color: #324056;
+}
+.markdown-style h1 {
+  position: relative;
+  font-size: 21px;
+  font-weight: 500;
+  padding: 0;
+  margin: 0;
+}
+.markdown-style h2 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.markdown-style h3 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.markdown-style h4 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.markdown-style h5 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.markdown-style h6 {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-weight: 400;
+  font-size: 16px;
+}
+
+.markdown-style p {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+.markdown-style p:not(:first-child) {
+  margin-top: 0.75rem;
+}
+
+.markdown-style a:hover {
+  text-decoration: underline;
+}
+
+.markdown-style blockquote {
+  font-size: 14px;
+  border-left: 2px solid #5fb0c0;
+  background-color: #f5f5f5;
+  padding: 5px 10px;
+  margin: 10px 0 !important;
+}
+.markdown-style blockquote p {
+  position: relative;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.list-blockquote {
+  font-size: 8px;
+  border-left: 2px solid #5fb0c0;
+  background-color: #f5f5f5;
+  margin: 10px 0 !important;
+}
+
+.markdown-style code {
+  font: inherit;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.28px;
+  color: #324056;
+  background-color: #fff8a6;
+}
+
+.markdown-style table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+  overflow: scroll;
+}
+
+.markdown-style td {
+  border-bottom: solid 1px #edf2f5;
+  text-align: center;
+  padding: 10px;
+}
+.markdown-style th {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.26px;
+  color: #8d939b;
+  background-color: #f5f5f5;
+  padding: 10px;
+  text-align: center;
+}
+
+.markdown-style img {
+  height: 100%;
+  width: 100%;
+  max-height: 100px;
+  max-width: 100px;
+}
+
+.markdown-inside {
+  position: relative;
+  margin-bottom: 10px;
+}
+
+.markdown-inside button {
+  position: absolute;
+  right: 7px;
+  top: 50px;
+  border: none;
+  border-radius: 100%;
+  outline: none;
+  text-align: center;
+  font-weight: bold;
+  padding: 0px;
+  height: 17px;
+  width: 26px;
+  opacity: 0.79;
+}
+.markdown-inside button:hover {
+  cursor: pointer;
+  opacity: 1;
+}
+.markdown-outside {
+  margin-top: 2px;
+  margin-left: 20px;
+}
+.new-markdown-outside {
+  margin-left: 15px;
+}
+.new-markdown-outside button {
+  right: 7px;
+  top: 50px;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  text-align: center;
+  font-weight: bold;
+  padding: 2px 5px 2px 2px;
+  height: 23px;
+  width: 31px;
+  opacity: 0.79;
+  background: white;
+}
+.new-markdown-outside button {
+  right: 7px;
+  top: 50px;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  text-align: center;
+  font-weight: bold;
+  padding: 2px 5px 2px 2px;
+  height: 23px;
+  width: 31px;
+  opacity: 0.79;
+  background: white;
+}
+.new-markdown-outside button:hover {
+  cursor: pointer;
+  opacity: 1;
+  background: rgba(202, 212, 216, 0.3) !important;
+}
+.markdown-outside button {
+  right: 7px;
+  top: 50px;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  text-align: center;
+  font-weight: bold;
+  padding: 2px 5px 2px 2px;
+  height: 23px;
+  width: 31px;
+  opacity: 0.79;
+  background: white;
+}
+.markdown-outside button {
+  right: 7px;
+  top: 50px;
+  border: none;
+  border-radius: 3px;
+  outline: none;
+  text-align: center;
+  font-weight: bold;
+  padding: 2px 5px 2px 2px;
+  height: 23px;
+  width: 31px;
+  opacity: 0.79;
+}
+.markdown-outside button:hover {
+  cursor: pointer;
+  opacity: 1;
+  background: rgba(202, 212, 216, 0.3) !important;
+}
+.comment-message-tooltip {
+  z-index: 9999 !important;
+}
+.sharing-popover {
+  padding: 0px 0px 10px 0px;
+  z-index: 9999 !important;
+}
+.sharing-popover .el-checkbox__label {
+  font-size: 13px;
+}
+.sharing-popover .el-checkbox__input.is-checked + .el-checkbox__label {
+  font-size: 13px;
+}
+.markdown-pop {
+  width: 520px;
+  padding: 17px 0 24px;
+  border-radius: 3px;
+  background-color: rgb(255, 255, 255);
+  z-index: 9999;
+}
+
+.element-list {
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  color: #324056;
+}
+
+.syntax-text {
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.3px;
+  text-align: center;
+  color: #818a99;
+}
+.syntax-text .symbol {
+  font-weight: 500;
+  color: #ff0084;
+}
+.syntax-copy {
+  display: block;
+  opacity: 0;
+}
+.syntax-copy button {
+  background-color: #ffffff;
+  border: none;
+  color: white;
+  padding: 0px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 0px 0px;
+  border-radius: 50%;
+  display: block;
+}
+
+.markdown-style table tr:hover .syntax-copy {
+  opacity: 1;
+}
+
+.markdown-comment-btn {
+  padding: 5px 13px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 3px;
+  border: solid 1px transparent;
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: center;
+  color: #fff;
+  background: #39b2c2;
+  border-color: #39b2c2 !important;
+}
+
+.markdown-comment-btn:hover {
+  background: #39b2c2;
+  opacity: 0.9;
+}
+
+.markdown-cancel-btn {
+  padding: 5px 13px;
+  outline: none;
+  cursor: pointer;
+  border-radius: 3px;
+  border: solid 1px transparent;
+  font-size: 13px;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.7px;
+  text-align: center;
+  color: #39b2c2;
+  font-weight: 500;
+  background: #fff;
+  border-color: #39b2c2 !important;
+}
+
+.markdown-cancel-btn:hover {
+  background: #39b2c2;
+  color: #fff;
+  opacity: 0.9;
+}
+
+.sharing-message {
+  color: #8ca1ad;
+  font-size: 10px;
+  font-style: italic;
+}
+.sharing-message-active {
+  color: #0053cc;
+}
+
+.popover-public-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #324056;
+}
+
+.comment-sharing-switch .el-switch__core {
+  width: 30px !important;
+  height: 16px;
+}
+.comment-sharing-switch .el-switch__core:after {
+  width: 12px;
+  height: 12px;
+}
+.comment-sharing-switch.is-checked .el-switch__core:after {
+  margin-left: -14px;
+}

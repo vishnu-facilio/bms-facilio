@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="60px" viewBox="0 0 44 60" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>flag</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="flag">
+            <polygon id="Path" fill="#EB696A" points="44 23.5 2 40 2 22 2 4"></polygon>
+            <path d="M1,0 C0.448,0 0,0.447 0,1 L0,4 L0,59 C0,59.553 0.448,60 1,60 C1.552,60 2,59.553 2,59 L2,4 L2,1 C2,0.447 1.552,0 1,0 Z" id="Path" fill="#A0A9C4"></path>
+        </g>
+    </g>
+</svg>

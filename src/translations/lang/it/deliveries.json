@@ -1,0 +1,11 @@
+{
+  "deliveries": {
+    "new_delivery": "Nuova consegna",
+    "no_data_deliveries": "Nessuna consegna disponibile",
+    "deliveries": "Consegne",
+    "delivery": "Consegna",
+    "delete_delivery": "Elimina consegna",
+    "delete_confirmation_delivery": "Sei sicuro di voler eliminare queste consegne?",
+    "delete_success_delivery": "Consegna(e) eliminata(e) con successo"
+  }
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="13px" viewBox="0 0 34 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.2 (57519) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="FAHU-Card-Design" transform="translate(-69.000000, -205.000000)" stroke="#000000">
+            <g id="Group-6" transform="translate(28.000000, 70.000000)">
+                <g id="Group-5">
+                    <g id="Group-4" transform="translate(42.000000, 130.000000)">
+                        <g id="Group-3" transform="translate(0.000000, 6.000000)">
+                            <polygon id="Triangle" transform="translate(11.250000, 5.750000) rotate(90.000000) translate(-11.250000, -5.750000) " points="11.25 1 17 10.5 5.5 10.5"></polygon>
+                            <polygon id="Triangle-Copy" transform="translate(20.750000, 5.750000) rotate(-90.000000) translate(-20.750000, -5.750000) " points="20.75 1 26.5 10.5 15 10.5"></polygon>
+                            <path d="M25.75,5.75 L31.75,5.75" id="Line-2" stroke-linecap="square"></path>
+                            <path d="M0.25,5.75 L6.25,5.75" id="Line-2-Copy" stroke-linecap="square"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

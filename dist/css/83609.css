@@ -1,0 +1,34 @@
+
+table[data-v-e7ddb0c8] {
+  color: #b5b5b7;
+  font-size: 1.1em;
+}
+.legend[data-v-e7ddb0c8] {
+  color: black;
+}
+.label[data-v-e7ddb0c8] {
+  margin-bottom: 20px;
+  font-size: 1.1em;
+}
+.box[data-v-e7ddb0c8] {
+  padding: 20px;
+}
+.weeks-header > td[data-v-e7ddb0c8]:not(:first-child) {
+  border-bottom: 1px solid #e9eef4;
+}
+.weekly-off-row[data-v-e7ddb0c8] {
+  border-bottom: 1px solid #e9eef4;
+}
+.strike-mark[data-v-e7ddb0c8] {
+  background-color: #eafdff;
+  color: #39b2c2;
+  font-weight: 400;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  text-align: center;
+}
+td[data-v-e7ddb0c8] {
+  padding: 5px;
+}
+

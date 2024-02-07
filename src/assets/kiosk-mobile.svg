@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="44px" height="66px" viewBox="0 0 44 66" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Kiosk_Selection_1.1" transform="translate(-390.000000, -314.000000)">
+            <g id="Group" transform="translate(392.000000, 316.000000)">
+                <g id="Group-7">
+                    <rect id="Rectangle" fill="#32C5FF" x="1.19270833" y="8.80654297" width="36.283103" height="39.414502"></rect>
+                    <g id="Group-2-Copy" transform="translate(20.076923, 31.000000) scale(-1, 1) translate(-20.076923, -31.000000) translate(0.076923, 0.000000)" stroke="#733C9A">
+                        <rect id="Rectangle-Copy-12" stroke-width="4" stroke-linejoin="round" x="0.808794071" y="0" width="38.3059896" height="62" rx="2"></rect>
+                        <ellipse id="Oval-Copy-4" stroke-width="3" cx="19.9617889" cy="53.3130371" rx="1.53846154" ry="1.55"></ellipse>
+                    </g>
+                </g>
+                <circle id="Oval" fill="#FFFFFF" cx="14.5" cy="22.5" r="5.5"></circle>
+                <rect id="Rectangle" fill="#FFFFFF" x="20" y="29" width="10" height="11"></rect>
+                <rect id="Rectangle-Copy-13" fill="#FFFFFF" x="9" y="32" width="5" height="5"></rect>
+                <rect id="Rectangle-Copy-14" fill="#FFFFFF" x="25" y="20" width="5" height="5"></rect>
+            </g>
+        </g>
+    </g>
+</svg>

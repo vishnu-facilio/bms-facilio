@@ -1,0 +1,1154 @@
+.form-data-creation,
+.submit-request-container {
+  .header {
+    .title,
+    .form-label {
+      font-size: 20px;
+      font-weight: 300;
+      letter-spacing: 0.4px;
+      color: #324056;
+    }
+
+    .form-label {
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+  }
+}
+
+.form-data-creation,
+.live-form {
+  .loading-container {
+    overflow-y: scroll;
+    height: calc(100vh - 150px);
+    border: 1px solid #ebedf4;
+    background: #fff;
+  }
+}
+
+.form-data-creation {
+  width: 100%;
+  max-width: 1000px;
+  float: left;
+  margin-left: 60px;
+  &.form-creation-widgets {
+    display: flex;
+    max-width: none;
+    margin-left: 0px;
+    padding-left: 20px;
+    .form-left-container {
+      flex: 0 0 70%;
+    }
+    .f-webform-container {
+      .el-form {
+        .section-container {
+          padding-right: 70px;
+        }
+      }
+    }
+    .widgets-container {
+      flex: 1 1 100%;
+      border-left: 1px solid #ebeef5;
+      border-right: 1px solid #ebeef5;
+      margin-left: 15px;
+      overflow-y: scroll;
+      height: 100vh;
+      background: #fff;
+      padding-bottom: 50px;
+      .el-collapse-item {
+        &.expand-widget {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          .el-collapse-item__wrap {
+            flex-grow: 1;
+          }
+        }
+        .el-collapse-item__header {
+          font-size: 13px;
+          font-weight: bold;
+          letter-spacing: 1px;
+          color: #324056;
+          text-transform: uppercase;
+          padding: 25px 15px 25px 25px;
+          height: auto;
+          line-height: normal;
+          &.is-active {
+            border-bottom: 1px solid #ebeef5;
+          }
+        }
+        .el-collapse-item__wrap {
+          min-height: 450px;
+          display: flex;
+          .el-collapse-item__content {
+            width: 100%;
+          }
+        }
+      }
+    }
+  }
+  &.budget-container {
+    max-width: 90%;
+    .f-webform-container .el-form .section-container {
+      padding: 0 500px 30px 70px;
+      &.budget-section-container {
+        padding: 0 100px 30px 70px;
+      }
+    }
+  }
+}
+
+.form-data-creation
+  .el-select.fc-input-full-border-select2
+  >>> .el-input__inner {
+  border: 1px solid #e9edf1;
+}
+
+/* Common styles for facilio form builder and subform builder */
+.form-builder-main-form,
+.f-subform-builder {
+  .section-container {
+    &.active {
+      background: #f3fafb;
+      border: solid 1px #38b3c2;
+    }
+    .notes-field {
+      border: 1px dashed #9ed7de;
+      .notes-container {
+        display: flex;
+        font-size: 0.8125rem;
+        color: #77b2b9;
+        letter-spacing: 0.7px;
+      }
+    }
+  }
+
+  .el-form-item {
+    &.active,
+    &.photo-field.hide-field:hover {
+      background-color: #f3fafb;
+      border: solid 1px #38b3c2;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    &:hover {
+      background-color: #f3fafb;
+      cursor: pointer;
+    }
+  }
+}
+
+/* Common styles for Facilio webform and subform */
+
+.f-webform-container,
+.f-subform-container {
+  .el-form {
+    .section-items {
+      .el-select {
+        &.resource-search {
+          .el-input {
+            .el-input__prefix {
+              right: 5px;
+              left: 95%;
+              z-index: 10;
+            }
+            .el-input__suffix {
+              .el-select__caret {
+                &.el-icon-arrow-up {
+                  display: none;
+                }
+              }
+              .el-icon-circle-close {
+                padding-left: 30px;
+              }
+            }
+          }
+        }
+      }
+      &.f-quote-lineitems {
+        margin: 0px -130px 0px -10px;
+      }
+    }
+  }
+}
+
+.add-option-content,
+.add-option-empty {
+  background: #39b2c2;
+  color: #fff;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  text-align: center;
+  padding: 10px 20px;
+  border-radius: 0px;
+  border-bottom-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  width: 100%;
+  border: 0;
+  &:hover {
+    background: #39b2c2;
+    color: #fff;
+  }
+}
+
+.add-option-content {
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+}
+
+.add-option-container {
+  min-height: 30px;
+}
+
+.el-scrollbar {
+  &.is-empty {
+    .add-option-container {
+      display: none;
+    }
+  }
+}
+
+/* Facilio web form styles */
+.f-webform-container {
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll;
+  height: calc(100vh - 150px);
+
+  .el-form {
+    &.el-form--label-left,
+    &.el-form--label-right {
+      .section-items {
+        display: flex;
+        .el-form-item__label {
+          line-height: normal;
+          font-size: 13px;
+          flex: 0 0 125px;
+          margin-top: 10px;
+          display: flex;
+          word-break: break-word;
+        }
+        .el-form-item__content {
+          line-height: normal;
+          flex: 1 1 100%;
+          align-self: center;
+        }
+      }
+    }
+    &.el-form--label-right {
+      .section-items {
+        .el-form-item__label {
+          flex: 0 0 125px;
+          justify-content: flex-end;
+          text-align: right;
+          padding-right: 15px;
+        }
+      }
+    }
+    &.el-form--label-top {
+      .section-container {
+        .section-items {
+          margin-bottom: 15px;
+          .el-form-item__label.attachment-label {
+            display: flex;
+            justify-content: space-between;
+          }
+        }
+      }
+    }
+    .section-container {
+      padding: 0 200px 30px 70px;
+      border: 1px solid #ebedf4;
+      background: #fff;
+
+      .f-subform-wrapper {
+        border: 1px solid #ebf0f2;
+      }
+
+      &:last-of-type {
+        padding-bottom: 30px;
+        border-bottom: 0px;
+      }
+
+      &.pR300 {
+        padding-right: 300px;
+      }
+
+      .notes-content {
+        &.plain-text {
+          margin-bottom: 16px;
+          font-size: 1em;
+          letter-spacing: 0;
+          margin: 0 0 1rem;
+          line-height: 24px;
+        }
+        p {
+          font-size: 1em;
+        }
+      }
+
+      .section-header {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 1.6px;
+        color: #324056;
+        text-transform: capitalize;
+        margin-bottom: 20px;
+      }
+
+      .section-items {
+        padding: 0 10px;
+        margin-bottom: 28px;
+        .el-form-item__content {
+          line-height: normal;
+        }
+        .el-form-item__label {
+          font-size: 13px;
+        }
+        &.is-error {
+          margin-bottom: 33px;
+        }
+
+        &.is-success >>> .el-input__inner {
+          border-color: #d0d9e2;
+        }
+
+        &.attachments-container {
+          .el-form-item__label {
+            display: flex;
+            .attachment-label {
+              display: flex;
+              flex-grow: 1;
+              justify-content: space-between;
+            }
+          }
+        }
+
+        .fc-attachments {
+          .attached-files {
+            .attached-file-size {
+              font-size: 12px;
+              letter-spacing: 0.3px;
+              color: #a3a2b1;
+            }
+          }
+
+          .fc-attachment-row {
+            border-radius: 5px;
+            border: 1px solid #d0d9e2;
+
+            padding: 15px;
+            margin-bottom: 15px;
+
+            .attached-files {
+              overflow: hidden;
+            }
+
+            .attachment-label {
+              width: 500px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+
+            &:hover {
+              box-shadow: none;
+              .attachment-delete {
+                opacity: 1;
+                margin-left: auto;
+              }
+            }
+          }
+
+          .attachment-icon {
+            height: 15px;
+            width: 13px;
+          }
+
+          .attachment-delete {
+            opacity: 0;
+            color: #de7272;
+            font-size: 16px;
+          }
+
+          .attached-files {
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            margin: 0;
+            line-height: 1;
+            color: #324056;
+          }
+
+          .dropbox {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            p {
+              font-size: 0.8em;
+              text-align: center;
+              line-height: 15px;
+              color: #999;
+              padding-bottom: 10px;
+              margin-top: 0;
+            }
+          }
+        }
+      }
+
+      .fc-input-full-border2 {
+        &.fc-input-icon {
+          .el-input__inner {
+            border-radius: 0;
+            border-top-left-radius: 3px;
+            border-bottom-left-radius: 3px;
+          }
+        }
+      }
+      .fc-slot-input-append .el-input__inner {
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+      }
+      .fc-slot-input-append .el-input-group__append {
+        padding: 0px 15px;
+        font-size: 12px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-left: 0px;
+      }
+      .fc-slot-input-prepend .el-input__inner {
+        border-top-left-radius: 0px !important;
+        border-bottom-left-radius: 0px !important;
+      }
+      .fc-slot-input-prepend .el-input-group__prepend {
+        padding: 0px 15px;
+        font-size: 12px;
+        border-top-right-radius: 0px;
+        border-bottom-right-radius: 0px;
+        border-right: 0px;
+      }
+    }
+  }
+}
+
+.f-webform-container >>> .el-form-item__label {
+  font-size: 13px;
+}
+
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  flex-basis: 100%;
+}
+
+/* fc form builder right dialog use this class */
+
+.f-webform-right-dialog {
+  .el-dialog__body {
+    height: 100%;
+    overflow-y: hidden;
+    position: relative;
+  }
+
+  .f-form-header {
+    .f-form-title {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      letter-spacing: 0.9px;
+      color: #333;
+      text-transform: uppercase;
+      background: #fff;
+    }
+    border-bottom: 1px solid #ebedf4;
+  }
+
+  .f-webform-container {
+    height: 100%;
+    overflow-y: hidden;
+    border: none;
+
+    .el-form {
+      overflow-y: scroll;
+      padding-bottom: 140px;
+
+      &.el-form--label-top {
+        .section-items {
+          margin-bottom: 10px;
+        }
+      }
+
+      .section-header {
+        margin-top: 0px;
+        margin-bottom: 0px;
+      }
+
+      .section-container {
+        &.pR300 {
+          padding-right: 30px;
+        }
+
+        padding: 0 30px;
+        border: none;
+      }
+    }
+
+    .form-btn.secondary,
+    .form-btn.primary {
+      width: 50%;
+    }
+
+    .fc-web-form-action-btn {
+      width: 100%;
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      left: 0;
+      z-index: 10;
+    }
+  }
+}
+
+/* Facilio Subform styles */
+.form-creation-widgets .el-form,
+.el-form {
+  .f-subform-container {
+    &.f-subform-builder,
+    &.f-subform-live {
+      .section-container {
+        display: flex;
+        margin-top: 10px;
+        border: 1px solid #f1f6f9;
+        background: #fff;
+      }
+
+      .fields-container {
+        display: flex;
+        flex: 1 1 100%;
+      }
+
+      .subform-field {
+        flex: 1 0 auto;
+
+        .f-img-container {
+          width: 190px;
+
+          .attached-files {
+            padding-right: 5px;
+            overflow: hidden;
+
+            div:first-of-type {
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+          }
+
+          .f-img-empty {
+            .f-img-upload {
+              padding: 12px 10px 12px 10px;
+
+              .el-upload {
+                .el-upload-dragger {
+                  div {
+                    flex-direction: row;
+
+                    .folder-icon {
+                      padding: 0px;
+                      border: 0px;
+                      border-radius: 0px;
+                      margin: 0px 5px;
+
+                      .icon {
+                        height: 15px;
+                        width: 15px;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    /* Subform builder only styles */
+    &.f-subform-builder {
+      .empty {
+        &.btn-container {
+          display: flex;
+          min-height: 90px;
+          margin-top: 10px;
+          border: 1px solid #f1f6f9;
+
+          .add-field-btn {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex: 0 0 11%;
+            margin-left: auto;
+            box-shadow: -5px 0 15px 0 rgba(20, 20, 58, 0.09);
+          }
+        }
+      }
+
+      .section-container {
+        flex-wrap: nowrap;
+        overflow: hidden;
+
+        .fields-container {
+          flex: 1 1 85%;
+          overflow: scroll;
+        }
+
+        .subform-field {
+          .subform-field-delete {
+            display: none;
+            position: absolute;
+            top: -50px;
+            right: 0px;
+
+            .delete-icon {
+              width: 15px;
+            }
+
+            .el-form-item__content {
+              position: relative;
+            }
+          }
+
+          &:hover,
+          .active {
+            .subform-field-delete {
+              display: block;
+            }
+          }
+        }
+
+        .add-field-btn {
+          z-index: 10;
+          flex: 1 1 6%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          box-shadow: -5px 0 15px 0 rgba(20, 20, 58, 0.09);
+          background-color: #ffffff;
+          display: flex;
+          justify-content: center;
+          cursor: pointer;
+          min-height: 100px;
+        }
+      }
+
+      .fields-dropdown {
+        bottom: 0;
+        top: 115px;
+        right: 0;
+        overflow: scroll;
+        min-height: 150px;
+      }
+    }
+
+    /* Subform live only styles */
+    &.f-subform-live {
+      .section-container {
+        flex-wrap: wrap;
+        padding: 0px;
+        border: 0px;
+        margin-top: 0px;
+
+        &.first-subform {
+          .fields-container {
+            margin-top: 0px;
+
+            .subform-field {
+              .section-items {
+                .el-form-item__label {
+                  width: 100%;
+                  padding: 10px 20px !important;
+                  background: #f7f9fb;
+                  opacity: 1;
+                }
+                .el-textarea__inner {
+                  height: 40px;
+                  max-height: 40px;
+                  min-height: 40px;
+                }
+              }
+            }
+          }
+        }
+
+        &.last-subform {
+          .fields-container {
+            .subform-field {
+              border-bottom: 0px;
+            }
+          }
+        }
+
+        .fields-container {
+          margin-top: -40px;
+
+          .subform-field {
+            border-right: 1px solid #eef2f5;
+            border-bottom: 1px solid #eef2f5;
+
+            .section-items {
+              padding: 0px;
+              margin-bottom: 0px;
+              display: block;
+              .el-form-item__label {
+                width: 100%;
+                padding: 0px 20px !important;
+                opacity: 0;
+                line-height: 40px;
+                display: block;
+                text-align: left;
+                margin-top: 0px;
+              }
+
+              .el-form-item__content {
+                padding: 10px 20px;
+                z-index: 10;
+              }
+
+              &.is-error {
+                .el-form-item__content {
+                  padding-bottom: 25px;
+
+                  .el-form-item__error {
+                    left: auto;
+                    top: auto;
+                  }
+                }
+              }
+            }
+          }
+
+          .subform-field:last-of-type {
+            border-right: 0px;
+          }
+        }
+      }
+
+      .remove-btn-container {
+        cursor: pointer;
+        position: absolute;
+        left: -12px;
+        z-index: 20;
+
+        &.first {
+          top: 62px;
+        }
+
+        .remove-icon {
+          margin-top: 21px;
+          width: 15px;
+          height: 15px;
+        }
+      }
+    }
+  }
+}
+
+.f-subform-wrapper {
+  + .add-btn-container {
+    .add-lineitem-btn {
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-align: center;
+      padding: 10px 30px;
+      background: #39b2c2;
+      border: 1px solid #39b2c2;
+
+      &:hover {
+        color: #39b2c2;
+        background: #fff;
+      }
+    }
+  }
+}
+
+/* Service catalog form styles */
+.f-webform-container {
+  &.service-catalog-form {
+    .fc-input-full-border-textarea .el-textarea__inner,
+    .fc-input-full-border2 .el-input__inner {
+      border-radius: 0px !important;
+
+      &:hover,
+      &:focus,
+      &:active {
+        border: 1px solid #6979f8 !important;
+      }
+    }
+  }
+}
+
+.f-webform-center-dialog .el-form .section-container {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.reservation-form-body {
+  .LOOKUP_SIMPLE {
+    .width575px {
+      width: 568px !important;
+    }
+  }
+
+  .width575px {
+    width: 100% !important;
+  }
+}
+
+// full form class
+
+.fc-form-single-wrapper {
+  padding: 30px 50px;
+  height: calc(100vh - 80px);
+  overflow-y: scroll;
+  padding-bottom: 80px;
+
+  .fc-single-form-con {
+    width: 100%;
+    border: solid 1px #ecedf4;
+    background-color: #ffffff;
+    max-width: 897px;
+    position: relative;
+    padding: 36px 56px;
+  }
+}
+
+// address section
+.fc-form-address-sec {
+  width: 100%;
+  border: solid 1px #ecedf4;
+  background-color: #ffffff;
+  position: relative;
+  padding: 36px 56px;
+
+  .fc-form-single-el-block {
+    margin-top: 20px;
+  }
+}
+
+.fc-form-address {
+  .el-col-10 {
+    flex: 0 1 50%;
+  }
+}
+
+.fc-form-tax-table-header {
+  background: #f5f6f8;
+  border: 1px solid #d0d9e2;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: normal;
+  letter-spacing: 1px;
+  color: #324056;
+  .fc-form-tax-table-th {
+    padding: 15px 10px;
+  }
+}
+
+.fc-form-tax-table-child {
+  display: table-row;
+  border-bottom: 1px solid #d0d9e2;
+  border-right: 1px solid #d0d9e2;
+  border-left: 1px solid #d0d9e2;
+  position: relative;
+}
+.fc-form-tax-table-right-border {
+  border-right: 1px solid #d0d9e2;
+}
+.fc-form-tax-table-left-border {
+  border-left: 1px solid #d0d9e2;
+}
+.fc-form-table-td {
+  display: table-cell;
+  // min-height: 120px;
+}
+
+.fc-border-form-table-cal-td {
+  min-height: 60px;
+  max-height: 60px;
+  text-align: right;
+  padding: 20px 10px;
+  border-bottom: 1px solid #d0d9e2;
+}
+
+.fc-form-total-td-bg {
+  background-color: #f5f6f8;
+}
+
+.fc-form-tax-actions {
+  position: absolute;
+  right: -60px;
+  top: 15px;
+}
+
+.fc-form-tax-discount-box {
+  height: 59px;
+  width: 55px;
+  background-color: #fafbff;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border-left: 1px solid #f2f5f6;
+  .el-select {
+    line-height: 40px;
+  }
+  .el-select .el-input__inner {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.86px;
+    text-align: left;
+    color: #324056;
+    border-bottom: none;
+    background: #fafbff;
+    border: none;
+  }
+  .el-select .el-input__prefix {
+    right: -42px;
+    top: 6px;
+  }
+  .el-input__inner {
+    background: #fafbff;
+  }
+}
+.fc-form-action-total-remove {
+  position: absolute;
+  right: -30px;
+  top: 22px;
+}
+
+.hide-error {
+  .el-form-item__error {
+    background: #fff;
+    padding: 4px;
+    z-index: 100;
+    visibility: hidden;
+  }
+}
+.budget-amount-form-table {
+  .blue-txt {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    color: #4c8aff;
+    cursor: pointer;
+    position: absolute;
+    top: 50px;
+    right: 100px;
+  }
+  .add-delete-action-buttons {
+    position: absolute;
+    right: -60px;
+    top: 15px;
+  }
+  .budget-sub-form {
+    .el-form-item {
+      margin-bottom: 0px;
+    }
+  }
+  .fc-budget-table-input {
+    .el-input__inner {
+      padding: 0px 10px 0px 10px;
+      border-radius: 3px;
+      overflow: scroll;
+      border: none;
+      font-weight: 400;
+      white-space: nowrap;
+      font-size: 13px;
+      line-height: 1.43;
+      height: 44px;
+      letter-spacing: 0.5px;
+      text-align: right;
+      color: #324056;
+      transition: all 0.3s;
+      &:hover,
+      &:active {
+        border: 1px solid #39b2c2;
+      }
+    }
+  }
+  table {
+    border: solid 1px #d0d9e2;
+    thead {
+      th {
+        padding: 19px 10px 19px 10px;
+        background-color: #f5f6f8;
+        font-size: 11px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        color: #324056;
+        border: solid 1px #d0d9e2;
+      }
+    }
+    tbody {
+      td {
+        font-size: 13px;
+        line-height: 1.43;
+        letter-spacing: 0.5px;
+        color: #324056;
+        border: solid 1px #d0d9e2;
+      }
+      .td-padding {
+        padding: 16px 10px 16px 10px;
+      }
+    }
+    .is-error {
+      .budget-table-select,
+      .fc-budget-table-input {
+        .el-input__inner {
+          border: 1px solid;
+        }
+      }
+    }
+    .budget-table-select {
+      .el-input__inner {
+        height: 49px;
+        border: none !important;
+        transition: all 0s;
+        &:hover {
+          border: 1px solid #39b2c2 !important;
+        }
+        ::placeholder {
+          padding: 5px;
+        }
+      }
+    }
+  }
+}
+.facility-availability-container {
+  .currency-suffix {
+    .el-input__suffix {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0px 5px 0px 10px;
+      border-left: solid 1px #d0d9e2;
+      .el-input__suffix-inner {
+        font-size: 13px;
+        letter-spacing: 0.13px;
+        color: #385571;
+      }
+    }
+  }
+}
+.f-booking-slots-container {
+  .time-slot-heading {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 0.11px;
+    color: #385571;
+  }
+  .f-slot-c1 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    .slot-available-width {
+      width: 25%;
+      text-align: center;
+    }
+  }
+  .time-slot-container {
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: solid 1px #d0d9e2;
+    &:not(.disabled) {
+      cursor: pointer;
+    }
+    margin-bottom: 10px;
+    &.active {
+      color: #324056;
+      background: rgba(57, 179, 194, 0.2);
+      font-weight: 500;
+      border: 1px solid #39b3c2;
+      cursor: pointer;
+    }
+    &:hover {
+      color: #324056;
+      background: rgba(57, 179, 194, 0.2);
+      border: 1px solid #39b3c2;
+    }
+  }
+  .booking-slot-alret {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    background: #fff9eb;
+    border-radius: 3px;
+    font-size: 14px;
+    padding: 7px 10px;
+    border: 1px solid #ffd26f;
+    .fc-warning-icon-booking {
+      transform: rotate(180deg);
+      font-size: 15px;
+      font-weight: 500;
+      vertical-align: baseline;
+      position: relative;
+      right: 5px;
+      top: -1px;
+    }
+    .el-alert__description {
+      margin-top: 0;
+    }
+  }
+  .fc-booking-add-btn {
+    width: 140px;
+    height: 40px !important;
+  }
+  .booking-remove-icon {
+    cursor: pointer;
+    position: absolute;
+    top: 4px;
+    right: -35px;
+  }
+  .f-slot-c2 {
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .time-slot-data {
+      border-bottom: solid 1px #d0d9e2;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      padding-bottom: 5px;
+    }
+    .time-slot-data2 {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+    }
+    .time-slot-text {
+      font-size: 14px;
+      letter-spacing: 0.14px;
+      color: #385571;
+    }
+    .time-slot-total-txt {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.14px;
+      color: #385571;
+    }
+  }
+}
+.fc-booking-popup {
+  padding: 20px;
+}

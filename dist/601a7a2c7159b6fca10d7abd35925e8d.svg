@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="269px" height="186px" viewBox="0 0 269 186" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>arrow-pointing-to-left</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="arrow-pointing-to-left" fill="#6C6A91">
+            <g transform="translate(134.500000, 93.000000) rotate(180.000000) translate(-134.500000, -93.000000) translate(0.000000, 0.000000)" id="Shape">
+                <path d="M265.171,84.577 L185.171,4.577 C180.29,-0.304 172.374,-0.304 167.493,4.577 C162.611,9.459 162.611,17.373 167.493,22.255 L226.154,80.916 L12.5,80.916 C5.597,80.916 0,86.513 0,93.416 C0,100.318 5.597,105.916 12.5,105.916 L226.154,105.916 L167.495,164.577 C162.613,169.459 162.613,177.373 167.495,182.255 C169.935,184.694 173.135,185.916 176.334,185.916 C179.533,185.916 182.732,184.694 185.173,182.255 L265.171,102.255 C270.053,97.373 270.053,89.459 265.171,84.577 Z"></path>
+            </g>
+        </g>
+    </g>
+</svg>

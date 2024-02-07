@@ -1,0 +1,20 @@
+{
+  "deliveries": {
+    "new_delivery": "Nueva entrega",
+    "no_data_deliveries": "No hay entregas disponibles",
+    "deliveries": "Entregas",
+    "delivery": "Entrega",
+    "delete_delivery": "Borrar entrega",
+    "delete_confirmation_delivery": "¿Está seguro de que desea eliminar esta(s) entrega(s)?",
+    "delete_success_delivery": "Entrega(s) eliminada(s) con éxito"
+  },
+  "deliveryArea": {
+    "new_deliveryArea": "Nueva zona de entrega",
+    "no_data_deliveryArea": "No hay zonas de entrega disponibles",
+    "deliveryaAreas": "Zonas de entrega",
+    "deliveryArea": "Zona de entrega",
+    "delete_deliveryArea": "Borrar zona de entrega",
+    "delete_confirmation_deliveryArea": "¿Está seguro de que desea eliminar esta(s) zona(s) de entrega?",
+    "delete_success_deliveryArea": "Área(s) de entrega eliminada(s) con éxito"
+  }
+}

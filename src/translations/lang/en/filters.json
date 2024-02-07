@@ -1,0 +1,28 @@
+{
+  "search": {
+    "by": "by",
+    "search_fields": "Search Fields"
+  },
+  "tags": {
+    "clear_all": "clear all",
+    "save_view": "save view",
+    "save_view_as": "save as",
+    "save_as_new": "save as new view",
+    "save_to_existing": "save to existing"
+  },
+  "views": {
+    "confirm_edit": "Are you sure you want to edit the view ?",
+    "edit_success": "View Edited successfully!",
+    "existing_filters": "Existing Filters",
+    "new_filters": "New Filters",
+    "events": "EVENTS"
+  },
+  "bulk_action": {
+    "all_selected": "All 50 records on this page are selected.",
+    "records": "records",
+    "clear_selection": "Clear Selection",
+    "per_page_selected": "records on this page are selected",
+    "per_page_all_selected": "records are selected",
+    "all": "All"
+  }
+}

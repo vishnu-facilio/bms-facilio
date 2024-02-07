@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[39326],{
+/***/39326:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return ConnectedAppWidget}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/page/widget/common/ConnectedAppWidget.vue?vue&type=template&id=4ddd4693
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("connected-app-view-widget",{staticStyle:{height:"800px"},attrs:{widgetId:_vm.config.widgetId,recordId:_vm.config.recordId,context:_vm.details}})},staticRenderFns=[],ConnectedAppWidgetvue_type_script_lang_js=(__webpack_require__(260228),__webpack_require__(821694),__webpack_require__(76265),__webpack_require__(434284),{props:["tab","moduleName","details","layoutParams","fields","widget"],components:{ConnectedAppViewWidget:function(){return __webpack_require__.e(/* import() */67004).then(__webpack_require__.bind(__webpack_require__,767004))}},created:function(){},computed:{config:function(){return{widgetId:this.tab?this.tab.name:this.widget.widgetParams.widgetId,recordId:this.details.id}}}}),common_ConnectedAppWidgetvue_type_script_lang_js=ConnectedAppWidgetvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(common_ConnectedAppWidgetvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,ConnectedAppWidget=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/39326.js.map

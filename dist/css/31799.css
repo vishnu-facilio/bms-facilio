@@ -1,0 +1,81 @@
+.el-progress__text,.el-progress__text{color:#fff}
+
+.icon-div[data-v-2309053c] {
+  width: 10%;
+}
+.room-values[data-v-2309053c] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding-left: 30px;
+  padding-right: 30px;
+  padding-top: 20px;
+}
+.cloud[data-v-2309053c] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-column-gap: 10px;
+     -moz-column-gap: 10px;
+          column-gap: 10px;
+  color: white;
+}
+.set-temperature-container[data-v-2309053c] {
+  height: 75%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.inc-dec-button[data-v-2309053c] {
+  width: 40%;
+  margin-left: 30%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.el-icon-cloudy[data-v-2309053c] {
+  color: white;
+}
+.set-temperature[data-v-2309053c] {
+  width: 60%;
+  height: 50px;
+  font-size: 18px;
+  font-weight: 500;
+  background-color: #2553e6;
+  margin-left: 20%;
+  margin-top: 60px;
+  color: white;
+  border-radius: 10px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.inc-dec-icon[data-v-2309053c] {
+  font-weight: bold;
+  color: #000;
+  font-size: 20px;
+}
+

@@ -1,0 +1,71 @@
+.pdf-generic-component {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+@media print {
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  td {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tfoot {
+    display: table-footer-group;
+  }
+  body {
+    overflow: scroll;
+    margin: 0;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+  }
+  .list-view-widget thead th {
+    font-size: 0.65rem !important;
+    background: #2c394c !important;
+    padding: 0 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    color: #ffffff !important;
+    font-weight: bold;
+    border: none !important;
+  }
+
+  .list-view-widget .fc-list-view-table tbody tr:nth-child(even) {
+    background: #f0f9fb !important;
+  }
+  .list-view-widget tbody td {
+    word-break: break-all;
+    padding-left: 14px;
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  .list-view-widget tbody td:first-child {
+    word-break: break-all;
+    padding-right: 40px;
+  }
+  .list-view-widget {
+    page-break-after: always;
+  }
+
+  .list-view-widget .table-scroll {
+    border: 1px solid #2d394c !important;
+  }
+
+  .list-view-widget table {
+    border: none !important;
+    page-break-inside: avoid;
+  }
+
+  .list-view-widget .list-print-header {
+    display: block;
+    padding: 10px;
+    font-size: 12px;
+  }
+}

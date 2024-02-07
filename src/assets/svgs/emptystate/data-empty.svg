@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="132px" height="100px" viewBox="0 0 132 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>Group 6</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0.540675845" width="88.136927" height="52.8660826" rx="3.52941176"></rect>
+        <filter x="-34.6%" y="-55.8%" width="169.2%" height="215.4%" filterUnits="objectBoundingBox" id="filter-2">
+            <feOffset dx="0" dy="1" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="10" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feComposite in="shadowBlurOuter1" in2="SourceAlpha" operator="out" result="shadowBlurOuter1"></feComposite>
+            <feColorMatrix values="0 0 0 0 0.529411765   0 0 0 0 0.490196078   0 0 0 0 0.643137255  0 0 0 0.2 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Trigger_Empty-State" transform="translate(-790.000000, -339.000000)">
+            <g id="Group-17" transform="translate(722.000000, 337.500000)">
+                <g id="Group-7">
+                    <g id="Group-6" transform="translate(68.000000, 0.959113)">
+                        <path d="M110.233395,40.0738119 C87.1396081,8.98581675 72.4126118,-6.26339888 49.1844579,3.51706926 C3.75553275,22.6454148 -10.0491733,50.007984 7.13059809,67.6382217 C15.9690106,76.7083838 76.1082524,103.583271 101.022474,95.1110923 C124.535572,87.1153713 113.234075,44.1132157 110.233395,40.0738119 Z" id="Oval" fill="#F6F5FF"></path>
+                        <path d="M9.16422011,53.7082789 L11.8090166,53.7082789 C12.1978525,53.7082789 12.5130663,54.0234927 12.5130663,54.4123286 C12.5130663,54.8011645 12.1978525,55.1163783 11.8090166,55.1163783 L9.16422011,55.1163783 L9.16422011,57.7575809 C9.16422011,58.146535 8.84891047,58.4618447 8.45995632,58.4618447 C8.07100217,58.4618447 7.75569253,58.146535 7.75569253,57.7575809 L7.75569253,55.1163783 L5.11089608,55.1163783 C4.72206015,55.1163783 4.40684635,54.8011645 4.40684635,54.4123286 C4.40684635,54.0234927 4.72206015,53.7082789 5.11089608,53.7082789 L7.75569253,53.7082789 L7.75569253,51.0647144 C7.75569253,50.6757602 8.07100217,50.3604506 8.45995632,50.3604506 C8.84891047,50.3604506 9.16422011,50.6757602 9.16422011,51.0647144 L9.16422011,53.7082789 Z" id="Combined-Shape" fill="#FF83B5"></path>
+                        <path d="M49.4403049,64.8986233 C75.7952108,33.6557906 72.20332,16.9717535 38.6646325,14.846512 C-11.6433987,11.6586498 1.64712319,48.4490029 23.6813549,41.9899875 C45.7155867,35.5309721 57.9626921,13.1280245 51.8391394,0.578222778" id="Path-4" stroke="#B3AFC9" stroke-width="0.65" stroke-linecap="round" stroke-dasharray="2.058823618021878"></path>
+                        <g id="Group-3" transform="translate(24.237655, 26.470588)">
+                            <g id="Rectangle">
+                                <use fill="black" fill-opacity="1" filter="url(#filter-2)" xlink:href="#path-1"></use>
+                                <rect stroke="#B3AFC9" stroke-width="1.32352941" stroke-linejoin="square" fill="#FFFFFF" fill-rule="evenodd" x="0.661764706" y="1.20244055" width="86.8133976" height="51.5425532" rx="3.52941176"></rect>
+                            </g>
+                            <g id="Group-4" transform="translate(64.780641, 1.201502) rotate(90.000000) translate(-64.780641, -1.201502) translate(64.119614, -6.508135)">
+                                <g id="Group-Copy" transform="translate(-0.000000, 0.000000)">
+                                    <rect id="Rectangle" fill="#EFEDFA" x="-2.84217094e-13" y="0.881101377" width="1.32205391" height="14.097622"></rect>
+                                    <rect id="Rectangle-Copy" fill="#B3AFC9" x="-7.38903213e-13" y="3.30413016" width="1.32205391" height="8.81101377" rx="0.661026953"></rect>
+                                    <ellipse id="Oval" fill="#B3AFC9" cx="0.661026953" cy="0.660826033" rx="1" ry="1"></ellipse>
+                                    <ellipse id="Oval-Copy" fill="#B3AFC9" cx="0.661026953" cy="14.7584481" rx="1" ry="1"></ellipse>
+                                </g>
+                            </g>
+                            <g id="Group-7" transform="translate(11.017116, 12.876095)">
+                                <g id="Group-2">
+                                    <rect id="Rectangle" fill="#B3AFC9" opacity="0.5" x="11.8984851" y="1.32165207" width="53.9495584" height="3.52440551" rx="1.76220275"></rect>
+                                    <ellipse id="Oval" fill="#FF3184" opacity="0.300000012" cx="3.31819854" cy="3.30413016" rx="3.31819854" ry="3.30413016"></ellipse>
+                                </g>
+                                <g id="Group-2-Copy" transform="translate(0.000000, 11.013767)">
+                                    <rect id="Rectangle" fill="#B3AFC9" opacity="0.5" x="11.7173342" y="1.54192741" width="28.7577207" height="3.52440551" rx="1.76220275"></rect>
+                                    <rect id="Rectangle-Copy-2" fill="#B3AFC9" opacity="0.5" x="42.6871872" y="1.54192741" width="15.0425" height="3.52440551" rx="1.76220275"></rect>
+                                    <ellipse id="Oval" fill="#97D6E0" opacity="0.300000012" cx="3.31819854" cy="3.30413016" rx="3.31819854" ry="3.30413016"></ellipse>
+                                </g>
+                                <g id="Group-2-Copy-2" transform="translate(0.000000, 22.027534)">
+                                    <rect id="Rectangle" fill="#B3AFC9" opacity="0.5" x="11.7124522" y="1.54192741" width="10.6130279" height="3.52440551" rx="1.76220275"></rect>
+                                    <rect id="Rectangle-Copy-3" fill="#B3AFC9" opacity="0.5" x="24.5365276" y="1.54192741" width="41.1254831" height="3.52440551" rx="1.76220275"></rect>
+                                    <ellipse id="Oval" fill="#F5A623" opacity="0.300000012" cx="3.31657122" cy="3.30413016" rx="3.31657122" ry="3.30413016"></ellipse>
+                                </g>
+                            </g>
+                        </g>
+                        <polygon id="Path-2-Copy" stroke="#39B3C2" stroke-width="1.32352941" opacity="0.5" stroke-linejoin="round" points="85.4928192 15.2656404 92.7256045 15.2656404 89.1092118 8.94868586"></polygon>
+                        <path d="M126.696833,59.612015 C128.278825,59.612015 129.561283,58.3299468 129.561283,56.7484355 C129.561283,55.1669243 128.278825,53.8848561 126.696833,53.8848561 C125.11484,53.8848561 123.832382,55.1669243 123.832382,56.7484355 C123.832382,58.3299468 125.11484,59.612015 126.696833,59.612015 Z" id="Oval-Copy-3" stroke="#736795" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="6.176470149647105"></path>
+                        <g id="Group-5" transform="translate(68.554004, 87.367960) scale(-1, 1) translate(-68.554004, -87.367960) translate(26.789298, 86.485607)" fill="#B3AFC9">
+                            <g id="Group-4" transform="translate(27.871884, 0.882152) rotate(90.000000) translate(-27.871884, -0.882152) translate(26.989531, -26.470789)">
+                                <g id="Group" transform="translate(0.000000, 0.000000)">
+                                    <rect id="Rectangle-Copy" x="2.09610107e-13" y="0.0419572084" width="1.32205391" height="54.5443709" rx="0.661026953"></rect>
+                                </g>
+                            </g>
+                            <g id="Group-4-Copy" transform="translate(75.945308, 0.660826) rotate(90.000000) translate(-75.945308, -0.660826) translate(75.284281, -6.387985)">
+                                <g id="Group" transform="translate(0.000000, 0.000000)">
+                                    <rect id="Rectangle-Copy" x="7.10542736e-15" y="0.314679063" width="1.32205391" height="13.4682641" rx="0.661026953"></rect>
+                                </g>
+                            </g>
+                            <g id="Group-4-Copy-2" transform="translate(62.063742, 0.660826) rotate(90.000000) translate(-62.063742, -0.660826) translate(61.402715, -4.846058)">
+                                <g id="Group" transform="translate(0.000000, 0.000000)">
+                                    <rect id="Rectangle-Copy" x="7.10542736e-15" y="0.209786042" width="1.32205391" height="10.5941951" rx="0.661026953"></rect>
+                                </g>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

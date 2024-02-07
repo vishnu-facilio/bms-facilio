@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="73px" height="53px" viewBox="0 0 73 53" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Group 6 Copy 4</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="test" transform="translate(-242.000000, -128.000000)">
+            <g id="Group-6-Copy-4" transform="translate(243.000000, 130.000000)">
+                <g id="Group-3" transform="translate(35.000000, 20.000000) scale(-1, 1) translate(-35.000000, -20.000000) " stroke="#BACCDA" stroke-width="3">
+                    <polygon id="Path" points="69.0140845 40 0 40 0 0 69.0140845 0"></polygon>
+                </g>
+                <g id="Group-2" transform="translate(35.500000, 29.000000) scale(-1, -1) translate(-35.500000, -29.000000) translate(15.000000, 7.000000)">
+                    <g id="Fan-3-Copy">
+                        <g id="Group-27-Copy-3" transform="translate(20.495000, 21.730003) rotate(-90.000000) translate(-20.495000, -21.730003) translate(-1.005000, 1.730003)">
+                            <path d="M33.8407554,21.6175241 L40.2466412,18.6318815 C40.4274392,21.9518638 39.9637327,24.3823215 38.8555217,25.9232545 C37.7473108,27.4641876 34.1842391,30.3949685 28.1663065,34.7155972 L33.8407554,21.6175241 Z" id="Path-28" fill="#99B3C6"></path>
+                            <rect id="Rectangle" fill="#DBE7F0" x="15.3450009" y="5.44500033" width="21.7800013" height="16.335001"></rect>
+                            <circle id="Oval-Copy-5" fill="#DBE7F0" cx="16.830001" cy="22.2750014" r="16.830001"></circle>
+                            <path d="M37.2081644,5.56668968 L42.4747167,0.300137451 C30.1598503,0.104737061 22.282779,0.196928019 18.8435028,0.576710325 C14.5372978,1.0522233 12.5521176,2.86329008 11.7751884,3.39742441 C10.0674835,4.57146169 8.30371831,6.42808728 6.48389284,8.96730117 C8.94415052,7.52913074 10.9391449,6.60372893 12.4688759,6.19109574 C13.998607,5.77846256 16.2059091,5.5703272 19.0907823,5.56668968 L37.2081644,5.56668968 Z" id="Path-26" fill="#BACCDA"></path>
+                            <polygon id="Path-27" stroke="#99B3C6" stroke-width="0.825000018" fill="#6A889F" points="37.3758877 21.2740552 37.3758877 5.69242556 42.2579729 0.877486765 42.4652368 9.50891166 42.6217396 16.0264088"></polygon>
+                        </g>
+                    </g>
+                    <g id="Group" transform="translate(14.300000, 16.500000)">
+                        <circle id="Oval" fill="#6A889F" cx="8.91000055" cy="8.91000055" r="8.91000055"></circle>
+                        <circle id="Oval" fill="#FFFFFF" cx="8.91000055" cy="8.91000055" r="1.48500009"></circle>
+                        <ellipse id="Oval" fill="#FFFFFF" cx="8.91000055" cy="4.20750026" rx="1.98000012" ry="2.72250017"></ellipse>
+                        <ellipse id="Oval-Copy-6" fill="#FFFFFF" transform="translate(8.910001, 13.612501) scale(-1, -1) translate(-8.910001, -13.612501) " cx="8.91000055" cy="13.6125008" rx="1.98000012" ry="2.72250017"></ellipse>
+                        <ellipse id="Oval-Copy-7" fill="#FFFFFF" transform="translate(13.612501, 8.910001) rotate(90.000000) translate(-13.612501, -8.910001) " cx="13.6125008" cy="8.91000055" rx="1.98000012" ry="2.72250017"></ellipse>
+                        <ellipse id="Oval-Copy-8" fill="#FFFFFF" transform="translate(4.207500, 8.910001) scale(-1, -1) rotate(90.000000) translate(-4.207500, -8.910001) " cx="4.20750026" cy="8.91000055" rx="1.98000012" ry="2.72250017"></ellipse>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

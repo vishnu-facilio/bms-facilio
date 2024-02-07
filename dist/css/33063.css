@@ -1,0 +1,61 @@
+
+.user-layout .el-icon-close:before {
+  content: '';
+}
+.setting-header .add-btn {
+  position: fixed;
+  right: 0;
+  z-index: 111;
+}
+.user-layout .setting-page-btn {
+  top: 7.5rem !important;
+}
+.user-layout .setting-Rlayout {
+  padding: 1rem 1.7rem !important;
+}
+.add-btn {
+  position: relative;
+  right: 21px;
+  top: -47px;
+  z-index: 1111;
+}
+.h100 {
+  height: 100% !important;
+}
+.carbon-weather-mini .carbon-icon {
+  width: 15%;
+}
+.carbon-weather-container {
+  top: 0%;
+}
+.carbon-weather-mini .carbon-weather {
+  position: relative;
+  width: 100%;
+  top: 0%;
+}
+.carbon-weather-mini .degree {
+  font-size: 2.5rem;
+  color: #fff;
+  margin-left: 10px;
+  font-weight: 200 !important;
+}
+.carbon-weather-mini .area.uppercase {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: center;
+  font-weight: 600;
+  padding-top: 20px;
+}
+.carbon-weather-mini .sub-text {
+  font-size: 1.2rem;
+  padding-left: 8px;
+  letter-spacing: 1.5px;
+  font-weight: 500;
+}
+.carbon-weather-mini .thismonth {
+  color: #fff;
+  text-align: center;
+}
+

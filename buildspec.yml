@@ -1,0 +1,26 @@
+version: 0.2
+
+env:
+  exported-variables:
+    - CODEBUILD_BUILD_ARN
+    - CODEBUILD_BUILD_ID
+    - CODEBUILD_BUILD_NUMBER
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - npm --version && node --version
+      - npm ci --registry https://registry.facilio.in/
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run build
+      - mv dist v$CODEBUILD_BUILD_NUMBER
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - v$CODEBUILD_BUILD_NUMBER/**/*

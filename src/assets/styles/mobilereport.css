@@ -1,0 +1,46 @@
+.reports-header,
+.newTable,
+.widget-legends,
+.charttypechanger,
+.cal-right-btn,
+.cal-left-btn,
+.bb-axis-y2-label {
+  display: none !important;
+}
+.chart-table-layout {
+  padding: 0 !important;
+}
+.mobiledashboard
+  .date-filter-comp-new-report
+  button.el-button.el-button--default.el-popover__reference {
+  text-transform: uppercase !important;
+  letter-spacing: 0.6px !important;
+  font-size: 11px !important;
+}
+.mR30.chart-icon.pointer.flRight {
+  display: none;
+}
+.filter-field.date-filter-comp-new-report {
+  text-align: right;
+  padding-top: 10px;
+}
+.datefilter-hide-overlay {
+  background: transparent;
+  position: absolute;
+  width: 100%;
+  height: 40px;
+  top: 10px;
+}
+button.el-button.el-button--default.el-popover__reference {
+  letter-spacing: 0.6px !important;
+  text-transform: uppercase !important;
+  font-size: 12px !important;
+}
+.mobile-report-outline {
+  padding: 15px;
+}
+div#q-app {
+  background: #f7f8f9;
+  height: 100vh;
+  overflow-x: hidden;
+}

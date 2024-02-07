@@ -1,0 +1,991 @@
+@media only screen and (max-width: 1024px) {
+  .dashboard-container .fc-widget-header {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    display: flex !important;
+    justify-content: left !important;
+    align-items: center !important;
+    border-bottom: 1px solid #f2f4fa;
+  }
+
+  .dashboard-container .f-mobile-widget {
+    border: solid 1px #eae8e8;
+    box-shadow: 0 7px 6px 0 rgba(233, 233, 233, 0.5);
+    background: #fff;
+    border-radius: 3px;
+  }
+
+  .fc-white-theme .en-divider {
+    display: none !important;
+  }
+
+  .fc-white-theme .axis text,
+  .month-axis .tick text,
+  .fchart text.Xaxis-label,
+  text.Yaxis-label {
+    fill: #000000 !important;
+  }
+
+  .dashboard-container .fc-widget-label {
+    font-size: 15px !important;
+  }
+
+  .dashboard-container .date-filter-comp button {
+    font-size: 12px !important;
+  }
+
+  .button-row {
+    margin-top: -25px;
+  }
+
+  .datepicker-header {
+    padding-left: 6%;
+  }
+
+  .calender-range-section {
+    width: 100%;
+    overflow-x: scroll;
+  }
+
+  .calender-popup {
+    left: -10px !important;
+    width: 100% !important;
+  }
+
+  .to-table {
+    /* padding-left: 0 !important; */
+  }
+
+  .ftimeseries-alarm-toggle-container {
+    margin-top: -20px !important;
+  }
+
+  .year-section .year {
+    padding-left: 15px !important;
+  }
+
+  .month-container {
+    margin-right: 0 !important;
+  }
+
+  .year-section {
+    margin-right: 0 !important;
+  }
+
+  .days-section {
+    margin-left: 0 !important;
+  }
+
+  .range-selecter {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  .days-section .month-row {
+    margin-left: 4% !important;
+  }
+
+  .externalLink {
+    display: none !important;
+  }
+
+  .fLegendContainer .el-color-picker__color-inner {
+    height: 3px !important;
+    width: 14px !important;
+    border-radius: 0% !important;
+    top: 6px;
+  }
+
+  .fLegendContainer-new {
+    justify-content: left !important;
+  }
+
+  img.no-chart-data {
+    width: 40% !important;
+  }
+
+  .readingcard-header {
+    font-weight: 500 !important;
+    font-size: 0.7em !important;
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  .readingcard-value {
+    font-size: 1.3em !important;
+    font-weight: 500 !important;
+  }
+
+  .readingcard-time {
+    font-size: 0.6em !important;
+  }
+
+  .readingcard-header {
+    padding-top: 0 !important;
+  }
+
+  .layout1 {
+    margin-top: -7px;
+  }
+
+  .layout3 {
+    padding-top: 0px !important;
+  }
+
+  .readingcard-unit {
+    font-size: 1.3em !important;
+    font-weight: 500 !important;
+  }
+
+  .profilemini-avatar {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .layout3 .readingcard-data {
+    bottom: 32px !important;
+  }
+
+  .layout3 .reading-card-time2 {
+    bottom: 31px !important;
+  }
+
+  .reading-card-time2 {
+    font-size: 0.6em !important;
+  }
+
+  .layout1 .readingcard-time {
+    position: relative;
+    top: 36px;
+  }
+
+  .layout1 .readingcard-time.mobileset-btn {
+    position: relative;
+    top: 15px;
+  }
+
+  .layout3 .card3-measure-txt {
+    bottom: 20px !important;
+    font-size: 0.7em !important;
+  }
+
+  .layout1 .readingcard-data {
+    position: relative;
+    top: 6px;
+  }
+
+  /* .layout1 .readingcard-header{
+    position: relative;
+    bottom: 20px;
+  } */
+  .layout2 .readingcard-header {
+    position: relative;
+    bottom: 25px;
+  }
+
+  .layout2 .readingcard-time {
+    position: relative;
+    top: 15px;
+  }
+
+  .layout2 .readingcard-data {
+    position: relative;
+    top: -6px;
+  }
+
+  .reading-gauge {
+    padding-top: 15px;
+  }
+
+  .layout4 .readingcard-header {
+    position: relative;
+    top: 10px;
+  }
+
+  .card3-measure-txt {
+    display: none;
+  }
+
+  .thismonth {
+    color: #fff;
+    opacity: 0.7;
+    font-size: 0.9em !important;
+    font-weight: 600;
+  }
+
+  .energy-card-H {
+    font-size: 0.9em !important;
+    padding-top: 19px !important;
+    color: #fff;
+  }
+
+  .energy-mini .readings-result-txt {
+    font-size: 1.3em !important;
+    font-weight: 400 !important;
+  }
+
+  .meter-formula-txt {
+    font-size: 0.6em !important;
+  }
+
+  .energy-card-readigdata {
+    padding-top: 0 !important;
+  }
+
+  .thismonth-section {
+    top: 40% !important;
+  }
+
+  .dashboard-web-widget {
+    height: 500px !important;
+  }
+
+  .weather-layou3-mini {
+    padding-top: 10px !important;
+  }
+
+  .weather-layou3-mini img {
+    width: 3em !important;
+    position: relative !important;
+    top: 5px !important;
+    left: 10px !important;
+  }
+
+  .mini-weather {
+    font-size: 2em !important;
+    color: #fff !important;
+  }
+
+  .deg-mini {
+    position: relative !important;
+    bottom: 3px !important;
+    left: -2px !important;
+    font-weight: 300 !important;
+    font-size: 2.2em !important;
+    color: #fff !important;
+  }
+
+  .weather-mini-unit {
+    font-weight: 400 !important;
+    font-size: 1.3em !important;
+    color: #fff !important;
+  }
+
+  .weather-layou3-mini .sub-text {
+    font-weight: 500 !important;
+    font-size: 0.9em !important;
+    margin-left: 12px !important;
+    color: #fff !important;
+    padding-top: 3px !important;
+  }
+
+  .weather-time {
+    font-size: 0.7em !important;
+    font-weight: 500 !important;
+    padding-left: 17px !important;
+    color: #fff !important;
+    margin-top: 5px !important;
+  }
+
+  .mobile-building-card-right {
+    align-self: auto !important;
+    padding-left: 20px !important;
+    padding-top: 15px !important;
+  }
+
+  .mobile-building-name {
+    font-weight: bold !important;
+  }
+
+  .mobile-building-img-row img {
+    width: 30px !important;
+    height: 20px !important;
+  }
+
+  .mobile-buiding-arrow-val {
+    padding-top: 6px !important;
+  }
+
+  .mobile-building-row-val {
+    padding-top: 5px !important;
+  }
+
+  .mobile-buidling-year {
+    padding-top: 0 !important;
+    font-size: 1em !important;
+  }
+
+  .mobile-current-val {
+    padding-top: 8 !important;
+    font-weight: 500 !important;
+  }
+
+  .mobile-building-val {
+    font-size: 1.5em !important;
+    font-weight: 500 !important;
+  }
+
+  .table-scroll {
+    overflow: scroll;
+  }
+
+  .count-header {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.9px;
+    text-align: center;
+    color: #828282;
+    margin-bottom: 20px;
+  }
+
+  .count-grid-container .col-md-6 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .mobile-count-grid-container1 {
+    margin-top: 0;
+  }
+
+  .mobile-count-grid-container2 {
+    margin-top: 10px;
+  }
+
+  .mobile-count-grid-container1-col1 {
+    margin-top: 10px;
+  }
+
+  /* .fc-widget-header{
+    border-bottom: 1px solid #eae8e8;
+  } */
+  .unassigned {
+    color: #ee8e39;
+    font-size: 5em;
+    text-align: center;
+    /* margin-top: 20px; */
+  }
+
+  .zoomout {
+    color: red;
+    font-size: 5em !important;
+    text-align: center;
+    animation: blinker 1.25s linear infinite;
+    margin-top: 20px;
+  }
+
+  .openalarms .mobile-db-fire-test1 {
+    margin-bottom: 40px;
+    margin-top: 0px;
+  }
+
+  .openalarms .mobile-db-fire-test2 {
+    margin-top: 30px;
+  }
+
+  @keyframes blinker {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .mobile-energy-card {
+    top: 20% !important;
+  }
+
+  .mobile-readings-result-txt {
+    font-size: 1.7em !important;
+    font-weight: 500 !important;
+  }
+
+  .mobile-meter-formula-txt {
+    font-size: 1em !important;
+  }
+
+  .mobile-this-month,
+  .mobile-last-month {
+    font-size: 0.8em !important;
+    margin-top: 10px !important;
+  }
+
+  .mobile-divider-white {
+    background: #fff !important;
+    opacity: 0.25 !important;
+    height: 1px !important;
+    margin-top: 20px !important;
+  }
+
+  .mobile-varience-class {
+    padding-top: 25px !important;
+  }
+
+  .mobile-varience-class .mobile-arrow-down,
+  .mobile-varience-class .mobile-varience {
+    font-size: 20px !important;
+  }
+
+  .mobile-divider-section {
+    top: 40% !important;
+  }
+
+  .mobile-energy-card-H {
+    padding-top: 25px !important;
+  }
+
+  .mobile-lastmonth-section {
+    top: 58% !important;
+  }
+
+  .pofilecard img {
+    height: 26vh !important;
+  }
+
+  .profile-building-name {
+    font-size: 1em !important;
+    margin-left: 20px !important;
+    margin-top: 20px !important;
+  }
+
+  .building-address {
+    font-size: 1em !important;
+    margin-left: 20px !important;
+    margin-top: 5px !important;
+  }
+
+  .building-sq {
+    font-size: 1em !important;
+    margin-left: 20px !important;
+  }
+
+  .mobile-energy-card-H {
+    font-size: 1em !important;
+    font-weight: bold !important;
+  }
+
+  .mobile-inner-unit .mobile-energy-value {
+    font-size: 1.7em !important;
+  }
+
+  .mobile-inner-unit,
+  .mobile-energy-value,
+  .mobile-energy-thismonth,
+  .mobile-energy-date,
+  .mobile-energy-unit {
+    font-size: 0.8em !important;
+  }
+
+  .mobile-lastmonth-value {
+    font-size: 2.5em !important;
+  }
+
+  .mobile-energy-prev-val {
+    font-size: 0.6em !important;
+  }
+
+  .mobile-energy-lastmonth {
+    font-size: 1em !important;
+  }
+
+  .weather-layou1 .sun-icon {
+    width: 50px !important;
+  }
+
+  .weather-layout .carbon-icon {
+    width: 50px !important;
+  }
+
+  .weather-layou1 .degree,
+  .carbon-weather .degree {
+    font-size: 2em !important;
+  }
+
+  .weather .sub-text,
+  .carbon-weather .sub-text,
+  .carbon-weather .sub-text {
+    font-size: 15px !important;
+  }
+
+  .weather .month,
+  .carbon-weather .month,
+  .carbon-weather .area,
+  .weather .area {
+    font-size: 1em !important;
+  }
+
+  .weather .area {
+    font-size: 1em;
+  }
+
+  .db-progress-1 {
+    color: #d4ea8f !important;
+    border-radius: 10px;
+  }
+
+  .q-progress {
+    position: relative;
+    height: 5px;
+    display: block;
+    width: 100%;
+    background-clip: padding-box;
+    overflow: hidden;
+    color: #027be3;
+  }
+
+  .db-prog-c .overdue-prog {
+    color: #f7768c !important;
+  }
+
+  .db-prog-c .ontime-prog {
+    color: #7addec !important;
+  }
+
+  .mobile-categories-chart {
+    border: none;
+    margin-top: 0;
+  }
+
+  .mobile-categories-chart .db-test-2 {
+    padding-bottom: 8px;
+  }
+
+  .mobile-categories-txt {
+    font-size: 0.8em;
+    text-align: center;
+  }
+
+  .mobile-categories-fL {
+    width: 50% !important;
+    float: left !important;
+    text-align: center !important;
+    border-right: 1px solid #eae8e8;
+    padding-left: 0 !important;
+  }
+
+  .mobile-categories-fR {
+    width: 50% !important;
+    float: right !important;
+    text-align: center !important;
+    padding-right: 0 !important;
+  }
+
+  .mobile-categories-label {
+    font-size: 28px !important;
+    text-align: center !important;
+  }
+
+  .mobile-db-prog-container {
+    margin-top: 15px;
+    border-top: 1px solid #eae8e8;
+  }
+
+  .mobile-q-progress {
+    margin-top: 6px;
+  }
+
+  .mobile-db-prog-l {
+    font-size: 12px;
+  }
+
+  .mobile-db-prog-r {
+    font-size: 12px;
+  }
+
+  .mobile-db-test-2-container {
+    margin-top: 0;
+  }
+
+  .mobile-db-test-2-l-close-fL {
+    width: 50% !important;
+    text-align: center !important;
+    padding: 0 !important;
+    float: left !important;
+    margin-top: 10px !important;
+    border-right: 1px solid #eae8e8 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .mobile-db-test-2-l-close-fR {
+    width: 50% !important;
+    text-align: center;
+    padding: 0 !important;
+    float: right !important;
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+
+  .close-fc-widget-header {
+    border-bottom: none !important;
+    font-size: 12px !important;
+  }
+
+  .close-db-prog-container {
+    margin-top: 20px !important;
+  }
+
+  .close-db-prog-l {
+    font-size: 12px !important;
+  }
+
+  .close-ontime-prog {
+    margin-top: 6px !important;
+  }
+
+  .close-db-prog-row {
+    padding-bottom: 20px !important;
+  }
+
+  .table-scroll {
+    display: table-cell;
+    overflow: scroll;
+  }
+
+  .fc-list-view-table2 {
+    width: 100%;
+    border-spacing: 0;
+    empty-cells: show;
+    overflow: scroll;
+  }
+
+  .fc-list-view-table {
+    border-collapse: collapse;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  .fc-list-view-table thead th {
+    font-size: 11px;
+    background: #f1f3f5;
+    padding: 14px 15px;
+    font-weight: 500;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    color: #717b85;
+  }
+
+  .fc-list-view-table thead {
+    background: #f1f3f5;
+  }
+
+  .fc-list-view-table tbody tr.tablerow td:first-child {
+    border-left: 3px solid transparent !important;
+    font-size: 13px;
+    font-weight: 400;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.57;
+    letter-spacing: 0.3px;
+    text-align: left;
+    color: #333333;
+    white-space: nowrap;
+    max-width: 230px;
+  }
+
+  .fc-list-view-table tbody tr.tablerow td:first-child div {
+    max-width: 230px;
+    width: 230px;
+    white-space: initial;
+  }
+
+  .readingcard-section {
+    overflow: hidden !important;
+  }
+
+  .readingcard {
+    border: 1px solid transparent !important;
+  }
+
+  .ahuheader {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .ahustatus {
+    position: absolute;
+    top: 30% !important;
+    width: 100% !important;
+    padding-left: 30px !important;
+    padding-right: 30px !important;
+  }
+
+  .tripstatus {
+    top: 55% !important;
+    padding-top: 5px !important;
+    padding-bottom: 5px !important;
+  }
+
+  .valuestatus {
+    top: 100px !important;
+  }
+
+  .carbon-weather .mT15 {
+    margin-top: 5px;
+  }
+
+  .fvw14 {
+    font-size: 1em;
+  }
+}
+
+/* tenant Homepage designs*/
+
+.fc-mobile-tenant-home-con {
+  width: 100%;
+  height: 100vh;
+  background: #f7f8fc;
+  display: flex;
+  flex: 0 0 auto;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 20px;
+  padding-bottom: 30px !important;
+  .fc-mobile-tenant-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 13px 0 rgba(230, 233, 236, 0.26);
+    -webkit-box-shadow: 0 2px 13px 0 rgba(230, 233, 236, 0.26);
+    -moz-box-shadow: 0 2px 13px 0 rgba(230, 233, 236, 0.26);
+    border: none;
+  }
+  .fc-card-tenant-img {
+    width: 100%;
+    object-fit: cover;
+    height: 200px;
+  }
+  .fc-card-tenant-border {
+    border-bottom: 1px solid #f2f4fa;
+    margin: 20px;
+    padding-bottom: 20px;
+  }
+
+  .fc-card-tenant-border-top {
+    border-top: 1px solid #f2f4fa;
+    margin: 20px;
+    padding-bottom: 20px;
+  }
+  .fc-card-tenant-border-top:first-child {
+    border-top: none;
+  }
+  .fc-right-arrow-blue {
+    color: #5c43e1;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .fc-tenant-news-card-con {
+    width: 100%;
+    overflow-x: scroll;
+    display: flex;
+    grid-gap: 10px;
+    overflow-y: hidden;
+  }
+  .fc-tenant-grid-column {
+    flex-direction: row;
+    overflow-x: scroll;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-y: hidden;
+  }
+  .fc-tennat-grid-column-each {
+    width: 300px;
+    height: 350px;
+    border-radius: 10px;
+    box-shadow: 0 2px 13px 0 rgba(230, 233, 236, 0.26);
+    background-color: #ffffff;
+    margin-right: 10px;
+  }
+  .fc-card-tenant-news-img {
+    width: 100%;
+    height: 125px;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
+  .fc-tenant-grid-contacts {
+    width: 200px;
+    height: 200px;
+    border-radius: 10px;
+    box-shadow: 0 2px 13px 0 rgba(230, 233, 236, 0.26);
+    background-color: #ffffff;
+  }
+  .fc-contact-border-top {
+    border-top: 1px solid #f2f4fa;
+  }
+  .fc-contact-border-bottom {
+    border-bottom: 1px solid #f2f4fa;
+  }
+  .fc-tenant-res-header {
+    width: 100%;
+    height: 132px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background-color: #594de1;
+    display: flex;
+    align-items: center;
+    padding: 20px;
+  }
+  .fc-news-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+  }
+  .el-carousel__indicator--horizontal {
+    display: none;
+  }
+  .fc-news-tenant-p {
+    font-size: 14px;
+  }
+  .fc-mobile-grey-txt14 {
+    font-size: 14px;
+    font-weight: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: #9da5c3;
+  }
+}
+
+.fc-mobile-grey11 {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: 1px;
+  color: #acacbc;
+}
+
+.fc-mobile-badge {
+  color: #acacbd;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.fc-mobile-tenant-card-commerical {
+  background: inherit;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.fc-card-commercial-block {
+  padding: 20px;
+  background: #594de1;
+  border-radius: 4px;
+}
+
+// mobile occupant
+
+.fc-occupant-profile {
+  width: 100%;
+  padding: 20px;
+  box-shadow: 0 30px 60px 0 rgb(138 149 158 / 20%);
+  background-color: #fff;
+  border-radius: 10px;
+  position: relative;
+}
+.fc-occupant-heading {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #191a45;
+}
+.fc-wo-tag {
+  height: auto;
+  border-radius: 3px;
+  background-color: #2cb988;
+  border: 1px solid #2cb988;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: #ffffff;
+  padding: 4px 12px;
+}
+.fc-wo-date-txt {
+  font-size: 9px;
+  font-weight: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #b3b2b2;
+}
+
+.fc-occupant-homepage {
+  .fc-mobile-tenant-card {
+    box-shadow: 0 3px 10px 0 rgb(138 149 158 / 8%);
+    border-radius: 8px;
+  }
+  .fc-visitor-card {
+    width: 186px;
+    height: 180px;
+    position: relative;
+    box-shadow: none;
+  }
+}
+
+.fc-text-pink {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 3.17;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #ff3184;
+}
+
+.border-top-grey {
+  border-top: 1px solid #f2f2f2;
+}
+
+.border-right-grey {
+  border-right: 1px solid #f2f2f2;
+}
+
+.fc-occupant-avatar {
+  position: absolute;
+  top: -18px;
+  left: 46%;
+}
+
+.fc-mobile-black15 {
+  font-size: 16px;
+  color: #191a45;
+  letter-spacing: 0;
+}
+
+.fc-mobile-black14 {
+  font-size: 14px;
+  color: #191a45;
+  letter-spacing: 0;
+  line-height: 20px;
+}
+
+.fc-mobile-black12 {
+  font-size: 12px;
+  color: #191a45;
+  letter-spacing: 0;
+  line-height: 20px;
+}
+
+.fc-mobile-grey-txt12 {
+  font-size: 12px;
+  color: #959cb1;
+  letter-spacing: 0;
+}
+.visitor-empty-mobile svg {
+  width: 140px !important;
+}
+
+.fc-booking-center {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.fc-empty-desk-round {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 220, 85, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  border-radius: 50%;
+  display: grid;
+  align-items: center;
+  justify-content: center;
+}

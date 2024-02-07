@@ -1,0 +1,604 @@
+<template>
+  <div>
+    <iframe
+      v-if="exportDownloadUrl"
+      :src="exportDownloadUrl"
+      style="display: none;"
+    ></iframe>
+    <div class="analytics-page-header heatmap">
+      <div class="row">
+        <div class="col-7">
+          <div class="analytics-page-header-title">
+            {{ analyticsConfig.name }}
+          </div>
+          <div class="analytics-page-header-filters">
+            <el-select
+              @change="selectBuilding"
+              v-model="heatMapDataPoint.buildingId"
+              placeholder="Select Building"
+            >
+              <el-option-group label="Building">
+                <el-option
+                  v-for="(building,
+                  key) in $store.getters.getBuildingsPickList()"
+                  :key="key"
+                  :label="building"
+                  :value="key"
+                >
+                </el-option>
+              </el-option-group>
+            </el-select>
+            <el-select
+              @change="selectMeter"
+              v-model="heatMapDataPoint.parentId"
+              filterable
+              placeholder="Select Meter"
+            >
+              <el-option-group label="Meter">
+                <el-option
+                  v-for="(meter, index) in subMeters"
+                  :key="index"
+                  :label="meter.name"
+                  :value="meter.id"
+                >
+                </el-option>
+              </el-option-group>
+            </el-select>
+          </div>
+        </div>
+        <div class="col-5" style="text-align: right;">
+          <el-button
+            class="freport-btn analytics-save-as-report"
+            :disabled="isActionsDisabled"
+            @click="visibility.saveAsDialog = true"
+            >{{ $t('common.wo_report.save_as_report') }}</el-button
+          >
+          <div class="analytics-page-options">
+            <el-dropdown
+              @command="exportData($event, analyticsConfig, iframeLoader)"
+              :class="{ 'action-disabled': isActionsDisabled }"
+            >
+              <el-button size="small" type="text" class="fc-chart-btn">
+                <img class="report-icon" src="~statics/report/export.svg" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1" :disabled="isActionsDisabled">{{
+                  $t('common.wo_report.export_csv')
+                }}</el-dropdown-item>
+                <el-dropdown-item command="2" :disabled="isActionsDisabled">{{
+                  $t('common.wo_report.export_xcl')
+                }}</el-dropdown-item>
+                <!-- <el-dropdown-item command="3">As PDF</el-dropdown-item>
+              <el-dropdown-item command="4">As Image</el-dropdown-item> -->
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button
+              size="small"
+              :disabled="isActionsDisabled"
+              type="text"
+              :title="$t('common.wo_report.email_this_report')"
+              data-position="bottom"
+              data-arrow="true"
+              v-tippy
+              class="fc-chart-btn"
+              @click="visibility.emailReport = true"
+            >
+              <img class="report-icon" src="~statics/report/email.svg" />
+            </el-button>
+            <el-button
+              size="small"
+              :disabled="isActionsDisabled"
+              type="text"
+              @click="printReport"
+              title="Print"
+              data-position="bottom"
+              data-arrow="true"
+              v-tippy
+              class="fc-chart-btn"
+            >
+              <img class="report-icon" src="~statics/report/printer.svg" />
+            </el-button>
+            <email-report
+              :visibility.sync="visibility.emailReport"
+              :analyticsConfig="analyticsConfig"
+            ></email-report>
+            <f-save-as-report
+              :visibility.sync="visibility.saveAsDialog"
+              :config="analyticsConfig"
+            ></f-save-as-report>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ref="chartSection" class="self-center fchart-section scrollable">
+      <div v-if="!analyticsConfig.dataPoints.length" class="text-center">
+        <div class="p15">Please select a meter to analyze.</div>
+      </div>
+      <f-analytic-report
+        :config.sync="analyticsConfig"
+        v-else
+      ></f-analytic-report>
+    </div>
+  </div>
+</template>
+<script>
+import FAnalyticReport from 'pages/energy/analytics/components/FAnalyticReport'
+import FSaveAsReport from 'pages/report/components/FSaveAsReport'
+import EmailReport from 'pages/report/forms/EmailReport'
+import AnalyticsMixin from 'pages/energy/analytics/mixins/AnalyticsMixin'
+
+export default {
+  mixins: [AnalyticsMixin],
+  components: {
+    FAnalyticReport,
+    FSaveAsReport,
+    EmailReport,
+  },
+  title() {
+    return 'Heatmap Analysis'
+  },
+  data() {
+    return {
+      analyticsConfig: {
+        name: 'Heatmap Analysis',
+        period: 20,
+        chartType: 'heatMap',
+        chartTypeChangable: false,
+        dateFilter: this.getDefaultDateFilter('Y'),
+        dataPoints: [],
+      },
+      visibility: {
+        saveAsDialog: false,
+        emailReport: false,
+      },
+      heatMapDataPoint: {
+        buildingId: '',
+        readingFieldId: '',
+        readingField: null,
+        parentId: '',
+        parent: null,
+        parentType: 'asset',
+        name: 'Heatmap',
+        yAggr: 3,
+      },
+      assetList: [],
+      subMeters: [],
+      exportDownloadUrl: null,
+    }
+  },
+  created() {
+    this.$store.dispatch('loadEnergyMeters')
+    this.$store.dispatch('loadBuildings').then(() => {
+      this.loadAssets()
+    })
+  },
+  mounted() {},
+  methods: {
+    initHeatmapAnalysis() {
+      if (Object.keys(this.$store.getters.getBuildingsPickList()).length) {
+        this.heatMapDataPoint.buildingId = Object.keys(
+          this.$store.getters.getBuildingsPickList()
+        )[0]
+        this.selectBuilding()
+      }
+    },
+    iframeLoader(url) {
+      this.exportDownloadUrl = url
+    },
+    selectBuilding() {
+      this.subMeters = []
+      this.heatMapDataPoint.parentId = ''
+      this.loadSubMeters()
+    },
+    selectMeter() {
+      this.loadReadingFields()
+    },
+    loadSubMeters() {
+      let self = this
+      let url =
+        '/dashboard/getSubMeters?buildingId=' + this.heatMapDataPoint.buildingId
+      self.$http.get(url).then(function(response) {
+        self.subMeters = response.data.energyMeters
+
+        if (!self.heatMapDataPoint.parentId) {
+          let energyMeter = self.$store.state.energyMeters.find(
+            meter =>
+              meter.purposeSpace.id ===
+              parseInt(self.heatMapDataPoint.buildingId)
+          )
+          if (energyMeter) {
+            self.heatMapDataPoint.parentId = energyMeter.id
+          }
+        }
+        if (self.heatMapDataPoint.parentId) {
+          self.selectMeter()
+        }
+      })
+    },
+    getAsset(id) {
+      return this.assetList.find(obj => obj.id === id)
+    },
+    loadAssets() {
+      let self = this
+      self.loading = true
+      let url = '/asset/all'
+      this.$http.get(url).then(function(response) {
+        if (response.data) {
+          self.assetList = response.data.assets
+          self.initHeatmapAnalysis()
+          self.loading = false
+        }
+      })
+    },
+    loadReadingFields() {
+      let self = this
+      let obj = self.getAsset(this.heatMapDataPoint.parentId)
+      self.heatMapDataPoint.parent = obj
+      let url =
+        '/module/meta?moduleName=asset&assetId=' +
+        obj.id +
+        '&categoryId=' +
+        obj.category.id +
+        '&resourceType=asset'
+      self.$http.get(url).then(function(response) {
+        self.readingFields = response.data.meta.fields
+        if (!self.heatMapDataPoint.readingFieldId) {
+          let energyDelta = self.readingFields.find(
+            r => r.columnName === 'TOTAL_ENERGY_CONSUMPTION_DELTA'
+          )
+          if (energyDelta) {
+            self.heatMapDataPoint.readingFieldId = energyDelta.id
+            self.heatMapDataPoint.readingField = energyDelta
+            self.analyticsConfig.dataPoints = [self.heatMapDataPoint]
+          }
+        }
+      })
+    },
+  },
+}
+</script>
+<style>
+.charttype-options {
+  /* padding: 4px 10px;
+    margin: 0;
+    list-style: none;
+    float: left; */
+  border-bottom: 1px solid #6666660d;
+  padding: 8px 13px;
+}
+
+.charttype-options ul.fchart-icon li {
+  float: left;
+  cursor: pointer;
+  width: 45px;
+  height: 40px;
+  padding: 20px 10px 10px 10px;
+}
+
+.charttype-options ul li svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.3;
+}
+
+.charttype-options ul li svg:hover,
+.charttype-options ul li.active svg {
+  opacity: 1;
+}
+
+.charttype-options-select {
+  padding-top: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.chart-category-dropdown {
+  font-size: 12px;
+  /* padding-top: 15px; */
+  /* padding-right: 23px; */
+}
+.datefilter-name {
+  padding-right: 8px;
+  padding-top: 7px !important;
+}
+.chart-created-info {
+  text-align: left;
+  line-height: 1.5;
+  color: #333333;
+  font-size: 12px;
+  justify-content: center;
+}
+.chart-category-dropdown input.el-input__inner {
+  font-size: 12px;
+}
+.datefilter-name {
+  white-space: nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+.charttype-options-select {
+  font-size: 12px;
+}
+.building-filter {
+  text-align: left;
+}
+.building-filter .filter-entry {
+  display: inline-block;
+  font-size: 12px;
+  color: #666;
+  padding-left: 10px;
+}
+
+.building-filter .filter-entry .q-select {
+  font-size: 12px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+  margin-right: 10px;
+}
+
+.building-filter .filter-entry .q-select i {
+  font-size: 12px;
+  opacity: 0.5;
+  padding-right: 4px;
+}
+
+.building-filter .filter-entry .q-select:before {
+  height: 0px;
+}
+
+.building-filter .filter-entry .q-select .q-if-control[slot='after'] {
+  display: none;
+}
+
+.fc-analysis-filter {
+  padding: 20px;
+}
+
+.fc-analysis-filter .pull-left {
+  padding-top: 4px;
+}
+
+.fc-analysis-filter .filter-field {
+  font-size: 12px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+  margin-right: 15px;
+  display: inline-block;
+}
+
+.fc-analysis-filter .filter-field i {
+  opacity: 0.4;
+  padding-right: 4px;
+}
+
+.fc-analysis-filter .filter-field .plholder {
+  opacity: 0.5;
+  font-size: 11px;
+}
+
+.chart-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.chart-label {
+  margin-top: -4px;
+  margin-left: 6px;
+}
+.fchart-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #ffffff91;
+  cursor: progress;
+}
+.report-col {
+  padding: 5px;
+}
+.report-col.active {
+  color: red !important;
+}
+.date-icon-right,
+.date-icon-left {
+  font-size: 15px;
+  position: relative;
+  top: 2px;
+}
+.fchart-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #ffffff91;
+  cursor: progress;
+}
+.fc-analysis-filter {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid #cccccc61;
+}
+/**/
+.en-dropDown {
+  padding: 4px 10px;
+  border: 1px solid #ccccccd6;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+.en-dropDown .el-input .el-input__inner {
+  border: none !important;
+}
+.en-dropDown .el-input__inner {
+  max-width: 75%;
+}
+.en-dropDown input {
+  font-size: 13px;
+  color: #333;
+}
+.en-icon {
+  position: relative;
+  left: 30px;
+  top: 5px;
+}
+.en-icon svg,
+.en-icon img {
+  width: 20px;
+}
+.fc-analysis-filter .el-select-dropdown.el-popper {
+  margin-left: -20px;
+}
+.an-sidebar.header {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.03);
+}
+.en-fchart {
+  padding-left: 10px;
+  padding-right: 50px;
+}
+.reading-analysi .fchart-section {
+  height: calc(100vh - 150px);
+  overflow: auto;
+}
+.an-spin {
+  align-items: center;
+  width: 80px;
+  margin: 0 auto;
+  height: 80px;
+  margin-top: 10%;
+}
+.en-dropDown.el-cascader,
+.en-dropDown.el-cascader .el-input__icon {
+  line-height: 0px;
+}
+.reading-fileds-header .en-dropDown {
+  margin-right: 5px;
+}
+.reading-analysis .fc-analysis-filter {
+  display: inline-flex;
+  width: 100%;
+}
+.reading-analysis
+  .fc-analysis-filter
+  .pull-right
+  input.el-input
+  .el-input__inner {
+  border-bottom: 0px solid #d8dce5;
+  margin-left: 40px;
+}
+.date-filter-day input.el-input__inner {
+  border: 0px;
+  margin-left: 30px;
+}
+.fc-el-report-pop {
+  padding: 0px !important;
+}
+.fc-el-btn {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  align-items: center;
+  text-transform: uppercase;
+  padding-bottom: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  padding-top: 15px;
+}
+.el-report-cancel-btn {
+  background-color: #f4f4f4;
+  color: #5f5f5f;
+}
+.el-report-save-btn {
+  color: white;
+  background-color: #39b2c2;
+}
+.analytics-page-header {
+  box-shadow: 0 3px 4px 0 rgba(218, 218, 218, 0.32);
+  padding: 20px;
+  position: relative;
+  width: 100%;
+  background: #fff;
+}
+.analytics-page-header-title {
+  letter-spacing: 0.6px;
+  color: #000000;
+  font-weight: 500;
+  font-size: 18px;
+}
+.analytics-page-header-filters {
+  padding-top: 12px;
+}
+.analytics-page-header-filters .el-select {
+  margin-right: 10px;
+}
+.analytics-page-header-filters .el-select input {
+  border-radius: 3px;
+  background-color: #f3fdff;
+  border: solid 1px #8fd2db;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: #31a4b4;
+  padding: 8px;
+  height: 30px;
+}
+.analytics-page-header-filters .period-select {
+  width: 90px;
+}
+.analytics-page-options {
+  margin: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px 0 rgba(230, 230, 230, 0.5);
+  border: solid 1px #d9e0e7;
+  border-radius: 5px;
+}
+.analytics-page-options {
+  display: inline-block;
+  height: 40px;
+  margin-left: 20px;
+  position: relative;
+  top: 4px;
+}
+.analytics-page-options button,
+.analytics-page-options button:hover,
+.analytics-page-options button:focus {
+  border-left: 1px solid rgb(217, 224, 231);
+}
+.analytics-page-options .el-button + .el-button {
+  margin-left: 0px;
+}
+.analytics-page-options button:first-child {
+  border: none !important;
+}
+.analytics-page-options .report-icon {
+  width: 17px;
+  height: 17px;
+}
+.analytics-page-options .fc-chart-btn {
+  color: #333333;
+  font-size: 17px;
+  padding: 9px;
+  padding-left: 15px;
+  padding-right: 12px;
+  margin-left: 0px;
+}
+.freport-btn,
+.freport-btn:hover,
+.freport-btn:focus {
+  border-radius: 4px;
+  background-color: #ffffff;
+  border: solid 1px #39b2c2;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  color: #39b2c2;
+  font-weight: normal;
+}
+.freport-btn:hover {
+  background-color: #f5f7fa;
+}
+.analytics-save-as-report,
+.analytics-save-as-report:hover,
+.analytics-save-as-report:focus {
+  font-weight: 500;
+}
+.fchart-alarm-toggle {
+  display: none;
+}
+/* .heatmap .fanalytics-alarm-toggle {
+  display: none !important;
+} */
+</style>

@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[91117],{
+/***/991117:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return ControlLight}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/webViews/pages/SmartControl/ControlLight.vue?vue&type=template&id=225510ad&scoped=true
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"control-light-container main"},[_c("p",{staticClass:"floor"},[_vm._v(" "+_vm._s(_vm.floor)+" ")]),_c("p",{staticClass:"building"},[_vm._v(" "+_vm._s(_vm.building)+" ")]),_c("div",{staticClass:"bulb-svg"},[_c("div",{staticClass:"bulb-svg-inner",class:{off:!_vm.mode}},[_c("inline-svg",{staticClass:"bulb-icon",attrs:{src:"control-mobile-ui/light",iconClass:"fill-white"}})],1),_c("p",{staticClass:"bulb-status"},[_vm._v(" "+_vm._s(_vm.mode?"ON":"OFF")+" ")]),_c("div",{staticClass:"controlLigth-switch"},[_c("el-switch",{attrs:{"active-color":"#13ce66","inactive-color":"#e5e5e5"},model:{value:_vm.mode,callback:function($$v){_vm.mode=$$v},expression:"mode"}})],1)])])},staticRenderFns=[],ControlLightvue_type_script_lang_js={data:function(){return{mode:!0,floor:"1st Floor",building:"Atlantis Tower 2"}}},SmartControl_ControlLightvue_type_script_lang_js=ControlLightvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(SmartControl_ControlLightvue_type_script_lang_js,render,staticRenderFns,!1,null,"225510ad",null)
+/* harmony default export */,ControlLight=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/91117.js.map

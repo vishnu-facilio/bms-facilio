@@ -1,0 +1,17 @@
+
+.upload-space-photos {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos {
+  display: block;
+}
+
+.asset-details-widget[data-v-c5a24bd2]{padding:0px 30px 0px;text-align:left;height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}.container[data-v-c5a24bd2]{font-size:13px;display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;overflow:hidden}.field[data-v-c5a24bd2]{-webkit-box-flex:0;-ms-flex:0 50%;flex:0 50%;padding:20px 0;-webkit-transition:top .45s cubic-bezier(0.44, 0.99, 0.48, 1);transition:top .45s cubic-bezier(0.44, 0.99, 0.48, 1)}.field[data-v-c5a24bd2]:not(.border-none){border-bottom:1px solid #edf4fa}.field-label[data-v-c5a24bd2],.field-value[data-v-c5a24bd2]{word-break:break-word;padding-right:10px}.field-label[data-v-c5a24bd2]{color:#324056;font-size:13px;letter-spacing:.5px;font-weight:normal}.field-value[data-v-c5a24bd2]{padding-left:10px;font-size:13px;font-weight:500;letter-spacing:.5px;color:#324056}.lines[data-v-c5a24bd2]{height:15px;width:90%;margin:0px 20px 0px 20px;border-radius:5px}

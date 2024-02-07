@@ -1,0 +1,22 @@
+{
+  "page": {
+    "overview": "Überblick",
+    "asset": {
+      "details": "Asset-Details",
+      "perf": "Anlagenleistung"
+    },
+    "readings": "Lesungen",
+    "widgetFields": {
+      "thismonth": "Diesen Monat",
+      "everymonth": "Jeden Monat",
+      "crititcal": "Kritisch",
+      "active": "Aktiv",
+      "unacknowledged": "Unbestätigt",
+      "total": "Gesamt",
+      "avgworkorders": "Durchschnittliche Arbeitsaufträge",
+      "overdue": "Überfällig",
+      "frequentlyassigned": "Häufig zugewiesen",
+      "clear": "klar"
+    }
+  }
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Plus pipe</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-395.000000, -565.000000)" fill="url(#linearGradient-1)">
+            <path d="M397,591 C397,591.552285 396.552285,592 396,592 L395,592 L395,577 L396,577 C396.552285,577 397,577.447715 397,578 L409,578 L409,567 C408.447715,567 408,566.552285 408,566 L408,565 L423,565 L423,566 C423,566.552285 422.552285,567 422,567 L422,578 L433,578 C433,577.447715 433.447715,577 434,577 L435,577 L435,592 L434,592 C433.447715,592 433,591.552285 433,591 L422,591 L422,603 C422.552285,603 423,603.447715 423,604 L423,605 L408,605 L408,604 C408,603.447715 408.447715,603 409,603 L409,591 L397,591 Z" id="Plus-pipe"></path>
+        </g>
+    </g>
+</svg>

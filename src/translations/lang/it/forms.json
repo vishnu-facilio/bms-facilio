@@ -1,0 +1,11 @@
+{
+  "builder": {
+    "new_section": "Nuova sezione",
+    "new_subform": "Subform",
+    "new_fields": "Nuovi campi",
+    "notes_des": "Il contenuto delle tue note sarà mostrato qui",
+    "switch_to_richtext": "Passa a testo arricchito",
+    "plain_text_mode": "Modalità testo semplice",
+    "switch_alert": "Perderai la formattazione quando passerai alla modalità testo semplice. Sei sicuro?"
+  }
+}

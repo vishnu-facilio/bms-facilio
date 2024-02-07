@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Shape</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="BIM_Integration_UI_05" transform="translate(-1281.000000, -577.000000)" fill="#58CA94" fill-rule="nonzero">
+            <g id="box-1-copy-2" transform="translate(442.000000, 503.000000)">
+                <g id="tabular-column-copy" transform="translate(1.000000, 0.000000)">
+                    <g id="ro-1" transform="translate(40.000000, 74.000000)">
+                        <g id="success" transform="translate(798.000000, 0.000000)">
+                            <path d="M11,0 C4.9,0 0,4.9 0,11 C0,17.1 4.9,22 11,22 C17.1,22 22,17.1 22,11 C22,4.9 17.1,0 11,0 Z M17.35,7.55 L17.35,7.55 L9.35,15.85 C9.25,15.95 9.15,16 9,16 C8.85,16 8.7,15.95 8.65,15.85 L4.75,11.65 L4.65,11.55 C4.55,11.45 4.5,11.3 4.5,11.2 C4.5,11.1 4.55,10.95 4.65,10.85 L5.35,10.15 C5.55,9.95 5.85,9.95 6.05,10.15 L6.1,10.2 L8.85,13.15 C8.95,13.25 9.1,13.25 9.2,13.15 L15.9,6.2 L15.95,6.2 C16.15,6 16.45,6 16.65,6.2 L17.35,6.9 C17.55,7.05 17.55,7.35 17.35,7.55 L17.35,7.55 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

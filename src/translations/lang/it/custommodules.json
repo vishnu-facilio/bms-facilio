@@ -1,0 +1,13 @@
+{
+  "list": {
+    "custom_modules": "Moduli personalizzati",
+    "connected_apps": "App connesse",
+    "state_flows": "Flusso di stato",
+    "fields": "Campi",
+    "enabled": "Abilitato",
+    "disabled": "Disabilitato",
+    "created_date": "Data di Creazione",
+    "created_by": "Creato da",
+    "description": "Descrizione"
+  }
+}

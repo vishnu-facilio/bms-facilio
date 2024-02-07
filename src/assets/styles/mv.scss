@@ -1,0 +1,45 @@
+.mv-summary-container {
+  .vertical-separator {
+    border-right: solid 1px #edf4fa;
+  }
+  .ecm-option {
+    align-self: center;
+    color: #324056;
+  }
+  .date {
+    line-height: 1.38;
+  }
+  .mv-card {
+    padding: 30px 0;
+    flex-direction: row;
+    .title {
+      letter-spacing: 1px;
+      color: #324056;
+    }
+    .saving-amount {
+      color: #39c2b0;
+    }
+    .target-saving-amount {
+      color: #f08532;
+    }
+    .energy {
+      color: #324056;
+    }
+    .formula-expression {
+      line-height: 1.69;
+      letter-spacing: 0.13px;
+      color: #324056;
+    }
+    .duration {
+      letter-spacing: 0.5px;
+      color: #8ca1ad;
+    }
+  }
+  .mv-equation {
+    padding: 30px;
+    overflow: scroll;
+    .fbVariableLegendContainer {
+      padding-top: 0px;
+    }
+  }
+}

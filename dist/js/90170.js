@@ -1,0 +1,12 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[90170],{
+/***/390170:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return Layout}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/pages/peopleV2/Layout.vue?vue&type=template&id=84a8d4ec
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"height100 pL50"},[_c("router-view")],1)},staticRenderFns=[],Layoutvue_type_script_lang_js=(__webpack_require__(670560),{data:function(){return{product:{code:"pl",label:"People",path:"/app/pl",modules:[{label:"Employee",path:{path:"/app/pl/employee"},icon:"",permission:"people:READ",license:"PEOPLE"},{label:"Shift",path:{path:"/app/pl/shift"},icon:"",permission:"people:READ",license:"SHIFT"},{label:"Shift Planner",path:{path:"/app/pl/shiftplanner"},icon:"",license:"SHIFT"},{label:"Break",path:{path:"/app/pl/break"},icon:"",license:"ATTENDANCE"},{label:"Attendance",path:{path:"/app/pl/attendance"},icon:"",license:"ATTENDANCE"},{label:"My Attendance",path:{path:"/app/pl/myattendance"},icon:"",license:"ATTENDANCE"}]}}},mounted:function(){this.initProduct()},watch:{$route:function(){this.initProduct()}},methods:{initProduct:function(){
+// TODO get the custom modules from server for assets and show the list
+this.$store.dispatch("switchProduct",this.product),"/app/pl"===this.$route.path&&(this.$helpers.isLicenseEnabled("PEOPLE_CONTACTS")?this.$router.push({path:"/app/pl/employee"}):this.$router.push({path:"/app/pl/attendance"}))}}}),peopleV2_Layoutvue_type_script_lang_js=Layoutvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(peopleV2_Layoutvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,Layout=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/90170.js.map

@@ -1,0 +1,52 @@
+{
+  "creation": {
+    "new_commissioning": "New Commissioning",
+    "agent": "Agent",
+    "controller": "Controller",
+    "allpoints": "All Points",
+    "protocol": "Protocol"
+  },
+  "list": {
+    "commissioning": "Commissioning",
+    "add_commissioning": "Add Commissioning",
+    "publish": "publish",
+    "confirm_delete_text": "Are you sure want to delete commissioning?",
+    "delete": "Delete Commissioning",
+    "delete_success_text": "Commissioning deleted successfully"
+  },
+  "sheet": {
+    "select_category": "Select Category",
+    "select_asset": "Select Asset",
+    "select_reading": "Select Reading",
+    "search_points": "Search Points",
+    "mapcategory": "Map Category",
+    "pointsfound": "Points Found",
+    "remaining_points": "Remaining Points",
+    "change_category": "Change Category",
+    "filter": "Filter",
+    "filter_by_value": "Filter by value",
+    "header_name": "Name",
+    "header_deviceName": "Device Name",
+    "header_controllerName": "Controller Name",
+    "header_instanceNumber": "Instance",
+    "header_instanceType": "Instance Type",
+    "header_categoryId": "Category",
+    "header_resourceId": "Asset",
+    "header_fieldId": "Reading",
+    "header_unit": "Unit",
+    "header_enumInputValues": "",
+    "filter_all_points": "All Points",
+    "filter_mapped": "Mapped Points",
+    "filter_unmapped": "Unmapped Points",
+    "removefilter": "Remove applied filter to map category",
+    "removeview": "To map category, reset to All points filter",
+    "remove_filter_view": "To map category, reset to All points and remove applied filter",
+    "select_agent": "Select Agent",
+    "select_controllerType": "Select Controller Type",
+    "commissioning_save_error": "Cannot save commissioning. Remove existing errors and try again",
+    "commissioning_save_success": "Updated successfully"
+  },
+  "commissioning": {
+    "prefill_ml_data": "Prefill data using ML (*beta)"
+  }
+}

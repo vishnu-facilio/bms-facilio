@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="50px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>humidity</title>
+    <desc>Created with Sketch.</desc>
+    <g id="humidity" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="image-1" fill-rule="nonzero">
+            <rect id="Rectangle" fill="#14BAF2" x="0" y="0" width="50" height="50" rx="5"></rect>
+            <g id="humidity" transform="translate(15.000000, 12.000000)" stroke="#FFFFFF" stroke-width="1.3">
+                <path d="M10,0.65 C9.88428363,0.65 9.76852662,0.687855483 9.67271046,0.763751515 C8.4180794,1.75358511 6.49448049,3.68635256 4.93680095,5.72991799 C2.50073245,8.93732961 0.65,12.7880442 0.65,16.786841 C0.65,19.3064605 1.60791704,21.6025054 3.17264415,23.3135457 C4.74334052,25.0311134 6.92588324,26.1594537 9.36325228,26.3281092 C12.0649912,26.5132948 14.556735,25.5108398 16.37475,23.7765464 C18.2025937,22.0328768 19.35,19.5499765 19.35,16.786841 C19.35,13.1199961 17.772251,9.19465462 14.8273938,5.42336788 C12.6144461,2.58900047 10.4208971,0.837608547 10,0.65 Z" id="Path"></path>
+                <path d="M8.02706166,21.941818 C5.71458515,20.0692794 4.35523149,17.7337669 4.35523149,14.4935207" id="Path" stroke-linecap="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

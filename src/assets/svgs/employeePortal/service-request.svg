@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <g id="Service_request_20px" data-name="Service request 20px">
+    <path d="M6.4,1V6.5H1V15H9.6v-5.49h5.4V1H6.4Zm2.2,13H2V7.5h6.6v6.5Zm5.4-5.5h-4.4v-2h0s-2.2,0-2.2,0V2h6.6v6.49Z"/>
+    <g>
+      <path d="M4.79,11.9c-.01-.09-.13-.87,.34-1.34,.12-.12,.27-.24,.46-.36,.15-.1,.27-.18,.29-.21,0,0,0-.02,0-.09v-.55c0-.13-.11-.24-.24-.24h-.7c-.13,0-.24,.11-.24,.24v.55h-1v-.55c0-.68,.55-1.24,1.24-1.24h.7c.68,0,1.24,.55,1.24,1.24v.55c0,.64-.37,.88-.69,1.09-.22,.14-.34,.29-.37,.35-.06,.12-.07,.39-.05,.55h-.99Z"/>
+      <rect x="4.8" y="12.29" width="1" height="1"/>
+    </g>
+    <rect x="7.81" y="4.56" width="1.4" height="1.4" rx=".7" ry=".7"/>
+    <rect x="10" y="4.56" width="1.4" height="1.4" rx=".7" ry=".7"/>
+    <rect x="12.19" y="4.56" width="1.4" height="1.4" rx=".7" ry=".7"/>
+  </g>
+  <g id="Floor_map_20px" data-name="Floor map 20px">
+    <rect class="cls-1" x="0" y="0" width="16" height="16"/>
+  </g>
+</svg>

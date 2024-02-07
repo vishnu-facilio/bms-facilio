@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512px" height="512px" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Artboard Copy 18</title>
+    <g id="Artboard-Copy-18" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-0.000000, 0.000000)">
+        <g id="Icon-24px" transform="translate(0.000000, 0.000000)">
+            <polygon id="Shape" points="0 0 512 0 512 512 0 512"></polygon>
+            <polygon id="Shape" fill="#2E2E49" points="0 426.666667 512 426.666667 512 512 0 512"></polygon>
+            <path d="M234.666667,64 L117.333333,362.666667 L165.333333,362.666667 L189.226667,298.666667 L322.56,298.666667 L346.453333,362.666667 L394.453333,362.666667 L277.333333,64 L234.666667,64 L234.666667,64 Z M205.226667,256 L256,120.96 L306.773333,256 L205.226667,256 L205.226667,256 Z" id="Shape" fill="#2E2E49"></path>
+        </g>
+    </g>
+</svg>

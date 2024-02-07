@@ -1,0 +1,32 @@
+{
+  "attendance": {
+    "users_list": "Lista degli utenti",
+    "resume_work": "Riprendere il lavoro",
+    "check_in_caps": "CHECK-IN",
+    "check_out_caps": "CHECK-OUT",
+    "check_in": "Check-in",
+    "check_out": "Check-out",
+    "add_notes": "Aggiungi note",
+    "break_start": "INTERROMPERE",
+    "no_attendance": "Nessuna partecipazione disponibile ",
+    "attendance_transaction": "Transazione presenze"
+  },
+  "shift": {
+    "shift": "CAMBIO",
+    "name": "Nome",
+    "from_time": "Dal tempo",
+    "to_time": "Al tempo",
+    "weekend_definition": "Definizione del fine settimana",
+    "cancel": "Annulla",
+    "break": "Interrompere",
+    "break_type": "Tipo di interruzione",
+    "break_duration": "Durata della pausa",
+    "applicable_shifts": "Turni applicabili",
+    "shift_rotation": "ROTAZIONE DEL TURNO",
+    "scheduler_name": "Nome dello Schedulatore",
+    "scheduler_frequency": "Frequenza dello schedulatore"
+  },
+  "employee": {
+    "update_success": "Aggiornato correttamente"
+  }
+}

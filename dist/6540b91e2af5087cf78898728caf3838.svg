@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="120px" height="101px" viewBox="0 0 120 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Plate heat exchanger</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="6.46622263%" x2="50%" y2="64.5249645%" id="linearGradient-1">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#B3C1CB" offset="27.9376385%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-839.000000, -307.000000)" stroke="#474747">
+            <g id="Plate-heat-exchanger" transform="translate(839.000000, 308.000000)">
+                <g id="Group-7-Copy-4" fill="url(#linearGradient-1)">
+                    <path d="M119.5,35.5 L94.5,35.5 L94.5,49.5 L119.5,49.5 L119.5,35.5 Z" id="Path-23-Copy-22"></path>
+                    <path d="M119.5,67.5 L94.5,67.5 L94.5,81.5 L119.5,81.5 L119.5,67.5 Z" id="Path-23-Copy-23"></path>
+                    <path d="M10.1910289,0.68061213 L27.0372086,17.0952369 L108.335487,17.0952369 L91.227338,0.68061213 L10.1910289,0.68061213 Z" id="Path-33-Copy"></path>
+                    <path d="M9.47939776,1.3467575 L9.47939776,80.7954903 L26.449456,97.9400156 L26.449456,17.6206167 L9.47939776,1.3467575 Z" id="Path-34-Copy"></path>
+                    <path d="M20.0967141,25.5 L0.5,25.5 L0.5,39.5 L20.0967141,39.5 C21.8113707,34.9910903 21.8113707,30.0089097 20.096713,25.5 Z" id="Path-23-Copy-25"></path>
+                    <path d="M20.0967141,53.5 L0.5,53.5 L0.5,67.5 L20.0967141,67.5 C21.8113707,62.9910903 21.8113707,58.0089097 20.096713,53.5 Z" id="Path-23-Copy-24"></path>
+                    <path d="M27.2941176,18.094273 L27.2941176,98.9640503 L109.014897,98.9640503 L109.066079,18.094273 L27.2941176,18.094273 Z" id="Path-35-Copy"></path>
+                </g>
+                <polyline id="Path-70-Copy-4" points="15.5054915 0.322334382 32.7097805 17.5266235 32.7097805 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-6" points="17.7113738 0.322334382 34.9156629 17.5266235 34.9156629 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-7" points="19.9172562 0.322334382 37.1215453 17.5266235 37.1215453 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-8" points="22.1231385 0.322334382 39.3274276 17.5266235 39.3274276 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-13" points="24.3290209 0.322334382 41.53331 17.5266235 41.53331 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-12" points="26.5349032 0.322334382 43.7391923 17.5266235 43.7391923 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-11" points="28.7407856 0.322334382 45.9450747 17.5266235 45.9450747 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-10" points="30.9466679 0.322334382 48.150957 17.5266235 48.150957 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-9" points="33.1525503 0.322334382 50.3568394 17.5266235 50.3568394 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-18" points="35.3584326 0.322334382 52.5627217 17.5266235 52.5627217 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-17" points="37.564315 0.322334382 54.7686041 17.5266235 54.7686041 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-16" points="39.7701973 0.322334382 56.9744864 17.5266235 56.9744864 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-15" points="41.9760797 0.322334382 59.1803688 17.5266235 59.1803688 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-14" points="44.1819621 0.322334382 61.3862511 17.5266235 61.3862511 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-23" points="46.3878444 0.322334382 63.5921335 17.5266235 63.5921335 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-22" points="48.5937268 0.322334382 65.7980158 17.5266235 65.7980158 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-21" points="50.7996091 0.322334382 68.0038982 17.5266235 68.0038982 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-20" points="53.0054915 0.322334382 70.2097805 17.5266235 70.2097805 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-19" points="55.2113738 0.322334382 72.4156629 17.5266235 72.4156629 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-28" points="57.4172562 0.322334382 74.6215453 17.5266235 74.6215453 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-27" points="59.6231385 0.322334382 76.8274276 17.5266235 76.8274276 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-26" points="61.8290209 0.322334382 79.03331 17.5266235 79.03331 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-25" points="64.0349032 0.322334382 81.2391923 17.5266235 81.2391923 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-24" points="66.2407856 0.322334382 83.4450747 17.5266235 83.4450747 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-33" points="68.4466679 0.322334382 85.650957 17.5266235 85.650957 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-32" points="70.6525503 0.322334382 87.8568394 17.5266235 87.8568394 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-31" points="72.8584326 0.322334382 90.0627217 17.5266235 90.0627217 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-30" points="75.064315 0.322334382 92.2686041 17.5266235 92.2686041 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-29" points="77.2701973 0.322334382 94.4744864 17.5266235 94.4744864 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-38" points="79.4760797 0.322334382 96.6803688 17.5266235 96.6803688 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-37" points="81.6819621 0.322334382 98.8862511 17.5266235 98.8862511 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-36" points="83.8878444 0.322334382 101.092133 17.5266235 101.092133 98.9412857"></polyline>
+                <polyline id="Path-70-Copy-35" points="86.0937268 0.322334382 103.298016 17.5266235 103.298016 98.9412857"></polyline>
+                <path d="M27.2781249,36.5 L27.2781249,42.3368302 L109.022554,42.3368302 L109.022554,36.5 L27.2781249,36.5 Z" id="Rectangle" fill="url(#linearGradient-1)"></path>
+                <path d="M27.2781249,56.5 L27.2781249,62.3368302 L109.022554,62.3368302 L109.022554,56.5 L27.2781249,56.5 Z" id="Rectangle-Copy" fill="url(#linearGradient-1)"></path>
+                <path d="M27.2781249,76.5 L27.2781249,82.3368302 L109.022554,82.3368302 L109.022554,76.5 L27.2781249,76.5 Z" id="Rectangle-Copy-2" fill="url(#linearGradient-1)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

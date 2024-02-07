@@ -1,0 +1,539 @@
+<template>
+  <div>
+    <iframe
+      v-if="exportDownloadUrl"
+      :src="exportDownloadUrl"
+      style="display: none;"
+    ></iframe>
+    <div class="analytics-page-header">
+      <div class="row">
+        <div class="col-7">
+          <div class="analytics-page-header-title">
+            {{ analyticsConfig.name }}
+          </div>
+          <div class="analytics-page-header-filters">
+            <el-select
+              class="period-select"
+              v-model="analyticsConfig.period"
+              placeholder="Period"
+            >
+              <el-option label="High-res" :value="0"></el-option>
+              <el-option label="Hourly" :value="20"></el-option>
+              <el-option label="Daily" :value="12"></el-option>
+              <el-option label="Weekly" :value="11"></el-option>
+              <el-option label="Monthly" :value="10"></el-option>
+            </el-select>
+            <el-select
+              class="period-select"
+              @change="selectBaseLine"
+              v-model="selectedBaseLineId"
+              placeholder="Compare"
+              v-if="baseLineList && !isActionsDisabled"
+            >
+              <el-option-group label="Compare to">
+                <el-option label="None" :value="-1"></el-option>
+                <el-option
+                  v-for="(baseLine, index) in baseLineList"
+                  :key="index"
+                  :label="baseLine.name"
+                  :value="baseLine.id"
+                ></el-option>
+              </el-option-group>
+            </el-select>
+            <f-data-point-adder
+              ref="readingAdder"
+              reading="TOTAL_ENERGY_CONSUMPTION_DELTA"
+              type="meter"
+              :aggregate="analyticsConfig.period"
+              @change="dataPointsChanged"
+              style="display: inline;"
+            ></f-data-point-adder>
+          </div>
+        </div>
+        <div class="col-5" style="text-align: right;">
+          <el-button
+            class="freport-btn analytics-save-as-report"
+            :disabled="isActionsDisabled"
+            @click="visibility.saveAsDialog = true"
+            >{{ $t('common.wo_report.save_as_report') }}</el-button
+          >
+          <div class="analytics-page-options">
+            <el-dropdown
+              @command="exportData($event, analyticsConfig, iframeLoader)"
+              :class="{ 'action-disabled': isActionsDisabled }"
+            >
+              <el-button size="small" type="text" class="fc-chart-btn">
+                <img class="report-icon" src="~statics/report/export.svg" />
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item command="1" :disabled="isActionsDisabled">{{
+                  $t('common.wo_report.export_csv')
+                }}</el-dropdown-item>
+                <el-dropdown-item command="2" :disabled="isActionsDisabled">{{
+                  $t('common.wo_report.export_xcl')
+                }}</el-dropdown-item>
+                <!-- <el-dropdown-item command="3">As PDF</el-dropdown-item>
+              <el-dropdown-item command="4">As Image</el-dropdown-item> -->
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button
+              :disabled="isActionsDisabled"
+              size="small"
+              type="text"
+              :title="$t('common.wo_report.email_this_report')"
+              data-position="bottom"
+              data-arrow="true"
+              v-tippy
+              class="fc-chart-btn"
+              @click="visibility.emailReport = true"
+            >
+              <img class="report-icon" src="~statics/report/email.svg" />
+            </el-button>
+            <el-button
+              :disabled="isActionsDisabled"
+              size="small"
+              type="text"
+              @click="printReport"
+              title="Print"
+              data-position="bottom"
+              data-arrow="true"
+              v-tippy
+              class="fc-chart-btn"
+            >
+              <img class="report-icon" src="~statics/report/printer.svg" />
+            </el-button>
+            <email-report
+              :visibility.sync="visibility.emailReport"
+              :analyticsConfig="analyticsConfig"
+            ></email-report>
+            <f-save-as-report
+              :visibility.sync="visibility.saveAsDialog"
+              :config="analyticsConfig"
+            ></f-save-as-report>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div ref="chartSection" class="self-center fchart-section scrollable">
+      <!-- <div style="position: absolute;right: 20px;" @click="reportoption = !reportoption"><i class="el-icon-setting"></i> {{reportoption}}</div> -->
+      <!-- <report-options v-if="reportoption" :dialogVisible.sync="reportoption" :data="analyticsConfig" :report="report"></report-options> -->
+      <div v-if="!analyticsConfig.dataPoints.length" class="text-center">
+        <div class="p15">Please select a meter to analyze.</div>
+        <el-button
+          size="small"
+          class="freport-btn"
+          @click="$refs.readingAdder.selectDataPoint()"
+          >Select Meter</el-button
+        >
+      </div>
+      <f-analytic-report
+        :config.sync="analyticsConfig"
+        @report="getReport"
+        v-else
+      ></f-analytic-report>
+    </div>
+  </div>
+</template>
+<script>
+import FDataPointAdder from 'pages/energy/analytics/components/FDataPointAdder'
+import FAnalyticReport from 'pages/energy/analytics/components/FAnalyticReport'
+import FSaveAsReport from 'pages/report/components/FSaveAsReport'
+import EmailReport from 'pages/report/forms/EmailReport'
+import AnalyticsMixin from 'pages/energy/analytics/mixins/AnalyticsMixin'
+// import ReportOptions from '@/ReportOptions'
+
+export default {
+  mixins: [AnalyticsMixin],
+  components: {
+    FDataPointAdder,
+    FAnalyticReport,
+    FSaveAsReport,
+    EmailReport,
+    // ReportOptions
+  },
+  title() {
+    return 'Consumption Analysis'
+  },
+  data() {
+    return {
+      baseLineList: null,
+      selectedBaseLineId: '',
+      report: null,
+      reportoption: false,
+      analyticsConfig: {
+        name: 'Consumption Analysis',
+        period: 0,
+        baseLine: null,
+        dateFilter: this.getDefaultDateFilter('D'),
+        dataPoints: [],
+      },
+      visibility: {
+        saveAsDialog: false,
+        emailReport: false,
+      },
+      exportDownloadUrl: null,
+    }
+  },
+  mounted() {
+    if (this.loadAnalyticsConfig()) {
+      this.$helpers.extend(this.analyticsConfig, this.loadAnalyticsConfig())
+      if (this.$refs.readingAdder) {
+        this.$refs.readingAdder.setDataPoints(this.analyticsConfig.dataPoints)
+      }
+    }
+  },
+  methods: {
+    dataPointsChanged(dataPoints) {
+      this.analyticsConfig.dataPoints = dataPoints
+    },
+    getReport(data) {
+      this.report = data
+    },
+    iframeLoader(url) {
+      this.exportDownloadUrl = url
+    },
+  },
+}
+</script>
+<style>
+.charttype-options {
+  /* padding: 4px 10px;
+    margin: 0;
+    list-style: none;
+    float: left; */
+  border-bottom: 1px solid #6666660d;
+  padding: 8px 13px;
+}
+
+.charttype-options ul.fchart-icon li {
+  float: left;
+  cursor: pointer;
+  width: 45px;
+  height: 40px;
+  padding: 20px 10px 10px 10px;
+}
+
+.charttype-options ul li svg {
+  width: 18px;
+  height: 18px;
+  opacity: 0.3;
+}
+
+.charttype-options ul li svg:hover,
+.charttype-options ul li.active svg {
+  opacity: 1;
+}
+
+.charttype-options-select {
+  padding-top: 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.chart-category-dropdown {
+  font-size: 12px;
+  /* padding-top: 15px; */
+  /* padding-right: 23px; */
+}
+.datefilter-name {
+  padding-right: 8px;
+  padding-top: 7px !important;
+}
+.chart-created-info {
+  text-align: left;
+  line-height: 1.5;
+  color: #333333;
+  font-size: 12px;
+  justify-content: center;
+}
+.chart-category-dropdown input.el-input__inner {
+  font-size: 12px;
+}
+.datefilter-name {
+  white-space: nowrap;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10px;
+  padding-right: 10px;
+}
+.charttype-options-select {
+  font-size: 12px;
+}
+.building-filter {
+  text-align: left;
+}
+.building-filter .filter-entry {
+  display: inline-block;
+  font-size: 12px;
+  color: #666;
+  padding-left: 10px;
+}
+
+.building-filter .filter-entry .q-select {
+  font-size: 12px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+  margin-right: 10px;
+}
+
+.building-filter .filter-entry .q-select i {
+  font-size: 12px;
+  opacity: 0.5;
+  padding-right: 4px;
+}
+
+.building-filter .filter-entry .q-select:before {
+  height: 0px;
+}
+
+.building-filter .filter-entry .q-select .q-if-control[slot='after'] {
+  display: none;
+}
+
+.fc-analysis-filter {
+  padding: 20px;
+}
+
+.fc-analysis-filter .pull-left {
+  padding-top: 4px;
+}
+
+.fc-analysis-filter .filter-field {
+  font-size: 12px;
+  margin-top: 0px;
+  padding-bottom: 0px;
+  margin-right: 15px;
+  display: inline-block;
+}
+
+.fc-analysis-filter .filter-field i {
+  opacity: 0.4;
+  padding-right: 4px;
+}
+
+.fc-analysis-filter .filter-field .plholder {
+  opacity: 0.5;
+  font-size: 11px;
+}
+
+.chart-icon svg {
+  width: 18px;
+  height: 18px;
+}
+.chart-label {
+  margin-top: -4px;
+  margin-left: 6px;
+}
+.fchart-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #ffffff91;
+  cursor: progress;
+}
+.report-col {
+  padding: 5px;
+}
+.report-col.active {
+  color: red !important;
+}
+.date-icon-right,
+.date-icon-left {
+  font-size: 15px;
+  position: relative;
+  top: 2px;
+}
+.fchart-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #ffffff91;
+  cursor: progress;
+}
+.fc-analysis-filter {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid #cccccc61;
+}
+/**/
+.en-dropDown {
+  padding: 4px 10px;
+  border: 1px solid #ccccccd6;
+  border-radius: 5px;
+  margin-right: 15px;
+}
+.en-dropDown .el-input .el-input__inner {
+  border: none !important;
+}
+.en-dropDown .el-input__inner {
+  max-width: 75%;
+}
+.en-dropDown input {
+  font-size: 13px;
+  color: #333;
+}
+.en-icon {
+  position: relative;
+  left: 30px;
+  top: 5px;
+}
+.en-icon svg,
+.en-icon img {
+  width: 20px;
+}
+.fc-analysis-filter .el-select-dropdown.el-popper {
+  margin-left: -20px;
+}
+.an-sidebar.header {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.03);
+}
+.en-fchart {
+  padding-left: 10px;
+  padding-right: 50px;
+}
+.reading-analysi .fchart-section {
+  height: calc(100vh - 150px);
+  overflow: auto;
+}
+.an-spin {
+  align-items: center;
+  width: 80px;
+  margin: 0 auto;
+  height: 80px;
+  margin-top: 10%;
+}
+.en-dropDown.el-cascader,
+.en-dropDown.el-cascader .el-input__icon {
+  line-height: 0px;
+}
+.reading-fileds-header .en-dropDown {
+  margin-right: 5px;
+}
+.reading-analysis .fc-analysis-filter {
+  display: inline-flex;
+  width: 100%;
+}
+.reading-analysis
+  .fc-analysis-filter
+  .pull-right
+  input.el-input
+  .el-input__inner {
+  border-bottom: 0px solid #d8dce5;
+  margin-left: 40px;
+}
+.date-filter-day input.el-input__inner {
+  border: 0px;
+  margin-left: 30px;
+}
+.fc-el-report-pop {
+  padding: 0px !important;
+}
+.fc-el-btn {
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  align-items: center;
+  text-transform: uppercase;
+  padding-bottom: 15px;
+  cursor: pointer;
+  font-weight: 500;
+  padding-top: 15px;
+}
+.el-report-cancel-btn {
+  background-color: #f4f4f4;
+  color: #5f5f5f;
+}
+.el-report-save-btn {
+  color: white;
+  background-color: #39b2c2;
+}
+.analytics-page-header {
+  box-shadow: 0 3px 4px 0 rgba(218, 218, 218, 0.32);
+  padding: 20px;
+  position: relative;
+  width: 100%;
+  background: #fff;
+  /* z-index: 1; */
+}
+.analytics-page-header-title {
+  letter-spacing: 0.6px;
+  color: #000000;
+  font-weight: 500;
+  font-size: 18px;
+}
+.analytics-page-header-filters {
+  padding-top: 12px;
+}
+.analytics-page-header-filters .el-select {
+  margin-right: 10px;
+}
+.analytics-page-header-filters .el-select input {
+  border-radius: 3px;
+  background-color: #f3fdff;
+  border: solid 1px #8fd2db;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  color: #31a4b4;
+  padding: 8px;
+  height: 30px;
+}
+.analytics-page-header-filters .period-select {
+  width: 90px;
+}
+.analytics-page-options {
+  margin: 10px;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px 0 rgba(230, 230, 230, 0.5);
+  border: solid 1px #d9e0e7;
+  border-radius: 5px;
+}
+.analytics-page-options {
+  display: inline-block;
+  height: 40px;
+  margin-left: 20px;
+  position: relative;
+  top: 4px;
+}
+.analytics-page-options button,
+.analytics-page-options button:hover,
+.analytics-page-options button:focus {
+  border-left: 1px solid rgb(217, 224, 231);
+}
+.analytics-page-options .el-button + .el-button {
+  margin-left: 0px;
+}
+.analytics-page-options button:first-child {
+  border: none !important;
+}
+.analytics-page-options .report-icon {
+  width: 17px;
+  height: 17px;
+}
+.analytics-page-options .fc-chart-btn {
+  color: #333333;
+  font-size: 17px;
+  padding: 9px;
+  padding-left: 15px;
+  padding-right: 12px;
+  margin-left: 0px;
+}
+.freport-btn,
+.freport-btn:hover,
+.freport-btn:focus,
+.freport-btn.is-disabled,
+.freport-btn.is-disabled:hover {
+  border-radius: 4px;
+  background-color: #ffffff;
+  border: solid 1px #39b2c2;
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  color: #39b2c2;
+  font-weight: normal;
+}
+.freport-btn:hover {
+  background-color: #f5f7fa;
+}
+.analytics-save-as-report,
+.analytics-save-as-report:hover,
+.analytics-save-as-report:focus {
+  font-weight: 500;
+}
+</style>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10px" height="10px" viewBox="0 0 10 10" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57.1 (83088) - https://sketch.com -->
+    <title>check-icon</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Futureproof_banner_form_revamp-Copy-8" transform="translate(-1267.000000, -967.000000)" fill-rule="nonzero">
+            <g id="check-icon" transform="translate(1267.000000, 967.000000)">
+                <circle id="Oval" fill="#000000" cx="5" cy="5" r="5"></circle>
+                <path d="M4.52705882,6.71 C4.43436585,6.71012306 4.34544873,6.67328597 4.28,6.60764706 L3.04352941,5.37058824 C2.95377151,5.28262558 2.91816627,5.15323665 2.95028413,5.03173623 C2.98240199,4.91023582 3.07729464,4.81534317 3.19879506,4.78322531 C3.32029548,4.75110745 3.44968441,4.78671269 3.53764706,4.87647059 L4.52705882,5.86470588 L6.75294118,3.64117647 C6.889388,3.50456721 7.11074368,3.50443553 7.24735294,3.64088235 C7.3839622,3.77732917 7.38409388,3.99868486 7.24764706,4.13529412 L4.77529412,6.60823529 C4.70980854,6.67381912 4.62091537,6.71064629 4.52823529,6.7105883 L4.52705882,6.71 Z" id="Path" stroke="#FFFFFF" stroke-width="0.4" fill="#FFFFFF"></path>
+            </g>
+        </g>
+    </g>
+</svg>

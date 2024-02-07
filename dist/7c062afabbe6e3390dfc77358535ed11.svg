@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Zoom_in_20px" data-name="Zoom in 20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <rect  class="cls-1" x="0" y="0" width="20" height="20" transform="translate(20 20) rotate(-180)"/>
+  <g>
+    <rect class="config-icon" x="12.6" y="8.13" width="1.67" height="10.62" transform="translate(26.87 26.88) rotate(-180)"/>
+    <rect class="config-icon" x="12.6" y="1.25" width="1.67" height="3.54" transform="translate(26.87 6.04) rotate(-180)"/>
+    <path class="config-icon" d="M13.44,7.29c-.57,0-1.04-.47-1.04-1.04s.47-1.04,1.04-1.04,1.04,.47,1.04,1.04-.47,1.04-1.04,1.04m0,1.67c1.5,0,2.71-1.21,2.71-2.71s-1.21-2.71-2.71-2.71-2.71,1.21-2.71,2.71,1.21,2.71,2.71,2.71h0Z"/>
+  </g>
+  <g>
+    <rect class="config-icon" x="6.25" y="1.25" width="1.67" height="10.62"/>
+    <rect class="config-icon" x="6.25" y="15.21" width="1.67" height="3.54"/>
+    <path class="config-icon" d="M7.08,14.79c-.57,0-1.04-.47-1.04-1.04s.47-1.04,1.04-1.04,1.04,.47,1.04,1.04-.47,1.04-1.04,1.04m0,1.67c1.5,0,2.71-1.21,2.71-2.71s-1.21-2.71-2.71-2.71-2.71,1.21-2.71,2.71,1.21,2.71,2.71,2.71h0Z"/>
+  </g>
+</svg>

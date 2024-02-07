@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="List_view_20px" data-name="List view 20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <g>
+    <rect x="3" y="4" width="1" height="1"/>
+    <rect x="3" y="11" width="1" height="1"/>
+    <rect x="3" y="7.5" width="1" height="1"/>
+    <rect x="5" y="4" width="8" height="1"/>
+    <rect x="5" y="11" width="8" height="1"/>
+    <rect x="5" y="7.5" width="8" height="1"/>
+    <path d="M1,1V15H15V1H1ZM14,14H2V2H14V14Z"/>
+  </g>
+  <rect class="cls-1" y="0" width="16" height="16"/>
+</svg>

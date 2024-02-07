@@ -1,0 +1,113 @@
+
+.ppm-row {
+  width: 100%;
+  border-bottom: 1px solid #eae8e8;
+  padding-bottom: 23px;
+  height: 0;
+  padding-top: 23px;
+  line-height: 1px;
+  position: relative;
+}
+.ppm-area {
+  width: 44%;
+  float: left;
+  text-align: left;
+  font-weight: 500;
+  padding-left: 20px;
+  color: #7e7e7e;
+  letter-spacing: 0.4px;
+  font-size: 14px;
+}
+.ppm-fullscore {
+  width: 16%;
+  float: left;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #7e7e7e;
+  text-align: left;
+  font-weight: 500;
+}
+.non-compliance,
+.repeat-finding,
+.total-points-earned {
+  width: 20%;
+  float: left;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #7e7e7e;
+  text-align: left;
+  font-weight: 500;
+}
+.total-points-earned {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #333333;
+}
+.ppm-list-txt {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #333333;
+}
+.border-hide {
+  border-bottom: transparent;
+  padding-bottom: 23px;
+  height: 0;
+  padding-top: 23px;
+  line-height: 1px;
+}
+.ppm-table-bg {
+  background-color: #f9f9f9;
+  border-bottom: transparent;
+  padding-bottom: 23px;
+  height: 0;
+  padding-top: 23px;
+  line-height: 1px;
+}
+.border-two {
+  border-bottom: 1px solid #eae8e8;
+  border-top: 1px solid #eae8e8;
+  padding-bottom: 23px;
+  height: 0;
+  padding-top: 23px;
+  line-height: 1px;
+}
+.ppm-pink-txt {
+  font-size: 15px;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  color: #ef508f;
+}
+.float-right {
+  float: right;
+}
+.sample-ppm-section.uts {
+  margin-top: 10px;
+}
+.quarterSelecter {
+  position: absolute;
+  top: 10px;
+  right: 30px;
+}
+.quarterSelecter .el-input .el-input__inner,
+.quarterSelecter .el-textarea .el-textarea__inner {
+  border: none;
+}
+.el-select.quarterSelecter input.el-input__inner {
+  font-size: 14px;
+  font-weight: 500;
+  color: #ef508f;
+  width: 90px;
+}
+.empty-row {
+  margin-top: 50px;
+  border-bottom: 1px solid #eae8e8;
+}
+.uts-datefilter {
+  top: 0px !important;
+  right: 15px !important;
+}
+

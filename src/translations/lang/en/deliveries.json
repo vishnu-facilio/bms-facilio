@@ -1,0 +1,20 @@
+{
+  "deliveries": {
+    "new_delivery": "New Delivery",
+    "no_data_deliveries": "No Deliveries available",
+    "deliveries": "Deliveries",
+    "delivery": "Delivery",
+    "delete_delivery": "Delete delivery",
+    "delete_confirmation_delivery": "Are you sure you want to delete this delivery(s)?",
+    "delete_success_delivery": "Delivery(s) Deleted Successfully"
+  },
+  "deliveryArea": {
+    "new_deliveryArea": "New Delivery Area",
+    "no_data_deliveryArea": "No Delivery Areas Available",
+    "deliveryaAreas": "Delivery Areas",
+    "deliveryArea": "Delivery Area",
+    "delete_deliveryArea": "Delete delivery area",
+    "delete_confirmation_deliveryArea": "Are you sure you want to delete this delivery area(s)?",
+    "delete_success_deliveryArea": "Delivery Area(s) Deleted Successfully"
+  }
+}

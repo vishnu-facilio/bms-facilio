@@ -1,0 +1,81 @@
+.font-bold {
+  font-weight: 700;
+}
+.pR5 {
+  padding-right: 5px;
+}
+.pT10 {
+  padding-top: 10px;
+}
+.pT15 {
+  padding-top: 15px;
+}
+.pT20 {
+  padding-top: 20px;
+}
+.pT40 {
+  padding-top: 40px;
+}
+.pB100 {
+  padding-bottom: 100px;
+}
+.max-width450 {
+  max-width: 450px;
+}
+.max-width600 {
+  max-width: 600px;
+}
+.opacity-50 {
+  opacity: 0.5;
+}
+.flex-middle {
+  display: flex;
+  align-items: center;
+}
+.justify-content-space {
+  justify-content: space-between;
+}
+.fc-pink-dot-xs {
+  width: 8px;
+  height: 8px;
+  background-color: #ff438f;
+  border-radius: 100%;
+}
+.mT0 {
+  margin-top: 0 !important;
+}
+.mT40 {
+  margin-top: 40px;
+}
+.mL10 {
+  margin-left: 10px;
+}
+.mR70 {
+  margin-right: 70px;
+}
+.mR90 {
+  margin-right: 90px;
+}
+.text-center {
+  text-align: center;
+}
+// position
+.position-relative {
+  position: relative;
+}
+.pointer {
+  cursor: pointer;
+}
+.border-bottom1px {
+  border-bottom: 1px solid #e2e8ee !important;
+}
+.text-left {
+  text-align: left !important;
+}
+// visibility
+.visible {
+  visibility: visible;
+}
+.invisible {
+  visibility: hidden;
+}

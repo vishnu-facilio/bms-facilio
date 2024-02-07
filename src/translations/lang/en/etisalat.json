@@ -1,0 +1,44 @@
+{
+  "common": {
+    "status": "Status",
+    "actions": "Actions",
+    "month": "Month",
+    "details": "Details",
+    "show_alerts": "Show Alerts",
+    "show_bills": "Show Bills",
+    "cancelled": "Cancelled"
+  },
+  "etisalat": {
+    "from": "From",
+    "to": "To",
+    "unit": "Unit",
+    "rete_in_aed": "Rate in AED",
+    "supplier_name": "Supplier Name",
+    "tariff_type": "Tariff Type",
+    "utility_type": "Utility Type",
+    "cost_type": "Cost Type",
+    "water": "Water",
+    "sewage": "sewage",
+    "show_invoice": "Show Payment Memo",
+    "create_invoice": "Create Payment Memo",
+    "total": "Total",
+    "utility_accounts": "Utility Accounts",
+    "electricity": "Electricity",
+    "gas": "Gas",
+    "tariffs": "Tariffs"
+  },
+  "payments": {
+    "invoice_details": "Payment Memo details",
+    "dispute_free": "DISPUTE FREE TOTAL",
+    "under_dispute": "Under Dispute",
+    "cancelled_payments": "Cancelled Payments",
+    "invoice_date": "Payment Memo Date",
+    "region_code": "Region code",
+    "cost_center": "Cost Center",
+    "vat_amount": "VAT Amount",
+    "pending_approval": "Pending Approval from DG",
+    "disputes_alerts": "from Disputes/Alerts",
+    "outstanding_amount": "Outstanding Amount",
+    "under_review": "Under Review "
+  }
+}

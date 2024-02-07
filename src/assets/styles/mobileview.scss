@@ -1,0 +1,17 @@
+.mobile-view {
+  header {
+    display: none !important;
+  }
+
+  .default-portal-dashboard {
+    padding: 5% !important;
+  }
+}
+
+.web-view-layout {
+  .default-portal-dashboard {
+    padding: 5%;
+    height: 90vh;
+    overflow: auto;
+  }
+}

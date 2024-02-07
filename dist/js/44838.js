@@ -1,0 +1,10 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[44838],{
+/***/644838:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return RichTextPreview}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/pages/community/components/RichTextPreview.vue?vue&type=template&id=2c8d481a&scoped=true
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"rich-text-preview"},[_c("div",{ref:"description-container",domProps:{innerHTML:_vm._s(_vm.sanitize(_vm.details[_vm.fieldKey]))}})])},staticRenderFns=[],sanitize=__webpack_require__(678042),RichTextPreviewvue_type_script_lang_js={name:"RichTextPreview",props:["details","widget"],computed:{fieldKey:function(){return this.$getProperty(this.widget,"widgetParams.fieldKey","description")||"description"}},created:function(){this.sanitize=sanitize/* sanitize */.N}},components_RichTextPreviewvue_type_script_lang_js=RichTextPreviewvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(components_RichTextPreviewvue_type_script_lang_js,render,staticRenderFns,!1,null,"2c8d481a",null)
+/* harmony default export */,RichTextPreview=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/44838.js.map

@@ -1,0 +1,22 @@
+{
+  "page": {
+    "overview": "Overview",
+    "asset": {
+      "details": "Asset Details",
+      "perf": "Asset Performance"
+    },
+    "readings": "Readings",
+    "widgetFields": {
+      "thismonth": "This Month",
+      "everymonth": "Every Month",
+      "crititcal": "Critical",
+      "active": "Active",
+      "unacknowledged": "Unacknowledged",
+      "total": "Total",
+      "avgworkorders": "Average Workorders",
+      "overdue": "Overdue",
+      "frequentlyassigned": "Frequently Assigned",
+      "clear": "Clear"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="9px" height="11px" viewBox="0 0 9 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Rectangle-path</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <path d="M10.5,70 C11.3284271,70 12,70.6715729 12,71.5 L12,79.5 C12,80.3284271 11.3284271,81 10.5,81 L4.5,81 C3.67157288,81 3,80.3284271 3,79.5 L3,71.5 C3,70.6715729 3.67157288,70 4.5,70 L10.5,70 Z M9.375,74.5 C8.89175084,74.5 8.5,74.8917508 8.5,75.375 C8.5,75.8582492 8.89175084,76.25 9.375,76.25 C9.85824916,76.25 10.25,75.8582492 10.25,75.375 C10.25,74.8917508 9.85824916,74.5 9.375,74.5 Z" id="path-1"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Employee-List_Global-Search_Filter-collapse-Copy-2" transform="translate(-189.000000, -324.000000)">
+            <g id="Filter-full" transform="translate(178.000000, 178.000000)">
+                <g id="Group-4" transform="translate(8.000000, 25.000000)">
+                    <g id="Filter-2">
+                        <g id="Icons" transform="translate(0.000000, 51.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="Rectangle-path" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

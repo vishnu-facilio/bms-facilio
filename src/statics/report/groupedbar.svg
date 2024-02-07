@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="16px" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>grouped bar chart</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-738.000000, -98.000000)">
+        <g id="grouped-bar-chart" transform="translate(738.000000, 98.000000)">
+            <rect id="Rectangle-8" stroke="#EF508F" x="0.5" y="0.5" width="19" height="15" rx="1.20000005"></rect>
+            <path d="M14.3,10 L15.7,10 C15.8656854,10 16,10.1343146 16,10.3 L16,14 L14,14 L14,10.3 C14,10.1343146 14.1343146,10 14.3,10 Z" id="Rectangle" fill="#F7A1C3" transform="translate(15.000000, 12.000000) rotate(-270.000000) translate(-15.000000, -12.000000) "></path>
+            <path d="M7,7 L9,7 L9,16.7 C9,16.8656854 8.86568542,17 8.69999999,17 L7.30000001,17 C7.13431458,17 7,16.8656854 7,16.7 L7,7 Z" id="Rectangle" fill="#EF508F" transform="translate(8.000000, 12.000000) rotate(-270.000000) translate(-8.000000, -12.000000) "></path>
+            <path d="M10.3,6 L11.7,6 C11.8656854,6 12,6.13431458 12,6.30000001 L12,10 L10,10 L10,6.30000001 C10,6.13431458 10.1343146,6 10.3,6 Z" id="Rectangle" fill="#F7A1C3" transform="translate(11.000000, 8.000000) rotate(-270.000000) translate(-11.000000, -8.000000) "></path>
+            <path d="M5,5 L7,5 L7,10.7 C7,10.8656854 6.86568542,11 6.69999999,11 L5.30000001,11 C5.13431458,11 5,10.8656854 5,10.7 L5,5 Z" id="Rectangle" fill="#EF508F" transform="translate(6.000000, 8.000000) rotate(-270.000000) translate(-6.000000, -8.000000) "></path>
+            <path d="M7.30000001,2 L8.69999999,2 C8.86568542,2 9,2.13431458 9,2.30000001 L9,6 L7,6 L7,2.30000001 C7,2.13431458 7.13431458,2 7.30000001,2 Z" id="Rectangle" fill="#F7A1C3" transform="translate(8.000000, 4.000000) rotate(-270.000000) translate(-8.000000, -4.000000) "></path>
+            <path d="M3.5,2.5 L5.5,2.5 L5.5,5.19999999 C5.5,5.36568542 5.36568542,5.5 5.19999999,5.5 L3.80000001,5.5 C3.63431458,5.5 3.5,5.36568542 3.5,5.19999999 L3.5,2.5 Z" id="Rectangle" fill="#EF508F" transform="translate(4.500000, 4.000000) rotate(-270.000000) translate(-4.500000, -4.000000) "></path>
+        </g>
+    </g>
+</svg>

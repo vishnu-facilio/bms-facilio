@@ -1,0 +1,48 @@
+{
+  "list": {
+    "add_view": "Ansicht hinzufügen",
+    "add_folder": "Ordner hinzufügen",
+    "views_manager": "Ansichten-Manager",
+    "back": "Zurück",
+    "success": "Ansicht erfolgreich aktualisiert!",
+    "error": "Beim Teilen dieser Ansicht ist ein Fehler aufgetreten"
+  },
+  "customize": {
+    "updated": "Aktualisiert",
+    "error": "Konnte nicht anpassen"
+  },
+  "sharing_permission": {
+    "title": "Teilen",
+    "desc": "Verwenden Sie diese Option, um mit relevanten Benutzern und Gruppen zu teilen",
+    "share_with": "Geteilt mit",
+    "only_me": "Nur ich",
+    "everyone": "Jeder",
+    "specific": "Spezifischer Benutzer / Team / Rolle",
+    "specific_user": "Spezifischer Benutzer"
+  },
+  "folder": {
+    "edit_folder": "Ordner bearbeiten",
+    "add_new_folder": "Neuen Ordner hinzufügen"
+  },
+  "schedules": {
+    "no_view_schedules_available": " Keine Zeitpläne verfügbar",
+    "schedule_deletion_succesfully": "Zeitplan erfolgreich gelöscht",
+    "schedule_deletion_failed": "Löschen des Zeitplans fehlgeschlagen",
+    "schedule_views": "Terminplanansicht",
+    "view": "Aussicht",
+    "specify_criteria_for_this_view_to_teams_and_users": "Geben Sie Kriterien für diese Ansicht für Teams und Benutzer an"
+  },
+  "views": {
+    "edit_view": "Ansicht bearbeiten",
+    "save_as_new_view": "Als neue Ansicht speichern",
+    "delete_view": "Ansicht löschen",
+    "delete_view_confirmation": "Möchten Sie diese Ansicht wirklich löschen?",
+    "delete": "löschen",
+    "delete_view_sucess": "Ansicht erfolgreich gelöscht",
+    "delete_view_error": "Ansicht kann nicht gelöscht werden",
+    "delete_group": "Lösche Ordner",
+    "delete_group_confirmation": "Möchten Sie diesen Ordner wirklich löschen?",
+    "delete_group_sucess": "Ordner erfolgreich gelöscht",
+    "delete_group_error": "Ordner kann nicht gelöscht werden "
+  }
+}

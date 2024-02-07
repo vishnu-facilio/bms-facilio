@@ -1,0 +1,486 @@
+
+.f-criteria-rule .flicker {
+  background: #fff !important;
+  border: 1px !important;
+}
+.Alarm-Class {
+  width: 82px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #70678f;
+}
+.f-criteria-rule .el-row {
+  padding: 12px;
+}
+.innerwhite {
+  background: #fff !important;
+}
+.textalign {
+  width: 59px;
+  height: 28px;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #333333;
+}
+.f-criteria-rule .el-input {
+  vertical-align: middle;
+}
+.f-criteria-rule .el-select {
+  vertical-align: middle;
+}
+.f-criteria-rule .el-select .el-input.is-disabled .el-input__inner {
+  background: white;
+}
+.f-criteria-rule .el-input.is-disabled .el-input__inner {
+  background: white;
+}
+.f-criteria-rule .el-input .el-input__inner,
+.f-criteria-rule .el-textarea .el-textarea__inner {
+  border: 0px solid #d8dce5;
+  border-bottom: 1px solid #d8dce5;
+  padding: 0px;
+  border-radius: 0px;
+  height: 32px;
+}
+.mouse {
+  background: #cacaf7;
+}
+.f-criteria-rule .el-date-editor--datetimerange.el-input,
+.f-criteria-rule .el-date-editor--datetimerange.el-input__inner {
+  width: auto;
+}
+.f-criteria-rule .el-icon-time:before {
+  content: '';
+}
+.f-criteria-rule .el-input__icon {
+  width: auto;
+}
+
+
+.rootgroup-body {
+  background: #ffffff;
+}
+.subgroup-body {
+  background: #f3f3f9;
+}
+.corner {
+  position: absolute;
+  top: 50px;
+  right: 0px;
+}
+.adcomp:last-child {
+  position: absolute;
+  bottom: 42px;
+  right: 13px;
+}
+/* .adcomp:last-child{
+
+ } */
+.MATCH-TYPE {
+  position: relative;
+  width: 77px;
+  height: 22px;
+  opacity: 0.8;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  text-align: left;
+  color: #ffffff;
+}
+.WATCH-TYPE {
+  position: relative;
+  width: 77px;
+  height: 22px;
+  opacity: 0.7;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  text-align: left;
+  color: #70678f;
+}
+.Shape {
+  width: 18px;
+  height: 18px;
+  background-color: #8778bb;
+}
+.el-icon-circle-plus:before {
+  background: #f3f3f9;
+  border-radius: 150px;
+}
+.all {
+  width: 23px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  color: #333333;
+}
+.allwhite {
+  width: 23px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  color: #ffffff;
+}
+.f-criteria-group .el-button--small,
+.el-button--small.is-round {
+  padding: 6px 5px;
+}
+.el-icon-plus {
+  font-weight: bold;
+}
+
+
+.f-criteria-builder .f-criteria-group.threshold .el-card.box-card {
+  border: none !important;
+  margin-top: 0px !important;
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  background: none !important;
+}
+.f-criteria-builder .f-criteria-group.threshold .el-card__header {
+  padding: 0px !important;
+  border-bottom: none !important;
+}
+.f-criteria-builder .f-criteria-group.threshold .el-card__body {
+  padding: 0px !important;
+  margin: 0px !important;
+  height: 56px !important;
+}
+.f-criteria-builder
+  .f-criteria-group.threshold
+  .el-card__body
+  .f-criteria-rule {
+  margin: 0px !important;
+}
+.f-criteria-builder
+  .f-criteria-group.threshold
+  .el-card__body
+  .el-card.box-card.active {
+  padding: 0px !important;
+  margin: 0px !important;
+  border: none !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+}
+.f-criteria-builder
+  .f-criteria-group.threshold
+  .el-card__body
+  .el-card.box-card.active
+  .el-row.is-align-middle {
+  margin: 0px !important;
+}
+.f-criteria-builder .box-card {
+  margin: 8px 0;
+  /* -webkit-box-shadow: none !important; */
+  -webkit-border-radius: 0 !important;
+  -webkit-box-shadow: none !important;
+          box-shadow: none !important;
+  width: 75%;
+}
+.f-criteria-builder .rootgroup .el-card__header {
+  background: #938cab;
+  padding: 10px;
+  height: 40px;
+}
+.f-criteria-builder .rootgroup .box-card {
+  border: solid 1px #938cab;
+  background: #fff;
+}
+.f-criteria-builder .f-criteria-group .el-card__body {
+  padding: 13px !important;
+  margin-left: 9px;
+  margin-right: 7px;
+  /* margin-bottom: -16px; */
+}
+.f-criteria-builder .f-criteria-group.subgroup .box-card .el-card__header {
+  padding: 10px;
+  background: #dfdce8;
+  height: 40px;
+}
+.f-criteria-builder .f-criteria-group:not(.rootgroup) .el-card {
+  position: relative;
+  background: #f3f3f9;
+  border: 1px;
+  border: solid 1px #dfdce8;
+  margin-top: 20px;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.f-criteria-builder .f-criteria-group:not(.rootgroup) .el-card.active {
+  position: relative;
+  background: #fff;
+  border: 1px bold !important;
+  -webkit-box-shadow: 0 2px 6px 0 #dfdee3 !important;
+          box-shadow: 0 2px 6px 0 #dfdee3 !important;
+
+  margin-bottom: 5px;
+  margin-top: 10px;
+  width: 100%;
+  /* margin-bottom: 15px; */
+}
+.f-criteria-builder .f-criteria-rule .el-card.normal {
+  /* height: 45px; */
+  /* background-image: linear-gradient(to right, #675a94 10%, rgba(255, 255, 255, 0) 0%);
+     background-position: top;
+  background-size: 10px 1px;
+  background-repeat: repeat-x; */
+
+  background-color: #f3f3f9;
+  border: 1px dashed #675a94;
+  margin-top: 10px;
+  /* border-width: 1px;
+ margin-bottom: 5px;
+           margin-top: 5px;
+
+
+  /* margin-bottom: 13px; */
+}
+.f-criteria-builder .f-criteria-rule .el-card__body {
+  padding: 5px !important;
+  margin-top: 0px;
+  margin-bottom: 7px;
+  margin-left: 2px;
+  margin-right: 0px;
+  height: 45px;
+}
+.f-criteria-builder .f-criteria-rule .el-card {
+  margin-bottom: 21px;
+}
+.f-criteria-builder .f-criteria-rule .el-card.active {
+  /* height: 60px; */
+  background-color: #ffffff !important;
+  -webkit-box-shadow: 0 2px 6px 0 #dfdee3;
+          box-shadow: 0 2px 6px 0 #dfdee3;
+  border: solid 1px #bfbbcd;
+  box-shadow: 0 2px 6px 0 #dfdee3 !important;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+.f-criteria-builder .el-select .el-input__inner {
+  cursor: pointer !important;
+  background: #fff;
+}
+.f-criteria-builder .f-criteria-rule {
+  margin-bottom: 22px;
+  background-color: #fff;
+}
+.dotted-spaced-left {
+  background-image: -webkit-gradient(
+    linear,
+    left top, left bottom,
+    color-stop(10%, #333),
+    color-stop(0%, rgba(255, 255, 255, 0))
+  );
+  background-image: linear-gradient(
+    to bottom,
+    #333 10%,
+    rgba(255, 255, 255, 0) 0%
+  );
+  background-position: left;
+  background-size: 1px 10px;
+  background-repeat: repeat-y;
+}
+.dotted-spaced-right {
+  background-image: -webkit-gradient(
+    linear,
+    left top, left bottom,
+    color-stop(10%, #333),
+    color-stop(0%, rgba(255, 255, 255, 0))
+  );
+  background-image: linear-gradient(
+    to bottom,
+    #333 10%,
+    rgba(255, 255, 255, 0) 0%
+  );
+  background-position: right;
+  background-size: 1px 10px;
+  background-repeat: repeat-y;
+  padding-right: 0px;
+}
+.dotted-spaced-top {
+  background-image: -webkit-gradient(
+    linear,
+    left top, right top,
+    color-stop(10%, #333),
+    color-stop(0%, rgba(255, 255, 255, 0))
+  );
+  background-image: linear-gradient(
+    to right,
+    #333 10%,
+    rgba(255, 255, 255, 0) 0%
+  );
+  background-position: top;
+  background-size: 10px 1px;
+  background-repeat: repeat-x;
+}
+.dotted-spaced-bottom {
+  background-image: -webkit-gradient(
+    linear,
+    left top, right top,
+    color-stop(10%, #333),
+    color-stop(0%, rgba(255, 255, 255, 0))
+  );
+  background-image: linear-gradient(
+    to right,
+    #333 10%,
+    rgba(255, 255, 255, 0) 0%
+  );
+  background-position: bottom;
+  background-size: 10px 1px;
+  background-repeat: repeat-x;
+}
+/* .f-criteria-builder .el-main {
+    background: #fff;
+} */
+.f-criteria-builder .f-criteria-rule .el-card {
+  width: 100%;
+}
+
+
+.field-matcher-bg {
+  padding: 10px 20px 3px 10px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+.field-matcher-bg:hover {
+  background-color: #f1f8fa;
+  transition: 0.3s all ease-in-out;
+  -webkit-transition: 0.3s all ease-in-out;
+}
+
+
+.boxheader {
+  background-color: #ffffff;
+  -webkit-box-shadow: 3px 0 7px 0 rgba(191, 191, 191, 0.5);
+          box-shadow: 3px 0 7px 0 rgba(191, 191, 191, 0.5);
+  padding-left: 34px;
+  height: 70px !important ;
+}
+.discription-textbox {
+  font-size: 12px;
+  text-align: left;
+  color: #6b7e91;
+  letter-spacing: 0.4px;
+}
+.indent {
+  padding-top: 35px;
+  padding-left: 35px;
+  padding-bottom: 150px;
+}
+.line {
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 2px 7px 0 rgba(191, 191, 191, 0.5);
+          box-shadow: 0 2px 7px 0 rgba(191, 191, 191, 0.5);
+}
+.font {
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  color: #39b2c2;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+.thinline {
+  border: solid 1px #dff4f6;
+}
+.el-button.is-round {
+  border-radius: 20px;
+  padding: 7px 10px;
+}
+.el-button--primary {
+  color: #fff;
+  background-color: #39b2c2;
+  border-color: #39b2c2;
+  letter-spacing: 0.7px;
+}
+.el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #70678f;
+  background-color: #f3f3f9;
+  border-color: #e2e8ee;
+  -webkit-box-shadow: 0 2px 4px 0 rgba(232, 229, 229, 0.5);
+          box-shadow: 0 2px 4px 0 rgba(232, 229, 229, 0.5);
+}
+.el-button.is-round {
+  padding: 6px 5px;
+}
+.Alarm-title {
+  margin-top: -13px;
+  width: 30%;
+  font-size: 18px;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #000000;
+}
+.edittext {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #333333;
+}
+.Alarm-Created {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #333333;
+}
+.Action-text {
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #757575;
+}
+.mailbody {
+  font-size: 13px;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #757575;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.inline {
+  /* display:inline; */
+  /* padding-left:8%; */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.boldtitle {
+  font-size: 11px;
+  color: #000000;
+  font-weight: 500;
+  letter-spacing: 0.9px;
+  padding-top: 45px;
+}
+.childinline {
+  display: inline;
+  padding-left: 56px;
+}
+.dropdownbutton {
+  border-color: #39b2c2;
+  font-size: 11px;
+  color: #39b2c2;
+  font-weight: bold;
+  padding: 5px;
+  padding-bottom: 15px;
+}
+.team-down-icon {
+  width: 10px;
+  height: 10px;
+  color: #e1e4eb;
+  bottom: 9px;
+  right: 41%;
+}
+

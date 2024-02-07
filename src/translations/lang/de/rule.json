@@ -1,0 +1,18 @@
+{
+  "create": {
+    "new_alarm_rule": "Neue Alarmregel",
+    "alarm_conditions": "Alarmbedingungen",
+    "root_cause_impacts": "Ursache & Kostenauswirkungen",
+    "impact": "Einschlag",
+    "actions": "Aktionen",
+    "new_custom_alarm_rule": "Neue benutzerdefinierte Alarmregel",
+    "root_cause": "Ursache",
+    "cost_impact": "Kostenauswirkungen",
+    "prerequisite_condition": "Voraussetzung Bedingung",
+    "alarm_condition": "Alarmzustand",
+    "alarm_clear_condition": "Zustand löschen",
+    "report_for_downtime": "Alarm für Ausfallzeit melden",
+    "create_wo_alarm_creation": "WO bei Alarmerstellung erstellen",
+    "control_points": "Kontrollpunkte"
+  }
+}

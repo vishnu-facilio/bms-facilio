@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="53px" height="61px" viewBox="0 0 53 61" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Group 12</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Kiosk-Icons-Copy" transform="translate(-171.000000, -362.000000)">
+            <g id="Group-12" transform="translate(173.000000, 364.000000)">
+                <path d="M35,17 L35,19.5 C35,25.2989899 30.2989899,30 24.5,30 C18.7010101,30 14,25.2989899 14,19.5 L14,17 L14,17 L27,17 L35,17 Z" id="Rectangle" stroke="#733C9A" stroke-width="3" stroke-linejoin="round"></path>
+                <path d="M12.5,34 L14,34 L14,34 L23.023029,43.8823651 C23.7678064,44.6980737 25.0328302,44.7555747 25.8485387,44.0107974 C25.8932723,43.9699536 25.9361273,43.9270987 25.976971,43.8823651 L35,34 L35,34 C39.9705627,34 44,38.0294373 44,43 L44,53 C44,55.209139 42.209139,57 40,57 L5,57 C2.790861,57 1,55.209139 1,53 L1,45.5 C1,39.1487254 6.14872538,34 12.5,34 Z" id="Rectangle" fill="#72DEE8"></path>
+                <path d="M13.5,30 L35.5,30 C42.9558441,30 49,36.0441559 49,43.5 L49,53 C49,55.209139 47.209139,57 45,57 L4,57 C1.790861,57 2.705415e-16,55.209139 0,53 L0,43.5 C-4.46579124e-15,36.0441559 6.04415588,30 13.5,30 Z" id="Rectangle" stroke="#733C9A" stroke-width="3"></path>
+                <path d="M23.5,6 C28.1944204,6 32,9.80557963 32,14.5 L32,17 L32,17 L15,17 L15,14.5 C15,9.80557963 18.8055796,6 23.5,6 Z" id="Rectangle" fill="#FDDD54"></path>
+                <rect id="Rectangle" fill="#FDDD54" x="22" y="3" width="4" height="7" rx="1"></rect>
+                <path d="M26,0 C27.1045695,0 28,0.8954305 28,2 L28.0002282,4.59755065 C32.0782823,6.03904252 35,9.92831939 35,14.5 L35,17 L14,17 L14,14.5 C14,9.92794805 16.9221924,6.03841069 21.0007655,4.59719943 L21,2 C21,0.8954305 21.8954305,0 23,0 L26,0 Z" id="Combined-Shape" stroke="#733C9A" stroke-width="3"></path>
+                <polygon id="Rectangle" stroke="#733C9A" stroke-width="3" stroke-linejoin="round" transform="translate(24.500000, 30.500000) rotate(-45.000000) translate(-24.500000, -30.500000) " points="18 24 31 37 18 37"></polygon>
+                <path d="M21,16 L21,15 L21,2 M28,2 L28,16 L28,15" id="Shape" stroke="#733C9A" stroke-width="3"></path>
+                <line x1="11" y1="17" x2="38" y2="17" id="Line" stroke="#733C9A" stroke-width="3" stroke-linecap="round"></line>
+            </g>
+        </g>
+    </g>
+</svg>

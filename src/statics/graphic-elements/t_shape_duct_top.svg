@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100px" height="101px" viewBox="0 0 100 101" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>T shaped duct 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="100%" y1="15.1876786%" x2="0%" y2="15.1876786%" id="linearGradient-2">
+            <stop stop-color="#424951" offset="0%"></stop>
+            <stop stop-color="#909CAC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-787.000000, -614.000000)">
+            <g id="T-shaped-duct-3" transform="translate(787.000000, 614.000000)">
+                <g id="Group-Copy-4" transform="translate(0.000000, 1.000000)">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="5 1.42108547e-14 5 77 0 77 0 1.42108547e-14"></polygon>
+                    <polygon id="Path-2-Copy-2" fill="#5B6777" points="100 77 70 77 70 30 99.9598784 0"></polygon>
+                    <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="0 0 0 30 5 30 5 0"></polygon>
+                    <polygon id="Path-4-Copy-2" fill="url(#linearGradient-1)" opacity="0.5" points="70 30 100 30 100 0"></polygon>
+                    <polygon id="Path-4-Copy" fill="#848E9C" points="0 77 0 100 100 100 100 77"></polygon>
+                </g>
+                <polygon id="Path-8" fill="#848E9C" points="23 1 9.9475983e-14 31 -2.27373675e-13 1.00193425"></polygon>
+                <polygon id="Path-8-Copy" fill="url(#linearGradient-2)" points="99.9598784 1.07524753 70 31 70 0.992951991"></polygon>
+                <polyline id="Path-9" fill="#5B6777" points="-2.27373675e-13 31 23 1 70 1 70 78 -2.27373675e-13 78"></polyline>
+            </g>
+        </g>
+    </g>
+</svg>

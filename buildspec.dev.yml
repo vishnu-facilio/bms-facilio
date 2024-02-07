@@ -1,0 +1,20 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - npm --version && node --version
+      - npm ci --registry https://registry.facilio.in/
+  build:
+    commands:
+      - echo Build started on `date`
+      - npm run build
+      - mv dist rc$CODEBUILD_BUILD_NUMBER
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  files:
+    - rc$CODEBUILD_BUILD_NUMBER/**/*

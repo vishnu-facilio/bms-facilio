@@ -1,0 +1,15 @@
+<svg width="192" height="60" viewBox="0 0 192 60" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" fill-rule="evenodd">
+        <path d="M0 0h192v60H0z"/>
+        <path d="M24 14h32v32H24z"/>
+        <path d="M41.387 35.267c0 .766-.589 1.4-1.389 1.4-.777 0-1.4-.623-1.4-1.4 0-.79.623-1.39 1.4-1.39.79 0 1.39.612 1.39 1.39zm-1.4-11.934c-1.966 0-3.31 1.278-3.81 2.767l1.821.767c.245-.745.823-1.645 2-1.645 1.8 0 2.156 1.69 1.523 2.59-.6.855-1.634 1.432-2.178 2.4-.433.766-.345 1.655-.345 2.2h2.023c0-1.034.077-1.245.244-1.568.433-.8 1.233-1.177 2.078-2.41.755-1.112.467-2.623-.022-3.423-.567-.933-1.69-1.678-3.334-1.678zm9.346-2.666H30.667v18.666h18.666V20.667m0-2.667C50.8 18 52 19.2 52 20.667v18.666C52 40.8 50.8 42 49.333 42H30.667A2.675 2.675 0 0 1 28 39.333V20.667C28 19.2 29.2 18 30.667 18h18.666z" fill="#334056" fill-rule="nonzero"/>
+        <g fill="#324056">
+            <text  font-size="17" transform="translate(68 23)" margin="0 29px 4px 0" font-weight="500" font-stretch="normal" font-style= "normal" line-height="normal" letter-spacing="normal" color="324056">
+                                <tspan x="0" y="11">Help</tspan>
+                            </text>
+            <text opacity=".497"  font-size="10" transform="translate(68 16)" margin="4px 0 0" opacity="0.5" font-weight="normal" font-stretch="normal" font-style="normal" line-height="normal" letter-spacing="normal" color="#324056">
+                            </text>
+        </g>
+        <path fill="#F7F7F7" d="M0 0h191v1H0z"/>
+    </g>
+</svg>

@@ -1,0 +1,32 @@
+pipelines:
+  custom:
+    production:
+      - step:
+          script:
+            - echo "started"
+            - git checkout production
+            - echo $commitid
+            - git reset --hard $commitid
+            - git remote set-url origin ${BITBUCKET_GIT_SSH_ORIGIN}
+            - git push --force
+            - echo "Finished"
+  pull-requests:
+    'unit-test/*':
+      - step:
+          name: Check Destination Branch
+          script:
+            - |
+              if [[ "${BITBUCKET_PR_DESTINATION_BRANCH}" != "production" ]]; then
+                echo "This pull request does not target the production branch. Terminating the pipeline."
+                exit 0
+              fi
+      - step:
+          name: Run Unit Tests
+          image: node:16
+          caches:
+            - node
+          script:
+            - git branch
+            - npm install --registry https://registry.facilio.in/
+            - npm run test:unit
+

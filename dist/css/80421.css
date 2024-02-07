@@ -1,0 +1,26 @@
+.pagination-arrow.disable[data-v-7641710c]{color:#50506c;font-weight:bold;opacity:.4;background:none}.mT-5[data-v-7641710c]{margin-top:-5px}.button-hover[data-v-7641710c]{border-radius:5px}.button-hover[data-v-7641710c]:hover{background:rgba(202,212,216,.3)}
+.el-pager li.active,.el-pager li:hover{color:#39b2c2}
+.notification-list-component .notifications-list-item-container[data-v-ad08ce4a]{border-bottom:1px solid #f3f5f6}.notification-list-component .notifications-list-item-container[data-v-ad08ce4a]:hover{background:#f4f6ff}.notification-list-component .notifications-list-item[data-v-ad08ce4a]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:horizontal;-webkit-box-direction:normal;-ms-flex-direction:row;flex-direction:row;padding:5px 0px 5px 0px}.notification-list-component .notifications-list-item-container .has-action[data-v-ad08ce4a]{margin:0px 15px 0px 0px;visibility:hidden;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.notification-list-component .notifications-list-item-container:hover .has-action[data-v-ad08ce4a]{visibility:visible;margin-left:auto}.notification-list-component .not-read[data-v-ad08ce4a]{background-color:#f9fbfd}.notification-list-component .notification-seen-dot-container[data-v-ad08ce4a]{padding:22px 0px 0px 8px}.notification-list-component .notification-dot[data-v-ad08ce4a]{height:7px;width:7px;border-radius:50%;display:inline-block}.notification-list-component .notification-seen-dot-unseen[data-v-ad08ce4a]{background-color:#9295ff}.notification-list-component .notification-avatar-block[data-v-ad08ce4a]{float:left;width:35px;height:35px;border-radius:17.5px;margin:13px 0px 0px 7px}.notification-list-component .notification-avatar-block .inline[data-v-ad08ce4a]{padding:9px;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.notification-list-component .notification-msg[data-v-ad08ce4a]{overflow:auto;font-size:13px;letter-spacing:.5px;text-align:left;color:#333;padding:10px 13px 0px 13px;line-height:1.36;text-overflow:ellipsis;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:inherit;-ms-flex-align:inherit;align-items:inherit}.notification-list-component .notification-subject[data-v-ad08ce4a]::first-letter{text-transform:uppercase}.notification-list-component .popover-subject[data-v-ad08ce4a]{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;width:100%;word-break:break-word;letter-spacing:.5px;line-height:1.43;margin-top:2px}.notification-list-component .notification-subject[data-v-ad08ce4a]{white-space:pre-line;overflow:hidden;margin-top:2px}.notification-list-component .notification-subject-viewLess[data-v-ad08ce4a]{max-height:70px;-webkit-transition:max-height .3s ease-in;transition:max-height .3s ease-in}.notification-list-component .notification-subject-viewMore[data-v-ad08ce4a]{max-height:500px;-webkit-transition:max-height .2s ease-in;transition:max-height .2s ease-in}.notification-list-component .margin-go-to-summary[data-v-ad08ce4a]{border-right:1px solid #ccc}.notification-list-component .notifications-time[data-v-ad08ce4a]{font-size:11px;font-weight:normal;letter-spacing:.4px;color:#999;float:left;padding-top:5px}.notification-list-component .notifications-time-in-popover[data-v-ad08ce4a]{font-size:11px;font-weight:normal;letter-spacing:.4px;color:#999;display:-webkit-box;display:-ms-flexbox;display:flex;margin-right:10px;-webkit-box-pack:end;-ms-flex-pack:end;justify-content:flex-end;width:100}.notification-list-component .notifications-empty[data-v-ad08ce4a]{padding:50px;color:#999;text-align:center}
+
+.notification-list-container {
+  background-color: #ffffff;
+  height: inherit;
+  width: 600px;
+  padding: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: auto;
+  border-radius: 8px;
+}
+.notification-inner {
+  width: 100%;
+  overflow: auto;
+}
+.notification-header {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 2;
+}
+

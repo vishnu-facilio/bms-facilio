@@ -1,0 +1,30 @@
+
+.notificationHeader {
+  font-size: 19px;
+}
+.notificationDiv {
+  width: 800px;
+  padding-top: 10px;
+}
+.notificationDiv table {
+  width: 100%;
+  border: 1px solid #eee;
+  border-bottom: none;
+}
+.notificationDiv th {
+  text-align: left;
+  background: #f2f2f2;
+  color: #666;
+  padding: 10px;
+  padding-left: 20px;
+  font-size: 15px;
+}
+.notificationDiv td {
+  text-align: left;
+  color: #666;
+  padding: 10px;
+  padding-left: 20px;
+  font-size: 15px;
+  border-bottom: 1px solid #eee;
+}
+

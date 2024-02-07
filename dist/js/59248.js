@@ -1,0 +1,15 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[59248],{
+/***/359248:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return V3WorkPermitList}});
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.json.stringify.js
+__webpack_require__(648324),__webpack_require__(434284),__webpack_require__(670560);
+// EXTERNAL MODULE: ./node_modules/core-js/modules/es.function.name.js
+var render,staticRenderFns,router=__webpack_require__(329435),CommonModuleList=__webpack_require__(347446),V3WorkPermitListvue_type_script_lang_js={name:"WorkPermitList",extends:CommonModuleList["default"],computed:{slotList:function(){return[{name:"localId",isHardcodedColumn:!0,columnAttrs:{"min-width":90,label:"ID",fixed:"left"}},{criteria:JSON.stringify({name:"name"})},{name:"editDelete",isActionColumn:!0,columnAttrs:{width:130,class:"visibility-visible-actions",fixed:"right"}}]},parentPath:function(){return"/app/wo/workpermit"}},methods:{
+// route redirection handling
+openList:function(){var viewname=this.viewname;if((0,router/* isWebTabsEnabled */.tj)()){var _ref=(0,router/* findRouteForModule */.Jp)(this.moduleName,router/* pageTypes */.As.LIST)||{},name=_ref.name;name&&this.$router.push({name:name,params:{viewname:viewname},query:this.$route.query})}else this.$router.push({path:"/app/wo/workpermit/".concat(viewname),query:this.$route.query})},redirectToOverview:function(id){var moduleName=this.moduleName,viewname=this.viewname;if((0,router/* isWebTabsEnabled */.tj)()){var _ref2=(0,router/* findRouteForModule */.Jp)(moduleName,router/* pageTypes */.As.OVERVIEW)||{},name=_ref2.name,route={name:name,params:{viewname:viewname,id:id},query:this.$route.query};return name&&route}return{name:"workPermitSummaryV3",params:{viewname:viewname,id:id},query:this.$route.query}},editModule:function(row){var moduleName=this.moduleName,id=row.id;if((0,router/* isWebTabsEnabled */.tj)()){var _ref3=(0,router/* findRouteForModule */.Jp)(moduleName,router/* pageTypes */.As.EDIT)||{},name=_ref3.name;name&&this.$router.push({name:name,params:{id:id}})}else this.$router.push({path:"/app/wo/workpermit/edit/".concat(row.id)})},redirectToFormCreation:function(){var moduleName=this.moduleName;if((0,router/* isWebTabsEnabled */.tj)()){var _ref4=(0,router/* findRouteForModule */.Jp)(moduleName,router/* pageTypes */.As.CREATE)||{},name=_ref4.name;name&&this.$router.push({name:name})}else this.$router.push({path:"/app/wo/workpermit/new"})}}},v3_V3WorkPermitListvue_type_script_lang_js=V3WorkPermitListvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(v3_V3WorkPermitListvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,V3WorkPermitList=component.exports}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/59248.js.map

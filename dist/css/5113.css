@@ -1,0 +1,16 @@
+
+.upload-space-photos[data-v-159e524a] {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos[data-v-159e524a] {
+  display: block;
+}
+

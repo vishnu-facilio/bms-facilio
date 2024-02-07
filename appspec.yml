@@ -1,0 +1,9 @@
+version: 0.0
+os: linux
+files:
+  - source: /dist
+    destination: /tmp/bmsclient/dist 
+hooks:
+  AfterInstall:
+    - location: /deploy.sh
+      timeout: 3600

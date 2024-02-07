@@ -1,0 +1,43 @@
+{
+  "creation": {
+    "new_commissioning": "Nuovo Commissioning",
+    "agent": "Agente",
+    "controller": "Controllore",
+    "allpoints": "Tutti i punti",
+    "protocol": "Protocollo"
+  },
+  "list": {
+    "commissioning": "Commissioning",
+    "add_commissioning": "Aggiungi Commissioning",
+    "publish": "pubblicare",
+    "confirm_delete_text": "Vuoi cancellare il Commissioning?",
+    "delete": "Elimina Commissioning",
+    "delete_success_text": "Commissioning eliminato correttamente"
+  },
+  "sheet": {
+    "select_category": "Seleziona categoria",
+    "select_asset": "Seleziona asset",
+    "select_reading": "Seleziona Lettura",
+    "search_points": "Cerca punti",
+    "mapcategory": "Categoria mappa",
+    "pointsfound": "Punti trovati",
+    "remaining_points": "Punti rimanenti ",
+    "change_category": "Cambia categoria ",
+    "filter": "Filtro",
+    "filter_by_value": "Filtra per valore",
+    "header_name": "Nome",
+    "header_deviceName": "Nome del dispositivo",
+    "header_instanceNumber": "Istanza",
+    "header_instanceType": "Tipo di istanza",
+    "header_categoryId": "Categoria",
+    "header_resourceId": "Asset  ",
+    "header_fieldId": "Lettura",
+    "header_unit": "Unità",
+    "filter_all_points": "Tutti i punti",
+    "filter_mapped": "Punti mappati ",
+    "filter_unmapped": "Punti non mappati",
+    "removefilter": "Rimuovi il filtro applicato per la categoria della mappa",
+    "removeview": "Per mappare la categoria, ripristinare il filtro Tutti i punti",
+    "remove_filter_view": "Per mappare la categoria, reimpostare su Tutti i punti e rimuovere il filtro applicato"
+  }
+}

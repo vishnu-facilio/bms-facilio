@@ -1,0 +1,20 @@
+
+table tr[data-v-2ae61b6a],
+.cost-heading-border[data-v-2ae61b6a] {
+  border-bottom: 1px solid #e5eaee;
+}
+.row_select[data-v-2ae61b6a] {
+  border-left: 2px solid blue;
+  background-color: #f7faff;
+}
+.fw-550[data-v-2ae61b6a] {
+  font-weight: 550;
+}
+.cost-color[data-v-2ae61b6a] {
+  color: #808998;
+  font-weight: 400;
+}
+.mT90[data-v-2ae61b6a] {
+  margin-top: 90px !important;
+}
+

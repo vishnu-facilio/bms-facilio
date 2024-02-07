@@ -1,0 +1,114 @@
+
+.error-block {
+  width: 100%;
+  background-color: #f9ecec;
+  border: none;
+  height: 45px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+.error-block .error-txt {
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.4px;
+  text-align: center;
+  color: #e16868;
+}
+.error-block .error-close-icon {
+  position: absolute;
+  right: 17px;
+  top: 12px;
+  color: #de5656;
+  font-size: 18px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+
+.fc-support-dialog .el-dialog__header {
+  display: none;
+}
+
+
+.borderTop,
+.borderBottom {
+  width: 100%;
+  height: 1px;
+  background-color: #eeeeee;
+  margin-bottom: 3px;
+}
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.btn-default {
+  color: #333;
+  background-color: #fff;
+  border-color: #ccc;
+}
+.divider {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+.title {
+  font-size: 18px;
+  letter-spacing: 0.6px;
+  text-align: left;
+  color: #000000;
+}
+.mailfont {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  margin-top: -10px;
+  text-align: left;
+  color: #000000;
+}
+.subhead {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #666666;
+  margin-top: -20px;
+}
+.content {
+  font-size: 14px;
+  letter-spacing: 0.3px;
+  text-align: left;
+  color: #333333;
+}
+.fwdtitle {
+  font-size: 13px;
+  letter-spacing: 0.4px;
+  margin-top: -10px;
+  text-align: left;
+  color: #666666;
+}
+/*.btn {
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    /* touch-action: manipulation; */
+/* cursor: pointer; */
+/*-webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}*/
+

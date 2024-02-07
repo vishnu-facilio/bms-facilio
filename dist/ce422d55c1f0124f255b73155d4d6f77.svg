@@ -1,0 +1,16 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd">
+    <path fill="#F2F2F2" fill-rule="nonzero" d="M157.8 219.1h262.8v207.5H157.8z"/>
+    <path d="M384 402.5H120V194h264v208.6zm-262.9-1H383V195H121v206.5z" fill="#3F3D56" fill-rule="nonzero"/>
+    <path fill="#000" fill-rule="nonzero" opacity=".2" d="M307.1 302l-114.7 51v7L315 305.4z"/>
+    <g transform="translate(193.9 240.1)">
+      <circle fill="#D3D9D8" fill-rule="nonzero" cx="76.7" cy="76.7" r="58.1"/>
+      <circle fill="#685FFB" fill-rule="nonzero" cx="58.1" cy="58.1" r="58.1"/>
+      <path stroke="#FFF" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round" d="M88.3 34.9L51.1 76.7 28 58"/>
+    </g>
+    <path fill="#6C63FF" fill-rule="nonzero" d="M44 261.7l15.8-6 5.9 15.1-15.8 6.1z"/>
+    <path d="M62.9 269.6L46.3 276 40 260l16.7-6.4 6.2 16zm-16.1 5.3l15-5.8-5.7-14.4-15 5.8 5.7 14.4z" fill="#3F3D56" fill-rule="nonzero"/>
+    <path fill="#6C63FF" fill-rule="nonzero" d="M462.7 135.1l5.5 16-15.4 5.3-5.5-16z"/>
+    <path d="M454 153.7l-5.8-16.9 16.3-5.6 5.8 16.9-16.3 5.6zm-4.7-16.3l5.3 15.1 14.6-5-5.2-15.2-14.7 5zM511.5 98.2v1.1H.6v-1h510.9zM11 84.5a5 5 0 110 10 5 5 0 010-10zm15.3 0a5 5 0 110 10 5 5 0 010-10zm15.3 0a5 5 0 110 10 5 5 0 010-10zM190.2 135.7H307v1.3H190.2zM190.2 144.9H307v1.3H190.2zM190.2 154.1H307v1.3H190.2z" fill="#3F3D56" fill-rule="nonzero"/>
+  </g>
+</svg>

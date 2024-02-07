@@ -1,0 +1,46 @@
+
+.error-block {
+  width: 100%;
+  background-color: #f9ecec;
+  border: none;
+  height: 45px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+.error-block .error-txt {
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.4px;
+  text-align: center;
+  color: #e16868;
+}
+.error-block .error-close-icon {
+  position: absolute;
+  right: 17px;
+  top: 12px;
+  color: #de5656;
+  font-size: 18px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+
+.field-hint {
+  padding: 8px 0;
+  font-size: 12px;
+  border-radius: 2px;
+}
+#newworkordercategory .el-textarea .el-textarea__inner {
+  min-height: 50px !important;
+  width: 350px;
+  resize: none;
+}
+
+.selectedrow{background-color:#effdff !important}.operating-hour-dialog-scroll{max-height:400px;padding-bottom:100px;overflow-y:scroll}.tablerow.selected{background:#effdff;border-right:1px solid rgba(232,232,232,.35);border-top:1px solid rgba(232,232,232,.35);border-bottom:1px solid rgba(232,232,232,.35) !important}#operatinghourchooser .setting-list-view-table tbody tr.tablerow:hover{background-color:#effdff !important}.operating-hours-dialog .fc-alert-msg-info{border-radius:0;margin-top:-3px;border-left:0;padding-top:13px;font-size:13px;border-right:0;padding-bottom:14px}
+.operating-hour-body[data-v-64e795ca]{overflow:scroll}.operating-hour-body .hv-center-block[data-v-64e795ca]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center}.operating-hour-body .operating-hour-container[data-v-64e795ca]{display:-webkit-box;display:-ms-flexbox;display:flex;-ms-flex-line-pack:center;align-content:center;-ms-flex-wrap:wrap;flex-wrap:wrap;-webkit-box-flex:1;-ms-flex-positive:1;flex-grow:1}.operating-hour-body .operating-hour-container .operating-hour-single-day[data-v-64e795ca]{width:25%;padding:0px 10px;margin:10px 0px;border-right:1px solid #f0f0f0}.operating-hour-body .operating-hour-container .operating-hour-single-day .operating-hour-timing[data-v-64e795ca]{font-size:11px;color:#324056;text-align:center}
+.operating-hours-card .fc-black-18[data-v-9ac15b42]{font-size:18px;font-weight:500;line-height:normal;letter-spacing:normal;color:#324056}.operating-hours-card .header[data-v-9ac15b42]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;margin-bottom:20px}

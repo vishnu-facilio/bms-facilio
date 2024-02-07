@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19" height="19" viewBox="0 0 19 19">
+    <defs>
+        <path id="domp2m17pa" d="M8.75.73c2.416 0 4.375 1.958 4.375 4.374v2.187h.73c1.207 0 2.187.98 2.187 2.188v5.104c0 1.208-.98 2.188-2.188 2.188H3.646c-1.208 0-2.188-.98-2.188-2.188V9.48c0-1.208.98-2.187 2.188-2.187h.728l.001-2.188c0-2.345 1.845-4.26 4.163-4.37zm5.104 8.02H3.646c-.403 0-.73.326-.73.73v5.103c0 .403.327.73.73.73h10.208c.403 0 .73-.327.73-.73V9.48c0-.403-.327-.729-.73-.729zM8.75 2.187c-1.61 0-2.917 1.306-2.917 2.917v2.187h5.833V5.104c0-1.553-1.214-2.823-2.745-2.912z"/>
+    </defs>
+    <g fill="none" fill-rule="evenodd">
+        <g>
+            <g>
+                <g>
+                    <g>
+                        <g transform="translate(-267 -243) translate(88 137) translate(9 99) translate(162) translate(8.75 7.875)">
+                            <mask id="a9dsd5aihb" fill="#fff">
+                                <use xlink:href="#domp2m17pa"/>
+                            </mask>
+                            <use fill="#000" xlink:href="#domp2m17pa"/>
+                            <g fill="#FFF" mask="url(#a9dsd5aihb)">
+                                <path d="M0 0H17.5V17.5H0z"/>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

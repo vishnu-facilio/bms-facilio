@@ -1,0 +1,9 @@
+.confirmation-dialog .el-dialog__header{padding:40px 40px 10px}.confirmation-dialog .el-dialog__body{padding:0}.confirmation-dialog .message-block{padding:0px 40px 50px;word-break:break-word;white-space:pre-line;line-height:26px}.confirmation-dialog .cancel-btn,.confirmation-dialog .delete-btn{width:50%;border:none;border-radius:0;margin-left:0 !important;padding-top:20px;padding-bottom:20px;font-size:13px;font-weight:500;letter-spacing:1.1px;text-align:center;vertical-align:bottom}.confirmation-dialog .cancel-btn{background-color:#f4f4f4;color:#8f8f8f}.confirmation-dialog .delete-btn{background-color:#e47676;color:#fff}.confirmation-dialog .delete-btn:hover{background-color:#d95f5f}
+
+.transition-btn-name[data-v-cca90304] {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.state-transition-list-dialog .state-transition-list-container[data-v-88fc9d08]{min-height:200px;max-height:600px;overflow-x:hidden;overflow-y:scroll;padding:0px 1px 60px 1px}

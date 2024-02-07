@@ -1,0 +1,414 @@
+
+.avatar-popover {
+  float: left;
+  width: 38px;
+  padding: 0 !important;
+}
+.avatar-popover-container .el-popover--plain,
+.avatar-popover-container .el-popover {
+  max-width: 383px;
+  padding-bottom: 30px;
+  -webkit-box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.15);
+          box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.15);
+  background-color: #ffffff;
+  border: solid 1px #edeaea;
+  transition-delay: 0.8s;
+  -webkit-transition-delay: 0.8s;
+  padding: 0;
+}
+.avatar-popover-container .el-popover--plain,
+.avatar-popover-container .el-popover:hover {
+  transition-delay: 0.2s;
+  -webkit-transition-delay: 0.2s;
+}
+.popover-content-block {
+  width: 100%;
+  padding-top: 10px;
+}
+.popover-avatar {
+  width: 30%;
+  padding-left: 10px;
+  float: left;
+}
+.popover-avatar-det {
+  width: 70%;
+  float: left;
+  padding-right: 10px;
+}
+.avatar-name-txt {
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-align: left;
+  margin-bottom: 10px;
+  color: #333333;
+}
+.mail-txt {
+  width: 300px;
+  max-width: 300px;
+  overflow-x: hidden;
+  word-break: break-all;
+  padding-right: 10px;
+  font-size: 13px;
+  letter-spacing: 0.9px;
+  text-align: left;
+  padding-left: 5px;
+  color: #2b7ec7;
+}
+.popover-footer ul {
+  width: 100%;
+  list-style-type: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding-left: 0px;
+  text-align: center;
+  padding-top: 0;
+  padding-bottom: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.popover-phone-number {
+  padding-right: 5px;
+  font-size: 13px;
+  letter-spacing: 0.8px;
+  text-align: left;
+  color: #333333;
+}
+.popover-footer-list {
+  width: 33.3%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+.border-RL {
+  border-right: 1px solid #edeaea;
+  border-left: 1px solid #edeaea;
+}
+.popover-footer {
+  width: 100%;
+  clear: both;
+  position: relative;
+  border-top: 1px solid #edeaea;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  line-height: 2;
+}
+.mail-block {
+  display: inline-block;
+  margin-bottom: 9px;
+}
+.popover-avatar-det {
+  padding-top: 20px;
+  padding-bottom: 30px;
+}
+.open-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #5dc6d5;
+}
+.result-txt-black {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #333333;
+}
+.overdue-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #e07575;
+}
+.dueday-result-txt {
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-align: center;
+  color: #e4ba2d;
+}
+.popover-avatar .fc-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 100%;
+  position: relative;
+  top: 20px;
+  text-align: center;
+  left: 10px;
+  font-size: 18px;
+}
+.avatar-popover-container .wo-team-txt {
+  margin-left: 10px !important;
+  max-width: 100px !important;
+  overflow-x: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+
+.assignment-avatar-name {
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  color: #333333;
+  max-width: 200px;
+  overflow-x: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.wo-team-txt {
+  margin-left: 10px !important;
+  overflow-x: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+
+.upload-photos-dialog .el-dialog__body {
+  max-height: 400px;
+  overflow-y: scroll;
+  padding-bottom: 50px;
+}
+
+
+.upload-space-photos {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos {
+  display: block;
+}
+
+
+.space-readingcard-header-empty {
+  padding: 40px;
+  padding-bottom: 0;
+}
+.space-readingcard-header {
+  font-size: 12px;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #999999;
+  text-transform: uppercase;
+}
+.space-readingcard-value {
+  font-size: 40px;
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  text-align: center;
+  color: #000000;
+}
+.space-readingcard--emptyvalue-1 {
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  color: #000000;
+  letter-spacing: 0.6px;
+  width: 100%;
+  text-transform: capitalize;
+  white-space: normal;
+  padding: 45px;
+  font-size: 35px;
+  text-align: center;
+  line-height: 31px;
+  height: 100%;
+  padding-top: 15px;
+}
+.space-readingcard--emptyvalue {
+  font-weight: 300;
+  font-style: normal;
+  font-stretch: normal;
+  color: #000000;
+  letter-spacing: 0.6px;
+  width: 100%;
+  text-transform: capitalize;
+  white-space: normal;
+  padding: 45px;
+  font-size: 17px;
+  text-align: center;
+  line-height: 31px;
+  height: 100%;
+  padding-top: 15px;
+}
+.space-readingcard-unit {
+  font-size: 1.25vw;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 0.1px;
+  color: #50516c;
+}
+.space-readingcard-time {
+  font-size: 11px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1.2px;
+  text-align: center;
+  color: #b9b9b9;
+  text-transform: uppercase;
+}
+.space-readingcard-edit {
+  position: absolute;
+  left: 10px;
+  top: 18px;
+  font-size: 18px;
+  z-index: 8;
+  color: #868686;
+  display: none;
+  cursor: pointer;
+}
+.dragabale-card.space-readingcard:hover .space-readingcard-edit {
+  display: block !important;
+}
+.space-readingcard .el-color-picker {
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  display: none;
+}
+.dragabale-card.space-readingcard:hover .el-color-picker {
+  display: block !important;
+}
+.card-theame .space-readingcard-header,
+.card-theame .space-readingcard-unit,
+.card-theame .space-readingcard-value {
+  color: #fff;
+}
+.space-readingcard .el-switch {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+}
+.card-theame .space-readingcard-time {
+  font-size: 12px;
+  font-weight: bold;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1.3px;
+  text-align: center;
+  color: #ffffff;
+}
+.space-readingcard {
+  height: 100%;
+  padding: 40px 0;
+}
+.reading-card-color-picker {
+  position: absolute;
+  top: 16px;
+  right: 33px;
+  color: #000;
+  opacity: 0.6;
+  font-weight: 500;
+  font-size: 18px;
+  cursor: pointer;
+}
+.color-picker-conatiner {
+  display: inline-grid;
+}
+.color-box {
+  height: 20px;
+  width: 20px;
+  margin: 2px;
+  border: 1px solid #f4f4f4;
+  cursor: pointer;
+}
+.color-picker-section {
+}
+.reading-color-picker {
+  padding: 20px;
+}
+.c-picker-label {
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: uppercase;
+  padding: 10px;
+  padding-left: 2px;
+  letter-spacing: 1px;
+}
+.color-choose-icon {
+  display: none;
+}
+.dragabale-card.space-readingcard:hover .color-choose-icon {
+  display: block !important;
+}
+.editmode .dragabale-card.space-readingcard:hover .space-readingcard-header {
+  max-width: 65%;
+  margin: auto;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.space-readingcard-data {
+  max-width: 90%;
+  margin: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  padding: 5px 0 5px 0;
+  cursor: pointer;
+}
+@media only screen and (min-width: 1800px) {
+.space-readingcard-section {
+    padding-top: 25px;
+}
+}
+@media only screen and (min-width: 2000px) {
+.space-readingcard-section {
+    padding-top: 40px;
+}
+}
+.space-readingcard-img {
+  width: 24px;
+}
+.energy-reading-card .space-readingcard-data {
+  padding: 13.5px 0 6px 0;
+}
+.energy-reading-card {
+  padding: 43px 0 40px 0;
+}
+.space-readingcard,
+.space-readingcard-empty {
+  max-height: 180px;
+  overflow: hidden;
+}
+.container.db-container.fc-position-relative.fc-border-radius.p0.text-center.fc-border-1 {
+  height: 100%;
+}
+
+
+.site-cards .col-3:first-child {
+  padding-left: 0px;
+}
+.site-cards .col-3 {
+  padding: 10px;
+}
+.site-cards .col-3:last-child {
+  padding-right: 0px;
+}
+

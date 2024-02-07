@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="181px" height="102px" viewBox="0 0 181 102" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="test" transform="translate(-64.000000, -622.000000)" stroke="#385062">
+            <g id="Group" transform="translate(64.000000, 623.000000)">
+                <g id="Group-Copy-2" transform="translate(115.000000, 25.510204) scale(-1, 1) translate(-115.000000, -25.510204) translate(50.000000, 0.000000)" fill="#6A889F">
+                    <polygon id="Path" points="-5.68434189e-14 50.0392465 -5.68434189e-14 42.9805258 10.3034471 42.9805258 10.3034471 35.1370226 20.0274624 35.1370226 20.0274624 26.6961555 29.9248504 26.6961555 29.9248504 18.3176172 40.0847429 18.3176172 40.0847429 9.72451341 50.1291787 9.72451341 50.1291787 0 60 0 60 9.72451341 12.1282553 50.0392465"></polygon>
+                    <polygon id="Path-2" points="60 0 130 0 130 9.81161695 60 9.81161695"></polygon>
+                </g>
+                <g id="Group-Copy" transform="translate(0.000000, 50.000000)">
+                    <polygon id="Path" fill="#6A889F" points="50 49.6210657 50 42.5507759 59.654154 42.5507759 59.654154 34.6944173 68.7653904 34.6944173 68.7653904 26.2397157 78.0390741 26.2397157 78.0390741 17.8474452 87.5587199 17.8474452 87.5587199 9.24025734 96.9701847 9.24025734 96.9701847 0.482575392 106.218976 0.482575392 106.218976 9.24025734 61.3639682 49.6210657"></polygon>
+                    <polygon id="Path-2" fill="#6A889F" points="106.218976 0.482575392 179.482955 0.482575392 179.482955 9.25119088 106.218976 9.25119088"></polygon>
+                    <line x1="0" y1="49.4897959" x2="180" y2="49.4897959" id="Path-3"></line>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,96 @@
+
+.lines[data-v-b2639826] {
+  height: 15px;
+  border-radius: 5px;
+}
+.height40[data-v-b2639826] {
+  height: 40px !important;
+}
+
+.depreciation-list .bold-row td{font-weight:500 !important;border-top:1px solid #f2f5f6}.depreciation-list .border-top td{border-bottom:1px solid #b0d9de}.depreciation-list .high-light-background{background-color:#f9feff}.depreciation-list .current-border-top{border-top:solid 1px #9ed6dd !important}.depreciation-list .current-border-bottom{border-bottom:solid 1px #9ed6dd !important}.depreciation-list .current-border-left-and-right{border-left:solid 1px #9ed6dd;border-right:solid 1px #9ed6dd}.depreciation-list .lines{height:23px;border-radius:5px;margin:12px 20px 12px 20px}.depreciation-list .width210px{width:210px}.depreciation-list .mL-20{margin-left:-20px}
+
+.error-block {
+  width: 100%;
+  background-color: #f9ecec;
+  border: none;
+  height: 45px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  position: relative;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+.error-block .error-txt {
+  font-size: 13px;
+  font-weight: 500;
+  font-style: normal;
+  letter-spacing: 0.4px;
+  text-align: center;
+  color: #e16868;
+}
+.error-block .error-close-icon {
+  position: absolute;
+  right: 17px;
+  top: 12px;
+  color: #de5656;
+  font-size: 18px;
+  font-weight: 300;
+  cursor: pointer;
+}
+
+
+.lines[data-v-5ae10516] {
+  height: 16px;
+  border-radius: 5px;
+}
+.height45[data-v-5ae10516] {
+  height: 45px !important;
+}
+
+
+.container[data-v-98eee6ee] {
+  padding-left: 10px;
+  font-size: 13px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  overflow: hidden;
+}
+.field[data-v-98eee6ee] {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 50%;
+          flex: 0 50%;
+  padding: 20px 0;
+  border-bottom: 1px solid #edf4fa;
+  -webkit-transition: top 0.45s cubic-bezier(0.44, 0.99, 0.48, 1);
+  transition: top 0.45s cubic-bezier(0.44, 0.99, 0.48, 1);
+}
+.lines[data-v-98eee6ee] {
+  height: 12px;
+  width: 200px;
+  margin: 0px 20px 0px 20px;
+  border-radius: 5px;
+}
+.field-label[data-v-98eee6ee],
+.field-value[data-v-98eee6ee] {
+  word-break: break-word;
+  padding-right: 10px;
+}
+.field-label[data-v-98eee6ee] {
+  color: #324056;
+  font-weight: 500;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+.field-value[data-v-98eee6ee] {
+  padding-left: 10px;
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.5px;
+  color: #324056;
+}
+

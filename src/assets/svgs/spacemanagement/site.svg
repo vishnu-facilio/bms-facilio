@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 72 62" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>Group 3</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Site" transform="translate(-4.000000, -9.000000)">
+            <g id="Group-3" transform="translate(4.000000, 9.000000)">
+                <g id="Group-2">
+                    <polygon id="Fill-7-Copy" fill="#EDEDF9" points="60.9178441 11.4255474 60.9178441 57.4 43.4500016 57.4 43.4500016 40.6597433 39.543341 39.5717486 39.543341 17.450523 53.6573316 9.14356901"></polygon>
+                    <polygon id="Fill-7-Copy-2" fill="#EDEDF9" points="34.9985943 18.3641477 34.9985943 38.3465813 14.2 32 14.1500008 31.6801342 14.1500008 21.7826048 21.8000004 14.837293"></polygon>
+                    <polygon id="Fill-7-Copy-3" fill="#EDEDF9" points="14.2 57.4 3.35671654 57.4 3.35671654 42.3513852 14.1500008 35.1990004"></polygon>
+                    <polygon id="Path-8" fill="#DBDBF3" points="14.1500008 19.025556 18.9924883 14.837293 18.9924883 33.2330408 14.2 32"></polygon>
+                    <polygon id="Fill-13-Copy" fill="#DBDBF3" points="40.1159993 14.2558082 40.1159993 39.5624566 36.8 38.6277225 37 16.078"></polygon>
+                    <polygon id="Fill-18-Copy" fill="#EDEDF9" transform="translate(28.915597, 41.920716) scale(-1, 1) translate(-28.915597, -41.920716) " points="17 43.8558312 40.8311935 38.8270292 40.8311935 41.2291988 17 45.014402"></polygon>
+                    <polygon id="Fill-18-Copy-2" fill="#EDEDF9" transform="translate(28.915597, 45.660041) scale(-1, 1) translate(-28.915597, -45.660041) " points="17 47.1615114 40.8311935 43 40.8311935 45.4434034 17 48.3200821"></polygon>
+                    <polygon id="Fill-18-Copy-3" fill="#EDEDF9" transform="translate(28.915597, 49.401227) scale(-1, 1) translate(-28.915597, -49.401227) " points="17 50.427246 40.8311935 47.2166376 40.8311935 49.6600411 17 51.5858167"></polygon>
+                    <line x1="17.0468829" y1="38.6277225" x2="40.8311935" y2="43.8306751" id="Path-7" stroke="#7176C4" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <line x1="17" y1="43.2297202" x2="40.6386176" y2="47.2117098" id="Path-7-Copy" stroke="#7176C4" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <line x1="17" y1="47.3695113" x2="40.7843105" y2="50.5327974" id="Path-7-Copy-2" stroke="#7176C4" stroke-linecap="round" stroke-linejoin="round"></line>
+                    <g id="Group" transform="translate(21.000000, 61.000000)" stroke="#7176C4" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="-3.55271368e-15" y1="0.5" x2="16.9770997" y2="0.5" id="Stroke-5-Copy"></line>
+                        <line x1="25" y1="0.5" x2="31.9771" y2="0.5" id="Stroke-5-Copy-2"></line>
+                    </g>
+                    <path d="M61,1.50072745 C61,2.32929195 60.3285645,3.00072745 59.5,3.00072745 C58.6714355,3.00072745 58,2.32929195 58,1.50072745 C58,0.672162949 58.6714355,0 59.5,0 C60.3285645,0 61,0.672162949 61,1.50072745" id="Fill-30" fill="#DBDBF3"></path>
+                    <rect id="Rectangle-Copy-28" fill="#DBDBF3" transform="translate(3.000000, 28.000000) rotate(28.000000) translate(-3.000000, -28.000000) " x="1" y="26" width="4" height="4"></rect>
+                </g>
+                <g id="Group-3-Copy" transform="translate(0.000000, 6.000000)">
+                    <polygon id="Rectangle-Copy" stroke="#7176C4" stroke-linejoin="round" points="0.5 35.0978745 14.1500008 26 14.1500008 51.4 0.5 51.4"></polygon>
+                    <polyline id="Path" stroke="#7176C4" stroke-linejoin="round" points="14.2 26.1199068 14.2 12.9640049 21.8000004 6.17769286 21.8000004 28.2293625"></polyline>
+                    <polyline id="Path" stroke="#7176C4" stroke-linejoin="round" points="21.8000004 28.2602462 21.8000004 6.18 36.8000004 10.0587351 36.8000004 32.6277225"></polyline>
+                    <polyline id="Path" stroke="#7176C4" stroke-linejoin="round" points="36.8 32.6521091 36.8 10.2905719 53.6573316 0 53.6573316 51.4 36.8 51.4"></polyline>
+                    <polyline id="Path" stroke="#7176C4" stroke-linecap="round" stroke-linejoin="round" points="63.4295507 46.6826723 63.4295507 51.4 53.6573316 51.4 53.6573316 -2.84217094e-14 63.4295507 3.59280607 63.4295507 26"></polyline>
+                    <circle id="Oval-Copy-15" fill="#DBDBF3" cx="69" cy="37" r="3"></circle>
+                    <polygon id="Rectangle-Copy-2" stroke="#7176C4" stroke-linejoin="round" points="14.1500008 26 43.4500016 34.6597433 43.4500016 51.4 14.1500008 51.4"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

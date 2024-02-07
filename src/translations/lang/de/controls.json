@@ -1,0 +1,14 @@
+{
+  "controlSchedule": {
+    "no_data": "Kein Kontrollzeitplan verfügbar",
+    "delete_schedule": "Zeitplan löschen",
+    "delete_schedule_confirmation": "Möchten Sie diesen Zeitplan wirklich löschen?"
+  },
+  "controlGroups": {
+    "no_data": "Keine Kontrollgruppen verfügbar",
+    "delete_group": "Gruppe löschen",
+    "delete_group_confirmation": "Möchten Sie diese Gruppe wirklich löschen?",
+    "delete_exception": "Zeitplanänderung löschen",
+    "delete_exception_confirmation": "Möchten Sie diese Zeitplanänderung wirklich löschen?"
+  }
+}

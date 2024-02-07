@@ -1,0 +1,544 @@
+.fc-list-table-container {
+  width: 100%;
+  position: relative;
+}
+
+.fc-list-table-container .el-table--border::after,
+.el-table--group::after,
+.el-table::before,
+.fc-list-table-container .el-table__fixed-right::before,
+.el-table__fixed::before {
+  background: none;
+  background-color: none;
+}
+
+/* .fc-list-table-container .el-table__header{
+   width: 100% !important;
+}
+.fc-list-table-container .el-table__fixed-body-wrapper .el-table__body{
+  width: 100% !important;
+} */
+.fc-list-table-container .el-table th > .cell {
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #333333;
+  white-space: nowrap;
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.fc-list-table-container .el-table td,
+.fc-list-table-container .el-table th.is-leaf {
+  border-bottom: 1px solid #f2f5f6 !important;
+  padding-left: 20px !important;
+  padding-right: 20px !important;
+}
+
+.fc-list-table-container
+  .el-table--striped
+  .el-table__body
+  tr.el-table__row--striped
+  td {
+  background: #fff;
+}
+
+.fc-list-edit-icon {
+  position: absolute;
+  right: 40px;
+  top: 31px;
+  z-index: 1;
+  border-left: 1px solid #eaeef0;
+  border-bottom: 1px solid #eaeef0;
+  line-height: 46px;
+  background: #fff;
+  width: 50px;
+}
+
+.fc-list-table-container .el-table {
+  height: calc(100vh - 130px) !important;
+  padding-bottom: 100px !important;
+}
+
+.fc-card-popup-list-view .fc-list-table-container .el-table {
+  height: calc(100vh - 170px) !important;
+  padding-bottom: 10px !important;
+}
+
+.people-table-border-top .fc-list-table-container .el-table {
+  height: calc(100vh - 280px) !important;
+  padding-bottom: 100px !important;
+}
+
+.fc-list-table-search-scroll .el-table {
+  height: calc(100vh - 250px) !important;
+  padding-bottom: 100px !important;
+}
+
+.fc-full-table-wrap {
+  padding: 10px;
+  height: calc(100vh - 100px);
+  overflow-y: scroll;
+}
+
+.table-subject-heading {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.6px;
+  color: #333333;
+}
+
+.table-subheading {
+  text-align: left;
+  font-size: 13px;
+  line-height: 20px;
+  font-weight: normal;
+  letter-spacing: 0.6px;
+  color: #333333;
+  word-break: break-word;
+  white-space: normal;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+// Have to move this to generic list component
+.main-field-column {
+  &:hover {
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    color: #46a2bf;
+  }
+}
+
+.el-table_body tr.hover-row td:hover {
+  cursor: pointer;
+  background: #fafbfc !important;
+}
+
+.el-table__row:not(.no-hover) {
+  cursor: pointer;
+}
+
+.el-table--enable-row-transition .el-table__body td {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.4px;
+  color: #324056;
+  border-bottom-width: thin;
+}
+
+.fc-table-tooltip {
+  width: 300px;
+}
+
+.fc-table-border-top-none .el-table__row td {
+  border-bottom: none;
+  font-size: 14px;
+  letter-spacing: 0.6px;
+  font-weight: 400;
+}
+
+.fc-table-hover-bg-white
+  .el-table__body-wrapper
+  .el-table--enable-row-hover
+  .el-table__body
+  tr:hover
+  > td {
+  background: #fff;
+}
+
+.fc-table-th-top-border-none .el-table th {
+  border-top: none;
+  color: #333;
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.inventory-inner-table {
+  table {
+    .el-table-column--selection {
+      .cell {
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+    }
+
+    th {
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+  }
+}
+
+.fc-list-table-container .el-table__row:nth-child(odd) {
+  border-bottom: none;
+  font-size: 14px;
+  letter-spacing: 0.6px;
+  font-weight: 400;
+}
+
+.el-table__fixed {
+  background: #fff;
+}
+
+/*.fc-list-table-container .el-table__row:nth-child(even) {
+  background: #ffffff;
+}
+*/
+.hover-row {
+  background: #fafbfc !important;
+}
+
+.store-table .setting-table-th {
+  padding: 8px 30px !important;
+}
+
+.invent-table-dialog .setting-table-th {
+  padding: 11px 30px !important;
+}
+
+.fc-table-td-height .el-table td {
+  padding: 10px 20px;
+}
+
+.fc-table-td-height .el-table th.is-leaf {
+  padding: 15px 20px;
+}
+
+.fc-table-viewchooser .view-column-chooser {
+  width: 45px !important;
+  height: 52px !important;
+  right: 14px !important;
+}
+
+.fc-table-viewchooser .wo_assignedto_avatarblock .wo-assigned-avatar {
+  width: inherit;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped.current-row td,
+.el-table__body tr.current-row > td,
+.el-table__body tr.hover-row.current-row > td,
+.el-table__body tr.hover-row.el-table__row--striped.current-row > td,
+.el-table__body tr.hover-row.el-table__row--striped > td,
+.el-table__body tr.hover-row > td {
+  background: #f1f8fa !important;
+}
+
+.el-checkbox__input.is-indeterminate .el-checkbox__inner::before {
+  content: '';
+  position: absolute;
+  display: block;
+  background-color: #fff;
+  height: 4px;
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+  left: 0;
+  right: 0;
+  top: 6px;
+}
+
+.table-header-actions {
+  position: absolute;
+  z-index: 1343;
+  left: 70px;
+  background: #fff;
+  width: 90.9%;
+  height: 51px;
+  padding-top: 13px;
+}
+
+.inventor-store-adde-table tbody tr td {
+  padding: 10px 30px;
+}
+
+.hover-row,
+.el-table_body tr.hover-row > td {
+  background: #f1f8fa !important;
+}
+
+.fc-list-eltable td:nth-of-type(1),
+.fc-list-eltable th:nth-of-type(1) {
+  padding-right: 0 !important;
+}
+
+.fc-list-eltable th.is-leaf:nth-of-type(2) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.fc-list-eltable td:nth-of-type(2) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.el-table .cell {
+  word-break: break-word;
+}
+
+.settings-table-hover-bg-remove .setting-list-view-table td {
+  background: #ffffff;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.settings-table-hover-bg-remove .setting-list-view-table tr {
+  border-bottom: 1px solid #f2f5f6;
+}
+
+.settings-table-hover-bg-remove .setting-list-view-table tr:hover td,
+.settings-table-hover-bg-remove .setting-list-view-table tbody tr:hover td {
+  background: #ffffff;
+  border: none;
+  border-top: none !important;
+  border-bottom: 1px solid #f2f5f6;
+  border-left: none;
+  border-right: none;
+}
+
+.settings-table-hover-bg-remove
+  .setting-list-view-table
+  tbody
+  tr:not(.nohover):hover {
+  border: none !important;
+  border-bottom: 1px solid #f2f5f6;
+}
+
+.fc-attendance-table-td-height .el-table td {
+  padding: 16px 20px;
+}
+
+.fc-attendance-table-td-height .el-table th.is-leaf {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.control-points-table table {
+  width: 100% !important;
+}
+
+.f-el-group-table-style-1 {
+  .el-table thead.is-group th {
+    background: #fff;
+    padding: 20px;
+  }
+
+  .el-table th > .cell {
+    font-size: 11px;
+    font-weight: 600;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: 1px;
+    color: #324056;
+  }
+
+  .el-table--border th:first-child .cell,
+  .el-table .cell {
+    padding-left: 0px !important;
+  }
+}
+
+.reading-table .el-table__body tr:hover > td {
+  // conectric org table style overlap issue
+  //background: inherit !important;
+}
+
+/* smart table css*/
+.smart-table {
+  th {
+    font-size: 0.65rem;
+    padding: 0 10px !important;
+    white-space: nowrap;
+    background: #fff !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase;
+  }
+
+  .smart-table-header-th {
+    height: 40px;
+  }
+
+  td {
+    height: 0 !important;
+    padding: 0;
+  }
+
+  td:first-child {
+    padding-left: 10px !important;
+    padding-right: 10px !important;
+  }
+
+  td .cell {
+    height: 100% !important;
+  }
+
+  .el-table td,
+  .el-table th {
+    padding: 0px !important;
+  }
+
+  .smart-td-cell {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: 20px;
+    padding-right: 20px;
+    height: 100%;
+  }
+}
+
+.smart-table .el-table__body tr:hover > td {
+  background: inherit !important;
+}
+
+.el-table__fixed-right {
+  box-shadow: none;
+}
+
+.el-table__row,
+.hover-row {
+  visibility: visible;
+}
+
+.el-table__body tr.hover-row > td .visibility-hide-actions {
+  visibility: visible;
+}
+
+.el-table__body tr.hover-row > td .insurance-link {
+  color: #396dc2 !important;
+  letter-spacing: 0.6px;
+  font-size: 13px;
+}
+
+.el-table__body tr td .insurance-link {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.6px;
+  color: #324056;
+}
+
+.el-table th > .cell {
+  text-transform: uppercase;
+}
+
+.el-table tr {
+  background: transparent;
+}
+
+.fc-table-widget-scroll .el-table__body-wrapper {
+  height: 346px;
+  padding-bottom: 130px;
+}
+
+.related-list-container {
+  .related-list-header {
+    border-bottom: 1px solid #f7f8f9;
+    padding: 10px 15px;
+    display: flex;
+    flex-direction: column;
+
+    .header {
+      display: flex;
+      min-height: 35px;
+    }
+  }
+
+  thead {
+    th {
+      .cell {
+        text-transform: uppercase;
+        padding-left: 0px;
+        padding-right: 0px;
+      }
+
+      &.is-leaf {
+        border-bottom: 1px solid #f2f5f6 !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+      }
+    }
+  }
+
+  .cell {
+    font-size: 11px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #333333;
+  }
+
+  .name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  .fc-input-full-border2 {
+    .el-input__inner {
+      height: 35px !important;
+    }
+  }
+
+  .search-icon {
+    fill: #91969d;
+  }
+
+  .column-customization-icon {
+    z-index: 100;
+    text-align: center;
+    position: absolute;
+    top: 35%;
+    right: 29%;
+  }
+
+  .view-column-chooser {
+    position: absolute;
+    top: 56px;
+    right: 0px;
+    display: block;
+    width: 45px;
+    height: 50px;
+    cursor: pointer;
+    text-align: center;
+    background-color: #ffffff;
+    border-left: 1px solid #f2f5f6;
+    z-index: 20;
+  }
+}
+
+.fc-table-th-minus th > .cell {
+  padding-left: 0 !important;
+}
+
+.fc-table-th-pad0 {
+  th {
+    .cell {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+}
+
+// related list table
+
+.fc-related-list-table {
+  .el-table {
+    th.is-leaf {
+      padding: 8px 20px;
+      background: #f3f1fc;
+    }
+    .el-table__body {
+      td {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+    }
+  }
+}

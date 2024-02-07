@@ -1,0 +1,8 @@
+{
+  "conditions": {
+    "match_any": "Coincidir con cualquiera",
+    "match_all": "Todos los partidos",
+    "reading": "Lectura",
+    "operator": "Operador"
+  }
+}

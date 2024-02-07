@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="16px" viewBox="0 0 20 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 48.2 (47327) - http://www.bohemiancoding.com/sketch -->
+    <title>progress bar</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Artboard" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(-668.000000, -98.000000)">
+        <g id="progress-bar" transform="translate(668.000000, 98.000000)">
+            <rect id="Rectangle-8" stroke="#EF508F" x="0.5" y="0.5" width="19" height="15" rx="1.20000005"></rect>
+            <path d="M9.3,-3 L10.7,-3 C10.8656854,-3 11,-2.86568542 11,-2.7 L11,10.7 C11,10.8656854 10.8656854,11 10.7,11 L9.30000001,11 C9.13431458,11 9,10.8656854 9,10.7 L9,-2.7 C9,-2.86568542 9.13431458,-3 9.3,-3 Z" id="Rectangle" fill="#EF508F" transform="translate(10.000000, 4.000000) scale(1, -1) rotate(-270.000000) translate(-10.000000, -4.000000) "></path>
+            <path d="M6.8,3.5 L8.2,3.5 C8.36568542,3.5 8.5,3.63431458 8.5,3.8 L8.5,12.2 C8.5,12.3656854 8.36568542,12.5 8.19999999,12.5 L6.80000001,12.5 C6.63431458,12.5 6.5,12.3656854 6.5,12.2 L6.5,3.8 C6.5,3.63431458 6.63431458,3.5 6.8,3.5 Z" id="Rectangle" fill="#FA90BA" transform="translate(7.500000, 8.000000) scale(1, -1) rotate(-270.000000) translate(-7.500000, -8.000000) "></path>
+            <path d="M4.3,10 L5.7,10 C5.86568542,10 6,10.1343146 6,10.3 L6,13.7 C6,13.8656854 5.86568542,14 5.69999999,14 L4.30000001,14 C4.13431458,14 4,13.8656854 4,13.7 L4,10.3 C4,10.1343146 4.13431458,10 4.3,10 Z" id="Rectangle" fill="#FFC4DB" transform="translate(5.000000, 12.000000) scale(1, -1) rotate(-270.000000) translate(-5.000000, -12.000000) "></path>
+        </g>
+    </g>
+</svg>

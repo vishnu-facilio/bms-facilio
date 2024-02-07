@@ -1,0 +1,378 @@
+.db-test {
+  padding-left: 10px;
+  padding-bottom: 10px;
+  padding-right: 10px;
+}
+
+.q-list {
+  border: 0;
+}
+.db-container {
+  background: white;
+  padding: 0px;
+  box-shadow: 0 5px 3px rgba(56, 66, 171, 0.04);
+  border: solid 1px rgba(234, 233, 233, 0.21);
+}
+
+.db-container-first-row {
+  height: 380px;
+}
+
+.db-container-second-row {
+  height: 450px;
+  overflow-y: hidden;
+}
+
+.db-container-third-row {
+  height: 500px;
+  overflow-y: hidden;
+}
+
+.db-dashboard {
+}
+
+.db-summary {
+  margin-left: 10px;
+}
+
+.db-progress-1 {
+  color: #d4ea8f !important;
+  border-radius: 10px;
+}
+.db-progress-2 {
+  color: #bbe694 !important;
+  border-radius: 10px;
+}
+.db-progress-3 {
+  color: #a2e299 !important;
+  border-radius: 10px;
+}
+.db-progress-4 {
+  color: #8ede9d !important;
+  border-radius: 10px;
+}
+.db-progress-5 {
+  color: #8ede9d !important;
+  border-radius: 10px;
+}
+.db-progress-6 {
+  color: #69d8a4 !important;
+  border-radius: 10px;
+}
+.db-progress-7 {
+  color: #69d8a4 !important;
+  border-radius: 10px;
+}
+
+.db-progress-track {
+  border-radius: 10px;
+  opacity: 1;
+  position: absolute;
+  background: #edeef0;
+}
+.db-prog-l {
+  text-align: right;
+  font-size: 13px;
+  position: relative;
+  right: 15px;
+}
+.db-prog-r {
+  text-align: end;
+  position: relative;
+  right: 10px;
+  font-size: 13px;
+}
+.db-prog-c {
+  position: relative;
+  top: 5px;
+}
+.db-prog-row {
+  margin-right: 20px;
+  margin-left: 30px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.db-prog-container {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.q-item-separator-component {
+  background-color: hsla(60, 15%, 83%, 0.22);
+  width: 100%;
+}
+.db-test-2 div {
+  align-self: center;
+  cursor: pointer;
+}
+.db-test-2-l {
+  padding-right: 10px;
+}
+.fc-white-theme .db-test-2-l {
+  border-right: 1px solid #e0e0e0;
+}
+.fc-black-theme .db-test-2-l {
+  border-right: rgba(234, 233, 233, 0.1);
+}
+.db-test-2-r {
+  padding-left: 10px;
+}
+.db-test-3-l {
+  border-right: 1px solid hsla(60, 15%, 83%, 0.22);
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 0px;
+  margin-left: 15px;
+}
+.db-test-3-r {
+  padding-left: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 0px;
+  margin-left: 15px;
+}
+.db-test-3 {
+  border-bottom: 1px solid hsla(60, 15%, 83%, 0.22);
+  margin-right: 40px;
+}
+.db-test-4 {
+  border-right: 1px solid hsla(60, 15%, 83%, 0.22);
+  background-color: white;
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+.db-avatar {
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  background: deepskyblue;
+  overflow: hidden;
+  text-align: center;
+  padding-top: 10px;
+  color: white;
+  margin-right: 5px;
+  margin-bottom: 10px;
+}
+.db-avatar-sm {
+  width: 30px;
+  height: 30px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  background: #b8d077;
+  overflow: hidden;
+  text-align: center;
+  padding-top: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  color: white;
+  margin-bottom: 10px;
+}
+.db-avatar-xs {
+  width: 8px;
+  height: 5px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  background: #cae288;
+  overflow: hidden;
+  text-align: center;
+  padding-top: 8px;
+  margin-bottom: 10px;
+  margin-top: 30px;
+  margin-left: 15px;
+}
+.db-sublabel {
+  text-align: left;
+  font-size: 9px;
+}
+.db-list-header {
+  font-size: 18px;
+  color: #2f2e49;
+  height: 81px;
+  font-weight: 400;
+}
+.db-container table th.sortable {
+  font-size: 10px;
+}
+.db-container table th {
+  font-size: 11px;
+}
+.db-container table.q-table {
+  width: 100%;
+  padding: 15px;
+  color: #2f2e49;
+  padding-bottom: 12px;
+}
+.db-container table.q-table.striped-odd tbody tr:nth-child(odd),
+table.q-table.striped tbody tr:nth-child(odd) {
+  background: rgba(248, 249, 251, 0.87);
+}
+.db-bold {
+  font-weight: 400;
+  font-size: 13px;
+}
+.fc-white-theme .db-bold {
+  color: #50516c;
+}
+.fc-black-theme .db-bold {
+  color: #fff;
+}
+.db-bold-2 {
+  font-weight: 400;
+  font-size: 13px;
+  padding: 10px !important;
+  color: rgba(85, 85, 85, 0.9);
+}
+.db-bold-3 {
+  font-weight: 400;
+  font-size: 14px;
+  color: #927fed;
+}
+
+.demo-info-icon {
+  margin-left: 5px;
+  color: #e2e2e2;
+  cursor: pointer;
+}
+
+.demo-info-icon:hover {
+  color: #333333;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.plotly-notifier {
+  display: none !important;
+}
+
+.zoomout {
+  /*animation:move 3s infinite ease-in-out;*/
+  color: red;
+  font-size: 75px;
+  text-align: center;
+  animation: blinker 1.25s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.countzero {
+  color: #a4d619;
+  font-size: 75px;
+  text-align: center;
+}
+
+.unassigned {
+  color: #ee8e39;
+  font-size: 5.2vw;
+  text-align: center;
+}
+
+.recent-alarms .row.fia-table-row.fia-alarm-entry {
+  padding: 8px 0;
+  border-bottom: 1px solid hsla(60, 15%, 83%, 0.22);
+}
+.recent-alarms span.q-item-label {
+  font-size: 13px;
+  color: #252525;
+  font-weight: 400;
+}
+.view-all-link {
+  font-size: 12px;
+  font-weight: 400 !important;
+}
+.recent-alarms .picklist-downarrow {
+  font-size: 13px;
+  padding-left: 3px;
+  color: transparent;
+}
+.recent-alarms .row.fia-table-row.fia-alarm-entry:hover .picklist-downarrow {
+  color: #000;
+}
+
+.recent-alarms .q-item-main.q-item-section {
+  margin-left: 0px !important;
+}
+.divider {
+  width: 100%;
+  height: 1px;
+  background-color: #eae9e9;
+  margin-bottom: 11px;
+}
+
+.filterButton {
+  background-color: white;
+  color: #565656;
+  border: 1px solid white;
+  outline: none;
+  font-size: 10px;
+  padding-left: 10px;
+}
+.filterButton:hover {
+  color: #f26271;
+  cursor: pointer;
+  outline: none;
+}
+
+.filterButton.active {
+  color: #f26271;
+  outline: none;
+}
+
+.filterButton:before,
+.buttone:after {
+  outline: none;
+}
+
+.db-fire-test {
+  padding: 20px;
+}
+
+.fc-black-theme .q-item-sublabel {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.alarm-avg-resptime .probarbackground,
+.alarm-avg-resltime .probarbackground {
+  height: 50px;
+}
+
+.toolTip {
+  position: absolute;
+  display: none;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  text-align: center;
+}
+.severityTag {
+  border-radius: 38px;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  letter-spacing: 0.8px;
+  text-align: center;
+  color: #ffffff !important;
+  padding: 4px 10px;
+  width: 72px;
+  margin-bottom: 6px;
+  line-height: 15px;
+}
+.summaryseverityTag {
+  border-radius: 38px;
+  font-size: 10px !important;
+  font-weight: bold !important;
+  letter-spacing: 0.8px;
+  text-align: center;
+  color: #ffffff !important;
+  padding: 4px 10px;
+  width: 72px;
+  margin-bottom: 6px;
+}

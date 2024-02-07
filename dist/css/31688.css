@@ -1,0 +1,30 @@
+
+.graphics-insert-variable-title {
+  padding: 12px;
+  border-bottom: 1px solid #fafafa;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 13px;
+}
+.graphics-insert-variable-filter {
+  padding: 12px;
+}
+.graphics-insert-variable-list {
+  max-height: 300px;
+  overflow: scroll;
+}
+.graphics-insert-variable-list ul {
+  padding: 0;
+  margin: 0;
+}
+.graphics-insert-variable-list ul li {
+  list-style: none;
+  padding: 12px;
+  cursor: pointer;
+}
+.graphics-insert-variable-list ul li:hover {
+  background: #fafafa;
+}
+
+.header[data-v-0c8356e2]{font-size:22px;font-weight:300}.card-wrapper[data-v-0c8356e2]{width:280px}.search-icon[data-v-0c8356e2]{line-height:0 !important;font-size:15px !important;cursor:pointer !important;padding-top:5px}.item-controls[data-v-0c8356e2]{-webkit-box-align:center;-ms-flex-align:center;align-items:center;min-width:80px}
+.icon-picker{width:60px}.icon-picker .el-input__prefix{background:#fff;width:85%;height:30px;top:5px;text-align:center;overflow:hidden}

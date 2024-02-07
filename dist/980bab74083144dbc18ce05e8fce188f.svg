@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="53px" height="57px" viewBox="0 0 53 57" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Group 13</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Kiosk-Icons-Copy" transform="translate(-244.000000, -366.000000)">
+            <g id="Group-13" transform="translate(246.000000, 368.000000)">
+                <path d="M35,7.93512417 L35,16.5 C35,21.7467051 30.7467051,26 25.5,26 L24.5,26 C18.7010101,26 14,21.2989899 14,15.5 L14,13 L14,13 L27,13 C29.3144709,13.0094312 31.1478042,12.6760979 32.5,12 C33.7169762,11.3915119 34.5136738,9.9806631 34.8900929,7.7674536 C35.0041482,7.83677639 35,7.8859065 35,7.93512417 Z" id="Rectangle" stroke="#733C9A" stroke-width="3" stroke-linejoin="bevel"></path>
+                <path d="M12.5,30 L14,30 L14,30 L23.023029,39.8823651 C23.7678064,40.6980737 25.0328302,40.7555747 25.8485387,40.0107974 C25.8932723,39.9699536 25.9361273,39.9270987 25.976971,39.8823651 L35,30 L35,30 C39.9705627,30 44,34.0294373 44,39 L44,49 C44,51.209139 42.209139,53 40,53 L5,53 C2.790861,53 1,51.209139 1,49 L1,41.5 C1,35.1487254 6.14872538,30 12.5,30 Z" id="Rectangle" fill="#45EABA"></path>
+                <path d="M13.5,26 L35.5,26 C42.9558441,26 49,32.0441559 49,39.5 L49,49 C49,51.209139 47.209139,53 45,53 L4,53 C1.790861,53 2.705415e-16,51.209139 0,49 L0,39.5 C-4.46579124e-15,32.0441559 6.04415588,26 13.5,26 Z" id="Rectangle" stroke="#733C9A" stroke-width="3"></path>
+                <path d="M21,0 L34,0 C34.5522847,-1.01453063e-16 35,0.44771525 35,1 L35,6.5 C35,10.0898509 32.0898509,13 28.5,13 L14,13 L14,13 L14,7 C14,3.13400675 17.1340068,7.10171439e-16 21,0 Z" id="Rectangle" stroke="#733C9A" stroke-width="3"></path>
+                <polygon id="Rectangle" stroke="#733C9A" stroke-width="3" transform="translate(24.500000, 26.500000) rotate(-45.000000) translate(-24.500000, -26.500000) " points="20 22 29 31 20 31"></polygon>
+                <polygon id="Rectangle" stroke="#733C9A" stroke-width="3" stroke-linejoin="round" transform="translate(24.500000, 41.318019) scale(1, -1) rotate(-45.000000) translate(-24.500000, -41.318019) " points="30.2855339 35.5324856 28.3681085 41.1612885 18.7144661 47.1035534 24.6492378 37.4647406"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

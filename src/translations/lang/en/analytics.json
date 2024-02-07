@@ -1,0 +1,35 @@
+{
+  "analytics": {
+    "mode": "Mode",
+    "Category": "Category",
+    "xaxis": "X-Axis",
+    "yaxis": "Y-Axis",
+    "assets": "Assets",
+    "rotate_axis": "Rotate Axis",
+    "auto": "Auto",
+    "horizontal": "Horizontal",
+    "vertical": "Vertical",
+    "slanting": "Slanting",
+    "tick_direction": "Tick Direction",
+    "ymin": "Y-Min",
+    "ymax": "Y-Max",
+    "xmin": "X-Min",
+    "xmax": "X-Max",
+    "y1axis_label": "Y1 - Axis Label",
+    "y2axis_label": "Y2 - Axis Label",
+    "ticks_count": "Ticks Count",
+    "decimals": "Decimals"
+  },
+  "custom_baseline": {
+    "custom_baseline": "Custom baseline",
+    "add_point": "Add point",
+    "modify_point": "Modify point",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "done": "done",
+    "add_baseline": "Add baseline point",
+    "modify_baseline_point": "Modify baseline point",
+    "x_value": "X value",
+    "y_value": "Y value"
+  }
+}

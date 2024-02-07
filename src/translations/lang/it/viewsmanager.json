@@ -1,0 +1,48 @@
+{
+  "list": {
+    "add_view": "Aggiungi vista",
+    "add_folder": "Aggiungi cartella",
+    "views_manager": "Gestore delle viste",
+    "back": "Indietro",
+    "success": "Vista aggiornata con successo!",
+    "error": "Qualcosa è andato storto nella condivisione di questa vista"
+  },
+  "customize": {
+    "updated": "Aggiornato",
+    "error": "Non è stato possibile personalizzare"
+  },
+  "sharing_permission": {
+    "title": "Condividi viste",
+    "desc": "Usa questa opzione per condividere una vista specifica con gli utenti e i gruppi interessati",
+    "share_with": "Condiviso con",
+    "only_me": "Solo io",
+    "everyone": "Tutti",
+    "specific": "Utente specifico / Squadra / Ruolo",
+    "specific_user": "Utente specifico"
+  },
+  "folder": {
+    "edit_folder": "Modifica cartella",
+    "add_new_folder": "Aggiungi una nuova cartella"
+  },
+  "schedules": {
+    "no_view_schedules_available": "Nessuna visualizzazione delle pianificazioni disponibili",
+    "schedule_deletion_succesfully": "Programma eliminato con successo",
+    "schedule_deletion_failed": "Eliminazione della pianificazione non riuscita",
+    "schedule_views": "Vista programma",
+    "view": "Visualizza",
+    "specify_criteria_for_this_view_to_teams_and_users": "Specificare i criteri per questa vista a squadre e utenti"
+  },
+  "views": {
+    "edit_view": "Modifica vista",
+    "save_as_new_view": "Salva come nuova vista",
+    "delete_view": "Elimina vista",
+    "delete_view_confirmation": "Sei sicuro di voler eliminare questa vista?",
+    "delete": "elimina",
+    "delete_view_sucess": "Vista eliminata con successo",
+    "delete_view_error": "La vista non può essere eliminata",
+    "delete_group": "Elimina cartella",
+    "delete_group_confirmation": "Sei sicuro di voler eliminare questa cartella?",
+    "delete_group_sucess": "Cartella eliminata con successo",
+    "delete_group_error": "La cartella non può essere eliminata"
+  }
+}

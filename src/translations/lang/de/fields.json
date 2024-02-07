@@ -1,0 +1,25 @@
+{
+  "properties": {
+    "hideFieldTxt": "Ausblenden",
+    "disabledFieldTxt": "Nicht bearbeitbar",
+    "enable_filters": "Filter aktivieren",
+    "show_only_building": "Gebäude",
+    "show_only_asset": "Vermögenswerte",
+    "show_only_tenantcontact": "Mieterkontakte",
+    "show_only_clientcontact": "Kundenkontakte",
+    "show_only_vendorcontact": "Lieferantenkontakte",
+    "show_only_employee": "Mitarbeiter",
+    "set_filter": "Filter einstellen",
+    "show_criteria": "Kriterien anzeigen",
+    "show_lookup_fields": "Nachschlagefelder anzeigen",
+    "choices": "Auswahl",
+    "allow_other_choices": "Andere Optionen zulassen",
+    "enable_colorpalette": "Farbpalette aktivieren",
+    "display_type": "Anzeigetyp",
+    "display_type_placeholders": "Anzeigetyp auswählen",
+    "single_select": "Einzelauswahl",
+    "multiple_select": "Mehrfachauswahl",
+    "time_picker_placeholder": "Zeit auswählen",
+    "skip_site_filter": "Site-Filter überspringen"
+  }
+}

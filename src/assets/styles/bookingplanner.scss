@@ -1,0 +1,158 @@
+.booking-resource-planner {
+  width: 100%;
+  overflow: hidden;
+
+  .pm-wo-card {
+    width: 440px;
+    //height: 300px;
+    box-shadow: 0 6px 23px 0 rgba(21, 18, 51, 0.09);
+    background-color: #ffffff;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+  }
+  .pm-wo-card-header {
+    padding: 20px 30px;
+    background-color: #ffc301;
+    border: none;
+    border-bottom: 1px solid #dcecf4;
+    position: relative;
+    color: #ffffff;
+  }
+  .pm-wo-card-body {
+    padding: 30px;
+  }
+  .pm-wo-card-header-close {
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+  /* Style the planner contents */
+
+  .rp-cell {
+    position: relative;
+    background: #ffffff;
+    //min-width: 72px;
+    min-width: 56px; // empty cells need to be as wide as cells with tasks
+    //min-height: 45px;
+    min-height: 42px;
+    padding: 5px 0px;
+    &.past-date {
+      //opacity: 0.75;
+      background: #f8f8f9;
+    }
+
+    &:hover {
+      cursor: pointer;
+      background: #fff8fb;
+    }
+  }
+
+  .rp-task {
+    // special handling for booking planner
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding: 5px;
+    height: 100%;
+
+    top: 0;
+    left: 0;
+    z-index: 2;
+    // height: 100%;
+    // display: flex;
+    // align-items: center;
+    // *******
+    text-align: center;
+
+    // background-color: #fff6e1;
+    // border: 1px solid #fae9c7;
+    border-style: solid;
+    border-width: 1px;
+    background: rgba(255, 214, 72, 0.2);
+    border-color: rgba(255, 214, 72, 0.75);
+    font-size: 11px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    color: #324056;
+    margin-bottom: 2px;
+    line-height: 17px;
+    cursor: pointer;
+  }
+  .rp-task-text {
+    margin: auto;
+    text-align: center;
+    // width: 70px;
+    // reducing to fit like excel
+    width: 54px;
+  }
+  .rp-task.task-selected {
+    background: orange !important;
+  }
+
+  .facilio-resource-planner {
+    //temp fix , to do clean up button styles
+    .settings-fullscreen {
+      border-left: 1px solid rgb(217, 224, 231) !important;
+      .pm-fullscreen-btn {
+        padding-left: 9px !important;
+        padding-right: 9px !important;
+      }
+    }
+
+    .rp-task {
+      &.wo-legend-color-0 {
+        background: rgba(255, 214, 72, 0.2);
+        border-color: rgba(255, 214, 72, 0.75);
+      }
+
+      &.wo-legend-color-1 {
+        background: rgba(112, 207, 0, 0.15);
+        border-color: rgba(112, 207, 0, 0.6);
+      }
+      &.wo-legend-color-2 {
+        background: rgba(138, 226, 249, 0.15);
+        border-color: rgba(138, 226, 249, 0.9);
+      }
+      &.wo-legend-color-3 {
+        background: rgba(6, 133, 228, 0.15);
+        border-color: rgba(6, 133, 228, 0.6);
+      }
+
+      &.wo-legend-color-4 {
+        background: rgba(15, 187, 203, 0.15);
+        border-color: rgba(15, 187, 203, 0.5);
+      }
+
+      &.wo-legend-color-5 {
+        background: rgba(218, 98, 198, 0.15);
+        border-color: rgba(218, 98, 198, 0.6);
+      }
+
+      &.wo-legend-color-6 {
+        background: rgba(255, 71, 79, 0.15);
+        border-color: rgba(255, 71, 79, 0.5);
+      }
+
+      &.wo-legend-color-7 {
+        background: rgba(168, 80, 74, 0.15);
+        border-color: rgba(168, 80, 74, 0.5);
+      }
+
+      &.wo-legend-color-8 {
+        background: rgba(255, 154, 0, 0.15);
+        border-color: rgba(255, 154, 0, 0.4);
+      }
+      &.wo-legend-color-9 {
+        background: rgba(18, 132, 73, 0.15);
+        border-color: rgba(18, 132, 73, 0.4);
+      }
+    }
+  }
+}

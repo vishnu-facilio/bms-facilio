@@ -1,0 +1,116 @@
+
+.el-dropdown-menu__item.active {
+  background-color: #ecf5ff;
+  color: #66b1ff;
+}
+.fc-site-switcher-container {
+  max-height: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding-bottom: 20px;
+}
+.fc-site-switcher-container .el-dropdown-menu__item {
+  line-height: 24px;
+}
+
+
+.upload-photos-dialog .el-dialog__body {
+  max-height: 400px;
+  overflow-y: scroll;
+  padding-bottom: 50px;
+}
+
+
+.upload-space-photos {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos {
+  display: block;
+}
+
+
+.fc-site-name {
+  padding: 5px;
+  border-radius: 2px;
+}
+.fc-site-name:hover {
+  background: #f7f8f9;
+}
+.sp-navbar {
+  padding: 0 15px;
+}
+.sp-navbar ul li {
+  list-style: none;
+  padding: 0px;
+}
+.sp-navbar ul li .menu-item,
+.sp-navbar ul li .node-label {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 10px;
+  cursor: pointer;
+}
+.sp-navbar ul li .menu-item .label {
+  margin-left: 15px;
+}
+.sp-navbar ul li.active .menu-item {
+  background: #f7f8f9;
+}
+.space-left-tree {
+  padding: 0px 24px;
+}
+.space-left-tree .el-tree-node {
+  padding: 2px;
+}
+.space-left-tree .el-tree__empty-block {
+  display: none;
+}
+.sp-ul {
+  width: 100%;
+  padding: 0px;
+}
+.sp-navbar .sp-ul li .menu-item:hover,
+.sp-navbar .sp-ul li.active .menu-item {
+  background: #f7f8f9;
+  cursor: pointer;
+  color: #9666cf;
+}
+.sp-navbar li:hover .node-label,
+.sp-navbar li.active .node-label {
+  color: #9666cf;
+}
+.sp-navbar li .sp-sub-ul {
+  display: none;
+}
+.sp-navbar li .sp-sub-ul li {
+  padding-left: 0px;
+}
+.sp-navbar li.active .sp-sub-ul {
+  display: block;
+}
+.sp-sub-ul li:hover .sub-menu-item,
+.sp-sub-ul li.active .sub-menu-item {
+  cursor: pointer;
+  color: #9666cf;
+}
+.sp-sub-ul li .sub-menu-item {
+  padding: 10px 0px;
+}
+
+
+.hideside {
+  display: none;
+}
+

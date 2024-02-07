@@ -1,0 +1,22 @@
+{
+  "page": {
+    "overview": "Panoramica",
+    "asset": {
+      "details": "Dettagli asset",
+      "perf": "Performance degli asset"
+    },
+    "readings": "Letture",
+    "widgetFields": {
+      "thismonth": "Questo mese",
+      "everymonth": "Ogni mese",
+      "crititcal": "Critico",
+      "active": "Attivo",
+      "unacknowledged": "Non riconosciuto",
+      "total": "Totale",
+      "avgworkorders": "Media di ordini di lavoro",
+      "overdue": "In ritardo",
+      "frequentlyassigned": "Assegnato frequentemente ",
+      "clear": "Annulla"
+    }
+  }
+}

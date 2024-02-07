@@ -1,0 +1,28 @@
+{
+  "search": {
+    "by": "por",
+    "search_fields": "Campos de búsqueda"
+  },
+  "tags": {
+    "clear_all": "borrar todo",
+    "save_view": "guardar vista",
+    "save_view_as": "guardar como",
+    "save_as_new": "guardar como nueva vista",
+    "save_to_existing": "guardar en existente"
+  },
+  "views": {
+    "confirm_edit": "¿Estás seguro de que quieres editar la vista?",
+    "edit_success": "¡Ver Editado con éxito!",
+    "existing_filters": "Filtros existentes",
+    "new_filters": "Filtros nuevos",
+    "events": "EVENTOS"
+  },
+  "bulk_action": {
+    "all_selected": "Se seleccionan los 50 registros de esta página.",
+    "records": "registros",
+    "clear_selection": "Borrar selección",
+    "per_page_selected": "se seleccionan los registros de esta página",
+    "per_page_all_selected": "se seleccionan los registros",
+    "all": "Todos"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "service": {
+    "service": "Servizio",
+    "new_service": "NUOVO SERVIZIO",
+    "new_tandc": "NUOVI T&C",
+    "no_services": "Nessun servizio disponibile ",
+    "create_service": "Crea servizio",
+    "edit_service": "Modifica servizio"
+  },
+  "contracts": {
+    "new_purchase_contract": "NUOVO CONTRATTO DI ACQUISTO",
+    "new_labour_contract": "NUOVO CONTRATTO DI LAVORO",
+    "new_renlease_contract": "NUOVO CONTRATTO DI LOCAZIONE / NOLEGGIO",
+    "new_warranty_contract": "NUOVO CONTRATTO DI GARANZIA",
+    "notification_preference": "PREFERENZA DI NOTIFICA ",
+    "no_payment_info": "Le informazioni di pagamento non sono configurate"
+  }
+}

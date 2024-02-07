@@ -1,0 +1,22 @@
+{
+  "page": {
+    "overview": "Visión general",
+    "asset": {
+      "details": "Detalles del activo",
+      "perf": "Rendimiento de los activos"
+    },
+    "readings": "Lecturas",
+    "widgetFields": {
+      "thismonth": "Este mes",
+      "everymonth": "Cada mes",
+      "crititcal": "Crítica",
+      "active": "Activo",
+      "unacknowledged": "No reconocido",
+      "total": "Total",
+      "avgworkorders": "Promedio de órdenes de trabajo",
+      "overdue": "Atrasado",
+      "frequentlyassigned": "Asignados con frecuencia",
+      "clear": "Claro"
+    }
+  }
+}

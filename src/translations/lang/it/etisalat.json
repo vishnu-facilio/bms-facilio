@@ -1,0 +1,44 @@
+{
+  "common": {
+    "status": "Stato",
+    "actions": "Azioni",
+    "month": "Mese",
+    "details": "Dettagli",
+    "show_alerts": "Mostra alert",
+    "show_bills": "Mostra fatture",
+    "cancelled": "Annullato"
+  },
+  "etisalat": {
+    "from": "Da ",
+    "to": "A",
+    "unit": "Unità",
+    "rete_in_aed": "Prezzo nel AED",
+    "supplier_name": "Nome Fornitore",
+    "tariff_type": "Tipo Tariffa",
+    "utility_type": "Tipo Utility",
+    "cost_type": "Tipo Costo",
+    "water": "Acqua",
+    "sewage": "Fognatura",
+    "show_invoice": "Mostra Memo pagamento",
+    "create_invoice": "Crea Memo Pagamento",
+    "total": "Totale",
+    "utility_accounts": "Servizio Utility",
+    "electricity": "Elettricità",
+    "gas": "Gas",
+    "tariffs": "Tariffe"
+  },
+  "payments": {
+    "invoice_details": "Dettagli memo Pagamenti",
+    "dispute_free": "TOTALE LIBERO DA CONTROVERSIE",
+    "under_dispute": "In discussione",
+    "cancelled_payments": "Pagamenti cancellati",
+    "invoice_date": "Data Memo Pagamento",
+    "region_code": "Codice Regione",
+    "cost_center": "centro di Costo",
+    "vat_amount": "Importo IVA",
+    "pending_approval": "In attesa approvazione da DG",
+    "disputes_alerts": "da Controversie/Avvisi",
+    "outstanding_amount": "Importo residuo",
+    "under_review": "In corso di revisione"
+  }
+}

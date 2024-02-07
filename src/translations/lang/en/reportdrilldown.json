@@ -1,0 +1,9 @@
+{
+  "clickAction": "On click",
+  "all": "All",
+  "none": "None",
+  "list": "Show List",
+  "drilldown": "Drilldown",
+  "configure": "Configure Drilldown",
+  "path": "Drilldown path"
+}

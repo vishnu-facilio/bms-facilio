@@ -1,0 +1,44 @@
+{
+  "tenant": {
+    "work_request": "Mis peticiones",
+    "work_permits": "Permisos de trabajo",
+    "visitor_invites": "Invitaciones de visitantes",
+    "invite_visitor": "Invitar a un visitante",
+    "vendor": "Vendedor",
+    "add_vendor": "Añadir proveedor",
+    "reports": "Informes",
+    "lease_information": "Información sobre el alquiler",
+    "other_contact_information": "Otros datos de contacto",
+    "overview": "Visión general"
+  },
+  "empty": {
+    "no_vendor_available": "No hay proveedor disponible"
+  },
+  "contactdirectory": {
+    "add_contact_directory": "Añadir directorio de contactos"
+  },
+  "announcement": {
+    "new_announcement": "Nuevo anuncio"
+  },
+  "admin_document": {
+    "add_document": "Añadir documento"
+  },
+  "webview": {
+    "hi": "Hola",
+    "scope": "Alcance",
+    "properties": "Propiedades",
+    "services": "Servicios",
+    "show_more": "Ver más",
+    "insurance_pending": "Seguro pendiente",
+    "admin_workers": "Administración y trabajadores contratados",
+    "induction_pending": "Inducción pendiente",
+    "worker_license": "Licencia y certificados de trabajador pendientes",
+    "swms_uploaded": "SWMS cargado"
+  },
+  "employee_portal": {
+    "hi": "Hola",
+    "homepage": "PÁGINA INICIAL",
+    "service_catalog_layout": "DISEÑO DEL CATÁLOGO DE SERVICIOS",
+    "add": "AÑADE"
+  }
+}

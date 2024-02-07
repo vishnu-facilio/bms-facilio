@@ -1,0 +1,10 @@
+{
+  "signature": {
+    "addSignature": "Añadir firma",
+    "saveKey": "Guardar",
+    "signature": "Firma",
+    "success": "Firma guardada",
+    "deletekey": "Borrar",
+    "deleteSuccess": "Firma eliminada correctamente"
+  }
+}

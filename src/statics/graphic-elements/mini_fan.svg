@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Fan with base</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="79.0215099%" y1="91.770871%" x2="18.02391%" y2="12.580571%" id="linearGradient-1">
+            <stop stop-color="#42535E" offset="0%"></stop>
+            <stop stop-color="#1F2930" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="87.463788%" y1="16.0727894%" x2="23.4200858%" y2="89.0030632%" id="linearGradient-2">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-424.000000, -287.000000)">
+            <g id="Fan-with-base" transform="translate(424.000000, 287.000000)">
+                <g id="Group-27-Copy-5" transform="translate(18.000000, 18.000000) scale(-1, 1) translate(-18.000000, -18.000000) ">
+                    <circle id="Oval" fill="url(#linearGradient-1)" cx="18" cy="18" r="18"></circle>
+                    <circle id="Oval" fill="url(#linearGradient-2)" cx="18" cy="18" r="3"></circle>
+                    <ellipse id="Oval" fill="url(#linearGradient-2)" cx="18" cy="8.5" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-6" fill="url(#linearGradient-2)" transform="translate(18.000000, 27.500000) scale(-1, -1) translate(-18.000000, -27.500000) " cx="18" cy="27.5" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-7" fill="url(#linearGradient-2)" transform="translate(27.500000, 18.000000) rotate(90.000000) translate(-27.500000, -18.000000) " cx="27.5" cy="18" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-8" fill="url(#linearGradient-2)" transform="translate(8.500000, 18.000000) scale(-1, -1) rotate(90.000000) translate(-8.500000, -18.000000) " cx="8.5" cy="18" rx="4" ry="5.5"></ellipse>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

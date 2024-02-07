@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="106px" height="94px" viewBox="0 0 106 94" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Fan 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="95.1568957%" y1="22.8415126%" x2="28.3000453%" y2="81.1660069%" id="linearGradient-1">
+            <stop stop-color="#42535E" offset="0%"></stop>
+            <stop stop-color="#1F2930" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="87.463788%" y1="16.0727894%" x2="23.4200858%" y2="89.0030632%" id="linearGradient-2">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="79.0215099%" y1="91.770871%" x2="18.02391%" y2="12.580571%" id="linearGradient-3">
+            <stop stop-color="#42535E" offset="0%"></stop>
+            <stop stop-color="#1F2930" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="87.463788%" y1="16.0727894%" x2="-9.17620837%" y2="143.223567%" id="linearGradient-4">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-5">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-101.000000, -255.000000)">
+            <g id="Fan-1" transform="translate(101.000000, 255.000000)">
+                <polygon id="Path-2-Copy" fill="#5B6777" points="105.201244 -7.10542736e-15 105.201244 72.26 -3.55271368e-14 72.26 -3.55271368e-14 -7.10542736e-15"></polygon>
+                <polygon id="Path-4-Copy" fill="#848E9C" points="0 72 0 94 105 94 105 72"></polygon>
+                <g id="Group-27-Copy-2" transform="translate(11.000000, 6.000000)">
+                    <path d="M68.3651583,43.6717631 L81.3063409,37.6401623 C81.6715892,44.3471969 80.7348085,49.2572121 78.4959987,52.370208 C76.2571888,55.4832039 69.0590646,61.403973 56.9016259,70.1325154 L68.3651583,43.6717631 Z" id="Path-28" fill="url(#linearGradient-1)"></path>
+                    <rect id="Rectangle" fill="#99ACB9" x="31" y="11" width="44" height="33"></rect>
+                    <circle id="Oval-Copy-5" fill="url(#linearGradient-2)" cx="34" cy="45" r="34"></circle>
+                    <circle id="Oval" fill="url(#linearGradient-3)" cx="34" cy="45" r="18"></circle>
+                    <path d="M75.1680043,11.245837 L85.8075031,0.606338247 C60.9289868,0.211590009 45.0157124,0.397834357 38.0676801,1.16507129 C29.3682767,2.1257035 25.3578118,5.78442405 23.788258,6.86348324 C20.3383493,9.23527558 16.7751875,12.9860341 13.0987726,18.1157588 C18.0689898,15.2103642 22.0992812,13.3408657 25.1896468,12.5072634 C28.2800123,11.673661 32.7392083,11.2531856 38.5672346,11.245837 L75.1680043,11.245837 Z" id="Path-26" fill="url(#linearGradient-4)"></path>
+                    <polygon id="Path-27" stroke="#26333C" fill="#8194A2" points="75.5068392 42.9778867 75.5068392 11.4998489 85.3696371 1.77270043 85.788352 19.2099214 86.1045192 32.3765815"></polygon>
+                    <circle id="Oval" fill="url(#linearGradient-2)" cx="34" cy="45" r="3"></circle>
+                    <ellipse id="Oval" fill="url(#linearGradient-2)" cx="34" cy="35.5" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-6" fill="url(#linearGradient-2)" transform="translate(34.000000, 54.500000) scale(-1, -1) translate(-34.000000, -54.500000) " cx="34" cy="54.5" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-7" fill="url(#linearGradient-2)" transform="translate(43.500000, 45.000000) rotate(90.000000) translate(-43.500000, -45.000000) " cx="43.5" cy="45" rx="4" ry="5.5"></ellipse>
+                    <ellipse id="Oval-Copy-8" fill="url(#linearGradient-2)" transform="translate(24.500000, 45.000000) scale(-1, -1) rotate(90.000000) translate(-24.500000, -45.000000) " cx="24.5" cy="45" rx="4" ry="5.5"></ellipse>
+                </g>
+                <polygon id="Path-4" fill="url(#linearGradient-5)" opacity="0.5" points="0 0 0 25 105 25 105 0"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

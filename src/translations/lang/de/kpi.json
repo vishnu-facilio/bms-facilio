@@ -1,0 +1,8 @@
+{
+  "kpi": {
+    "historical_header": "Verlaufsberechnung ausführen",
+    "historical_dialog": "Verlaufsdaten ausführen",
+    "logs": "Historisches Kpi-Protokoll",
+    "warning_message": "Stellen Sie sicher, dass dieser KPI keiner Dashboard-Karte zugeordnet ist. <br/> <br/> Wenn dies der Fall ist, entfernen Sie die zugehörige Karte aus dem Dashboard, bevor Sie diesen KPI löschen."
+  }
+}

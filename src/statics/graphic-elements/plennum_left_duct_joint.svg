@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="100px" viewBox="0 0 50 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>T shape for plennum left</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Plennum" transform="translate(-290.000000, -76.000000)">
+            <g id="T-shape-for-plennum-left" transform="translate(290.000000, 76.000000)">
+                <rect id="Rectangle" fill="#415F76" x="0" y="0" width="50" height="100"></rect>
+                <polygon id="Rectangle" fill="#6A889F" points="0 77 27 77 50 100 0 100"></polygon>
+                <polygon id="Rectangle" fill="#385062" points="0 0 50 0 27 30 0 30"></polygon>
+                <polygon id="Path-37" fill="#6A889F" points="27 -7.07767178e-15 27 30 50 0"></polygon>
+                <polygon id="Path-38" fill="#6A889F" points="27 100 27 77 50 100"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

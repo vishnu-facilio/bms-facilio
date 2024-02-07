@@ -1,0 +1,14 @@
+{
+  "controlSchedule": {
+    "no_data": "Nessun programma di controllo disponibile",
+    "delete_schedule": "Cancellare il programma",
+    "delete_schedule_confirmation": "Sei sicuro di voler cancellare questo programma?"
+  },
+  "controlGroups": {
+    "no_data": "Nessun gruppo di controllo disponibile",
+    "delete_group": "Cancella Gruppo",
+    "delete_group_confirmation": "Sei sicuro di voler cancella re questo gruppo?",
+    "delete_exception": "Cancellare il cambiamento di programma",
+    "delete_exception_confirmation": "Sei sicuro di voler cancellare questo cambio di programma?\n"
+  }
+}

@@ -1,0 +1,24 @@
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <g fill="none" fill-rule="evenodd">
+    <path fill-opacity=".6" fill="#DBDBF3" d="M408.5 408.7h19.2V111.5h-19.2z"/>
+    <path fill="#E9E9F8" d="M439 408.7h54.6V123h-54.7z"/>
+    <path stroke="#7176C4" stroke-width="6.1" stroke-linecap="round" stroke-linejoin="round" d="M427.7 408.7h65.9V113.6h-66z"/>
+    <path d="M321.8 94.4v231.8a154.5 154.5 0 00-15.4-15.5l-3.9-3.4V94.4h19.3z" fill-opacity=".6" fill="#DBDBF3"/>
+    <path d="M387.7 104.2v241H335l-2.1-3.7V104.2h54.7z" fill="#DBDBF3"/>
+    <path d="M387.7 96.2v249H335l-2.1-3.7c-3.3-5.4-7-10.5-11.2-15.3v-230h65.9z" stroke="#7176C4" stroke-width="6.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path fill-opacity=".6" fill="#DBDBF3" d="M212 225v-84.5h-19.2v86.7z"/>
+    <path fill="#ECECF8" d="M277.9 233v-82.8h-54.7v74.3z"/>
+    <path stroke="#7176C4" stroke-width="6.1" stroke-linecap="round" stroke-linejoin="round" d="M212 225v-82.7h65.9v90.6"/>
+    <path d="M490 79.4a19.3 19.3 0 11-38.5 0 19.3 19.3 0 0138.5 0" fill="#DBDBF3" opacity=".5"/>
+    <path d="M127.3 197.8a11.4 11.4 0 11-22.7 0 11.4 11.4 0 0122.7 0" fill="#DBDBF3" opacity=".6"/>
+    <path d="M403 395.4a171.2 171.2 0 00-73.1-132.3 125.6 125.6 0 00-13.8-8.8 174 174 0 00-85.7-22.7A172.7 172.7 0 0057.7 404.3v4.4h40.8l-.1-4.6a125.2 125.2 0 01204.1-96.8l3.9 3.3a160.5 160.5 0 0126.5 30.9l2.2 3.6c9.9 17.5 15.6 37.7 15.6 59.2l-.1 4.4h52.5v-4.6c0-3 0-5.8-.2-8.7" fill="#BCBCE2"/>
+    <path d="M403 395.5a179.7 179.7 0 00-359.1 13.2h54.6l-.1-4.5a125.2 125.2 0 01250.2 0v4.5h54.6v-4.5c0-3 0-5.9-.2-8.7z" stroke="#7176C4" stroke-width="6.1" stroke-linecap="round" stroke-linejoin="round"/>
+    <path fill="#7176C4" d="M201.3 407.4l117.2-156-78.2 157.3z"/>
+    <path d="M326 255.8l-1.4 2.8L301 306c-5.7-5-6.4-5-13-9l28-42.8 2-3 7.9 4.5z" fill="#7176C4" opacity=".2"/>
+    <path stroke="#7176C4" stroke-width="6.1" stroke-linecap="round" stroke-linejoin="round" d="M2 408.8h507.2M333.6 449.4h66.5M129.5 449.4h148.4"/>
+    <path d="M452.5 404.8h-23.3v-89a228 228 0 0123.3 89M389.1 258.7v68.6c-14-31.8-37-58.7-65.9-77.5v-39.2c24.8 12 47.1 28.3 66 48" fill="#7176C4" opacity=".2"/>
+    <path fill="#7176C4" d="M279.4 229v-34.4M213.4 221v-33.1"/>
+    <path d="M429.2 315.8v89h23.3c-1.7-31.8-10-62-23.3-89m-106-105.2v39.2a179.6 179.6 0 0166 77.5v-68.6a228.7 228.7 0 00-66-48.1m-100.1-23c-3.3 0-6.5 0-9.6.3v33a177.8 177.8 0 0166 8l-.1-34.3c-18-4.6-37-7-56.3-7" fill="#7176C4" opacity=".2"/>
+    <path fill="#DBDBF3" d="M53.3 115.1L32.7 94.6 53.3 74l20.5 20.6zM154.4 379.1l-8.7-37.7 37.7 8.7z"/>
+  </g>
+</svg>

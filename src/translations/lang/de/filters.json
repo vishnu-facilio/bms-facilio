@@ -1,0 +1,19 @@
+{
+  "search": {
+    "by": "durch",
+    "search_fields": "Suchfelder"
+  },
+  "tags": {
+    "clear_all": "alles löschen",
+    "save_view": "Ansicht speichern",
+    "save_view_as": "speichern als",
+    "save_as_new": "als neue Ansicht speichern",
+    "save_to_existing": "auf bestehende speichern"
+  },
+  "views": {
+    "confirm_edit": "Möchten Sie die Ansicht wirklich bearbeiten?",
+    "edit_success": "Ansicht Erfolgreich bearbeitet!",
+    "existing_filters": "Vorhandene Filter",
+    "new_filters": "Neue Filter"
+  }
+}

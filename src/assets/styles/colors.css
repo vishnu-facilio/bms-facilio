@@ -1,0 +1,345 @@
+.fc-white-theme .primary-color {
+  color: #25243e;
+}
+.fc-white-theme .color-d {
+  color: #8ca1ad !important;
+}
+.fc-white-theme .primaryfill-color {
+  fill: #25243e;
+}
+.fc-white-theme .secondaryfill-color {
+  fill: #50516c;
+}
+.fc-white-theme .fc-white-theme .secondary-color {
+  color: #50516c;
+}
+.fc-white-theme .fc-identify-color-1 {
+  color: #5bbdbf;
+}
+.fc-white-theme .fc-identify-color-2 {
+  color: #fc3786;
+}
+.fc-white-theme .secondary-color2 {
+  color: #ddd;
+}
+.fc-white-theme .en-secondary-color {
+  color: #7b7b7b;
+}
+.fc-white-theme .sb-secondary-color {
+  color: #bfbfbf;
+}
+/* .space-secondary-color {
+  color: #abaab7;
+} */
+.fc-white-theme .fc-white-theme .space-secondary-color {
+  color: #979dac;
+}
+.fc-white-theme .bg-color-1 {
+  background-color: #fff;
+}
+.fc-white-theme .color-w {
+  color: #fff;
+}
+.fc-white-theme .third-color {
+  color: #f1f2f3;
+}
+.fc-white-theme .leed-color-1 {
+  color: #ff3184 !important;
+}
+.fc-white-theme .color-2 {
+  color: #39b2c2 !important;
+}
+.fc-white-theme .fc-chip-color-1 {
+  border-color: #62db7c;
+  background-color: #d9fadf;
+  color: #2a6537;
+}
+.fc-white-theme .fc-white-theme .fc-chip-color-2 {
+  border-color: #d9b362;
+  background-color: #f9f5d8;
+  color: #65572a;
+}
+.fc-white-theme .fc-chip-color-3 {
+  border-color: #dc629f;
+  background-color: #f9d9e4;
+  color: #612644;
+}
+.fc-white-theme .space-identify-color-1 {
+  color: #816eed;
+}
+.fc-white-theme .space-identify-color-2 {
+  background-color: #fef3c7 !important;
+}
+.fc-white-theme .sp-color-1 {
+  background-color: #f4f2fd !important;
+  color: #8270e5 !important;
+}
+.fc-white-theme .sp-color-4 {
+  background-color: #fff3f7 !important;
+  color: #fe4b92 !important;
+}
+.fc-white-theme .sp-color-5 {
+  background: #9666cf !important;
+}
+.fc-white-theme .sp-tick-color {
+  color: #5bbf6c;
+}
+.fc-white-theme .sp-color-6 {
+  color: #9666cf !important;
+}
+.fc-white-theme .sp-color-7 {
+  background: #f7f8f9;
+}
+.fc-white-theme .sp-color-8 {
+  background: #fef0f5;
+  color: #f24e89;
+}
+
+/* -------------------------------------------- */
+
+.fc-black-theam .primary-color {
+  color: #fff;
+}
+.fc-black-theam .color-d {
+  color: #aaa !important;
+}
+.fc-black-theam .primaryfill-color {
+  fill: #25243e;
+}
+.fc-black-theam .secondaryfill-color {
+  fill: #50516c;
+}
+.fc-black-theam .fc-black-theam .secondary-color {
+  color: #50516c;
+}
+.fc-black-theam .fc-identify-color-1 {
+  color: #5bbdbf;
+}
+.fc-black-theam .fc-identify-color-2 {
+  color: #fc3786;
+}
+.fc-black-theam .secondary-color2 {
+  color: #ddd;
+}
+/* .space-secondary-color {
+  color: #abaab7;
+} */
+.fc-black-theam .fc-black-theam .space-secondary-color {
+  color: #979dac;
+}
+.fc-black-theam .bg-color-1 {
+  background-color: #fff;
+}
+.fc-black-theam .color-w {
+  color: #fff;
+}
+.fc-black-theam .third-color {
+  color: #f1f2f3;
+}
+.fc-black-theam .leed-color-1 {
+  color: #ff3184 !important;
+}
+.fc-black-theam .color-2 {
+  color: #39b2c2 !important;
+}
+.fc-black-theam .fc-chip-color-1 {
+  border-color: #62db7c;
+  background-color: #d9fadf;
+  color: #2a6537;
+}
+.fc-black-theam .fc-black-theam .fc-chip-color-2 {
+  border-color: #d9b362;
+  background-color: #f9f5d8;
+  color: #65572a;
+}
+.fc-black-theam .fc-chip-color-3 {
+  border-color: #dc629f;
+  background-color: #f9d9e4;
+  color: #612644;
+}
+.fc-black-theam .space-identify-color-1 {
+  color: #816eed;
+}
+.fc-black-theam .space-identify-color-2 {
+  background-color: #fef3c7 !important;
+}
+.fc-black-theam .sp-color-1 {
+  background-color: #f4f2fd !important;
+  color: #8270e5 !important;
+}
+.fc-black-theam .sp-color-4 {
+  background-color: #fff3f7 !important;
+  color: #fe4b92 !important;
+}
+.fc-black-theam .sp-color-5 {
+  background: #9666cf !important;
+}
+.fc-black-theam .sp-tick-color {
+  color: #5bbf6c;
+}
+.fc-black-theam .sp-color-6 {
+  color: #9666cf !important;
+}
+.fc-black-theam .sp-color-7 {
+  background: #f7f8f9;
+}
+.fc-black-theam .sp-color-8 {
+  background: #fef0f5;
+  color: #f24e89;
+}
+
+.fc-white-bg {
+  background: #fff !important;
+}
+
+/* -------------------------------------------- */
+
+.workorder-color {
+  background-color: #39b2c2;
+}
+.workorder-bg {
+  color: #39b2c2;
+}
+.workorder-border-color {
+  border-color: #39b2c2;
+}
+.bg-secondary {
+  border-color: #39b2c2 !important;
+}
+.text-secondary {
+  color: #39b2c2 !important;
+}
+.workorder-btn-1 {
+  background-color: #39b2c2 !important;
+  color: #fff !important;
+  border: none !important;
+}
+.workorder-btn-2 {
+  background-color: #fff !important;
+  color: #39b2c2 !important;
+  border: 1px solid #39b2c2 !important;
+}
+
+/* Zone color */
+.zone-color {
+  color: #e58279;
+}
+.chart-min-color {
+  color: #77bf8f;
+}
+.chart-max-color {
+  color: #ed6e6e;
+}
+
+.white-color {
+  color: #fff !important;
+}
+.id-color {
+  color: #39b2c2;
+}
+.fc-black-2 {
+  color: #333333;
+}
+.fc-grey2 {
+  color: #748893;
+}
+.fc-icon-grey {
+  color: #939299 !important;
+}
+.fc-grey3 {
+  color: #67666a;
+}
+.fc-grey4 {
+  color: #aaaaaa;
+}
+.fc-grey5 {
+  color: #666666;
+}
+.fc-grey6 {
+  color: #919195;
+}
+.fc-grey7 {
+  color: #95a8ba;
+}
+.fc-grey8 {
+  color: #c0c3cc;
+}
+.fc-delete {
+  color: #e21a1a !important;
+}
+.fc-red {
+  color: #e64f4f;
+}
+.fc-red2 {
+  color: #e94c4c;
+}
+.fc-red3 {
+  color: #dd6060;
+}
+.fc-blue3 {
+  color: #8ca1ad;
+}
+.fc-blue4 {
+  color: #eceef1 !important;
+}
+.fc-blue5 {
+  color: #6171db;
+}
+.fc-darkgrey {
+  color: #605e88;
+}
+.fc-black {
+  color: #000000 !important;
+}
+.fc-green {
+  color: #26a666;
+}
+.fc-green2 {
+  color: #5bc293;
+}
+/* white color */
+.white-bg {
+  background: #fff !important;
+}
+.fc-black-color {
+  color: #324056;
+}
+.fc-green-color {
+  color: #80c088;
+}
+.fc-green-color2 {
+  color: #46ca87;
+}
+.fc-green-color3 {
+  color: #2cb988;
+}
+.fc-green-color4 {
+  color: #58ca94;
+}
+.fc-red-color {
+  color: #ee8181;
+}
+.fc-warning2 {
+  color: #e0944e;
+}
+
+/* priority color code */
+
+.fc-priority-normal {
+  background: #9ade80;
+}
+
+.fc-priority-low {
+  background: #c5bc12;
+}
+
+.fc-priority-high {
+  background: #e77070;
+}
+
+.fc-orange {
+  color: #df6a48;
+}
+.fc-error-btn-bg {
+  background: #e47676 !important;
+}

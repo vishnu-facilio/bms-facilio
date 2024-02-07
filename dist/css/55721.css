@@ -1,0 +1,44 @@
+
+.item-unit-price-currency[data-v-2c0c24b4] {
+  padding: 20px 0px 0px;
+  width: 32%;
+}
+
+.fc-vendor-add-btn{position:absolute;z-index:100;right:20px;top:5px}.fc-service-vendor-table .el-table td{padding-left:30px !important;padding-right:30px !important}.fc-service-vendor-table .el-table th{padding-left:20px !important;padding-right:20px !important}
+
+.currencySelect-lineItem .el-input__inner {
+  width: 8.063rem;
+  height: 2.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: 2px;
+  border: solid 1px #d0d9e2;
+}
+.fCurrencyCodeList {
+  width: 15%;
+}
+.fCurrencyCodeList .el-select-dropdown__list li:nth-child(1) {
+  font-size: 12px;
+  padding: 0 20px;
+  position: relative;
+  line-height: 18px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #f2f7ff;
+  padding: 10px 20px;
+  color: #2e2e49;
+  margin-bottom: 5px;
+  white-space: normal;
+  overflow: auto;
+  font-weight: 300;
+  height: 100% !important;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.fCurrencyCodeList .el-select-dropdown__list {
+  padding: 0 0 6px 0;
+}
+.fCurrencyCodeList .el-select-dropdown__item.is-disabled:hover {
+  background-color: #f2f7ff;
+}
+
+.fNewCurrencyField .el-input__inner{border-top-left-radius:0 !important;border-bottom-left-radius:0 !important;font-weight:400;font-size:14px;padding-left:10px !important}.fNewCurrencyField .description{color:gray;font-size:12px;letter-spacing:.43px;visibility:visible}.fNewCurrencyField .hideDescription{visibility:hidden}.fNewCurrencyField .currencyChangeDesc{color:gray;font-size:12px;letter-spacing:.43px;-webkit-transition:all 1s ease-out;transition:all 1s ease-out}.fNewCurrencyField .el-input-group__prepend{width:75px;border-right:solid .5px #d0d9e2}.fNewCurrencyField .el-input-group__prepend div.el-select .el-input__inner{border-top:1px solid #d0d9e2;border-bottom:1px solid #d0d9e2;border-top-right-radius:0px;border-bottom-right-radius:0px;color:#000;font-size:14px;border:none}.fNewCurrencyField .el-input-group__prepend div.el-select .el-input .el-input--suffix{height:40px}

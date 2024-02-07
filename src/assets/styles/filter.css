@@ -1,0 +1,117 @@
+.filter-header {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1.1px;
+  text-align: left;
+  color: #333333;
+}
+
+.filter-form .el-form-item .el-form-item__label {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.4px;
+  text-align: left;
+  color: #6b7e91;
+  padding: 0px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-form .filter-form .el-form-item {
+  margin-bottom: 2px;
+}
+
+.filter-form .el-select .el-tag {
+  border-radius: 100px;
+  background-color: #f8ffff;
+  border: solid 1px #39b1c1;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+  color: #2c9baa;
+  margin: 3px 6px 3px 0px;
+}
+
+.filter-form .el-select__input {
+  margin-left: 0px;
+}
+
+.filter-form .el-select .el-tag__close.el-icon-close {
+  background-color: transparent;
+  right: -4px;
+  top: 0;
+  color: #219fb0;
+}
+
+.filter-dropdown .el-select-dropdown__item.selected,
+.filter-dropdown.el-select-dropdown.is-multiple
+  .el-select-dropdown__item.selected,
+.filter-form .el-checkbox__input.is-checked + .el-checkbox__label,
+.filter-form .el-radio__input.is-checked + .el-radio__label {
+  color: #39b1c1;
+}
+
+.filter-dropdown {
+  z-index: 500 !important;
+}
+
+.filter-form .el-select .el-input.is-focus .el-input__inner,
+.filter-form .el-checkbox__input.is-focus .el-checkbox__inner,
+.filter-form .el-checkbox__input:hover .el-checkbox__inner {
+  border-color: #39b1c1;
+}
+
+.filter-form .el-checkbox {
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-x: hidden;
+  margin-left: 0px;
+  padding-top: 5px;
+}
+
+.filter-form .el-checkbox__label {
+  font-size: 13px;
+  font-weight: normal;
+  letter-spacing: 0.4px;
+  text-align: left;
+  color: #333333;
+}
+
+.filter-form .el-checkbox__input.is-checked .el-checkbox__inner,
+.filter-form .el-radio__input.is-checked .el-radio__inner {
+  background-color: #39b1c1;
+  border-color: #39b1c1;
+}
+
+.filter-dialog .el-row {
+  margin-bottom: 20px;
+}
+
+.fc-form-content .el-select,
+.fc-form-content .el-cascader {
+  width: 100%;
+}
+
+.filter-form .el-date-editor .el-range-input {
+  font-size: 13px;
+}
+
+.filter-form .el-range-editor.el-input__inner {
+  padding: 3px 0px 3px 4px;
+}
+
+.filter-form .el-date-editor--datetimerange.el-input__inner {
+  width: 100%;
+}
+
+.filter-form .el-input__icon.el-range__icon.el-icon-time {
+  display: none;
+}
+/* New filter  */
+.new-filter-form .el-form-item__label {
+  float: left;
+  top: 4px;
+}
+.fc-form .filter-form .el-form-item .el-checkbox-group {
+  clear: both;
+}

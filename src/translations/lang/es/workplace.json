@@ -1,0 +1,33 @@
+{
+  "general": {
+    "bookingpolicies": "Política de reservas",
+    "newbookingpolicies": "Nueva política de reservas",
+    "description": "Descripción",
+    "add_policy": "Añadir políticas de reserva",
+    "policy": "Política",
+    "id": "ID",
+    "name": " NOMBRE",
+    "criteriaId": "CRITERIO ID",
+    "policydescription": "DESCRIPCIÓN",
+    "moduleName": "MODULENAME",
+    "bookingpolicy": "POLÍTICA"
+  },
+  "policies": {
+    "enterpoliciesname": "Introducir políticas Nombre",
+    "description": "El objetivo de la Política de Reservas es proporcionar un marco estratégico para la reserva ordenada y justa de las instalaciones comunitarias."
+  },
+  "policy_status": {
+    "added": "Política añadida correctamente",
+    "updated": "Política actualizada correctamente",
+    "delete_policy": "¿Está seguro de eliminar esta política?",
+    "delete_title": "Suprimir la política de reservas",
+    "deleted": "Política eliminada correctamente",
+    "no_policy": "Política no disponible"
+  },
+  "form_relation": {
+    "add": "AÑADE",
+    "formrelations": "Relación de forma",
+    "description": "El objetivo de la Relación de formas es proporcionar una relación entre las categorías de espacios y los tipos de formas de reserva de espacios.",
+    "no_form_relation": "No hay relación de formulario disponible"
+  }
+}

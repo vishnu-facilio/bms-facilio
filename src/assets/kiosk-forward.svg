@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="52px" height="52px" viewBox="0 0 52 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Kiosk_Enter_Mobile_1.1" transform="translate(-681.000000, -332.000000)">
+            <g id="Group-3" transform="translate(291.000000, 288.000000)">
+                <g id="Group-2">
+                    <g id="Group" transform="translate(390.000000, 44.000000)">
+                        <circle id="Oval" fill="#000000" cx="26" cy="26" r="26"></circle>
+                        <g id="arrow-pointing-to-right" transform="translate(26.000000, 26.000000) scale(1, -1) translate(-26.000000, -26.000000) translate(16.000000, 19.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                            <path d="M19.7275999,6.02961175 L13.7759385,0.263838194 C13.4128128,-0.0879460648 12.8238959,-0.0879460648 12.4607702,0.263838194 C12.09757,0.615694526 12.09757,1.18607367 12.4607702,1.53793001 L16.8249003,5.76575554 L0.929947086,5.76575554 C0.416393107,5.76575554 0,6.16914347 0,6.66665766 C0,7.16409977 0.416393107,7.56755978 0.929947086,7.56755978 L16.8249003,7.56755978 L12.460919,11.7953853 C12.0977188,12.1472416 12.0977188,12.7176208 12.460919,13.0694771 C12.6424446,13.2452611 12.8805111,13.3333333 13.1185032,13.3333333 C13.3564952,13.3333333 13.5944873,13.2452611 13.7760873,13.0694771 L19.7275999,7.30370356 C20.0908,6.95184723 20.0908,6.38146808 19.7275999,6.02961175 Z" id="Path"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

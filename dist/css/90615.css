@@ -1,0 +1,82 @@
+
+.spinner[data-v-06a81286] {
+  -webkit-transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease;
+  -webkit-animation: rotator-data-v-06a81286 1.4s linear infinite;
+          animation: rotator-data-v-06a81286 1.4s linear infinite;
+  -webkit-animation-play-state: paused;
+          animation-play-state: paused;
+}
+.spinner.show[data-v-06a81286] {
+  -webkit-animation-play-state: running;
+          animation-play-state: running;
+}
+.spinner.v-enter[data-v-06a81286],
+.spinner.v-leave-active[data-v-06a81286] {
+  opacity: 0;
+}
+.spinner.v-enter-active[data-v-06a81286],
+.spinner.v-leave[data-v-06a81286] {
+  opacity: 1;
+}
+.spinner .path[data-v-06a81286] {
+  stroke-dasharray: 126;
+  stroke-dashoffset: 0;
+  -webkit-transform-origin: center;
+          transform-origin: center;
+  -webkit-animation: dash-data-v-06a81286 1.4s ease-in-out infinite;
+          animation: dash-data-v-06a81286 1.4s ease-in-out infinite;
+}
+@-webkit-keyframes rotator-data-v-06a81286 {
+0% {
+    -webkit-transform: scale(0.5) rotate(0deg);
+            transform: scale(0.5) rotate(0deg);
+}
+100% {
+    -webkit-transform: scale(0.5) rotate(270deg);
+            transform: scale(0.5) rotate(270deg);
+}
+}
+@keyframes rotator-data-v-06a81286 {
+0% {
+    -webkit-transform: scale(0.5) rotate(0deg);
+            transform: scale(0.5) rotate(0deg);
+}
+100% {
+    -webkit-transform: scale(0.5) rotate(270deg);
+            transform: scale(0.5) rotate(270deg);
+}
+}
+@-webkit-keyframes dash-data-v-06a81286 {
+0% {
+    stroke-dashoffset: 126;
+}
+50% {
+    stroke-dashoffset: 63;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+}
+100% {
+    stroke-dashoffset: 126;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+}
+}
+@keyframes dash-data-v-06a81286 {
+0% {
+    stroke-dashoffset: 126;
+}
+50% {
+    stroke-dashoffset: 63;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+}
+100% {
+    stroke-dashoffset: 126;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+}
+}
+
+.page-container[data-v-38fa9cf8]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;height:100%;overflow:hidden}.page-container .padding[data-v-38fa9cf8]{padding-bottom:20px}.page-container .header[data-v-38fa9cf8]{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:justify;-ms-flex-pack:justify;justify-content:space-between;-webkit-box-align:center;-ms-flex-align:center;align-items:center;height:80px;padding:20px;background-color:#fff}.page-container .header-title[data-v-38fa9cf8]{font-size:18px;letter-spacing:.5px;color:#324056;padding-bottom:5px}.page-container .header-content[data-v-38fa9cf8]{font-size:13px;letter-spacing:.5px;color:gray}.page-container .lang-list[data-v-38fa9cf8]{-webkit-box-flex:1;-ms-flex:1;flex:1;background-color:#fff;margin:20px}.page-container .lang-list .empty-container[data-v-38fa9cf8]{height:100%;display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column;-ms-flex-line-pack:center;align-content:center;-webkit-box-align:center;-ms-flex-align:center;align-items:center}.page-container .lang-list .empty-container .empty-state-text[data-v-38fa9cf8]{font-size:14px;letter-spacing:.5px;text-align:center;color:#324056;padding:15px}.page-container .lang-list .add-button[data-v-38fa9cf8]{margin-bottom:20px}.page-container .lang-list .header-row[data-v-38fa9cf8]{border-bottom:1px solid #f2f5f6}.page-container .lang-list .body-row[data-v-38fa9cf8]{padding:15px 30px 15px 0;border-bottom:1px solid #f7f8f9}.page-container .lang-list .body-row[data-v-38fa9cf8]:hover{border:1px solid #b0dbe1}.popup-item[data-v-38fa9cf8]{font-size:14px;padding:10px 20px}.popup-item[data-v-38fa9cf8]:hover{cursor:pointer;background-color:#f3fafb}.popup-item .tick-mark[data-v-38fa9cf8]{margin:0 5px;visibility:hidden}.popup-item .selected[data-v-38fa9cf8]{visibility:visible}.selected[data-v-38fa9cf8]{background-color:#f3fafb}
+.language-popup .el-dialog__body{padding:0 !important}

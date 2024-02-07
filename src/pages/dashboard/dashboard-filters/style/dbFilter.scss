@@ -1,0 +1,156 @@
+@import './variables';
+
+.dashboard-filter-portal {
+  .dashboard-filter-toggle {
+    // right: 100px;
+    // bottom: 11px;
+    // position: absolute;
+    padding: 8px 8px 4px 8px;
+    border-radius: 2px;
+    box-shadow: 0 2px 7px 0 rgba(217, 224, 231, 0.47);
+    border: solid 1px #dae0e8;
+    &.is-open {
+      border: solid 1px #ee518f;
+    }
+
+    background-color: #ffffff;
+  }
+
+  .dashboard-timeline-filter {
+    box-shadow: 0 2px 7px 0 rgba(217, 224, 231, 0.47);
+
+    .button-row {
+      border-radius: 3px;
+      padding: 0px;
+      border: solid 1px #ffb8d5;
+
+      .el-button {
+        font-size: 14px;
+        letter-spacing: 0.5px;
+        color: #ff3184 !important;
+        padding: 8px 15px !important;
+        &:hover {
+          background: #ffffff !important;
+        }
+      }
+    }
+    .cal-left-btn {
+      border-right: 1px solid #ffb8d5;
+    }
+    .cal-right-btn {
+      border-left: 1px solid #ffb8d5;
+    }
+  }
+}
+
+.db-filter-container {
+  flex-basis: auto;
+  flex-grow: 0;
+  flex-shrink: 0;
+  overflow: hidden;
+  &:fullscreen {
+    margin-top: 20px;
+  }
+  // display: flex;
+  // justify-content: flex-start;
+  // height: 50px;
+  // margin-top: 25px;
+
+  &.edit-background {
+    border: dashed 1px $db-blue-color;
+    background: $db-blue-light;
+  }
+  background: $db-white;
+  width: 100%;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.06);
+  z-index: 20;
+
+  .db-filter-empty-state {
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .empty-state-button {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 13px;
+    color: $db-blue-color;
+    text-transform: uppercase;
+    background: $db-white;
+    border: solid 1px $db-blue-color;
+    border-radius: 3px;
+    padding: 10px 20px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+
+  .lookup-filter-section {
+    background: inherit; //needed ,otherwise transition flicks transparently
+    display: flex;
+    // padding: 25px;
+    padding: 20px 25px 10px 25px;
+    flex-wrap: wrap;
+  }
+  .dashboard-lookup-filter {
+    margin-bottom: 20px;
+    padding-right: 10px;
+    width: 16%;
+    .el-select {
+      width: 100%;
+    }
+  }
+  .sliderWidth {
+    width: 28% !important;
+    padding: 0px 20px;
+  }
+  .edit-mode-bar {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 15px;
+
+    .seperator {
+      // box-shadow: 0 2px 4px 0 rgba(217, 224, 231, 0.25);
+      border-left: solid 1px #e2e8ef;
+      margin-right: 10px;
+      margin-left: 10px;
+    }
+  }
+
+  .cancel-btn,
+  .blue-btn {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 10px;
+    cursor: pointer;
+  }
+  .blue-btn {
+    color: $db-blue-color;
+  }
+  .cancel-btn {
+    color: $db-grey;
+  }
+}
+
+.fc-scale-vertical-enter-active,
+.fc-scale-vertical-leave-active {
+  // transition-timing-function: cubic-bezier(0.390, 0.575, 0.565, 1.000);
+  transition-timing-function: ease;
+  transition-property: max-height;
+  transition-duration: 0.5s;
+}
+
+.fc-scale-vertical-enter,
+.fc-scale-vertical-leave-to {
+  // transform: translateY(-100%); using translate will cause the layout below to jerk after animation ends
+  max-height: 0px;
+}
+
+.fc-scale-vertical-enter-to,
+.fc-scale-vertical-leave {
+  max-height: 176px; //classic max height hack since,0->auto height transition doesn't work in css,max 12 filters=2 rows and height=204px
+}

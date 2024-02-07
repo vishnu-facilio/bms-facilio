@@ -1,0 +1,42 @@
+
+.tenant-img[data-v-064f2f33] {
+  width: 100px;
+  height: 100px;
+  border: 1px solid #f9f9f9;
+  border-radius: 50%;
+}
+.emtpy-tenant-container[data-v-064f2f33] {
+  width: 220px;
+  height: 220px;
+  border: 1px solid #cacaca;
+  background-color: #ecf2f7;
+  border-radius: 50%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.emtpy-tenant[data-v-064f2f33] {
+  width: 100px;
+  height: 100px;
+}
+.flex-middle[data-v-064f2f33] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal !important;
+  -webkit-box-direction: normal !important;
+      -ms-flex-direction: row !important;
+          flex-direction: row !important;
+}
+.seperator[data-v-064f2f33] {
+  margin-top: 10px;
+  height: 40px;
+  border: solid 1px #ededed;
+}
+

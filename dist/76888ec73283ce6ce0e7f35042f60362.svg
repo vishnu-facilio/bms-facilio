@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="52px" height="100px" viewBox="0 0 52 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>End duct</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-101.000000, -1161.000000)">
+            <g id="End-duct" transform="translate(101.000000, 1161.000000)">
+                <g id="Group-Copy-6">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="51 0 51 77.26 0 77.26 0 0"></polygon>
+                    <path d="M0,0 L0,30 L24.1971885,30 C24.783123,30 25.3395861,29.7430568 25.7195782,29.2970465 L49.8008868,1.03195504 L50.2413509,0 L0,0 Z" id="Path-4" fill="url(#linearGradient-1)" opacity="0.5"></path>
+                    <path d="M0,77 L0,100 L26.3905412,100 C26.9090208,100 27.4072385,99.7986517 27.7801327,99.4384143 L51.0010684,77.0056458 L0,77 Z" id="Path-4-Copy" fill="#848E9C"></path>
+                </g>
+                <path d="M25.0124694,29.4244137 L50.0189946,1.18484627 C50.2386773,0.936761265 50.6178779,0.913736634 50.8659629,1.13341931 C50.9945666,1.24729959 51.0681923,1.41083916 51.0681923,1.58261695 L51.0681923,75.6250295 C51.0681923,75.8895758 50.9633657,76.1433433 50.7766654,76.3307673 L27.1988158,100" id="Path-19" stroke="#000000" stroke-linecap="round"></path>
+            </g>
+        </g>
+    </g>
+</svg>

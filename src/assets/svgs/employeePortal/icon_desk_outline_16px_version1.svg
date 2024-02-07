@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Desk_20px" data-name="Desk 20px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #fff;
+        opacity: 0;
+      }
+    </style>
+  </defs>
+  <g>
+    <path d="M1,4.2h0v2.5h1v5H1v1h3v-1h-1V6.7h6.1v6h0s5.9,0,5.9,0h0V4.2h0s-14,0-14,0Zm13,7.5h-3.9V6.7h3.9v5Zm0-6H2v-.5H14v.5Z"/>
+    <rect x="11" y="7.5" width="2.2" height="1"/>
+  </g>
+  <rect class="cls-1" x="0" y="0" width="16" height="16"/>
+  <rect class="cls-1" y="0" width="16" height="16"/>
+</svg>

@@ -1,0 +1,554 @@
+line.safelimit-line-default {
+  stroke-linecap: butt;
+}
+
+line.safelimit-line-dashed {
+  /* stroke-width: 0.5px; */
+  stroke-dasharray: 7, 7;
+}
+
+line.safelimit-line-dotted {
+  stroke-width: 0.5px;
+  stroke-dasharray: 3, 3;
+}
+
+text.safelimit-label,
+text.safelimit-value {
+  font-size: 11px;
+}
+
+.fchart .vertical-marker {
+  stroke: #d2d6df;
+  stroke-width: 1;
+}
+
+.fchart .area-outline {
+  shape-rendering: geometricPrecision;
+  fill: none;
+  stroke-width: 1.2;
+}
+
+.fchart .line {
+  fill: none;
+  stroke-width: 1.8 !important;
+  shape-rendering: geometricPrecision;
+}
+
+.fchart .masking-rectangle {
+  fill: #fff;
+}
+
+.fchart .circle {
+  fill: white;
+  stroke-width: 2px;
+}
+
+.fchart .data-point-highlighter {
+  fill: #fff;
+  stroke-width: 1;
+}
+
+.fchart .lineChart--circle {
+  fill: #6bb7c7;
+  stroke: #fff;
+  stroke-width: 3;
+}
+
+.fchart text.Xaxis-label,
+text.Yaxis-label {
+  font-size: 0.7rem !important;
+  fill: #202024 !important;
+  letter-spacing: 1px;
+}
+
+.fchart .legend.legendsAll {
+  margin-top: 20px;
+}
+
+.chart-group-brush .brush-area {
+  fill: #eff2f5;
+}
+
+.brush-group-brush-rect {
+  stroke-width: '0';
+  fill: '#000';
+  stroke: '#000';
+  fill-opacity: '0.005';
+  stroke-opacity: '0.005';
+}
+
+.chart-group-brush .rect.brush-rect.selection {
+  fill-opacity: 0.08;
+  stroke-linejoin: round;
+}
+
+.brush-group-brush rect.brush-rect.handle {
+  fill: #00d8d2;
+  width: 0.2rem;
+}
+
+chart-group-brush .axis path {
+  display: none;
+}
+
+/* fchart .brush-area {
+  fill: #EFF2F5;
+}
+
+.rect .brush-rect .selection {
+  fill-opacity: 0.08;
+  stroke-linejoin: round;
+}
+
+.rect .brush-rect.handle {
+  fill: #00d8d2;
+  width: 0.2rem;
+} */
+.area-outline {
+  shape-rendering: geometricPrecision;
+  fill: none;
+  stroke-width: 1.2;
+}
+
+/* progress Ui css */
+
+.progbar-fill {
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.progbar-shadow {
+  display: block;
+  overflow: hidden;
+  height: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+  background-color: #f7f7f7;
+}
+
+.title-label {
+  margin-left: 0px;
+  padding-left: 20px;
+  font-size: 12px;
+  color: #a2a2a2;
+  line-height: 18px;
+}
+
+.title-div {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+}
+
+.align-r {
+  text-align: right;
+}
+
+.title-value {
+  margin-left: 0px;
+  text-align: right;
+  font-size: 10px;
+  color: #838383;
+  line-height: 18px;
+  padding-right: 10px;
+}
+
+.fchart .text {
+  margin-left: 0px;
+  text-align: left;
+  padding-top: 5px;
+  padding-left: 5px;
+  color: black;
+}
+
+.fchart .grid {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #eff2f5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.fchart .y-axis-group.axis g.tick > line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.fc-white-theme .fchart .y-axis-group.axis g.tick > line {
+  stroke: #eff2f5;
+}
+
+.fc-black-theme .fchart .y-axis-group g.tick > line {
+  stroke: #eff2f53d;
+}
+
+.fchart .y-axis-group.axis g.tick:first-child > line {
+  stroke: red;
+}
+
+path.x-axis-line-path {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #d2d6df !important;
+  stroke-width: 1 !important;
+}
+
+.x-axis-group.axis .tick > line {
+  stroke: #d2d6df !important;
+  opacity: 0;
+}
+
+polyline {
+  opacity: 0.1;
+  stroke: black;
+  stroke-width: 2px;
+  fill: none;
+}
+
+.labelValue {
+  font-size: 60%;
+  opacity: 0.5;
+}
+
+/* .fchart {
+  padding-top: 20px;
+} */
+.dashboard-container .legend.legendsAll {
+  padding-top: 40px;
+  padding-bottom: 0px;
+}
+
+.legend.legendsAll {
+  padding-top: 30px;
+  padding-bottom: 20px;
+  overflow-y: hidden !important;
+}
+
+.dashboard-container .fc-widget {
+  padding: 0px !important;
+  overflow: hidden;
+}
+
+/* .reports-summary .fchart-section {
+  padding: 50px !important;
+  padding-top: 0px !important;
+  padding-bottom: 30px !important;
+} */
+.probar-background {
+  padding-left: 50px;
+  padding-right: 60px;
+}
+
+.heatMap line,
+.heatMap .y.axis path {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #d2d6df !important;
+  stroke-width: 1;
+}
+
+.heatLegend .legendLabel {
+  fill: #868686;
+  font-size: 12px;
+}
+
+.fc-black-theme line.yaxis-tick-line {
+  stroke-opacity: 0.2;
+}
+
+.dashboard-container
+  .f-multichart
+  .f-multichart-print
+  .fLegendContainer:not(.mobile-legend) {
+  flex-wrap: wrap;
+  max-width: 100% !important;
+}
+
+.dashboard-container .fLegendContainer {
+  /* max-width: 80% !important; */
+  flex-wrap: wrap;
+  max-width: 80% !important;
+  justify-content: center;
+}
+
+.alarm-indication {
+  fill: #ff0000;
+  cursor: pointer;
+  opacity: 0.2;
+}
+
+.chart-tooltip table td div {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 4px 0px;
+}
+
+g.d3_timeseries.x.axis text {
+  font-size: 11px;
+}
+
+.d3_timeseries.brush rect.selection {
+  stroke: transparent;
+  fill: #00d8d2;
+}
+
+.fc-white-theme .d3_timeseries.brush rect.selection {
+  fill-opacity: 0.1;
+}
+
+.fc-black-theme .d3_timeseries.brush rect.selection {
+  fill-opacity: 0.4;
+}
+
+.d3_timeseries.brush rect.handle.handle--e,
+.d3_timeseries.brush rect.handle.handle--w {
+  fill: #00d8d2;
+  width: 0.11rem;
+}
+
+g.y-axis g.tick > line {
+  fill: none;
+  shape-rendering: crispEdges;
+  stroke: #eff2f5;
+  stroke-width: 1;
+  stroke-dasharray: 4, 4;
+}
+
+.heatMap rect.tile {
+  cursor: pointer;
+}
+
+.linesmall {
+  width: 18px;
+  padding: 0px !important;
+  margin-top: 3px;
+}
+
+.month-axis path {
+  display: none;
+}
+
+.month-axis .tick text {
+  fill: #868686d1;
+  font-size: 11px;
+}
+
+.r-squared-label {
+  opacity: 0.7;
+  font-size: 13px;
+}
+
+rect.zoom {
+  stroke: steelblue;
+  fill-opacity: 0.1;
+  stroke-opacity: 0.5;
+}
+
+.report-settings-table td {
+  padding: 10px;
+  white-space: nowrap;
+  padding-left: 0;
+}
+
+.report-settings-popover {
+  padding: 0px !important;
+}
+
+.report-settings-popover .el-popover__title {
+  padding-top: 20px;
+  padding-left: 15px;
+}
+
+.y1-axis-group .tick line,
+.y1-axis-group .domain {
+  stroke: none !important;
+}
+
+.report-settings-table .el-radio-button__orig-radio {
+  left: 0px;
+}
+
+.report-setting-table-content {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 130px;
+}
+
+.reports-summary .change-chart-select,
+.reports-summary .report-table-setting-icon {
+  margin: auto;
+}
+
+.removealarm .alarm-indication {
+  display: none;
+}
+
+.fchart-alarm-toggle {
+  position: absolute;
+  right: 23px;
+  top: 75px;
+  color: #5bbaa7;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.fchart-alarm-toggle:hover {
+  color: #5bbaa7;
+  opacity: 1;
+}
+
+.fchart-alarm-toggle-on {
+  opacity: 0.5;
+  color: #000;
+}
+
+.fc-report .button-row {
+  display: flex !important;
+}
+
+.chart-tooltip table tr > td:last-child {
+  text-align: right;
+  padding-left: 5px;
+}
+
+/* .heatMap .fanalytics-alarm-toggle {
+  display: none !important;
+} */
+.alarm-icon-size {
+  font-size: 1.5vw;
+}
+
+.fc-newchart-container {
+  display: flex;
+}
+
+.fc-newchart-container .fc-new-chart {
+  flex: 1;
+}
+
+.fc-newchart-container .fLegendContainer {
+  display: block;
+  align-self: center;
+}
+
+.boolean-conatiner .axis.x .domain {
+  stroke: #d2d6df !important;
+}
+
+.fchart-layout {
+  padding-top: 20px;
+}
+
+.tooltip-alarm-container {
+  text-align: left;
+  margin-top: 10px;
+}
+
+.tooltip-alarm-container .tooltip-alarm-title {
+  font-size: 12px;
+  border-bottom: 1px solid #f4f4f4;
+  letter-spacing: 0.5px;
+  line-height: 23px;
+}
+
+.tooltip-alarm-container table td {
+  text-align: left !important;
+  padding: 8px 0px !important;
+}
+
+.tooltip-alarm-container .tooltip-alarm-datapoint {
+  font-size: 11px;
+  font-weight: 500;
+  display: block;
+}
+
+.tooltip-alarm-container .tooltip-alarm-message {
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.tooltip-alarm-container .tooltip-alarm-severity {
+  border-radius: 8px;
+  font-size: 10px;
+  color: #fff;
+  padding: 2px 4px !important;
+  margin-left: 8px;
+  letter-spacing: 0.8px;
+  margin-top: -1px;
+  text-transform: uppercase;
+}
+
+.fc-boolean-rect-01 {
+  fill-opacity: 0.1 !important;
+}
+
+.fc-boolean-rect-02 {
+  fill-opacity: 0.2 !important;
+}
+
+.fc-boolean-rect-03 {
+  fill-opacity: 0.3 !important;
+}
+
+.fc-boolean-rect-04 {
+  fill-opacity: 0.4 !important;
+}
+
+.fc-boolean-rect-05 {
+  fill-opacity: 0.5 !important;
+}
+
+.fc-boolean-rect-06 {
+  fill-opacity: 0.6 !important;
+}
+
+.fc-boolean-rect-07 {
+  fill-opacity: 0.7 !important;
+}
+
+.fc-boolean-rect-08 {
+  fill-opacity: 0.8 !important;
+}
+
+.fc-boolean-rect-09 {
+  fill-opacity: 0.9 !important;
+}
+
+.fc-boolean-rect-0 {
+  fill-opacity: 0 !important;
+}
+
+.fc-boolean-rect-1 {
+  fill-opacity: 1 !important;
+}
+
+.fc-alarms-chart .bb-zoom-rect {
+  fill: #ccc;
+  opacity: 0.1 !important;
+}
+
+.bb-target-alarms {
+  opacity: 0 !important;
+}
+
+.fc-alarms-chart .bb-event-rects {
+  display: none !important;
+}
+
+.fc-alarms-chart-title {
+  text-align: left;
+  margin-left: 100px;
+  position: relative;
+  top: 15px;
+  font-size: 0.7rem;
+  color: #adb0b6 !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase;
+}

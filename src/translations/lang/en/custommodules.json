@@ -1,0 +1,32 @@
+{
+  "list": {
+    "custom_modules": "Custom Modules",
+    "connected_apps": "Connected Apps",
+    "state_flows": "State Flow",
+    "fields": "fields",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "created_date": "Created Date",
+    "created_by": "Created By",
+    "description": "Description",
+    "filtered_view": "Filtered View",
+    "delete_error": "Error Occurred while deleting",
+    "delete_success": "Deleted Successfully",
+    "delete": "Delete",
+    "delete_confirmation": "Are you sure you want to delete this",
+    "new": "New",
+    "no": "No",
+    "available": "Available",
+    "unable_to_fetch_custom_btn": "Unable to fetch custom buttons",
+    "unable_to_fetch_count": "Unable to fetch total count",
+    "list_error": "Error Occurred while fetching record list"
+  },
+  "form": {
+    "widget_error": "Error Occurred while fetching connected app widget",
+    "form_template_error": "Unable to fetch module form templates",
+    "form_details_error": "Error Occurred while fetching form details"
+  },
+  "summary": {
+    "record_summary_error": "Error Occurred while fetching record detail summary"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "builder": {
+    "new_section": "New Section",
+    "new_subform": "Subform",
+    "new_fields": "New Fields",
+    "notes_des": "Your notes content will be shown here",
+    "switch_to_richtext": "Switch to Rich text",
+    "plain_text_mode": "Plain Text Mode",
+    "switch_alert": "You will lose the formatting, when you switch to plain text mode. Are you sure?",
+    "system_label": "System Fields",
+    "custom_label": "Custom Fields",
+    "field": "Field"
+  },
+  "live_form": {
+    "no_forms": "No template configured",
+    "contact_admin": "Please contact administrator",
+    "change_site_heading": "Are you sure ?",
+    "change_site": "Changing site will reset related fields.",
+    "change_site_subform": "Changing site will reset related fields of this record."
+  },
+  "rules": {
+    "add_new_rule": "Add Form Rule",
+    "add_new_subform_rule": "Add Sub Form Rule",
+    "forms_empty": "No forms rules available",
+    "criteria": "Criteria",
+    "subform_criteria": "Subform Criteria",
+    "specify_criteria": "Specify criteria for this RULE",
+    "specify_subform_criteria": "Specify criteria for the selected subform",
+    "edit_actions": "Edit Actions",
+    "reset": "Reset",
+    "configured": "Configured",
+    "show_hide_fields": "Show Fields / Hide Fields",
+    "specify_show_hide": "Specify the fields to be shown / hide",
+    "enable_disable_field": "Enable Fields / Disable Fields",
+    "specify_enable_disable": "Specify the fields to be enabled / disabled",
+    "show_hide_section": "Show Sections / Hide Sections",
+    "specify_show_hide_section": "Specify the sections to be shown / hide",
+    "set_remove_mandatory": "Set / Remove Mandatory",
+    "specify_mandatory": "Specify the fields to set / remove mandatory",
+    "set_value": "Set Values",
+    "specify_set_value": "Specify the fields to Set Value",
+    "specify_picklist_filter": "Specify the fields to set picklist filter",
+    "execute_script": "Execute Script",
+    "specify_execute_script": "The system will execute script to return actions",
+    "cancel": "CANCEL",
+    "subform_name": "Subform Name"
+  },
+  "booking": {
+    "time_slot": "Available Slots",
+    "external_Attendees_Desc": "Want to invite external attendees?",
+    "external_Attendees": "External Attendees",
+    "external_Attendees_msg": "Total Amount for the booked slots:",
+    "no_slot_available": "No slot available",
+    "slotHeading": "Cost Breakdown",
+    "total": "Total",
+    "no_available_slot": "No available slot",
+    "no_cost_breakdown": "No cost breakdown"
+  },
+  "field_permission": {
+    "valid_time": "Please enter valid time",
+    "update_success": "Field Permission updated successfully!",
+    "email_validation": "Enter valid email",
+    "input_value": "Type your "
+  },
+  "form_rule": {
+    "execute": "Run when a record is"
+  }
+}

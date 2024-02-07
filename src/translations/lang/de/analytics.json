@@ -1,0 +1,23 @@
+{
+  "analytics": {
+    "mode": "Modus",
+    "Category": "Kategorie",
+    "xaxis": "X-Achse",
+    "yaxis": "Y-Achse",
+    "assets": "Assetwerte",
+    "rotate_axis": "Achse drehen",
+    "auto": "Auto",
+    "horizontal": "Horizontal",
+    "vertical": "Vertikal",
+    "slanting": "Schräg",
+    "tick_direction": "Richtung ankreuzen",
+    "ymin": "Y-Min",
+    "ymax": "Y-Max",
+    "xmin": "X-Min",
+    "xmax": "X-Max",
+    "y1axis_label": "Y1 - Achsenbeschriftung",
+    "y2axis_label": "Y2 - Achsenbeschriftung",
+    "ticks_count": "Taktanzahl",
+    "decimals": "Dezimalstellen"
+  }
+}

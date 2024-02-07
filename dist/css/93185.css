@@ -1,0 +1,63 @@
+
+.fc-attachments .dropbox2 {
+  outline: 1px dashed #e1e1ed;
+  /* outline-offset: -10px; */
+  color: #999999;
+  padding: 57px 10px;
+  position: relative;
+  cursor: pointer;
+  text-align: center;
+}
+.fc-attachments .dropbox2 .input-file {
+  width: 100%;
+  height: 200px;
+  opacity: 0;
+  position: absolute;
+  cursor: pointer;
+  left: 0;
+  top: 0;
+}
+.fc-attachments .dropbox2:hover {
+  outline: 1px dashed #e1e1ed;
+}
+.fc-attachments .dropbox2 p {
+  font-size: 13px;
+  text-align: center;
+  letter-spacing: 0.9px;
+  color: #999999;
+}
+.fc-attachments .fc-attachment-row {
+  border-bottom: 1px solid #e2e2e2;
+  padding: 5px;
+}
+.fc-attachments {
+  font-size: 13px;
+}
+.fc-attachments .fc-attachment-row .attachment-sublabel,
+.fc-attachments .fc-attachment-row .attachment-progress {
+  color: rgb(163, 162, 177);
+  font-size: 12px;
+}
+.fc-attachments .fc-attachment-row div {
+  padding: 2px;
+}
+.fc-attachments .fc-attachment-row .remove {
+  margin-top: -30px;
+}
+.fc-attachments .fc-attachment-row:last-child {
+  border: none;
+}
+
+
+.oddEven:nth-child(odd) {
+  background: rgb(248, 250, 250);
+}
+
+
+.Cell {
+  display: table-cell;
+  border-width: thin;
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+

@@ -1,0 +1,39 @@
+
+.details_fc[data-v-2b6a6a54] {
+  margin: 5px;
+  padding: 24px 24px 32px;
+  background-color: #fff;
+}
+.flx[data-v-2b6a6a54] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.ic_delete[data-v-2b6a6a54] {
+  margin: 0 20px 0 0;
+  -o-object-fit: contain;
+     object-fit: contain;
+}
+.Shape[data-v-2b6a6a54] {
+  margin: 0 24px 0 0;
+  padding: 4px;
+}
+.details[data-v-2b6a6a54] {
+  margin: 1px 0px 1px 0;
+  font-size: 15px;
+  font-weight: 450;
+  color: #324056;
+}
+.description[data-v-2b6a6a54] {
+  opacity: 0.5;
+  font-size: 12px;
+  letter-spacing: 0.16px;
+  color: #324056;
+}
+.details_body[data-v-2b6a6a54] {
+  margin: 25px 0;
+}
+

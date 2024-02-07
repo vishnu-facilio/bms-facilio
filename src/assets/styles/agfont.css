@@ -1,0 +1,60 @@
+@font-face {
+  font-family: Panton-Regular;
+  src: url(../../fonts/agfont/Panton-Regular.eot);
+  src: url(../../fonts/agfont/Panton-Regular.eot?#iefix)
+      format('embedded-opentype'),
+    url(../../fonts/agfont/Panton-Regular.ttf) format('truetype'),
+    url(../../fonts/agfont/Panton-Regular.svg#Panton-Regular) format('svg');
+  font-weight: 400;
+  font-style: normal;
+  background: url(../../fonts/agfont/Panton-Regular.eot);
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-ultrabold.woff') format('woff');
+  font-weight: 800;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-semibold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-bold.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-bold-italic.woff') format('woff');
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-regular-italic.woff') format('woff');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: Aktiv-Grotesk;
+  src: url('../../fonts/agfont/ag-thin.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+}

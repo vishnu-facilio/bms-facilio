@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="62px" height="80px" viewBox="0 0 62 80" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 59 (86127) - https://sketch.com -->
+    <title>Map_1 new.svg</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Map_1-new.svg" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="map_2-new-01" transform="translate(8.000000, 1.000000)" fill-rule="nonzero">
+            <path d="M33.05,2.95 C25.22,-0.65 16.17,0.32 9.15,5.32 C1.51,10.76 -1.61,20.22 1.14,29.12 C2.74,34.28 5.42,39 8.16,43.63 C11.18,48.71 14.17,53.84 16.62,59.23 C18.79,64.01 20.89,69.28 21.4,74.55 C21.45,75.06 21.42,75.6 21.64,76.08 C21.83,76.49 22.19,76.81 22.62,76.94 C23.05,77.07 23.55,77.01 23.89,76.72 C24.47,76.24 24.43,75.4 24.52,74.71 C24.59,74.17 24.68,73.64 24.77,73.11 C24.88,72.43 25.01,71.76 25.14,71.09 C26.14,66.08 27.72,61.02 29.92,56.36 C32.2,51.53 35.29,47.15 38.45,42.86 C41.51,38.7 43.86,33.72 45.07,28.68 C45.82,25.57 46.08,22.32 45.59,19.14 C45.18,16.48 44.27,13.9 42.88,11.6 C40.95,8.39 37.89,5.17 33.05,2.95 Z" id="Path" stroke="#FFFFFF" fill="#FE2C25"></path>
+            <circle id="Oval" fill="#101010"  opacity="0.5" cx="22.88" cy="24.11" r="8.56"></circle>
+        </g>
+    </g>
+</svg>

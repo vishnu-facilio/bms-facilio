@@ -1,0 +1,247 @@
+
+#newenpi .el-input.is-disabled .el-input__inner {
+  background-color: white !important;
+}
+#newenpi .textcolor {
+  color: #6b7e91;
+}
+#newenpi .ruletitle {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #ef4f8f;
+}
+#newenpi .header.text {
+  font-size: 18px;
+  text-align: left;
+  letter-spacing: 0.6px;
+}
+#newenpi .header .el-textarea__inner {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #666666;
+}
+#newenpi .header.el-input .el-input__inner,
+#newenpi .header.el-textarea .el-textarea__inner {
+  border-bottom: none;
+  resize: none;
+}
+#newenpi .primarybutton.el-button {
+  background-color: #39b2c2 !important;
+  border-color: #39b2c2 !important;
+  color: #ffffff !important;
+  float: right;
+}
+#newenpi .fc-form .form-header,
+#newenpi .fc-form-container .form-header {
+  font-weight: normal;
+  font-size: 16px;
+  text-align: left;
+}
+#newenpi .fc-form .form-input {
+  padding: 0px;
+}
+#newenpi .column-item {
+  padding: 10px;
+  border: 1px solid #f2f2f2;
+  cursor: move;
+  margin-top: 5px;
+}
+#newenpi.el-button:focus,
+#newenpi .el-button:hover {
+  background-color: #ecf5ff;
+}
+.fc-create-record {
+  width: 50% !important;
+}
+.body-scroll {
+  width: 100%;
+  overflow-y: scroll;
+  display: inline-block;
+  /* height: 100vh; */
+  padding-bottom: 30px;
+}
+.kpi-body-modal {
+  height: calc(100vh - 100px) !important;
+}
+.kpi-icon-search {
+  line-height: 0px !important;
+  font-size: 16px !important;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  right: 11%;
+}
+
+
+#newenpi .el-input.is-disabled .el-input__inner {
+  background-color: white !important;
+}
+#newenpi .textcolor {
+  color: #6b7e91;
+}
+#newenpi .ruletitle {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #ef4f8f;
+}
+#newenpi .header.text {
+  font-size: 18px;
+  text-align: left;
+  letter-spacing: 0.6px;
+}
+#newenpi .header .el-textarea__inner {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  text-align: left;
+  color: #666666;
+}
+#newenpi .header.el-input .el-input__inner,
+#newenpi .header.el-textarea .el-textarea__inner {
+  border-bottom: none;
+  resize: none;
+}
+#newenpi .primarybutton.el-button {
+  background-color: #39b2c2 !important;
+  border-color: #39b2c2 !important;
+  color: #ffffff !important;
+  float: right;
+}
+#newenpi .fc-form .form-header,
+#newenpi .fc-form-container .form-header {
+  font-weight: normal;
+  font-size: 16px;
+  text-align: left;
+}
+#newenpi .fc-form .form-input {
+  padding: 0px;
+}
+#newenpi .column-item {
+  padding: 10px;
+  border: 1px solid #f2f2f2;
+  cursor: move;
+  margin-top: 5px;
+}
+#newenpi.el-button:focus,
+#newenpi .el-button:hover {
+  background-color: #ecf5ff;
+}
+.fc-create-record {
+  width: 50% !important;
+}
+.body-scroll {
+  width: 100%;
+  overflow-y: scroll;
+  display: inline-block;
+  /* height: 100vh; */
+  padding-bottom: 30px;
+}
+.kpi-body-modal {
+  height: calc(100vh - 100px) !important;
+}
+.kpi-icon-search {
+  line-height: 0px !important;
+  font-size: 16px !important;
+  cursor: pointer;
+  position: absolute;
+  top: 0px;
+  right: 11%;
+}
+.setup-dialog-2 .el-dialog__body,
+.setup-dialog-2 .el-dialog__header {
+  padding: 0px;
+}
+
+
+.spinner[data-v-06a81286] {
+  -webkit-transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease;
+  -webkit-animation: rotator-data-v-06a81286 1.4s linear infinite;
+          animation: rotator-data-v-06a81286 1.4s linear infinite;
+  -webkit-animation-play-state: paused;
+          animation-play-state: paused;
+}
+.spinner.show[data-v-06a81286] {
+  -webkit-animation-play-state: running;
+          animation-play-state: running;
+}
+.spinner.v-enter[data-v-06a81286],
+.spinner.v-leave-active[data-v-06a81286] {
+  opacity: 0;
+}
+.spinner.v-enter-active[data-v-06a81286],
+.spinner.v-leave[data-v-06a81286] {
+  opacity: 1;
+}
+.spinner .path[data-v-06a81286] {
+  stroke-dasharray: 126;
+  stroke-dashoffset: 0;
+  -webkit-transform-origin: center;
+          transform-origin: center;
+  -webkit-animation: dash-data-v-06a81286 1.4s ease-in-out infinite;
+          animation: dash-data-v-06a81286 1.4s ease-in-out infinite;
+}
+@-webkit-keyframes rotator-data-v-06a81286 {
+0% {
+    -webkit-transform: scale(0.5) rotate(0deg);
+            transform: scale(0.5) rotate(0deg);
+}
+100% {
+    -webkit-transform: scale(0.5) rotate(270deg);
+            transform: scale(0.5) rotate(270deg);
+}
+}
+@keyframes rotator-data-v-06a81286 {
+0% {
+    -webkit-transform: scale(0.5) rotate(0deg);
+            transform: scale(0.5) rotate(0deg);
+}
+100% {
+    -webkit-transform: scale(0.5) rotate(270deg);
+            transform: scale(0.5) rotate(270deg);
+}
+}
+@-webkit-keyframes dash-data-v-06a81286 {
+0% {
+    stroke-dashoffset: 126;
+}
+50% {
+    stroke-dashoffset: 63;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+}
+100% {
+    stroke-dashoffset: 126;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+}
+}
+@keyframes dash-data-v-06a81286 {
+0% {
+    stroke-dashoffset: 126;
+}
+50% {
+    stroke-dashoffset: 63;
+    -webkit-transform: rotate(135deg);
+            transform: rotate(135deg);
+}
+100% {
+    stroke-dashoffset: 126;
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg);
+}
+}
+
+.el-dialog .fc-dialog-right{position:absolute;right:0;top:0;bottom:0;overflow-y:hidden;border-radius:0px;width:55%;-webkit-transition:-webkit-transform .25s ease;transition:-webkit-transform .25s ease;transition:transform .25s ease;transition:transform .25s ease, -webkit-transform .25s ease;text-align:left;-webkit-box-shadow:none;box-shadow:none;margin-top:0px !important;margin-bottom:0px !important;padding-top:0%}.el-dialog .fc-dialog-right .el-dialog__body{padding:0}.el-dialog .fc-setup-modal-title{font-size:16px;font-weight:600;color:#303133}.el-dialog .setup-dialog-header-hide .el-dialog__header{display:none}.el-dialog .el-dialog__body{padding:0px 20px !important}.el-dialog .el-dialog__header{padding:20px 0px 15px 40px;border-bottom:1px solid #ebedf4}.el-dialog .el-form-item{text-transform:capitalize}.el-dialog .el-form-item__label{color:#514242}.el-dialog .is-required .el-form-item__label{color:#c51e1e}.new-body-modal{overflow-y:scroll;overflow-x:hidden;padding-left:20px;padding-right:40px;text-align:left;margin:0px;height:calc(100vh - 150px);position:relative;padding-bottom:30px}
+
+.capp-linkname {
+  font-size: 14px;
+  margin: 0 2px;
+  opacity: 0.3;
+}
+.capp-linkname:hover {
+  opacity: 1;
+}
+

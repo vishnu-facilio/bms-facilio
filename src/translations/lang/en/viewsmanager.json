@@ -1,0 +1,105 @@
+{
+  "list": {
+    "add_view": "Add View",
+    "add_folder": "Add Folder",
+    "views_manager": "Views Manager",
+    "views": "Views",
+    "manage_views": "Manage views",
+    "back": "Back",
+    "success": "View updated successfully!",
+    "error": "Something went wrong in sharing this view",
+    "module_list": "Module List",
+    "no_view_config": "No View Configured",
+    "clone_view": "Clone View",
+    "edit_view": "Edit View",
+    "show_all": "Show All"
+  },
+  "customize": {
+    "heading_name": "Customize Columns",
+    "updated": "Updated",
+    "error": "Could not able to customize",
+    "drag_drop_text": "Add columns that you wish to save in this view",
+    "available_columns": "Available Columns",
+    "selected_columns": "Selected Columns"
+  },
+  "visualization_type": {
+    "heading_name": "Visualization Type",
+    "error_msg": "Please select atleast one visualization",
+    "list": "List",
+    "calendar": "Calendar"
+  },
+  "sharing_permission": {
+    "add_here": "Add Here",
+    "heading_name": "Share With",
+    "title": "Share",
+    "desc": "Use this option to share with relevant user(s) and groups",
+    "share_with": "Shared with",
+    "only_me": "Only Me",
+    "everyone": "Everyone",
+    "specific": "Specific User / Team / Role",
+    "specific_user": "Specific User",
+    "permission_desc": "Do not let the shared users edit this view",
+    "selected_user": "Selected User",
+    "available_user": "Available User",
+    "add_columns_desc": "Add users to share this view",
+    "select_user": "Select User",
+    "reorder": "Reorder"
+  },
+  "folder": {
+    "edit_folder": "Edit Folder",
+    "add_new_folder": "Add New Folder",
+    "error_creation": "Something went wrong in creating the group",
+    "success_creation": "The group was created successfully",
+    "edit_creation": "The group was edited successfully"
+  },
+  "schedules": {
+    "no_view_schedules_available": " No View Schedules Available",
+    "schedule_deletion_succesfully": "Schedule deleted succesfully",
+    "schedule_deletion_failed": "Schedule deletion failed",
+    "schedule_views": "Schedule view",
+    "view": "View",
+    "select_view": "Select View",
+    "select_user": "Select Users",
+    "subject_empty": "Subject is Empty",
+    "specify_criteria_for_this_view_to_teams_and_users": "Specify criteria for this view to teams and users"
+  },
+  "views": {
+    "edit_view": "Edit View",
+    "save_as_new_view": "Save as New View",
+    "delete_view": "Delete View",
+    "delete_view_confirmation": "Are you sure you want to delete this view?",
+    "delete": "delete",
+    "delete_view_sucess": "View deleted successfully",
+    "delete_view_error": "View cannot be deleted",
+    "delete_group": "Delete Folder",
+    "delete_group_confirmation": "Are you sure you want to delete this folder?",
+    "delete_group_sucess": "Folder deleted successfully",
+    "delete_group_error": "Folder cannot be deleted"
+  },
+  "naming": {
+    "heading_name": "Naming",
+    "display_name": "View Display Name",
+    "folder_name": "Folder Name"
+  },
+  "sorting": {
+    "heading_name": "Sorting",
+    "field": "Field"
+  },
+  "criteria": {
+    "heading_name": "Specify Criteria"
+  },
+  "calender": {
+    "add_weekend": "Add Weekend",
+    "from_date": "Please enter from date",
+    "to_date": "Please enter to date"
+  },
+  "view_status": {
+    "view_enabled_successfully": " View enabled successfully",
+    "view_disabled_successfully": " View disabled successfully",
+    "error_while_editing_view_status": " Error Occured while editing View Status"
+  },
+  "view_clone": {
+    "clone": "Clone",
+    "select_app_to_clone_view": " Please select an App to Clone View"
+  }
+}

@@ -1,0 +1,116 @@
+
+.gauge .arc {
+  -webkit-transform: rotate(-90deg);
+          transform: rotate(-90deg);
+}
+.layout4 .readingcard-header {
+  padding-top: 10px;
+  line-height: 0.8rem;
+  padding-bottom: 8px;
+}
+.gauge {
+  width: 86%;
+  margin: auto;
+}
+.target {
+  -webkit-transform: rotate(212deg);
+          transform: rotate(212deg);
+}
+.kpi-gauge-chart {
+  position: absolute;
+  padding: 10px;
+  -webkit-box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.1) !important;
+          box-shadow: 0 4px 18px 0 rgba(0, 0, 0, 0.1) !important;
+  border: none;
+  background-color: #fff;
+  color: #000 !important;
+  opacity: 1 !important;
+  -webkit-transition: visibility 0.2s, opacity 0.3s linear;
+  transition: visibility 0.2s, opacity 0.3s linear;
+  z-index: 10000;
+  max-width: 500px;
+  border-radius: 3px;
+  padding-bottom: 5px;
+}
+.kpi-gauge-chart .axis-row {
+  padding: 3px;
+  padding-left: 0px;
+}
+.kpi-gauge-chart .tooltip-title {
+  font-weight: 500;
+  font-size: 13px;
+  padding: 5px 0;
+}
+.tooltip-type-title {
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: normal;
+  letter-spacing: 1px;
+  text-align: left;
+  color: #879eb5;
+  padding: 5px;
+  padding-left: 0px;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.kpi-gauge-chart .axis-color {
+  margin: 2px 5px;
+}
+.kpi-gauge-chart .axis-tip {
+  font-size: 12px;
+  color: #333333bd;
+  padding-top: 5px;
+}
+.kpi-gauge-chart .axis-label {
+  font-weight: 400;
+  padding-right: 8px;
+  color: #7f7f7f;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.kpi-gauge-chart .icon {
+  height: 20px;
+  width: 20px;
+  margin-right: 4px;
+  margin-top: 4px;
+}
+.kpi-gauge-chart .imgcls {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  cursor: pointer;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+.kpi-gauge-chart .axis-value {
+  font-weight: 500;
+  font-size: 12.5px;
+}
+.kpi-gauge-chart .axis-unit {
+  font-weight: 400;
+  font-size: 13px;
+  margin-left: 2px;
+  color: #979797;
+}
+.layout4 .readingcard-header {
+  letter-spacing: 0.8px !important;
+}
+
+
+.target-meter-header {
+  font-size: 0.97vw;
+  font-weight: 500;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.33;
+  letter-spacing: normal;
+  color: rgba(0, 0, 0, 0.5);
+  text-align: left;
+}
+.target-meter-header text.gauge-center-period {
+  fill: #6d7278;
+}
+

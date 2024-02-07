@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="40px" viewBox="0 0 50 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>labour</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="quotation-icon-copy-2" transform="translate(0.000000, -4.000000)" stroke="#fff" stroke-width="2.78">
+            <g id="labour" transform="translate(0.000000, 6.000000)">
+                <path d="M45,23.3780914 C45,13.7648265 38.2175342,5.73569131 29.176807,3.81489026 M21.9560883,3.60824753 C12.3550385,5.07431601 5,13.3672731 5,23.3780914 M5.00355445,23.3736402 L5.00355445,27.8742027 M45,23.0414015 L45,27.9815936" id="Shape"></path>
+                <path d="M22,11.3780914 L22,3.10344828 C22,1.38946112 23.5670034,0 25.5,0 C27.4329966,0 29,1.38946112 29,3.10344828 L29,11.3780914" id="Shape" stroke-linecap="round" transform="translate(25.500000, 5.689046) scale(-1, 1) translate(-25.500000, -5.689046) "></path>
+                <line x1="15.0227817" y1="6.51450429" x2="15.0227817" y2="16.4019756" id="Path-44" stroke-linecap="round"></line>
+                <rect id="Rectangle" x="1.39" y="28.7680914" width="47.22" height="7.22" rx="2"></rect>
+                <line x1="36.0227817" y1="7.07364078" x2="36.0227817" y2="16.4019756" id="Path-44-Copy" stroke-linecap="round"></line>
+            </g>
+        </g>
+    </g>
+</svg>

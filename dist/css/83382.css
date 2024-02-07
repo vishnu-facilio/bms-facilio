@@ -1,0 +1,43 @@
+
+.priorityMediumtag {
+  font-size: 16px;
+  padding-right: 10px;
+  position: relative;
+  top: 1px;
+}
+.priority-check-icon {
+  color: #939299;
+  font-weight: 600;
+  padding-top: 10px;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  margin-left: 47px;
+  font-size: 16px;
+}
+.priority-more-popover {
+  padding: 0;
+}
+.priority-more-popover ul {
+  list-style-type: none;
+  padding-left: 0;
+  margin-top: 4px;
+  margin-bottom: 0px;
+}
+.priority-more-popover li {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(151, 151, 151, 0.1);
+  padding-left: 24px;
+  padding-right: 20px;
+  letter-spacing: 0.5px;
+  font-size: 13px;
+  color: #67666a;
+  font-weight: 500;
+}
+.priority-more-popover li:hover {
+  background: #f1f8fa;
+  color: #39b2c2;
+  cursor: pointer;
+}
+

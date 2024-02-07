@@ -1,0 +1,20 @@
+{
+  "deliveries": {
+    "new_delivery": "Neue Lieferung",
+    "no_data_deliveries": "Keine Lieferungen verfügbar",
+    "deliveries": "Lieferungen",
+    "delivery": "Lieferung",
+    "delete_delivery": "Lieferung löschen",
+    "delete_confirmation_delivery": "Möchten Sie diese Lieferung(en) wirklich löschen?",
+    "delete_success_delivery": "Lieferung(en) erfolgreich gelöscht"
+  },
+  "deliveryArea": {
+    "new_deliveryArea": "Neues Liefergebiet",
+    "no_data_deliveryArea": "Keine Liefergebiete verfügbar",
+    "deliveryaAreas": "Liefergebiete",
+    "deliveryArea": "Lieferzone",
+    "delete_deliveryArea": "Liefergebiet löschen",
+    "delete_confirmation_deliveryArea": "Möchten Sie diese Lieferregion(en) wirklich löschen?",
+    "delete_success_deliveryArea": "Liefergebiet(e) erfolgreich gelöscht"
+  }
+}

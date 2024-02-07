@@ -1,0 +1,81 @@
+
+.change-password-container {
+  padding: 40px;
+}
+
+
+.change-password-container {
+  background-color: #ffffff;
+  padding: 20px;
+  height: calc(100vh - 90px);
+}
+
+
+.change-password-container[data-v-03c28ac6] {
+  background-color: #ffffff;
+  height: inherit;
+  width: 600px;
+  padding: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: auto;
+  border-radius: 8px;
+}
+.change-el-btn[data-v-03c28ac6] {
+  height: 32px !important;
+  width: 100px;
+  padding: 8px 24px;
+  border-radius: 4px;
+  background-color: #0053cc;
+  line-height: 1;
+  display: inline-block;
+  border: none !important;
+  font-size: 12px;
+  letter-spacing: 0.7px !important;
+  font-weight: 500;
+  cursor: pointer !important;
+  color: #ffffff;
+}
+.fc-ep-cancel-btn[data-v-03c28ac6] {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: normal;
+  color: #0053cc;
+}
+.fc-ep-cancel-btn[data-v-03c28ac6]:hover {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: normal;
+  color: #0053cc;
+  text-decoration: underline;
+}
+.fc-form[data-v-03c28ac6] {
+  overflow-y: scroll;
+  padding: 5px;
+}
+
+
+.change-pass-form .el-form-item__label {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #324056;
+  margin-bottom: 10px;
+}
+.change-pass-form .el-form-item__content {
+  width: 500px;
+}
+.change-pass-form .el-form-item {
+  margin-bottom: 25px !important;
+}
+

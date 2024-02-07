@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="40px" viewBox="0 0 20 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Hand operated valve 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="129.331989%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-1013.000000, -560.000000)">
+            <g id="Hand-operated-valve-1" transform="translate(1013.000000, 560.000000)">
+                <polygon id="Rectangle" fill="#80858F" points="8 5 12 5 12 26 8 26"></polygon>
+                <polygon id="Rectangle-Copy-10" fill="#7C818A" points="6 16 14 16 15 25 15 26 5.00082629 26 5.00082629 25"></polygon>
+                <rect id="Rectangle-Copy-42" fill="#7C818A" x="4" y="10" width="12" height="6"></rect>
+                <path d="M1.82968294,2.25514052e-16 L2.65936588,9.836576e-14 C3.21165063,9.82643069e-14 3.65936588,0.44771525 3.65936588,1 L3.65936588,1.88991 L5.45454545,1.88991 L5.45454545,1 C5.45454545,0.44771525 5.9022607,4.93999618e-15 6.45454545,5.32907052e-15 L7.92933967,-1.11022302e-16 C8.48162442,-7.03002761e-16 8.92933967,0.44771525 8.92933967,1 L8.92933967,1.88991 L11.0210806,1.88991 L11.0210806,1.03889026 C11.0210806,0.486605513 11.4687959,0.0388902632 12.0210806,0.0388902632 L14.0807947,0.0388902632 C14.6330794,0.0388902632 15.0807947,0.486605513 15.0807947,1.03889026 L15.0807947,1.88991 L16.6216663,1.88991 L16.6216663,1.02744485 C16.6216663,0.479650149 17.062397,0.033816717 17.6101554,0.0275111029 L18.3108331,0.0194451316 C19.2330568,0.00882879712 19.989273,0.747832545 19.9998894,1.6700562 C19.9999631,1.67646346 20,1.68287109 20,1.68927878 L20,5 L0,5 L-2.22044605e-16,1.82968294 C-3.45795897e-16,0.819176956 0.819176956,4.07671543e-16 1.82968294,2.22044605e-16 Z" id="Rectangle" fill="#D3251C"></path>
+                <path d="M15,39 L5,39 L5,40 L0,40 L0,25 L5,25 L5,26 L15,26 L15,25 L20,25 L20,40 L15,40 L15,39 Z" id="Combined-Shape" fill="url(#linearGradient-1)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

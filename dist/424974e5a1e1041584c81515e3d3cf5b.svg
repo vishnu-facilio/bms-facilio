@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="50px" height="15px" viewBox="0 0 50 15" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Grey pipe Horizontal</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="46.2468438%" y1="0%" x2="46.2468438%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#ABAAAA" offset="0%"></stop>
+            <stop stop-color="#D8DBDF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-410.000000, -848.000000)" fill="url(#linearGradient-1)">
+            <rect id="Grey-pipe-Horizontal" x="410.5" y="848" width="100" height="15"></rect>
+        </g>
+    </g>
+</svg>

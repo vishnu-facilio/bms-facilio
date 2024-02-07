@@ -1,0 +1,322 @@
+.floor-plan-builder {
+  padding: 0px !important;
+  background: #fff;
+
+  .fp-header {
+    background: #fff;
+    box-shadow: -6px -1px 8px 2px rgb(194 200 206 / 29%);
+  }
+
+  .fp-tool-bar {
+    height: 50px;
+    background: #fff;
+    border: 1px solid #f2f2f2;
+  }
+
+  .floor-plan-builder-container {
+    height: calc(100vh - 130px);
+    // background: #f0f2f5;
+  }
+
+  .floor-plan-viewer-container {
+    // background: #f0f2f5;
+  }
+
+  .floorplan-viewtools-header {
+    font-size: 13px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    color: #385571;
+    padding-left: 30px;
+    padding: 0 20px;
+    height: 40px;
+    box-sizing: border-box;
+    line-height: 40px;
+    display: inline-block;
+    list-style: none;
+    position: relative;
+    font-weight: 500;
+  }
+
+  .fp-markers {
+    cursor: grab;
+  }
+
+  .floorplan-builder-toolbar ul {
+    padding: 0;
+    margin: 0;
+  }
+
+  .floorplan-builder-toolbar ul li {
+    list-style: none;
+    display: inline;
+    cursor: pointer;
+  }
+
+  .floorplan-builder-toolbar ul li i {
+    font-size: 20px;
+    padding: 12px 12px;
+  }
+
+  .floorplan-builder-toolbar {
+    height: 50px;
+    background: #fff;
+    border-bottom: 1px solid #ebeef5;
+    box-shadow: 0 3px 4px 0 hsla(0, 0%, 85.5%, 0.32);
+    padding: 1px;
+  }
+
+  .floorplan-builder-toolbar .el-button-group {
+    padding: 0 6px;
+    border-right: 1px solid #ededed;
+  }
+
+  .floorplan-builder-toolbar .el-button {
+    border: none;
+    background: transparent;
+  }
+
+  .fp-viwer-settings {
+    position: absolute;
+    right: 2%;
+    bottom: 5%;
+    float: right;
+    display: block;
+  }
+
+  .fp-leagends {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #fff;
+    width: 250px;
+  }
+
+  .fc-leagend-icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    margin: auto;
+  }
+
+  .fp-leagend-header {
+    padding: 10px;
+    border-bottom: 1px solid #f3f3f7;
+    width: 100%;
+  }
+
+  .fp-leagend-row.inactive {
+    opacity: 0.2;
+  }
+
+  .fp-leagend-row.active {
+    opacity: 1;
+  }
+
+  .fp-actions {
+    position: absolute;
+    min-width: 200px;
+    border: 1px solid #e4e7ed;
+    border-radius: 4px;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+
+  .fp-actions .graphics-actions-menu {
+    padding: 6px 0;
+    margin: 0;
+  }
+
+  .fp-actions .graphics-actions-menu-item {
+    list-style: none;
+    padding: 12px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  .fp-actions .graphics-actions-menu-section {
+    border-top: 1px solid #ededed;
+  }
+
+  .fp-actions .graphics-actions-menu-item:hover {
+    background: #f5f7fa;
+  }
+
+  .fc-input-full-border0 .el-input__inner {
+    border: 0px !important;
+    background: transparent;
+    width: 180px;
+    font-size: 13px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-transform: capitalize;
+    letter-spacing: 1px;
+    color: #385571;
+    padding-left: 30px;
+    padding: 0 20px;
+    height: 40px;
+    box-sizing: border-box;
+    line-height: 40px;
+    display: inline-block;
+    list-style: none;
+    position: relative;
+    font-weight: 500;
+  }
+
+  .fplan-space-info-card {
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  .fplan-space-info-card .space-title {
+    padding: 5px;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 1px;
+    color: #324056;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+  }
+
+  .fplan-space-info-card .space-title1 {
+    padding: 5px;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 1px;
+    color: #324056;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+  }
+
+  .fplan-space-info-card .space-subtitle {
+    font-size: 13px;
+    padding: 5px;
+    opacity: 0.7;
+  }
+
+  .fplan-space-info-card .space-popver-colse-container {
+    font-size: 15px;
+    top: 15px;
+    position: absolute;
+    right: 10px;
+    z-index: 10;
+  }
+
+  .fplan-space-info-card .open-graphics {
+    border-left: 1px solid #f0eff0;
+    padding-left: 10px;
+    font-size: 13px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.46px;
+    color: #39b2c2;
+    white-space: nowrap;
+  }
+}
+
+.properties-section {
+  width: 350px;
+  top: 10px;
+  border-radius: 10px;
+  right: 10px;
+  background: #fff;
+  position: absolute;
+  height: calc(100vh - 130px);
+  z-index: 100;
+  border-left: 1px solid #f4f5f7;
+  -webkit-transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 1s cubic-bezier(0.25, 0.8, 0.25, 1);
+  -webkit-box-shadow: 0px 1px 16px 0px rgb(0 0 0 / 12%);
+  box-shadow: 0px 1px 16px 0px rgb(0 0 0 / 12%);
+  .new-header-text {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .new-header-container {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 50px;
+    .fc-setup-modal-title {
+      font-size: 12px;
+      color: #385571;
+      opacity: 1;
+      font-weight: 600;
+      .el-icon-close {
+        font-weight: bold;
+      }
+    }
+  }
+  .fc-input-label-txt {
+    font-size: 14px;
+    font-weight: 400;
+    color: #385571;
+  }
+}
+
+.infp-left-section .el-form-item__content {
+  margin: 0px !important;
+}
+
+.fc-btn-desk-type {
+  opacity: 1 !important;
+  color: #324056 !important;
+  font-size: 14px;
+  font-weight: 400;
+  padding-top: 10px;
+}
+.fc-properties-section-editor {
+  height: calc(100vh - 85px) !important;
+  top: 70px !important;
+}
+.fc-floorplan-delete {
+  background: #e6736d;
+  color: #fff;
+  font-size: 12px;
+  border: 1px solid #e6736d;
+  letter-spacing: 0.7px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 600;
+  &:hover,
+  &:active,
+  &:focus {
+    background: #e6736d;
+    border: 1px solid #e6736d;
+    color: #fff;
+  }
+}
+.fc-pink-btn-small {
+  background: #ff3184;
+  border-color: #ff3184;
+  color: #fff;
+  padding: 10px 25px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  font-weight: 700;
+  &:hover,
+  &:active,
+  &:focus {
+    color: #fff;
+    background: #ff3184;
+    border-color: #ff3184;
+  }
+}

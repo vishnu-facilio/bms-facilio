@@ -1,0 +1,26 @@
+
+.f-dialog .el-dialog__body,
+.f-dialog .el-dialog__header {
+  padding: 0px;
+}
+.f-dialog-title {
+  padding: 20px 30px 18px;
+  border-bottom: 1px solid #eeeeee;
+}
+.f-dialog-content {
+  padding: 15px 25px 60px;
+}
+.costdialog .el-icon-close {
+  display: none;
+}
+
+.desc[data-v-f2216c10]{color:#666;margin-top:4px}.wattsense-table[data-v-f2216c10]{border-top:1px solid #f3f6f9}.wattsense-table tr[data-v-f2216c10]{display:table-row;vertical-align:inherit;cursor:pointer;background-color:#fff;z-index:1}.wattsense-table tr[data-v-f2216c10]:hover{background-color:#f9f9f9}.wattsense-table td[data-v-f2216c10]{border-top:none;border-left:none;border-right:none;color:#333;font-size:14px;border-collapse:separate;padding:15px 30px;letter-spacing:.6px;font-weight:400;border-bottom:1px solid #f3f6f9}
+
+.integrations-card[data-v-73deeb56] {
+  -webkit-box-shadow: 0 3px 7px 0 rgba(233, 233, 226, 0.5);
+          box-shadow: 0 3px 7px 0 rgba(233, 233, 226, 0.5);
+  background-color: #fff;
+  margin: 0 20px 20px 0;
+  min-height: 135px;
+}
+

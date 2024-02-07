@@ -1,0 +1,23 @@
+{
+  "setup": {
+    "add_new": "Neue hinzufügen",
+    "service_catalogs": "Servicekataloge",
+    "list_of_sc": "Liste aller Servicekataloge",
+    "emptytext": "Keine Servicekataloge verfügbar.",
+    "emptytext_category": "Keine Servicekategorien verfügbar",
+    "emptytext_category_item": "Keine Serviceartikel verfügbar",
+    "group": "Servicekategorie",
+    "item": "Serviceartikel",
+    "select_category": "Kategorie wählen",
+    "category": "Kategorie",
+    "moduledetails": "Moduldetails",
+    "module_name": "Modulname",
+    "forms": "Formen",
+    "selectmodules": "Wählen Sie ein Modul",
+    "selectforms": "Wählen Sie ein Formular aus",
+    "configure_now": "Jetzt konfigurieren",
+    "external_url": "Externe URL",
+    "enter_external_url": "Geben Sie die externe URL ein",
+    "service_categories": "Service Kategorien"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "control-home": {
+    "title": "Dispositivos"
+  },
+  "control-fan": {
+    "fan": "ABANICO"
+  },
+  "control-light": {
+    "light": "RAYO"
+  },
+  "control-temperature": {
+    "temperature": "TEMPERATURA",
+    "set-point": "PUNTO DE AJUSTE",
+    "set-temperature": "AJUSTAR TEMPERATURA"
+  }
+}

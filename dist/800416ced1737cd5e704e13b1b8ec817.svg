@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="20px" viewBox="0 0 34 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Sensor</title>
+    <desc>Created with Sketch.</desc>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Components" transform="translate(-1025.000000, -273.000000)">
+            <g id="Sensor" transform="translate(1025.000000, 273.000000)">
+                <g id="Group-19">
+                    <g id="Group-18">
+                        <rect id="Rectangle" fill="#FFAD0A" x="0" y="6" width="14" height="14"></rect>
+                        <polygon id="Path-17" fill="#FFD2A6" points="0.110718833 6.14414727 5.07239848 0.828596885 18.8647445 0.828596885 14.0135324 6.14414727"></polygon>
+                        <polygon id="Path-18" fill="#CE8B05" points="18.8321659 0.766490912 18.8321659 14.9694638 13.9892526 20.0095317 13.9892526 6.16548487"></polygon>
+                    </g>
+                    <g id="Group-17" transform="translate(17.000000, 9.000000)">
+                        <rect id="Rectangle" fill="#EAA316" x="0" y="1" width="17" height="1"></rect>
+                        <rect id="Rectangle-Copy-2" fill="#FABC50" x="0" y="0" width="17" height="1"></rect>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,29 @@
+
+.flex-center[data-v-c4c97cd6] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+.seperator[data-v-c4c97cd6] {
+  margin-top: 30px;
+  height: 50px;
+  width: 1px;
+  border: solid 1px #8ca1ad;
+  opacity: 0.4;
+}
+.detail-card-icon[data-v-c4c97cd6] {
+  width: 27px;
+  height: 27px;
+}
+.show-link[data-v-c4c97cd6]:hover {
+  color: #017aff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+

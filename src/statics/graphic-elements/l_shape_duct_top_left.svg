@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>L shaped duct 1</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="0%" y1="21.2628413%" x2="100%" y2="21.2628413%" id="linearGradient-1">
+            <stop stop-color="#424951" offset="0%"></stop>
+            <stop stop-color="#909CAC" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="54.3006639%" y1="100%" x2="54.3006639%" y2="0%" id="linearGradient-2">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-105.000000, -474.000000)">
+            <g id="L-shaped-duct-1" transform="translate(155.000000, 524.000000) scale(-1, -1) translate(-155.000000, -524.000000) translate(105.000000, 474.000000)">
+                <g id="Group-Copy-4" transform="translate(0.000000, 6.000000)" fill="#5B6777">
+                    <polygon id="Path-2-Copy" points="5 0 5 94 0 94 0 0"></polygon>
+                </g>
+                <polygon id="Path-8" fill="url(#linearGradient-1)" points="29.9521056 6.06207107 0.00367788446 6.15762363 -1.9950781e-16 0 30 0"></polygon>
+                <polygon id="Path-4" fill="#848E9C" points="0 -2.84217094e-14 0 23 5 23 30 -2.84217094e-14"></polygon>
+                <polygon id="Path-8-Copy" fill="#848E9C" points="76 100 76.8011842 70 76.9599357 0 99.9598784 0 99.9598784 70"></polygon>
+                <polygon id="Path-9" fill="#5B6777" points="5 23 30 -1.13686838e-13 77 -2.48689958e-14 76.8011842 70 100 70 75.5 100 5 100"></polygon>
+                <polygon id="Path-4-Copy" fill="url(#linearGradient-2)" opacity="0.5" points="0 70 0 100 76.1488169 100 100 70"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

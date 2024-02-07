@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="101px" height="52px" viewBox="0 0 101 52" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>V.End closed</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-230.000000, -1569.000000)">
+            <g id="V.End-closed" transform="translate(281.000000, 1595.000000) rotate(90.000000) translate(-281.000000, -1595.000000) translate(255.000000, 1545.000000)">
+                <g id="Group-23-Copy-8">
+                    <g id="Group-Copy-6">
+                        <polygon id="Path-2-Copy" fill="#5B6777" points="51 0 51 77.26 0 77.26 0 0"></polygon>
+                        <path d="M-3.55271368e-14,0 L-3.55271368e-14,30 L24.0837134,30 C24.6654959,30 25.2184431,29.7466709 25.5983678,29.3060713 L49.8008868,1.23834605 L50.2413509,0 L-3.55271368e-14,0 Z" id="Path-4" fill="url(#linearGradient-1)" opacity="0.5"></path>
+                        <path d="M-8.8817842e-14,77 L-8.8817842e-14,100 L26.5497174,100 C27.0705721,100 27.5708795,99.7968076 27.9442376,99.4336364 L51.0010684,77.0059024 L-8.8817842e-14,77 Z" id="Path-4-Copy" fill="#848E9C"></path>
+                    </g>
+                    <path d="M25,30 L50.0125894,0.811247122 C50.2282111,0.559624596 50.6069875,0.530440227 50.85861,0.746062009 C50.9916318,0.860051757 51.0681923,1.0264837 51.0681923,1.2016649 L51.0681923,76.5709622 C51.0681923,76.8449128 50.9558035,77.1068682 50.7572766,77.2956433 L26.8800574,100" id="Path-19" stroke="#000000" stroke-linecap="round"></path>
+                </g>
+                <path d="M25,30 L49.2597101,2.02439209 C49.621539,1.60714125 50.253108,1.56221292 50.6703588,1.92404185 C50.8893899,2.11397985 51.0152096,2.38962572 51.0152096,2.67954134 L51.0152096,76.5691571 C51.0152096,76.8441664 50.9019533,77.1070379 50.7020827,77.2959344 L26.6790156,100 L25,30 Z" id="Rectangle" fill="#000000" opacity="0.5"></path>
+            </g>
+        </g>
+    </g>
+</svg>

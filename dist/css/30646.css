@@ -1,0 +1,29 @@
+
+.smart-table-wrapper {
+  overflow: auto;
+}
+.smart-table-wrapper .el-table td {
+  padding: 0px !important;
+}
+/* .condition-icon {
+  position: absolute;
+  right: 0;
+  top: 15px;
+} */
+.smart-table-actions {
+  position: absolute;
+  right: 0px;
+  top: 15px;
+}
+.smart-table-print {
+  font-size: 18px;
+  position: absolute;
+  z-index: 10;
+  color: #646f7f;
+  top: 10px;
+  cursor: pointer;
+}
+.smart-table-wrapper .el-table__row td:first-child .cell {
+  padding-left: 0;
+}
+

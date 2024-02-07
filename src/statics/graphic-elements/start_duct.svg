@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="100px" viewBox="0 0 48 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>start duct</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#424951" offset="0%"></stop>
+            <stop stop-color="#909CAC" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-153.000000, -1161.000000)">
+            <g id="start-duct" transform="translate(152.000000, 1161.000000)">
+                <polygon id="Path-2" fill="#5B6777" points="48.0605918 0 48.0605918 77.2625973 23 77.2625973 23 0"></polygon>
+                <path d="M23.145961,0.400923968 L2.19642503,28.400924 C1.86556448,28.843134 1.95583108,29.4698316 2.39804114,29.8006921 C2.57097085,29.9300778 2.7811419,30 2.99711718,30 L48.0893011,30 L48.0893011,-5.32907052e-15 L23.9466532,-4.4408921e-15 C23.6314896,-4.38299749e-15 23.334768,0.148574953 23.145961,0.400923968 Z" id="Path" fill="url(#linearGradient-1)"></path>
+                <path d="M47.9824677,100 L47.9824677,77 L22.8651008,77 L1.6950237,98.294976 C1.30564971,98.6866472 1.30751198,99.3198095 1.69918319,99.7091835 C1.88654765,99.895449 2.14000972,100 2.40420717,100 L47.9824677,100 Z" id="Path-3" fill="#848E9C"></path>
+            </g>
+        </g>
+    </g>
+</svg>

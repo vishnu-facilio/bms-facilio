@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="40px" viewBox="0 0 30 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>T pipe 3</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="15.7272798%" x2="50%" y2="115.72728%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-563.000000, -558.000000)" fill="url(#linearGradient-1)">
+            <path d="M579,596 L579,584 L565,584 C565,584.552285 564.552285,585 564,585 L563,585 L563,570 L564,570 C564.552285,570 565,570.447715 565,571 L579,571 L579,560 C578.447715,560 578,559.552285 578,559 L578,558 L593,558 L593,559 C593,559.552285 592.552285,560 592,560 L592,596 C592.552285,596 593,596.447715 593,597 L593,598 L578,598 L578,597 C578,596.447715 578.447715,596 579,596 Z" id="T-pipe-3" transform="translate(578.000000, 578.000000) scale(-1, 1) translate(-578.000000, -578.000000) "></path>
+        </g>
+    </g>
+</svg>

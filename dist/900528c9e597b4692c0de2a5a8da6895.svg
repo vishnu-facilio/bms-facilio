@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="20px" viewBox="0 0 40 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Butterfly valve 2</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="0%" x2="50%" y2="129.331989%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-901.000000, -641.000000)">
+            <g id="Butterfly-valve-2" transform="translate(921.000000, 651.000000) rotate(90.000000) translate(-921.000000, -651.000000) translate(911.000000, 631.000000)">
+                <path d="M7.04761905,16 L6,5 L0,5 L0,2 C-1.3527075e-16,0.8954305 0.8954305,2.02906125e-16 2,0 L18,0 C19.1045695,-2.02906125e-16 20,0.8954305 20,2 L20,5 L14,5 L12.952381,16 L15,16 L15,26 L5,26 L5,16 L7.04761905,16 Z" id="Combined-Shape" fill="#1780C2"></path>
+                <path d="M15,39 L5,39 L5,40 L0,40 L0,25 L5,25 L5,26 L15,26 L15,25 L20,25 L20,40 L15,40 L15,39 Z" id="Combined-Shape" fill="url(#linearGradient-1)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

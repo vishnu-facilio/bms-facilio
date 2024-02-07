@@ -1,0 +1,25 @@
+const path = require('path')
+
+module.exports = {
+  quasar: path.resolve(__dirname, 'node_modules/quasar-framework/'),
+  variables: path.resolve(__dirname, 'src/themes/quasar.variables.styl'),
+  lib: path.resolve(__dirname, 'lib'),
+  third_party: path.resolve(__dirname, 'third_party'),
+  src: path.resolve(__dirname, 'src'),
+  '@': path.resolve(__dirname, 'src/components'),
+  setup: path.resolve(__dirname, 'src/pages/setup/components'),
+  styles: path.resolve(__dirname, 'src/assets/styles'),
+  assets: path.resolve(__dirname, 'src/assets'),
+  pages: path.resolve(__dirname, 'src/pages'),
+  pageWidgets: path.resolve(__dirname, 'src/components/page/widget'),
+  util: path.resolve(__dirname, 'src/util'),
+  i18n: path.resolve(__dirname, 'src/translations'),
+  charts: path.resolve(__dirname, 'src/charts'),
+  newcharts: path.resolve(__dirname, 'src/newcharts'),
+  stateflows: path.resolve(__dirname, 'src/pages/stateflows'),
+  cardbuilder: path.resolve(__dirname, 'src/pages/card-builder'),
+  newapp: path.resolve(__dirname, 'src/newapp'),
+  webViews: path.resolve(__dirname, 'src/webViews'),
+  pdf: path.resolve(__dirname, 'src/pdf'),
+  digest: path.resolve(__dirname, 'src/digest'),
+}

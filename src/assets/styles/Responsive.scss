@@ -1,0 +1,100 @@
+/* your css rules for ipad portrait */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .fc-header-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  ul.product-menu {
+    padding-left: 0 !important;
+  }
+  .fc-new-sidebar ul.fc-sidebar li.bottom {
+    position: relative !important;
+    bottom: inherit;
+  }
+  ul.product-menu li a {
+    font-size: 11px !important;
+    padding: 17px 10px !important;
+  }
+  .space-management-v1-tree .side-bar-site-details .label-text {
+    font-size: 12px !important;
+  }
+  .side-bar-site-details .fc-id {
+    font-size: 11px !important;
+  }
+  .fc-setup-home .setting-grid-list {
+    padding-bottom: 30px !important;
+    overflow-y: scroll !important;
+  }
+  .fc-layout-aside {
+    height: 100%;
+    overflow-y: hidden;
+    padding-bottom: 300px;
+  }
+  .fc-white-theme ul.subheader-tabs li a {
+    font-size: 13px !important;
+  }
+  .building-hover {
+    display: none !important;
+  }
+  .fc-toolbar .fc-logo {
+    height: 20px !important;
+  }
+  ul.subheader-tabs li {
+    padding: 0px 10px !important;
+  }
+  .fc-create-btn {
+    font-size: 10px;
+  }
+  .container-scroll {
+    position: relative;
+    // height: calc(100vh - 800px) !important;
+    width: 100%;
+    overflow: scroll;
+    padding-bottom: 200px !important;
+  }
+  .fc-setup-navbar a {
+    padding-left: 30px !important;
+  }
+  .fc-setup-navbar .setting {
+    padding-left: 20px !important;
+    margin-left: 0 !important;
+  }
+  .fc-setup-navbar .group-title {
+    margin-left: 0 !important;
+  }
+  .visitor-type-card {
+    flex: 0 0 31.3%;
+  }
+
+  .el-table th > .cell .el-table th > .cell {
+    white-space: nowrap;
+  }
+
+  .modules-card,
+  .connectedapps-card {
+    flex: 0 0 29% !important;
+  }
+
+  .fc-energy-tab .fc-energy-timeline {
+    padding: 18.4px 30px !important;
+  }
+
+  .fc-list-view-table tbody tr.tablerow td:first-child div {
+    max-width: 230px;
+    width: 100% !important;
+  }
+
+  .fc-setup-home {
+    margin-left: 0;
+    margin-right: 0;
+    // height: calc(100vh - 550px) !important;
+    overflow-y: scroll !important;
+    .setting-grid-list {
+      padding: 15px 15px;
+      margin-left: 10px !important;
+      margin-right: 10px !important;
+    }
+  }
+}

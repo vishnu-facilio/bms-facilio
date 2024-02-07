@@ -1,0 +1,15 @@
+.fc-setup-loader{width:100%;height:80vh;background:#fff;-webkit-box-shadow:0 3px 7px 0 rgba(233,233,226,.5);box-shadow:0 3px 7px 0 rgba(233,233,226,.5);display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;-webkit-box-pack:center;-ms-flex-pack:center;justify-content:center;-webkit-box-orient:vertical;-webkit-box-direction:normal;-ms-flex-direction:column;flex-direction:column}
+.fc-secret-key{-webkit-transform:rotate(45deg);transform:rotate(45deg);font-size:18px;vertical-align:inherit}.fc-secret-lock{font-size:16px}
+
+.flex-space-between[data-v-3d1e7fde] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  -webkit-box-align: baseline;
+      -ms-flex-align: baseline;
+          align-items: baseline;
+}
+

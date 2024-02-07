@@ -1,0 +1,68 @@
+(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[57568],{
+/***/142885:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){"use strict";
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{Z:function(){/* binding */return InstantTranslate}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/components/InstantTranslate.vue?vue&type=template&id=7d2632e2
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",[_vm.detectLangShow?_c("div",[_vm.orgAndUserLanguage!==_vm.detectLanguage.language?_c("div",[_vm.extraContent?_c("div",_vm._l(_vm.translateListMoreThan,(function(translate,inex){return _c("div",{key:inex},[_c("div",{staticClass:"fc-translate-text"},[_c("div",{staticClass:"fc-grey8-14 f13 bold"},[_vm._v(" "+_vm._s(_vm.$t("common.translation.translate_text"))+" "),translate&&translate.detectedSourceLanguage?_c("el-tooltip",{staticClass:"item",attrs:{effect:"dark",content:"Translated from "+_vm.languagesData[translate.detectedSourceLanguage]||0,placement:"top-start"}},[_c("i",{staticClass:"el-icon-info"})]):_vm._e()],1),_c("div",{staticClass:"pT5 fc-grey8-14 f13 line-height20"},[_vm._v(" "+_vm._s(translate.translatedText)+" ")])])])})),0):_c("div",{staticClass:"fc-grey8-14 f13 fc-translate-text"},[_c("div",{staticClass:"fc-grey8-14 f13 bold"},[_vm._v(" "+_vm._s(_vm.$t("common.translation.translate_text"))+" "),_vm.translateListData&&_vm.translateListData.detectedSourceLanguage?_c("el-tooltip",{staticClass:"item",attrs:{effect:"dark",content:"Translated from "+_vm.languagesData[_vm.translateListData.detectedSourceLanguage],placement:"top-start"}},[_c("i",{staticClass:"el-icon-info"})]):_vm._e()],1),_c("div",{staticClass:"pT5 fc-grey8-14 f13 line-height20"},[_vm._v(" "+_vm._s(_vm.translateListData.translatedText)+" ")])])]):_vm._e()]):_vm._e()])},staticRenderFns=[],regeneratorRuntime=__webpack_require__(150124),asyncToGenerator=__webpack_require__(548534),axios=(__webpack_require__(260228),__webpack_require__(947522),__webpack_require__(634338),__webpack_require__(409669)),axios_default=__webpack_require__.n(axios),validation=__webpack_require__(586529),languages=__webpack_require__(601273),InstantTranslatevue_type_script_lang_js={props:["content","extraContent"],data:function(){return{detectLanguage:[],loading:!0,translateListData:[],languageData:this.$org.language,seeTranslation:!1,seeTranslationStartContent:!0,googleKey:"AIzaSyAeJBX0k0BxzMvvlRyCsOtPYWKVs62603w",translateListMoreThan:[],detectLangShow:!1,languages:null,languageTranslateData:{}}},computed:{orgAndUserLanguage:function(){return(0,validation/* isEmpty */.xb)(this.$account.user.language)?this.$org.language:this.$account.user.language},languagesData:function(){var _this=this,data={};return languages/* default */.Z.forEach((function(rt){_this.$set(data,rt.value,rt.label)})),data}},mounted:function(){var _this2=this;this.$nextTick((function(){_this2.getDetectLanguage()}))},methods:{
+// This API for detect app language
+detectAppLanguage:function(){var _this3=this;return(0,asyncToGenerator/* default */.Z)((0,regeneratorRuntime/* default */.Z)().mark((function _callee(){var response;return(0,regeneratorRuntime/* default */.Z)().wrap((function(_context){while(1)switch(_context.prev=_context.next){case 0:return _this3.loading=!0,_context.next=3,axios_default().post("https://translation.googleapis.com/language/translate/v2/detect?key=".concat(_this3.googleKey,"&q=").concat(_this3.content));case 3:response=_context.sent,_this3.detectLanguage=response.data&&response.data.data&&response.data.data.detections[0][0],_this3.loading=!1;case 6:case"end":return _context.stop()}}),_callee)})))()},
+// This API for translate text
+translateLanguageList:function(){var _this4=this;return(0,asyncToGenerator/* default */.Z)((0,regeneratorRuntime/* default */.Z)().mark((function _callee2(){var params,response;return(0,regeneratorRuntime/* default */.Z)().wrap((function(_context2){while(1)switch(_context2.prev=_context2.next){case 0:return _this4.loading=!0,params={q:[_this4.content]},_this4.extraContent&&(params.q=[_this4.content,_this4.extraContent]),_context2.next=5,axios_default().post("https://translation.googleapis.com/language/translate/v2?key=".concat(_this4.googleKey,"&target=").concat(_this4.orgAndUserLanguage,"&format=html"),params);case 5:response=_context2.sent,_this4.translateListData=response.data&&response.data.data&&response.data.data.translations[0],_this4.translateListMoreThan=response.data&&response.data.data&&response.data.data.translations,_this4.loading=!1;case 9:case"end":return _context2.stop()}}),_callee2)})))()},showLanguageHideList:function(){var _this5=this;return(0,asyncToGenerator/* default */.Z)((0,regeneratorRuntime/* default */.Z)().mark((function _callee3(){return(0,regeneratorRuntime/* default */.Z)().wrap((function(_context3){while(1)switch(_context3.prev=_context3.next){case 0:return _this5.seeTranslation=!0,_this5.seeTranslationStartContent=!1,_context3.next=4,_this5.translateLanguageList();case 4:_this5.$emit("onData");case 5:case"end":return _context3.stop()}}),_callee3)})))()},backToOriginal:function(){this.seeTranslation=!1,this.seeTranslationStartContent=!0},getDetectLanguage:function(){var _this6=this;return(0,asyncToGenerator/* default */.Z)((0,regeneratorRuntime/* default */.Z)().mark((function _callee4(){return(0,regeneratorRuntime/* default */.Z)().wrap((function(_context4){while(1)switch(_context4.prev=_context4.next){case 0:return _this6.detectAppLanguage(),_context4.next=3,_this6.translateLanguageList();case 3:_this6.$emit("reLoad"),_this6.$emit("onData"),_this6.detectLangShow=!0;case 6:case"end":return _context4.stop()}}),_callee4)})))()}}},components_InstantTranslatevue_type_script_lang_js=InstantTranslatevue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(components_InstantTranslatevue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,InstantTranslate=component.exports},
+/***/357568:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return WorkorderDescription}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/pages/workorder/workorders/v3/widgets/WorkorderDescription.vue?vue&type=template&id=71a8b2aa
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",[_vm.workorder.subject.length>45||_vm.workorder.description?_c("div",{ref:_vm.getRefName,staticClass:"fc-visibility-gicon-visible"},[_c("div",{staticClass:"p10 fc__wo__sum__h__desc"},[_c("div",[_vm.workorder.subject.length>45?_c("div",[_c("div",{staticClass:"heading-black18"},[_vm._v(" "+_vm._s(_vm.workorder.subject?_vm.workorder.subject:"---")+" ")])]):_vm._e(),_vm.workorder.description?_c("div",{staticClass:"pm-summary-tab-subject pT10 space-preline",domProps:{innerHTML:_vm._s(_vm.getDescription(_vm.workorder))}}):_vm._e(),_vm.workorder.subject.length>45?_c("div",[_vm.woDescriptiontranslate?_c("InstantTranslate",{attrs:{content:_vm.workorder.subject,extraContent:_vm.workorder.description},on:{onData:_vm.handleDataLoad}}):_vm._e()],1):_c("div",[_vm.woDescriptiontranslate?_c("InstantTranslate",{attrs:{content:_vm.workorder.description},on:{onData:_vm.handleDataLoad}}):_vm._e()],1)])])]):_vm._e()])},staticRenderFns=[],objectSpread2=__webpack_require__(595082),vuex_esm=(__webpack_require__(659749),__webpack_require__(386544),__webpack_require__(420629)),validation=__webpack_require__(990260),sanitize=__webpack_require__(678042),InstantTranslate=__webpack_require__(142885),eventBus=__webpack_require__(398011),random=__webpack_require__(683608),random_default=__webpack_require__.n(random),WorkorderDescriptionvue_type_script_lang_js={props:["moduleName","details","resizeWidget"],name:"WorkorderDescription",mounted:function(){var _this=this;this.$nextTick((function(){_this.autoResize()}))},data:function(){return{woDescriptiontranslate:!1}},computed:(0,objectSpread2/* default */.Z)((0,objectSpread2/* default */.Z)({},(0,vuex_esm/* mapState */.rn)({sites:function(state){return state.site}})),{},{currModuleName:function(){return"workorder"},widgetTitle:function(){return"Workorder Description"},workorder:function(){return this.details.workorder},getRefName:function(){var refName=random_default()(1,3);return"dis-".concat(refName)}}),created:function(){var _this2=this;eventBus/* eventBus */.Y.$on("woDescriptiontranslate",(function(woDescriptiontranslate){_this2.woDescriptiontranslate=woDescriptiontranslate,_this2.$nextTick((function(){_this2.autoResize()}))}))},destroyed:function(){var _this3=this;eventBus/* eventBus */.Y.$off("woDescriptiontranslate",(function(){_this3.woDescriptiontranslate=!1,_this3.$nextTick((function(){_this3.autoResize()}))}))},components:{InstantTranslate:InstantTranslate/* default */.Z},methods:{handleDataLoad:function(){var _this4=this;this.$nextTick((function(){_this4.autoResize()}))},getDescription:function(record){var description=record.description;return(0,validation/* isEmpty */.xb)(description)?"---":(0,sanitize/* sanitize */.N)(description)},autoResize:function(){var _this5=this;this.$nextTick((function(){setTimeout((function(){var container=_this5.$refs[_this5.getRefName];if(container){var width=container.scrollWidth,height=container.scrollHeight+50;_this5.resizeWidget&&_this5.resizeWidget({height:height,width:width})}}))}))},handleTranslate:function(){this.woDescriptiontranslate=!this.woDescriptiontranslate,eventBus/* eventBus */.Y.$emit("woDescriptiontranslate",this.woDescriptiontranslate)}}},widgets_WorkorderDescriptionvue_type_script_lang_js=WorkorderDescriptionvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(widgets_WorkorderDescriptionvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,WorkorderDescription=component.exports},
+/***/769877:
+/***/function(module){
+/* Built-in method references for those with the same name as other `lodash` methods. */
+var nativeFloor=Math.floor,nativeRandom=Math.random;
+/**
+ * The base implementation of `_.random` without support for returning
+ * floating-point numbers.
+ *
+ * @private
+ * @param {number} lower The lower bound.
+ * @param {number} upper The upper bound.
+ * @returns {number} Returns the random number.
+ */function baseRandom(lower,upper){return lower+nativeFloor(nativeRandom()*(upper-lower+1))}module.exports=baseRandom},
+/***/683608:
+/***/function(module,__unused_webpack_exports,__webpack_require__){var baseRandom=__webpack_require__(769877),isIterateeCall=__webpack_require__(816612),toFinite=__webpack_require__(418601),freeParseFloat=parseFloat,nativeMin=Math.min,nativeRandom=Math.random;
+/** Built-in method references without a dependency on `root`. */
+/**
+ * Produces a random number between the inclusive `lower` and `upper` bounds.
+ * If only one argument is provided a number between `0` and the given number
+ * is returned. If `floating` is `true`, or either `lower` or `upper` are
+ * floats, a floating-point number is returned instead of an integer.
+ *
+ * **Note:** JavaScript follows the IEEE-754 standard for resolving
+ * floating-point values which can produce unexpected results.
+ *
+ * @static
+ * @memberOf _
+ * @since 0.7.0
+ * @category Number
+ * @param {number} [lower=0] The lower bound.
+ * @param {number} [upper=1] The upper bound.
+ * @param {boolean} [floating] Specify returning a floating-point number.
+ * @returns {number} Returns the random number.
+ * @example
+ *
+ * _.random(0, 5);
+ * // => an integer between 0 and 5
+ *
+ * _.random(5);
+ * // => also an integer between 0 and 5
+ *
+ * _.random(5, true);
+ * // => a floating-point number between 0 and 5
+ *
+ * _.random(1.2, 5.2);
+ * // => a floating-point number between 1.2 and 5.2
+ */
+function random(lower,upper,floating){if(floating&&"boolean"!=typeof floating&&isIterateeCall(lower,upper,floating)&&(upper=floating=void 0),void 0===floating&&("boolean"==typeof upper?(floating=upper,upper=void 0):"boolean"==typeof lower&&(floating=lower,lower=void 0)),void 0===lower&&void 0===upper?(lower=0,upper=1):(lower=toFinite(lower),void 0===upper?(upper=lower,lower=0):upper=toFinite(upper)),lower>upper){var temp=lower;lower=upper,upper=temp}if(floating||lower%1||upper%1){var rand=nativeRandom();return nativeMin(lower+rand*(upper-lower+freeParseFloat("1e-"+((rand+"").length-1))),upper)}return baseRandom(lower,upper)}module.exports=random}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/57568.js.map

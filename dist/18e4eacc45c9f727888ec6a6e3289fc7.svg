@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100px" height="100px" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>V.Duct </title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="73.8528983%" y1="0%" x2="73.8528983%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#282828" offset="0%"></stop>
+            <stop stop-color="#C6D0E1" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="AHU-Illustration" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Types-of-Ducts" transform="translate(-790.000000, -248.000000)">
+            <g id="V.Duct-" transform="translate(840.000000, 298.000000) rotate(90.000000) translate(-840.000000, -298.000000) translate(790.000000, 248.000000)">
+                <g id="Group">
+                    <polygon id="Path-2-Copy" fill="#5B6777" points="100 0 100 77 0 77 0 0"></polygon>
+                    <polygon id="Path-4" fill="url(#linearGradient-1)" opacity="0.5" points="0 0 0 30 100 30 100 0"></polygon>
+                    <polygon id="Path-4-Copy" fill="#848E9C" points="0 77 0 100 100 100 100 77"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

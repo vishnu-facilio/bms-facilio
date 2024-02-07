@@ -1,0 +1,16 @@
+(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[96090],{
+/***/796090:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){"use strict";
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return LoginSuccess}});// CONCATENATED MODULE: ./node_modules/cache-loader/dist/cjs.js?{"cacheDirectory":"node_modules/.cache/vue-loader","cacheIdentifier":"5f5f0a0c-vue-loader-template"}!./node_modules/@vue/vue-loader-v15/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/cache-loader/dist/cjs.js??ruleSet[0].use[0]!./node_modules/@vue/vue-loader-v15/lib/index.js??vue-loader-options!./src/auth/LoginSuccess.vue?vue&type=template&id=12ca5146
+var render=function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"saml-logout-page"},[_c("div",{staticClass:"fc-login-con"},[_c("div",{staticClass:"fc-login-align"},[_c("div",{staticClass:"fc-login-block"},[_c("div",{staticClass:"fc-saml-white-bg"},[_c("div",{staticClass:"text-center"},[_c("div",[_vm.isCustomDomain?_c("img",{staticStyle:{height:"25px"},attrs:{src:_vm.orgLogoUrl}}):_c("img",{staticStyle:{height:"25px"},attrs:{src:__webpack_require__(117524)}})]),_c("div",{staticClass:"fc-login-black20 pT10 pB5"},[_vm._v(" Redirecting to Application… ")]),_c("div",{staticClass:"fc-login-black18"},[_vm._v(" Please click Continue if you’re not automatically redirected ")]),_c("div",{staticClass:"fc-login-blue18 underline pT20 pointer",on:{click:_vm.continueLogin}},[_vm._v(" Continue ")])])])]),_vm.isCustomDomain?_vm._e():_c("div",{staticClass:"fc-copy-right pT30"},[_vm._v(" Facilio Inc © 2022 ")])]),_vm._m(0)])])},staticRenderFns=[function(){var _vm=this,_h=_vm.$createElement,_c=_vm._self._c||_h;return _c("div",{staticClass:"fc-login-footer"},[_c("div",{staticClass:"fc-login-footer-img"},[_c("img",{staticClass:"fc-login-footer-img",attrs:{src:__webpack_require__(615329)}})])])}],rebrandMixin=(__webpack_require__(634338),__webpack_require__(222174)),LoginSuccessvue_type_script_lang_js={mounted:function(){var _this=this,token=this.$cookie.get("fc.mobile.idToken.facilio"),scheme=this.$cookie.get("fc.mobile.scheme");this.loginUrl="".concat(scheme,"://login?token=").concat(token),this.isTokenPresent=token,token&&setTimeout((function(){return window.location.href=_this.loginUrl,!1}),50)},mixins:[rebrandMixin/* default */.Z],methods:{continueLogin:function(){this.isTokenPresent&&(window.location.href=this.loginUrl)}},data:function(){return{isTokenPresent:!1,loginUrl:""}}},auth_LoginSuccessvue_type_script_lang_js=LoginSuccessvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(auth_LoginSuccessvue_type_script_lang_js,render,staticRenderFns,!1,null,null,null)
+/* harmony default export */,LoginSuccess=component.exports},
+/***/117524:
+/***/function(module,__unused_webpack_exports,__webpack_require__){module.exports=__webpack_require__.p+"10a53ccbae023b46b9211d3725c2236a.svg";
+/***/},
+/***/615329:
+/***/function(module,__unused_webpack_exports,__webpack_require__){module.exports=__webpack_require__.p+"b1cf981f2d2e3ae36a29fdc8ebe7e180.svg";
+/***/}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/96090.js.map

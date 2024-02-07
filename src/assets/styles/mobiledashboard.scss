@@ -1,0 +1,277 @@
+.subheader-section.width100.new-analytics-subheader,
+.chart-option,
+.legendsAll,
+.dashboard-container .widget-legends,
+.dualchart,
+.bb-axis-x-label,
+.chartsettings-container,
+.chart-icon,
+.cal-right-btn,
+.cal-left-btn,
+.bb-axis-y2-label {
+  display: none !important;
+}
+
+/*
+.subheader-section {
+  display: none !important;
+}
+.q-toolbar.row.no-wrap.items-center.relative-position.q-toolbar-normal.fc-toolbar.toolbar {
+  display: none !important;
+} */
+/* aside.fc-layout-aside, {
+  display: none !important;
+} */
+.height100.pL50.pL60 {
+  padding: 0;
+}
+
+.row.fc-widget-header .col-8 {
+  max-width: 100% !important;
+  overflow: hidden;
+  width: 100% !important;
+  text-align: left;
+  flex: 100%;
+}
+
+.row.fc-widget-header .col-4 {
+  display: none;
+}
+
+.dashboard-container .fLegendContainer {
+  max-width: 100% !important;
+  overflow: auto;
+  padding-left: 12px;
+}
+
+.mobiledashboard .dashboard-container .fLegendContainer {
+  top: 0px !important;
+}
+
+.dashboard-container
+  .date-filter-comp-new-report
+  .el-button
+  el-button--default
+  el-popover__reference {
+  text-transform: uppercase;
+  font-size: 10px;
+}
+
+.dashboard-container .date-filter-comp-new-report {
+  position: absolute;
+  top: 20px;
+}
+
+.mobiledashboard
+  .date-filter-comp-new-report
+  button.el-button.el-button--default.el-popover__reference {
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-size: 11px;
+}
+
+.mobiledashboard .fc-widget-header {
+  width: 100%;
+  /* position: absolute; */
+  z-index: 0;
+}
+
+.nodata-dark {
+  display: none;
+}
+
+.smart-table {
+  border-left: none;
+  border-right: none;
+}
+
+.dashboard-container .date-filter-comp-new-report {
+  text-align: right;
+  position: inherit !important;
+}
+.table-filters-section {
+  display: flex;
+  padding-left: 17px;
+  padding-right: 17px;
+}
+.fc-table-filters-section-select {
+  width: 50%;
+  padding-top: 3px;
+}
+.db-filter.el-select {
+  width: 95% !important;
+}
+.mobile-new-date-filter {
+  position: inherit !important;
+  padding-right: 10px !important;
+  padding-top: 12px !important;
+}
+
+div#q-app {
+  background: #f7f8f9;
+}
+
+.vue-grid-item {
+  background: #fff;
+}
+
+.dashboard-container .date-filter-comp-new-report {
+  position: absolute;
+  top: 14px;
+  right: 0;
+}
+
+.single-leagend .mobile-tootltip-value {
+  font-size: 13px;
+  height: 20px;
+}
+
+.muiltileagend .mobile-tootltip-value {
+  font-size: 13px;
+  height: 20px;
+  border-left: 1px solid #f3f3f3;
+  padding-left: 10px;
+  display: inline;
+}
+
+.mobile-new-date-filter {
+  position: inherit !important;
+  padding-right: 10px;
+}
+
+.f-mobile-widget .fc-widget-body {
+  padding-top: 0 !important;
+}
+
+.smart-table {
+  border-top: none;
+}
+
+.legendBoxNew-fchart {
+  line-height: 20px !important;
+}
+
+.mobile-label {
+  font-size: 12px;
+}
+
+span.mobile-tootltip-date,
+span.mobile-tootltip-value {
+  font-size: 10px;
+}
+
+.mobiledashboard {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.f18.fc-widget-label {
+  width: 77%;
+  overflow: auto;
+  text-overflow: ellipsis;
+}
+
+.emptyMobileleagend {
+  margin-top: 70px;
+}
+
+.mobiledashboard text.gauge-center-text {
+  font-size: 3.5vw !important;
+}
+
+.mobiledashboard text.gauge-center-value {
+  font-size: 2vw !important;
+}
+
+.mobiledashboard text.gauge-center-period {
+  font-size: 1.6vw !important;
+}
+
+.mobile-dashboard-container {
+  height: 100%;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding: 10px !important;
+}
+
+.mobile-dashboard-container .el-row {
+  margin: 0px !important;
+}
+
+.mobile-dashboard-container .el-row > .el-col {
+  padding-bottom: 10px;
+}
+
+.layout3 .sparkline-wrap {
+  position: absolute;
+  bottom: -6px !important;
+  margin-left: -2px !important;
+}
+
+.energy-savings-txt {
+  font-size: 3.5vw !important;
+}
+
+.energy-saving {
+  padding: 22% !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.sv-month {
+  font-size: 2.8vw !important;
+}
+
+.sv-date {
+  font-size: 2.8vw !important;
+}
+
+.energy-saving-card {
+  height: 100% !important;
+}
+
+.empty-multi-chart {
+  font-size: 12px;
+  margin: 0 auto;
+  position: absolute;
+  top: 48%;
+  left: 16%;
+  letter-spacing: 0.4px;
+  color: #333333;
+}
+
+.readingcard-time.reading-set-button.el-popover__reference {
+  margin: 0;
+  margin-bottom: 30px;
+  position: relative;
+  bottom: 10px;
+}
+
+.card-section.row.gray-bg.level-button {
+  text-align: center;
+  align-items: center;
+  margin: auto;
+  padding-left: 18%;
+}
+
+.report-userfilter-select.el-select {
+  display: none;
+}
+
+.mobile-dashboard-container .target-meter-header {
+  font-size: small;
+}
+
+.mobile-dashboard-container .gauge text {
+  // font-size: 1.3vw !important;
+}
+
+.mobile-dashboard-container .date-filter-comp-new-report {
+  top: 15px;
+}
+.mobile-dashboard-container {
+  .card-wrapper.loading {
+    height: 120px;
+  }
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="10px" height="14px" viewBox="0 0 10 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55.2 (78181) - https://sketchapp.com -->
+    <title>maps-and-flags</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Attendance_Summary_page_with_Location1.0" transform="translate(-920.000000, -246.000000)" fill="#C8CDD4" fill-rule="nonzero">
+            <g id="Group-14" transform="translate(560.000000, 121.000000)">
+                <g id="Group-13-Copy-2" transform="translate(360.000000, 87.000000)">
+                    <g id="Group-15" transform="translate(0.000000, 35.000000)">
+                        <g id="maps-and-flags" transform="translate(0.000000, 3.000000)">
+                            <path d="M5,0 C2.25147849,0 0.0154032258,2.23607527 0.0154032258,4.98456989 C0.0154032258,8.39553763 4.47612903,13.4030376 4.66604839,13.614543 C4.84443548,13.8132258 5.1558871,13.8128763 5.33395161,13.614543 C5.52387097,13.4030376 9.98459677,8.39553763 9.98459677,4.98456989 C9.98459677,2.23607527 7.74849462,0 5,0 Z M5,7.49244624 C3.61715054,7.49244624 2.49215054,6.36741935 2.49215054,4.98456989 C2.49215054,3.60172043 3.61717742,2.47672043 5,2.47672043 C6.38282258,2.47672043 7.50782258,3.60174731 7.50782258,4.98459677 C7.50782258,6.36744624 6.38282258,7.49244624 5,7.49244624 Z" id="Shape"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="54px" height="33px" viewBox="0 0 54 33" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 62 (91390) - https://sketch.com -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="-137.399179%" x2="50%" y2="91.3387797%" id="linearGradient-1">
+            <stop stop-color="#FFFFFF" offset="0%"></stop>
+            <stop stop-color="#FFFFFF" stop-opacity="0" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Agent_Overview" transform="translate(-1323.000000, -307.000000)" fill-rule="nonzero">
+            <g id="Group-10" transform="translate(320.000000, 210.000000)">
+                <g id="Group-7">
+                    <g id="Group">
+                        <g id="Component/Card-Metric" transform="translate(839.000000, -0.000000)">
+                            <g id="Group" transform="translate(165.484848, 98.281071)">
+                                <path d="M0.108797844,15.7176221 C5.83875254,9.22999047 13.3705956,7.9778448 22.7043271,11.9611851 C36.7049242,17.9361956 34.5583672,0.16968452 50.9441384,0.16968452 C50.9441384,12.0140253 50.9441384,23.5199427 50.9441384,34.6874369 L0.108797844,34.6874369 L0.108797844,15.7176221 Z" id="Path-4-Copy" fill="url(#linearGradient-1)" opacity="0.414899554"></path>
+                                <path d="M0.108797844,15.7176221 C5.83875254,9.22999047 13.3705956,7.9778448 22.7043271,11.9611851 C36.7049242,17.9361956 34.5583672,0.16968452 50.9441384,0.16968452" id="Path-4" stroke="#FFFFFF" stroke-width="1.44530987" stroke-linecap="round"></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

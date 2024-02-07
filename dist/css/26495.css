@@ -1,0 +1,168 @@
+
+.fc-blue-text-14[data-v-061a4661] {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: 0.34px;
+  color: #0053cc;
+}
+.fc-blue-text-14[data-v-061a4661]:hover {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: 0.34px;
+  color: #0053cc;
+  text-decoration: underline;
+}
+.copy-img[data-v-061a4661] {
+  margin-left: 10px;
+  height: 32px;
+  width: 32px;
+  cursor: pointer;
+}
+.copy-img[data-v-061a4661]:hover {
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
+
+.flex-spacebetween[data-v-1902eb66] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+.editprofile-portal-container[data-v-1902eb66] {
+  background-color: #ffffff;
+  height: inherit;
+  width: 600px;
+  padding: 20px;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: auto;
+  border-radius: 8px;
+}
+.user-detail-container[data-v-1902eb66] {
+  max-height: 385px;
+  overflow-y: scroll;
+  width: 100%;
+}
+.fc-text-16[data-v-1902eb66] {
+  font-size: 16px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 16px;
+  letter-spacing: normal;
+  color: #324056;
+  margin-bottom: 12px;
+}
+.fc-text-14[data-v-1902eb66] {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 15px;
+  letter-spacing: 0.34px;
+  color: #737376;
+}
+.fc-blue-text-14[data-v-1902eb66] {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: 0.34px;
+  color: #0053cc;
+}
+.fc-blue-text-14[data-v-1902eb66]:hover {
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: 0.34px;
+  color: #0053cc;
+  text-decoration: underline;
+}
+.copy-img[data-v-1902eb66] {
+  margin-left: 10px;
+  height: 32px;
+  width: 32px;
+  cursor: pointer;
+}
+.copy-img[data-v-1902eb66]:hover {
+  background-color: #f0f0f0;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.mB35[data-v-1902eb66] {
+  margin-bottom: 35px;
+}
+.btn-edit[data-v-1902eb66] {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border-radius: 3px;
+  padding: 5px 5px 1px 5px;
+  cursor: pointer;
+}
+.btn-edit[data-v-1902eb66]:hover {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  padding: 5px 5px 1px 5px;
+  cursor: pointer;
+}
+.fc-ep-save-btn[data-v-1902eb66] {
+  line-height: 1;
+  display: inline-block;
+  border: none !important;
+  font-size: 12px;
+  letter-spacing: 0.7px !important;
+  font-weight: 500;
+  cursor: pointer;
+  color: #ffffff;
+  border-radius: 3px;
+  background-color: #0053cc;
+  width: 100px;
+  height: 32px !important;
+}
+.fc-ep-cancel-btn[data-v-1902eb66] {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: normal;
+  color: #0053cc;
+}
+.fc-ep-cancel-btn[data-v-1902eb66]:hover {
+  font-size: 14px;
+  font-weight: 500;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: 32px;
+  letter-spacing: normal;
+  color: #0053cc;
+  text-decoration: underline;
+}
+.mB3[data-v-1902eb66] {
+  margin-bottom: 3px !important;
+}
+
+
+.fc-ep-form .el-form-item {
+  margin-bottom: 20;
+}
+

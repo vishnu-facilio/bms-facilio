@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="50px" viewBox="0 0 16 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Blue pipe Vertical</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="41.0618075%" x2="0%" y2="41.0618075%" id="linearGradient-1">
+            <stop stop-color="#A7C4E6" offset="0%"></stop>
+            <stop stop-color="#5198EA" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-595.000000, -780.000000)" fill="url(#linearGradient-1)">
+            <rect id="Blue-pipe-Vertical" x="595.5" y="780" width="15" height="100"></rect>
+        </g>
+    </g>
+</svg>

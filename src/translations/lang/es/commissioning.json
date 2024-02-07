@@ -1,0 +1,47 @@
+{
+  "creation": {
+    "new_commissioning": "Nueva puesta en servicio",
+    "agent": "Agente",
+    "controller": "Controlador",
+    "allpoints": "Todos los puntos",
+    "protocol": "Protocolo"
+  },
+  "list": {
+    "commissioning": "Puesta en servicio",
+    "add_commissioning": "Añadir puesta en servicio",
+    "publish": "publicar",
+    "confirm_delete_text": "¿Está seguro de que desea eliminar la puesta en servicio?",
+    "delete_success_text": "Puesta en servicio suprimida con éxito"
+  },
+  "sheet": {
+    "select_category": "Seleccionar categoría",
+    "select_asset": "Seleccionar activo",
+    "select_reading": "Seleccionar lectura",
+    "search_points": "Puntos de búsqueda",
+    "mapcategory": "Mapa Categoría",
+    "pointsfound": "Puntos encontrados",
+    "remaining_points": "Puntos restantes",
+    "change_category": "Cambiar categoría",
+    "filter": "Filtro",
+    "filter_by_value": "Filtrar por valor",
+    "header_name": "Nombre",
+    "header_deviceName": "Nombre del dispositivo",
+    "header_controllerName": "Nombre del controlador",
+    "header_instanceNumber": "Instancia",
+    "header_instanceType": "Tipo de instancia",
+    "header_categoryId": "Categoría",
+    "header_resourceId": "Activo",
+    "header_fieldId": "Lectura",
+    "header_unit": "Unidad",
+    "header_enumInputValues": "",
+    "filter_all_points": "Todos los puntos",
+    "filter_mapped": "Puntos cartografiados",
+    "filter_unmapped": "Puntos sin cartografiar",
+    "removefilter": "Eliminar el filtro aplicado a la categoría de mapa",
+    "removeview": "Para asignar la categoría, restablezca el filtro Todos los puntos",
+    "remove_filter_view": "Para asignar la categoría, restablecer a Todos los puntos y eliminar el filtro aplicado"
+  },
+  "commissioning": {
+    "prefill_ml_data": "Precompletar datos mediante ML (*beta)"
+  }
+}

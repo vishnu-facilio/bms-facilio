@@ -1,0 +1,15 @@
+
+.maintenancecosttrend .bb-axis-x-label,
+.maintenancecosttrend .bb-axis-y-label,
+.maintenancecosttrend .bb-axis-y2-label,
+.maintenancecosttrend .bb .bb-axis-x .tick text,
+.maintenancecosttrend .bb .bb-axis-y .tick text,
+.maintenancecosttrend .bb .bb-axis-y2 .tick text {
+  fill: #324056 !important;
+}
+.maintenancecosttrend .bb .bb-axis-y path.domain,
+.maintenancecosttrend .bb .bb-axis-x path.domain {
+  opacity: 1 !important;
+  stroke: #eceef1 !important;
+}
+

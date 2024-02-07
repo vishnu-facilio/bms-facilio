@@ -1,0 +1,8 @@
+{
+  "conditions": {
+    "match_any": "Match Any",
+    "match_all": "Match All",
+    "reading": "Reading",
+    "operator": "Operator"
+  }
+}

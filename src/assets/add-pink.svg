@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>add-pink</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="add-pink" fill="#EF508F">
+            <path d="M7.6,6.4 L12.5,6.4 C12.831371,6.4 13.1,6.6686292 13.1,7 C13.1,7.3313708 12.831371,7.6 12.5,7.6 L7.6,7.6 L7.6,12.5 C7.6,12.8313708 7.331371,13.1 7,13.1 C6.668629,13.1 6.4,12.8313708 6.4,12.5 L6.4,7.6 L1.5,7.6 C1.168629,7.6 0.9,7.3313708 0.9,7 C0.9,6.6686292 1.168629,6.4 1.5,6.4 L6.4,6.4 L6.4,1.5 C6.4,1.1686292 6.668629,0.9 7,0.9 C7.331371,0.9 7.6,1.1686292 7.6,1.5 L7.6,6.4 Z" id="add-dashboard"></path>
+        </g>
+    </g>
+</svg>

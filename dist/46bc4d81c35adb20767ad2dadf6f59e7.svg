@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="330px" height="330px" viewBox="0 0 330 330" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#39B2C2">
+    <!-- Generator: Sketch 52.3 (67297) - http://www.bohemiancoding.com/sketch -->
+    <title>information</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="information" fill="#000">
+            <path d="M165,0 C74.019,0 0,74.02 0,165.001 C0,255.982 74.019,330 165,330 C255.981,330 330,255.982 330,165.001 C330,74.02 255.981,0 165,0 Z M165,300 C90.56,300 30,239.44 30,165.001 C30,90.562 90.56,30 165,30 C239.44,30 300,90.562 300,165.001 C300,239.44 239.439,300 165,300 Z" id="Shape" fill-rule="nonzero"></path>
+            <path d="M164.998,70 C153.972,70 145.002,78.976 145.002,90.009 C145.002,101.032 153.972,110 164.998,110 C176.024,110 184.994,101.032 184.994,90.009 C184.994,78.976 176.024,70 164.998,70 Z" id="Path"></path>
+            <path d="M165,140 C156.716,140 150,146.716 150,155 L150,245 C150,253.284 156.716,260 165,260 C173.284,260 180,253.284 180,245 L180,155 C180,146.716 173.284,140 165,140 Z" id="Path"></path>
+        </g>
+    </g>
+</svg>

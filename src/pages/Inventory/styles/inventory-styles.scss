@@ -1,0 +1,150 @@
+.item-summary-table {
+  .el-table th.is-leaf {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .el-table th.el-table__cell > .cell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .el-table {
+    .right-align-items {
+      text-align: right;
+      padding-right: 20px;
+    }
+    .center-align-element {
+      text-align: center;
+      padding-right: 16px;
+    }
+    .cost-type {
+      text-align: center;
+      padding-right: 40px;
+    }
+    .right-align-ir-items {
+      text-align: right;
+    }
+    .custom-class-price {
+      background-color: #f7faff;
+    }
+  }
+}
+.vendorComparisonDialog .el-table th.is-leaf {
+  padding-left: 10px;
+}
+
+.vendor-quotes-lineitems-table {
+  .el-table {
+    .award-column {
+      padding-left: 10px;
+    }
+    td {
+      padding-left: 20px;
+      padding-right: 20px;
+      background-color: white;
+    }
+
+    td.right-align-elements {
+      text-align: right;
+    }
+    .item-name {
+      padding-left: 32px;
+      padding-right: 10px;
+      text-overflow: ellipsis !important;
+    }
+  }
+
+  .el-table__body td.el-table__cell.item-name-vq {
+    padding-left: 24px;
+  }
+  .el-table th.is-leaf.item-name-vq {
+    padding-left: 25px;
+  }
+  .el-table th.is-leaf {
+    background-color: #f0f8ff;
+  }
+  .vq-award-icon {
+    padding-top: 7px;
+    padding-right: 6px;
+  }
+  .total-amount {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    color: #333;
+    font-weight: 700;
+    display: flex;
+    justify-content: right;
+  }
+  .total-amount-row {
+    border: 1px solid #ebeef5;
+  }
+  .el-table__fixed-right {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.12);
+  }
+  .el-table th.el-table__cell > .cell {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+.transaction-info {
+  color: #333;
+  font-size: 11px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  margin-bottom: 0%;
+}
+.add-record-msg {
+  margin: 20px 0 20px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.27px;
+  text-align: center;
+  color: #324056;
+}
+.vendorquote-banner-msg-container {
+  border-top: 1px solid #f5f5f5;
+  border-bottom: 1px solid #f5f5f5;
+  color: #324056;
+  display: flex;
+  justify-content: center;
+  height: 40px;
+  .vendor-quotes-banner-msg {
+    padding-top: 10px;
+  }
+  .vq-warning-icon {
+    padding-top: 8px;
+    padding-right: 5px;
+  }
+}
+.vendorquote-discarded-banner {
+  background-color: #f8efde;
+  border-bottom: 1px solid #ffb638;
+}
+.vendorquote-closed-bid-banner {
+  background-color: #e1ebf3;
+  border-bottom: 1px solid #0078b9;
+}
+.delete-btn-container {
+  width: 96px;
+  height: 40px;
+  padding: 2px 25px;
+  border-radius: 4px;
+  background-color: #ffff;
+  cursor: pointer;
+  &:hover {
+    background-color: #dde0e4;
+  }
+}
+.reserve {
+  width: 46px;
+  height: 12px;
+  font-size: 12px;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #324056;
+}

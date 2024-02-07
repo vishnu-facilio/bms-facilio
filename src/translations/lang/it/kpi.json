@@ -1,0 +1,8 @@
+{
+  "kpi": {
+    "historical_header": "Esegui calcolo storico ",
+    "historical_dialog": "Esegui dati storici",
+    "logs": "Registro storico Kpi ",
+    "warning_message": "Assicurati che questo KPI non sia associato a nessuna scheda della dashboard.<br/><br/>Se lo è, rimuovi la scheda associata dalla dashboard prima di cancellare questo KPI."
+  }
+}

@@ -1,0 +1,452 @@
+//Inline SVG Icon related css classes
+//ONLY ADD COMMON CLASSES/STYLES RELATED TO SVGS
+
+svg.icon {
+  width: 16px;
+  height: 16px;
+  fill: currentColor;
+
+  &.icon-xxxs {
+    height: 8px;
+    width: 8px;
+  }
+
+  &.icon-xxs {
+    height: 10px;
+    width: 10px;
+  }
+
+  &.icon-xs {
+    height: 12px;
+    width: 12px;
+  }
+
+  &.icon-s {
+    height: 13px;
+    width: 13px;
+  }
+
+  &.icon-sm {
+    height: 14px;
+    width: 14px;
+  }
+
+  &.icon-sm15 {
+    height: 15px;
+    width: 15px;
+  }
+
+  &.icon-sm17 {
+    height: 17px;
+    width: 17px;
+  }
+  &.edit-pivot-svg {
+    height: 17.8px;
+    width: 15px;
+    padding-top: 3px;
+  }
+
+  &.filter-pivot-svg {
+    height: 15px;
+    width: 15px;
+    padding-top: 3px;
+  }
+
+  &.iconmT3 {
+    margin-top: 3px;
+    scale: 1.2;
+  }
+
+  &.icon-sm-md {
+    height: 16px;
+    width: 16px;
+  }
+
+  &.icon-md {
+    height: 18px;
+    width: 18px;
+  }
+
+  &.icon-md19 {
+    height: 19px;
+    width: 19px;
+  }
+
+  &.icon-lg {
+    height: 20px;
+    width: 20px;
+  }
+
+  &.icon-xl {
+    height: 22px;
+    width: 22px;
+  }
+
+  &.icon-xxll {
+    height: 22px;
+    width: 24px;
+  }
+
+  &.icon-xxlll {
+    height: 24px;
+    width: 24px;
+  }
+
+  &.icon-xxl {
+    height: 25px;
+    width: 25px;
+  }
+
+  &.icon-38 {
+    height: 38px;
+    width: 38px;
+  }
+
+  &.icon-xxxll {
+    height: 25px;
+    width: 22px;
+  }
+
+  &.icon-xxxlll {
+    height: 26px;
+    width: 26px;
+  }
+
+  &.icon-xxxl {
+    height: 30px;
+    width: 30px;
+  }
+
+  &.icon-40 {
+    width: 40px;
+    height: 40px;
+  }
+
+  &.icon-xlg {
+    height: 35px;
+    width: 35px;
+  }
+
+  &.icon-xxllg {
+    height: 46px;
+    width: 46px;
+  }
+
+  &.icon-xxlg {
+    height: 50px;
+    width: 50px;
+  }
+
+  &.icon-60 {
+    height: 60px;
+    width: 60px;
+  }
+
+  &.icon-80 {
+    height: 80px;
+    width: 80px;
+  }
+
+  &.icon-xxxlg {
+    height: 100px;
+    width: 100px;
+  }
+
+  &.icon-xxxxlg {
+    height: 150px;
+    width: 150px;
+  }
+
+  &.icon-100 {
+    width: 100px;
+    height: 100px;
+  }
+
+  &.icon-130 {
+    width: 130px;
+    height: 130px;
+  }
+
+  &.icon-200 {
+    width: 200px;
+    height: 200px;
+  }
+
+  &.icon-170 {
+    width: 170px;
+    height: 170px;
+  }
+  &.icon-256 {
+    height: 256px;
+    width: 256px;
+  }
+
+  &.icon-512 {
+    height: 512px;
+    width: 512px;
+  }
+
+  &.icon-35pc {
+    height: 35%;
+    width: 35%;
+  }
+
+  &.icon-16-14 {
+    width: 16px;
+    height: 14px;
+  }
+  &.icon-sidebar {
+    height: 20px;
+    width: auto;
+  }
+  &.icon-employee-sidebar {
+    height: 50px;
+    width: 100%;
+  }
+
+  &.arrow {
+    &.rotate-right {
+      transform: rotate(90deg);
+    }
+
+    &.rotate-left {
+      transform: rotate(-90deg);
+    }
+
+    &.rotate-bottom {
+      transform: rotate(180deg);
+    }
+  }
+
+  &.empty-note {
+    height: 89px;
+    width: 200px;
+  }
+  &.empty-notes {
+    height: 60px;
+    width: 70px;
+  }
+
+  &.space-card {
+    height: 75px;
+    width: 75px;
+  }
+
+  &.location-icon {
+    g {
+      fill: #809bae;
+    }
+  }
+
+  &.fill-green {
+    fill: #2cb988;
+  }
+
+  &.fill-red {
+    fill: #e87171;
+  }
+
+  &.fill-white {
+    fill: #fff;
+  }
+
+  &.icon-add,
+  &.icon-edit {
+    fill: #23b096;
+  }
+
+  &.icon-remove {
+    fill: #ff0000;
+  }
+
+  &.white-bg {
+    background: #fff;
+  }
+
+  &.fill-orange {
+    fill: #fc7300;
+  }
+
+  &.fc-color {
+    fill: #39b2c2;
+  }
+
+  &.fill-delete {
+    fill: #ff5959;
+  }
+
+  &.fill-red {
+    fill: #ec7c7c;
+  }
+
+  &.fill-black {
+    fill: #4f4f4f;
+  }
+
+  &.fill-grey {
+    fill: #324056;
+  }
+
+  &.fill-grey2 {
+    fill: #a0a0a0;
+  }
+
+  &.fill-grey-active {
+    fill: #605e88;
+  }
+
+  &.fill-grey-inactive {
+    fill: #aeadc2;
+  }
+
+  &.fill-grey2 {
+    fill: #615e88;
+  }
+
+  &.fill-grey3 {
+    fill: #d0d9e2;
+  }
+
+  &.fill-grey4 {
+    fill: #6b7e91;
+  }
+
+  &.fill-blue {
+    fill: #489edc;
+  }
+  &.fill-blue7 {
+    fill: #3ab2c1;
+  }
+  &.fill-yellow {
+    fill: #e29011;
+  }
+  &.fill-blue2 {
+    fill: #489edc;
+  }
+  &.fill-green3 {
+    fill: #35bb6d;
+  }
+  &.fill-blue3 {
+    fill: #398fd2;
+  }
+
+  &.fill-blue4 {
+    fill: #438dff;
+  }
+
+  &.fill-lite-grey {
+    fill: #c0c2db;
+  }
+  &.fill-blue5 {
+    fill: #3478f6;
+  }
+  &.fill-pink {
+    background-color: #fff1f7;
+    g {
+      fill: #ee518f;
+    }
+  }
+  &.fill-pink2 {
+    fill: #ee518f;
+  }
+  &.fill-blue6 {
+    fill: #2a8bdd;
+  }
+  &.fill-green1 {
+    fill: #18a83b;
+  }
+  &.fill-orange1 {
+    fill: #e87e3c;
+  }
+  &.fill-disabled-grey {
+    cursor: not-allowed;
+    fill: #c0c4cc;
+    g {
+      fill: #c0c4cc;
+    }
+    path {
+      fill: #c0c4cc;
+    }
+  }
+}
+
+// color fill
+.fc-color {
+  fill: #39b2c2;
+}
+
+.fc-white-color {
+  fill: #fff !important;
+}
+
+.fc-grey-svg-color {
+  fill: #a6c1d0 !important;
+}
+
+.stroke-white {
+  stroke: #fff;
+}
+
+.stroke-grey {
+  stroke: #324056;
+}
+
+.fc-fill-path {
+  &.fill-blue2 {
+    path {
+      fill: #489edc;
+    }
+  }
+  &.fill-path-white {
+    path {
+      fill: #fff;
+    }
+  }
+}
+
+.fc-fill-white {
+  path {
+    fill: white;
+  }
+}
+.fc-fill-path-grey {
+  path {
+    fill: #324056;
+  }
+}
+
+.fc-black-path {
+  path {
+    fill: #000;
+  }
+}
+
+.scale6 {
+  scale: 1.6;
+}
+
+.scale2 {
+  scale: 1.2;
+}
+
+.scale3{
+  scale: 1.3;
+}
+.pivot-disabled-btn{
+  .st1{
+    fill: rgba(152, 159, 170, 0.5);
+  }
+}
+
+.readings-icon{
+  margin-top: 7px;
+  .st1{
+    fill: #8d96a4;
+  }
+}
+
+.pivot-filter-active{
+  .st1{
+    fill:#324056;
+  }
+}

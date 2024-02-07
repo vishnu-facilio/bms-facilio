@@ -1,0 +1,253 @@
+$wo-c-palette-dark-1: rgba(255, 214, 72, 0.75);
+$wo-c-palette-dark-2: rgba(112, 207, 0, 0.6);
+$wo-c-palette-dark-3: rgba(138, 226, 249, 0.9);
+$wo-c-palette-dark-4: rgba(6, 133, 228, 0.6);
+$wo-c-palette-dark-5: rgba(15, 187, 203, 0.5);
+$wo-c-palette-dark-6: rgba(218, 98, 198, 0.6);
+$wo-c-palette-dark-7: rgba(255, 71, 79, 0.5);
+$wo-c-palette-dark-8: rgba(168, 80, 74, 0.5);
+$wo-c-palette-dark-9: rgba(255, 154, 0, 0.4);
+$wo-c-palette-dark-10: rgba(18, 132, 73, 0.4);
+
+.wo-legend-0 {
+  background: $wo-c-palette-dark-1;
+}
+.wo-legend-1 {
+  background: $wo-c-palette-dark-2;
+}
+
+.wo-legend-2 {
+  background: $wo-c-palette-dark-3;
+}
+.wo-legend-3 {
+  background: $wo-c-palette-dark-4;
+}
+.wo-legend-4 {
+  background: $wo-c-palette-dark-5;
+}
+.wo-legend-5 {
+  background: $wo-c-palette-dark-6;
+}
+.wo-legend-6 {
+  background: $wo-c-palette-dark-7;
+}
+.wo-legend-7 {
+  background: $wo-c-palette-dark-8;
+}
+.wo-legend-8 {
+  background: $wo-c-palette-dark-9;
+}
+.wo-legend-9 {
+  background: $wo-c-palette-dark-10;
+}
+.pm-resource-planner {
+  width: 100%;
+  overflow: hidden;
+
+  .pm-wo-card {
+    width: 440px;
+    //height: 300px;
+    box-shadow: 0 6px 23px 0 rgba(21, 18, 51, 0.09);
+    background-color: #ffffff;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+  }
+  .pm-wo-card-header {
+    padding: 20px 30px;
+    background-color: #ffc301;
+    border: none;
+    border-bottom: 1px solid #dcecf4;
+    position: relative;
+    color: #ffffff;
+  }
+  .pm-wo-card-body {
+    padding: 30px;
+  }
+  .pm-wo-card-header-close {
+    cursor: pointer;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
+
+  /* Style the planner contents */
+
+  .rp-cell {
+    background: #ffffff;
+    //min-width: 72px;
+    min-width: 56px; // empty cells need to be as wide as cells with tasks
+    //min-height: 45px;
+    min-height: 42px;
+    padding: 5px 0px;
+    &.past-date {
+      opacity: 0.75;
+      background: #f8f8f9;
+    }
+  }
+
+  .rp-task {
+    position: relative;
+    text-align: center;
+
+    height: 19px;
+    // background-color: #fff6e1;
+    // border: 1px solid #fae9c7;
+    border-style: solid;
+    border-width: 1px;
+    background: rgba(255, 214, 72, 0.2);
+    border-color: rgba(255, 214, 72, 0.75);
+    font-size: 11px;
+    font-weight: 500;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    color: #324056;
+    margin-bottom: 2px;
+    line-height: 17px;
+    cursor: pointer;
+  }
+  .rp-task-text {
+    margin: auto;
+    text-align: center;
+    // width: 70px;
+    // reducing to fit like excel
+    width: 54px;
+  }
+
+  //for week view table layout is set to FIXED , so no explicit width needed
+  .WEEK {
+    .rp-task {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
+    .rp-task-text {
+      width: unset;
+    }
+  }
+
+  .rp-task.task-selected {
+    background: rgba(255, 214, 72, 0.75);
+  }
+
+  .facilio-resource-planner {
+    .rp-task {
+      &.wo-legend-color-0 {
+        background: rgba(255, 214, 72, 0.2);
+        border-color: rgba(255, 214, 72, 0.75);
+        &.task-selected {
+          background: rgba(255, 214, 72, 0.75);
+        }
+      }
+
+      &.wo-legend-color-1 {
+        background: rgba(112, 207, 0, 0.15);
+        border-color: rgba(112, 207, 0, 0.6);
+        &.task-selected {
+          background: rgba(112, 207, 0, 0.6);
+        }
+      }
+      &.wo-legend-color-2 {
+        background: rgba(138, 226, 249, 0.15);
+        border-color: rgba(138, 226, 249, 0.9);
+        &.task-selected {
+          background: rgba(138, 226, 249, 0.9);
+        }
+      }
+      &.wo-legend-color-3 {
+        background: rgba(6, 133, 228, 0.15);
+        border-color: rgba(6, 133, 228, 0.6);
+        &.task-selected {
+          background: rgba(6, 133, 228, 0.6);
+        }
+      }
+
+      &.wo-legend-color-4 {
+        background: rgba(15, 187, 203, 0.15);
+        border-color: rgba(15, 187, 203, 0.5);
+        &.task-selected {
+          background: rgba(15, 187, 203, 0.5);
+        }
+      }
+
+      &.wo-legend-color-5 {
+        background: rgba(218, 98, 198, 0.15);
+        border-color: rgba(218, 98, 198, 0.6);
+        &.task-selected {
+          background: rgba(218, 98, 198, 0.6);
+        }
+      }
+
+      &.wo-legend-color-6 {
+        background: rgba(255, 71, 79, 0.15);
+        border-color: rgba(255, 71, 79, 0.5);
+        &.task-selected {
+          background: rgba(255, 71, 79, 0.5);
+        }
+      }
+
+      &.wo-legend-color-7 {
+        background: rgba(168, 80, 74, 0.15);
+        border-color: rgba(168, 80, 74, 0.5);
+        &.task-selected {
+          background: rgba(168, 80, 74, 0.5);
+        }
+      }
+
+      &.wo-legend-color-8 {
+        background: rgba(255, 154, 0, 0.15);
+        border-color: rgba(255, 154, 0, 0.4);
+        &.task-selected {
+          background: rgba(255, 154, 0, 0.4);
+        }
+      }
+      &.wo-legend-color-9 {
+        background: rgba(18, 132, 73, 0.15);
+        border-color: rgba(18, 132, 73, 0.4);
+        &.task-selected {
+          background: rgba(18, 132, 73, 0.4);
+        }
+      }
+    }
+  }
+}
+
+//when printing make background dark
+
+// &.wo-legend-color-0 {
+//   background: rgba(255, 214, 72, 0.75);
+// }
+
+// &.wo-legend-color-1 {
+//   background: rgba(112, 207, 0, 0.6);
+// }
+// &.wo-legend-color-2 {
+//   background: rgba(138, 226, 249, 0.9);
+// }
+// &.wo-legend-color-3 {
+//   background: rgba(6, 133, 228, 0.6);
+// }
+
+// &.wo-legend-color-4 {
+//   background: rgba(15, 187, 203, 0.5);
+// }
+
+// &.wo-legend-color-5 {
+//   background: rgba(218, 98, 198, 0.6);
+// }
+
+// &.wo-legend-color-6 {
+//   background: rgba(255, 71, 79, 0.5);
+// }
+
+// &.wo-legend-color-7 {
+//   background: rgba(168, 80, 74, 0.5);
+// }
+
+// &.wo-legend-color-8 {
+//   background: rgba(255, 154, 0, 0.4);
+// }
+// &.wo-legend-color-9 {
+//   background: rgba(18, 132, 73, 0.4);
+// }

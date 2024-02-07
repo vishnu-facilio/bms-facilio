@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="180px" height="100px" viewBox="0 0 180 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52 (66869) - http://www.bohemiancoding.com/sketch -->
+    <title>Shell and tube heat exchanger</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="50%" y1="7.85712592%" x2="50%" y2="64.5249645%" id="linearGradient-1">
+            <stop stop-color="#4C4C4C" offset="0%"></stop>
+            <stop stop-color="#CACACA" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="6.46622263%" x2="50%" y2="64.5249645%" id="linearGradient-2">
+            <stop stop-color="#4C4C4C" offset="2.3956828%"></stop>
+            <stop stop-color="#CACACA" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient x1="50%" y1="6.46622263%" x2="50%" y2="64.5249645%" id="linearGradient-3">
+            <stop stop-color="#99ACB9" offset="0%"></stop>
+            <stop stop-color="#B3C1CB" offset="27.9376385%"></stop>
+            <stop stop-color="#DBE1E6" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="Chillers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD-Copy-5" transform="translate(-367.000000, -308.000000)" stroke="#474747">
+            <g id="Shell-and-tube-heat-exchanger" transform="translate(367.000000, 308.000000)">
+                <path d="M129.309635,82.3463695 L135.598539,99.1085429 L147.301527,99.1085429 L147.301527,82.3463695 L129.309635,82.3463695 Z" id="Path-69-Copy-3" fill="url(#linearGradient-1)"></path>
+                <path d="M28.5462761,82.3463695 L34.8351802,99.1085429 L46.5381679,99.1085429 L46.5381679,82.3463695 L28.5462761,82.3463695 Z" id="Path-69-Copy-2" fill="url(#linearGradient-2)" transform="translate(37.431410, 90.727456) scale(-1, 1) translate(-37.431410, -90.727456) "></path>
+                <path d="M179.5,26.5 L154.5,26.5 L154.5,40.5 L179.5,40.5 L179.5,26.5 Z" id="Path-23-Copy-28" fill="url(#linearGradient-3)"></path>
+                <path d="M179.5,58.5 L154.5,58.5 L154.5,72.5 L179.5,72.5 L179.5,58.5 Z" id="Path-23-Copy-27" fill="url(#linearGradient-3)"></path>
+                <rect id="Rectangle" fill="url(#linearGradient-3)" x="41.5" y="0.5" width="14" height="18"></rect>
+                <rect id="Rectangle-Copy-31" fill="url(#linearGradient-3)" x="119.5" y="0.5" width="14" height="18"></rect>
+                <path d="M15.8197849,11.9503817 C5.60012508,24.5275575 0.5,37.0808848 0.5,49.6183206 C0.5,62.1557564 5.60012508,74.7090837 15.8197849,87.2862595 L154.119146,87.2862595 C164.338806,74.7090837 169.438931,62.1557564 169.438931,49.6183206 C169.438931,37.0808848 164.338806,24.5275575 154.119146,11.9503817 L15.8197849,11.9503817 Z" id="Rectangle" fill="url(#linearGradient-3)"></path>
+                <path d="M30.2346098,11.8707381 C40.4127269,24.4661579 45.5017854,37.0615778 45.5017854,49.6569976 C45.5017854,62.2524174 40.4127269,74.8478373 30.2346098,87.4432571" id="Path-65"></path>
+                <path d="M60.768961,11.8707381 C70.947078,24.4661579 76.0361365,37.0615778 76.0361365,49.6569976 C76.0361365,62.2524174 70.947078,74.8478373 60.768961,87.4432571" id="Path-65-Copy"></path>
+                <path d="M91.3033121,11.8707381 C101.481429,24.4661579 106.570488,37.0615778 106.570488,49.6569976 C106.570488,62.2524174 101.481429,74.8478373 91.3033121,87.4432571" id="Path-65-Copy-2"></path>
+                <path d="M121.837663,11.8707381 C132.01578,24.4661579 137.104839,37.0615778 137.104839,49.6569976 C137.104839,62.2524174 132.01578,74.8478373 121.837663,87.4432571" id="Path-65-Copy-3"></path>
+            </g>
+        </g>
+    </g>
+</svg>

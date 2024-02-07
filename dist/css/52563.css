@@ -1,0 +1,17 @@
+
+.upload-space-photos {
+  position: absolute;
+  bottom: 5px;
+  right: 0px;
+  display: none;
+  z-index: 10;
+  width: 100%;
+  text-align: center;
+  background: #fff;
+  padding: 5px;
+}
+.fc-avatar-element:hover .upload-space-photos {
+  display: block;
+}
+
+.tr-summary-table .el-table th.is-leaf[data-v-60b7f7f8],.tr-summary-table .el-table th.el-table__cell>.cell[data-v-60b7f7f8]{padding-left:0;padding-right:0}

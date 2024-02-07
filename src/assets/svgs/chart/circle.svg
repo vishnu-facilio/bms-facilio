@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 50 50" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 63.1 (92452) - https://sketch.com -->
+    <title>circle</title>
+    <desc>Created with Sketch.</desc>
+    <g id="circle" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <path d="M25,0 C38.8071187,0 50,11.1928813 50,25 C50,38.8071187 38.8071187,50 25,50 C11.1928813,50 0,38.8071187 0,25 C0,11.1928813 11.1928813,0 25,0 Z M25,3 C12.8497355,3 3,12.8497355 3,25 C3,37.1502645 12.8497355,47 25,47 C37.1502645,47 47,37.1502645 47,25 C47,12.8497355 37.1502645,3 25,3 Z" id="Oval" fill="#324056" fill-rule="nonzero"></path>
+    </g>
+</svg>

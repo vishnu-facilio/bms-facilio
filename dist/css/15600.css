@@ -1,0 +1,32 @@
+
+.fc-hot-desk-cards {
+  min-width: 115px;
+  height: auto;
+  margin-right: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: solid 1px #e6e6e6;
+  background-color: #fff;
+  padding: 8px;
+  max-width: 300px;
+}
+.fc-hot-desk-cards:hover {
+  border-color: #0053cc;
+}
+.fc-recently-received-card {
+  /* height: 100%; */
+}
+.flex-center {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+svg.icon.text-center.icon-md.vertical-bottom.empty-state {
+  width: 100%;
+  height: 100%;
+  margin-top: 15px;
+}
+

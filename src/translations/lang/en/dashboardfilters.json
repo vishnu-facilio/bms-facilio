@@ -1,0 +1,11 @@
+{
+  "configure": "Configure filters",
+  "show_slider": "Show Slider",
+  "select_operator": "Select Operator",
+  "select_dropdown": "Select Dropdown",
+  "cancel": "Cancel",
+  "done": "Done",
+  "filter_label": "Filter label",
+  "display_type_label": "Display Type",
+  "selection_type_label": "Selection Type"
+}

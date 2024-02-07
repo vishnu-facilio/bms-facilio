@@ -1,0 +1,13 @@
+"use strict";(self["webpackChunkfacilio_web"]=self["webpackChunkfacilio_web"]||[]).push([[14747],{
+/***/714747:
+/***/function(__unused_webpack_module,__webpack_exports__,__webpack_require__){
+// ESM COMPAT FLAG
+__webpack_require__.r(__webpack_exports__),
+// EXPORTS
+__webpack_require__.d(__webpack_exports__,{default:function(){/* binding */return custom_module_DSMFormCreation}});
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/regeneratorRuntime.js
+var render,staticRenderFns,regeneratorRuntime=__webpack_require__(150124),asyncToGenerator=__webpack_require__(548534),DSMFormCreation=(__webpack_require__(670560),__webpack_require__(434284),__webpack_require__(366458)),router=__webpack_require__(329435),validation=__webpack_require__(990260),FetchViewsMixin=__webpack_require__(646716),DSMFormCreationvue_type_script_lang_js={extends:DSMFormCreation["default"],mixins:[FetchViewsMixin/* default */.Z],computed:{moduleName:function(){return this.$attrs.moduleName},moduleDisplayName:function(){return this.formObj&&this.formObj.module?this.$getProperty(this.formObj,"module.displayName"):""},isV3Api:function(){return!0}},methods:{afterSaveHook:function(response){var data=response[this.moduleName];if(!(0,validation/* isEmpty */.xb)(data)){var _ref=data||{},id=_ref.id;this.redirectToSummary(id)}},redirectToList:function(){var route=(0,router/* findRouteForModule */.Jp)(this.moduleName,router/* pageTypes */.As.LIST);route&&this.$router.push({name:route.name})},redirectToSummary:function(id){var _this=this;return(0,asyncToGenerator/* default */.Z)((0,regeneratorRuntime/* default */.Z)().mark((function _callee(){var viewname,_findRouteForModule,name;return(0,regeneratorRuntime/* default */.Z)().wrap((function(_context){while(1)switch(_context.prev=_context.next){case 0:return _context.next=2,_this.fetchView(_this.moduleName);case 2:viewname=_context.sent,_findRouteForModule=(0,router/* findRouteForModule */.Jp)(_this.moduleName,router/* pageTypes */.As.OVERVIEW),name=_findRouteForModule.name,name&&_this.$router.push({name:name,params:{viewname:viewname,id:id}});case 5:case"end":return _context.stop()}}),_callee)})))()}}},custom_module_DSMFormCreationvue_type_script_lang_js=DSMFormCreationvue_type_script_lang_js,componentNormalizer=__webpack_require__(801001),component=(0,componentNormalizer/* default */.Z)(custom_module_DSMFormCreationvue_type_script_lang_js,render,staticRenderFns,!1,null,"425fd26d",null)
+/* harmony default export */,custom_module_DSMFormCreation=component.exports;
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js
+}}]);
+//# sourceMappingURL=http://localhost:5050/sourcemaps/js/14747.js.map
