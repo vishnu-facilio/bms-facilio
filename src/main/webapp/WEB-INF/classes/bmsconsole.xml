@@ -114,6 +114,9 @@
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
 		</action>
 		<action name="fresetPassword" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="resetPassword">

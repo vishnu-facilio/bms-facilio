@@ -2064,6 +2064,9 @@ public class FacilioAuthAction extends FacilioAction {
 			portalUser = true;
 		}
 
+		Organization defaultOrg = IAMUserUtil.getDefaultOrg(user.getUid());
+		setDomain(defaultOrg.getDomain());
+
 		addAuthCookies(authtoken, portalUser, false, request, "mobile".equals(userType));
 
 		String isWebView = FacilioCookie.getUserCookie(request, "fc.isWebView");
